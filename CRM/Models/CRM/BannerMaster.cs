@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CRM.Models.CRM
+namespace CRM.Models.Crm
 {
     public partial class BannerMaster
     {
         public int Id { get; set; }
-        public string BannerImage { get; set; } = null!;
-        public string BannerPath { get; set; } = null!;
+        public string? BannerImage { get; set; }
+        public string? Bannerdescription { get; set; }
     }
 }
