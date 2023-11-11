@@ -18,6 +18,7 @@ namespace CRM.Models.Crm
 
         public virtual DbSet<AccountTypeMaster> AccountTypeMasters { get; set; } = null!;
         public virtual DbSet<AdminLogin> AdminLogins { get; set; } = null!;
+        public virtual DbSet<BannerMaster> BannerMasters { get; set; } = null!;
         public virtual DbSet<BillingDetail> BillingDetails { get; set; } = null!;
         public virtual DbSet<BillingHistory> BillingHistories { get; set; } = null!;
         public virtual DbSet<CustomerRegistration> CustomerRegistrations { get; set; } = null!;
@@ -82,6 +83,15 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.Role).HasMaxLength(120);
 
                 entity.Property(e => e.UserName).HasMaxLength(120);
+            });
+
+            modelBuilder.Entity<BannerMaster>(entity =>
+            {
+                entity.ToTable("BannerMaster");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.Bannerdescription).HasMaxLength(200);
             });
 
             modelBuilder.Entity<BillingDetail>(entity =>
