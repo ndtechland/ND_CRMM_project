@@ -1,0 +1,115 @@
+﻿@model CRM.Models.Crm.CustomerRegistration
+
+@{
+    ViewData["Title"] = "Customer";
+    Layout = "~/Views/Shared/_adminLayout.cshtml";
+}
+
+
+
+<div class="page-wrapper">
+    <div class="page-body-wrapper">
+        <div class="page-sidebar">
+        </div>
+
+        <div class="page-body">
+
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="page-header-left">
+                                <h3>
+                                    Customer Registration
+                                </h3>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <ol class="breadcrumb pull-right">
+                                <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
+                                <li class="breadcrumb-item">CRM</li>
+                                <li class="breadcrumb-item active">Customer</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Container-fluid Ends-->
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="row">
+
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <form asp-action="Customer" autocomplete="off">
+                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                    <div class="form-group">
+                                        <label for="validationCustom0">Company Name</label>
+                                        <input asp-for="CompanyName" class="form-control" />
+                                        <span asp-validation-for="CompanyName" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="validationCustom0">Contact Person Name</label>
+                                        <input asp-for="ContactPersonName" class="form-control" />
+                                        <span asp-validation-for="ContactPersonName" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="validationCustom0">Mobile Number</label>
+                                        <input asp-for="MobileNumber" class="form-control" />
+                                        <span asp-validation-for="MobileNumber" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="validationCustom0">Alternate Number</label>
+                                        <input asp-for="AlternateNumber" class="form-control" />
+                                        <span asp-validation-for="AlternateNumber" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="validationCustom0">Email</label>
+                                        <input asp-for="Email" class="form-control" />
+                                        <span asp-validation-for="Email" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="validationCustom0">Gst Number</label>
+                                        <input asp-for="GstNumber" class="form-control" />
+                                        <span asp-validation-for="GstNumber" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="validationCustom0">Billing Address</label>
+                                        <input asp-for="BillingAddress" class="form-control" />
+                                        <span asp-validation-for="BillingAddress" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="validationCustom0">Product Details</label>
+                                        <input asp-for="ProductDetails" class="form-control" />
+                                        <span asp-validation-for="ProductDetails" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="validationCustom0">Start Date</label>
+                                        <input asp-for="StartDate" type="date" class="form-control" />
+                                        <span asp-validation-for="StartDate" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="validationCustom0">Renew Date</label>
+                                        <input asp-for="RenewDate" type="date" class="form-control" />
+                                        <span asp-validation-for="RenewDate" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group" style="display:flex; justify-content:center;">
+                                        <input type="submit" value="Save" class="btn btn-primary" />
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+

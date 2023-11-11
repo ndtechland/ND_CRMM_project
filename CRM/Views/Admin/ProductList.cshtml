@@ -1,0 +1,102 @@
+﻿@model IEnumerable<CRM.Models.Crm.ProductMaster>
+
+@{
+    ViewData["Title"] = "ProductList";
+    Layout = "~/Views/Shared/_adminLayout.cshtml";
+}
+<div class="page-wrapper">
+    <div class="page-body-wrapper">
+        <div class="page-sidebar">
+        </div>
+        <!-- Page Sidebar Ends-->
+        <!-- Right sidebar Start-->
+        <!-- Right sidebar Ends-->
+
+        <div class="page-body">
+
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="page-header-left">
+                                <h3>
+                                    Product List
+                                </h3>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <ol class="breadcrumb pull-right">
+                                <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
+                                <li class="breadcrumb-item">Product</li>
+                                <li class="breadcrumb-item active">Product List</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Container-fluid Ends-->
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="row">
+
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                @Html.DisplayNameFor(model => model.ProductName)
+                                            </th>
+                                            <th>
+                                                @Html.DisplayNameFor(model => model.Category)
+                                            </th>
+                                            <th>
+                                                @Html.DisplayNameFor(model => model.Gst)
+                                            </th>
+                                            <th>
+                                                HSN Code
+                                            </th>
+                                            <th>
+                                                @Html.DisplayNameFor(model => model.Price)
+                                            </th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.ProductName)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.Category)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.Gst)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.HsnSacCode)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.Price)
+                                                </td>
+
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>

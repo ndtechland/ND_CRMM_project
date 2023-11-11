@@ -1,0 +1,146 @@
+﻿@model IEnumerable<CRM.Models.Crm.CustomerRegistration>
+
+@{
+    ViewData["Title"] = "CustomerList";
+    Layout = "~/Views/Shared/_adminLayout.cshtml";
+}
+
+<div class="page-wrapper">
+    <div class="page-body-wrapper">
+        <div class="page-sidebar">
+        </div>
+        <!-- Page Sidebar Ends-->
+        <!-- Right sidebar Start-->
+        <!-- Right sidebar Ends-->
+
+        <div class="page-body">
+
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="page-header-left">
+                                <h3>
+                                    Customer List
+                                </h3>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <ol class="breadcrumb pull-right">
+                                <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
+                                <li class="breadcrumb-item">Customer</li>
+                                <li class="breadcrumb-item active">CustomerList</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Container-fluid Ends-->
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="row">
+
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class=" table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    @Html.DisplayNameFor(model => model.CompanyName)
+                                                </th>
+                                                <th>
+                                                    @Html.DisplayNameFor(model => model.ContactPersonName)
+                                                </th>
+                                                <th>
+                                                    @Html.DisplayNameFor(model => model.MobileNumber)
+                                                </th>
+                                                <th>
+                                                    @Html.DisplayNameFor(model => model.AlternateNumber)
+                                                </th>
+                                                <th>
+                                                    @Html.DisplayNameFor(model => model.Email)
+                                                </th>
+                                                <th>
+                                                    @Html.DisplayNameFor(model => model.GstNumber)
+                                                </th>
+                                                <th>
+                                                    @Html.DisplayNameFor(model => model.BillingAddress)
+                                                </th>
+                                                <th>
+                                                    @Html.DisplayNameFor(model => model.ProductDetails)
+                                                </th>
+                                                <th>
+                                                    @Html.DisplayNameFor(model => model.StartDate)
+                                                </th>
+                                                <th>
+                                                    @Html.DisplayNameFor(model => model.RenewDate)
+                                                </th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in Model)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.CompanyName)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.ContactPersonName)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.MobileNumber)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.AlternateNumber)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.Email)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.GstNumber)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.BillingAddress)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.ProductDetails)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.StartDate)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.RenewDate)
+                                                    </td>
+                                                    <td>
+                                                        <div>
+                                                            <i class="fa fa-edit me-2 font-success"></i>
+                                                            <i class="fa fa-trash font-danger"></i>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+  
+
+ 
+
