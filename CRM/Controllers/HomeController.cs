@@ -58,9 +58,6 @@ namespace CRM.Controllers
             var response = await _ICrmrpo.ProductList();
             return View(response);
         }
-        public IActionResult Banner()
-        {
-            return View();
-        }
+       
     }
 }
