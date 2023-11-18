@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <Folder Include="Models\CRM\" />
+    <Folder Include="Models\DTO\" />
   </ItemGroup>
 
 </Project>

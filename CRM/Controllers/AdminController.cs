@@ -1,6 +1,7 @@
 ﻿using CRM.Models.Crm;
 using CRM.Models.CRM;
 using CRM.Repository;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
@@ -15,7 +16,6 @@ namespace CRM.Controllers
     {
         private readonly admin_NDCrMContext _context;
         private readonly ICrmrpo _ICrmrpo;
-
         public AdminController(ICrmrpo _ICrmrpo, admin_NDCrMContext _context)
         {
             this._context = _context;
@@ -24,6 +24,7 @@ namespace CRM.Controllers
         [HttpGet]
         public IActionResult Login()
         {
+             
             return View();
         }
         [HttpPost]
@@ -31,6 +32,9 @@ namespace CRM.Controllers
         {
             try
             {
+
+                // Get session value
+                
                 var response = await _ICrmrpo.Login(model);
                 if (response != null)
                 {
@@ -50,6 +54,7 @@ namespace CRM.Controllers
         }
         public IActionResult Product()
         {
+            
             return View();
         }
         [HttpPost]
