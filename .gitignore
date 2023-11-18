@@ -1,2 +1,5 @@
 *.obj 
 *.bin 
+/.vs/CRM/FileContentIndex
+/.vs/CRM/FileContentIndex
+/CRM/obj/Debug/net6.0
