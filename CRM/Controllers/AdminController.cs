@@ -80,8 +80,9 @@ namespace CRM.Controllers
         }
         public async Task<IActionResult> ProductList()
         {
-            var response = await _ICrmrpo.ProductList();
-            return View(response);
+            //var response = await _ICrmrpo.ProductList();
+            //return View(response);
+            return View();
         }
     }
 }
