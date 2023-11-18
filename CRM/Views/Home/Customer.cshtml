@@ -45,55 +45,65 @@
                             <div class="card-body">
                                 <form asp-action="Customer" autocomplete="off">
                                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                                    <div class="form-group">
+                                    <div class="row">
+                                        <div class="form-group col-sm">
                                         <label for="validationCustom0">Company Name</label>
                                         <input asp-for="CompanyName" class="form-control" />
                                         <span asp-validation-for="CompanyName" class="text-danger"></span>
                                     </div>
-                                    <div class="form-group">
+                                        <div class="form-group col-sm">
                                         <label for="validationCustom0">Contact Person Name</label>
                                         <input asp-for="ContactPersonName" class="form-control" />
                                         <span asp-validation-for="ContactPersonName" class="text-danger"></span>
                                     </div>
-                                    <div class="form-group">
+                                    </div>
+                                    <div  class="row"> 
+                                    <div class="form-group col-sm">
                                         <label for="validationCustom0">Mobile Number</label>
-                                        <input asp-for="MobileNumber" class="form-control" />
+                                            <input type="text" asp-for="MobileNumber" class="form-control" minlength="10" maxlength="10" onkeydown="validateNumericInput(event)" required />
                                         <span asp-validation-for="MobileNumber" class="text-danger"></span>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="validationCustom0">Alternate Number</label>
-                                        <input asp-for="AlternateNumber" class="form-control" />
-                                        <span asp-validation-for="AlternateNumber" class="text-danger"></span>
+                                        <div class="form-group col-sm">
+                                            <label for="validationCustom0">Alternate Number</label>
+                                            <input type="text" asp-for="AlternateNumber" class="form-control" minlength="10" maxlength="10" onkeydown="validateNumericInput(event)" required />
+                                            <span asp-validation-for="AlternateNumber" class="text-danger"></span>
+                                        </div>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="validationCustom0">Email</label>
-                                        <input asp-for="Email" class="form-control" />
-                                        <span asp-validation-for="Email" class="text-danger"></span>
+                                    <div class="row">
+                                        <div class="form-group col-sm">
+                                            <label for="validationCustom0">Email</label>
+                                            <input type="email" asp-for="Email" class="form-control" required />
+                                            <span asp-validation-for="Email" class="text-danger"></span>
+                                        </div>
+                                        <div class="form-group col-sm">
+                                            <label for="validationCustom0">Gst Number</label>
+                                            <input asp-for="GstNumber" class="form-control" required />
+                                            <span asp-validation-for="GstNumber" class="text-danger"></span>
+                                        </div>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="validationCustom0">Gst Number</label>
-                                        <input asp-for="GstNumber" class="form-control" />
-                                        <span asp-validation-for="GstNumber" class="text-danger"></span>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="validationCustom0">Billing Address</label>
-                                        <input asp-for="BillingAddress" class="form-control" />
-                                        <span asp-validation-for="BillingAddress" class="text-danger"></span>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="validationCustom0">Product Details</label>
-                                        <input asp-for="ProductDetails" class="form-control" />
-                                        <span asp-validation-for="ProductDetails" class="text-danger"></span>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="validationCustom0">Start Date</label>
-                                        <input asp-for="StartDate" type="date" class="form-control" />
-                                        <span asp-validation-for="StartDate" class="text-danger"></span>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="validationCustom0">Renew Date</label>
-                                        <input asp-for="RenewDate" type="date" class="form-control" />
-                                        <span asp-validation-for="RenewDate" class="text-danger"></span>
+                                   <div class="row">
+                                        <div class="form-group col-sm">
+                                            <label for="validationCustom0">Billing Address</label>
+                                            <input asp-for="BillingAddress" class="form-control" required />
+                                            <span asp-validation-for="BillingAddress" class="text-danger"></span>
+                                        </div>
+                                        <div class="form-group col-sm">
+                                            <label for="validationCustom0">Product Details</label>
+                                            <input asp-for="ProductDetails" class="form-control" required />
+                                            <span asp-validation-for="ProductDetails" class="text-danger"></span>
+                                        </div>
+                                   </div>
+                                    <div class="row">
+                                        <div class="form-group col-sm">
+                                            <label for="validationCustom0">Start Date</label>
+                                            <input asp-for="StartDate" type="date" class="form-control" required />
+                                            <span asp-validation-for="StartDate" class="text-danger"></span>
+                                        </div>
+                                        <div class="form-group col-sm">
+                                            <label for="validationCustom0">Renew Date</label>
+                                            <input asp-for="RenewDate" type="date" class="form-control" required />
+                                            <span asp-validation-for="RenewDate" class="text-danger"></span>
+                                        </div>
                                     </div>
                                     <div class="form-group" style="display:flex; justify-content:center;">
                                         <input type="submit" value="Save" class="btn btn-primary" />
@@ -111,5 +121,21 @@
     </div>
 
 </div>
+<script>
+    function validateNumericInput(event) {
+        // Allow: backspace, delete, tab, escape, enter
+        if ([46, 8, 9, 27, 13].indexOf(event.keyCode) !== -1 ||
+            // Allow: Ctrl+A
+            (event.keyCode == 65 && event.ctrlKey === true) ||
+            // Allow: home, end, left, right
+            (event.keyCode >= 35 && event.keyCode <= 39)) {
+            // Let it happen, don't do anything
+            return;
+        }
 
-
+        // Ensure that it is a number and stop the keypress if not
+        if ((event.shiftKey || (event.keyCode < 48 || event.keyCode > 57)) && (event.keyCode < 96 || event.keyCode > 105)) {
+            event.preventDefault();
+        }
+    }
+</script>

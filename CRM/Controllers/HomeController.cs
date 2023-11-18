@@ -35,7 +35,7 @@ namespace CRM.Controllers
                 if (response != null)
                 {
 
-                    return RedirectToAction("Customer", "Home");
+                    return RedirectToAction("CustomerList", "Home");
                     TempData["msg"] = "Regiter Successfully.";
                 }
                 else
