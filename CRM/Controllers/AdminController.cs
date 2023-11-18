@@ -1,6 +1,7 @@
 ﻿using CRM.Models.Crm;
 using CRM.Models.CRM;
 using CRM.Repository;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
@@ -24,19 +25,28 @@ namespace CRM.Controllers
         [HttpGet]
         public IActionResult Login()
         {
-            return View();
+            try
+            {
+                return View();
+            }
+            catch (Exception Ex)
+            {
+                throw new Exception("Error:" + Ex.Message);
+            }
         }
         [HttpPost]
         public async Task<IActionResult> Login(AdminLogin model)
         {
             try
             {
-                var response = await _ICrmrpo.Login(model);
-                if (response != null)
+                DataTable dtresponse =  _ICrmrpo.Login(model);
+                if(dtresponse!=null && dtresponse.Rows.Count>0)
                 {
-                    //Session["Id"] = response.Id.ToString();
+                    HttpContext.Session.SetString("UserName", dtresponse.Rows[0]["UserName"].ToString());
                     return RedirectToAction("Dashboard", "Home");
+                    
                 }
+                
                 else
                 {
                     ModelState.Clear();
@@ -47,11 +57,17 @@ namespace CRM.Controllers
             {
                 throw new Exception("Error:" + Ex.Message);
             }
+
         }
         public IActionResult Product()
         {
+            if (HttpContext.Session == null)
+            {
+                return RedirectToAction("Login");
+            }
             return View();
         }
+
         [HttpPost]
         public async Task<IActionResult> Product(ProductMaster model)
         {

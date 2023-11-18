@@ -4,6 +4,8 @@ using CRM.Repository;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
+
+
 namespace CRM.Controllers
 {
     public class HomeController : Controller
@@ -18,7 +20,18 @@ namespace CRM.Controllers
         }
         public IActionResult Dashboard()
         {
-            return View();
+            if(HttpContext.Session.GetString("UserName")!=null)
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName = AddedBy;
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
+            
+           
         }
         public IActionResult Customer()
         {
@@ -58,9 +71,38 @@ namespace CRM.Controllers
             var response = await _ICrmrpo.ProductList();
             return View(response);
         }
+        [HttpGet]
         public IActionResult Banner()
         {
             return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> Upload(IFormFile file, BannerMaster banerm)
+        {
+            if (file == null || file.Length == 0)
+            {
+                ViewBag.Message = "Please select a file.";
+                return View("Banner");
+            }
+
+            // Access the file properties
+            var fileName = Path.GetFileName(file.FileName);
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "UploadsImage", fileName);
+
+            // Save the file to a folder
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+            //save in db
+            string AddedBy = HttpContext.Session.GetString("UserName");
+            banerm.AddedBy= AddedBy;
+            banerm.BannerPath = filePath;
+            banerm.BannerImage = fileName;
+            var response = await _ICrmrpo.Banner(banerm);
+            //end
+            ViewBag.Message = "File uploaded successfully.";
+            return View("Banner");
         }
     }
 }

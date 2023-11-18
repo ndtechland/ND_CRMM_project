@@ -18,6 +18,11 @@ namespace CRM
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(15); // Set session timeout
+            });
+
             services.AddDbContext<admin_NDCrMContext>(options => options.UseSqlServer(Configuration.GetConnectionString("db1")));
 
             services.AddControllersWithViews();
@@ -37,11 +42,12 @@ namespace CRM
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+            app.UseStaticFiles();              // Enable static files, including wwwroot
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseSession();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
