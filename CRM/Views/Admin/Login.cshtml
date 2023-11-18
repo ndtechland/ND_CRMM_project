@@ -3,12 +3,7 @@
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }*@
 
-<style>
-    .center {
-        text-align: center;
-        margin-left: -94px;
-    }
-</style>
+ 
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -58,19 +53,18 @@
     <div class="page-wrapper center">
         <div class="authentication-box">
             <div class="container">
-                <div class="row ">
-
+                <div class="row "> 
                     <center>
-                        <div class="col-10 p-0 card-right ">
+                        <div class="col-md-7 p-0 card-right">
                             <div class="card tab2-card">
                                 <div class="card-body">
                                     <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
                                         <li class="nav-item">
                                             <a class="nav-link active" id="top-profile-tab" data-bs-toggle="tab" href="#top-profile" role="tab" aria-controls="top-profile" aria-selected="true"><span class="icon-user me-2"></span>Login</a>
                                         </li>
-                                        @*<li class="nav-item">
-                                        <a class="nav-link" id="contact-top-tab" data-bs-toggle="tab" href="#top-contact" role="tab" aria-controls="top-contact" aria-selected="false"><span class="icon-unlock me-2"></span>Register</a>
-                                        </li>*@
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="contact-top-tab" data-bs-toggle="tab" href="#top-contact" role="tab" aria-controls="top-contact" aria-selected="false"><span class="icon-unlock me-2"></span>Register</a>
+                                        </li>
                                     </ul>
                                     <div class="tab-content" id="top-tabContent">
                                         <div class="tab-pane fade show active" id="top-profile" role="tabpanel" aria-labelledby="top-profile-tab">
@@ -95,7 +89,7 @@
                                                 </div>
                                                 <div class="form-button">
                                                     <input type="submit" id="btnsubmit" class="btn btn-primary" value="Login" />
-                                                   
+
                                                 </div>
                                             </form>
                                         </div>
@@ -104,7 +98,7 @@
                             </div>
                         </div>
                     </center>
-
+                    
                 </div>               
             </div>
         </div>

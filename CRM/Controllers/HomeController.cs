@@ -2,7 +2,9 @@
 using CRM.Models.Crm;
 using CRM.Repository;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Diagnostics;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace CRM.Controllers
 {
@@ -55,9 +57,11 @@ namespace CRM.Controllers
         }
         public async Task<IActionResult> ProductList()
         {
+            List<ProductMaster> list = new List<ProductMaster>();
+           
             var response = await _ICrmrpo.ProductList();
             return View(response);
         }
-       
+
     }
 }
