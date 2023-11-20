@@ -11,5 +11,6 @@ namespace CRM.Repository
         public Task<List<ProductMaster>> ProductList();
         public Task<int> Customer(CustomerRegistration model);
         public Task<List<CustomerRegistration>> CustomerList();
+        public Task<int> EmpRegistration(EmployeeRegistration model);
     }
 }

@@ -73,5 +73,23 @@ namespace CRM.Repository
                 .FromSqlRaw<CustomerRegistration>("Customerlist")
                 .ToListAsync();
         }
+        public async Task<int> EmpRegistration(EmployeeRegistration model)
+        {
+            var parameter = new List<SqlParameter>();
+            parameter.Add(new SqlParameter("@FirstName", model.FirstName));
+            parameter.Add(new SqlParameter("@MiddleName", model.MiddleName));
+            parameter.Add(new SqlParameter("@LastName", model.LastName));
+            parameter.Add(new SqlParameter("@DateOfJoining", model.DateOfJoining));
+            parameter.Add(new SqlParameter("@WorkEmail", model.WorkEmail));
+            parameter.Add(new SqlParameter("@GenderID", model.GenderId));
+            parameter.Add(new SqlParameter("@WorkLocationID", model.WorkLocationId));
+            parameter.Add(new SqlParameter("@DesignationID", model.DesignationId));
+            parameter.Add(new SqlParameter("@DepartmentID", model.DepartmentId));
+
+            var result = await Task.Run(() => _context.Database
+           .ExecuteSqlRawAsync(@"exec EmployeeRegistration @FirstName, @MiddleName,@LastName,@DateOfJoining,@WorkEmail,@GenderID,@WorkLocationID,@DesignationID,@DepartmentID", parameter.ToArray()));
+
+            return result;
+        }
     }
 }
