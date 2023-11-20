@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\UploadsImage\**" />
+    <Content Remove="wwwroot\UploadsImage\**" />
+    <EmbeddedResource Remove="wwwroot\UploadsImage\**" />
+    <None Remove="wwwroot\UploadsImage\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.24" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.24">
@@ -23,8 +30,6 @@
 
   <ItemGroup>
     <Folder Include="Models\CRM\" />
-    <Folder Include="Models\DTO\" />
-    <Folder Include="wwwroot\UploadsImage\" />
   </ItemGroup>
 
 </Project>
