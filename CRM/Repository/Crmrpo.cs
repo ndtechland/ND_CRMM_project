@@ -99,7 +99,7 @@ namespace CRM.Repository
             var parameter = new List<SqlParameter>();
             parameter.Add(new SqlParameter("@BannerImage", model.BannerImage));
             parameter.Add(new SqlParameter("@Bannerdescription", model.Bannerdescription));
-            parameter.Add(new SqlParameter("@BannerPath", model.BannerPath));
+            parameter.Add(new SqlParameter("@BannerPath", model.Imagepath));
             parameter.Add(new SqlParameter("@AddedBy", model.AddedBy));
             var result = await Task.Run(() => _context.Database
            .ExecuteSqlRawAsync(@"exec Sp_Banner @BannerImage,@Bannerdescription,@BannerPath,@AddedBy", parameter.ToArray()));
