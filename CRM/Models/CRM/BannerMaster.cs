@@ -8,5 +8,7 @@ namespace CRM.Models.Crm
         public int Id { get; set; }
         public string? BannerImage { get; set; }
         public string? Bannerdescription { get; set; }
+        public string? BannerPath { get; set; }
+        public string? AddedBy { get; set; }
     }
 }
