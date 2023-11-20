@@ -91,7 +91,17 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Id).HasColumnName("ID");
 
+                entity.Property(e => e.AddedBy)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.AddedOn).HasColumnType("datetime");
+
                 entity.Property(e => e.Bannerdescription).HasMaxLength(200);
+
+                entity.Property(e => e.Imagepath)
+                    .IsUnicode(false)
+                    .HasColumnName("IMAGEPATH");
             });
 
             modelBuilder.Entity<BillingDetail>(entity =>

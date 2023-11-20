@@ -99,7 +99,7 @@ namespace CRM.Controllers
             //save in db
             string AddedBy = HttpContext.Session.GetString("UserName");
             banerm.AddedBy = AddedBy;
-            banerm.BannerPath = filePath;
+            banerm.Imagepath = filePath;
             banerm.BannerImage = fileName;
             var response = await _ICrmrpo.Banner(banerm);
             //end
