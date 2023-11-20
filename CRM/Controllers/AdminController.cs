@@ -54,8 +54,16 @@ namespace CRM.Controllers
         }
         public IActionResult Product()
         {
-            
-            return View();
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName = AddedBy;
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
         }
         [HttpPost]
         public async Task<IActionResult> Product(ProductMaster model)
