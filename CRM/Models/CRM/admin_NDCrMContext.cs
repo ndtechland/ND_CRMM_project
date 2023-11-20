@@ -26,6 +26,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<DeductorNameMaster> DeductorNameMasters { get; set; } = null!;
         public virtual DbSet<DeductorTypeMaster> DeductorTypeMasters { get; set; } = null!;
         public virtual DbSet<DepartmentMaster> DepartmentMasters { get; set; } = null!;
+        public virtual DbSet<DesignationMaster> DesignationMasters { get; set; } = null!;
         public virtual DbSet<EmployeeBankDetail> EmployeeBankDetails { get; set; } = null!;
         public virtual DbSet<EmployeeLeaveMaster> EmployeeLeaveMasters { get; set; } = null!;
         public virtual DbSet<EmployeeLogin> EmployeeLogins { get; set; } = null!;
@@ -247,6 +248,17 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.DepartmentName)
                     .HasMaxLength(255)
                     .HasColumnName("Department_Name");
+            });
+
+            modelBuilder.Entity<DesignationMaster>(entity =>
+            {
+                entity.ToTable("Designation_Master");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.DesignationName)
+                    .HasMaxLength(150)
+                    .HasColumnName("Designation_Name");
             });
 
             modelBuilder.Entity<EmployeeBankDetail>(entity =>
@@ -863,20 +875,6 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.AddressLine1)
                     .HasMaxLength(255)
                     .HasColumnName("Address_Line_1");
-
-                entity.Property(e => e.AddressLine2)
-                    .HasMaxLength(255)
-                    .HasColumnName("Address_Line_2");
-
-                entity.Property(e => e.City).HasMaxLength(255);
-
-                entity.Property(e => e.StateId).HasColumnName("State_ID");
-
-                entity.HasOne(d => d.State)
-                    .WithMany(p => p.WorkLocations)
-                    .HasForeignKey(d => d.StateId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Work_Location_State_ID");
             });
 
             OnModelCreatingPartial(modelBuilder);

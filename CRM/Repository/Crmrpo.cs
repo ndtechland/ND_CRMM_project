@@ -105,5 +105,6 @@ namespace CRM.Repository
            .ExecuteSqlRawAsync(@"exec Sp_Banner @BannerImage,@Bannerdescription,@BannerPath,@AddedBy", parameter.ToArray()));
             return result;
         }
+      
     }
 }

@@ -14,5 +14,6 @@ namespace CRM.Repository
         public Task<List<CustomerRegistration>> CustomerList();
         public Task<int> EmpRegistration(EmployeeRegistration model);
         public Task<int> Banner(BannerMaster model);
+
     }
 }

@@ -11,7 +11,6 @@ namespace CRM.Models.Crm
             EmployeePersonalAddresses = new HashSet<EmployeePersonalAddress>();
             HeadOfficeAddresses = new HashSet<HeadOfficeAddress>();
             OrganisationProfiles = new HashSet<OrganisationProfile>();
-            WorkLocations = new HashSet<WorkLocation>();
         }
 
         public int Id { get; set; }
@@ -21,6 +20,5 @@ namespace CRM.Models.Crm
         public virtual ICollection<EmployeePersonalAddress> EmployeePersonalAddresses { get; set; }
         public virtual ICollection<HeadOfficeAddress> HeadOfficeAddresses { get; set; }
         public virtual ICollection<OrganisationProfile> OrganisationProfiles { get; set; }
-        public virtual ICollection<WorkLocation> WorkLocations { get; set; }
     }
 }
