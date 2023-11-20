@@ -14,17 +14,19 @@ namespace CRM.Repository
             _context = context;
         }
 
-        public async Task<int> Login(AdminLogin model)
+        public DataTable Login(AdminLogin model)
         {
-            var parameter = new List<SqlParameter>();
-            parameter.Add(new SqlParameter("@UserName", model.UserName));
-            parameter.Add(new SqlParameter("@password", model.Password));
+            SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
+            SqlCommand cmd = new SqlCommand("usp_adminlogin", con);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add(new SqlParameter("@UserName", model.UserName));
+            cmd.Parameters.Add(new SqlParameter("@password", model.Password));
+            SqlDataAdapter da = new SqlDataAdapter();
+            da.SelectCommand = cmd;
+            DataTable dt = new DataTable();
+            da.Fill(dt);
+            return dt;
 
-
-            var result = await Task.Run(() => _context.Database
-           .ExecuteSqlRawAsync(@"exec usp_adminlogin @UserName, @password", parameter.ToArray()));
-
-            return result;
         }
         public async Task<int> Product(ProductMaster model)
         {
@@ -89,6 +91,18 @@ namespace CRM.Repository
             var result = await Task.Run(() => _context.Database
            .ExecuteSqlRawAsync(@"exec EmployeeRegistration @FirstName, @MiddleName,@LastName,@DateOfJoining,@WorkEmail,@GenderID,@WorkLocationID,@DesignationID,@DepartmentID", parameter.ToArray()));
 
+            return result;
+        }
+
+        public async Task<int> Banner(BannerMaster model)
+        {
+            var parameter = new List<SqlParameter>();
+            parameter.Add(new SqlParameter("@BannerImage", model.BannerImage));
+            parameter.Add(new SqlParameter("@Bannerdescription", model.Bannerdescription));
+            parameter.Add(new SqlParameter("@BannerPath", model.BannerPath));
+            parameter.Add(new SqlParameter("@AddedBy", model.AddedBy));
+            var result = await Task.Run(() => _context.Database
+           .ExecuteSqlRawAsync(@"exec Sp_Banner @BannerImage,@Bannerdescription,@BannerPath,@AddedBy", parameter.ToArray()));
             return result;
         }
     }

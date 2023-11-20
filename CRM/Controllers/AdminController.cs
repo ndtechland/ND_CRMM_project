@@ -27,20 +27,20 @@ namespace CRM.Controllers
              
             return View();
         }
+      
         [HttpPost]
         public async Task<IActionResult> Login(AdminLogin model)
         {
             try
             {
-
-                // Get session value
-                
-                var response = await _ICrmrpo.Login(model);
-                if (response != null)
+                DataTable dtresponse = _ICrmrpo.Login(model);
+                if (dtresponse != null && dtresponse.Rows.Count > 0)
                 {
-                    //Session["Id"] = response.Id.ToString();
+                    HttpContext.Session.SetString("UserName", dtresponse.Rows[0]["UserName"].ToString());
                     return RedirectToAction("Dashboard", "Home");
+
                 }
+
                 else
                 {
                     ModelState.Clear();
@@ -50,7 +50,7 @@ namespace CRM.Controllers
             catch (Exception Ex)
             {
                 throw new Exception("Error:" + Ex.Message);
-            }
+            }  
         }
         public IActionResult Product()
         {
