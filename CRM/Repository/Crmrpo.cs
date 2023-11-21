@@ -5,6 +5,8 @@ using CRM.Models.DTO;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace CRM.Repository
 {
@@ -118,7 +120,7 @@ namespace CRM.Repository
                 parameter.Add(new SqlParameter("@Pincode", model.Pincode));
 
                 var result = await Task.Run(() => _context.Database
-               .ExecuteSqlRawAsync(@"exec sp_insert_Employee_Personal_Details @Personal_Email_Address,
+               .ExecuteSqlRawAsync(@"exec sp_Employee_Personal_Details @Personal_Email_Address,
             @Mobile_Number,@Date_Of_Birth,@Father_Name,@PAN,@Address_Line_1,
               @Address_Line_2,@City,@State_ID,@Pincode", parameter.ToArray()));
                 return result;
@@ -142,6 +144,24 @@ namespace CRM.Repository
             return data;
         }
 
+        public async Task<List<EmployeeBasicinfo>> EmployeeBasicinfoList()
+        {
+            var data = await _dbcontext.EmployeeBasicinfos
+                .FromSqlRaw<EmployeeBasicinfo>("EmployeeBasicinfoList").ToListAsync();
+            return data;
+        }
 
+        //public async Task<EmployeePersonalDetail> DeleteEmployee(int Id)
+        //{
+        //    var employeeToDelete = await _context.EmployeePersonalDetails.FindAsync(Id);
+
+        //    if (employeeToDelete != null)
+        //    {
+        //        var data=_context.EmployeePersonalDetails.Remove(employeeToDelete);
+        //        await _context.SaveChangesAsync();
+        //    }
+
+        //    return data;
+        //}
     }
 }

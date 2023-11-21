@@ -14,6 +14,7 @@ namespace CRM.Models.DTO
         {
         }
         public virtual DbSet<EmpRegistration> EmpRegistrations { get; set; } = null!;
+        public virtual DbSet<EmployeeBasicinfo> EmployeeBasicinfos { get; set; } = null!;
 
 
     }
