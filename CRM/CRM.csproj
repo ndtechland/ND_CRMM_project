@@ -7,9 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Models\DTO\**" />
     <Compile Remove="wwwroot\UploadsImage\**" />
+    <Content Remove="Models\DTO\**" />
     <Content Remove="wwwroot\UploadsImage\**" />
+    <EmbeddedResource Remove="Models\DTO\**" />
     <EmbeddedResource Remove="wwwroot\UploadsImage\**" />
+    <None Remove="Models\DTO\**" />
     <None Remove="wwwroot\UploadsImage\**" />
   </ItemGroup>
 

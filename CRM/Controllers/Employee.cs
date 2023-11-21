@@ -1,5 +1,4 @@
 ﻿using CRM.Models.Crm;
-using CRM.Models.DTO;
 using CRM.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
