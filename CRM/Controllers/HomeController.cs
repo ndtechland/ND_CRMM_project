@@ -35,11 +35,21 @@ namespace CRM.Controllers
         }
         public IActionResult Customer()
         {
+            
             if (HttpContext.Session.GetString("UserName") != null)
             {
+                var emp = new CustomerRegistration();
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 ViewBag.UserName = AddedBy;
-                return View();
+                ViewBag.ProductDetails = _context.ProductMasters
+              .Select(p => new SelectListItem
+              {
+                  Value = p.Id.ToString(),
+                  Text = p.ProductName
+              })
+               .ToList();
+
+                return View(emp);
             }
             else
             {
