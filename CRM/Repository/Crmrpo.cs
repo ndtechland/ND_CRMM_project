@@ -81,7 +81,7 @@ namespace CRM.Repository
             parameter.Add(new SqlParameter("@FirstName", model.FirstName));
             parameter.Add(new SqlParameter("@MiddleName", model.MiddleName));
             parameter.Add(new SqlParameter("@LastName", model.LastName));
-            parameter.Add(new SqlParameter("@DateOfJoining", model.DateOfJoining));
+            parameter.Add(new SqlParameter("@DateOfJoining", DateTime.Now));
             parameter.Add(new SqlParameter("@WorkEmail", model.WorkEmail));
             parameter.Add(new SqlParameter("@GenderID", model.GenderId));
             parameter.Add(new SqlParameter("@WorkLocationID", model.WorkLocationId));
