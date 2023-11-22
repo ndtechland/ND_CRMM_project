@@ -88,8 +88,17 @@ namespace CRM.Controllers
         }
         public async Task<IActionResult> ProductList()
         {
-            var response = await _ICrmrpo.ProductList();
-            return View(response);
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                var response = await _ICrmrpo.ProductList();
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName = AddedBy;
+                return View(response);
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using CRM.Models.Crm;
 using CRM.Models.CRM;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using CRM.Models.DTO;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
@@ -9,9 +11,12 @@ namespace CRM.Repository
     public class Crmrpo : ICrmrpo
     {
         private admin_NDCrMContext _context;
-        public Crmrpo(admin_NDCrMContext context)
+        private admin_NDCrM _dbcontext;
+
+        public Crmrpo(admin_NDCrMContext context, admin_NDCrM dbcontext)
         {
             _context = context;
+            _dbcontext = dbcontext;
         }
 
         public DataTable Login(AdminLogin model)
@@ -93,7 +98,32 @@ namespace CRM.Repository
 
             return result;
         }
+        public async Task<List<StateMaster>> GetAllState()
+        {
+            return await _context.StateMasters.ToListAsync();
+        }
+        public async Task<int> EmployeeBasicinfo(EmployeePersonalDetail model)
+        {
+            {
+                var parameter = new List<SqlParameter>();
+                parameter.Add(new SqlParameter("@Personal_Email_Address", model.PersonalEmailAddress));
+                parameter.Add(new SqlParameter("@Mobile_Number", model.MobileNumber));
+                parameter.Add(new SqlParameter("@Date_Of_Birth", model.DateOfBirth));
+                parameter.Add(new SqlParameter("@Father_Name", model.FatherName));
+                parameter.Add(new SqlParameter("@PAN", model.Pan));
+                parameter.Add(new SqlParameter("@Address_Line_1", model.AddressLine1));
+                parameter.Add(new SqlParameter("@Address_Line_2", model.AddressLine2));
+                parameter.Add(new SqlParameter("@City", model.City));
+                parameter.Add(new SqlParameter("@State_ID", model.StateId));
+                parameter.Add(new SqlParameter("@Pincode", model.Pincode));
 
+                var result = await Task.Run(() => _context.Database
+               .ExecuteSqlRawAsync(@"exec sp_insert_Employee_Personal_Details @Personal_Email_Address,
+            @Mobile_Number,@Date_Of_Birth,@Father_Name,@PAN,@Address_Line_1,
+              @Address_Line_2,@City,@State_ID,@Pincode", parameter.ToArray()));
+                return result;
+            }
+        }
         public async Task<int> Banner(BannerMaster model)
         {
             var parameter = new List<SqlParameter>();
@@ -105,6 +135,13 @@ namespace CRM.Repository
            .ExecuteSqlRawAsync(@"exec Sp_Banner @BannerImage,@Bannerdescription,@BannerPath,@AddedBy", parameter.ToArray()));
             return result;
         }
-      
+        public async Task<List<EmpRegistration>> EmployeeList()
+        {
+            var data = await _dbcontext.EmpRegistrations
+                .FromSqlRaw<EmpRegistration>("EmployeeRegistrationList").ToListAsync();
+            return data;
+        }
+
+
     }
 }
