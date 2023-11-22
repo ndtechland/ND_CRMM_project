@@ -23,7 +23,7 @@
 
   <ItemGroup>
     <Folder Include="Models\CRM\" />
-    <Folder Include="wwwroot\UploadsImage\" />
+    <Folder Include="wwwroot\Image\" />
   </ItemGroup>
 
 </Project>
