@@ -90,19 +90,19 @@
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Product Details</label>
                                          
-                                            @Html.DropDownListFor(model => model.ProductDetails, new SelectList(ViewBag.ProductDetails, "Value", "Text"), "-- Select ProductDetails --", new { @class = "form-control" })
+                                            @Html.DropDownListFor(model => model.ProductDetails, new SelectList(ViewBag.ProductDetails, "Value", "Text"), "-- Select Product --", new { @class = "form-control" })
                                             <span asp-validation-for="ProductDetails" class="text-danger"></span>
                                         </div>
                                    </div>
                                     <div class="row">
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Start Date</label>
-                                            <input asp-for="StartDate" type="date" class="form-control" required />
+                                            <input name="StartDate"  type="date" class="form-control" required />
                                             <span asp-validation-for="StartDate" class="text-danger"></span>
                                         </div>
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Renew Date</label>
-                                            <input asp-for="RenewDate" type="date" class="form-control" required />
+                                            <input name="RenewDate" type="date" class="form-control" required />
                                             <span asp-validation-for="RenewDate" class="text-danger"></span>
                                         </div>
                                     </div>
@@ -122,21 +122,4 @@
     </div>
 
 </div>
-<script>
-    function validateNumericInput(event) {
-        // Allow: backspace, delete, tab, escape, enter
-        if ([46, 8, 9, 27, 13].indexOf(event.keyCode) !== -1 ||
-            // Allow: Ctrl+A
-            (event.keyCode == 65 && event.ctrlKey === true) ||
-            // Allow: home, end, left, right
-            (event.keyCode >= 35 && event.keyCode <= 39)) {
-            // Let it happen, don't do anything
-            return;
-        }
 
-        // Ensure that it is a number and stop the keypress if not
-        if ((event.shiftKey || (event.keyCode < 48 || event.keyCode > 57)) && (event.keyCode < 96 || event.keyCode > 105)) {
-            event.preventDefault();
-        }
-    }
-</script>

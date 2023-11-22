@@ -1,0 +1,144 @@
+﻿@model IEnumerable<CRM.Models.DTO.EmpRegistration>
+
+
+@{
+    ViewData["Title"] = "Employeelist";
+    Layout = "~/Views/Shared/_adminLayout.cshtml";
+}
+
+
+<div class="page-wrapper">
+    <div class="page-body-wrapper">
+        <div class="page-sidebar">
+        </div>
+        <!-- Page Sidebar Ends-->
+        <!-- Right sidebar Start-->
+        <!-- Right sidebar Ends-->
+
+        <div class="page-body">
+
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="page-header-left">
+                                <h3>
+                                    Employee List
+                                </h3>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <ol class="breadcrumb pull-right">
+                                <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
+                                <li class="breadcrumb-item">HR Payrole</li>
+                                <li class="breadcrumb-item active">Employee</li>
+                                <li class="breadcrumb-item active">EmployeeList</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Container-fluid Ends-->
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="row">
+
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class=" table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    @Html.DisplayNameFor(model => model.FirstName)
+                                                </th>
+                                                <th>
+                                                    @Html.DisplayNameFor(model => model.MiddleName)
+                                                </th>
+                                                <th>
+                                                    @Html.DisplayNameFor(model => model.LastName)
+                                                </th>
+                                                <th>
+                                                    @Html.DisplayNameFor(model => model.EmployeeId)
+                                                </th>
+                                                <th>
+                                                    @Html.DisplayNameFor(model => model.DateOfJoining)
+                                                </th>
+                                                <th>
+                                                    @Html.DisplayNameFor(model => model.WorkEmail)
+                                                </th>
+                                                <th>
+                                                    Gender
+                                                </th>
+                                                <th>
+                                                   WorkLocation
+                                                </th>
+                                                <th>
+                                                   Designation
+                                                </th>
+                                                <th>
+                                                    Department
+                                                </th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in Model)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.FirstName)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.MiddleName)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.LastName)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.EmployeeId)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.DateOfJoining)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.WorkEmail)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.GenderId)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.WorkLocationId)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.DesignationId)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.DepartmentId)
+                                                    </td>
+                                                    <td>
+                                                        <div>
+                                                            <i class="fa fa-edit me-2 font-success"></i>
+                                                            <i class="fa fa-trash font-danger"></i>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>

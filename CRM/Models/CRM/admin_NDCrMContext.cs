@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using CRM.Models.DTO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -30,7 +31,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<EmployeeBankDetail> EmployeeBankDetails { get; set; } = null!;
         public virtual DbSet<EmployeeLeaveMaster> EmployeeLeaveMasters { get; set; } = null!;
         public virtual DbSet<EmployeeLogin> EmployeeLogins { get; set; } = null!;
-        public virtual DbSet<EmployeePersonalAddress> EmployeePersonalAddresses { get; set; } = null!;
+        public virtual DbSet<EmployeePersonalDetail> EmployeePersonalDetails { get; set; } = null!;
         public virtual DbSet<EmployeeRegistration> EmployeeRegistrations { get; set; } = null!;
         public virtual DbSet<EmployeeRole> EmployeeRoles { get; set; } = null!;
         public virtual DbSet<EmployeeSalaryDetail> EmployeeSalaryDetails { get; set; } = null!;
@@ -243,7 +244,9 @@ namespace CRM.Models.Crm
             {
                 entity.ToTable("Department_Master", "dbo");
 
-                entity.Property(e => e.Id).HasColumnName("ID");
+                entity.Property(e => e.Id)
+                    .HasMaxLength(120)
+                    .HasColumnName("ID");
 
                 entity.Property(e => e.DepartmentName)
                     .HasMaxLength(255)
@@ -330,9 +333,9 @@ namespace CRM.Models.Crm
                     .HasConstraintName("FK_Employee_Login_Employee_ID");
             });
 
-            modelBuilder.Entity<EmployeePersonalAddress>(entity =>
+            modelBuilder.Entity<EmployeePersonalDetail>(entity =>
             {
-                entity.ToTable("Employee_Personal_Address", "dbo");
+                entity.ToTable("Employee_Personal_Details");
 
                 entity.Property(e => e.Id).HasColumnName("ID");
 
@@ -350,8 +353,6 @@ namespace CRM.Models.Crm
                     .HasColumnType("date")
                     .HasColumnName("Date_Of_Birth");
 
-                entity.Property(e => e.EmployeeRegistrationId).HasColumnName("Employee_Registration_ID");
-
                 entity.Property(e => e.FatherName)
                     .HasMaxLength(255)
                     .HasColumnName("Father_Name");
@@ -368,19 +369,9 @@ namespace CRM.Models.Crm
                     .HasMaxLength(120)
                     .HasColumnName("Personal_Email_Address");
 
+                entity.Property(e => e.Pincode).HasColumnType("numeric(6, 0)");
+
                 entity.Property(e => e.StateId).HasColumnName("State_ID");
-
-                entity.HasOne(d => d.EmployeeRegistration)
-                    .WithMany(p => p.EmployeePersonalAddresses)
-                    .HasForeignKey(d => d.EmployeeRegistrationId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Employee_Personal_Address_Employee_Registration_ID");
-
-                entity.HasOne(d => d.State)
-                    .WithMany(p => p.EmployeePersonalAddresses)
-                    .HasForeignKey(d => d.StateId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Employee_Personal_Address_State_ID");
             });
 
             modelBuilder.Entity<EmployeeRegistration>(entity =>
@@ -393,9 +384,13 @@ namespace CRM.Models.Crm
                     .HasColumnType("date")
                     .HasColumnName("Date_Of_Joining");
 
-                entity.Property(e => e.DepartmentId).HasColumnName("Department_ID");
+                entity.Property(e => e.DepartmentId)
+                    .HasMaxLength(120)
+                    .HasColumnName("Department_ID");
 
-                entity.Property(e => e.DesignationId).HasColumnName("Designation_ID");
+                entity.Property(e => e.DesignationId)
+                    .HasMaxLength(120)
+                    .HasColumnName("Designation_ID");
 
                 entity.Property(e => e.EmployeeId)
                     .HasMaxLength(95)
@@ -406,7 +401,9 @@ namespace CRM.Models.Crm
                     .HasMaxLength(120)
                     .HasColumnName("First_Name");
 
-                entity.Property(e => e.GenderId).HasColumnName("Gender_ID");
+                entity.Property(e => e.GenderId)
+                    .HasMaxLength(120)
+                    .HasColumnName("Gender_ID");
 
                 entity.Property(e => e.LastName)
                     .HasMaxLength(120)
@@ -420,25 +417,9 @@ namespace CRM.Models.Crm
                     .HasMaxLength(120)
                     .HasColumnName("Work_Email");
 
-                entity.Property(e => e.WorkLocationId).HasColumnName("Work_Location_ID");
-
-                entity.HasOne(d => d.Department)
-                    .WithMany(p => p.EmployeeRegistrations)
-                    .HasForeignKey(d => d.DepartmentId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Employee_Registration_Department_ID");
-
-                entity.HasOne(d => d.Gender)
-                    .WithMany(p => p.EmployeeRegistrations)
-                    .HasForeignKey(d => d.GenderId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Employee_Registration_Gender_ID");
-
-                entity.HasOne(d => d.WorkLocation)
-                    .WithMany(p => p.EmployeeRegistrations)
-                    .HasForeignKey(d => d.WorkLocationId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Employee_Registration_Work_Location_ID");
+                entity.Property(e => e.WorkLocationId)
+                    .HasMaxLength(120)
+                    .HasColumnName("Work_Location_ID");
             });
 
             modelBuilder.Entity<EmployeeRole>(entity =>
@@ -464,60 +445,47 @@ namespace CRM.Models.Crm
 
             modelBuilder.Entity<EmployeeSalaryDetail>(entity =>
             {
-                entity.ToTable("Employee_Salary_Details", "dbo");
+                entity.ToTable("Employee_Salary_Details");
 
                 entity.Property(e => e.Id).HasColumnName("ID");
 
-                entity.Property(e => e.AnnualCtc).HasColumnName("Annual_CTC");
+                entity.Property(e => e.Basic).HasColumnType("decimal(18, 0)");
 
-                entity.Property(e => e.BasicAnnualAmount)
-                    .HasColumnName("Basic_Annual_Amount")
-                    .HasComputedColumnSql("([Annual_CTC]/(2))", false);
+                entity.Property(e => e.ConveyanceAllowance).HasColumnType("decimal(18, 0)");
 
-                entity.Property(e => e.BasicMonthlyAmount)
-                    .HasColumnName("Basic_Monthly_Amount")
-                    .HasComputedColumnSql("(([Annual_CTC]/(2))/(12))", false);
+                entity.Property(e => e.EmployeeId)
+                    .HasMaxLength(120)
+                    .HasColumnName("EmployeeID");
 
-                entity.Property(e => e.ConveyanceAllowanceAnnualAmount)
-                    .HasColumnName("Conveyance_Allowance_Annual_Amount")
-                    .HasComputedColumnSql("([Conveyance_Allowance_Monthly_Amount]*(12))", false);
+                entity.Property(e => e.EmployeeName).HasMaxLength(120);
 
-                entity.Property(e => e.ConveyanceAllowanceMonthlyAmount)
-                    .HasColumnName("Conveyance_Allowance_Monthly_Amount")
-                    .HasDefaultValueSql("((2000))");
+                entity.Property(e => e.Epf)
+                    .HasColumnType("decimal(18, 0)")
+                    .HasColumnName("EPF");
 
-                entity.Property(e => e.FixedAllowanceAnnualAmount)
-                    .HasColumnName("Fixed_Allowance_Annual_Amount")
-                    .HasComputedColumnSql("([Fixed_Allowance_Monthly_Amount]*(12))", false);
+                entity.Property(e => e.FixedAllowance)
+                    .HasColumnType("decimal(18, 0)")
+                    .HasDefaultValueSql("((1400.00))");
 
-                entity.Property(e => e.FixedAllowanceMonthlyAmount)
-                    .HasColumnName("Fixed_Allowance_Monthly_Amount")
-                    .HasDefaultValueSql("((1400))");
+                entity.Property(e => e.HouseRentAllowance).HasColumnType("decimal(18, 0)");
 
-                entity.Property(e => e.HouseRentAllowanceAnnualAmount)
-                    .HasColumnName("House_Rent_Allowance_Annual_Amount")
-                    .HasComputedColumnSql("(([Annual_CTC]/(2))/(2))", false);
+                entity.Property(e => e.MonthlyCtc)
+                    .HasColumnType("decimal(22, 0)")
+                    .HasColumnName("MonthlyCTC")
+                    .HasComputedColumnSql("((((isnull([Basic],(0))+isnull([HouseRentAllowance],(0)))+isnull([ConveyanceAllowance],(0)))+isnull([FixedAllowance],(0)))+isnull([EPF],(0)))", false);
 
-                entity.Property(e => e.HouseRentAllowanceMonthlyAmount)
-                    .HasColumnName("House_Rent_Allowance_Monthly_Amount")
-                    .HasComputedColumnSql("((([Annual_CTC]/(2))/(2))/(12))", false);
-
-                entity.Property(e => e.IncomeTax).HasColumnName("Income_Tax");
-
-                entity.Property(e => e.NetPay)
-                    .HasColumnName("Net_Pay")
-                    .HasComputedColumnSql("(isnull([Annual_CTC],(0))-isnull([Income_Tax],(0)))", false);
-
-                entity.Property(e => e.TotalDeduction)
-                    .HasColumnName("Total_Deduction")
-                    .HasComputedColumnSql("(isnull([Income_Tax],(0)))", false);
+                entity.Property(e => e.MonthlyGrossPay)
+                    .HasColumnType("decimal(22, 0)")
+                    .HasComputedColumnSql("((((isnull([Basic],(0))+isnull([HouseRentAllowance],(0)))+isnull([ConveyanceAllowance],(0)))+isnull([FixedAllowance],(0)))-isnull([EPF],(0)))", false);
             });
 
             modelBuilder.Entity<GenderMaster>(entity =>
             {
                 entity.ToTable("Gender_Master", "dbo");
 
-                entity.Property(e => e.Id).HasColumnName("ID");
+                entity.Property(e => e.Id)
+                    .HasMaxLength(120)
+                    .HasColumnName("ID");
 
                 entity.Property(e => e.GenderName)
                     .HasMaxLength(50)
@@ -735,12 +703,6 @@ namespace CRM.Models.Crm
                     .HasForeignKey(d => d.LeaveId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Payroll_Leave_ID");
-
-                entity.HasOne(d => d.Salary)
-                    .WithMany(p => p.Payrolls)
-                    .HasForeignKey(d => d.SalaryId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Payroll_Salary_ID");
             });
 
             modelBuilder.Entity<ProductMaster>(entity =>
@@ -870,7 +832,9 @@ namespace CRM.Models.Crm
             {
                 entity.ToTable("Work_Location", "dbo");
 
-                entity.Property(e => e.Id).HasColumnName("ID");
+                entity.Property(e => e.Id)
+                    .HasMaxLength(120)
+                    .HasColumnName("ID");
 
                 entity.Property(e => e.AddressLine1)
                     .HasMaxLength(255)
