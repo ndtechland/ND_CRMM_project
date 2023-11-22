@@ -368,19 +368,9 @@ namespace CRM.Models.Crm
                     .HasMaxLength(120)
                     .HasColumnName("Personal_Email_Address");
 
+                entity.Property(e => e.Pincode).HasColumnType("numeric(6, 0)");
+
                 entity.Property(e => e.StateId).HasColumnName("State_ID");
-
-                entity.HasOne(d => d.EmployeeRegistration)
-                    .WithMany(p => p.EmployeePersonalAddresses)
-                    .HasForeignKey(d => d.EmployeeRegistrationId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Employee_Personal_Address_Employee_Registration_ID");
-
-                entity.HasOne(d => d.State)
-                    .WithMany(p => p.EmployeePersonalAddresses)
-                    .HasForeignKey(d => d.StateId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Employee_Personal_Address_State_ID");
             });
 
             modelBuilder.Entity<EmployeeRegistration>(entity =>
