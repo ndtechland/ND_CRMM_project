@@ -1,6 +1,7 @@
 ﻿using CRM.Models;
 using CRM.Models.Crm;
 using CRM.Repository;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Diagnostics;
@@ -82,8 +83,18 @@ namespace CRM.Controllers
 
         public async Task<IActionResult> CustomerList()
         {
-            var response = await _ICrmrpo.CustomerList();
-            return View(response);
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                var response = await _ICrmrpo.CustomerList();
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName = AddedBy;
+                return View(response);
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
+          
         }
         [HttpGet]
         public IActionResult Banner()
@@ -127,6 +138,22 @@ namespace CRM.Controllers
             ViewBag.Message = "File uploaded successfully.";
             return View("Banner");
         }
+
+        public IActionResult Logout()
+        {
+            
+                string addedBy = HttpContext.Session.GetString("UserName");
+                HttpContext.Session.Remove("UserName");
+
+                // Set ViewBag.UserName only if addedBy is not null or empty
+                if (!string.IsNullOrEmpty(addedBy))
+                {
+                    ViewBag.UserName = addedBy;
+                }
+                return RedirectToAction("Login", "Admin");
+
+        }
+       
     }
 
 }

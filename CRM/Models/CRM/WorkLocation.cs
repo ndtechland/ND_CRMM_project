@@ -5,14 +5,7 @@ namespace CRM.Models.Crm
 {
     public partial class WorkLocation
     {
-        public WorkLocation()
-        {
-            EmployeeRegistrations = new HashSet<EmployeeRegistration>();
-        }
-
-        public int Id { get; set; }
+        public string Id { get; set; } = null!;
         public string AddressLine1 { get; set; } = null!;
-
-        public virtual ICollection<EmployeeRegistration> EmployeeRegistrations { get; set; }
     }
 }

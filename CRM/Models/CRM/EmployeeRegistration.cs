@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 
 namespace CRM.Models.Crm
 {
@@ -10,7 +9,6 @@ namespace CRM.Models.Crm
         {
             EmployeeBankDetails = new HashSet<EmployeeBankDetail>();
             EmployeeLogins = new HashSet<EmployeeLogin>();
-            EmployeePersonalAddresses = new HashSet<EmployeePersonalAddress>();
             EmployeeRoles = new HashSet<EmployeeRole>();
             Payrolls = new HashSet<Payroll>();
         }
@@ -22,17 +20,13 @@ namespace CRM.Models.Crm
         public string? EmployeeId { get; set; }
         public DateTime DateOfJoining { get; set; }
         public string WorkEmail { get; set; } = null!;
-        public int GenderId { get; set; }
-        public int WorkLocationId { get; set; }
-        public int DesignationId { get; set; }
-        public int DepartmentId { get; set; }
+        public string GenderId { get; set; } = null!;
+        public string WorkLocationId { get; set; } = null!;
+        public string DesignationId { get; set; } = null!;
+        public string DepartmentId { get; set; } = null!;
 
-        public virtual DepartmentMaster Department { get; set; } = null!;
-        public virtual GenderMaster Gender { get; set; } = null!;
-        public virtual WorkLocation WorkLocation { get; set; } = null!;
         public virtual ICollection<EmployeeBankDetail> EmployeeBankDetails { get; set; }
         public virtual ICollection<EmployeeLogin> EmployeeLogins { get; set; }
-        public virtual ICollection<EmployeePersonalAddress> EmployeePersonalAddresses { get; set; }
         public virtual ICollection<EmployeeRole> EmployeeRoles { get; set; }
         public virtual ICollection<Payroll> Payrolls { get; set; }
     }
