@@ -171,5 +171,37 @@ namespace CRM.Controllers
             return age;
 
         }
+
+       
+         public async Task<IActionResult> EmployeeBasicinfoList()
+          {
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                var response = await _ICrmrpo.EmployeeBasicinfoList();
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName = AddedBy;
+                return View(response);
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
+
+         }
+
+
+        //[HttpPost]
+        //public async Task<IActionResult> DeleteEmployee(int Id)
+        //{
+        //    var employeeToDelete = await _context.EmployeePersonalDetails.FindAsync(Id);
+
+        //    if (employeeToDelete != null)
+        //    {
+        //        _context.EmployeePersonalDetails.Remove(employeeToDelete);
+        //        await _context.SaveChangesAsync();
+        //    }
+
+        //    return RedirectToAction("EmployeeBasicinfoList");
+        //}
     }
 }
