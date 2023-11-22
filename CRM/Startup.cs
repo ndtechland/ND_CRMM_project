@@ -3,6 +3,7 @@ using CRM.Models.Crm;
 using CRM.Repository;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Principal;
+using CRM.Models.DTO;
 
 namespace CRM
 {
@@ -24,6 +25,7 @@ namespace CRM
             });
 
             services.AddDbContext<admin_NDCrMContext>(options => options.UseSqlServer(Configuration.GetConnectionString("db1")));
+            services.AddDbContext<admin_NDCrM>(options => options.UseSqlServer(Configuration.GetConnectionString("db1")));
 
             services.AddControllersWithViews();
             services.AddScoped<ICrmrpo, Crmrpo>();

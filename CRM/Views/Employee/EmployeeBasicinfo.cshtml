@@ -67,6 +67,7 @@
                                             <label asp-for="Age" class="control-label"></label>
                                             <input type="text" asp-for="Age" class="form-control" id="ageInput" readonly />
                                             <span asp-validation-for="Age" class="text-danger"></span>
+
                                         </div>
                                     </div>
                                     <div class="row">
@@ -128,6 +129,7 @@
 </div>
 
 <script>
+
     function calculateAge() {
         var dobInput = document.getElementById('dobInput');
         var ageInput = document.getElementById('ageInput');
@@ -144,6 +146,8 @@
         }
     }
 </script>
+
+   
 
 
 

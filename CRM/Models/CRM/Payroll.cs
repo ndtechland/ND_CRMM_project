@@ -17,6 +17,5 @@ namespace CRM.Models.Crm
         public virtual EmployeeBankDetail BankDetails { get; set; } = null!;
         public virtual EmployeeRegistration Employee { get; set; } = null!;
         public virtual EmployeeLeaveMaster Leave { get; set; } = null!;
-        public virtual EmployeeSalaryDetail Salary { get; set; } = null!;
     }
 }
