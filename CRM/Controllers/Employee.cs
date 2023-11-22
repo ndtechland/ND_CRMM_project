@@ -107,6 +107,7 @@ namespace CRM.Controllers
                 int age = CalculatAge(dob);
                 ViewBag.EmployeeAge = age;
                 return View(emp);
+
           }
           }
         
@@ -118,6 +119,7 @@ namespace CRM.Controllers
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 ViewBag.UserName = AddedBy;
                 return View(response);
+
 
             }
             else
@@ -163,8 +165,6 @@ namespace CRM.Controllers
             }
 
             return age;
-
-            
 
         }
     }
