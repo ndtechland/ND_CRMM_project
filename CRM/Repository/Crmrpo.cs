@@ -1,6 +1,7 @@
 ﻿using CRM.Models.Crm;
 using CRM.Models.CRM;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using CRM.Models.DTO;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
@@ -10,9 +11,12 @@ namespace CRM.Repository
     public class Crmrpo : ICrmrpo
     {
         private admin_NDCrMContext _context;
-        public Crmrpo(admin_NDCrMContext context)
+        private admin_NDCrM _dbcontext;
+
+        public Crmrpo(admin_NDCrMContext context, admin_NDCrM dbcontext)
         {
             _context = context;
+            _dbcontext = dbcontext;
         }
 
         public DataTable Login(AdminLogin model)
@@ -131,6 +135,13 @@ namespace CRM.Repository
            .ExecuteSqlRawAsync(@"exec Sp_Banner @BannerImage,@Bannerdescription,@BannerPath,@AddedBy", parameter.ToArray()));
             return result;
         }
-      
+        public async Task<List<EmpRegistration>> EmployeeList()
+        {
+            var data = await _dbcontext.EmpRegistrations
+                .FromSqlRaw<EmpRegistration>("EmployeeRegistrationList").ToListAsync();
+            return data;
+        }
+
+
     }
 }
