@@ -108,8 +108,13 @@ namespace CRM.Controllers
                 ViewBag.EmployeeAge = age;
                 return View(emp);
 
-          }
-          }
+          
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
+        }
         
         public async Task<IActionResult> Employeelist()
         {
