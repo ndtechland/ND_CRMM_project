@@ -1,0 +1,149 @@
+﻿@model CRM.Models.Crm.EmployeePersonalDetail
+
+@{
+    ViewData["Title"] = "EmployeeBasicinfo";
+    Layout = "~/Views/Shared/_adminLayout.cshtml";
+}
+
+<div class="page-wrapper">
+    <div class="page-body-wrapper">
+        <div class="page-sidebar">
+        </div>
+
+        <div class="page-body">
+
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="page-header-left">
+                                <h3>
+                                    Employee Personal info
+                                </h3>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <ol class="breadcrumb pull-right">
+                                <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
+                                <li class="breadcrumb-item">HR Payrole</li>
+                                <li class="breadcrumb-item active">Employee</li>
+                                <li class="breadcrumb-item active">EmployeeBasicinfo</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Container-fluid Ends-->
+            <!-- Container-fluid starts-->
+
+            <div class="container-fluid">
+                <div class="row">
+
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <form asp-action="EmployeeBasicinfo" autocomplete="off">
+                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                    <div class="row">
+                                        <div class="form-group col-sm">
+                                            <label asp-for="PersonalEmailAddress" class="control-label"></label>
+                                            <input asp-for="PersonalEmailAddress" class="form-control" />
+                                            <span asp-validation-for="PersonalEmailAddress" class="text-danger"></span>
+                                        </div>
+                                        <div class="form-group col-sm">
+                                            <label asp-for="MobileNumber" class="control-label"></label>
+                                            <input asp-for="MobileNumber" class="form-control" />
+                                            <span asp-validation-for="MobileNumber" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-sm">
+                                            <label asp-for="DateOfBirth" class="control-label"></label>
+                                            <input name="DateOfBirth" type="date" class="form-control" id="dobInput" onchange="calculateAge()" />
+                                            <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                                        </div>
+                                        <div class="form-group col-sm">
+                                            <label asp-for="Age" class="control-label"></label>
+                                            <input type="text" asp-for="Age" class="form-control" id="ageInput" readonly />
+                                            <span asp-validation-for="Age" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-sm">
+                                            <label asp-for="Pan" class="control-label"></label>
+                                            <input asp-for="Pan" class="form-control" />
+                                            <span asp-validation-for="Pan" class="text-danger"></span>
+                                        </div>
+                                          <div class="form-group col-sm">
+                                         <label asp-for="AddressLine1" class="control-label"></label>
+                                         <input asp-for="AddressLine1" class="form-control" />
+                                         <span asp-validation-for="AddressLine1" class="text-danger"></span>
+                                             </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-sm">
+                                            <label asp-for="AddressLine2" class="control-label"></label>
+                                            <input asp-for="AddressLine2" class="form-control" />
+                                            <span asp-validation-for="AddressLine2" class="text-danger"></span>
+                                        </div>
+                                        <div class="form-group col-sm">
+                                            <label asp-for="City" class="control-label"></label>
+                                            <input asp-for="City" class="form-control" />
+                                            <span asp-validation-for="City" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-sm">
+                                        <label asp-for="StateId" class="control-label"></label>
+             
+                                             @Html.DropDownListFor(model => model.StateId, new SelectList(ViewBag.StateId, "Value", "Text"), "-- Select State --", new { @class = "form-control" })
+                                         <span asp-validation-for="StateId" class="text-danger"></span>
+                                        </div>
+                                        <div class="form-group col-sm">
+                                            <label asp-for="Pincode" class="control-label"></label>
+                                            <input asp-for="Pincode" class="form-control" />
+                                            <span asp-validation-for="Pincode" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-sm-6">
+                                            <label asp-for="FatherName" class="control-label"></label>
+                                            <input asp-for="FatherName" class="form-control" />
+                                            <span asp-validation-for="FatherName" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style="display:flex; justify-content:center;">
+                                        <input type="submit" value="Save" class="btn btn-primary" />
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+  </div>
+        </div>
+</div>
+
+<script>
+    function calculateAge() {
+        var dobInput = document.getElementById('dobInput');
+        var ageInput = document.getElementById('ageInput');
+
+        if (dobInput.value) {
+            var dob = new Date(dobInput.value);
+            var today = new Date();
+
+            var age = Math.floor((today - dob) / (365.25 * 24 * 60 * 60 * 1000));
+
+            ageInput.value = age;
+        } else {
+            ageInput.value = '';
+        }
+    }
+</script>
+
+
+
