@@ -43,7 +43,7 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-body">
-                                <table class="table">
+                                <table class="table table-responsive">
                                     <thead>
                                         <tr>
                                             <th>
@@ -61,7 +61,7 @@
                                             <th>
                                                 @Html.DisplayNameFor(model => model.Price)
                                             </th>
-
+                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -83,7 +83,12 @@
                                                 <td>
                                                     @Html.DisplayFor(modelItem => item.Price)
                                                 </td>
-
+                                                <td>
+                                                    <div>
+                                                        <i class="fa fa-edit me-2 font-success"></i>
+                                                        <i class="fa fa-trash font-danger"></i>
+                                                    </div>
+                                                </td>
                                             </tr>
                                         }
                                     </tbody>
