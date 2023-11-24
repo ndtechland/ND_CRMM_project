@@ -190,18 +190,19 @@ namespace CRM.Controllers
          }
 
 
-        //[HttpPost]
-        //public async Task<IActionResult> DeleteEmployee(int Id)
-        //{
-        //    var employeeToDelete = await _context.EmployeePersonalDetails.FindAsync(Id);
-
-        //    if (employeeToDelete != null)
-        //    {
-        //        _context.EmployeePersonalDetails.Remove(employeeToDelete);
-        //        await _context.SaveChangesAsync();
-        //    }
-
-        //    return RedirectToAction("EmployeeBasicinfoList");
-        //}
+        public async Task<IActionResult> DeleteEmployee(int id)
+        {
+            try
+            {
+                var data = _context.EmployeeRegistrations.Find(id);
+                _context.EmployeeRegistrations.Remove(data);
+                _context.SaveChanges();
+                return Content("ok");
+            }
+            catch (Exception ex)
+            {
+                return Content("Server error");
+            }
+        }
     }
 }

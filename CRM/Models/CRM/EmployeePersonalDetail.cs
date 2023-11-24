@@ -7,7 +7,7 @@ namespace CRM.Models.Crm
     {
         public int Id { get; set; }
         public string? PersonalEmailAddress { get; set; }
-        public decimal? MobileNumber { get; set; }
+        public string? MobileNumber { get; set; }
         public DateTime DateOfBirth { get; set; }
         public int? Age { get; set; }
         public string FatherName { get; set; } = null!;
@@ -15,7 +15,7 @@ namespace CRM.Models.Crm
         public string? AddressLine1 { get; set; }
         public string? AddressLine2 { get; set; }
         public string? City { get; set; }
-        public int? StateId { get; set; }
-        public decimal? Pincode { get; set; }
+        public string StateId { get; set; } = null!;
+        public string? Pincode { get; set; }
     }
 }

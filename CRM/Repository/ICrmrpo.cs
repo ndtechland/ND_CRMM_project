@@ -18,10 +18,9 @@ namespace CRM.Repository
         public Task<int> EmployeeBasicinfo(EmployeePersonalDetail model);
         public Task<List<StateMaster>> GetAllState();
         public Task<int> Banner(BannerMaster model);
-        public Task<List<EmpRegistration>> EmployeeList();
-        public Task<List<EmployeeBasicinfo>> EmployeeBasicinfoList();
-        //public Task<EmployeePersonalDetail> DeleteEmployee(int Id);
-
+        public Task<List<EmployeeRegistration>> EmployeeList();
+        public Task<List<EmployeePersonalDetail>> EmployeeBasicinfoList();
+        public Task<List<ProductMaster>> GetproductById(int id);
 
     }
 }

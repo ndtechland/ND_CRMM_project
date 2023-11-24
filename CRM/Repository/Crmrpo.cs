@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using Microsoft.Extensions.Primitives;
 
 namespace CRM.Repository
 {
@@ -68,7 +70,7 @@ namespace CRM.Repository
             parameter.Add(new SqlParameter("@GST_Number", model.GstNumber));
             parameter.Add(new SqlParameter("@Billing_Address", model.BillingAddress));
             parameter.Add(new SqlParameter("@Product_Details", model.ProductDetails));
-            parameter.Add(new SqlParameter("@Start_date", model.StartDate)); 
+            parameter.Add(new SqlParameter("@Start_date", model.StartDate));
             parameter.Add(new SqlParameter("@Renew_Date", model.RenewDate));
 
             var result = await Task.Run(() => _context.Database
@@ -137,31 +139,91 @@ namespace CRM.Repository
            .ExecuteSqlRawAsync(@"exec Sp_Banner @BannerImage,@Bannerdescription,@BannerPath,@AddedBy", parameter.ToArray()));
             return result;
         }
-        public async Task<List<EmpRegistration>> EmployeeList()
+        public async Task<List<EmployeeRegistration>> EmployeeList()
         {
-            var data = await _dbcontext.EmpRegistrations
-                .FromSqlRaw<EmpRegistration>("EmployeeRegistrationList").ToListAsync();
-            return data;
+            List<EmployeeRegistration> emp = new List<EmployeeRegistration>();
+            SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
+            SqlCommand cmd = new SqlCommand("EmployeeRegistrationList", con);
+            cmd.CommandType = CommandType.StoredProcedure;
+            con.Open();
+            SqlDataReader rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                var emps = new EmployeeRegistration()
+                {
+                    Id = Convert.ToInt32(rdr["id"]),
+                    FirstName = Convert.ToString(rdr["FirstName"]),                    
+                   MiddleName= Convert.ToString(rdr["MiddleName"]),
+                    LastName = Convert.ToString(rdr["LastName"]),
+                    EmployeeId = Convert.ToString(rdr["EmployeeId"]),
+                    DateOfJoining =((DateTime)rdr["DateOfJoining"]),                   
+                    WorkEmail = Convert.ToString(rdr["WorkEmail"]),
+                    GenderId = Convert.ToString(rdr["GenderId"]),
+                    WorkLocationId = Convert.ToString(rdr["WorkLocationId"]),
+                    DesignationId = Convert.ToString(rdr["DesignationId"]),
+                    DepartmentId = Convert.ToString(rdr["DepartmentId"]),
+
+                };
+
+                emp.Add(emps);
+            }
+            return (emp);
+
         }
 
-        public async Task<List<EmployeeBasicinfo>> EmployeeBasicinfoList()
+        public async Task<List<EmployeePersonalDetail>> EmployeeBasicinfoList()
         {
-            var data = await _dbcontext.EmployeeBasicinfos
-                .FromSqlRaw<EmployeeBasicinfo>("EmployeeBasicinfoList").ToListAsync();
-            return data;
+            List<EmployeePersonalDetail> emp = new List<EmployeePersonalDetail>();
+            SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
+            SqlCommand cmd = new SqlCommand("EmployeeBasicinfoList", con);
+            cmd.CommandType = CommandType.StoredProcedure;
+            con.Open();
+            SqlDataReader rdr = cmd.ExecuteReader();
+            while (rdr.Read())
+            {
+                var emps = new EmployeePersonalDetail()
+                {
+                    Id = Convert.ToInt32(rdr["id"]),
+                    PersonalEmailAddress = Convert.ToString(rdr["PersonalEmailAddress"]),
+                    MobileNumber = Convert.ToString(rdr["MobileNumber"]),
+                    //DateOfBirth = ((DateTime)rdr["DateOfBirth"]),
+                    DateOfBirth = (DateTime)(rdr["DateOfBirth"] != DBNull.Value ? Convert.ToDateTime(rdr["DateOfBirth"]) : (DateTime?)null),
+                    Age = Convert.ToInt32(rdr["Age"]),
+                    FatherName = Convert.ToString(rdr["FatherName"]),
+                    Pan = Convert.ToString(rdr["Pan"]),
+                    AddressLine1 = Convert.ToString(rdr["AddressLine1"]),
+                    AddressLine2 = Convert.ToString(rdr["AddressLine2"]),
+                    City = Convert.ToString(rdr["City"]),
+                    StateId = Convert.ToString(rdr["StateId"]),
+                    Pincode = Convert.ToString(rdr["Pincode"]),
+
+                };
+
+                emp.Add(emps);
+            }
+            return (emp);
+        }
+        
+        public async Task<List<ProductMaster>> GetproductById(int id)
+        {
+            List<ProductMaster> pm = new List<ProductMaster>();
+            var parameter = new List<SqlParameter>();
+            parameter.Add(new SqlParameter("@id", id));
+
+            var result = await _context.ProductMasters
+                .FromSqlRaw("exec GetproductById @id", parameter.ToArray())
+                .ToListAsync();
+
+            if (result != null)
+            {
+                pm = result;
+            }
+
+            return pm;
         }
 
-        //public async Task<EmployeePersonalDetail> DeleteEmployee(int Id)
-        //{
-        //    var employeeToDelete = await _context.EmployeePersonalDetails.FindAsync(Id);
 
-        //    if (employeeToDelete != null)
-        //    {
-        //        var data=_context.EmployeePersonalDetails.Remove(employeeToDelete);
-        //        await _context.SaveChangesAsync();
-        //    }
-
-        //    return data;
-        //}
     }
+
 }
+
