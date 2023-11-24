@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CRM.Models.Crm.ProductMaster>
+﻿@model List<CRM.Models.Crm.ProductMaster>
 
 @{
     ViewData["Title"] = "ProductList";
@@ -47,19 +47,19 @@
                                     <thead>
                                         <tr>
                                             <th>
-                                                @Html.DisplayNameFor(model => model.ProductName)
+                                               ProductName
                                             </th>
                                             <th>
-                                                @Html.DisplayNameFor(model => model.Category)
+                                                Category
                                             </th>
                                             <th>
-                                                @Html.DisplayNameFor(model => model.Gst)
+                                               Gst
                                             </th>
                                             <th>
                                                 HSN Code
                                             </th>
                                             <th>
-                                                @Html.DisplayNameFor(model => model.Price)
+                                               Price
                                             </th>
                                             <th>Action</th>
                                         </tr>
@@ -85,8 +85,10 @@
                                                 </td>
                                                 <td>
                                                     <div>
-                                                        <i class="fa fa-edit me-2 font-success"></i>
-                                                        <i class="fa fa-trash font-danger"></i>
+                                                        <a href="@Url.Action("Product","Admin",new { id=item.Id})" class="fa fa-edit me-2 font-success"></a>
+                                                        <a href="@Url.Action("DeleteProduct","Admin",new { id=item.Id})" class="fa fa-trash font-danger"></a>
+@*                                                        <i class="fa fa-edit me-2 font-success" onclick="location.href='/Admin/productEdit';"></i>
+*@                                                       @* <i class="fa fa-trash font-danger"></i>*@
                                                     </div>
                                                 </td>
                                             </tr>

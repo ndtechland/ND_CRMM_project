@@ -1,5 +1,6 @@
 ﻿@model CRM.Models.Crm.ProductMaster
 
+
 @{
     ViewData["Title"] = "Product";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
@@ -71,16 +72,10 @@
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="form-group col-sm-6">
-                                            <label for="validationCustom0">GST<span>*</span></label>
-                                            <select name="Gst" class="form-control">
-                                                <option style="text" >--Select--</option>
-                                                <option value="1">5%</option>
-                                                <option value="2">10%</option>
-                                                <option value="3">12%</option>
-                                                <option value="4">18%</option>
-
-                                            </select>
+                                        <div class="form-group col-sm">
+                                            <label for="validationCustom0">GST</label>
+                                            @Html.DropDownListFor(model => model.Gst, new SelectList(ViewBag.Gst, "Value", "Text"), "-- Select Gst -- ", new { @class = "form-control" })
+                                            <span asp-validation-for="Gst" class="text-danger"></span>
                                         </div>
                               
                                     </div>
@@ -100,4 +95,15 @@
     </div>
 
 </div>
+
+
+
+@if (ViewBag.Gst1 != null)
+{
+    <script>
+        @*$('#District_Code').val(ViewBag.ViewStateList2);*@
+        $('#Gst').html(row);
+        $('#Gst').val(@ViewBag.Gst1);
+    </script>
+}
 

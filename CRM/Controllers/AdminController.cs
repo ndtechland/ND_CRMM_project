@@ -3,11 +3,13 @@ using CRM.Models.CRM;
 using CRM.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using Microsoft.EntityFrameworkCore;
 using NuGet.Protocol.Plugins;
 using System.Data;
+using System.Net;
 using System.Security.Principal;
 
 namespace CRM.Controllers
@@ -52,19 +54,40 @@ namespace CRM.Controllers
                 throw new Exception("Error:" + Ex.Message);
             }  
         }
-        public IActionResult Product()
+        [HttpGet]
+        public async Task<IActionResult> Product(int id=0)
         {
-            if (HttpContext.Session.GetString("UserName") != null)
-            {
-                string AddedBy = HttpContext.Session.GetString("UserName");
-                ViewBag.UserName = AddedBy;
-                return View();
-            }
-            else
-            {
+
+                List<CRM.Models.Crm.ProductMaster> product = new List<CRM.Models.Crm.ProductMaster>();
+                if (HttpContext.Session.GetString("UserName") != null)
+                {
+                    string AddedBy = HttpContext.Session.GetString("UserName");
+                    ViewBag.UserName = AddedBy;
+                    ViewBag.Gst = _context.GstMasters
+                  .Select(w => new SelectListItem
+                  {
+                      Value = w.Id.ToString(),
+                      Text = w.GstPercentagen
+                  });
+                    product = await _ICrmrpo.GetproductById(id);
+                    if (product[0].Gst != null)
+                    {
+                        ViewBag.Gst1 = product[0].Gst;
+                    }
+                    else
+                    {
+                        return RedirectToAction("Login", "Admin");
+                    }
+                }
+                else
+                {
                 return RedirectToAction("Login", "Admin");
-            }
+                }
+               return View(product);
+
         }
+
+
         [HttpPost]
         public async Task<IActionResult> Product(ProductMaster model)
         {
@@ -100,5 +123,20 @@ namespace CRM.Controllers
                 return RedirectToAction("Login", "Admin");
             }
         }
+        public async Task<IActionResult> DeleteProduct(int id)
+        {
+            try
+            {
+                var data = _context.ProductMasters.Find(id);
+                _context.ProductMasters.Remove(data);
+                _context.SaveChanges();
+                return Content("ok");
+            }
+            catch (Exception ex)
+            {
+                return Content("Server error");
+            }
+        }
+
     }
 }

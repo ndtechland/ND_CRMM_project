@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CRM.Models.DTO.EmpRegistration>
+﻿@model IEnumerable<CRM.Models.Crm.EmployeeRegistration>
 
 
 @{
@@ -121,8 +121,9 @@
                                                     <td>
                                                         <div>
                                                             <i class="fa fa-edit me-2 font-success"></i>
-                                                            <i class="fa fa-trash font-danger"></i>
-                                                        </div>
+                                                                         <a href="@Url.Action("DeleteEmployee","Employee",new { id=item.Id})" class="fa fa-trash font-danger"></a>
+@*                                                            <i class="fa fa-trash font-danger"></i>
+*@                                                        </div>
                                                     </td>
                                                 </tr>
                                             }

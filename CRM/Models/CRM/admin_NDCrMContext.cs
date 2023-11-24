@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using CRM.Models.DTO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -358,7 +357,7 @@ namespace CRM.Models.Crm
                     .HasColumnName("Father_Name");
 
                 entity.Property(e => e.MobileNumber)
-                    .HasColumnType("numeric(10, 0)")
+                    .HasMaxLength(50)
                     .HasColumnName("Mobile_Number");
 
                 entity.Property(e => e.Pan)
@@ -369,9 +368,11 @@ namespace CRM.Models.Crm
                     .HasMaxLength(120)
                     .HasColumnName("Personal_Email_Address");
 
-                entity.Property(e => e.Pincode).HasColumnType("numeric(6, 0)");
+                entity.Property(e => e.Pincode).HasMaxLength(50);
 
-                entity.Property(e => e.StateId).HasColumnName("State_ID");
+                entity.Property(e => e.StateId)
+                    .HasMaxLength(120)
+                    .HasColumnName("State_ID");
             });
 
             modelBuilder.Entity<EmployeeRegistration>(entity =>
