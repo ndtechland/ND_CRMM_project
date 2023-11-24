@@ -11,13 +11,13 @@ namespace CRM.Controllers
     {
         private readonly admin_NDCrMContext _context;
         private readonly ICrmrpo _ICrmrpo;
-        private readonly admin_NDCrM _dbcontext;
+        
 
-        public Employee(ICrmrpo _ICrmrpo, admin_NDCrMContext _context, admin_NDCrM dbcontext)
+        public Employee(ICrmrpo _ICrmrpo, admin_NDCrMContext _context)
         {
             this._context = _context;
             this._ICrmrpo = _ICrmrpo;
-            _dbcontext = dbcontext;
+          
         }
         public IActionResult EmployeeRegistration()
         {
@@ -197,12 +197,28 @@ namespace CRM.Controllers
                 var data = _context.EmployeeRegistrations.Find(id);
                 _context.EmployeeRegistrations.Remove(data);
                 _context.SaveChanges();
-                return Content("ok");
+                return RedirectToAction("Employeelist");
             }
             catch (Exception ex)
             {
-                return Content("Server error");
+                throw new Exception("An error occurred while deleting the employee:" + ex.Message);
             }
         }
+        public async Task<IActionResult> DeleteBasicEmp(int id)
+        {
+            try
+            {
+                var data = _context.EmployeePersonalDetails.Find(id);
+                _context.EmployeePersonalDetails.Remove(data);
+                _context.SaveChanges();
+                return RedirectToAction("EmployeeBasicinfoList");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while deleting the BasicEmployee:" + ex.Message);
+            }
+        }
+
+
     }
 }

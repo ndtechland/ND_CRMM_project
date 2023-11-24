@@ -126,7 +126,7 @@
                                                     <td>
                                                         <div>
                                                             <i class="fa fa-edit me-2 font-success"></i>
-                                                            <i class="fa fa-trash font-danger"></i>
+                                                            <a href="@Url.Action("DeleteBasicEmp","Employee",new { id=item.Id})" class="fa fa-trash font-danger"></a>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -148,7 +148,5 @@
 
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+
 

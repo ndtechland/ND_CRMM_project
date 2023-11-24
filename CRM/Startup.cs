@@ -25,7 +25,7 @@ namespace CRM
             });
 
             services.AddDbContext<admin_NDCrMContext>(options => options.UseSqlServer(Configuration.GetConnectionString("db1")));
-            services.AddDbContext<admin_NDCrM>(options => options.UseSqlServer(Configuration.GetConnectionString("db1")));
+           
 
             services.AddControllersWithViews();
             services.AddScoped<ICrmrpo, Crmrpo>();

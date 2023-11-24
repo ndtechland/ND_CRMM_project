@@ -15,12 +15,12 @@ namespace CRM.Repository
     public class Crmrpo : ICrmrpo
     {
         private admin_NDCrMContext _context;
-        private admin_NDCrM _dbcontext;
+       
 
-        public Crmrpo(admin_NDCrMContext context, admin_NDCrM dbcontext)
+        public Crmrpo(admin_NDCrMContext context)
         {
             _context = context;
-            _dbcontext = dbcontext;
+           
         }
 
         public DataTable Login(AdminLogin model)
@@ -186,7 +186,6 @@ namespace CRM.Repository
                     Id = Convert.ToInt32(rdr["id"]),
                     PersonalEmailAddress = Convert.ToString(rdr["PersonalEmailAddress"]),
                     MobileNumber = Convert.ToString(rdr["MobileNumber"]),
-                    //DateOfBirth = ((DateTime)rdr["DateOfBirth"]),
                     DateOfBirth = (DateTime)(rdr["DateOfBirth"] != DBNull.Value ? Convert.ToDateTime(rdr["DateOfBirth"]) : (DateTime?)null),
                     Age = Convert.ToInt32(rdr["Age"]),
                     FatherName = Convert.ToString(rdr["FatherName"]),
