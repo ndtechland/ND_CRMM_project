@@ -219,6 +219,10 @@ namespace CRM.Controllers
             }
         }
 
-
+        public JsonResult Edit (int id)
+        {
+            var data = _context.EmployeePersonalDetails.Where(e => e.Id == id).SingleOrDefault();
+            return new JsonResult(data);
+        }
     }
 }
