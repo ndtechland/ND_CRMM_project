@@ -125,8 +125,10 @@
                                                     </td>
                                                     <td>
                                                         <div>
-                                                            <i class="fa fa-edit me-2 font-success"></i>
+                                                           
                                                             <a href="@Url.Action("DeleteBasicEmp","Employee",new { id=item.Id})" class="fa fa-trash font-danger"></a>
+                                                            <a href="#" class="fa fa-edit m-2 font-success" data-toggle="modal" data-target="#editModal" onclick="Edit(@item.Id)"></a>
+                                                            @*<a href="/Employee/Edit" class="fa fa-edit m-2 font-success" onclick="editEmployee(@item.Id)" data-toggle="modal" data-target="#editModal"></a>*@
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -147,6 +149,124 @@
     </div>
 
 </div>
+<!--pop disigon-->
+<style>
+    /* Custom CSS for smaller form fields */
+    #editModal .form-group {
+        margin-bottom: 10px;
+    }
+
+    #editModal label {
+        font-size: 14px;
+        width: 150px; /* Adjust the width as needed */
+    }
+
+    #editModal input {
+        width: 200px; /* Adjust the width as needed */
+    }
+</style>
+<div id="editModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">close</button>
+                <h4 class="modal-title">Edit Employee</h4>
+            </div>
+            <div class="modal-body">
+                <!-- Add your form fields here -->
+                
+                <div class="form-group">
+                    <label for="PersonalEmailAddress">Personal Email Address:</label>
+                    <input type="email" id="PersonalEmailAddress" class="form-control" placeholder="Enter Personal Email Address">
+                </div>
+                <div class="form-group">
+                    <label for="MobileNumber">Mobile Number:</label>
+                    <input type="tel" id="MobileNumber" class="form-control" placeholder="Enter Mobile Number">
+                </div>
+                 
+                <div class="form-group">
+                    <label for="DateOfBirth">Date of Birth:</label>
+                    <input type="date" id="DateOfBirth" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label for="Age">Age:</label>
+                    <input type="text" id="Age" class="form-control">
+                </div>
+                
+                <div class="form-group">
+                    <label for="FatherName">Father Name:</label>
+                    <input type="text" id="FatherName" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="Pan">Pan:</label>
+                    <input type="text" id="Pan" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="AddressLine1">AddressLine1:</label>
+                    <input type="text" id="AddressLine1" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="AddressLine2">AddressLine2:</label>
+                    <input type="text" id="AddressLine2" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="City">City:</label>
+                    <input type="text" id="City" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="StateId">StateId:</label>
+                    <input type="text" id="StateId" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="Pincode">Pincode:</label>
+                    <input type="text" id="Pincode" class="form-control">
+                </div>
+                
+
+               
+                <!-- Add a save button to submit the edited data -->
+                <button type="button" class="btn btn-primary" onclick="saveChanges()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    function Edit(id) {
+        debugger
+        $.ajax({
+            url: '/Employee/Edit?id=' + id,
+            type: 'GET',
+            contentType: 'application/json;charset=utf-8',
+            dataType: 'json', // Assuming the response is in JSON format
+            success: function (response) {
+                // Handle the success response, for example, load it into the modal
+                $('#editModal').modal('show');
+                $('#PersonalEmailAddress').val(response.personalEmailAddress);
+                $('#MobileNumber').val(response.mobileNumber);
+                $('#DateOfBirth').val(response.dateOfBirth);
+                $('#Age').val(response.age);
+                $('#FatherName').val(response.fatherName);
+                $('#Pan').val(response.pan);
+                $('#AddressLine1').val(response.addressLine1);
+                $('#AddressLine2').val(response.addressLine2);
+                $('#City').val(response.city);
+                $('#StateId').val(response.stateId);
+                $('#Pincode').val(response.pincode);
+            },
+            error: function () {
+                alert('Data not found');
+            }
+        });
+    }</script>
+
+
+
+
+
+ 
 
 
 
