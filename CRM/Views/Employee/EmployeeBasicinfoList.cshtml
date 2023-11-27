@@ -149,98 +149,111 @@
     </div>
 
 </div>
-<!--pop disigon-->
-<style>
-    /* Custom CSS for smaller form fields */
-    #editModal .form-group {
-        margin-bottom: 10px;
-    }
 
-    #editModal label {
-        font-size: 14px;
-        width: 150px; /* Adjust the width as needed */
-    }
 
-    #editModal input {
-        width: 200px; /* Adjust the width as needed */
-    }
-</style>
 <div id="editModal" class="modal fade" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="btn btn-danger" data-dismiss="modal">close</button>
+                    <a id="closePopup" href="#" class="btn btn-danger" data-dismiss="modal">Close</a>
                 <h4 class="modal-title">Edit Employee</h4>
             </div>
             <div class="modal-body">
                 <!-- Add your form fields here -->
-                
-                <div class="form-group">
-                    <label for="PersonalEmailAddress">Personal Email Address:</label>
-                    <input type="email" id="PersonalEmailAddress" class="form-control" placeholder="Enter Personal Email Address">
+                <form action="update" method="post">
+                    <input name="ID" type="text" id="pID" style="display:none">
+
+                   <div class="row">
+                    <div class="form-group col-sm">
+                            <label for="PersonalEmailAddress">PersonalEmailAddress:</label>
+                            <input name="PersonalEmailAddress" type="email" id="PersonalEmailAddress" class="form-control" placeholder="Enter Personal Email Address">
+                    </div>
+                    <div class="form-group col-sm">
+                        <label for="MobileNumber">Mobile Number:</label>
+                            <input name="MobileNumber" type="tel" id="MobileNumber" class="form-control" placeholder="Enter Mobile Number">
+                    </div>
+
+                    
                 </div>
-                <div class="form-group">
-                    <label for="MobileNumber">Mobile Number:</label>
-                    <input type="tel" id="MobileNumber" class="form-control" placeholder="Enter Mobile Number">
-                </div>
+               
                  
-                <div class="form-group">
-                    <label for="DateOfBirth">Date of Birth:</label>
-                    <input type="date" id="DateOfBirth" class="form-control">
-                </div>
+                    <div class="row">
+                     <div class="form-group col-sm">
+                        <label for="DateOfBirth">Date of Birth:</label>
+                            <input name="DateOfBirth" type="date" id="DateOfBirth" class="form-control">
+                    </div>
+                    <div class="form-group col-sm">
+                        <label for="Age">Age:</label>
+                            <input name="Age" type="text" id="Age" class="form-control">
+                    </div>
 
-                <div class="form-group">
-                    <label for="Age">Age:</label>
-                    <input type="text" id="Age" class="form-control">
-                </div>
-                
-                <div class="form-group">
+               </div>
+
+                <div class="row">
+                <div class="form-group col-sm">
                     <label for="FatherName">Father Name:</label>
-                    <input type="text" id="FatherName" class="form-control">
+                            <input name="FatherName" type="text" id="FatherName" class="form-control">
                 </div>
-                <div class="form-group">
+                <div class="form-group col-sm">
                     <label for="Pan">Pan:</label>
-                    <input type="text" id="Pan" class="form-control">
+                            <input name="Pan" type="text" id="Pan" class="form-control">
                 </div>
-                <div class="form-group">
-                    <label for="AddressLine1">AddressLine1:</label>
-                    <input type="text" id="AddressLine1" class="form-control">
                 </div>
-                <div class="form-group">
-                    <label for="AddressLine2">AddressLine2:</label>
-                    <input type="text" id="AddressLine2" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label for="City">City:</label>
-                    <input type="text" id="City" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label for="StateId">StateId:</label>
-                    <input type="text" id="StateId" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label for="Pincode">Pincode:</label>
-                    <input type="text" id="Pincode" class="form-control">
-                </div>
-                
 
+                <div class="row">
+                    <div class="form-group col-sm">
+                    <label for="AddressLine1">AddressLine1:</label>
+                            <input name="AddressLine1" type="text" id="AddressLine1" class="form-control">
+                </div>
+                    <div class="form-group col-sm">
+                    <label for="AddressLine2">AddressLine2:</label>
+                            <input name="AddressLine2" type="text" id="AddressLine2" class="form-control">
+                </div>
+                   
+                </div>
+                <div class="row">
+                    <div class="form-group col-sm">
+                        <label for="City">City:</label>
+                            <input name="City" type="text" id="City" class="form-control">
+                    </div>
+                    <div class="form-group col-sm">
+                    <label for="StateId">StateId:</label>
+                    <input name="StateId" type="text" id="StateId" class="form-control">
+                </div>
+                </div>
+                <div class="row">
+                <div class="form-group col-sm">
+                    <label for="Pincode">Pincode:</label>
+                            <input name="Pincode" type="text" id="Pincode" class="form-control">
+                </div>
+                </div>
                
                 <!-- Add a save button to submit the edited data -->
-                <button type="button" class="btn btn-primary" onclick="saveChanges()">Save Changes</button>
+                <button class="btn btn-warning"  id="btnUpdate">Update</button>
+                </form>
             </div>
         </div>
     </div>
 </div>
 
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
 <script>
+
+    // jQuery code to close the modal on click of the "Close" link
+    $(document).ready(function () {
+        $("#closePopup").click(function () {
+            $("#editModal").modal("hide");
+        });
+    });
+
     function Edit(id) {
         debugger
         $.ajax({
             url: '/Employee/Edit?id=' + id,
             type: 'GET',
             contentType: 'application/json;charset=utf-8',
-            dataType: 'json', // Assuming the response is in JSON format
+            dataType: 'json',
             success: function (response) {
                 // Handle the success response, for example, load it into the modal
                 $('#editModal').modal('show');
@@ -255,12 +268,17 @@
                 $('#City').val(response.city);
                 $('#StateId').val(response.stateId);
                 $('#Pincode').val(response.pincode);
+                $('#pID').val(id);
+
+             
             },
             error: function () {
                 alert('Data not found');
             }
         });
-    }</script>
+    }
+    
+ </script>
 
 
 
