@@ -21,6 +21,7 @@ namespace CRM.Repository
         public Task<List<EmployeeRegistration>> EmployeeList();
         public Task<List<EmployeePersonalDetail>> EmployeeBasicinfoList();
         public Task<List<ProductMaster>> GetproductById(int id);
+        public Task<int> Iupdate(EmployeePersonalDetail model);
 
     }
 }
