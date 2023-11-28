@@ -219,6 +219,33 @@ namespace CRM.Controllers
             }
         }
 
+        public JsonResult Edit (int id)
+        {
+            var data = _context.EmployeePersonalDetails.Where(e => e.Id == id).SingleOrDefault();
+            return new JsonResult(data);
+        }
+        [HttpPost]
+        public async Task<IActionResult> update(EmployeePersonalDetail model)
+        {
+            try
+            {
+                var response = await _ICrmrpo.Iupdate(model);
+                if (response != null)
+                {
 
+                    return RedirectToAction("EmployeeBasicinfoList", "Employee");
+                    TempData["msg"] = "EmployeeBasicinfo Successfully.";
+                }
+                else
+                {
+                    ModelState.Clear();
+                    return View();
+                }
+            }
+            catch (Exception Ex)
+            {
+                throw new Exception("Error:" + Ex.Message);
+            }
+        }
     }
 }

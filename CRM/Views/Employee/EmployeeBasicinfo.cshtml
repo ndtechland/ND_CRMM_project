@@ -46,6 +46,12 @@
                                 <form asp-action="EmployeeBasicinfo" autocomplete="off">
                                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                                     <div class="row">
+
+                                        <div class="form-group col-sm">
+                                            <label>Id </label>
+                                            <input  type="text" class="form-control" id="ID" disabled="disabled"/>
+                                        </div>
+
                                         <div class="form-group col-sm">
                                             <label asp-for="PersonalEmailAddress" class="control-label"></label>
                                             <input asp-for="PersonalEmailAddress" class="form-control" />

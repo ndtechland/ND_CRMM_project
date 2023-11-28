@@ -125,8 +125,10 @@
                                                     </td>
                                                     <td>
                                                         <div>
-                                                            <i class="fa fa-edit me-2 font-success"></i>
+                                                           
                                                             <a href="@Url.Action("DeleteBasicEmp","Employee",new { id=item.Id})" class="fa fa-trash font-danger"></a>
+                                                            <a href="#" class="fa fa-edit m-2 font-success" data-toggle="modal" data-target="#editModal" onclick="Edit(@item.Id)"></a>
+                                                            @*<a href="/Employee/Edit" class="fa fa-edit m-2 font-success" onclick="editEmployee(@item.Id)" data-toggle="modal" data-target="#editModal"></a>*@
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -147,6 +149,142 @@
     </div>
 
 </div>
+
+
+<div id="editModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                    <a id="closePopup" href="#" class="btn btn-danger" data-dismiss="modal">Close</a>
+                <h4 class="modal-title">Edit Employee</h4>
+            </div>
+            <div class="modal-body">
+                <!-- Add your form fields here -->
+                <form action="update" method="post">
+                    <input name="ID" type="text" id="pID" style="display:none">
+
+                   <div class="row">
+                    <div class="form-group col-sm">
+                            <label for="PersonalEmailAddress">PersonalEmailAddress:</label>
+                            <input name="PersonalEmailAddress" type="email" id="PersonalEmailAddress" class="form-control" placeholder="Enter Personal Email Address">
+                    </div>
+                    <div class="form-group col-sm">
+                        <label for="MobileNumber">Mobile Number:</label>
+                            <input name="MobileNumber" type="tel" id="MobileNumber" class="form-control" placeholder="Enter Mobile Number">
+                    </div>
+
+                    
+                </div>
+               
+                 
+                    <div class="row">
+                     <div class="form-group col-sm">
+                        <label for="DateOfBirth">Date of Birth:</label>
+                            <input name="DateOfBirth" type="date" id="DateOfBirth" class="form-control">
+                    </div>
+                    <div class="form-group col-sm">
+                        <label for="Age">Age:</label>
+                            <input name="Age" type="text" id="Age" class="form-control">
+                    </div>
+
+               </div>
+
+                <div class="row">
+                <div class="form-group col-sm">
+                    <label for="FatherName">Father Name:</label>
+                            <input name="FatherName" type="text" id="FatherName" class="form-control">
+                </div>
+                <div class="form-group col-sm">
+                    <label for="Pan">Pan:</label>
+                            <input name="Pan" type="text" id="Pan" class="form-control">
+                </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-sm">
+                    <label for="AddressLine1">AddressLine1:</label>
+                            <input name="AddressLine1" type="text" id="AddressLine1" class="form-control">
+                </div>
+                    <div class="form-group col-sm">
+                    <label for="AddressLine2">AddressLine2:</label>
+                            <input name="AddressLine2" type="text" id="AddressLine2" class="form-control">
+                </div>
+                   
+                </div>
+                <div class="row">
+                    <div class="form-group col-sm">
+                        <label for="City">City:</label>
+                            <input name="City" type="text" id="City" class="form-control">
+                    </div>
+                    <div class="form-group col-sm">
+                    <label for="StateId">StateId:</label>
+                    <input name="StateId" type="text" id="StateId" class="form-control">
+                </div>
+                </div>
+                <div class="row">
+                <div class="form-group col-sm">
+                    <label for="Pincode">Pincode:</label>
+                            <input name="Pincode" type="text" id="Pincode" class="form-control">
+                </div>
+                </div>
+               
+                <!-- Add a save button to submit the edited data -->
+                <button class="btn btn-warning"  id="btnUpdate">Update</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<script>
+
+    // jQuery code to close the modal on click of the "Close" link
+    $(document).ready(function () {
+        $("#closePopup").click(function () {
+            $("#editModal").modal("hide");
+        });
+    });
+
+    function Edit(id) {
+        debugger
+        $.ajax({
+            url: '/Employee/Edit?id=' + id,
+            type: 'GET',
+            contentType: 'application/json;charset=utf-8',
+            dataType: 'json',
+            success: function (response) {
+                // Handle the success response, for example, load it into the modal
+                $('#editModal').modal('show');
+                $('#PersonalEmailAddress').val(response.personalEmailAddress);
+                $('#MobileNumber').val(response.mobileNumber);
+                $('#DateOfBirth').val(response.dateOfBirth);
+                $('#Age').val(response.age);
+                $('#FatherName').val(response.fatherName);
+                $('#Pan').val(response.pan);
+                $('#AddressLine1').val(response.addressLine1);
+                $('#AddressLine2').val(response.addressLine2);
+                $('#City').val(response.city);
+                $('#StateId').val(response.stateId);
+                $('#Pincode').val(response.pincode);
+                $('#pID').val(id);
+
+             
+            },
+            error: function () {
+                alert('Data not found');
+            }
+        });
+    }
+    
+ </script>
+
+
+
+
+
+ 
 
 
 
