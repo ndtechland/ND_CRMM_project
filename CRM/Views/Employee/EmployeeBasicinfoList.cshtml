@@ -125,9 +125,8 @@
                                                     </td>
                                                     <td>
                                                         <div>
-                                                           
-                                                            <a href="@Url.Action("DeleteBasicEmp","Employee",new { id=item.Id})" class="fa fa-trash font-danger"></a>
                                                             <a href="#" class="fa fa-edit m-2 font-success" data-toggle="modal" data-target="#editModal" onclick="Edit(@item.Id)"></a>
+                                                            <a href="@Url.Action("DeleteBasicEmp","Employee",new { id=item.Id})" class="fa fa-trash font-danger"></a>
                                                             @*<a href="/Employee/Edit" class="fa fa-edit m-2 font-success" onclick="editEmployee(@item.Id)" data-toggle="modal" data-target="#editModal"></a>*@
                                                         </div>
                                                     </td>
