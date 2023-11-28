@@ -20,8 +20,12 @@ namespace CRM.Repository
         public Task<int> Banner(BannerMaster model);
         public Task<List<EmployeeRegistration>> EmployeeList();
         public Task<List<EmployeePersonalDetail>> EmployeeBasicinfoList();
-        public Task<List<ProductMaster>> GetproductById(int id);
+
+        public ProductMaster GetproductById(int id);
+        public Task<int> updateproduct(ProductMaster model);
+
         public Task<int> Iupdate(EmployeePersonalDetail model);
+
 
     }
 }

@@ -48,6 +48,10 @@
                                 <form class="needs-validation" asp-action="Product" autocomplete="off">
                                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                                     <div class="row">
+                                       @* <div class="form-group col-sm">
+                                            <label>Id </label>
+                                            <input type="text" class="form-control" id="ID" disabled="disabled"/>
+                                        </div>*@
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Product Name<span>*</span></label>
                                             <input class="form-control" name="ProductName" type="text" required="">
@@ -98,12 +102,5 @@
 
 
 
-@if (ViewBag.Gst1 != null)
-{
-    <script>
-        @*$('#District_Code').val(ViewBag.ViewStateList2);*@
-        $('#Gst').html(row);
-        $('#Gst').val(@ViewBag.Gst1);
-    </script>
-}
+
 

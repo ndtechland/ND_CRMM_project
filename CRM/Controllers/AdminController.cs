@@ -11,6 +11,7 @@ using NuGet.Protocol.Plugins;
 using System.Data;
 using System.Net;
 using System.Security.Principal;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace CRM.Controllers
 {
@@ -54,40 +55,26 @@ namespace CRM.Controllers
                 throw new Exception("Error:" + Ex.Message);
             }  
         }
-        [HttpGet]
-        public async Task<IActionResult> Product(int id=0)
+        public async Task<IActionResult> Product()
         {
-
-                List<CRM.Models.Crm.ProductMaster> product = new List<CRM.Models.Crm.ProductMaster>();
-                if (HttpContext.Session.GetString("UserName") != null)
-                {
-                    string AddedBy = HttpContext.Session.GetString("UserName");
-                    ViewBag.UserName = AddedBy;
-                    ViewBag.Gst = _context.GstMasters
-                  .Select(w => new SelectListItem
-                  {
-                      Value = w.Id.ToString(),
-                      Text = w.GstPercentagen
-                  });
-                    product = await _ICrmrpo.GetproductById(id);
-                    if (product[0].Gst != null)
-                    {
-                        ViewBag.Gst1 = product[0].Gst;
-                    }
-                    else
-                    {
-                        return RedirectToAction("Login", "Admin");
-                    }
-                }
-                else
-                {
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName = AddedBy;
+                ViewBag.Gst = _context.GstMasters
+              .Select(w => new SelectListItem
+              {
+                  Value = w.Id.ToString(),
+                  Text = w.GstPercentagen
+              });
+               
+            }
+            else
+            {
                 return RedirectToAction("Login", "Admin");
-                }
-               return View(product);
-
+            }
+            return View();
         }
-
-
         [HttpPost]
         public async Task<IActionResult> Product(ProductMaster model)
         {
@@ -113,9 +100,10 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                var response = await _ICrmrpo.ProductList();
+                List<ProductMaster> response = await _ICrmrpo.ProductList();
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 ViewBag.UserName = AddedBy;
+                ViewBag.product=response;
                 return View(response);
             }
             else
@@ -130,13 +118,49 @@ namespace CRM.Controllers
                 var data = _context.ProductMasters.Find(id);
                 _context.ProductMasters.Remove(data);
                 _context.SaveChanges();
-                return Content("ok");
+                return RedirectToAction("ProductList", "Admin");
             }
             catch (Exception ex)
             {
-                return Content("Server error");
+                throw new Exception( ex.Message);
+            }
+        }
+       
+        public JsonResult EditProduct(int id)
+        {
+            var product = new ProductMaster();
+            var data = _ICrmrpo.GetproductById(id);
+            product.Id = data.Id;
+            product.ProductName=data.ProductName;
+            product.Category=data.Category;
+            product.HsnSacCode=data.HsnSacCode;
+            product.Price=data.Price;
+            product.Gst = data.Gst;           
+            return new JsonResult(product);
+        }
+        [HttpPost]
+        public async Task<IActionResult> EditProduct(ProductMaster model)
+        {
+            try
+            {
+                var response = await _ICrmrpo.updateproduct(model);
+                if (response != null)
+                {
+
+                    return RedirectToAction("ProductList", "Admin");
+                    TempData["msg"] = "product update Successfully.";
+                }
+                else
+                {
+                    ModelState.Clear();
+                    return View();
+                }
+            }
+            catch (Exception Ex)
+            {
+                throw new Exception("Error:" + Ex.Message);
             }
         }
 
-    }
 }
+   }

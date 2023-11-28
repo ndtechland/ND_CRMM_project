@@ -1,16 +1,20 @@
-﻿@model List<CRM.Models.Crm.ProductMaster>
-
+﻿@{
+    @model IEnumerable<CRM.Models.Crm.ProductMaster>
+}
 @{
     ViewData["Title"] = "ProductList";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
+
+@{
+    var Gst = ViewBag.Gst;
+
+}
+
 <div class="page-wrapper">
     <div class="page-body-wrapper">
         <div class="page-sidebar">
         </div>
-        <!-- Page Sidebar Ends-->
-        <!-- Right sidebar Start-->
-        <!-- Right sidebar Ends-->
 
         <div class="page-body">
 
@@ -35,6 +39,7 @@
                     </div>
                 </div>
             </div>
+
             <!-- Container-fluid Ends-->
             <!-- Container-fluid starts-->
             <div class="container-fluid">
@@ -85,10 +90,15 @@
                                                 </td>
                                                 <td>
                                                     <div>
-                                                        <a href="@Url.Action("Product","Admin",new { id=item.Id})" class="fa fa-edit me-2 font-success"></a>
-                                                        <a href="@Url.Action("DeleteProduct","Admin",new { id=item.Id})" class="fa fa-trash font-danger"></a>
-@*                                                        <i class="fa fa-edit me-2 font-success" onclick="location.href='/Admin/productEdit';"></i>
-*@                                                       @* <i class="fa fa-trash font-danger"></i>*@
+                                                       @* <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                                                            Edit
+                                                        </button>*@
+                                                        <a href="#" class="fa fa-edit m-2 font-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="EditProduct(@item.Id)"></a>
+                                                     @* <a href="#" class="fa fa-edit m-2 font-success" data-toggle="modal" id="abc" data-target="#myModal" onclick="EditProduct(@item.Id)"></a>*@
+@*                                                    <a href="@Url.Action("EditProduct","Admin",new { id=item.Id})" class="fa fa-edit m-2 font-success" data-toggle="modal" data-target="#myModal" onclick="EditProduct(@item.Id)"></a>
+*@                                                      <a href="@Url.Action("DeleteProduct","Admin",new { id=item.Id})" class="fa fa-trash font-danger"></a>
+                                                    
+                                                          
                                                     </div>
                                                 </td>
                                             </tr>
@@ -101,9 +111,119 @@
                 </div>
             </div>
 
+       
+
+
         </div>
 
 
     </div>
 
 </div>
+
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    function EditProduct(id) {
+        debugger
+        $.ajax({
+            url: '/Admin/EditProduct?id=' + id,
+            type: "Get",
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                debugger
+                //$('#modal').modal('show');
+                $('#Id').val(response.id);
+                $('#ProductName').val(response.productName);
+                $('#Category').val(response.category);
+                $('#Price').val(response.price);
+                $('#HsnSacCode').val(response.hsnSacCode);
+                $('#Gst').val(response.gst);
+
+              
+            },
+            error: function () {
+                alert('Data not found');
+            }
+        });
+    }
+
+    //$(document).ready(function () {
+    //    $("#closePopup").click(function () {
+    //        $("#modal").modal("hide");
+    //    });
+    //});
+
+</script>
+
+
+
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Edit Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <form action="EditProduct" method="post" autocomplete="off">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <input name="Id" type="text" id="Id" style="display:none">
+
+                            <div class="row">                               
+                                <div class="form-group col-sm">
+                                    <label for="validationCustom0">Product Name</label>
+                                    <input class="form-control" id="ProductName" name="ProductName" type="text" required="">
+
+                                </div>
+                                <div class="form-group col-sm">
+                                    <label for="validationCustom0">Category</label>
+                                    <input class="form-control" id="Category" name="Category" type="text" required="">
+
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-sm">
+                                    <label for="validationCustom0">Price</label>
+                                    <input class="form-control" id="Price" name="Price" type="text" required="">
+
+                                </div>
+                                <div class="form-group col-sm">
+                                    <label for="validationCustom0">HSN Code</label>
+                                    <input class="form-control" id="HsnSacCode" name="HsnSacCode" type="text" required="">
+
+                                </div>
+                            </div>
+                            <div class="row">
+                            <div class="form-group col-sm">
+                            <label for="validationCustom0">GST</label>
+@*                                    @Html.DropDownListFor("Gst",  ViewBag.Gst as IEnumerable<SelectListItem>, "-- Select Gst -- ", new { @class = "form-control" })
+                                    *@     
+                                   
+                                    <select id="Gst" name="Gst" class="form-control">
+                                        <option value="1">5%</option>
+                                        <option value="2">10%</option>
+                                        <option value="3">12%</option>
+                                        <option value="4">18%</option>
+                                    </select>
+                             </div>
+                            </div>
+                      
+                                <button class="btn btn-warning" id="btnUpdate">Update</button>
+                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+              
+                        </form>
+                    </div>
+                </div>
+            </div>           
+        </div>
+    </div>
+</div>
+
+
+

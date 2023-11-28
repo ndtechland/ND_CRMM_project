@@ -15,7 +15,6 @@ namespace CRM.Repository
     public class Crmrpo : ICrmrpo
     {
         private admin_NDCrMContext _context;
-       
 
         public Crmrpo(admin_NDCrMContext context)
         {
@@ -203,25 +202,26 @@ namespace CRM.Repository
             }
             return (emp);
         }
-        
-        public async Task<List<ProductMaster>> GetproductById(int id)
+
+        public ProductMaster GetproductById(int id)
         {
-            List<ProductMaster> pm = new List<ProductMaster>();
-            var parameter = new List<SqlParameter>();
-            parameter.Add(new SqlParameter("@id", id));
-
-            var result = await _context.ProductMasters
-                .FromSqlRaw("exec GetproductById @id", parameter.ToArray())
-                .ToListAsync();
-
-            if (result != null)
-            {
-                pm = result;
-            }
-
-            return pm;
+            return _context.ProductMasters.Find(id);
         }
+        public async Task<int> updateproduct(ProductMaster model)
+        {
+            var parameter = new List<SqlParameter>();
+            parameter.Add(new SqlParameter("@id", model.Id));
+            parameter.Add(new SqlParameter("@ProductName", model.ProductName));
+            parameter.Add(new SqlParameter("@Category", model.Category));
+            parameter.Add(new SqlParameter("@HSN_SAC_Code", model.HsnSacCode));
+            parameter.Add(new SqlParameter("@GST", model.Gst));
+            parameter.Add(new SqlParameter("@Price", model.Price));
 
+            var result = await Task.Run(() => _context.Database
+           .ExecuteSqlRawAsync(@"exec sp_Updateproduct @id,@ProductName,@Category,@HSN_SAC_Code,@GST,@Price", parameter.ToArray()));
+
+            return result;
+        }
 
         public async Task<int> Iupdate(EmployeePersonalDetail model)
         {
