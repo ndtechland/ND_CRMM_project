@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using Microsoft.Extensions.Primitives;
+using NuGet.DependencyResolver;
 
 namespace CRM.Repository
 {
@@ -225,10 +226,13 @@ namespace CRM.Repository
 
         public async Task<int> Iupdate(EmployeePersonalDetail model)
         {
+            int result;
+            try
+
             {
                 var parameter = new List<SqlParameter>();
                 parameter.Add(new SqlParameter("@ID", model.Id));
-                parameter.Add(new SqlParameter("@Action", 2));
+                parameter.Add(new SqlParameter("@action", 2));
                 parameter.Add(new SqlParameter("@Personal_Email_Address", model.PersonalEmailAddress));
                 parameter.Add(new SqlParameter("@Mobile_Number", model.MobileNumber));
                 parameter.Add(new SqlParameter("@Date_Of_Birth", model.DateOfBirth));
@@ -240,12 +244,17 @@ namespace CRM.Repository
                 parameter.Add(new SqlParameter("@State_ID", model.StateId));
                 parameter.Add(new SqlParameter("@Pincode", model.Pincode));
 
-                var result = await Task.Run(() => _context.Database
-               .ExecuteSqlRawAsync(@"exec sp_Employee_Personal_Details @ID,@Action,@Personal_Email_Address,
+                result = await Task.Run(() => _context.Database
+               .ExecuteSqlRawAsync(@"exec sp_Employee_Personal_Details @action,@ID,@Personal_Email_Address,
             @Mobile_Number,@Date_Of_Birth,@Father_Name,@PAN,@Address_Line_1,
               @Address_Line_2,@City,@State_ID,@Pincode", parameter.ToArray()));
-                return result;
+                
             }
+            catch (Exception Ex)
+            {
+                throw new Exception(Ex.Message);
+            }
+            return result;
         }
 
     }
