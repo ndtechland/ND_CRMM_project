@@ -35,7 +35,7 @@ namespace CRM.Controllers
         public async Task<IActionResult> Login(AdminLogin model)
         {
             try
-            {
+            {                
                 DataTable dtresponse = _ICrmrpo.Login(model);
                 if (dtresponse != null && dtresponse.Rows.Count > 0)
                 {
@@ -43,9 +43,9 @@ namespace CRM.Controllers
                     return RedirectToAction("Dashboard", "Home");
 
                 }
-
                 else
                 {
+                    ViewBag.Message = "Invalid User Name or Password!";
                     ModelState.Clear();
                     return View();
                 }
@@ -166,6 +166,6 @@ namespace CRM.Controllers
                 throw new Exception("Error:" + Ex.Message);
             }
         }
-
-}
+      
+    }
    }

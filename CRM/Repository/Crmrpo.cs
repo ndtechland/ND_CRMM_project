@@ -259,8 +259,12 @@ namespace CRM.Repository
             }
             return result;
         }
-        
-       
+
+        public EmployeePersonalDetail GetempPersonalDetailById(int id)
+        {
+            return _context.EmployeePersonalDetails.Find(id);
+        }
+
     }
 
 }
