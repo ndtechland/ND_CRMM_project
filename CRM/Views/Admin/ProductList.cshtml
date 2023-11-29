@@ -6,11 +6,6 @@
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
 
-@{
-    var Gst = ViewBag.Gst;
-
-}
-
 <div class="page-wrapper">
     <div class="page-body-wrapper">
         <div class="page-sidebar">
@@ -90,13 +85,8 @@
                                                 </td>
                                                 <td>
                                                     <div>
-                                                       @* <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                                                            Edit
-                                                        </button>*@
                                                         <a href="#" class="fa fa-edit m-2 font-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="EditProduct(@item.Id)"></a>
-                                                     @* <a href="#" class="fa fa-edit m-2 font-success" data-toggle="modal" id="abc" data-target="#myModal" onclick="EditProduct(@item.Id)"></a>*@
-@*                                                    <a href="@Url.Action("EditProduct","Admin",new { id=item.Id})" class="fa fa-edit m-2 font-success" data-toggle="modal" data-target="#myModal" onclick="EditProduct(@item.Id)"></a>
-*@                                                      <a href="@Url.Action("DeleteProduct","Admin",new { id=item.Id})" class="fa fa-trash font-danger"></a>
+                                                      <a href="@Url.Action("DeleteProduct","Admin",new { id=item.Id})" class="fa fa-trash font-danger"></a>
                                                     
                                                           
                                                     </div>
@@ -122,41 +112,43 @@
 </div>
 
 
-
-
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
     function EditProduct(id) {
-        debugger
+        debugger;
         $.ajax({
             url: '/Admin/EditProduct?id=' + id,
-            type: "Get",
-            dataType: "json",
-            contentType: "application/json; charset=utf-8",
+            type: 'GET',
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
             success: function (response) {
-                debugger
-                //$('#modal').modal('show');
-                $('#Id').val(response.id);
-                $('#ProductName').val(response.productName);
-                $('#Category').val(response.category);
-                $('#Price').val(response.price);
-                $('#HsnSacCode').val(response.hsnSacCode);
-                $('#Gst').val(response.gst);
+                debugger;
+                $('#Id').val(response.product.id);
+                $('#ProductName').val(response.product.productName);
+                $('#Category').val(response.product.category);
+                $('#Price').val(response.product.price);
+                $('#HsnSacCode').val(response.product.hsnSacCode);
 
-              
+                // Set the selected value for the GST dropdown
+                $('#Gst').empty(); // Clear existing options
+                var row = "";
+                $('#Gst').html('');
+                row += "<option value=''>-- Select Gst --</option>";
+                $.each(response.gstData, function (ind, item) {
+                    var isSelected = item.id === response.product.gst;
+                    row += "<option value='" + item.id + "' " + (isSelected ? "selected" : "") + ">" + item.gstPercentagen + "</option>";
+                    //row += "<option value='" + item.id + "'>" + item.gstPercentagen + "</option>";
+
+                });
+                $('#Gst').html(row);
+                $('#Gst').val(response.product.gst)
+                $('#staticBackdrop').modal('show');
             },
             error: function () {
                 alert('Data not found');
             }
         });
     }
-
-    //$(document).ready(function () {
-    //    $("#closePopup").click(function () {
-    //        $("#modal").modal("hide");
-    //    });
-    //});
-
 </script>
 
 
@@ -202,18 +194,12 @@
                             <div class="row">
                             <div class="form-group col-sm">
                             <label for="validationCustom0">GST</label>
-@*                                    @Html.DropDownListFor("Gst",  ViewBag.Gst as IEnumerable<SelectListItem>, "-- Select Gst -- ", new { @class = "form-control" })
-                                    *@     
-                                   
-                                    <select id="Gst" name="Gst" class="form-control">
-                                        <option value="1">5%</option>
-                                        <option value="2">10%</option>
-                                        <option value="3">12%</option>
-                                        <option value="4">18%</option>
+                                    <select id="Gst" name="Gst"  class="form-control searchableselect">
+                                       @* <option value="">-- Select Gst --</option>*@
                                     </select>
-                             </div>
+
+                                </div>
                             </div>
-                      
                                 <button class="btn btn-warning" id="btnUpdate">Update</button>
                                 <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
               

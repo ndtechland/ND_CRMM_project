@@ -247,5 +247,10 @@ namespace CRM.Controllers
                 throw new Exception("Error:" + Ex.Message);
             }
         }
+        public JsonResult EditEmployee(int id)
+        {
+            var data = _context.EmployeeRegistrations.Where(e => e.Id == id).SingleOrDefault();
+            return new JsonResult(data);
+        }
     }
 }
