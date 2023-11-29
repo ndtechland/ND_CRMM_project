@@ -247,13 +247,14 @@
     });
 
     function Edit(id) {
-        debugger
+        debugger;
         $.ajax({
             url: '/Employee/Edit?id=' + id,
             type: 'GET',
             contentType: 'application/json;charset=utf-8',
             dataType: 'json',
             success: function (response) {
+                debugger;
                 // Handle the success response, for example, load it into the modal
                 $('#editModal').modal('show');
                 $('#PersonalEmailAddress').val(response.personalEmailAddress);
