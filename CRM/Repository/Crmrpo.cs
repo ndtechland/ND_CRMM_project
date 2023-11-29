@@ -113,6 +113,7 @@ namespace CRM.Repository
             {
                 var parameter = new List<SqlParameter>();
                 parameter.Add(new SqlParameter("@Action", 1));
+                parameter.Add(new SqlParameter("@ID", model.Id));
                 parameter.Add(new SqlParameter("@Personal_Email_Address", model.PersonalEmailAddress));
                 parameter.Add(new SqlParameter("@Mobile_Number", model.MobileNumber));
                 parameter.Add(new SqlParameter("@Date_Of_Birth", model.DateOfBirth));
@@ -125,7 +126,7 @@ namespace CRM.Repository
                 parameter.Add(new SqlParameter("@Pincode", model.Pincode));
 
                 var result = await Task.Run(() => _context.Database
-               .ExecuteSqlRawAsync(@"exec sp_Employee_Personal_Details  @Action,@Personal_Email_Address,
+               .ExecuteSqlRawAsync(@"exec sp_Employee_Personal_Details  @Action,@ID,@Personal_Email_Address,
             @Mobile_Number,@Date_Of_Birth,@Father_Name,@PAN,@Address_Line_1,
               @Address_Line_2,@City,@State_ID,@Pincode", parameter.ToArray()));
                 return result;
