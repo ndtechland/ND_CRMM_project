@@ -221,8 +221,15 @@ namespace CRM.Controllers
 
         public JsonResult Edit (int id)
         {
-            var data = _context.EmployeePersonalDetails.Where(e => e.Id == id).SingleOrDefault();
-            return new JsonResult(data);
+            var emp = _ICrmrpo.GetempPersonalDetailById(id);
+            var statedata = _context.StateMasters.ToList();
+            var result = new
+            {
+                Emp = emp,
+                StateData = statedata,
+
+            };
+            return new JsonResult(result);
         }
         [HttpPost]
         public async Task<IActionResult> update(EmployeePersonalDetail model)

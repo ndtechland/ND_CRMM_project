@@ -217,7 +217,7 @@
                     </div>
                     <div class="form-group col-sm">
                     <label for="StateId">StateId:</label>
-                    <input name="StateId" type="text" id="StateId" class="form-control">
+                            <select id="StateId" name="StateId" class="form-control searchableselect"></select>
                 </div>
                 </div>
                 <div class="row">
@@ -257,19 +257,32 @@
                 debugger;
                 // Handle the success response, for example, load it into the modal
                 $('#editModal').modal('show');
-                $('#PersonalEmailAddress').val(response.personalEmailAddress);
-                $('#MobileNumber').val(response.mobileNumber);
-                $('#DateOfBirth').val(response.dateOfBirth);
-                $('#Age').val(response.age);
-                $('#FatherName').val(response.fatherName);
-                $('#Pan').val(response.pan);
-                $('#AddressLine1').val(response.addressLine1);
-                $('#AddressLine2').val(response.addressLine2);
-                $('#City').val(response.city);
-                $('#StateId').val(response.stateId);
-                $('#Pincode').val(response.pincode);
-                $('#pID').val(id);
+                $('#PersonalEmailAddress').val(response.emp.personalEmailAddress);
+                $('#MobileNumber').val(response.emp.mobileNumber);
+                $('#DateOfBirth').val(response.emp.dateOfBirth);
+                $('#Age').val(response.emp.age);
+                $('#FatherName').val(response.emp.fatherName);
+                $('#Pan').val(response.emp.pan);
+                $('#AddressLine1').val(response.emp.addressLine1);
+                $('#AddressLine2').val(response.emp.addressLine2);
+                $('#City').val(response.emp.city);
+                $('#StateId').val(response.emp.stateId);
+                $('#Pincode').val(response.emp.pincode);
+                $('#pID').val(response.emp.id);
+                // Set the selected value for the GST dropdown
+                $('#StateId').empty(); // Clear existing options
+                var row = "";
+                $('#StateId').html('');
+                row += "<option value=''>-- Select State --</option>";
+                $.each(response.stateData, function (ind, item) {
+                    var isSelected = item.id === response.emp.stateId;
+                    row += "<option value='" + item.id + "' " + (isSelected ? "selected" : "") + ">" + item.stateName + "</option>";
+                    //row += "<option value='" + item.id + "'>" + item.gstPercentagen + "</option>";
 
+                });
+                $('#StateId').html(row);
+                $('#StateId').val(response.emp.stateId)
+                $('#staticBackdrop').modal('show');
              
             },
             error: function () {
