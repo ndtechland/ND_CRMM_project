@@ -1,7 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CRM.Models.Crm
 {
@@ -16,14 +14,10 @@ namespace CRM.Models.Crm
         public int Id { get; set; }
         public string ProductName { get; set; } = null!;
         public string Category { get; set; } = null!;
-       
         public string Gst { get; set; } = null!;
         public string HsnSacCode { get; set; } = null!;
         public double Price { get; set; }
         public virtual ICollection<BillingHistory> BillingHistories { get; set; }
         public virtual ICollection<Quation> Quations { get; set; }
     }
- 
-
-
 }

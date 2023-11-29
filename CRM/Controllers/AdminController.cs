@@ -100,10 +100,9 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                List<ProductMaster> response = await _ICrmrpo.ProductList();
+                var  response = await _ICrmrpo.ProductList();
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 ViewBag.UserName = AddedBy;
-                ViewBag.product=response;
                 return View(response);
             }
             else
@@ -130,23 +129,29 @@ namespace CRM.Controllers
         {
             var product = new ProductMaster();
             var data = _ICrmrpo.GetproductById(id);
+            var gstdata = _context.GstMasters.ToList();
             product.Id = data.Id;
             product.ProductName=data.ProductName;
             product.Category=data.Category;
             product.HsnSacCode=data.HsnSacCode;
             product.Price=data.Price;
-            product.Gst = data.Gst;           
-            return new JsonResult(product);
+            product.Gst = data.Gst;
+            var result = new
+            {
+                Product = product,
+                GstData = gstdata,
+
+            };           
+            return new JsonResult(result);
         }
         [HttpPost]
         public async Task<IActionResult> EditProduct(ProductMaster model)
         {
             try
             {
-                var response = await _ICrmrpo.updateproduct(model);
-                if (response != null)
+                var product = await _ICrmrpo.updateproduct(model);
+                if (product != null)
                 {
-
                     return RedirectToAction("ProductList", "Admin");
                     TempData["msg"] = "product update Successfully.";
                 }

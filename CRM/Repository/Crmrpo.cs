@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using Microsoft.Extensions.Primitives;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace CRM.Repository
 {
@@ -247,7 +248,8 @@ namespace CRM.Repository
                 return result;
             }
         }
-
+        
+       
     }
 
 }

@@ -25,7 +25,5 @@ namespace CRM.Repository
         public Task<int> updateproduct(ProductMaster model);
 
         public Task<int> Iupdate(EmployeePersonalDetail model);
-
-
     }
 }
