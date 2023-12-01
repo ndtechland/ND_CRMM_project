@@ -120,8 +120,12 @@ namespace CRM.Controllers
             try
             {
                 var data = _context.ProductMasters.Find(id);
-                _context.ProductMasters.Remove(data);
-                _context.SaveChanges();
+                if (data != null)
+                {
+                    data.IsDeleted = true; 
+                    _context.SaveChanges();
+
+                }
                 return RedirectToAction("ProductList", "Admin");
             }
             catch (Exception ex)

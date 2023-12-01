@@ -195,8 +195,11 @@ namespace CRM.Controllers
             try
             {
                 var data = _context.EmployeeRegistrations.Find(id);
-                _context.EmployeeRegistrations.Remove(data);
-                _context.SaveChanges();
+                if(data != null)
+                {
+                    data.IsDeleted = true;
+                    _context.SaveChanges();
+                }
                 return RedirectToAction("Employeelist");
             }
             catch (Exception ex)
@@ -209,8 +212,11 @@ namespace CRM.Controllers
             try
             {
                 var data = _context.EmployeePersonalDetails.Find(id);
-                _context.EmployeePersonalDetails.Remove(data);
-                _context.SaveChanges();
+                if(data!=null)
+                {
+                    data.IsDeleted = true;
+                    _context.SaveChanges();
+                }               
                 return RedirectToAction("EmployeeBasicinfoList");
             }
             catch (Exception ex)
@@ -218,7 +224,6 @@ namespace CRM.Controllers
                 throw new Exception("An error occurred while deleting the BasicEmployee:" + ex.Message);
             }
         }
-        //state master table in bind data
         [HttpGet]
         public JsonResult Edit (int id)
         {
