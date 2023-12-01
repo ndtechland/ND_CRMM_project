@@ -66,8 +66,13 @@ namespace CRM.Controllers
               {
                   Value = w.Id.ToString(),
                   Text = w.GstPercentagen
+                   });
+                ViewBag.Category = _context.Categories
+              .Select(w => new SelectListItem
+              {
+                  Value = w.Id.ToString(),
+                  Text = w.CategoryName
               });
-               
             }
             else
             {
@@ -115,8 +120,12 @@ namespace CRM.Controllers
             try
             {
                 var data = _context.ProductMasters.Find(id);
-                _context.ProductMasters.Remove(data);
-                _context.SaveChanges();
+                if (data != null)
+                {
+                    data.IsDeleted = true; 
+                    _context.SaveChanges();
+
+                }
                 return RedirectToAction("ProductList", "Admin");
             }
             catch (Exception ex)
@@ -130,6 +139,7 @@ namespace CRM.Controllers
             var product = new ProductMaster();
             var data = _ICrmrpo.GetproductById(id);
             var gstdata = _context.GstMasters.ToList();
+            var categorydata = _context.Categories.ToList();
             product.Id = data.Id;
             product.ProductName=data.ProductName;
             product.Category=data.Category;
@@ -140,6 +150,7 @@ namespace CRM.Controllers
             {
                 Product = product,
                 GstData = gstdata,
+                Categorydata = categorydata,
 
             };           
             return new JsonResult(result);

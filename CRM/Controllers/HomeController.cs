@@ -85,10 +85,11 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                var response = await _ICrmrpo.CustomerList();
-                string AddedBy = HttpContext.Session.GetString("UserName");
-                ViewBag.UserName = AddedBy;
-                return View(response);
+                var response = await _ICrmrpo.CustomerList();      
+                    string AddedBy = HttpContext.Session.GetString("UserName");
+                    ViewBag.UserName = AddedBy;
+                    return View(response);         
+
             }
             else
             {
@@ -145,7 +146,6 @@ namespace CRM.Controllers
                 string addedBy = HttpContext.Session.GetString("UserName");
                 HttpContext.Session.Remove("UserName");
 
-                // Set ViewBag.UserName only if addedBy is not null or empty
                 if (!string.IsNullOrEmpty(addedBy))
                 {
                     ViewBag.UserName = addedBy;

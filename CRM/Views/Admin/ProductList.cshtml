@@ -125,24 +125,33 @@
                 debugger;
                 $('#Id').val(response.product.id);
                 $('#ProductName').val(response.product.productName);
-                $('#Category').val(response.product.category);
                 $('#Price').val(response.product.price);
                 $('#HsnSacCode').val(response.product.hsnSacCode);
-
-                // Set the selected value for the GST dropdown
-                $('#Gst').empty(); // Clear existing options
+                $('#Gst').empty(); 
                 var row = "";
                 $('#Gst').html('');
                 row += "<option value=''>-- Select Gst --</option>";
                 $.each(response.gstData, function (ind, item) {
                     var isSelected = item.id === response.product.gst;
                     row += "<option value='" + item.id + "' " + (isSelected ? "selected" : "") + ">" + item.gstPercentagen + "</option>";
-                    //row += "<option value='" + item.id + "'>" + item.gstPercentagen + "</option>";
 
                 });
                 $('#Gst').html(row);
                 $('#Gst').val(response.product.gst)
+                //category
+                $('#Category').empty(); 
+                var row = "";
+                $('#Category').html('');
+                row += "<option value=''>-- Select Category --</option>";
+                $.each(response.categorydata, function (ind, item) {
+                    var isSelected = item.id === response.product.category;
+                    row += "<option value='" + item.id + "' " + (isSelected ? "selected" : "") + ">" + item.categoryName + "</option>";
+
+                });
+                $('#Category').html(row);
+                $('#Category').val(response.product.category)
                 $('#staticBackdrop').modal('show');
+
             },
             error: function () {
                 alert('Data not found');
@@ -175,7 +184,7 @@
                                 </div>
                                 <div class="form-group col-sm">
                                     <label for="validationCustom0">Category</label>
-                                    <input class="form-control" id="Category" name="Category" type="text" required="">
+                                    <select id="Category" name="Category" class="form-control searchableselect"></select>
 
                                 </div>
                             </div>
@@ -194,8 +203,7 @@
                             <div class="row">
                             <div class="form-group col-sm">
                             <label for="validationCustom0">GST</label>
-                                    <select id="Gst" name="Gst"  class="form-control searchableselect">
-                                    </select>
+                                    <select id="Gst" name="Gst"  class="form-control searchableselect"></select>
 
                                 </div>
                             </div>

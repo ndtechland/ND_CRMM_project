@@ -17,5 +17,6 @@ namespace CRM.Models.Crm
         public string? City { get; set; }
         public string StateId { get; set; } = null!;
         public string? Pincode { get; set; }
+        public bool? IsDeleted { get; set; }
     }
 }

@@ -195,8 +195,11 @@ namespace CRM.Controllers
             try
             {
                 var data = _context.EmployeeRegistrations.Find(id);
-                _context.EmployeeRegistrations.Remove(data);
-                _context.SaveChanges();
+                if(data != null)
+                {
+                    data.IsDeleted = true;
+                    _context.SaveChanges();
+                }
                 return RedirectToAction("Employeelist");
             }
             catch (Exception ex)
@@ -209,8 +212,11 @@ namespace CRM.Controllers
             try
             {
                 var data = _context.EmployeePersonalDetails.Find(id);
-                _context.EmployeePersonalDetails.Remove(data);
-                _context.SaveChanges();
+                if(data!=null)
+                {
+                    data.IsDeleted = true;
+                    _context.SaveChanges();
+                }               
                 return RedirectToAction("EmployeeBasicinfoList");
             }
             catch (Exception ex)
@@ -218,7 +224,6 @@ namespace CRM.Controllers
                 throw new Exception("An error occurred while deleting the BasicEmployee:" + ex.Message);
             }
         }
-        //state master table in bind data
         [HttpGet]
         public JsonResult Edit (int id)
         {
@@ -258,7 +263,44 @@ namespace CRM.Controllers
         public JsonResult EditEmployee(int id)
         {
             var data = _context.EmployeeRegistrations.Where(e => e.Id == id).SingleOrDefault();
-            return new JsonResult(data);
+            var gender = _context.GenderMasters.ToList();
+            var worklocation = _context.WorkLocations.ToList();
+            var designation = _context.DesignationMasters.ToList();
+            var department=_context.DepartmentMasters.ToList();
+            var result = new
+            {
+                Data = data,
+                Gender = gender,
+                Worklocation = worklocation,
+                Designation=designation,
+                Department=department,
+
+
+            };
+            return new JsonResult(result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditEmployee(EmployeeRegistration model)
+        {
+            try
+            {
+                var product = await _ICrmrpo.updateEmployee(model);
+                if (product != null)
+                {
+                    return RedirectToAction("Employeelist", "Employee");
+                    TempData["msg"] = "product update Successfully.";
+                }
+                else
+                {
+                    ModelState.Clear();
+                    return View();
+                }
+            }
+            catch (Exception Ex)
+            {
+                throw new Exception("Error:" + Ex.Message);
+            }
         }
     }
 }
