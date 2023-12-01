@@ -120,7 +120,7 @@
                                                     </td>
                                                     <td>
                                                         <div>
-                                                                <a href="#" class="fa fa-edit m-2 font-success" data-toggle="modal" data-target="#editModal" onclick="EditEmployee(@item.Id)"></a>
+                                                              <a href="#" class="fa fa-edit m-2 font-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="EditEmployee(@item.Id)"></a>
                                                              <a href="@Url.Action("DeleteEmployee","Employee",new { id=item.Id})" class="fa fa-trash font-danger"></a>
                                                        </div>
                                                     </td>
@@ -143,114 +143,151 @@
 
 </div>
 
-
-
-
-
-
-<div id="editModal" class="modal fade" role="dialog">
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <a id="closePopup" href="#" class="btn btn-danger" data-dismiss="modal">Close</a>
-                <h4 class="modal-title">Edit Employee</h4>
+                <h5 class="modal-title" id="staticBackdropLabel">Edit Employee</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <!-- Add your form fields here -->
-                <form asp-action="EditEmployee" method="post">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                    <input name="Id" type="text" id="Id" style="display:none">
-                    <div class="row">
-                        <div class="form-group col-sm">
-                            <label for="validationCustom0">First Name</label>
-                            <input class="form-control" id="FirstName" name="FirstName" type="text" required="">
-                        </div>
-                        <div class="form-group col-sm">
-                            <label for="validationCustom0">Middle Name</label>
-                            <input class="form-control" id="MiddleName" name="MiddleName" type="text" required="">
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-sm">
-                            <label for="validationCustom0">Last Name</label>
-                            <input class="form-control" id="LastName" name="LastName" type="text" required="">
-                        </div>
-                        <div class="form-group col-sm">
-                            <label for="validationCustom0">Work Email</label>
-                            <input class="form-control" id="WorkEmail" name="WorkEmail" type="text" required="">
-                        </div>
-                    </div>
-                   @* <div class="row">
-                        <div class="form-group col-sm">
+                <div class="row">
+                    <div class="col-md-12">
+                        <form asp-action="EditEmployee" method="post" autocomplete="off">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <input name="Id" type="text" id="Id" style="display:none">
+                            <div class="row">
+                                <div class="form-group col-sm">
+                                    <label for="validationCustom0">First Name</label>
+                                    <input class="form-control" id="FirstName" name="FirstName" type="text" required="">
+                                </div>
+                                <div class="form-group col-sm">
+                                    <label for="validationCustom0">Middle Name</label>
+                                    <input class="form-control" id="MiddleName" name="MiddleName" type="text" required="">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-sm">
+                                    <label for="validationCustom0">Last Name</label>
+                                    <input class="form-control" id="LastName" name="LastName" type="text" required="">
+                                </div>
+                                <div class="form-group col-sm">
+                                    <label for="validationCustom0">Work Email</label>
+                                    <input class="form-control" id="WorkEmail" name="WorkEmail" type="text" required="">
+                                </div>
+                            </div>
+                             <div class="row">
+                            <div class="form-group col-sm">
                             <label for="validationCustom0">Gender</label>
-                            @Html.DropDownListFor(model => model.GenderId, new SelectList(ViewBag.Gender, "Value", "Text"), "-- Select Gender -- ", new { @class = "form-control" })
-                            <span asp-validation-for="GenderId" class="text-danger"></span>
-                        </div>
-                        <div class="form-group col-sm">
+                              <select id="GenderId" name="GenderId" class="form-control searchableselect"></select>
+                            </div>
+                            <div class="form-group col-sm">
                             <label for="validationCustom0">Work Location</label>
-                            @Html.DropDownListFor(model => model.WorkLocationId, new SelectList(ViewBag.WorkLocation, "Value", "Text"), "-- Select WorkLocation --", new { @class = "form-control" })
-                            <span asp-validation-for="WorkLocationId" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-sm">
+                             <select id="WorkLocationId" name="WorkLocationId" class="form-control searchableselect"></select>
+                            </div>
+                            </div>
+                            <div class="row">
+                            <div class="form-group col-sm">
                             <label for="validationCustom0">Designation</label>
-                            @Html.DropDownListFor(model => model.DesignationId, new SelectList(ViewBag.Designation, "Value", "Text"), "-- Select Designation --", new { @class = "form-control" })
-                            <span asp-validation-for="DesignationId" class="text-danger"></span>
-                        </div>
-                        <div class="form-group col-sm">
+                              <select id="DesignationId" name="DesignationId" class="form-control searchableselect"></select>
+                            </div>
+                            <div class="form-group col-sm">
                             <label for="validationCustom0">Department</label>
-                            @Html.DropDownListFor(model => model.DepartmentId, new SelectList(ViewBag.Department, "Value", "Text"), "-- Select Department --", new { @class = "form-control" })
-                            <span asp-validation-for="DepartmentId" class="text-danger"></span>
-                        </div>
-                    </div>*@
+                            <select id="DepartmentId" name="DepartmentId" class="form-control searchableselect"></select>
+                            </div>
+                            </div>
+                            <button class="btn btn-warning" id="btnUpdate">Update</button>
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
 
-                </form>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
+
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-
 <script>
-
-    // jQuery code to close the modal on click of the "Close" link
-    $(document).ready(function () {
-        $("#closePopup").click(function () {
-            $("#editModal").modal("hide");
-        });
-    });
-
-    function Edit(id) {
-        debugger
+    function EditEmployee(id) {
+        debugger;
         $.ajax({
-            url: '/Employee/Edit?id=' + id,
+            url: '/Employee/EditEmployee?id=' + id,
             type: 'GET',
-            contentType: 'application/json;charset=utf-8',
             dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
             success: function (response) {
-                // Handle the success response, for example, load it into the modal
-                $('#editModal').modal('show');
-                $('#PersonalEmailAddress').val(response.personalEmailAddress);
-                $('#MobileNumber').val(response.mobileNumber);
-                $('#DateOfBirth').val(response.dateOfBirth);
-                $('#Age').val(response.age);
-                $('#FatherName').val(response.fatherName);
-                $('#Pan').val(response.pan);
-                $('#AddressLine1').val(response.addressLine1);
-                $('#AddressLine2').val(response.addressLine2);
-                $('#City').val(response.city);
-                $('#StateId').val(response.stateId);
-                $('#Pincode').val(response.pincode);
-                $('#pID').val(id);
+                debugger;
+                $('#Id').val(response.data.id);
+                $('#FirstName').val(response.data.firstName);
+                $('#MiddleName').val(response.data.middleName);
+                $('#LastName').val(response.data.lastName);
+                $('#WorkEmail').val(response.data.workEmail);
+                //bind gender
+                $('#GenderId').empty();
+                var row = "<option value=''>-- Select Gender --</option>";
+                $.each(response.gender, function (ind, item) {
+                    var isSelected = item.id === response.data.genderId;
+                    row += "<option value='" + item.id + "' " + (isSelected ? "selected" : "") + ">" + item.genderName + "</option>";
+                });
+                $('#GenderId').html(row);
+                $('#GenderId').val(response.data.genderId);
+                //worklocation
+                $('#WorkLocationId').empty();
+                var row = "<option value=''>-- Select WorkLocation --</option>";
+                $.each(response.worklocation, function (ind, item) {
+                    var isSelected = item.id === response.data.workLocationId;
+                    row += "<option value='" + item.id + "' " + (isSelected ? "selected" : "") + ">" + item.addressLine1 + "</option>";
+                });
+                $('#WorkLocationId').html(row);
+                $('#WorkLocationId').val(response.data.workLocationId);
+                //Designation
+                $('#DesignationId').empty();
+                var row = "<option value=''>-- Select Designation --</option>";
+                $.each(response.designation, function (ind, item) {
+                    var isSelected = item.id === response.data.designationId;
+                    row += "<option value='" + item.id + "' " + (isSelected ? "selected" : "") + ">" + item.designationName + "</option>";
+                });
+                $('#DesignationId').html(row);
+                $('#DesignationId').val(response.data.designationId);
+                //Department
+                $('#DepartmentId').empty();
+                var row = "<option value=''>-- Select Designation --</option>";
+                $.each(response.department, function (ind, item) {
+                    var isSelected = item.id === response.data.departmentId;
+                    row += "<option value='" + item.id + "' " + (isSelected ? "selected" : "") + ">" + item.departmentName + "</option>";
+                });
+                $('#DepartmentId').html(row);
+                $('#DepartmentId').val(response.data.departmentId);
 
-
+                $('#staticBackdrop').modal('show');
             },
             error: function () {
                 alert('Data not found');
             }
         });
     }
-
 </script>
+
+@* "id": 3,
+        "firstName": "ff",
+        "middleName": "f",
+        "lastName": "f",
+        "employeeId": "ND-11/2023-3",
+        "dateOfJoining": "2023-11-21T00:00:00",
+        "workEmail": "a@gmail.com",
+        "genderId": "1",
+        "workLocationId": "1",
+        "designationId": "9",
+        "departmentId": "2",
+        "employeeBankDetails": [],
+        "employeeLogins": [],
+        "employeeRoles": [],
+        "payrolls": []
+        "department": [
+        {
+            "id": "1",
+            "departmentName": "HR"
+        },
+ *@

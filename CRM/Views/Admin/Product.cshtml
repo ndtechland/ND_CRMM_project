@@ -48,20 +48,17 @@
                                 <form class="needs-validation" asp-action="Product" autocomplete="off">
                                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                                     <div class="row">
-                                       @* <div class="form-group col-sm">
-                                            <label>Id </label>
-                                            <input type="text" class="form-control" id="ID" disabled="disabled"/>
-                                        </div>*@
+                                        <div class="form-group col-sm">
+                                            <label for="validationCustom0">Category<span>*</span></label>
+                                            @Html.DropDownListFor(model => model.Category, new SelectList(ViewBag.Category, "Value", "Text"), "-- Select Category -- ", new { @class = "form-control" })
+                                            <span asp-validation-for="Category" class="text-danger"></span>
+                                        </div>
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Product Name<span>*</span></label>
                                             <input class="form-control" name="ProductName" type="text" required="">
                                             <span asp-validation-for="ProductName" class="text-danger"></span>
                                         </div>
-                                        <div class="form-group col-sm">
-                                            <label for="validationCustom0">Category<span>*</span></label>
-                                            <input class="form-control" name="Category" type="text" required="">
-                                            <span asp-validation-for="Category" class="text-danger"></span>
-                                        </div>
+                                        
                                     </div>
                                     <div class="row">
                                         <div class="form-group col-sm">
@@ -76,7 +73,7 @@
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="form-group col-sm">
+                                        <div class="form-group col-sm-6">
                                             <label for="validationCustom0">GST</label>
                                             @Html.DropDownListFor(model => model.Gst, new SelectList(ViewBag.Gst, "Value", "Text"), "-- Select Gst -- ", new { @class = "form-control" })
                                             <span asp-validation-for="Gst" class="text-danger"></span>

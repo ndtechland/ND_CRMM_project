@@ -66,8 +66,13 @@ namespace CRM.Controllers
               {
                   Value = w.Id.ToString(),
                   Text = w.GstPercentagen
+                   });
+                ViewBag.Category = _context.Categories
+              .Select(w => new SelectListItem
+              {
+                  Value = w.Id.ToString(),
+                  Text = w.CategoryName
               });
-               
             }
             else
             {
