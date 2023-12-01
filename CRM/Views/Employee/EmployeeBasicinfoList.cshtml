@@ -154,7 +154,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                    <a id="closePopup" href="#" class="btn btn-danger" data-dismiss="modal">Close</a>
+                    <a id="closePopup" href="#" class="btn btn-danger" data-dismiss="modal">X</a>
                 <h4 class="modal-title">Edit Employee</h4>
             </div>
             <div class="modal-body">
@@ -269,7 +269,9 @@
                 $('#StateId').val(response.emp.stateId);
                 $('#Pincode').val(response.emp.pincode);
                 $('#pID').val(response.emp.id);
-                // Set the selected value for the GST dropdown
+
+                //state bind and state master table
+                // Set the selected value for the state master dropdown
                 $('#StateId').empty(); // Clear existing options
                 var row = "";
                 $('#StateId').html('');
@@ -277,8 +279,7 @@
                 $.each(response.stateData, function (ind, item) {
                     var isSelected = item.id === response.emp.stateId;
                     row += "<option value='" + item.id + "' " + (isSelected ? "selected" : "") + ">" + item.stateName + "</option>";
-                    //row += "<option value='" + item.id + "'>" + item.gstPercentagen + "</option>";
-
+                    
                 });
                 $('#StateId').html(row);
                 $('#StateId').val(response.emp.stateId)

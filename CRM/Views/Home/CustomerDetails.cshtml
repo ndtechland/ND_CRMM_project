@@ -1,7 +1,8 @@
 ﻿@model CRM.Models.Crm.CustomerRegistration
 
+
 @{
-    ViewData["Title"] = "Customer";
+    ViewData["Title"] = "CustomerDetail";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
 
@@ -21,7 +22,7 @@
                         <div class="col-lg-6">
                             <div class="page-header-left">
                                 <h3>
-                                    Customer Registration
+                                  CustomerDetail
                                 </h3>
                             </div>
                         </div>
@@ -29,7 +30,7 @@
                             <ol class="breadcrumb pull-right">
                                 <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
                                 <li class="breadcrumb-item">CRM</li>
-                                <li class="breadcrumb-item active">Customer</li>
+                                <li class="breadcrumb-item active">CustomerDetail</li>
                             </ol>
                         </div>
                     </div>
@@ -43,7 +44,7 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-body">
-                                <form asp-action="Customer" autocomplete="off">
+                                <form asp-action="CustomerDetails" autocomplete="off">
                                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                                     <div class="row">
                                         <div class="form-group col-sm">
@@ -87,18 +88,20 @@
                                             <input asp-for="BillingAddress" class="form-control" required />
                                             <span asp-validation-for="BillingAddress" class="text-danger"></span>
                                         </div>
-                                        <div class="form-group col-sm">
-                                            <label for="validationCustom0">Product Details</label>
-
-                                            @Html.DropDownListFor(model => model.ProductDetails, new SelectList(ViewBag.ProductDetails, "Value", "Text"), "-- Select ProductDetails --", new { @class = "form-control" })
-                                        
-                                            <span asp-validation-for="ProductDetails" class="text-danger"></span>
-                                        </div>
+                                        <div class="row">
+                                            <div class="form-group col-sm">
+                                                <label for="validationCustom0">ProductDetails</label>
+                                                <select class="form-control">
+                                                    <option value="">--Select ProductDetails--</option>
+                                                    <option value="">ghhg</option>
+                                                    <option value="">yyy</option>
+                                                </select>
+                                            </div>
                                     </div>
                                     <div class="row">
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Start Date</label>
-                                            <input name="StartDate"  type="date" class="form-control" required />
+                                            <input name="StartDate" type="date" class="form-control" required />
                                             <span asp-validation-for="StartDate" class="text-danger"></span>
                                         </div>
                                         <div class="form-group col-sm">
@@ -113,7 +116,7 @@
                                             <input type="email" asp-for="Email" class="form-control" required />
                                             <span asp-validation-for="Email" class="text-danger"></span>
                                         </div>
-                                       
+
                                     </div>
                                     <div class="row">
                                         <div class="form-group col-sm">
@@ -125,28 +128,93 @@
                                             </select>
                                         </div>
 
-                                     
                                     </div>
                                     <div class="row">
+
+                                            <div class="row">
+                                                <div class="form-group col-sm">
+                                                    <label for="validationCustom0">Catagory</label>
+                                                    <select class="form-control">
+                                                        <option value="">--Select Catagory--</option>
+                                                        <option value="">rr</option>
+                                                        <option value="">gg</option>
+                                                    </select>
+                                                </div>
+
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="form-group col-sm">
+                                                    <label for="validationCustom0">product</label>
+                                                    <select class="form-control">
+                                                        <option value="">--Select product--</option>
+                                                        <option value="">gg</option>
+                                                        <option value="">ee</option>
+                                                    </select>
+                                                </div>
+
+                                            </div>
+
+                                            <div class="form-group col-sm">
+                                                <label for="validationCustom0">HSN</label>
+                                                <input type="HSN" asp-for="Email" class="form-control" required  readonly/>
+                                                <span asp-validation-for="Email" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group col-sm">
+                                                <label for="validationCustom0">	UPrice</label>
+                                                <input type="UPrice" asp-for="Email" class="form-control" required />
+                                                <span asp-validation-for="Email" class="text-danger"></span>
+                                            </div>
                                         <div class="form-group col-sm">
-                                            <label for="validationCustom0">IGST</label>
+                                            <label for="validationCustom0">IGST(Tax%)</label>
                                             <input type="IGST" asp-for="Email" class="form-control" required />
                                             <span asp-validation-for="Email" class="text-danger"></span>
                                         </div>
                                         <div class="form-group col-sm">
-                                            <label for="validationCustom0">SGST</label>
+                                                <label for="validationCustom0">SGST(Tax%)</label>
                                             <input name="SGST" type="Email" class="form-control" required />
                                             <span asp-validation-for="Email" class="text-danger"></span>
                                         </div>
                                         <div class="form-group col-sm">
-                                            <label for="validationCustom0">CGST</label>
+                                                <label for="validationCustom0">CGST(Tax%)</label>
                                             <input name="CGST" type="Email" class="form-control" required />
                                             <span asp-validation-for="Email" class="text-danger"></span>
                                         </div>
                                     </div>
+                                        <div class="row">
+                                            <div class="form-group col-sm">
+                                                <label for="validationCustom0">Grand Total</label>
+                                                <input name="Grand Total" type="Email" class="form-control" required/>
+                                                <span asp-validation-for="Email" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group col-sm">
+                                                <label for="validationCustom0">Amount Paid</label>
+                                                <input name="Amount Paid" type="Email" class="form-control" required />
+                                                <span asp-validation-for="Email" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group col-sm">
+                                                <label for="validationCustom0">Remain</label>
+                                                <input name="Remain" type="Email" class="form-control" required />
+                                                <span asp-validation-for="Email" class="text-danger"></span>
+                                            </div>
 
+                                            <div class="row">
+                                                <div class="form-group col-sm">
+                                                    <label for="validationCustom0">PaymentType</label>
+                                                    <select class="form-control">
+                                                        <option value="">--PaymentType--</option>
+                                                        <option value="">Cash</option>
+                                                        <option value="">Online</option>
+                                                        <option value="">Cheque</option>
+                                                        <option value="">UPI</option>
+                                                        <option value="">Machine</option>
+                                                    </select>
+                                                </div>
+
+                                            </div>
+                                        </div>
                                     <div class="form-group" style="display:flex; justify-content:center;">
-                                        <input type="submit" value="Save" class="btn btn-primary" />
+                                        <input type="submit" value="Generate" class="btn btn-primary" />
                                     </div>
                                 </form>
                             </div>
@@ -161,4 +229,3 @@
     </div>
 
 </div>
-
