@@ -80,7 +80,7 @@ namespace CRM.Controllers
                 throw new Exception("Error:" + Ex.Message);
             }
         }
-
+        [HttpGet]
         public async Task<IActionResult> CustomerList()
         {
             if (HttpContext.Session.GetString("UserName") != null)
@@ -153,7 +153,38 @@ namespace CRM.Controllers
                 return RedirectToAction("Login", "Admin");
 
         }
+
+
+        //======Invoice Section========//
+        [HttpGet]
+        public IActionResult Invoice()
+        {
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName = AddedBy;
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
+        }
+
        
+        public IActionResult CustomerDetails()
+        {
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName = AddedBy;
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
+        }
     }
 
 }

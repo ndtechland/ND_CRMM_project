@@ -72,6 +72,7 @@ namespace CRM.Repository
             parameter.Add(new SqlParameter("@GST_Number", model.GstNumber));
             parameter.Add(new SqlParameter("@Billing_Address", model.BillingAddress));
             parameter.Add(new SqlParameter("@Product_Details", model.ProductDetails));
+            //parameter.Add(new SqlParameter("@GenrateInvoice", model.GenrateInvoice));
             parameter.Add(new SqlParameter("@Start_date", model.StartDate));
             parameter.Add(new SqlParameter("@Renew_Date", model.RenewDate));
 
@@ -259,7 +260,7 @@ namespace CRM.Repository
             }
             return result;
         }
-
+        //state bind and state master table
         public EmployeePersonalDetail GetempPersonalDetailById(int id)
         {
             return _context.EmployeePersonalDetails.Find(id);

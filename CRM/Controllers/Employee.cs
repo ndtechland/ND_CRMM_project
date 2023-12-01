@@ -218,7 +218,8 @@ namespace CRM.Controllers
                 throw new Exception("An error occurred while deleting the BasicEmployee:" + ex.Message);
             }
         }
-
+        //state master table in bind data
+        [HttpGet]
         public JsonResult Edit (int id)
         {
             var emp = _ICrmrpo.GetempPersonalDetailById(id);
