@@ -257,7 +257,44 @@ namespace CRM.Controllers
         public JsonResult EditEmployee(int id)
         {
             var data = _context.EmployeeRegistrations.Where(e => e.Id == id).SingleOrDefault();
-            return new JsonResult(data);
+            var gender = _context.GenderMasters.ToList();
+            var worklocation = _context.WorkLocations.ToList();
+            var designation = _context.DesignationMasters.ToList();
+            var department=_context.DepartmentMasters.ToList();
+            var result = new
+            {
+                Data = data,
+                Gender = gender,
+                Worklocation = worklocation,
+                Designation=designation,
+                Department=department,
+
+
+            };
+            return new JsonResult(result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditEmployee(EmployeeRegistration model)
+        {
+            try
+            {
+                var product = await _ICrmrpo.updateEmployee(model);
+                if (product != null)
+                {
+                    return RedirectToAction("Employeelist", "Employee");
+                    TempData["msg"] = "product update Successfully.";
+                }
+                else
+                {
+                    ModelState.Clear();
+                    return View();
+                }
+            }
+            catch (Exception Ex)
+            {
+                throw new Exception("Error:" + Ex.Message);
+            }
         }
     }
 }

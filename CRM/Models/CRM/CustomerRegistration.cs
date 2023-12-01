@@ -6,14 +6,14 @@ namespace CRM.Models.Crm
     public partial class CustomerRegistration
     {
         public int Id { get; set; }
-        public string CompanyName { get; set; } = null!;
-        public string ContactPersonName { get; set; } = null!;
-        public string MobileNumber { get; set; } = null!;
-        public string AlternateNumber { get; set; } = null!;
-        public string Email { get; set; } = null!;
-        public string GstNumber { get; set; } = null!;
-        public string BillingAddress { get; set; } = null!;
-        public string ProductDetails { get; set; } = null!;
+        public string? CompanyName { get; set; }
+        public string? ContactPersonName { get; set; }
+        public string? MobileNumber { get; set; }
+        public string? AlternateNumber { get; set; }
+        public string? Email { get; set; }
+        public string? GstNumber { get; set; }
+        public string? BillingAddress { get; set; }
+        public string? ProductDetails { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime RenewDate { get; set; }
     }
