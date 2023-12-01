@@ -302,5 +302,13 @@ namespace CRM.Controllers
                 throw new Exception("Error:" + Ex.Message);
             }
         }
+
+        public IActionResult Gengeneratesalary()
+        {
+
+                return View();
+            
+        }
+
     }
 }
