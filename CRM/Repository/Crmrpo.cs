@@ -319,11 +319,11 @@ namespace CRM.Repository
             parameter.Add(new SqlParameter("@Subject", model.Subject));
             parameter.Add(new SqlParameter("@Amount", model.Amount));
             parameter.Add(new SqlParameter("@Mobile", model.Mobile));
-            parameter.Add(new SqlParameter("@IsDeleted",'0'));
-           
+            parameter.Add(new SqlParameter("@IsDeleted", "0"));
+
 
             var result = await Task.Run(() => _context.Database
-           .ExecuteSqlRawAsync(@"exec SP_Quation @Company_Name, @Customer_Name,@Email,@Sales_Person_Name,@Product_ID,@Subject,@Amount,@Mobile", parameter.ToArray()));
+           .ExecuteSqlRawAsync(@"exec SP_Quation @Company_Name, @Customer_Name,@Email,@Sales_Person_Name,@Product_ID,@Subject,@Amount,@Mobile,@IsDeleted", parameter.ToArray()));
 
             return result;
 

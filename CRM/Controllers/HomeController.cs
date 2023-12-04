@@ -264,14 +264,22 @@ namespace CRM.Controllers
                 {
                     data.IsDeleted = true;
                     _context.SaveChanges();
+
+                }
+                else
+                {
+                    return RedirectToAction("QuationList");
+
                 }
                 return RedirectToAction("QuationList");
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while deleting the DeleteQuationList:" + ex.Message);
+                throw new Exception(ex.Message);
             }
         }
+
+
     }
 
 }
