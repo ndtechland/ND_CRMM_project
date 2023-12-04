@@ -48,19 +48,19 @@
                                     <input name="Id" type="text" id="Id" style="display:none">
                                     <div class="row">
                                         <div class="form-group col-sm">
-                                            <label asp-for="PersonalEmailAddress" class="control-label"></label>
+                                            <label  class="control-label">Personal EmailAddress</label>
                                             <input asp-for="PersonalEmailAddress" class="form-control" />
                                             <span asp-validation-for="PersonalEmailAddress" class="text-danger"></span>
                                         </div>
                                         <div class="form-group col-sm">
-                                            <label asp-for="MobileNumber" class="control-label"></label>
+                                            <label class="control-label">Mobile Number</label>
                                             <input asp-for="MobileNumber" class="form-control" />
                                             <span asp-validation-for="MobileNumber" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="form-group col-sm">
-                                            <label asp-for="DateOfBirth" class="control-label"></label>
+                                            <label class="control-label">Date Of Birth</label>
                                             <input name="DateOfBirth" type="date" class="form-control" id="dobInput" onchange="calculateAge()" />
                                             <span asp-validation-for="DateOfBirth" class="text-danger"></span>
                                         </div>
@@ -78,14 +78,14 @@
                                             <span asp-validation-for="Pan" class="text-danger"></span>
                                         </div>
                                           <div class="form-group col-sm">
-                                         <label asp-for="AddressLine1" class="control-label"></label>
+                                            <label class="control-label">AddressLine1</label>
                                          <input asp-for="AddressLine1" class="form-control" />
                                          <span asp-validation-for="AddressLine1" class="text-danger"></span>
                                              </div>
                                     </div>
                                     <div class="row">
                                         <div class="form-group col-sm">
-                                            <label asp-for="AddressLine2" class="control-label"></label>
+                                            <label  class="control-label">AddressLine2</label>
                                             <input asp-for="AddressLine2" class="form-control" />
                                             <span asp-validation-for="AddressLine2" class="text-danger"></span>
                                         </div>
@@ -97,7 +97,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="form-group col-sm">
-                                        <label asp-for="StateId" class="control-label"></label>
+                                            <label  class="control-label">State</label>
              
                                              @Html.DropDownListFor(model => model.StateId, new SelectList(ViewBag.StateId, "Value", "Text"), "-- Select State --", new { @class = "form-control" })
                                          <span asp-validation-for="StateId" class="text-danger"></span>
@@ -110,7 +110,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="form-group col-sm-6">
-                                            <label asp-for="FatherName" class="control-label"></label>
+                                            <label class="control-label">Father Name</label>
                                             <input asp-for="FatherName" class="form-control" />
                                             <span asp-validation-for="FatherName" class="text-danger"></span>
                                         </div>
