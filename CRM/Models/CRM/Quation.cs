@@ -15,5 +15,6 @@ namespace CRM.Models.Crm
         public double Amount { get; set; }
         public string? Mobile { get; set; }
         public string? Product_Name { get; set; }
+
     }
 }

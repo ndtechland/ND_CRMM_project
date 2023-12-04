@@ -43,7 +43,7 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-body">
-                                <table class="table table-responsive">
+                                <table id="datatable" class="table table-responsive">
                                     <thead>
                                         <tr>
                                             <th>
@@ -100,7 +100,9 @@
                     </div>
                 </div>
             </div>
-
+            <div id="pagination-container">
+                <ul id="pagination" class="pagination"></ul>
+            </div>
        
 
 
@@ -218,5 +220,55 @@
     </div>
 </div>
 
+<script>
+    var currentPage = 1;
+    var rowsPerPage = 20;
+    $(document).ready(function () {
+        function paginateTable() {
+            var table = $('#datatable');
+            var rows = table.find('tbody tr');
 
+
+            var totalPages = Math.ceil(rows.length / rowsPerPage);
+
+
+            var pagination = $('#pagination');
+            pagination.empty();
+
+            for (var i = 1; i <= totalPages; i++) {
+                var link = $('<li class="page-item"><a class="page-link" href="#">' + i + '</a></li>');
+
+
+                if (i === currentPage) {
+                    link.addClass('active');
+                }
+
+                pagination.append(link);
+            }
+
+
+            var startIndex = (currentPage - 1) * rowsPerPage;
+            var endIndex = startIndex + rowsPerPage;
+
+            rows.hide().slice(startIndex, endIndex).show();
+        }
+
+
+        paginateTable();
+
+        $(document).on('click', '#pagination li a', function (event) {
+            event.preventDefault();
+
+            var clickedPage = parseInt($(this).text());
+
+
+            currentPage = clickedPage;
+            paginateTable();
+
+
+            $('html, body').animate({ scrollTop: $('#table-container').offset().top }, 'slow');
+        });
+    });
+
+</script>
 

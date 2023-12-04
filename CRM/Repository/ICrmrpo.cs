@@ -23,11 +23,12 @@ namespace CRM.Repository
 
         public ProductMaster GetproductById(int id);
         public Task<int> updateproduct(ProductMaster model);
-
         public Task<int> Iupdate(EmployeePersonalDetail model);
-        //state bind and state master table
         public EmployeePersonalDetail GetempPersonalDetailById(int id);
         public Task<int> updateEmployee(EmployeeRegistration model);
+
+        public Task<int> Gengeneratesalary(EmployeeSalaryDetail model);
+
         public Task<int> Quation(Quation model);
         public Task<List<Quation>> QuationList(); 
 
