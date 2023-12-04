@@ -42,32 +42,32 @@
                         <div class="card">
                             <div class="card-body">
          <div class=" table-responsive">
-                                   <table class="table table-responsive">
+                                    <table id="datatable" class="table table-responsive">
                   <thead>
-          <tr>
+                                            <tr style="background-color: #00baf2;">
             <th>
-                @Html.DisplayNameFor(model => model.CompanyName)
+                Company Name
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.CustomerName)
+                Customer Name
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Email)
+               Email
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.SalesPersonName)
+               SalesPerson Name
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Product_Name)
+             Product Name
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Subject)
+                Subject
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Amount)
+                Amount
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Mobile)
+                Mobile
             </th>
             <th>Action</th>
         </tr>
@@ -88,7 +88,7 @@
                 @Html.DisplayFor(modelItem => item.SalesPersonName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Product_Name)
+              @Html.DisplayFor(modelItem => item.ProductId)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Subject)
@@ -119,10 +119,64 @@
                         </div>
                     </div>
                 </div>
-
+            <div id="pagination-container">
+                <ul id="pagination" class="pagination"></ul>
+            </div>
             </div>
 
 
         </div>
 
     </div>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    var currentPage = 1;
+    var rowsPerPage = 20;
+    $(document).ready(function () {
+        function paginateTable() {
+            var table = $('#datatable');
+            var rows = table.find('tbody tr');
+
+
+            var totalPages = Math.ceil(rows.length / rowsPerPage);
+
+
+            var pagination = $('#pagination');
+            pagination.empty();
+
+            for (var i = 1; i <= totalPages; i++) {
+                var link = $('<li class="page-item"><a class="page-link" href="#">' + i + '</a></li>');
+
+
+                if (i === currentPage) {
+                    link.addClass('active');
+                }
+
+                pagination.append(link);
+            }
+
+
+            var startIndex = (currentPage - 1) * rowsPerPage;
+            var endIndex = startIndex + rowsPerPage;
+
+            rows.hide().slice(startIndex, endIndex).show();
+        }
+
+
+        paginateTable();
+
+        $(document).on('click', '#pagination li a', function (event) {
+            event.preventDefault();
+
+            var clickedPage = parseInt($(this).text());
+
+
+            currentPage = clickedPage;
+            paginateTable();
+
+
+            $('html, body').animate({ scrollTop: $('#table-container').offset().top }, 'slow');
+        });
+    });
+
+</script>

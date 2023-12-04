@@ -319,6 +319,7 @@ namespace CRM.Repository
             parameter.Add(new SqlParameter("@Subject", model.Subject));
             parameter.Add(new SqlParameter("@Amount", model.Amount));
             parameter.Add(new SqlParameter("@Mobile", model.Mobile));
+            parameter.Add(new SqlParameter("@IsDeleted",'0'));
            
 
             var result = await Task.Run(() => _context.Database
