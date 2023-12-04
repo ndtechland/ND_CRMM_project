@@ -111,6 +111,7 @@ namespace CRM.Repository
         {
             return await _context.StateMasters.ToListAsync();
         }
+        //====EmployeeBasicinfo==//
         public async Task<int> EmployeeBasicinfo(EmployeePersonalDetail model)
         {
             {
@@ -337,8 +338,6 @@ namespace CRM.Repository
             var result = await _context.Quations.FromSqlRaw<Quation>("QuationList").ToListAsync();
             return result;
         }
-
-       
 
     }
 
