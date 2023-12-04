@@ -44,12 +44,12 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                             <div class="row">
                                 <div class="form-group col-sm">
-                                    <label asp-for="CompanyName" class="control-label"></label>
+                                            <label class="control-label">Company Name</label>
                                     <input asp-for="CompanyName" class="form-control" />
                                     <span asp-validation-for="CompanyName" class="text-danger"></span>
                                 </div>
                                 <div class="form-group col-sm">
-                                    <label asp-for="CustomerName" class="control-label"></label>
+                                            <label class="control-label">Customer Name</label>
                                     <input asp-for="CustomerName" class="form-control" />
                                     <span asp-validation-for="CustomerName" class="text-danger"></span>
                                 </div>
@@ -57,20 +57,20 @@
              <div class="row">
             <div class="form-group col-sm">
                 <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
+                <input type="email" asp-for="Email" class="form-control" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             <div class="form-group col-sm">
-                <label asp-for="SalesPersonName" class="control-label"></label>
+                <label class="control-label">Sales PersonName</label>
                 <input asp-for="SalesPersonName" class="form-control" />
                 <span asp-validation-for="SalesPersonName" class="text-danger"></span>
             </div>
             </div>
              <div class="row">
                 <div class="form-group col-sm">
-                   <label for="validationCustom0">Product Details</label>
+                   <label for="validationCustom0">Product Name</label>
 
-                      @Html.DropDownListFor(model => model.ProductId, new SelectList(ViewBag.ProductDetails, "Value", "Text"), "-- Select ProductDetails --", new { @class = "form-control" })
+                      @Html.DropDownListFor(model => model.ProductId, new SelectList(ViewBag.ProductDetails, "Value", "Text"), "-- Select Product --", new { @class = "form-control" })
 
                      <span asp-validation-for="ProductId" class="text-danger"></span>
                     </div>
@@ -88,12 +88,12 @@
             </div>
             <div class="form-group col-sm">
                 <label asp-for="Mobile" class="control-label"></label>
-                <input asp-for="Mobile" class="form-control" />
+                  <input asp-for="Mobile" class="form-control" minlength="10" maxlength="10" />
                 <span asp-validation-for="Mobile" class="text-danger"></span>
             </div>
             </div>
 
-            <div class="form-group">
+                                    <div class="form-group" style="display:flex; justify-content:center;">
                 <input type="submit" value="save" class="btn btn-primary" />
             </div>
         </form>
