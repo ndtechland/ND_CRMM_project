@@ -10,11 +10,10 @@ namespace CRM.Models.Crm
         public string CustomerName { get; set; } = null!;
         public string Email { get; set; } = null!;
         public string SalesPersonName { get; set; } = null!;
-        public int ProductId { get; set; }
+        public string ProductId { get; set; } = null!;
         public string Subject { get; set; } = null!;
         public double Amount { get; set; }
         public string? Mobile { get; set; }
-        public string? Product_Name { get; set; }
-
+        public bool? IsDeleted { get; set; }
     }
 }

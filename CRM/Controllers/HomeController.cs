@@ -262,7 +262,7 @@ namespace CRM.Controllers
                 var data = _context.Quations.Find(id);
                 if (data != null)
                 {
-                    //data.IsDeleted = true;
+                    data.IsDeleted = true;
                     _context.SaveChanges();
                 }
                 return RedirectToAction("QuationList");
