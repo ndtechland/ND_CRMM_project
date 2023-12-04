@@ -223,7 +223,7 @@ namespace CRM.Controllers
                 if (response != null)
                 {
 
-                    return RedirectToAction("Quation", "Home");
+                    return RedirectToAction("QuationList", "Home");
                     TempData["msg"] = "Regiter Successfully.";
                 }
                 else
