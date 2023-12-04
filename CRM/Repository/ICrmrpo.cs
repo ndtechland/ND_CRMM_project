@@ -26,7 +26,12 @@ namespace CRM.Repository
         public Task<int> Iupdate(EmployeePersonalDetail model);
         public EmployeePersonalDetail GetempPersonalDetailById(int id);
         public Task<int> updateEmployee(EmployeeRegistration model);
+
         public Task<int> Gengeneratesalary(EmployeeSalaryDetail model);
+
+        public Task<int> Quation(Quation model);
+        public Task<List<Quation>> QuationList(); 
+
 
     }
 }
