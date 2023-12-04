@@ -8,13 +8,12 @@ namespace CRM.Models.Crm
         public int Id { get; set; }
         public string CompanyName { get; set; } = null!;
         public string CustomerName { get; set; } = null!;
-        public decimal Mobile { get; set; }
         public string Email { get; set; } = null!;
         public string SalesPersonName { get; set; } = null!;
         public int ProductId { get; set; }
         public string Subject { get; set; } = null!;
         public double Amount { get; set; }
-
-        public virtual ProductMaster Product { get; set; } = null!;
+        public string? Mobile { get; set; }
+        public string? Product_Name { get; set; }
     }
 }

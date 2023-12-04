@@ -62,6 +62,7 @@ namespace CRM.Controllers
         {
             try
             {
+                
                 var response = await _ICrmrpo.Customer(model);
                 if (response != null)
                 {
@@ -179,6 +180,74 @@ namespace CRM.Controllers
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 ViewBag.UserName = AddedBy;
                 return View();
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
+        }
+
+        //-----Quation
+        [HttpGet]
+        public IActionResult Quation()
+        {
+            var emp = new Quation();
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName = AddedBy;
+                ViewBag.ProductDetails = _context.ProductMasters
+             .Select(p => new SelectListItem
+             {
+                 Value = p.Id.ToString(),
+                 Text = p.ProductName
+             })
+              .ToList();
+                return View(emp);
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> Quation(Quation model) 
+        {
+            try
+            {
+               
+                var response = await _ICrmrpo.Quation(model);
+                if (response != null)
+                {
+
+                    return RedirectToAction("Quation", "Home");
+                    TempData["msg"] = "Regiter Successfully.";
+                }
+                else
+                {
+                    ModelState.Clear();
+                    return View();
+                }
+            }
+            catch (Exception Ex)
+            {
+                throw new Exception("Error:" + Ex.Message);
+            }
+        }
+        // get quation List 
+        [HttpGet]
+        public async Task<IActionResult> QuationList()
+        {
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                var response = await _ICrmrpo.QuationList();
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName = AddedBy;
+                return View(response);
+
             }
             else
             {

@@ -65,6 +65,7 @@ namespace CRM.Repository
         }
         public async Task<int> Customer(CustomerRegistration model)
         {
+            
             var parameter = new List<SqlParameter>();
             parameter.Add(new SqlParameter("@Company_Name", model.CompanyName));
             parameter.Add(new SqlParameter("@Contact_person_name", model.ContactPersonName));
@@ -286,6 +287,40 @@ namespace CRM.Repository
 
             return result;
         }
+
+
+        public async Task<int> Quation(Quation model)
+        {
+
+            var parameter = new List<SqlParameter>();
+            parameter.Add(new SqlParameter("@Company_Name", model.CompanyName));
+            parameter.Add(new SqlParameter("@Customer_Name", model.CustomerName));
+            parameter.Add(new SqlParameter("@Email", model.Email));
+            parameter.Add(new SqlParameter("@Sales_Person_Name", model.SalesPersonName));
+            parameter.Add(new SqlParameter("@Product_ID", model.ProductId));
+            parameter.Add(new SqlParameter("@Subject", model.Subject));
+            parameter.Add(new SqlParameter("@Amount", model.Amount));
+            parameter.Add(new SqlParameter("@Mobile", model.Mobile));
+           
+
+            var result = await Task.Run(() => _context.Database
+           .ExecuteSqlRawAsync(@"exec SP_Quation @Company_Name, @Customer_Name,@Email,@Sales_Person_Name,@Product_ID,@Subject,@Amount,@Mobile", parameter.ToArray()));
+
+            return result;
+
+
+           
+        }
+
+
+        public async Task<List<Quation>> QuationList()
+        {
+            var result = await _context.Quations.FromSqlRaw<Quation>("QuationList").ToListAsync();
+            return result;
+        }
+
+       
+
     }
 
 }
