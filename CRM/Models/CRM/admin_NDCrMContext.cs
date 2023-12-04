@@ -739,9 +739,9 @@ namespace CRM.Models.Crm
 
             modelBuilder.Entity<Quation>(entity =>
             {
-                entity.HasNoKey();
-
                 entity.ToTable("Quation");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
 
                 entity.Property(e => e.CompanyName)
                     .HasMaxLength(255)
@@ -752,10 +752,6 @@ namespace CRM.Models.Crm
                     .HasColumnName("Customer_Name");
 
                 entity.Property(e => e.Email).HasMaxLength(255);
-
-                entity.Property(e => e.Id)
-                    .ValueGeneratedOnAdd()
-                    .HasColumnName("ID");
 
                 entity.Property(e => e.Mobile).HasMaxLength(255);
 
