@@ -1,0 +1,115 @@
+﻿@model CRM.Models.Crm.Quation
+
+@{
+    ViewData["Title"] = "Quation";
+    Layout = "~/Views/Shared/_adminLayout.cshtml";
+}
+
+<div class="page-wrapper">
+    <div class="page-body-wrapper">
+        <div class="page-sidebar">
+        </div>
+
+        <div class="page-body">
+
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="page-header-left">
+                                <h3>
+                                    Quation
+                                </h3>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <ol class="breadcrumb pull-right">
+                                <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
+                                <li class="breadcrumb-item">Quation</li>
+                                <li class="breadcrumb-item active">Generate Quation</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Container-fluid Ends-->
+            <!-- Container-fluid starts-->
+     <div class="container-fluid">
+          <div class="row">
+    <div class="col-sm-12">
+         <div class="card">
+             <div class="card-body">
+               <form asp-action="Quation">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <div class="row">
+                                <div class="form-group col-sm">
+                                    <label asp-for="CompanyName" class="control-label"></label>
+                                    <input asp-for="CompanyName" class="form-control" />
+                                    <span asp-validation-for="CompanyName" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-sm">
+                                    <label asp-for="CustomerName" class="control-label"></label>
+                                    <input asp-for="CustomerName" class="form-control" />
+                                    <span asp-validation-for="CustomerName" class="text-danger"></span>
+                                </div>
+                            </div>
+             <div class="row">
+            <div class="form-group col-sm">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group col-sm">
+                <label asp-for="SalesPersonName" class="control-label"></label>
+                <input asp-for="SalesPersonName" class="form-control" />
+                <span asp-validation-for="SalesPersonName" class="text-danger"></span>
+            </div>
+            </div>
+             <div class="row">
+                <div class="form-group col-sm">
+                   <label for="validationCustom0">Product Details</label>
+
+                      @Html.DropDownListFor(model => model.ProductId, new SelectList(ViewBag.ProductDetails, "Value", "Text"), "-- Select ProductDetails --", new { @class = "form-control" })
+
+                     <span asp-validation-for="ProductId" class="text-danger"></span>
+                    </div>
+            <div class="form-group col-sm">
+                <label asp-for="Subject" class="control-label"></label>
+                <input asp-for="Subject" class="form-control" />
+                <span asp-validation-for="Subject" class="text-danger"></span>
+            </div>
+            </div>
+            <div class="row">
+            <div class="form-group col-sm">
+                <label asp-for="Amount" class="control-label"></label>
+                <input asp-for="Amount" class="form-control" />
+                <span asp-validation-for="Amount" class="text-danger"></span>
+            </div>
+            <div class="form-group col-sm">
+                <label asp-for="Mobile" class="control-label"></label>
+                <input asp-for="Mobile" class="form-control" />
+                <span asp-validation-for="Mobile" class="text-danger"></span>
+            </div>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="save" class="btn btn-primary" />
+            </div>
+        </form>
+        </div>
+        </div>
+    </div>
+  </div>
+    </div>
+
+      </div>
+    </div>
+</div>
+
+
+
+
+
+
+
