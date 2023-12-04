@@ -753,7 +753,7 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Email).HasMaxLength(255);
 
-                entity.Property(e => e.Mobile).HasColumnType("numeric(10, 0)");
+                entity.Property(e => e.Mobile).HasMaxLength(255);
 
                 entity.Property(e => e.ProductId).HasColumnName("Product_ID");
 
@@ -762,12 +762,6 @@ namespace CRM.Models.Crm
                     .HasColumnName("Sales_Person_Name");
 
                 entity.Property(e => e.Subject).HasMaxLength(255);
-
-                entity.HasOne(d => d.Product)
-                    .WithMany(p => p.Quations)
-                    .HasForeignKey(d => d.ProductId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Quote_Product_ID");
             });
 
             modelBuilder.Entity<StateMaster>(entity =>

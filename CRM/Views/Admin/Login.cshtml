@@ -1,19 +1,15 @@
-﻿@*<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        var message = "@ViewBag.Message"; 
-        if (message) {
-            alert(message); 
-        }
-    });
-</script>*@
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+﻿<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         var message = "@ViewBag.Message";
+
         if (message) {
-            Swal.fire({ text: message});            
-        }
+            swal({ text: message })
+            setTimeout(function () {
+                swal.close();
+            }, 5000);
+        }       
     });
 </script>
 
@@ -81,7 +77,6 @@
 </head>
 
 <body>
-
     <!-- page-wrapper Start-->
     <div class="page-wrapper">
         <div class="authentication-box">
