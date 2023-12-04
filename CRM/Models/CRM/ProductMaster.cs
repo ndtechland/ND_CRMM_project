@@ -8,7 +8,6 @@ namespace CRM.Models.Crm
         public ProductMaster()
         {
             BillingHistories = new HashSet<BillingHistory>();
-            Quations = new HashSet<Quation>();
         }
 
         public int Id { get; set; }
@@ -20,6 +19,5 @@ namespace CRM.Models.Crm
         public bool? IsDeleted { get; set; }
 
         public virtual ICollection<BillingHistory> BillingHistories { get; set; }
-        public virtual ICollection<Quation> Quations { get; set; }
     }
 }

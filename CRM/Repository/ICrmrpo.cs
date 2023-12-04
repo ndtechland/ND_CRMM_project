@@ -28,6 +28,9 @@ namespace CRM.Repository
         //state bind and state master table
         public EmployeePersonalDetail GetempPersonalDetailById(int id);
         public Task<int> updateEmployee(EmployeeRegistration model);
+        public Task<int> Quation(Quation model);
+        public Task<List<Quation>> QuationList(); 
+
 
     }
 }

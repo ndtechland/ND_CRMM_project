@@ -15,5 +15,6 @@ namespace CRM.Models.Crm
         public decimal Epf { get; set; }
         public decimal? MonthlyGrossPay { get; set; }
         public decimal? MonthlyCtc { get; set; }
+        public bool? IsDeleted { get; set; }
     }
 }
