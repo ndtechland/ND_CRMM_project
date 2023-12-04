@@ -254,6 +254,24 @@ namespace CRM.Controllers
                 return RedirectToAction("Login", "Admin");
             }
         }
+
+        public async Task<IActionResult> DeleteQuation(int id)
+        {
+            try
+            {
+                var data = _context.Quations.Find(id);
+                if (data != null)
+                {
+                    //data.IsDeleted = true;
+                    _context.SaveChanges();
+                }
+                return RedirectToAction("QuationList");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while deleting the DeleteQuationList:" + ex.Message);
+            }
+        }
     }
 
 }
