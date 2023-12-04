@@ -3,6 +3,7 @@ using CRM.Models.DTO;
 using CRM.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace CRM.Controllers
@@ -124,7 +125,7 @@ namespace CRM.Controllers
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 ViewBag.UserName = AddedBy;
                 return View(response);
-
+                
             }
             else
             {
@@ -303,12 +304,47 @@ namespace CRM.Controllers
             }
         }
 
-        public IActionResult Gengeneratesalary()
+        [HttpGet("Employee/Gengeneratesalary")]
+        public IActionResult Gengeneratesalary(int? id, string name)
         {
 
-                return View();
-            
+            var data = _context.EmployeeRegistrations.Find(id);
+            EmployeeSalaryDetail empd = new EmployeeSalaryDetail();
+
+            if (data != null)
+            {
+                empd.EmployeeId = data.EmployeeId;
+                empd.EmployeeName = data.FirstName;
+            }
+
+            return View(empd);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Gengeneratesalary(EmployeeSalaryDetail model)
+        {
+            try
+            {
+                var response = await _ICrmrpo.Gengeneratesalary(model);
+                if (response != null)
+                {
+
+                    return RedirectToAction("Employeelist", "Employee");
+                    ViewBag.Message = "registration Successfully.";
+                }
+                else
+                {
+                    ModelState.Clear();
+                    return View();
+                }
+            }
+            catch (Exception Ex)
+            {
+                throw new Exception("Error:" + Ex.Message);
+            }
+        }
+
+
 
     }
 }

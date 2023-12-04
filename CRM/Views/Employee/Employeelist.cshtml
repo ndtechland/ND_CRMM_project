@@ -5,8 +5,6 @@
     ViewData["Title"] = "Employeelist";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
-
-
 <div class="page-wrapper">
     <div class="page-body-wrapper">
         <div class="page-sidebar">
@@ -48,7 +46,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class=" table-responsive">
-                                    <table class="table table-responsive"
+                                    <table id="datatable" class="table table-responsive"
                                         <thead>
                                             <tr>
                                                 <th>
@@ -122,12 +120,13 @@
                                                         <div>
                                                               <a href="#" class="fa fa-edit m-2 font-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="EditEmployee(@item.Id)"></a>
                                                              <a href="@Url.Action("DeleteEmployee","Employee",new { id=item.Id})" class="fa fa-trash font-danger"></a>
+                                                             <a href="@Url.Action("Gengeneratesalary", "Employee", new { id = item.Id })" class="fa fa-money"></a>
                                                        </div>
                                                     </td>
                                                 </tr>
                                             }
                                         </tbody>
-                                    </table>
+                                    </table>                                 
                                 </div>
                                 
                             </div>
@@ -135,7 +134,9 @@
                     </div>
                 </div>
             </div>
-
+               <div id="pagination-container">
+               <ul id="pagination" class="pagination"></ul>
+                </div>
         </div>
 
 
@@ -198,7 +199,6 @@
                             </div>
                             <button class="btn btn-warning" id="btnUpdate">Update</button>
                             <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-
                         </form>
                     </div>
                 </div>
@@ -269,25 +269,55 @@
         });
     }
 </script>
+<script>
+    var currentPage = 1;
+    var rowsPerPage = 20;
+    $(document).ready(function () {
+        function paginateTable() {
+            var table = $('#datatable');
+            var rows = table.find('tbody tr');
 
-@* "id": 3,
-        "firstName": "ff",
-        "middleName": "f",
-        "lastName": "f",
-        "employeeId": "ND-11/2023-3",
-        "dateOfJoining": "2023-11-21T00:00:00",
-        "workEmail": "a@gmail.com",
-        "genderId": "1",
-        "workLocationId": "1",
-        "designationId": "9",
-        "departmentId": "2",
-        "employeeBankDetails": [],
-        "employeeLogins": [],
-        "employeeRoles": [],
-        "payrolls": []
-        "department": [
-        {
-            "id": "1",
-            "departmentName": "HR"
-        },
- *@
+
+            var totalPages = Math.ceil(rows.length / rowsPerPage);
+
+
+            var pagination = $('#pagination');
+            pagination.empty();
+
+            for (var i = 1; i <= totalPages; i++) {
+                var link = $('<li class="page-item"><a class="page-link" href="#">' + i + '</a></li>');
+
+
+                if (i === currentPage) {
+                    link.addClass('active');
+                }
+
+                pagination.append(link);
+            }
+
+
+            var startIndex = (currentPage - 1) * rowsPerPage;
+            var endIndex = startIndex + rowsPerPage;
+
+            rows.hide().slice(startIndex, endIndex).show();
+        }
+
+
+        paginateTable();
+
+        $(document).on('click', '#pagination li a', function (event) {
+            event.preventDefault();
+
+            var clickedPage = parseInt($(this).text());
+
+
+            currentPage = clickedPage;
+            paginateTable();
+
+
+            $('html, body').animate({ scrollTop: $('#table-container').offset().top }, 'slow');
+        });
+    });
+
+</script>
+
