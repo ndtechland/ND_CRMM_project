@@ -91,7 +91,7 @@
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Product Details</label>
 
-                                            @Html.DropDownListFor(model => model.ProductDetails, new SelectList(ViewBag.ProductDetails, "Value", "Text"), "-- Select ProductDetails --", new { @class = "form-control" })
+                                            @Html.DropDownListFor(model => model.ProductDetails, new SelectList(ViewBag.ProductDetails, "Value", "Text"), "-- Select Product --", new { @class = "form-control" })
                                         
                                             <span asp-validation-for="ProductDetails" class="text-danger"></span>
                                         </div>
