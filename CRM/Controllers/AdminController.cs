@@ -140,6 +140,7 @@ namespace CRM.Controllers
             var product = new ProductMaster();
             var data = _ICrmrpo.GetproductById(id);
             var gstdata = _context.GstMasters.ToList();
+            var categorydata = _context.Categories.ToList();
             product.Id = data.Id;
             product.ProductName=data.ProductName;
             product.Category=data.Category;
@@ -150,6 +151,7 @@ namespace CRM.Controllers
             {
                 Product = product,
                 GstData = gstdata,
+                Category = categorydata,
              
             };           
             return new JsonResult(result);

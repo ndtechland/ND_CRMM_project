@@ -145,7 +145,7 @@
                 var row = "";
                 $('#Category').html('');
                 row += "<option value=''>-- Select Category --</option>";
-                $.each(response.categorydata, function (ind, item) {
+                $.each(response.category, function (ind, item) {
                     var isSelected = item.id === response.product.category;
                     row += "<option value='" + item.id + "' " + (isSelected ? "selected" : "") + ">" + item.categoryName + "</option>";
 
