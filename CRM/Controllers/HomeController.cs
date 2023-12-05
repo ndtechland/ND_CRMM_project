@@ -68,12 +68,13 @@ namespace CRM.Controllers
                 {
 
                     return RedirectToAction("CustomerList", "Home");
-                    TempData["msg"] = "Regiter Successfully.";
+                    ViewBag.Message = "Customer Registration Successfully.!";
+
                 }
                 else
                 {
                     ModelState.Clear();
-                    return View();
+                    return RedirectToAction("Customer", "Home");
                 }
             }
             catch (Exception Ex)
