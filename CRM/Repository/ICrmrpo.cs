@@ -30,7 +30,10 @@ namespace CRM.Repository
         public Task<int> Gengeneratesalary(EmployeeSalaryDetail model);
 
         public Task<int> Quation(Quation model);
-        public Task<List<Quation>> QuationList(); 
+        public Task<List<Quation>> QuationList();
+
+        public Quation GetempQuationById(int id);
+        public Task<int> Iupdate(Quation model);
 
 
     }
