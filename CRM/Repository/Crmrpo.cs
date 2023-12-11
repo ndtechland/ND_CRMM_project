@@ -11,6 +11,9 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using Microsoft.Extensions.Primitives;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NuGet.DependencyResolver;
+using System.Reflection;
+using System;
+using System.Reflection.Metadata;
 
 
 namespace CRM.Repository
@@ -22,7 +25,7 @@ namespace CRM.Repository
         public Crmrpo(admin_NDCrMContext context)
         {
             _context = context;
-           
+
         }
 
         public DataTable Login(AdminLogin model)
@@ -65,7 +68,7 @@ namespace CRM.Repository
         }
         public async Task<int> Customer(CustomerRegistration model)
         {
-            
+
             var parameter = new List<SqlParameter>();
             parameter.Add(new SqlParameter("@Company_Name", model.CompanyName));
             parameter.Add(new SqlParameter("@Contact_person_name", model.ContactPersonName));
@@ -86,8 +89,8 @@ namespace CRM.Repository
         }
         public async Task<List<CustomerRegistration>> CustomerList()
         {
-           var result = await _context.CustomerRegistrations.FromSqlRaw<CustomerRegistration>("Customerlist").ToListAsync();
-           return result;
+            var result = await _context.CustomerRegistrations.FromSqlRaw<CustomerRegistration>("Customerlist").ToListAsync();
+            return result;
         }
         public async Task<int> EmpRegistration(EmployeeRegistration model)
         {
@@ -160,11 +163,11 @@ namespace CRM.Repository
                 var emps = new EmployeeRegistration()
                 {
                     Id = Convert.ToInt32(rdr["id"]),
-                    FirstName = Convert.ToString(rdr["FirstName"]),                    
-                   MiddleName= Convert.ToString(rdr["MiddleName"]),
+                    FirstName = Convert.ToString(rdr["FirstName"]),
+                    MiddleName = Convert.ToString(rdr["MiddleName"]),
                     LastName = Convert.ToString(rdr["LastName"]),
                     EmployeeId = Convert.ToString(rdr["EmployeeId"]),
-                    DateOfJoining =((DateTime)rdr["DateOfJoining"]),                   
+                    DateOfJoining = ((DateTime)rdr["DateOfJoining"]),
                     WorkEmail = Convert.ToString(rdr["WorkEmail"]),
                     GenderId = Convert.ToString(rdr["GenderId"]),
                     WorkLocationId = Convert.ToString(rdr["WorkLocationId"]),
@@ -255,7 +258,7 @@ namespace CRM.Repository
                .ExecuteSqlRawAsync(@"exec sp_Employee_Personal_Details @action,@ID,@Personal_Email_Address,
             @Mobile_Number,@Date_Of_Birth,@Father_Name,@PAN,@Address_Line_1,
               @Address_Line_2,@City,@State_ID,@Pincode", parameter.ToArray()));
-                
+
             }
             catch (Exception Ex)
             {
@@ -263,12 +266,12 @@ namespace CRM.Repository
             }
             return result;
         }
-     
+
         public EmployeePersonalDetail GetempPersonalDetailById(int id)
         {
             return _context.EmployeePersonalDetails.Find(id);
         }
-        
+
         public async Task<int> updateEmployee(EmployeeRegistration model)
         {
             var parameter = new List<SqlParameter>();
@@ -298,8 +301,8 @@ namespace CRM.Repository
             parameter.Add(new SqlParameter("@Basic", model.Basic));
             parameter.Add(new SqlParameter("@HouseRentAllowance", model.HouseRentAllowance));
             parameter.Add(new SqlParameter("@ConveyanceAllowance", model.ConveyanceAllowance));
-            parameter.Add(new SqlParameter("@FixedAllowance", model.FixedAllowance));          
-            parameter.Add(new SqlParameter("@EPF", model.Epf));          
+            parameter.Add(new SqlParameter("@FixedAllowance", model.FixedAllowance));
+            parameter.Add(new SqlParameter("@EPF", model.Epf));
             parameter.Add(new SqlParameter("@IsDeleted", "0"));
             var result = await Task.Run(() => _context.Database
            .ExecuteSqlRawAsync(@"exec sp_Employee_Salary_Details @EmployeeID, @EmployeeName,@Basic,@HouseRentAllowance,@ConveyanceAllowance,@FixedAllowance,@EPF,@IsDeleted", parameter.ToArray()));
@@ -312,6 +315,8 @@ namespace CRM.Repository
         {
 
             var parameter = new List<SqlParameter>();
+            parameter.Add(new SqlParameter("@Action", 1));
+            parameter.Add(new SqlParameter("@ID", model.Id));
             parameter.Add(new SqlParameter("@Company_Name", model.CompanyName));
             parameter.Add(new SqlParameter("@Customer_Name", model.CustomerName));
             parameter.Add(new SqlParameter("@Email", model.Email));
@@ -320,16 +325,13 @@ namespace CRM.Repository
             parameter.Add(new SqlParameter("@Subject", model.Subject));
             parameter.Add(new SqlParameter("@Amount", model.Amount));
             parameter.Add(new SqlParameter("@Mobile", model.Mobile));
-            parameter.Add(new SqlParameter("@IsDeleted", "0"));
+            parameter.Add(new SqlParameter("@IsDeleted", '0'));
 
 
             var result = await Task.Run(() => _context.Database
-           .ExecuteSqlRawAsync(@"exec SP_Quation @Company_Name, @Customer_Name,@Email,@Sales_Person_Name,@Product_ID,@Subject,@Amount,@Mobile,@IsDeleted", parameter.ToArray()));
+           .ExecuteSqlRawAsync(@"exec SP_Quation @Action,@ID,@Company_Name,@Customer_Name,@Email,@Sales_Person_Name,@Product_ID,@Subject,@Amount,@Mobile", parameter.ToArray()));
 
             return result;
-
-
-           
         }
 
 
@@ -338,9 +340,53 @@ namespace CRM.Repository
             var result = await _context.Quations.FromSqlRaw<Quation>("QuationList").ToListAsync();
             return result;
         }
+
         //public async Task<int> EmployeeBankDetail(EmployeeBankDetail model)
         //{
         //}
+
+        public Quation GetempQuationById(int id)
+        {
+            return _context.Quations.Find(id);
+        }
+
+        public async Task<int> Iupdate(Quation model)
+        {
+           int result;
+            try
+
+            {
+                var parameter = new List<SqlParameter>();
+               
+                parameter.Add(new SqlParameter("@action", 2));
+                parameter.Add(new SqlParameter("@ID", model.Id));
+                parameter.Add(new SqlParameter("@Company_Name", model.CompanyName));
+                parameter.Add(new SqlParameter("@Customer_Name", model.CustomerName));
+                parameter.Add(new SqlParameter("@Email", model.Email));
+                parameter.Add(new SqlParameter("@Sales_Person_Name", model.SalesPersonName));
+                parameter.Add(new SqlParameter("@Product_ID ", model.ProductId));
+                parameter.Add(new SqlParameter("@Subject", model.Subject));
+                parameter.Add(new SqlParameter("@Amount", model.Amount));
+                parameter.Add(new SqlParameter("@Mobile", model.Mobile));
+                parameter.Add(new SqlParameter("@IsDeleted", '0'));
+               
+
+                result = await Task.Run(() => _context.Database
+               .ExecuteSqlRawAsync(@"exec SP_Quation @action,@ID,@Company_Name,
+            @Customer_Name,@Email,@Sales_Person_Name,@Product_ID,@Subject,
+              @Amount,@Mobile,@IsDeleted", parameter.ToArray()));
+
+            }
+            catch (Exception Ex)
+            {
+                throw new Exception(Ex.Message);
+           }
+            return result;
+        }
+ 
+    
+
+
     }
 
 }

@@ -36,7 +36,7 @@ namespace CRM.Controllers
         }
         public IActionResult Customer()
         {
-            
+
             if (HttpContext.Session.GetString("UserName") != null)
             {
                 var emp = new CustomerRegistration();
@@ -62,19 +62,18 @@ namespace CRM.Controllers
         {
             try
             {
-                
+
                 var response = await _ICrmrpo.Customer(model);
                 if (response != null)
                 {
 
                     return RedirectToAction("CustomerList", "Home");
-                    ViewBag.Message = "Customer Registration Successfully.!";
-
+                    TempData["msg"] = "Regiter Successfully.";
                 }
                 else
                 {
                     ModelState.Clear();
-                    return RedirectToAction("Customer", "Home");
+                    return View();
                 }
             }
             catch (Exception Ex)
@@ -87,17 +86,17 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                var response = await _ICrmrpo.CustomerList();      
-                    string AddedBy = HttpContext.Session.GetString("UserName");
-                    ViewBag.UserName = AddedBy;
-                    return View(response);         
+                var response = await _ICrmrpo.CustomerList();
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName = AddedBy;
+                return View(response);
 
             }
             else
             {
                 return RedirectToAction("Login", "Admin");
             }
-          
+
         }
         [HttpGet]
         public IActionResult Banner()
@@ -144,15 +143,15 @@ namespace CRM.Controllers
 
         public IActionResult Logout()
         {
-            
-                string addedBy = HttpContext.Session.GetString("UserName");
-                HttpContext.Session.Remove("UserName");
 
-                if (!string.IsNullOrEmpty(addedBy))
-                {
-                    ViewBag.UserName = addedBy;
-                }
-                return RedirectToAction("Login", "Admin");
+            string addedBy = HttpContext.Session.GetString("UserName");
+            HttpContext.Session.Remove("UserName");
+
+            if (!string.IsNullOrEmpty(addedBy))
+            {
+                ViewBag.UserName = addedBy;
+            }
+            return RedirectToAction("Login", "Admin");
 
         }
 
@@ -173,7 +172,7 @@ namespace CRM.Controllers
             }
         }
 
-       
+
         public IActionResult CustomerDetails()
         {
             if (HttpContext.Session.GetString("UserName") != null)
@@ -195,7 +194,7 @@ namespace CRM.Controllers
             var emp = new Quation();
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                
+
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 ViewBag.UserName = AddedBy;
                 ViewBag.ProductDetails = _context.ProductMasters
@@ -215,11 +214,11 @@ namespace CRM.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> Quation(Quation model) 
+        public async Task<IActionResult> Quation(Quation model)
         {
             try
             {
-               
+
                 var response = await _ICrmrpo.Quation(model);
                 if (response != null)
                 {
@@ -265,22 +264,55 @@ namespace CRM.Controllers
                 {
                     data.IsDeleted = true;
                     _context.SaveChanges();
-
-                }
-                else
-                {
-                    return RedirectToAction("QuationList");
-
                 }
                 return RedirectToAction("QuationList");
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                throw new Exception("An error occurred while deleting the DeleteQuationList:" + ex.Message);
             }
         }
 
 
+        [HttpGet]
+        public JsonResult EditQuation(int id)
+        {
+            var emp = _ICrmrpo.GetempQuationById(id);
+            var Productdata = _context.ProductMasters.ToList();
+            var result = new
+            {
+                Emp = emp,
+                Productdata = Productdata,
+
+            };
+
+            return new JsonResult(result);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> EditQuation(Quation model)
+        {
+            try
+            {
+                var response = await _ICrmrpo.Iupdate(model);
+                if (response != null)
+                {
+
+                    return RedirectToAction("QuationList", "Home");
+                    TempData["msg"] = "Quation Successfully.";
+                }
+                else
+                {
+                    ModelState.Clear();
+                    return View();
+                }
+            }
+            catch (Exception Ex)
+            {
+                throw new Exception("Error:" + Ex.Message);
+            }
+        }
     }
 
 }

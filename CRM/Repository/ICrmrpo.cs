@@ -31,7 +31,13 @@ namespace CRM.Repository
 
         public Task<int> Quation(Quation model);
         public Task<List<Quation>> QuationList();
+
         //public Task<int> EmployeeBankDetail(EmployeeBankDetail model);
+
+
+        public Quation GetempQuationById(int id);
+        public Task<int> Iupdate(Quation model);
+
 
 
     }
