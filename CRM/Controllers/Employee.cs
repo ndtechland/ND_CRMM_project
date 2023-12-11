@@ -279,6 +279,7 @@ namespace CRM.Controllers
 
             };
             return new JsonResult(result);
+          
         }
 
         [HttpPost]
@@ -307,17 +308,23 @@ namespace CRM.Controllers
         [HttpGet("Employee/Gengeneratesalary")]
         public IActionResult Gengeneratesalary(int? id, string name)
         {
-
-            var data = _context.EmployeeRegistrations.Find(id);
-            EmployeeSalaryDetail empd = new EmployeeSalaryDetail();
-
-            if (data != null)
+            if (HttpContext.Session.GetString("UserName") != null)
             {
-                empd.EmployeeId = data.EmployeeId;
-                empd.EmployeeName = data.FirstName;
+                var data = _context.EmployeeRegistrations.Find(id);
+                EmployeeSalaryDetail empd = new EmployeeSalaryDetail();
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName = AddedBy;
+                if (data != null)
+                {
+                    empd.EmployeeId = data.EmployeeId;
+                    empd.EmployeeName = data.FirstName;
+                }              
+                return View(empd);
             }
-
-            return View(empd);
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
         }
 
         [HttpPost]
@@ -344,7 +351,57 @@ namespace CRM.Controllers
             }
         }
 
+        [HttpGet("Employee/EmployeeBankDetail")]
+        public IActionResult EmployeeBankDetail(int? id)
+        {
+            if (HttpContext.Session.GetString("UserName") != null)
+            {                
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName = AddedBy;
+                var data = _context.EmployeeRegistrations.Find(id);
+                EmployeeBankDetail empd = new EmployeeBankDetail();
+                ViewBag.AccountType = _context.AccountTypeMasters
+                   .Select(w => new SelectListItem
+                   {
+                       Value = w.Id.ToString(),
+                       Text = w.AccountType
+                   })
+                    .ToList();
+                if (data != null)
+                {
+                    empd.EmployeeRegistrationId = data.Id;
+                }               
+                return View(empd);
+        }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
+        }
 
+        //[HttpPost]
+        //public async Task<IActionResult> EmployeeBankDetail(EmployeeBankDetail model)
+        //{
+        //    try
+        //    {
+        //        var response = await _ICrmrpo.EmployeeBankDetail(model);
+        //        if (response != null)
+        //        {
+
+        //            return RedirectToAction("Employeelist", "Employee");
+        //            ViewBag.Message = "registration Successfully.";
+        //        }
+        //        else
+        //        {
+        //            ModelState.Clear();
+        //            return View();
+        //        }
+        //    }
+        //    catch (Exception Ex)
+        //    {
+        //        throw new Exception("Error:" + Ex.Message);
+        //    }
+        //}
 
     }
 }
