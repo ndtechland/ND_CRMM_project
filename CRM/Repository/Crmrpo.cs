@@ -340,6 +340,11 @@ namespace CRM.Repository
             var result = await _context.Quations.FromSqlRaw<Quation>("QuationList").ToListAsync();
             return result;
         }
+
+        //public async Task<int> EmployeeBankDetail(EmployeeBankDetail model)
+        //{
+        //}
+
         public Quation GetempQuationById(int id)
         {
             return _context.Quations.Find(id);
@@ -380,6 +385,7 @@ namespace CRM.Repository
         }
  
     
+
 
     }
 
