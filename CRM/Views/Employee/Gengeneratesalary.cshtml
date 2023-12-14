@@ -35,7 +35,7 @@
                         <div class="col-lg-6">
                             <div class="page-header-left">
                                 <h3>
-                                    Generate Salary
+                                    Salary Details
                                 </h3>
                             </div>
                         </div>
@@ -58,26 +58,34 @@
                         <form asp-action="Gengeneratesalary" autocomplete="off">
                             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                             <div class="row">
+                                <div class="form-group col-sm-6">
+                                    <label class="control-label">Monthly CTC</label>
+                                    <input id="MonthlyCtc" asp-for="MonthlyCtc" type="text" class="form-control"/>
+                                    <span asp-validation-for="MonthlyCtc" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="row">
                                 <div class="form-group col-sm">
                                     <label class="control-label">Employee Id</label>
-                                    <input asp-for="EmployeeId" class="form-control" readonly/>
+                                    <input asp-for="EmployeeId" class="form-control" disabled />
                                     <span asp-validation-for="EmployeeId" class="text-danger"></span>
                                 </div>
                                 <div class="form-group col-sm">
                                     <label class="control-label">Employee Name</label>
-                                    <input asp-for="EmployeeName"  class="form-control" readonly />
+                                    <input asp-for="EmployeeName" class="form-control" disabled />
                                     <span asp-validation-for="EmployeeName" class="text-danger"></span>
                                 </div>
                             </div>
                            <div class="row">
                                 <div class="form-group col-sm">
                                     <label class="control-label">Basic</label>
-                                    <input asp-for="Basic" type="text" class="form-control" />
+                                    <input id="Basic" asp-for="Basic" type="number" class="form-control"  disabled />
                                     <span asp-validation-for="Basic" class="text-danger"></span>
+                                       
                                 </div>
                                 <div class="form-group col-sm">
                                     <label class="control-label">Houserent Allowance</label>
-                                    <input asp-for="HouseRentAllowance" type="text" class="form-control" />
+                                    <input id="HouseRentAllowance" asp-for="HouseRentAllowance" type="number" class="form-control" disabled />
                                     <span asp-validation-for="HouseRentAllowance" class="text-danger"></span>
                                 </div>
                            </div>
@@ -88,30 +96,24 @@
                                     <span asp-validation-for="ConveyanceAllowance" class="text-danger"></span>
                                 </div>
                                 <div class="form-group col-sm">
-                                    <label class="control-label">Conveyance Allowance</label>
-                                    <input asp-for="ConveyanceAllowance" type="text" class="form-control" />
-                                    <span asp-validation-for="ConveyanceAllowance" class="text-danger"></span>
-                                </div>                       
-                            </div>  
-                            <div class="row">
-                                <div class="form-group col-sm">
-                                    <label class="control-label">EPF</label>
-                                    <input asp-for="Epf" type="text"  class="form-control" />
-                                    <span asp-validation-for="Epf" class="text-danger"></span>
-                                </div>
-                                <div class="form-group col-sm">
                                     <label class="control-label">Fixed Allowance</label>
                                     <input asp-for="FixedAllowance" type="text" class="form-control" />
                                     <span asp-validation-for="FixedAllowance" class="text-danger"></span>
-                                </div>                               
-                            </div>
+                                </div> 
+                            </div>  
                             <div class="row">
                                 <div class="form-group col-sm-6">
-                                    <label class="control-label">Monthly CTC</label>
-                                    <input asp-for="MonthlyCtc" type="text" class="form-control" />
-                                    <span asp-validation-for="MonthlyCtc" class="text-danger"></span>
+                                    <label class="control-label">EPF</label>
+                                    <input asp-for="Epf" type="text" class="form-control" />
+                                    <span asp-validation-for="Epf" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-sm">
+                                    <label class="control-label">Monthly GrossPay</label>
+                                    <input asp-for="MonthlyGrossPay" type="text" class="form-control" />
+                                    <span asp-validation-for="MonthlyGrossPay" class="text-danger"></span>
                                 </div>
                             </div>
+                            
                             <div class="form-group" style="display:flex; justify-content:center;">
                                 <input type="submit" value="Submit" class="btn btn-primary" />
                             </div>
@@ -126,6 +128,32 @@
     </div>
 
 </div>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        // Add an event listener to MonthlyCtc input field
+        $('#MonthlyCtc').on('input', function () {
+            // Get the entered MonthlyCtc value
+            var monthlyCtc = parseFloat($(this).val());
+
+            // Calculate 50% of MonthlyCtc for Basic
+            var basic = monthlyCtc * 0.5;
+
+            // Calculate 50% of Basic for HouseRentAllowance
+            var houseRentAllowance = basic * 0.5;
+
+            // Set the calculated values to the respective input fields
+            $('#Basic').val(basic.toFixed(2));
+            $('#HouseRentAllowance').val(houseRentAllowance.toFixed(2));
+        });
+    });
+    $(function () {
+        $("input[name='MonthlyCtc']").on('input', function (e) {
+            $(this).val($(this).val().replace(/[^0-9]/g, ''));
+        });
+    });
+</script>
 
 
 

@@ -13,8 +13,8 @@ namespace CRM.Models.Crm
         public decimal ConveyanceAllowance { get; set; }
         public decimal FixedAllowance { get; set; }
         public decimal Epf { get; set; }
+        public bool? IsDeleted { get; set; }
         public decimal? MonthlyGrossPay { get; set; }
         public decimal? MonthlyCtc { get; set; }
-        public bool? IsDeleted { get; set; }
     }
 }

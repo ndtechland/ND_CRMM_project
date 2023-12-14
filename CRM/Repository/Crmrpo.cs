@@ -303,9 +303,11 @@ namespace CRM.Repository
             parameter.Add(new SqlParameter("@ConveyanceAllowance", model.ConveyanceAllowance));
             parameter.Add(new SqlParameter("@FixedAllowance", model.FixedAllowance));
             parameter.Add(new SqlParameter("@EPF", model.Epf));
+            parameter.Add(new SqlParameter("@MonthlyGrossPay", model.MonthlyGrossPay));
+            parameter.Add(new SqlParameter("@MonthlyCTC", model.MonthlyCtc));
             parameter.Add(new SqlParameter("@IsDeleted", "0"));
             var result = await Task.Run(() => _context.Database
-           .ExecuteSqlRawAsync(@"exec sp_Employee_Salary_Details @EmployeeID, @EmployeeName,@Basic,@HouseRentAllowance,@ConveyanceAllowance,@FixedAllowance,@EPF,@IsDeleted", parameter.ToArray()));
+           .ExecuteSqlRawAsync(@"exec sp_Employee_Salary_Details @EmployeeID,@EmployeeName,@Basic,@HouseRentAllowance,@ConveyanceAllowance,@FixedAllowance,@EPF,@MonthlyGrossPay,@MonthlyCTC,@IsDeleted", parameter.ToArray()));
 
             return result;
         }
@@ -383,10 +385,42 @@ namespace CRM.Repository
            }
             return result;
         }
- 
-    
 
 
+        public async Task<List<salarydetail>> salarydetail()
+        {
+            List<salarydetail> emp = new List<salarydetail>();
+            try
+            {
+                SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
+                SqlCommand cmd = new SqlCommand("sp_SalaryDetail", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                con.Open();
+                SqlDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    var emps = new salarydetail()
+                    {
+                        Id = Convert.ToInt32(rdr["id"]),
+                        FirstName = rdr["FirstName"] == DBNull.Value ? null : Convert.ToString(rdr["FirstName"]),
+                        EmployeeId = rdr["EmployeeId"] == DBNull.Value ? null : Convert.ToString(rdr["EmployeeId"]),                     
+                        MonthlyCtc = rdr["MonthlyCtc"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["MonthlyCtc"])
+                    };
+
+                    emp.Add(emps);
+                }
+                return emp;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                emp = null;
+            }
+        }
+       
     }
 
 }

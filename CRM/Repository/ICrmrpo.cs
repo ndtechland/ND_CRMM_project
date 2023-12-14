@@ -38,6 +38,8 @@ namespace CRM.Repository
         public Quation GetempQuationById(int id);
         public Task<int> Iupdate(Quation model);
 
+        public Task<List<salarydetail>> salarydetail();
+
 
 
     }

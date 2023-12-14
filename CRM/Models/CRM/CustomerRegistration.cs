@@ -16,6 +16,5 @@ namespace CRM.Models.Crm
         public string? ProductDetails { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime RenewDate { get; set; }
-      //  public string Invoice_Number { get; set; }
     }
 }
