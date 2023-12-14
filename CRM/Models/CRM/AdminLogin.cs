@@ -9,5 +9,6 @@ namespace CRM.Models.Crm
         public string UserName { get; set; } = null!;
         public string Password { get; set; } = null!;
         public string Role { get; set; } = null!;
+        public string? Emailid { get; set; }
     }
 }
