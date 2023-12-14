@@ -257,14 +257,12 @@ namespace CRM.Models.Crm
 
             modelBuilder.Entity<DepartmentMaster>(entity =>
             {
-                entity.ToTable("Department_Master", "dbo");
+                entity.ToTable("Department_Master");
 
-                entity.Property(e => e.Id)
-                    .HasMaxLength(120)
-                    .HasColumnName("ID");
+                entity.Property(e => e.Id).HasColumnName("ID");
 
                 entity.Property(e => e.DepartmentName)
-                    .HasMaxLength(255)
+                    .HasMaxLength(120)
                     .HasColumnName("Department_Name");
             });
 
@@ -315,6 +313,10 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.BankName)
                     .HasMaxLength(255)
                     .HasColumnName("Bank_Name");
+
+                entity.Property(e => e.EmpId)
+                    .HasMaxLength(100)
+                    .HasColumnName("EmpID");
 
                 entity.Property(e => e.EmployeeRegistrationId).HasColumnName("Employee_Registration_ID");
 
@@ -384,6 +386,8 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.DateOfBirth)
                     .HasColumnType("date")
                     .HasColumnName("Date_Of_Birth");
+
+                entity.Property(e => e.EmpRegId).HasMaxLength(100);
 
                 entity.Property(e => e.FatherName)
                     .HasMaxLength(255)
@@ -486,6 +490,8 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.Basic).HasColumnType("decimal(18, 0)");
 
                 entity.Property(e => e.ConveyanceAllowance).HasColumnType("decimal(18, 0)");
+
+                entity.Property(e => e.EmpId).HasColumnName("EmpID");
 
                 entity.Property(e => e.EmployeeId)
                     .HasMaxLength(120)
@@ -857,11 +863,9 @@ namespace CRM.Models.Crm
 
             modelBuilder.Entity<WorkLocation>(entity =>
             {
-                entity.ToTable("Work_Location", "dbo");
+                entity.ToTable("Work_Location");
 
-                entity.Property(e => e.Id)
-                    .HasMaxLength(120)
-                    .HasColumnName("ID");
+                entity.Property(e => e.Id).HasColumnName("ID");
 
                 entity.Property(e => e.AddressLine1)
                     .HasMaxLength(255)

@@ -313,6 +313,219 @@ namespace CRM.Controllers
                 throw new Exception("Error:" + Ex.Message);
             }
         }
+
+        [HttpGet]
+        public IActionResult Department()
+        {
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName = AddedBy;
+                return View();
+
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Department(DepartmentMaster model)
+        {
+            if (model != null)
+            {
+                DepartmentMaster master = new DepartmentMaster
+                {
+                    DepartmentName = model.DepartmentName,
+                };
+                _context.DepartmentMasters.Add(master);
+                _context.SaveChanges();
+                return RedirectToAction("Departmentlist");
+            }
+            else
+            {
+                ModelState.Clear();
+                return View("Departmentlist");
+            }
+            return View("Departmentlist");
+        }
+
+        [HttpGet]
+        public IActionResult Departmentlist()
+        {
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                var response = _context.DepartmentMasters.ToList();
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName = AddedBy;
+                return View(response);
+
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
+        }
+        public async Task<IActionResult> DeleteDepartment(int id)
+        {
+            try
+            {
+                var data = _context.DepartmentMasters.Find(id);
+                if (data != null)
+                {
+                    _context.DepartmentMasters.Remove(data); 
+                    _context.SaveChanges();
+                }
+                return RedirectToAction("Departmentlist");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while deleting the DeleteQuationList:" + ex.Message);
+            }
+        }
+        [HttpGet]
+        public IActionResult WorkLocation()
+        {
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName = AddedBy;
+                return View();
+
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> WorkLocation(WorkLocation model)
+        {
+            if (model != null)
+            {
+                WorkLocation master = new WorkLocation
+                {
+                    AddressLine1 = model.AddressLine1,
+                };
+                _context.WorkLocations.Add(master);
+                _context.SaveChanges();
+                return RedirectToAction("WorkLocationlist");
+            }
+            else
+            {
+                ModelState.Clear();
+                return View("WorkLocationlist");
+            }
+            return View("WorkLocationlist");
+        }
+
+        [HttpGet]
+        public IActionResult WorkLocationlist()
+        {
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                var response = _context.WorkLocations.ToList();
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName = AddedBy;
+                return View(response);
+
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
+        }
+
+        public async Task<IActionResult> DeleteWorkLocation(int id)
+        {
+            try
+            {
+                var data = _context.WorkLocations.Find(id);
+                if (data != null)
+                {
+                    _context.WorkLocations.Remove(data);
+                    _context.SaveChanges();
+                }
+                return RedirectToAction("WorkLocationlist");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception();
+            }
+        }
+
+        [HttpGet]
+        public IActionResult Designation()
+        {
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName = AddedBy;
+                return View();
+
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Designation(DesignationMaster model)
+        {
+            if (model != null)
+            {
+                DesignationMaster master = new DesignationMaster
+                {
+                    DesignationName = model.DesignationName,
+                };
+                _context.DesignationMasters.Add(master);
+                _context.SaveChanges();
+                return RedirectToAction("Designationlist");
+            }
+            else
+            {
+                ModelState.Clear();
+                return View("Designationlist");
+            }
+            return View("Designationlist");
+        }
+
+        [HttpGet]
+        public IActionResult Designationlist()
+        {
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                var response = _context.DesignationMasters.ToList();
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName = AddedBy;
+                return View(response);
+
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
+        }
+
+        public async Task<IActionResult> DeleteDesignation(int id)
+        {
+            try
+            {
+                var data = _context.DesignationMasters.Find(id);
+                if (data != null)
+                {
+                    _context.DesignationMasters.Remove(data);
+                    _context.SaveChanges();
+                }
+                return RedirectToAction("Designationlist");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception();
+            }
+        }
     }
 
 }

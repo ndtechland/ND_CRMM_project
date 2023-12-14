@@ -1,0 +1,99 @@
+﻿@model IEnumerable<CRM.Models.Crm.DepartmentMaster>
+
+@{
+    ViewData["Title"] = "Departmentlist";
+    Layout = "~/Views/Shared/_adminLayout.cshtml";
+}
+
+<div class="page-wrapper">
+    <div class="page-body-wrapper">
+        <div class="page-sidebar">
+        </div>
+        <!-- Page Sidebar Ends-->
+        <!-- Right sidebar Start-->
+        <!-- Right sidebar Ends-->
+
+        <div class="page-body">
+
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="page-header-left">
+                                <h2>
+                                    Department 
+                                </h2>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <ol class="breadcrumb pull-right">
+                                <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
+                                <li class="breadcrumb-item">Settings</li>
+                                <li class="breadcrumb-item active">DepartmentList</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Container-fluid Ends-->
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="row">
+
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class=" table-responsive">
+                                    <div style="text-align: right;">
+                                        <p>
+                                            <a class="btn btn-primary" asp-action="Department" style="color: black;"><i class="fa fa-plus"></i>Add Department</a>
+                                        </p>
+                                    </div>
+
+                                    <br />
+                                    <table id="datatable" class="table table-responsive">
+                                      <thead>
+                                            <tr style="background-color: #00baf2;">
+                                                <th nowrap>Sl. No.</th>
+                                        <th>
+                                         @Html.DisplayNameFor(model => model.DepartmentName)
+                                          </th>
+                                        <th>Action</th>
+                                        </tr>
+                                      </thead>
+                                        <tbody>
+                                            @{
+                                                var count = 0;
+                                            @foreach (var item in Model)
+                                            {
+                                                    count++;
+                                                <tr class="table-row">
+                                                        <td>@count</td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.DepartmentName)
+                                                    </td>
+                                                    <td>
+                                                        <div>
+                                                            <a href="#" class="fa fa-edit m-2 font-success"></a>
+                                                            <a href="@Url.Action("DeleteDepartment","Home",new { id=item.Id})" class="fa fa-trash font-danger"></a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>            
+        </div>
+
+
+    </div>
+
+</div>
