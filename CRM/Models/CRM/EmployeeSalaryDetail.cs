@@ -16,5 +16,6 @@ namespace CRM.Models.Crm
         public bool? IsDeleted { get; set; }
         public decimal? MonthlyGrossPay { get; set; }
         public decimal? MonthlyCtc { get; set; }
+        public int? EmpId { get; set; }
     }
 }

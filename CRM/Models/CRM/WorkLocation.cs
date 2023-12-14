@@ -5,7 +5,7 @@ namespace CRM.Models.Crm
 {
     public partial class WorkLocation
     {
-        public string Id { get; set; } = null!;
+        public int Id { get; set; }
         public string AddressLine1 { get; set; } = null!;
     }
 }
