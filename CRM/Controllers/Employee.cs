@@ -324,6 +324,7 @@ namespace CRM.Controllers
                 {
                     empd.EmployeeId = data.EmployeeId;
                     empd.EmployeeName = data.FirstName;
+                    empd.EmpId = data.Id;
 
                 }
                 return View(empd);
@@ -335,7 +336,7 @@ namespace CRM.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Gengeneratesalary(Updatesalary model)
+        public async Task<IActionResult> Gengeneratesalary(EmployeeSalaryDetail model)
         {
             try
             {

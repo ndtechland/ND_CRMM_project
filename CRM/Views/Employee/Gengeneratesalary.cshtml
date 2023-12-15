@@ -1,4 +1,4 @@
-﻿@model CRM.Models.DTO.Updatesalary
+﻿@model CRM.Models.Crm.EmployeeSalaryDetail
 
 @{
     ViewData["Title"] = "Gengeneratesalary";
@@ -67,25 +67,25 @@
                             <div class="row">
                                 <div class="form-group col-sm">
                                     <label class="control-label">Employee Id</label>
-                                    <input asp-for="EmployeeId" class="form-control" disabled />
+                                    <input asp-for="EmployeeId" class="form-control" readonly />
                                     <span asp-validation-for="EmployeeId" class="text-danger"></span>
                                 </div>
                                 <div class="form-group col-sm">
                                     <label class="control-label">Employee Name</label>
-                                    <input asp-for="EmployeeName" class="form-control" disabled />
+                                    <input asp-for="EmployeeName" class="form-control" readonly />
                                     <span asp-validation-for="EmployeeName" class="text-danger"></span>
                                 </div>
                             </div>
                            <div class="row">
                                 <div class="form-group col-sm">
                                     <label class="control-label">Basic</label>
-                                    <input id="Basic" asp-for="Basic" type="number" class="form-control"  disabled />
+                                    <input id="Basic" asp-for="Basic" type="number" class="form-control"  readonly />
                                     <span asp-validation-for="Basic" class="text-danger"></span>
                                        
                                 </div>
                                 <div class="form-group col-sm">
                                     <label class="control-label">Houserent Allowance</label>
-                                    <input id="HouseRentAllowance" asp-for="HouseRentAllowance" type="number" class="form-control" disabled />
+                                    <input id="HouseRentAllowance" asp-for="HouseRentAllowance" type="number" class="form-control" readonly />
                                     <span asp-validation-for="HouseRentAllowance" class="text-danger"></span>
                                 </div>
                            </div>

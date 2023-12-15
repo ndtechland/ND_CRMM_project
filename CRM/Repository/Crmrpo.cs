@@ -337,7 +337,7 @@ namespace CRM.Repository
         }
 
 
-        public async Task<int> Gengeneratesalary(Updatesalary model)
+        public async Task<int> Gengeneratesalary(EmployeeSalaryDetail model)
         {
             var parameter = new List<SqlParameter>();
             parameter.Add(new SqlParameter("@EmployeeID", model.EmployeeId));
@@ -349,9 +349,10 @@ namespace CRM.Repository
             parameter.Add(new SqlParameter("@EPF", model.Epf));
             parameter.Add(new SqlParameter("@MonthlyGrossPay", model.MonthlyGrossPay));
             parameter.Add(new SqlParameter("@MonthlyCTC", model.MonthlyCtc));
+            parameter.Add(new SqlParameter("@EmpId", model.EmpId));
             parameter.Add(new SqlParameter("@IsDeleted", "0"));
             var result = await Task.Run(() => _context.Database
-           .ExecuteSqlRawAsync(@"exec sp_Employee_Salary_Details @EmployeeID,@EmployeeName,@Basic,@HouseRentAllowance,@ConveyanceAllowance,@FixedAllowance,@EPF,@MonthlyGrossPay,@MonthlyCTC,@IsDeleted", parameter.ToArray()));
+           .ExecuteSqlRawAsync(@"exec sp_Employee_Salary_Details @EmployeeID,@EmployeeName,@Basic,@HouseRentAllowance,@ConveyanceAllowance,@FixedAllowance,@EPF,@MonthlyGrossPay,@MonthlyCTC,@EmpId,@IsDeleted", parameter.ToArray()));
 
             return result;
         }
