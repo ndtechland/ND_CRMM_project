@@ -7,7 +7,6 @@ namespace CRM.Models.Crm
     {
         public EmployeeRegistration()
         {
-            EmployeeBankDetails = new HashSet<EmployeeBankDetail>();
             EmployeeLogins = new HashSet<EmployeeLogin>();
             EmployeeRoles = new HashSet<EmployeeRole>();
             Payrolls = new HashSet<Payroll>();
@@ -26,7 +25,6 @@ namespace CRM.Models.Crm
         public string DepartmentId { get; set; } = null!;
         public bool? IsDeleted { get; set; }
 
-        public virtual ICollection<EmployeeBankDetail> EmployeeBankDetails { get; set; }
         public virtual ICollection<EmployeeLogin> EmployeeLogins { get; set; }
         public virtual ICollection<EmployeeRole> EmployeeRoles { get; set; }
         public virtual ICollection<Payroll> Payrolls { get; set; }

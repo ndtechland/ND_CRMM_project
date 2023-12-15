@@ -298,9 +298,7 @@ namespace CRM.Models.Crm
             {
                 entity.ToTable("Employee_Bank_Details", "dbo");
 
-                entity.Property(e => e.Id)
-                    .ValueGeneratedNever()
-                    .HasColumnName("ID");
+                entity.Property(e => e.Id).HasColumnName("ID");
 
                 entity.Property(e => e.AccountHolderName)
                     .HasMaxLength(255)
@@ -325,12 +323,6 @@ namespace CRM.Models.Crm
                     .HasColumnName("IFSC");
 
                 entity.Property(e => e.ReEnterAccountNumber).HasColumnName("Re_Enter_Account_Number");
-
-                entity.HasOne(d => d.EmployeeRegistration)
-                    .WithMany(p => p.EmployeeBankDetails)
-                    .HasForeignKey(d => d.EmployeeRegistrationId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Employee_Bank_Details_Employee_Registration_ID");
             });
 
             modelBuilder.Entity<EmployeeLeaveMaster>(entity =>
@@ -870,6 +862,10 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.AddressLine1)
                     .HasMaxLength(255)
                     .HasColumnName("Address_Line_1");
+
+                entity.Property(e => e.Commissoninpercentage)
+                    .HasColumnType("decimal(18, 2)")
+                    .HasColumnName("commissoninpercentage");
             });
 
             OnModelCreatingPartial(modelBuilder);

@@ -7,5 +7,6 @@ namespace CRM.Models.Crm
     {
         public int Id { get; set; }
         public string AddressLine1 { get; set; } = null!;
+        public decimal? Commissoninpercentage { get; set; }
     }
 }

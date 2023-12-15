@@ -21,7 +21,6 @@ namespace CRM.Models.Crm
         public bool? IsDeleted { get; set; }
         public string? EmpId { get; set; }
 
-        public virtual EmployeeRegistration EmployeeRegistration { get; set; } = null!;
         public virtual ICollection<Payroll> Payrolls { get; set; }
     }
 }

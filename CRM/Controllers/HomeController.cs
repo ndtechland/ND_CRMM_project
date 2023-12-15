@@ -407,6 +407,7 @@ namespace CRM.Controllers
                 WorkLocation master = new WorkLocation
                 {
                     AddressLine1 = model.AddressLine1,
+                    Commissoninpercentage=model.Commissoninpercentage,
                 };
                 _context.WorkLocations.Add(master);
                 _context.SaveChanges();
