@@ -18,6 +18,8 @@ namespace CRM.Models.Crm
         public int ReEnterAccountNumber { get; set; }
         public string Ifsc { get; set; } = null!;
         public int AccountTypeId { get; set; }
+        public bool? IsDeleted { get; set; }
+        public string? EmpId { get; set; }
 
         public virtual EmployeeRegistration EmployeeRegistration { get; set; } = null!;
         public virtual ICollection<Payroll> Payrolls { get; set; }

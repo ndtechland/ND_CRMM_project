@@ -20,9 +20,9 @@
                     <div class="row">
                         <div class="col-lg-6">
                             <div class="page-header-left">
-                                <h3>
+                                <h2>
                                     Customer Registration
-                                </h3>
+                                </h2>
                             </div>
                         </div>
                         <div class="col-lg-6">
@@ -187,4 +187,23 @@
         });
     </script>
 }
+
+    <script>
+        function validateNumericInput(event) {
+            // Allow: backspace, delete, tab, escape, enter
+            if ([46, 8, 9, 27, 13].indexOf(event.keyCode) !== -1 ||
+                // Allow: Ctrl+A
+                (event.keyCode == 65 && event.ctrlKey === true) ||
+                // Allow: home, end, left, right
+                (event.keyCode >= 35 && event.keyCode <= 39)) {
+                // Let it happen, don't do anything
+                return;
+            }
+
+            // Ensure that it is a number and stop the keypress if not
+            if ((event.shiftKey || (event.keyCode < 48 || event.keyCode > 57)) && (event.keyCode < 96 || event.keyCode > 105)) {
+                event.preventDefault();
+            }
+        }
+    </script>
 

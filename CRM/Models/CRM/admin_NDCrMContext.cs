@@ -28,6 +28,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<DeductorTypeMaster> DeductorTypeMasters { get; set; } = null!;
         public virtual DbSet<DepartmentMaster> DepartmentMasters { get; set; } = null!;
         public virtual DbSet<DesignationMaster> DesignationMasters { get; set; } = null!;
+        public virtual DbSet<Empattendance> Empattendances { get; set; } = null!;
         public virtual DbSet<EmployeeBankDetail> EmployeeBankDetails { get; set; } = null!;
         public virtual DbSet<EmployeeLeaveMaster> EmployeeLeaveMasters { get; set; } = null!;
         public virtual DbSet<EmployeeLogin> EmployeeLogins { get; set; } = null!;
@@ -79,6 +80,11 @@ namespace CRM.Models.Crm
                 entity.ToTable("AdminLogin");
 
                 entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.Emailid)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("emailid");
 
                 entity.Property(e => e.Password).HasMaxLength(120);
 
@@ -251,14 +257,12 @@ namespace CRM.Models.Crm
 
             modelBuilder.Entity<DepartmentMaster>(entity =>
             {
-                entity.ToTable("Department_Master", "dbo");
+                entity.ToTable("Department_Master");
 
-                entity.Property(e => e.Id)
-                    .HasMaxLength(120)
-                    .HasColumnName("ID");
+                entity.Property(e => e.Id).HasColumnName("ID");
 
                 entity.Property(e => e.DepartmentName)
-                    .HasMaxLength(255)
+                    .HasMaxLength(120)
                     .HasColumnName("Department_Name");
             });
 
@@ -271,6 +275,23 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.DesignationName)
                     .HasMaxLength(150)
                     .HasColumnName("Designation_Name");
+            });
+
+            modelBuilder.Entity<Empattendance>(entity =>
+            {
+                entity.ToTable("Empattendance");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Attendance).HasColumnName("attendance");
+
+                entity.Property(e => e.EmployeeId)
+                    .HasMaxLength(95)
+                    .HasColumnName("Employee_ID");
+
+                entity.Property(e => e.Entry).HasColumnType("date");
+
+                entity.Property(e => e.Year).HasColumnName("year");
             });
 
             modelBuilder.Entity<EmployeeBankDetail>(entity =>
@@ -292,6 +313,10 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.BankName)
                     .HasMaxLength(255)
                     .HasColumnName("Bank_Name");
+
+                entity.Property(e => e.EmpId)
+                    .HasMaxLength(100)
+                    .HasColumnName("EmpID");
 
                 entity.Property(e => e.EmployeeRegistrationId).HasColumnName("Employee_Registration_ID");
 
@@ -361,6 +386,8 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.DateOfBirth)
                     .HasColumnType("date")
                     .HasColumnName("Date_Of_Birth");
+
+                entity.Property(e => e.EmpRegId).HasMaxLength(100);
 
                 entity.Property(e => e.FatherName)
                     .HasMaxLength(255)
@@ -464,6 +491,8 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.ConveyanceAllowance).HasColumnType("decimal(18, 0)");
 
+                entity.Property(e => e.EmpId).HasColumnName("EmpID");
+
                 entity.Property(e => e.EmployeeId)
                     .HasMaxLength(120)
                     .HasColumnName("EmployeeID");
@@ -481,13 +510,10 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.HouseRentAllowance).HasColumnType("decimal(18, 0)");
 
                 entity.Property(e => e.MonthlyCtc)
-                    .HasColumnType("decimal(22, 0)")
-                    .HasColumnName("MonthlyCTC")
-                    .HasComputedColumnSql("((((isnull([Basic],(0))+isnull([HouseRentAllowance],(0)))+isnull([ConveyanceAllowance],(0)))+isnull([FixedAllowance],(0)))+isnull([EPF],(0)))", false);
+                    .HasColumnType("decimal(18, 0)")
+                    .HasColumnName("MonthlyCTC");
 
-                entity.Property(e => e.MonthlyGrossPay)
-                    .HasColumnType("decimal(22, 0)")
-                    .HasComputedColumnSql("((((isnull([Basic],(0))+isnull([HouseRentAllowance],(0)))+isnull([ConveyanceAllowance],(0)))+isnull([FixedAllowance],(0)))-isnull([EPF],(0)))", false);
+                entity.Property(e => e.MonthlyGrossPay).HasColumnType("decimal(18, 0)");
             });
 
             modelBuilder.Entity<GenderMaster>(entity =>
@@ -837,11 +863,9 @@ namespace CRM.Models.Crm
 
             modelBuilder.Entity<WorkLocation>(entity =>
             {
-                entity.ToTable("Work_Location", "dbo");
+                entity.ToTable("Work_Location");
 
-                entity.Property(e => e.Id)
-                    .HasMaxLength(120)
-                    .HasColumnName("ID");
+                entity.Property(e => e.Id).HasColumnName("ID");
 
                 entity.Property(e => e.AddressLine1)
                     .HasMaxLength(255)

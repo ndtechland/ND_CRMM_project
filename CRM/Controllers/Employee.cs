@@ -4,6 +4,8 @@ using CRM.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
@@ -281,6 +283,7 @@ namespace CRM.Controllers
 
             };
             return new JsonResult(result);
+          
         }
 
         [HttpPost]
@@ -309,17 +312,24 @@ namespace CRM.Controllers
         [HttpGet("Employee/Gengeneratesalary")]
         public IActionResult Gengeneratesalary(int? id, string name)
         {
-
-            var data = _context.EmployeeRegistrations.Find(id);
-            EmployeeSalaryDetail empd = new EmployeeSalaryDetail();
-
-            if (data != null)
+            if (HttpContext.Session.GetString("UserName") != null)
             {
-                empd.EmployeeId = data.EmployeeId;
-                empd.EmployeeName = data.FirstName;
-            }
+                var data = _context.EmployeeRegistrations.Find(id);
+                EmployeeSalaryDetail empd = new EmployeeSalaryDetail();
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName = AddedBy;
+                if (data != null)
+                {
+                    empd.EmployeeId = data.EmployeeId;
+                    empd.EmployeeName = data.FirstName;
 
-            return View(empd);
+                }
+                return View(empd);
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
         }
 
         [HttpPost]
@@ -346,7 +356,109 @@ namespace CRM.Controllers
             }
         }
 
+        //[HttpGet("Employee/EmployeeBankDetail")]
+        //public IActionResult EmployeeBankDetail(int? id)
+        //{
+        //    if (HttpContext.Session.GetString("UserName") != null)
+        //    {                
+        //        string AddedBy = HttpContext.Session.GetString("UserName");
+        //        ViewBag.UserName = AddedBy;
+        //        var data = _context.EmployeeRegistrations.Find(id);
+        //        EmployeeBankDetail empd = new EmployeeBankDetail();
+        //        ViewBag.AccountType = _context.AccountTypeMasters
+        //           .Select(w => new SelectListItem
+        //           {
+        //               Value = w.Id.ToString(),
+        //               Text = w.AccountType
+        //           })
+        //            .ToList();
+        //        if (data != null)
+        //        {
+        //            empd.EmployeeRegistrationId = data.Id;
+        //        }               
+        //        return View(empd);
+        //}
+        //    else
+        //    {
+        //        return RedirectToAction("Login", "Admin");
+        //    }
+        //}
+
+        //[HttpPost]
+        //public async Task<IActionResult> EmployeeBankDetail(EmployeeBankDetail model)
+        //{
+        //    try
+        //    {
+        //        var response = await _ICrmrpo.EmployeeBankDetail(model);
+        //        if (response != null)
+        //        {
+
+        //            return RedirectToAction("Employeelist", "Employee");
+        //            ViewBag.Message = "registration Successfully.";
+        //        }
+        //        else
+        //        {
+        //            ModelState.Clear();
+        //            return View();
+        //        }
+        //    }
+        //    catch (Exception Ex)
+        //    {
+        //        throw new Exception("Error:" + Ex.Message);
+        //    }
+        //}
+        public async Task<IActionResult> salarydetail()
+        {
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                var response = await _ICrmrpo.salarydetail();
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName = AddedBy;
+                return View(response);
+
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
 
 
+        }
+
+
+        [HttpPost]
+        public JsonResult Empattendance(List<Empattendance> customers)
+        {
+
+            if (customers == null)
+            {
+                return Json(new { success = false, message = "No data received." });
+            }
+
+            foreach (var item in customers)
+            {
+
+                if (customers.Count > 0)
+                {
+                    if (item.Id != 0)
+                    {
+                        Empattendance emp = new Empattendance
+                        {
+                            EmployeeId = item.EmployeeId,
+                            Month = DateTime.Now.Month,
+                            Year = DateTime.Now.Year,
+                            Attendance = item.Attendance,
+                            Entry = DateTime.Now
+                        };
+                        _context.Empattendances.Add(emp);
+                        _context.SaveChanges();
+                    }
+                }
+            }
+
+
+            return Json(new { success = true, message = "Data saved successfully." });
+        }
+   
     }
 }

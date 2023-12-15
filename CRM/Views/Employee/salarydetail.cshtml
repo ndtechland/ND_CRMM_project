@@ -1,0 +1,238 @@
+﻿@model IEnumerable<CRM.Models.DTO.salarydetail>
+
+
+@{
+    ViewData["Title"] = "salarydetail";
+    Layout = "~/Views/Shared/_adminLayout.cshtml";
+}
+<div class="page-wrapper">
+    <div class="page-body-wrapper">
+        <div class="page-sidebar">
+        </div>
+        <!-- Page Sidebar Ends-->
+        <!-- Right sidebar Start-->
+        <!-- Right sidebar Ends-->
+
+        <div class="page-body">
+
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="page-header-left">
+                                <h2>
+                                    Salarydetail List
+                                </h2>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <ol class="breadcrumb pull-right">
+                                <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
+                                <li class="breadcrumb-item">HR Payrole</li>
+                                <li class="breadcrumb-item active">Employee</li>
+                                <li class="breadcrumb-item active">Salarydetail list</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Container-fluid Ends-->
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="row">
+
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div style="text-align: right;">
+                                    <input type="submit" value="Gengeneratesalary" class="btn btn-primary" style="color:black;border: 2px solid black;" onclick="gensal();" />
+
+                                </div>
+                                <div class="modal-header">
+                                </div>
+                                <div class=" table-responsive">
+                                    <table id="datatable" class="table table-responsive">
+                                        <thead>
+                                            <tr style="background-color: #00baf2;">
+                                                <th hidden>
+                                                   ID
+                                                </th>
+                                                <th>
+                                                   Employee Name
+                                                </th>
+                                                <th>
+                                                    EmployeeId
+                                                </th>                                            
+                                                 <th>
+                                                    MonthlyCtc
+                                                </th>
+                                                <th>Attendance</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in Model)
+                                            {
+                                                                    <tr>
+                                                                        <td style="display:none">
+                                                         @item.Id
+                                                                        </td><td>
+                                                        @Html.DisplayFor(modelItem => item.FirstName)
+                                                                        </td>                                                                     
+                                                                        <td>
+                                                        @Html.DisplayFor(modelItem => item.EmployeeId)
+                                                                        </td>
+                                                                      
+                                                                             
+                                                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.MonthlyCtc)
+                                                                                    </td>
+
+                                                                    <td>
+                                                                    <input type="text"  name="Attendance" class="form-control" minlength="1" maxlength="2" style="height: 40px; width: 94px;" />
+                                                                         </td>
+                                                                    </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="pagination-container">
+                <ul id="pagination" class="pagination"></ul>
+            </div>
+        </div>
+
+
+    </div>
+
+</div>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+
+
+
+<script>
+    var currentPage = 1;
+    var rowsPerPage = 20;
+    $(document).ready(function () {
+        function paginateTable() {
+            var table = $('#datatable');
+            var rows = table.find('tbody tr');
+
+
+            var totalPages = Math.ceil(rows.length / rowsPerPage);
+
+
+            var pagination = $('#pagination');
+            pagination.empty();
+
+            for (var i = 1; i <= totalPages; i++) {
+                var link = $('<li class="page-item"><a class="page-link" href="#">' + i + '</a></li>');
+
+
+                if (i === currentPage) {
+                    link.addClass('active');
+                }
+
+                pagination.append(link);
+            }
+
+
+            var startIndex = (currentPage - 1) * rowsPerPage;
+            var endIndex = startIndex + rowsPerPage;
+
+            rows.hide().slice(startIndex, endIndex).show();
+        }
+
+
+        paginateTable();
+
+        $(document).on('click', '#pagination li a', function (event) {
+            event.preventDefault();
+
+            var clickedPage = parseInt($(this).text());
+
+
+            currentPage = clickedPage;
+            paginateTable();
+
+
+            $('html, body').animate({ scrollTop: $('#table-container').offset().top }, 'slow');
+        });
+    });
+
+</script>
+
+<script>
+   
+function gensal(){
+        var tbody = $("#datatable tbody");
+    if (tbody.children().length != 1) {
+            var modeldata = new Array;
+            $('#datatable tbody tr').each(function (index) {
+                var customer = {};
+                customer.Id = $(this).find('td:eq(0)').text().trim();
+                customer.EmployeeId = $(this).find('td:eq(2)').text().trim();
+                customer.Attendance = $(this).find('input[name="Attendance"]').val();
+                if (customer.Attendance === "") {
+                    alert("Please fill in all Attendance fields.");
+                    return false; 
+                }
+                modeldata.push(customer);
+            });
+
+            ///
+                $.ajax({
+
+                    url: '/Employee/Empattendance',
+                data: { customers: modeldata },
+                    //data: { 'id': id, 'Attendance': atten },
+                    dataType: 'json',
+                    type: 'post',
+                    async:'false',
+                 
+                    success: function (data) {
+                   if( (tbody.children().length-1)==@Model.Count())
+                   {
+                        location.reload();
+                    }
+                        debugger;
+                        //alert(data);
+                    },
+                   
+                    error: function (err) {
+
+                    }
+                });
+            ///
+
+     
+        
+    }
+    else {
+       
+        return false;
+
+    }
+}
+
+    $(function () {
+        $("input[name='Attendance']").on('input', function (e) {
+            $(this).val($(this).val().replace(/[^0-9]/g, ''));
+        });
+    });
+</script>
+
+
+
+
+
+
+
+
+
