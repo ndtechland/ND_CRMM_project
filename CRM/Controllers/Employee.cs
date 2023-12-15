@@ -3,6 +3,7 @@ using CRM.Models.DTO;
 using CRM.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.CodeAnalysis;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
@@ -27,61 +28,62 @@ namespace CRM.Controllers
             
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                var emp = new EmployeeRegistration();
-                string AddedBy = HttpContext.Session.GetString("UserName");
-                ViewBag.UserName = AddedBy;
-                //WorkLocation dropdown 
-                ViewBag.WorkLocation = _context.WorkLocations
-                .Select(w => new SelectListItem
-                {
-                    Value = w.Id.ToString(),
-                    Text = w.AddressLine1
-                })
-                 .ToList();
-                //Gender dropdown 
-                ViewBag.Gender = _context.GenderMasters
-                .Select(w => new SelectListItem {
-                 Value = w.Id.ToString(),
-                 Text = w.GenderName })
-                 .ToList();
-                //Department dropdown 
-                ViewBag.Department = _context.DepartmentMasters.Select(w => new SelectListItem
-                {
-                    Value = w.Id.ToString(),
-                    Text = w.DepartmentName
+                //var emp = new EmployeeRegistration();
+                //string AddedBy = HttpContext.Session.GetString("UserName");
+                //ViewBag.UserName = AddedBy;
+                ////WorkLocation dropdown 
+                //ViewBag.WorkLocation = _context.WorkLocations
+                //.Select(w => new SelectListItem
+                //{
+                //    Value = w.Id.ToString(),
+                //    Text = w.AddressLine1
+                //})
+                // .ToList();
+                ////Gender dropdown 
+                //ViewBag.Gender = _context.GenderMasters
+                //.Select(w => new SelectListItem {
+                // Value = w.Id.ToString(),
+                // Text = w.GenderName })
+                // .ToList();
+                ////Department dropdown 
+                //ViewBag.Department = _context.DepartmentMasters.Select(w => new SelectListItem
+                //{
+                //    Value = w.Id.ToString(),
+                //    Text = w.DepartmentName
 
-                }).ToList();
-                //Designation dropdown 
-                ViewBag.Designation = _context.DesignationMasters.Select(w => new SelectListItem
-                {
-                    Value = w.Id.ToString(),
-                    Text = w.DesignationName
+                //}).ToList();
+                ////Designation dropdown 
+                //ViewBag.Designation = _context.DesignationMasters.Select(w => new SelectListItem
+                //{
+                //    Value = w.Id.ToString(),
+                //    Text = w.DesignationName
 
-                }).ToList();
-                return View(emp);
+                //}).ToList();
+                return View();
             }
+           
             else
             {
                 return RedirectToAction("Login", "Admin");
             }
         }
         [HttpPost]
-        public async Task<IActionResult> EmployeeRegistration(EmployeeRegistration model)
+        public async Task<IActionResult> EmployeeRegistration(EmpMultiform model)
         {
             try
             {
                 var response = await _ICrmrpo.EmpRegistration(model);
-                if (response != null)
-                {
+                //if (response != null)
+                //{
 
-                    return RedirectToAction("Employeelist", "Employee");
-                    ViewBag.Message = "registration Successfully.";
-                }
-                else
-                {
+                //    return RedirectToAction("Employeelist", "Employee");
+                //    ViewBag.Message = "registration Successfully.";
+                //}
+                //else
+                //{
                     ModelState.Clear();
                     return View();
-                }
+                //}
             }
             catch (Exception Ex)
             {

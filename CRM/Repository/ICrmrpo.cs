@@ -14,7 +14,7 @@ namespace CRM.Repository
         public Task<List<ProductMaster>> ProductList();
         public Task<int> Customer(CustomerRegistration model);
         public Task<List<CustomerRegistration>> CustomerList();
-        public Task<int> EmpRegistration(EmployeeRegistration model);
+        public Task<int> EmpRegistration(EmpMultiform model);
         public Task<int> EmployeeBasicinfo(EmployeePersonalDetail model);
         public Task<List<StateMaster>> GetAllState();
         public Task<int> Banner(BannerMaster model);
@@ -37,6 +37,7 @@ namespace CRM.Repository
 
         public Quation GetempQuationById(int id);
         public Task<int> Iupdate(Quation model);
+        public DataTable ForgetPassword(AdminLogin model);
 
         public Task<List<salarydetail>> salarydetail();
 

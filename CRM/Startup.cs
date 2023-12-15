@@ -29,6 +29,7 @@ namespace CRM
 
             services.AddControllersWithViews();
             services.AddScoped<ICrmrpo, Crmrpo>();
+            services.AddScoped<IEmailService, EmailService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
