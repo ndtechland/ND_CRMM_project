@@ -335,7 +335,7 @@ namespace CRM.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Gengeneratesalary(EmployeeSalaryDetail model)
+        public async Task<IActionResult> Gengeneratesalary(Updatesalary model)
         {
             try
             {

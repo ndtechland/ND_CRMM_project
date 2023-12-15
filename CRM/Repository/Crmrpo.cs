@@ -337,7 +337,7 @@ namespace CRM.Repository
         }
 
 
-        public async Task<int> Gengeneratesalary(EmployeeSalaryDetail model)
+        public async Task<int> Gengeneratesalary(Updatesalary model)
         {
             var parameter = new List<SqlParameter>();
             parameter.Add(new SqlParameter("@EmployeeID", model.EmployeeId));
