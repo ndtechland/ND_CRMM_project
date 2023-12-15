@@ -193,9 +193,9 @@ namespace CRM.Repository
            .ExecuteSqlRawAsync(@"exec Sp_Banner @BannerImage,@Bannerdescription,@BannerPath,@AddedBy", parameter.ToArray()));
             return result;
         }
-        public async Task<List<EmployeeRegistration>> EmployeeList()
+        public async Task<List<EmployeeList>> EmployeeList()
         {
-            List<EmployeeRegistration> emp = new List<EmployeeRegistration>();
+            List<EmployeeList> emp = new List<EmployeeList>();
             SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
             SqlCommand cmd = new SqlCommand("EmployeeRegistrationList", con);
             cmd.CommandType = CommandType.StoredProcedure;
@@ -203,7 +203,7 @@ namespace CRM.Repository
             SqlDataReader rdr = cmd.ExecuteReader();
             while (rdr.Read())
             {
-                var emps = new EmployeeRegistration()
+                var emps = new EmployeeList()
                 {
                     Id = Convert.ToInt32(rdr["id"]),
                     FirstName = Convert.ToString(rdr["FirstName"]),
@@ -216,7 +216,7 @@ namespace CRM.Repository
                     WorkLocationId = Convert.ToString(rdr["WorkLocationId"]),
                     DesignationId = Convert.ToString(rdr["DesignationId"]),
                     DepartmentId = Convert.ToString(rdr["DepartmentId"]),
-
+                    MonthlyCTC = Convert.ToString(rdr["MonthlyCTC"])
                 };
 
                 emp.Add(emps);
@@ -315,7 +315,7 @@ namespace CRM.Repository
             return _context.EmployeePersonalDetails.Find(id);
         }
 
-        public async Task<int> updateEmployee(EmployeeRegistration model)
+        public async Task<int> updateEmployee(EmployeeList model)
         {
             var parameter = new List<SqlParameter>();
             parameter.Add(new SqlParameter("@Id", model.Id));
@@ -328,9 +328,10 @@ namespace CRM.Repository
             parameter.Add(new SqlParameter("@WorkLocationID", model.WorkLocationId));
             parameter.Add(new SqlParameter("@DesignationID", model.DesignationId));
             parameter.Add(new SqlParameter("@DepartmentID", model.DepartmentId));
+            parameter.Add(new SqlParameter("@MonthlyCTC", model.MonthlyCTC));
 
             var result = await Task.Run(() => _context.Database
-           .ExecuteSqlRawAsync(@"exec sp_updateEmpRegistration @Id,@FirstName, @MiddleName,@LastName,@DateOfJoining,@WorkEmail,@GenderID,@WorkLocationID,@DesignationID,@DepartmentID", parameter.ToArray()));
+           .ExecuteSqlRawAsync(@"exec sp_updateEmpRegistration @Id,@FirstName, @MiddleName,@LastName,@DateOfJoining,@WorkEmail,@GenderID,@WorkLocationID,@DesignationID,@DepartmentID,@MonthlyCTC", parameter.ToArray()));
 
             return result;
         }

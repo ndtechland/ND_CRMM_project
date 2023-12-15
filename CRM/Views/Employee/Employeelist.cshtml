@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CRM.Models.Crm.EmployeeRegistration>
+﻿@model IEnumerable<CRM.Models.DTO.EmployeeList>
 
 
 @{
@@ -79,6 +79,9 @@
                                                 <th>
                                                     Department
                                                 </th>
+                                                <th>
+                                                    Salary
+                                                </th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -115,6 +118,9 @@
                                                     </td>
                                                     <td>
                                                         @Html.DisplayFor(modelItem => item.DepartmentId)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.MonthlyCTC)
                                                     </td>
                                                     <td>
                                                         <div>
@@ -196,6 +202,10 @@
                             <label for="validationCustom0">Department</label>
                             <select id="DepartmentId" name="DepartmentId" class="form-control searchableselect"></select>
                             </div>
+                                <div class="form-group col-sm">
+                                    <label for="validationCustom0">Salary</label>
+                                    <input class="form-control" id="MonthlyCTC" name="MonthlyCTC" type="text" required="">
+                                </div>
                             </div>
                             <button class="btn btn-warning" id="btnUpdate">Update</button>
                             <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
@@ -224,6 +234,7 @@
                 $('#MiddleName').val(response.data.middleName);
                 $('#LastName').val(response.data.lastName);
                 $('#WorkEmail').val(response.data.workEmail);
+                $('#MonthlyCTC').val(response.monthlyCTC.monthlyCtc);
                 //bind gender
                 $('#GenderId').empty();
                 var row = "<option value=''>-- Select Gender --</option>";

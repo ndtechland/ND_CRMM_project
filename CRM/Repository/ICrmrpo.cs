@@ -18,14 +18,14 @@ namespace CRM.Repository
         public Task<int> EmployeeBasicinfo(EmployeePersonalDetail model);
         public Task<List<StateMaster>> GetAllState();
         public Task<int> Banner(BannerMaster model);
-        public Task<List<EmployeeRegistration>> EmployeeList();
+        public Task<List<EmployeeList>> EmployeeList();
         public Task<List<EmployeePersonalDetail>> EmployeeBasicinfoList();
 
         public ProductMaster GetproductById(int id);
         public Task<int> updateproduct(ProductMaster model);
         public Task<int> Iupdate(EmployeePersonalDetail model);
         public EmployeePersonalDetail GetempPersonalDetailById(int id);
-        public Task<int> updateEmployee(EmployeeRegistration model);
+        public Task<int> updateEmployee(EmployeeList model);
 
         public Task<int> Gengeneratesalary(EmployeeSalaryDetail model);
 
