@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace CRM.Controllers
@@ -270,6 +271,7 @@ namespace CRM.Controllers
             var worklocation = _context.WorkLocations.ToList();
             var designation = _context.DesignationMasters.ToList();
             var department=_context.DepartmentMasters.ToList();
+            var MonthlyCTC = _context.EmployeeSalaryDetails.Where(x =>x.EmployeeId == data.EmployeeId).FirstOrDefault();
             var result = new
             {
                 Data = data,
@@ -277,7 +279,7 @@ namespace CRM.Controllers
                 Worklocation = worklocation,
                 Designation=designation,
                 Department=department,
-
+                MonthlyCTC = MonthlyCTC,
 
             };
             return new JsonResult(result);
@@ -285,7 +287,7 @@ namespace CRM.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditEmployee(EmployeeRegistration model)
+        public async Task<IActionResult> EditEmployee(EmployeeList model)
         {
             try
             {
