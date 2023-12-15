@@ -1,6 +1,7 @@
 ﻿using CRM.Models.Crm;
 using CRM.Models.CRM;
 using CRM.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -8,6 +9,7 @@ using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.Data.SqlClient;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using Microsoft.EntityFrameworkCore;
+using NETCore.MailKit.Core;
 using NuGet.Protocol.Plugins;
 using System.Data;
 using System.Net;
@@ -20,11 +22,17 @@ namespace CRM.Controllers
     {
         private readonly admin_NDCrMContext _context;
         private readonly ICrmrpo _ICrmrpo;
-        public AdminController(ICrmrpo _ICrmrpo, admin_NDCrMContext _context)
+        private readonly Repository.IEmailService _emailService;
+        public AdminController(ICrmrpo _ICrmrpo, admin_NDCrMContext _context, Repository.IEmailService _emailService)
         {
             this._context = _context;
             this._ICrmrpo = _ICrmrpo;
+            this._emailService = _emailService;
         }
+      
+
+        
+
         [HttpGet]
         public IActionResult Login()
         {
@@ -178,6 +186,43 @@ namespace CRM.Controllers
                 throw new Exception("Error:" + Ex.Message);
             }
         }
-      
+
+        [AllowAnonymous ,HttpGet]
+        public IActionResult forgotPassoword()
+        {
+            ViewBag.Message = "";
+            return View();
+        }
+
+        [AllowAnonymous, HttpPost("forgotPassoword")]
+        public IActionResult forgotPassoword(AdminLogin model)
+        {
+            try
+            {
+                DataTable dtresponse = _ICrmrpo.ForgetPassword(model);
+                if (dtresponse != null && dtresponse.Rows.Count > 0)
+                {
+                    string Username= dtresponse.Rows[0]["UserName"].ToString();
+                    string Role = dtresponse.Rows[0]["Role"].ToString();
+                    string Password = dtresponse.Rows[0]["Password"].ToString();
+                    string body = "Hello ! " + Username + " (" + Role + ") Your Password is: " + Password + "";
+                    ViewBag.Message = body;
+                    //_emailService.SendEmailAsync(model.UserName, "Forget Password", body);
+                    return View();
+
+                }
+                else
+                {
+                    ViewBag.Message = "Invalid User Name or Password!";
+                    ModelState.Clear();
+                    return View();
+                }
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+            
+        }
     }
-   }
+}

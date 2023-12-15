@@ -4,25 +4,66 @@
     ViewData["Title"] = "Employee";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
+<link rel="stylesheet" type="text/css" href="../assets/css/EmpRegis.css">
+<!-- Normalize CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+<!-- Bootstrap 4 CSS -->
+<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta.2/css/bootstrap.css'>
+<!-- Telephone Input CSS -->
+<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/12.1.2/css/intlTelInput.css'>
+<!-- Icons CSS -->
+<link rel='stylesheet' href='https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css'>
+<!-- Nice Select CSS -->
+<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/css/nice-select.min.css'>
+<!-- Style CSS -->
+<link rel="stylesheet" href="css/style.css">
+<style>
+    .step-container {
+        position: relative;
+        text-align: center;
+        transform: translateY(-43%);
+    }
 
+    .step-circle {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: #fff;
+        border: 2px solid #007bff;
+        line-height: 30px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 10px;
+        cursor: pointer; /* Added cursor pointer */
+    }
 
+    .step-line {
+        position: absolute;
+        top: 16px;
+        left: 50px;
+        width: calc(100% - 100px);
+        height: 2px;
+        background-color: #007bff;
+        z-index: -1;
+    }
 
+    #multi-step-form {
+        overflow-x: hidden;
+</style>
 <div class="page-wrapper">
     <div class="page-body-wrapper">
         <div class="page-sidebar">
         </div>
 
         <div class="page-body">
-
             <!-- Container-fluid starts-->
             <div class="container-fluid">
                 <div class="page-header">
                     <div class="row">
                         <div class="col-lg-6">
                             <div class="page-header-left">
-                                <h3>
-                                    Employee Registration
-                                </h3>
                             </div>
                         </div>
                         <div class="col-lg-6">
@@ -40,65 +81,324 @@
             <!-- Container-fluid starts-->
             <div class="container-fluid">
                 <div class="row">
-
                     <div class="col-sm-12">
-                        <div class="card">
+                        <div class="card tab2-card">
+                            <div class="card-header">
+                                <h3>
+                                    Employee Registration
+                                </h3>
+                            </div>
                             <div class="card-body">
-                                <form asp-action="EmployeeRegistration" autocomplete="off">
-                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                                    <div class="row">
-                                        <div class="form-group col-sm">
-                                            <label for="validationCustom0">First Name</label>
-                                            <input asp-for="FirstName" class="form-control" />
-                                            <span asp-validation-for="FirstName" class="text-danger"></span>
-                                        </div>
-                                        <div class="form-group col-sm">
-                                            <label for="validationCustom0">Middle Name</label>
-                                            <input asp-for="MiddleName" class="form-control" />
-                                            <span asp-validation-for="MiddleName" class="text-danger"></span>
-                                        </div>
+
+                                <div class="tab-content">
+                                    <div class="progress px-1" style="height: 3px;">
+                                        <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                                     </div>
-                                    <div class="row">
-                                        <div class="form-group col-sm">
-                                            <label for="validationCustom0">Last Name</label>
-                                            <input type="text" asp-for="LastName" class="form-control"  required />
-                                            <span asp-validation-for="LastName" class="text-danger"></span>
-                                        </div>
-                                        <div class="form-group col-sm">
-                                            <label for="validationCustom0">Work Email</label>
-                                            <input type="email" asp-for="WorkEmail" class="form-control" required />
-                                            <span asp-validation-for="WorkEmail" class="text-danger"></span>
-                                        </div>
+                                    <div class="step-container d-flex justify-content-between">
+                                        <div class="step-circle" onclick="displayStep(1)">1</div>
+                                        <div class="step-circle" onclick="displayStep(2)">2</div>
+                                        <div class="step-circle" onclick="displayStep(3)">3</div>
+                                        <div class="step-circle" onclick="displayStep(4)">4</div>
                                     </div>
-                                    <div class="row">
-                                        <div class="form-group col-sm">
-                                            <label for="validationCustom0">Gender</label>
-                                            @Html.DropDownListFor(model => model.GenderId, new SelectList(ViewBag.Gender, "Value", "Text"), "-- Select Gender -- ", new { @class = "form-control" })
-                                           <span asp-validation-for="GenderId" class="text-danger"></span>
-                                        </div>
-                                        <div class="form-group col-sm">
-                                            <label for="validationCustom0">Work Location</label>
-                                            @Html.DropDownListFor(model => model.WorkLocationId, new SelectList(ViewBag.WorkLocation, "Value", "Text"), "-- Select WorkLocation --", new { @class = "form-control" })
-                                            <span asp-validation-for="WorkLocationId" class="text-danger"></span>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="form-group col-sm">
-                                            <label for="validationCustom0">Designation</label>
-                                            @Html.DropDownListFor(model => model.DesignationId, new SelectList(ViewBag.Designation, "Value", "Text"), "-- Select Designation --", new { @class = "form-control" })
-                                            <span asp-validation-for="DesignationId" class="text-danger"></span>
-                                        </div>
-                                         <div class="form-group col-sm">
-                                            <label for="validationCustom0">Department</label>
-                                            @Html.DropDownListFor(model => model.DepartmentId, new SelectList(ViewBag.Department, "Value", "Text"), "-- Select Department --", new { @class = "form-control" })
-                                            <span asp-validation-for="DepartmentId" class="text-danger"></span>
-                                        </div>
+                                    <div class="tab-pane fade active show" id="account" role="tabpanel" aria-labelledby="account-tab">
+                                        <form class="needs-validation user-add" id="multi-step-form" method="post" action="EmployeeRegistration">
+                                            <div class="step step-1">
+                                                <h4 class="text-danger">Basic info </h4>
+
+
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <label>Frist Name</label>
+                                                        <input class="form-control" name="FirstName" id="validationCustom1" type="text" required="">
+                                                    </div>
+
+                                                    <div class="col">
+                                                        <label>MiddleName</label>
+                                                        <input class="form-control" name="MiddleName" id="validationCustom1" type="text" required="">
+                                                    </div>
+                                                    <div class="col">
+                                                        <label>Last Name</label>
+                                                        <input class="form-control " name="LastName" id="validationCustom1" type="text" required="">
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="row">
+
+                                                    <div class="col-md-6">
+                                                        <label>Work Email</label>
+                                                        <div class="form-group">
+                                                            <input class="form-control " name="WorkEmail" id="validationCustom1" type="email" required="">
+
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-md-6">
+                                                        <label>Date Of Joining</label>
+                                                        <div class="form-group">
+
+                                                            <input class="form-control " name="DateOfJoining" id="validationCustom1" type="date" required="">
+
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-md-3">
+                                                        <label>Gender</label>
+                                                        <div class="form-group">
+
+                                                            <select name="GenderID" class="form-control ">
+                                                                <option value="0">-select Gender--</option>
+                                                                <option value="1">Male</option>
+                                                                <option value="2">Femail</option>
+                                                                <option value="3">Other</option>
+                                                                
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
+
+                                                    <div class="col-md-3">
+                                                        <label>Work Location</label>
+                                                        <div class="form-group">
+
+                                                            <select class="form-control " name="WorkLocationID">
+                                                                <option value="0">-select Work Location--</option>
+                                                                <option value="1">noida c-53 sector37 noida</option>
+                                                                <option value="2">Ashok naguarsector 15 Delhi</option>
+                                                              
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-md-3">
+                                                        <label>Designation</label>
+                                                        <div class="form-group">
+
+                                                            <select name="DesignationID" class="form-control ">
+                                                                <option value="0">--select Designation--</option>
+                                                                <option value="1">Chief Executive Officer</option>
+                                                                <option value="2">Chairman</option>
+                                                                <option value="3">Sweeper</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-md-3">
+                                                        <label>Department</label>
+                                                        <div class="form-group">
+
+                                                            <select name="DepartmentID" class="form-control ">
+                                                                <option value="0">-select Department--</option>
+                                                                <option value="1">Engineering</option>
+                                                                <option value="2">HR</option>
+                                                                <option value="3">Marketing</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="pull-right">
+                                                    <button type="button" class="btn btn-primary next-step">Next</button>
+                                                </div>
+                                            </div>
+
+                                            <div class="step step-2">
+                                                <h4 class="text-danger">Salary Details</h4>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <label>Annual CTC</label>
+                                                        <input class="form-control " name="AnnualCTC" id="validationCustom1" type="text" required="">
+                                                    </div>
+
+                                                    
+                                                    <div class="col">
+                                                        <label>Basic</label>
+                                                        <input class="form-control " name="Basic" id="validationCustom1" type="text" required="">
+                                                    </div>
+
+                                                </div>
+
+
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <label>HouseRent Allowance</label>
+                                                        <input class="form-control " name="HouseRentAllowance" id="validationCustom1" type="text" required="">
+                                                    </div>
+
+                                                    <div class="col">
+                                                        <label>ConveyanceAllowance</label>
+                                                        <input class="form-control " name="ConveyanceAllowance" id="validationCustom1" type="text" required="">
+                                                    </div>
+                                                    <div class="col">
+                                                        <label>FixedAllowance</label>
+                                                        <input class="form-control " name="FixedAllowance" id="validationCustom1" type="text" required="">
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <label>EPF</label>
+                                                        <input class="form-control " name="EPF"  id="validationCustom1" type="text" required="">
+                                                    </div>
+
+                                                    <div class="col">
+                                                        <label>MonthlyGrossPay</label>
+                                                        <input class="form-control " name="MonthlyGrossPay" id="validationCustom1" type="text" required="">
+                                                    </div>
+                                                    <div class="col">
+                                                        <label>MonthlyCtc</label>
+                                                        <input class="form-control " name="MonthlyCTC" id="validationCustom1" type="text" required="">
+                                                    </div>
+
+                                                </div>
+
+
+                                                <div class="pull-right">
+
+                                                    <button type="button" class="btn btn-primary prev-step">Previous</button>
+                                                    <button type="button" class="btn btn-primary next-step">Next</button>
+                                                </div>
+                                            </div>
+
+
+
+                                            <div class="step step-3">
+                                                <h4 class="text-danger">Persnal info.</h4>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <label>PersonalEmailAddress</label>
+                                                        <input class="form-control " name="PersonalEmailAddress" id="validationCustom1" type="email" required="">
+                                                    </div>
+
+                                                    <div class="col">
+                                                        <label>MobileNumber</label>
+                                                        <input class="form-control " name="MobileNumber" id="validationCustom1" type="text" required="">
+                                                    </div>
+                                                    <div class="col">
+                                                        <label>DateOfBirth</label>
+                                                        <input class="form-control "name="DateOfBirth" id="validationCustom1" type="date" required="">
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <label>Age</label>
+                                                        <input class="form-control " id="validationCustom1" type="text" required="">
+                                                    </div>
+
+                                                    <div class="col">
+                                                        <label>FatherName</label>
+                                                        <input class="form-control "name="FatherName" id="validationCustom1" type="text" required="">
+                                                    </div>
+                                                    <div class="col">
+                                                        <label>Pan</label>
+                                                        <input class="form-control " name="PAN" id="validationCustom1" type="text" required="">
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <label>AddressLine1</label>
+                                                        <input class="form-control " name="AddressLine1" id="validationCustom1" type="text" required="">
+                                                    </div>
+
+                                                    <div class="col">
+                                                        <label>AddressLine2</label>
+                                                        <input class="form-control " name="AddressLine2" id="validationCustom1" type="text" required="">
+                                                    </div>
+                                                    <div class="col">
+                                                        <label>City</label>
+                                                        <input class="form-control "name="City" id="validationCustom1" type="text" required="">
+                                                    </div>
+
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <label>State</label>
+                                                        <select class="form-control " name="StateID">
+                                                            <option value="U">UP</option>
+                                                            <option value="M">MP</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col">
+                                                        <label>Pincode</label>
+                                                        <input class="form-control " name="Pincode" id="validationCustom1" type="text" required="">
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="pull-right">
+
+                                                    <button type="button" class="btn btn-primary prev-step">Previous</button>
+                                                    <button type="button" class="btn btn-primary next-step">Next</button>
+                                                </div>
+                                            </div>
+
+                                            <div class="step step-4">
+                                                <h4 class="text-danger">Payment info.</h4>
+                                                <div class="form-group row">
+                                                    <div class="col-xl-3 col-md-4">
+                                                        <label for="validationCustom0"><span>*</span> Account Holder Name</label>
+                                                    </div>
+                                                    <div class="col-xl-8 col-md-7">
+                                                        <input class="form-control " name="AccountHolderName" id="validationCustom0" type="text" required="">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <div class="col-xl-3 col-md-4">
+                                                        <label for="validationCustom1"><span>*</span> Bank Name</label>
+                                                    </div>
+                                                    <div class="col-xl-8 col-md-7">
+                                                        <input class="form-control " name="BankName" id="validationCustom1" type="text" required="">
+                                                    </div>
+
+                                                </div>
+                                                <div class="form-group row">
+                                                    <div class="col-xl-3 col-md-4">
+                                                        <label for="validationCustom2"><span>*</span>  Account Number</label>
+                                                    </div>
+                                                    <div class="col-xl-8 col-md-7">
+                                                        <input class="form-control " name="AccountNumber" id="validationCustom2" type="number" required="">
+                                                    </div>
+                                                </div>
+                                                 <div class="form-group row">
+                                                    <div class="col-xl-3 col-md-4">
+                                                        <label for="validationCustom2"><span>*</span> Re-enter Account Number</label>
+                                                    </div>
+                                                    <div class="col-xl-8 col-md-7">
+                                                        <input class="form-control " name="ReEnterAccountNumber" id="validationCustom2" type="number" required="">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <div class="col-xl-3 col-md-4">
+                                                        <label for="validationCustom3"><span>*</span> IFSC</label>
+                                                    </div>
+                                                    <div class="col-xl-8 col-md-7">
+                                                        <input class="form-control " name="IFSC" id="validationCustom3" type="text" required="">
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <h3>Account Type </h3>
+                                                    <input type="radio" name="AccountTypeID" value="1">current
+                                                    <input type="radio" name="AccountTypeID" value="2">savings
+                                                </div>
+                                                <div class="pull-right">
+                                                    <button type="button" class="btn btn-primary prev-step">Previous</button>
+                                                    <input type="submit" class="btn btn-primary" value="Submit" />
+                                                </div>
+                                            </div>
+
+                                        </form>
                                     </div>
 
-                                    <div class="form-group" style="display:flex; justify-content:center;">
-                                        <input type="submit" value="Submit" class="btn btn-primary" />
-                                    </div>
-                                </form>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -106,8 +406,193 @@
             </div>
 
         </div>
-
-
     </div>
-
 </div>
+
+<!-- jQuery -->
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
+<!-- Bootstrap JS -->
+<script src='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta/js/bootstrap.min.js'></script>
+<!-- jQuery Easing JS -->
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js'></script>
+<!-- Telephone Input JS -->
+<script src='https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/12.1.2/js/intlTelInput.js'></script>
+<!-- Popper JS -->
+<script src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js'></script>
+<!-- jQuery Nice Select JS -->
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/js/jquery.nice-select.min.js'></script>
+<!-- Initialization -->
+
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+
+
+<script>
+    (function ($) {
+        "use strict";
+
+        //* Form js
+        function verificationForm() {
+            //jQuery time
+            var current_fs, next_fs, previous_fs; //fieldsets
+            var left, opacity, scale; //fieldset properties which we will animate
+            var animating; //flag to prevent quick multi-click glitches
+
+            $(".next").click(function () {
+                if (animating) return false;
+                animating = true;
+
+                current_fs = $(this).parent();
+                next_fs = $(this).parent().next();
+
+                //activate next step on progressbar using the index of next_fs
+                $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
+
+                //show the next fieldset
+                next_fs.show();
+                //hide the current fieldset with style
+                current_fs.animate({
+                    opacity: 0
+                }, {
+                    step: function (now, mx) {
+                        //as the opacity of current_fs reduces to 0 - stored in "now"
+                        //1. scale current_fs down to 80%
+                        scale = 1 - (1 - now) * 0.2;
+                        //2. bring next_fs from the right(50%)
+                        left = (now * 50) + "%";
+                        //3. increase opacity of next_fs to 1 as it moves in
+                        opacity = 1 - now;
+                        current_fs.css({
+                            'transform': 'scale(' + scale + ')',
+                            'position': 'absolute'
+                        });
+                        next_fs.css({
+                            'left': left,
+                            'opacity': opacity
+                        });
+                    },
+                    duration: 800,
+                    complete: function () {
+                        current_fs.hide();
+                        animating = false;
+                    },
+                    //this comes from the custom easing plugin
+                    easing: 'easeInOutBack'
+                });
+            });
+
+            $(".previous").click(function () {
+                if (animating) return false;
+                animating = true;
+
+                current_fs = $(this).parent();
+                previous_fs = $(this).parent().prev();
+
+                //de-activate current step on progressbar
+                $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("active");
+
+                //show the previous fieldset
+                previous_fs.show();
+                //hide the current fieldset with style
+                current_fs.animate({
+                    opacity: 0
+                }, {
+                    step: function (now, mx) {
+                        //as the opacity of current_fs reduces to 0 - stored in "now"
+                        //1. scale previous_fs from 80% to 100%
+                        scale = 0.8 + (1 - now) * 0.2;
+                        //2. take current_fs to the right(50%) - from 0%
+                        left = ((1 - now) * 50) + "%";
+                        //3. increase opacity of previous_fs to 1 as it moves in
+                        opacity = 1 - now;
+                        current_fs.css({
+                            'left': left
+                        });
+                        previous_fs.css({
+                            'transform': 'scale(' + scale + ')',
+                            'opacity': opacity
+                        });
+                    },
+                    duration: 800,
+                    complete: function () {
+                        current_fs.hide();
+                        animating = false;
+                    },
+                    //this comes from the custom easing plugin
+                    easing: 'easeInOutBack'
+                });
+            });
+
+            $(".submit").click(function () {
+                return false;
+            })
+        };
+
+        //* Add Phone no select
+        function phoneNoselect() {
+            if ($('#msform').length) {
+                $("#phone").intlTelInput();
+                $("#phone").intlTelInput("setNumber", "+880");
+            };
+        };
+        //* Select js
+        function nice_Select() {
+            if ($('.product_select').length) {
+                $('select').niceSelect();
+            };
+        };
+        /*Function Calls*/
+        verificationForm();
+        phoneNoselect();
+        nice_Select();
+    })(jQuery);
+</script>
+<script>
+    var currentStep = 1;
+    var updateProgressBar;
+
+    function displayStep(stepNumber) {
+        if (stepNumber >= 1 && stepNumber <= 4) {
+            $(".step-" + currentStep).hide();
+            $(".step-" + stepNumber).show();
+            currentStep = stepNumber;
+            updateProgressBar();
+        }
+    }
+
+    $(document).ready(function () {
+        $('#multi-step-form').find('.step').slice(1).hide();
+
+        $(".next-step").click(function () {
+            if (currentStep < 4) {
+                $(".step-" + currentStep).addClass("animate__animated animate__fadeOutLeft");
+                currentStep++;
+                setTimeout(function () {
+                    $(".step").removeClass("animate__animated animate__fadeOutLeft").hide();
+                    $(".step-" + currentStep).show().addClass("animate__animated animate__fadeInRight");
+                    updateProgressBar();
+                }, 500);
+            }
+        });
+
+        $(".prev-step").click(function () {
+            if (currentStep > 1) {
+                $(".step-" + currentStep).addClass("animate__animated animate__fadeOutRight");
+                currentStep--;
+                setTimeout(function () {
+                    $(".step").removeClass("animate__animated animate__fadeOutRight").hide();
+                    $(".step-" + currentStep).show().addClass("animate__animated animate__fadeInLeft");
+                    updateProgressBar();
+                }, 500);
+            }
+        });
+
+        updateProgressBar = function () {
+            var progressPercentage = ((currentStep - 1) / 3) * 100;
+            $(".progress-bar").css("width", progressPercentage + "%");
+        }
+    });
+</script>
+
+
