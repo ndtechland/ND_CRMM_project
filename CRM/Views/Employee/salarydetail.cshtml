@@ -46,7 +46,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <div style="text-align: right;">
-                                    <input type="submit" value="Gengeneratesalary" class="btn btn-primary" style="color:black;border: 2px solid black;" onclick="gensal();" />
+                                    <input type="submit" value="Gengenerate Salary" class="btn btn-primary" style="color:black;border: 2px solid black;" onclick="gensal();" />
 
                                 </div>
                                 <div class="modal-header">
@@ -58,6 +58,7 @@
                                                 <th hidden>
                                                    ID
                                                 </th>
+                                                <th nowrap>Sl. No.</th>
                                                 <th>
                                                    Employee Name
                                                 </th>
@@ -71,9 +72,14 @@
                                             </tr>
                                         </thead>
                                         <tbody>
+                                            @{
+                                                var count = 0;
+                                          
                                             @foreach (var item in Model)
                                             {
-                                                                    <tr>
+                                                    count++;
+                                                    <tr class="table-row">
+                                                        <td>@count</td>
                                                                         <td style="display:none">
                                                          @item.Id
                                                                         </td><td>
@@ -92,6 +98,7 @@
                                                                     <input type="text"  name="Attendance" class="form-control" minlength="1" maxlength="2" style="height: 40px; width: 94px;" />
                                                                          </td>
                                                                     </tr>
+                                                }
                                             }
                                         </tbody>
                                     </table>

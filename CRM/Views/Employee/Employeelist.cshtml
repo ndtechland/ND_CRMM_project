@@ -49,6 +49,7 @@
                                     <table id="datatable" class="table table-responsive">
                                         <thead>
                                             <tr style="background-color: #00baf2;">
+                                                <th nowrap>Sl. No.</th>
                                                 <th>
                                                     @Html.DisplayNameFor(model => model.FirstName)
                                                 </th>
@@ -86,50 +87,55 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach (var item in Model)
-                                            {
-                                                <tr>
-                                                    <td>
-                                                        @Html.DisplayFor(modelItem => item.FirstName)
-                                                    </td>
-                                                    <td>
-                                                        @Html.DisplayFor(modelItem => item.MiddleName)
-                                                    </td>
-                                                    <td>
-                                                        @Html.DisplayFor(modelItem => item.LastName)
-                                                    </td>
-                                                    <td>
-                                                        @Html.DisplayFor(modelItem => item.EmployeeId)
-                                                    </td>
-                                                    <td>
-                                                        @Html.DisplayFor(modelItem => item.DateOfJoining)
-                                                    </td>
-                                                    <td>
-                                                        @Html.DisplayFor(modelItem => item.WorkEmail)
-                                                    </td>
-                                                    <td>
-                                                        @Html.DisplayFor(modelItem => item.GenderId)
-                                                    </td>
-                                                    <td>
-                                                        @Html.DisplayFor(modelItem => item.WorkLocationId)
-                                                    </td>
-                                                    <td>
-                                                        @Html.DisplayFor(modelItem => item.DesignationId)
-                                                    </td>
-                                                    <td>
-                                                        @Html.DisplayFor(modelItem => item.DepartmentId)
-                                                    </td>
-                                                    <td>
-                                                        @Html.DisplayFor(modelItem => item.MonthlyCTC)
-                                                    </td>
-                                                    <td>
-                                                        <div>
-                                                              <a href="#" class="fa fa-edit m-2 font-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="EditEmployee(@item.Id)"></a>
-                                                             <a href="@Url.Action("DeleteEmployee","Employee",new { id=item.Id})" class="fa fa-trash font-danger"></a>
-                                                             <a href="@Url.Action("Gengeneratesalary", "Employee", new { id = item.Id })" class="fa fa-money"></a>
-                                                       </div>
-                                                    </td>
-                                                </tr>
+                                            @{
+                                                var count = 0;
+                                                @foreach (var item in Model)
+                                                {
+                                                     count++;
+                                                    <tr class="table-row">
+                                                        <td>@count</td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.FirstName)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.MiddleName)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.LastName)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.EmployeeId)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.DateOfJoining)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.WorkEmail)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.GenderId)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.WorkLocationId)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.DesignationId)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.DepartmentId)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.MonthlyCTC)
+                                                        </td>
+                                                        <td>
+                                                            <div>
+                                                                <a href="#" class="fa fa-edit m-2 font-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="EditEmployee(@item.Id)"></a>
+                                                                <a href="@Url.Action("DeleteEmployee","Employee",new { id=item.Id})" class="fa fa-trash font-danger"></a>
+                                                                <a href="@Url.Action("Gengeneratesalary", "Employee", new { id = item.Id })" class="fa fa-money"></a>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                }
                                             }
                                         </tbody>
                                     </table>                                 

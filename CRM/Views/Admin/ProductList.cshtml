@@ -46,6 +46,7 @@
                                 <table id="datatable" class="table table-responsive">
                                     <thead>
                                         <tr style="background-color: #00baf2;">
+                                            <th nowrap>Sl. No.</th>
                                             <th>
                                                ProductName
                                             </th>
@@ -65,9 +66,13 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        @{
+                                            var count = 0;
                                         @foreach (var item in Model)
                                         {
-                                            <tr>
+                                            count++;
+                                                    <tr class="table-row">
+                                                    <td>@count</td>
                                                 <td>
                                                     @Html.DisplayFor(modelItem => item.ProductName)
                                                 </td>
@@ -92,6 +97,7 @@
                                                     </div>
                                                 </td>
                                             </tr>
+                                            }
                                         }
                                     </tbody>
                                 </table>
