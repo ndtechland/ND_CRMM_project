@@ -417,6 +417,12 @@ namespace CRM.Controllers
             if (HttpContext.Session.GetString("UserName") != null)
             {
                 var response = await _ICrmrpo.salarydetail();
+                decimal total = 0;
+                foreach (var item in response)
+                {
+                     total += (decimal)item.MonthlyCtc;
+                }
+                ViewBag.TotalAmmount = total;
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 ViewBag.UserName = AddedBy;
                 return View(response);
@@ -465,5 +471,29 @@ namespace CRM.Controllers
             return Json(new { success = true, message = "Data saved successfully." });
         }
    
+        public IActionResult GenerateSalary()
+        {
+            try
+            {
+                ViewBag.CustomerName = _context.CustomerRegistrations.Select(x => new SelectListItem
+                {
+                    Value = x.Id.ToString(),
+                    Text = x.CompanyName
+                }).ToList();
+                ViewBag.Location = _context.WorkLocations.Select(x => new SelectListItem
+                {
+                    Value = x.Id.ToString(),
+                    Text = x.AddressLine1
+                }).ToList();
+
+                return View();
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("Error : " + ex.Message);
+            }
+        }
+
     }
 }
