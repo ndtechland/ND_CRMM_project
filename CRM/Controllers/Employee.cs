@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
@@ -29,10 +30,10 @@ namespace CRM.Controllers
             
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                var emp = new EmpMultiform();
-                string AddedBy = HttpContext.Session.GetString("UserName");
-                ViewBag.UserName = AddedBy;
-                //WorkLocation dropdown 
+                //var emp = new EmpMultiform();
+                //string AddedBy = HttpContext.Session.GetString("UserName");
+                //ViewBag.UserName = AddedBy;
+                ////WorkLocation dropdown 
                 ViewBag.WorkLocation = _context.WorkLocations
                 .Select(w => new SelectListItem
                 {
@@ -40,15 +41,15 @@ namespace CRM.Controllers
                     Text = w.AddressLine1
                 })
                  .ToList();
-                //Gender dropdown 
-                ViewBag.Gender = _context.GenderMasters
-                .Select(w => new SelectListItem
-                {
-                    Value = w.Id.ToString(),
-                    Text = w.GenderName
-                })
-                 .ToList();
-                //Department dropdown 
+                ////Gender dropdown 
+                //ViewBag.Gender = _context.GenderMasters
+                //.Select(w => new SelectListItem
+                //{
+                //    Value = w.Id.ToString(),
+                //    Text = w.GenderName
+                //})
+                // .ToList();
+                ////Department dropdown 
                 ViewBag.Department = _context.DepartmentMasters.Select(w => new SelectListItem
                 {
                     Value = w.Id.ToString(),
@@ -60,7 +61,12 @@ namespace CRM.Controllers
                 {
                     Value = w.Id.ToString(),
                     Text = w.DesignationName
+                }).ToList();
 
+                ViewBag.States = _context.StateMasters.Select(w => new SelectListItem
+                {
+                    Value = w.Id.ToString(),
+                    Text = w.StateName
                 }).ToList();
                 return View();
             }
@@ -319,6 +325,8 @@ namespace CRM.Controllers
             if (HttpContext.Session.GetString("UserName") != null)
             {
                 var data = _context.EmployeeRegistrations.Find(id);
+                //EmpId
+                
                 EmployeeSalaryDetail empd = new EmployeeSalaryDetail();
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 ViewBag.UserName = AddedBy;

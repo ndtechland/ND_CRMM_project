@@ -51,6 +51,7 @@
 
     #multi-step-form {
         overflow-x: hidden;
+    }
 </style>
 <div class="page-wrapper">
     <div class="page-body-wrapper">
@@ -58,13 +59,12 @@
         </div>
 
         <div class="page-body">
-            <!-- Container-fluid starts-->
-            <div class="container-fluid">
+            <!-- Container-flui starts-->
+            <div class="containder-fluid">
                 <div class="page-header">
                     <div class="row">
                         <div class="col-lg-6">
                             <div class="page-header-left">
-
                             </div>
                         </div>
                         <div class="col-lg-6">
@@ -109,16 +109,16 @@
                                                 <div class="row">
                                                     <div class="col">
                                                         <label>Frist Name</label>
-                                                        <input class="form-control" name="FirstName" id="validationCustom1" type="text" required="">
+                                                        <input class="form-control" name="FirstName" id="validationCustom1" type="text" required>
                                                     </div>
 
                                                     <div class="col">
                                                         <label>MiddleName</label>
-                                                        <input class="form-control" name="MiddleName" id="validationCustom1" type="text" required="">
+                                                        <input class="form-control" name="MiddleName" id="validationCustom1" type="text" required>
                                                     </div>
                                                     <div class="col">
                                                         <label>Last Name</label>
-                                                        <input class="form-control " name="LastName" id="validationCustom1" type="text" required="">
+                                                        <input class="form-control " name="LastName" id="validationCustom1" type="text" required>
                                                     </div>
 
                                                 </div>
@@ -128,7 +128,7 @@
                                                     <div class="col-md-6">
                                                         <label>Work Email</label>
                                                         <div class="form-group">
-                                                            <input class="form-control " name="WorkEmail" id="validationCustom1" type="email" required="">
+                                                            <input class="form-control " name="WorkEmail" id="validationCustom1" type="email" required>
 
                                                         </div>
                                                     </div>
@@ -137,7 +137,7 @@
                                                         <label>Date Of Joining</label>
                                                         <div class="form-group">
 
-                                                            <input class="form-control " name="DateOfJoining" id="validationCustom1" type="date" required="">
+                                                            <input class="form-control " name="DateOfJoining" id="validationCustom1" type="date" required>
 
                                                         </div>
                                                     </div>
@@ -154,7 +154,7 @@
                                                                 <option value="1">Male</option>
                                                                 <option value="2">Femail</option>
                                                                 <option value="3">Other</option>
-                                                                
+
                                                             </select>
                                                         </div>
                                                     </div>
@@ -164,11 +164,10 @@
                                                         <label>Work Location</label>
                                                         <div class="form-group">
 
-                                                            <select class="form-control " name="WorkLocationID">
+                                                            <select class="form-control " name="WorkLocationID" id="ddlWorkLocationID">
                                                                 <option value="0">-select Work Location--</option>
-                                                                <option value="1">noida c-53 sector37 noida</option>
-                                                                <option value="2">Ashok naguarsector 15 Delhi</option>
-                                                              
+
+
                                                             </select>
                                                         </div>
                                                     </div>
@@ -177,11 +176,9 @@
                                                         <label>Designation</label>
                                                         <div class="form-group">
 
-                                                            <select name="DesignationID" class="form-control ">
+                                                            <select name="DesignationID" class="form-control " id="ddDesignationID">
                                                                 <option value="0">--select Designation--</option>
-                                                                <option value="1">Chief Executive Officer</option>
-                                                                <option value="2">Chairman</option>
-                                                                <option value="3">Sweeper</option>
+
                                                             </select>
                                                         </div>
                                                     </div>
@@ -190,11 +187,9 @@
                                                         <label>Department</label>
                                                         <div class="form-group">
 
-                                                            <select name="DepartmentID" class="form-control ">
+                                                            <select name="DepartmentID" class="form-control " id="ddDepartmentID">
                                                                 <option value="0">-select Department--</option>
-                                                                <option value="1">Engineering</option>
-                                                                <option value="2">HR</option>
-                                                                <option value="3">Marketing</option>
+
                                                             </select>
                                                         </div>
                                                     </div>
@@ -211,21 +206,21 @@
                                                 <div class="row">
                                                     <div class="col">
                                                         <label>Annual CTC</label>
-                                                        <input class="form-control " name="AnnualCTC" id="validationCustom1" type="text" required="">
+                                                        <input class="form-control " name="AnnualCTC" id="txtAnnualCTC" type="text" required>
                                                     </div>
                                                     <div class="col">
                                                         <label>Basic</label>
-                                                        <input class="form-control " name="Basic" id="validationCustom1" type="text" required="">
+                                                        <input class="form-control " name="Basic" id="txtBasicSalary" type="text" required="">
                                                     </div>
                                                     <div class="col">
                                                         <label>HouseRent Allowance</label>
-                                                        <input class="form-control " name="HouseRentAllowance" id="validationCustom1" type="text" required="">
+                                                        <input class="form-control " name="HouseRentAllowance" id="txtHouseRentAllowance" type="text" required="">
                                                     </div>
 
                                                 </div>
 
                                                 <div class="row">
-                                                  
+
                                                     <div class="col">
                                                         <label>ConveyanceAllowance</label>
                                                         <input class="form-control " name="ConveyanceAllowance" id="validationCustom1" type="text" required="">
@@ -236,7 +231,7 @@
                                                     </div>
                                                     <div class="col">
                                                         <label>EPF</label>
-                                                        <input class="form-control " name="EPF" id="validationCustom1" type="text" required="">
+                                                        <input class="form-control " name="EPF" id="txtEPF" type="text" required="">
                                                     </div>
 
                                                 </div>
@@ -244,11 +239,11 @@
                                                 <div class="row">
                                                     <div class="col">
                                                         <label>MonthlyCtc</label>
-                                                        <input class="form-control " name="MonthlyCTC" id="validationCustom1" type="text" required="">
+                                                        <input class="form-control " name="MonthlyCTC" id="txtMonthlyCTC" type="text" required="">
                                                     </div>
                                                     <div class="col">
                                                         <label>MonthlyGrossPay</label>
-                                                        <input class="form-control " name="MonthlyGrossPay" id="validationCustom1" type="text" required="">
+                                                        <input class="form-control " name="MonthlyGrossPay" id="txtMonthlyGrossPay" type="text" required="">
                                                     </div>
 
                                                 </div>
@@ -274,7 +269,7 @@
                                                     </div>
                                                     <div class="col">
                                                         <label>DateOfBirth</label>
-                                                        <input class="form-control "name="DateOfBirth" id="validationCustom1" type="date" required="">
+                                                        <input class="form-control " name="DateOfBirth" id="dobInput" type="date" required="">
                                                     </div>
 
                                                 </div>
@@ -282,12 +277,12 @@
                                                 <div class="row">
                                                     <div class="col">
                                                         <label>Age</label>
-                                                        <input class="form-control " id="validationCustom1" type="text" required="">
+                                                        <input class="form-control " id="ageInput" type="text" required="">
                                                     </div>
 
                                                     <div class="col">
                                                         <label>FatherName</label>
-                                                        <input class="form-control "name="FatherName" id="validationCustom1" type="text" required="">
+                                                        <input class="form-control " name="FatherName" id="validationCustom1" type="text" required="">
                                                     </div>
                                                     <div class="col">
                                                         <label>Pan</label>
@@ -308,17 +303,16 @@
                                                     </div>
                                                     <div class="col">
                                                         <label>City</label>
-                                                        <input class="form-control "name="City" id="validationCustom1" type="text" required="">
+                                                        <input class="form-control " name="City" id="validationCustom1" type="text" required="">
                                                     </div>
 
                                                 </div>
                                                 <div class="row">
                                                     <div class="col">
                                                         <label>State</label>
-                                                        <select class="form-control " name="StateID">
+                                                        <select class="form-control " id="ddlState" name="StateID">
                                                             <option value="0">-select State--</option>
-                                                            <option value="U">UP</option>
-                                                            <option value="M">MP</option>
+                                                            
                                                         </select>
                                                     </div>
                                                     <div class="col">
@@ -327,63 +321,60 @@
                                                     </div>
 
                                                 </div>
+                                                <br />
 
-                                                <div class="pull-right">
+                                                <div class="pull-right" style="margin-top:5px;">
 
                                                     <button type="button" class="btn btn-primary prev-step">Previous</button>
                                                     <button type="button" class="btn btn-primary next-step">Next</button>
                                                 </div>
                                             </div>
 
+
+
                                             <div class="step step-4">
-                                                <h4 class="text-danger">Payment info.</h4>
-                                                <div class="form-group row">
-                                                    <div class="col-xl-3 col-md-4">
-                                                        <label for="validationCustom0"><span>*</span> Account Holder Name</label>
+                                                <h4 class="text-danger">Payment info</h4>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <label>Account Holder Name</label>
+                                                        <input class="form-control " name="AccountHolderName" id="validationCustom1" type="text" required="">
                                                     </div>
-                                                    <div class="col-xl-8 col-md-7">
-                                                        <input class="form-control " name="AccountHolderName" id="validationCustom0" type="text" required="">
+                                                    <div class="col">
+                                                        <label>Bank Name</label>
+                                                        <input class="form-control " name="BankName" id="validationCustom1" type="text" required="">
                                                     </div>
                                                 </div>
-                                                <div class="form-group row">
-                                                    <div class="col-xl-3 col-md-4">
-                                                        <label for="validationCustom1"><span>*</span> Bank Name</label>
+
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <label>Account Number</label>
+                                                        <input class="form-control " name="AccountNumber" id="validationCustom1" type="number" required="">
                                                     </div>
-                                                    <div class="col-xl-8 col-md-7">
-                                                        <input class="form-control " name="BankName" id="validationCustom1" type="text" required="">
+                                                    <div class="col">
+                                                        <label>Re-enter Account Number</label>
+                                                        <input class="form-control " name="ReEnterAccountNumber" id="validationCustom1" type="number" required="">
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <label>IFSC</label>
+                                                        <input class="form-control " name="IFSC" id="validationCustom1" type="text" required="">
+                                                    </div>
+                                                    <div class="col" style="padding:20px;">
+                                                        <label>Account Type</label>
+                                                        <br />
+                                                        <div class="d-flex gap-2">
+                                                            <input type="radio" name="AccountTypeID" value="1">current
+                                                            <input type="radio" name="AccountTypeID" value="2">savings
+                                                        </div>
+                                                        <div>
+                                                        </div>
                                                     </div>
 
                                                 </div>
-                                                <div class="form-group row">
-                                                    <div class="col-xl-3 col-md-4">
-                                                        <label for="validationCustom2"><span>*</span>  Account Number</label>
-                                                    </div>
-                                                    <div class="col-xl-8 col-md-7">
-                                                        <input class="form-control " name="AccountNumber" id="validationCustom2" type="number" required="">
-                                                    </div>
-                                                </div>
-                                                 <div class="form-group row">
-                                                    <div class="col-xl-3 col-md-4">
-                                                        <label for="validationCustom2"><span>*</span> Re-enter Account Number</label>
-                                                    </div>
-                                                    <div class="col-xl-8 col-md-7">
-                                                        <input class="form-control " name="ReEnterAccountNumber" id="validationCustom2" type="number" required="">
-                                                    </div>
-                                                </div>
-                                                <div class="form-group row">
-                                                    <div class="col-xl-3 col-md-4">
-                                                        <label for="validationCustom3"><span>*</span> IFSC</label>
-                                                    </div>
-                                                    <div class="col-xl-8 col-md-7">
-                                                        <input class="form-control " name="IFSC" id="validationCustom3" type="text" required="">
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <h4>Account Type </h4>
-                                                    <input type="radio" name="AccountTypeID" value="1">current
-                                                    <input type="radio" name="AccountTypeID" value="2">savings
-                                                </div>
-                                                <div class="pull-right">
+                                                <br />
+                                                <div class="pull-right mt-4" style="padding:20px;">
                                                     <button type="button" class="btn btn-primary prev-step">Previous</button>
                                                     <input type="submit" class="btn btn-primary" value="Submit" />
                                                 </div>
@@ -591,21 +582,124 @@
 
 <script>
 
-    function calculateAge() {
-        var dobInput = document.getElementById('dobInput');
-        var ageInput = document.getElementById('ageInput');
+  
 
-        if (dobInput.value) {
-            var dob = new Date(dobInput.value);
-            var today = new Date();
-
-            var age = Math.floor((today - dob) / (365.25 * 24 * 60 * 60 * 1000));
-
-            ageInput.value = age;
-        } else {
-            ageInput.value = '';
-        }
+    function bindworkLocation() {
+        var itemsList = @Json.Serialize(ViewBag.WorkLocation);
+        debugger
+        var dropdown = $("#ddlWorkLocationID");
+        $.each(itemsList, function (index, item) {
+            dropdown.append($('<option></option>').val(item.value).text(item.text));
+        });
     }
+
+
+    function bindDesigation() {
+        var itemsListforDesigation = @Json.Serialize(ViewBag.Designation);
+        debugger
+        var dropdownforDesigation = $("#ddDesignationID");
+        $.each(itemsListforDesigation, function (index, item) {
+            dropdownforDesigation.append($('<option></option>').val(item.value).text(item.text));
+        });
+    }
+
+
+    function bindDepartment() {
+        var itemsListforDepartment = @Json.Serialize(ViewBag.Department);
+        debugger
+        var dropdownforDepartment = $("#ddDepartmentID");
+        $.each(itemsListforDepartment, function (index, item) {
+            dropdownforDepartment.append($('<option></option>').val(item.value).text(item.text));
+        });
+    }
+
+    function bindStates() {
+        var itemsListforStates = @Json.Serialize(ViewBag.States);
+        debugger
+        var dropdownforState = $("#ddlState");
+        $.each(itemsListforStates, function (index, item) {
+            dropdownforState.append($('<option></option>').val(item.value).text(item.text));
+        });
+    }
+   
 </script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        bindworkLocation();
+        bindDepartment();
+        bindDesigation();
+        bindStates();
+        
+
+    })
+</script>
+
+<script>
+    $(document).ready(function () {
+        // Get the annual salary input element
+        var annualSalaryInput = $('#txtAnnualCTC');
+
+        // Get the monthly salary input element
+        var monthlySalaryInput = $('#txtMonthlyCTC');
+        var basicSalaryInput = $('#txtBasicSalary');
+        var basicSalaryInput = $('#txtBasicSalary');
+        var HouseRentAllowanceInput = $('#txtHouseRentAllowance');
+        var EPFInput = $('#txtEPF');
+        var MonthlyGrossPayInput = $('#txtMonthlyGrossPay');
+
+        // Attach an input event listener to the annual salary input
+        annualSalaryInput.on('input', function () {
+            // Get the value from the annual salary input
+            var annualSalary = parseFloat($(this).val());
+
+            // Check if the entered value is a valid number
+            if (!isNaN(annualSalary)) {
+                // Calculate monthly salary (assuming 12 months in a year)
+                var monthlySalary = annualSalary / 12;
+                var basicSalary = annualSalary / 2;
+                var houseRent = basicSalary / 2;
+                var EPFCalculation = monthlySalary*12/100;
+                var MonthlyGross = monthlySalary - EPFCalculation;
+
+                // Update the value of the monthly salary input
+                monthlySalaryInput.val(monthlySalary.toFixed(2));
+                basicSalaryInput.val(basicSalary.toFixed(2));
+                HouseRentAllowanceInput.val(houseRent.toFixed(2));
+                EPFInput.val(EPFCalculation.toFixed(2));
+                MonthlyGrossPayInput.val(MonthlyGross.toFixed(2));
+            } else {
+                // If the entered value is not a valid number, clear the monthly salary input
+                monthlySalaryInput.val('');
+                basicSalaryInput.val('');
+                HouseRentAllowanceInput.val('');
+                EPFInput.val('');
+                MonthlyGrossPayInput.val('');
+            }
+        });
+
+
+
+        $("#dobInput").on("input", function () {
+            debugger
+            var birthdate = $(this).val();
+            if (birthdate !== "") {
+                var today = new Date();
+                var birthDate = new Date(birthdate);
+
+                var age = today.getFullYear() - birthDate.getFullYear();
+                var monthDiff = today.getMonth() - birthDate.getMonth();
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                    age--;
+                }
+                $("#ageInput").val(age);
+            } else {
+                $("#ageInput").val('');
+            }
+        });
+        
+    });
+</script>
+
 
 
