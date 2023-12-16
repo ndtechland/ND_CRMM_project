@@ -48,11 +48,12 @@
                                     <table id="datatable" class="table table-responsive">
                                         <thead>
                                             <tr style="background-color: #00baf2;">
+                                                <th nowrap>Sl. No.</th>
                                                 <th nowrap>
                                                     Company Name
                                                 </th>
                                                 <th nowrap>
-                                                    Contact PersonName
+                                                    WorkLocation
                                                 </th>
                                                 <th nowrap>
                                                     MobileNumber
@@ -82,14 +83,18 @@
                                             </tr>
                                         </thead>
                                         <tbody>
+                                            @{
+                                                var count = 0;
                                             @foreach (var item in Model)
                                             {
-                                                <tr>
+                                                    count++;
+                                                    <tr class="table-row">
+                                                        <td>@count</td>
                                                     <td>
                                                         @Html.DisplayFor(modelItem => item.CompanyName)
                                                     </td>
                                                     <td>
-                                                        @Html.DisplayFor(modelItem => item.ContactPersonName)
+                                                            @Html.DisplayFor(modelItem => item.WorkLocation)
                                                     </td>
                                                     <td>
                                                         @Html.DisplayFor(modelItem => item.MobileNumber)
@@ -126,6 +131,7 @@
                                                         </div>
                                                     </td>
                                                 </tr>
+                                            }
                                             }
                                         </tbody>
                                     </table>

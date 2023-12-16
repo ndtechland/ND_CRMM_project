@@ -1,4 +1,4 @@
-﻿@model CRM.Models.Crm.CustomerRegistration
+﻿@model CRM.Models.DTO.Customer
 
 @{
     ViewData["Title"] = "Customer";
@@ -35,9 +35,8 @@
                 font-family: fontAwesome;
                 content: "\f00c";
                 color: #fff;
-                background-color: #f77750;
-                border: 0;
-                display: inline-block;
+                background-color: #0096ff;
+                border: 0;                
                 padding-left: 3px;
             }
 
@@ -59,7 +58,7 @@
         }
 
         .select2-container--default.select2-container--focus .select2-selection--multiple {
-            border-color: #f77750;
+            border-color: #272727;
             border-width: 2px;
         }
 
@@ -93,6 +92,7 @@
         .select-icon .select2-search--dropdown {
             display: none;
         }
+        
     </style>
 
 </head>
@@ -142,10 +142,10 @@
                                             <input asp-for="CompanyName" class="form-control" />
                                             <span asp-validation-for="CompanyName" class="text-danger"></span>
                                         </div>
-                                        <div class="form-group col-sm">
-                                            <label for="validationCustom0">Contact Person Name</label>
-                                            <input asp-for="ContactPersonName" class="form-control" />
-                                            <span asp-validation-for="ContactPersonName" class="text-danger"></span>
+                                        <div class="form-group  col-sm ">
+                                            <label for="validationCustom0">Work Location</label>
+                                            @Html.DropDownListFor(model => model.WorkLocation, new MultiSelectList(ViewBag.WorkLocations, "Value", "Text"), "-- Select WorkLocation --", new { @class = "form-control js-select2",@multiple="multiple",name="WorkLocation" })
+                                            <span asp-validation-for="WorkLocation" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -235,7 +235,7 @@
                                     </div>
 
 
-                                    <div class="row">
+                                    @*<div class="row">
                                         <label for="validationCustom0">Location</label>
                                         <select class="form-group col-sm js-select2" multiple="multiple">
                                             <option value="O1" data-badge="">Option1</option>
@@ -246,7 +246,7 @@
                                             <option value="O6" data-badge="">Option6</option>
                                             <option value="O7" data-badge="">Option7</option>
                                         </select>
-                                    </div>
+                                    </div>*@
 
 
                                     <div class="form-group" style="display:flex; justify-content:center;">
@@ -318,7 +318,7 @@
 <script type="text/javascript">
     $(".js-select2").select2({
         closeOnSelect: false,
-        placeholder: "Placeholder",
+        placeholder: "--Select WorkLocation--",
         // allowHtml: true,
         allowClear: true,
         tags: true // создает новые опции на лету

@@ -81,12 +81,12 @@ namespace CRM.Repository
         .ToListAsync();
             return result;
         }
-        public async Task<int> Customer(CustomerRegistration model)
+        public async Task<int> Customer(Customer model)
         {
 
             var parameter = new List<SqlParameter>();
             parameter.Add(new SqlParameter("@Company_Name", model.CompanyName));
-            parameter.Add(new SqlParameter("@Contact_person_name", model.ContactPersonName));
+            parameter.Add(new SqlParameter("@Work_Location", string.Join(",", model.WorkLocation)));
             parameter.Add(new SqlParameter("@Mobile_number", model.MobileNumber));
             parameter.Add(new SqlParameter("@Alternate_number", model.AlternateNumber));
             parameter.Add(new SqlParameter("@Email", model.Email));
@@ -98,7 +98,7 @@ namespace CRM.Repository
             parameter.Add(new SqlParameter("@Renew_Date", model.RenewDate));
 
             var result = await Task.Run(() => _context.Database
-           .ExecuteSqlRawAsync(@"exec CustomerRegistration @Company_Name, @Contact_person_name,@Mobile_number,@Alternate_number,@Email,@GST_Number,@Billing_Address,@Product_Details,@Start_date,@Renew_Date", parameter.ToArray()));
+           .ExecuteSqlRawAsync(@"exec CustomerRegistration @Company_Name, @Work_Location,@Mobile_number,@Alternate_number,@Email,@GST_Number,@Billing_Address,@Product_Details,@Start_date,@Renew_Date", parameter.ToArray()));
 
             return result;
         }
