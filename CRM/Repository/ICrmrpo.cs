@@ -12,7 +12,7 @@ namespace CRM.Repository
         public DataTable Login(AdminLogin model);
         public Task<int> Product(ProductMaster model);
         public Task<List<ProductMaster>> ProductList();
-        public Task<int> Customer(CustomerRegistration model);
+        public Task<int> Customer(Customer model);
         public Task<List<CustomerRegistration>> CustomerList();
         public Task<int> EmpRegistration(EmpMultiform model);
         public Task<int> EmployeeBasicinfo(EmployeePersonalDetail model);

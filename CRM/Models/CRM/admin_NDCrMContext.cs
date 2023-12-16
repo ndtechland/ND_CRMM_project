@@ -195,10 +195,6 @@ namespace CRM.Models.Crm
                     .HasMaxLength(255)
                     .HasColumnName("Company_Name");
 
-                entity.Property(e => e.ContactPersonName)
-                    .HasMaxLength(255)
-                    .HasColumnName("Contact_person_name");
-
                 entity.Property(e => e.Email).HasMaxLength(255);
 
                 entity.Property(e => e.GstNumber)
@@ -220,6 +216,10 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.StartDate)
                     .HasColumnType("date")
                     .HasColumnName("Start_date");
+
+                entity.Property(e => e.WorkLocation)
+                    .HasMaxLength(255)
+                    .HasColumnName("Work_Location");
             });
 
             modelBuilder.Entity<DateFormatMaster>(entity =>

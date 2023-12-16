@@ -1,5 +1,6 @@
 ﻿using CRM.Models;
 using CRM.Models.Crm;
+using CRM.Models.DTO;
 using CRM.Repository;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
@@ -39,7 +40,7 @@ namespace CRM.Controllers
 
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                var emp = new CustomerRegistration();
+                var emp = new Customer();
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 ViewBag.UserName = AddedBy;
                 ViewBag.ProductDetails = _context.ProductMasters
@@ -49,7 +50,13 @@ namespace CRM.Controllers
                   Text = p.ProductName
               })
                .ToList();
-
+                ViewBag.WorkLocations = _context.WorkLocations
+              .Select(p => new SelectListItem
+              {
+                  Value = p.Id.ToString(),
+                  Text = p.AddressLine1
+              })
+               .ToList();
                 return View(emp);
             }
             else
@@ -58,15 +65,13 @@ namespace CRM.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> Customer(CustomerRegistration model)
+        public async Task<IActionResult> Customer(Customer model)
         {
             try
-            {
-
+            {              
                 var response = await _ICrmrpo.Customer(model);
                 if (response != null)
                 {
-
                     return RedirectToAction("CustomerList", "Home");
                     TempData["msg"] = "Regiter Successfully.";
                 }
