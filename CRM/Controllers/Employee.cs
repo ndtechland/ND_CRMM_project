@@ -29,37 +29,39 @@ namespace CRM.Controllers
             
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                //var emp = new EmployeeRegistration();
-                //string AddedBy = HttpContext.Session.GetString("UserName");
-                //ViewBag.UserName = AddedBy;
-                ////WorkLocation dropdown 
-                //ViewBag.WorkLocation = _context.WorkLocations
-                //.Select(w => new SelectListItem
-                //{
-                //    Value = w.Id.ToString(),
-                //    Text = w.AddressLine1
-                //})
-                // .ToList();
-                ////Gender dropdown 
-                //ViewBag.Gender = _context.GenderMasters
-                //.Select(w => new SelectListItem {
-                // Value = w.Id.ToString(),
-                // Text = w.GenderName })
-                // .ToList();
-                ////Department dropdown 
-                //ViewBag.Department = _context.DepartmentMasters.Select(w => new SelectListItem
-                //{
-                //    Value = w.Id.ToString(),
-                //    Text = w.DepartmentName
+                var emp = new EmpMultiform();
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName = AddedBy;
+                //WorkLocation dropdown 
+                ViewBag.WorkLocation = _context.WorkLocations
+                .Select(w => new SelectListItem
+                {
+                    Value = w.Id.ToString(),
+                    Text = w.AddressLine1
+                })
+                 .ToList();
+                //Gender dropdown 
+                ViewBag.Gender = _context.GenderMasters
+                .Select(w => new SelectListItem
+                {
+                    Value = w.Id.ToString(),
+                    Text = w.GenderName
+                })
+                 .ToList();
+                //Department dropdown 
+                ViewBag.Department = _context.DepartmentMasters.Select(w => new SelectListItem
+                {
+                    Value = w.Id.ToString(),
+                    Text = w.DepartmentName
 
-                //}).ToList();
-                ////Designation dropdown 
-                //ViewBag.Designation = _context.DesignationMasters.Select(w => new SelectListItem
-                //{
-                //    Value = w.Id.ToString(),
-                //    Text = w.DesignationName
+                }).ToList();
+                //Designation dropdown 
+                ViewBag.Designation = _context.DesignationMasters.Select(w => new SelectListItem
+                {
+                    Value = w.Id.ToString(),
+                    Text = w.DesignationName
 
-                //}).ToList();
+                }).ToList();
                 return View();
             }
            

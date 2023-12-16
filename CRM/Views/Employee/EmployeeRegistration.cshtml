@@ -106,7 +106,6 @@
                                             <div class="step step-1">
                                                 <h4 class="text-danger">Basic info </h4>
 
-
                                                 <div class="row">
                                                     <div class="col">
                                                         <label>Frist Name</label>
@@ -214,22 +213,19 @@
                                                         <label>Annual CTC</label>
                                                         <input class="form-control " name="AnnualCTC" id="validationCustom1" type="text" required="">
                                                     </div>
-
-                                                    
                                                     <div class="col">
                                                         <label>Basic</label>
                                                         <input class="form-control " name="Basic" id="validationCustom1" type="text" required="">
                                                     </div>
-
-                                                </div>
-
-
-                                                <div class="row">
                                                     <div class="col">
                                                         <label>HouseRent Allowance</label>
                                                         <input class="form-control " name="HouseRentAllowance" id="validationCustom1" type="text" required="">
                                                     </div>
 
+                                                </div>
+
+                                                <div class="row">
+                                                  
                                                     <div class="col">
                                                         <label>ConveyanceAllowance</label>
                                                         <input class="form-control " name="ConveyanceAllowance" id="validationCustom1" type="text" required="">
@@ -238,34 +234,30 @@
                                                         <label>FixedAllowance</label>
                                                         <input class="form-control " name="FixedAllowance" id="validationCustom1" type="text" required="">
                                                     </div>
+                                                    <div class="col">
+                                                        <label>EPF</label>
+                                                        <input class="form-control " name="EPF" id="validationCustom1" type="text" required="">
+                                                    </div>
 
                                                 </div>
 
                                                 <div class="row">
                                                     <div class="col">
-                                                        <label>EPF</label>
-                                                        <input class="form-control " name="EPF"  id="validationCustom1" type="text" required="">
+                                                        <label>MonthlyCtc</label>
+                                                        <input class="form-control " name="MonthlyCTC" id="validationCustom1" type="text" required="">
                                                     </div>
-
                                                     <div class="col">
                                                         <label>MonthlyGrossPay</label>
                                                         <input class="form-control " name="MonthlyGrossPay" id="validationCustom1" type="text" required="">
                                                     </div>
-                                                    <div class="col">
-                                                        <label>MonthlyCtc</label>
-                                                        <input class="form-control " name="MonthlyCTC" id="validationCustom1" type="text" required="">
-                                                    </div>
 
                                                 </div>
-
-
+                                                <br />
                                                 <div class="pull-right">
-
                                                     <button type="button" class="btn btn-primary prev-step">Previous</button>
                                                     <button type="button" class="btn btn-primary next-step">Next</button>
                                                 </div>
                                             </div>
-
 
 
                                             <div class="step step-3">
@@ -324,6 +316,7 @@
                                                     <div class="col">
                                                         <label>State</label>
                                                         <select class="form-control " name="StateID">
+                                                            <option value="0">-select State--</option>
                                                             <option value="U">UP</option>
                                                             <option value="M">MP</option>
                                                         </select>
@@ -386,7 +379,7 @@
                                                     </div>
                                                 </div>
                                                 <div>
-                                                    <h3>Account Type </h3>
+                                                    <h4>Account Type </h4>
                                                     <input type="radio" name="AccountTypeID" value="1">current
                                                     <input type="radio" name="AccountTypeID" value="2">savings
                                                 </div>
@@ -594,6 +587,25 @@
             $(".progress-bar").css("width", progressPercentage + "%");
         }
     });
+</script>
+
+<script>
+
+    function calculateAge() {
+        var dobInput = document.getElementById('dobInput');
+        var ageInput = document.getElementById('ageInput');
+
+        if (dobInput.value) {
+            var dob = new Date(dobInput.value);
+            var today = new Date();
+
+            var age = Math.floor((today - dob) / (365.25 * 24 * 60 * 60 * 1000));
+
+            ageInput.value = age;
+        } else {
+            ageInput.value = '';
+        }
+    }
 </script>
 
 
