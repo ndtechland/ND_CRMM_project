@@ -1,0 +1,93 @@
+﻿@model CRM.Models.DTO.GenerateSalary
+@{
+    ViewData["Title"] = "GenerateSalary";
+    Layout = "~/Views/Shared/_adminLayout.cshtml";
+}
+
+
+<div class="page-wrapper">
+    <div class="page-body-wrapper">
+        <div class="page-sidebar">
+        </div>
+        <!-- Page Sidebar Ends-->
+        <!-- Right sidebar Start-->
+        <!-- Right sidebar Ends-->
+
+        <div class="page-body">
+
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="page-header-left">
+                                <h2>
+                                    Generate Salary
+                                </h2>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <ol class="breadcrumb pull-right">
+                                <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
+                                <li class="breadcrumb-item">CRM</li>
+                                <li class="breadcrumb-item active">Employee</li>
+                                <li class="breadcrumb-item active">Generate Salary</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container-fluid">
+                <div class="row">
+
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <form asp-action="GenerateSalary" autocomplete="off">
+                                <div class="form-group col-sm">
+                                    <label for="validationCustom0">Company Name</label>
+                                        @Html.DropDownListFor(model => model.CustomerID, new SelectList(ViewBag.CustomerName, "Value", "Text"), "-- Select Company Name --", new { @class = "form-control" })
+                                    <span asp-validation-for="CustomerID" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-sm">
+                                    <label for="validationCustom0">Work Location</label>
+                                        @Html.DropDownListFor(model => model.LocationID, new SelectList(ViewBag.Location, "Value", "Text"), "-- Select Work Location Name --", new { @class = "form-control" })
+                                    <span asp-validation-for="LocationID" class="text-danger"></span>
+                                </div>
+                                    <div class="form-group col-sm">
+                                        <label for="validationCustom0">Month</label>
+                                        <select class="form-control" asp-for="Month">
+                                            <option value="O1">January</option>
+                                            <option value="O2">February</option>
+                                            <option value="O3">March</option>
+                                            <option value="O4">April</option>
+                                            <option value="O5">May</option>
+                                            <option value="O6">Jun</option>
+                                            <option value="O7">July</option>
+                                            <option value="O8">August</option>
+                                            <option value="O9">Septemper</option>
+                                            <option value="10">Octobar</option>
+                                            <option value="11">November</option>
+                                            <option value="12">December</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group col-sm">
+                                        <label for="validationCustom0">Year</label>
+                                        <select class="form-control col-md-" asp-for="Year">
+                                            <option value="O1">2022-2023</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group" style="display:flex; justify-content:center;">
+                                        <input type="submit" value="Save" class="btn btn-primary" />
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
