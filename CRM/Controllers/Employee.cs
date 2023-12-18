@@ -69,6 +69,11 @@ namespace CRM.Controllers
                     Value = w.Id.ToString(),
                     Text = w.StateName
                 }).ToList();
+                ViewBag.CustomerName = _context.CustomerRegistrations.Select(x => new SelectListItem
+                {
+                    Value = x.Id.ToString(),
+                    Text = x.CompanyName
+                }).ToList();
                 return View();
             }
            
@@ -502,6 +507,7 @@ namespace CRM.Controllers
                 throw new Exception("Error : " + ex.Message);
             }
         }
+
         [HttpPost]
         public IActionResult GetLocationsByCustomer(string customerId)
         {
@@ -527,6 +533,7 @@ namespace CRM.Controllers
 
             return Json(locationsJson);
         }
+
 
 
 
