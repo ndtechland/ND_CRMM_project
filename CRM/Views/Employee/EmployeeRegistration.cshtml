@@ -159,13 +159,24 @@
                                                         </div>
                                                     </div>
 
+                                                    <div class="col-md-3">
+                                                        <label>Customer Name</label>
+                                                        <div class="form-group">
+
+                                                            <select class="form-control" name="CustomerID" id="ddCustomerID">
+                                                                <option value="0">--Select Company Name--</option>
+
+
+                                                            </select>
+                                                        </div>
+                                                    </div>
 
                                                     <div class="col-md-3">
                                                         <label>Work Location</label>
                                                         <div class="form-group">
 
-                                                            <select class="form-control " name="WorkLocationID" id="ddlWorkLocationID">
-                                                                <option value="0">-select Work Location--</option>
+                                                            <select class="form-control" name="WorkLocationID" id="ddlWorkLocationID">
+                                                                <option value="0">-Select Work Location--</option>
 
 
                                                             </select>
@@ -584,6 +595,15 @@
 
   
 
+    function bindcustomer() {
+        var itemsList = @Json.Serialize(ViewBag.CustomerName);
+        debugger
+        var dropdown = $("#ddCustomerID");
+        $.each(itemsList, function (index, item) {
+            dropdown.append($('<option></option>').val(item.value).text(item.text));
+        });
+    }
+
     function bindworkLocation() {
         var itemsList = @Json.Serialize(ViewBag.WorkLocation);
         debugger
@@ -592,7 +612,6 @@
             dropdown.append($('<option></option>').val(item.value).text(item.text));
         });
     }
-
 
     function bindDesigation() {
         var itemsListforDesigation = @Json.Serialize(ViewBag.Designation);
@@ -630,7 +649,7 @@
         bindDepartment();
         bindDesigation();
         bindStates();
-        
+        bindcustomer();
 
     })
 </script>
@@ -700,6 +719,5 @@
         
     });
 </script>
-
 
 
