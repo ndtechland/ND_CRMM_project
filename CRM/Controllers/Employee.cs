@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
@@ -493,7 +494,6 @@ namespace CRM.Controllers
                     Value = x.Id.ToString(),
                     Text = x.AddressLine1
                 }).ToList();
-
                 return View();
             }
             catch (Exception ex)
@@ -502,6 +502,37 @@ namespace CRM.Controllers
                 throw new Exception("Error : " + ex.Message);
             }
         }
+        [HttpPost]
+        public IActionResult GetLocationsByCustomer(string customerId)
+        {
+            
+            var locations = _context.CustomerRegistrations.FirstOrDefault(x => x.Id ==Convert.ToInt32(customerId));
+            string[] strlocation = locations.WorkLocation?.Split(new string[] { "," },
+                                  StringSplitOptions.None);
+            List<WorkLocation> locationlist =new List<WorkLocation>();
+            foreach (var loc in strlocation)
+            {
+                 locationlist.Add(_context.WorkLocations.FirstOrDefault(x=>x.Id ==Convert.ToInt32(loc)));
+            }
+
+
+            var locationsJson = locationlist.Select(x => new SelectListItem
+            {
+                Text = x.Id.ToString(),
+                Value=x.AddressLine1
+            }).ToList();
+
+
+           // var locationsJson = JsonConvert.SerializeObject(locationsJ);
+
+            return Json(locationsJson);
+        }
+
+
+
+
+
+
 
 
     }
