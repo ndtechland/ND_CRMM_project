@@ -45,6 +45,7 @@
                                     <table id="datatable" class="table table-responsive">
                   <thead>
                                             <tr style="background-color: #00baf2;">
+                                                <th nowrap>Sl. No.</th>
             <th>
                 Company Name
             </th>
@@ -73,43 +74,49 @@
         </tr>
     </thead>
              <tbody>
-                                            @foreach (var item in Model)
+                                           @{
+                                                var count = 0;
+                                                @foreach (var item in Model)
                                             {
-            <tr>
-                <td>
-                                                        @Html.DisplayFor(modelItem => item.CompanyName)
-                </td>
-                <td>
-                                                        @Html.DisplayFor(modelItem => item.CustomerName)
-                </td>
-                <td>
-                                                        @Html.DisplayFor(modelItem => item.Email)
-                </td>
-                <td>
-                                                        @Html.DisplayFor(modelItem => item.SalesPersonName)
-                </td>
-                <td>
-                                                        @Html.DisplayFor(modelItem => item.ProductId)
-                </td>
-                <td>
-                                                        @Html.DisplayFor(modelItem => item.Subject)
-                </td>
-                <td>
-                                                        @Html.DisplayFor(modelItem => item.Amount)
-                </td>
-                <td>
-                                                        @Html.DisplayFor(modelItem => item.Mobile)
-                </td>
-                <td>
-                                                        @*<a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                                                    count++;
+                                                        <tr class="table-row">
+                                                            <td>@count</td>
+              
+                    <td>
+                                                            @Html.DisplayFor(modelItem => item.CompanyName)
+                    </td>
+                    <td>
+                                                            @Html.DisplayFor(modelItem => item.CustomerName)
+                    </td>
+                    <td>
+                                                            @Html.DisplayFor(modelItem => item.Email)
+                    </td>
+                    <td>
+                                                            @Html.DisplayFor(modelItem => item.SalesPersonName)
+                    </td>
+                    <td>
+                                                            @Html.DisplayFor(modelItem => item.ProductId)
+                    </td>
+                    <td>
+                                                            @Html.DisplayFor(modelItem => item.Subject)
+                    </td>
+                    <td>
+                                                            @Html.DisplayFor(modelItem => item.Amount)
+                    </td>
+                    <td>
+                                                            @Html.DisplayFor(modelItem => item.Mobile)
+                    </td>
+                    <td>
+                                                            @*<a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>*@
-                            <div>
-                                                            <a href="#" class="fa fa-edit m-2 font-success" data-toggle="modal" data-target="#editModal" onclick="EditQuation(@item.Id)"></a>
-                                     <a href="@Url.Action("DeleteQuation","Home",new { id=item.Id})" class="fa fa-trash font-danger"></a>
-                             </div>
-                </td>
-                                     </tr>
+                                <div>
+                                                                <a href="#" class="fa fa-edit m-2 font-success" data-toggle="modal" data-target="#editModal" onclick="EditQuation(@item.Id)"></a>
+                                         <a href="@Url.Action("DeleteQuation","Home",new { id=item.Id})" class="fa fa-trash font-danger"></a>
+                                 </div>
+                    </td>
+                                         </tr>
+                                            }
                                             }
                                                       </tbody>
                                                        </table>
