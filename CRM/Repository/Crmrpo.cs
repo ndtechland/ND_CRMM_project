@@ -148,7 +148,7 @@ namespace CRM.Repository
                 parameter.Add(new SqlParameter("@Re_Enter_Account_Number", model.ReEnterAccountNumber));
                 parameter.Add(new SqlParameter("@IFSC", model.IFSC));
                 parameter.Add(new SqlParameter("@Account_Type_ID", model.AccountTypeID));
-                var result = await Task.Run(() => _context.Database.ExecuteSqlRawAsync(@"exec EmployeeRegistration @FirstName,@MiddleName,@LastName,@DateOfJoining,@WorkEmail,@GenderID,@WorkLocationID,@DesignationID,@DepartmentID,@AnnualCTC,@Basic,@HouseRentAllowance,@ConveyanceAllowance,@FixedAllowance,@EPF,@MonthlyGrossPay,@MonthlyCTC,@Personal_Email_Address,@Mobile_Number, @Date_Of_Birth,@Father_Name,@PAN,@Address_Line_1,@Address_Line_2,@City, @State_ID,@Pincode,@Account_Holder_Name,@Bank_Name,@Account_Number,@Re_Enter_Account_Number,@IFSC,@Account_Type_ID", parameter.ToArray()));
+                var result = await Task.Run(() => _context.Database.ExecuteSqlRawAsync(@"exec EmployeeRegistration @FirstName,@MiddleName,@LastName,@DateOfJoining,@WorkEmail,@GenderID,@WorkLocationID,@DesignationID,@DepartmentID,@AnnualCTC,@Basic,@HouseRentAllowance,@ConveyanceAllowance,@FixedAllowance,@EPF,@MonthlyGrossPay,@MonthlyCTC,@Personal_Email_Address,@Mobile_Number,@Date_Of_Birth,@Father_Name,@PAN,@Address_Line_1,@Address_Line_2,@City,@State_ID,@Pincode,@Account_Holder_Name,@Bank_Name,@Account_Number,@Re_Enter_Account_Number,@IFSC,@Account_Type_ID", parameter.ToArray()));
 
                 return result;
             }
