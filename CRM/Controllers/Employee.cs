@@ -374,63 +374,11 @@ namespace CRM.Controllers
                 throw new Exception("Error:" + Ex.Message);
             }
         }
-
-        //[HttpGet("Employee/EmployeeBankDetail")]
-        //public IActionResult EmployeeBankDetail(int? id)
-        //{
-        //    if (HttpContext.Session.GetString("UserName") != null)
-        //    {                
-        //        string AddedBy = HttpContext.Session.GetString("UserName");
-        //        ViewBag.UserName = AddedBy;
-        //        var data = _context.EmployeeRegistrations.Find(id);
-        //        EmployeeBankDetail empd = new EmployeeBankDetail();
-        //        ViewBag.AccountType = _context.AccountTypeMasters
-        //           .Select(w => new SelectListItem
-        //           {
-        //               Value = w.Id.ToString(),
-        //               Text = w.AccountType
-        //           })
-        //            .ToList();
-        //        if (data != null)
-        //        {
-        //            empd.EmployeeRegistrationId = data.Id;
-        //        }               
-        //        return View(empd);
-        //}
-        //    else
-        //    {
-        //        return RedirectToAction("Login", "Admin");
-        //    }
-        //}
-
-        //[HttpPost]
-        //public async Task<IActionResult> EmployeeBankDetail(EmployeeBankDetail model)
-        //{
-        //    try
-        //    {
-        //        var response = await _ICrmrpo.EmployeeBankDetail(model);
-        //        if (response != null)
-        //        {
-
-        //            return RedirectToAction("Employeelist", "Employee");
-        //            ViewBag.Message = "registration Successfully.";
-        //        }
-        //        else
-        //        {
-        //            ModelState.Clear();
-        //            return View();
-        //        }
-        //    }
-        //    catch (Exception Ex)
-        //    {
-        //        throw new Exception("Error:" + Ex.Message);
-        //    }
-        //}
         public async Task<IActionResult> salarydetail()
-        {
+        {          
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                var response = await _ICrmrpo.salarydetail();
+                var response = await _ICrmrpo.salarydetail();                
                 decimal total = 0;
                 foreach (var item in response)
                 {
@@ -440,14 +388,12 @@ namespace CRM.Controllers
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 ViewBag.UserName = AddedBy;
                 return View(response);
-
             }
             else
             {
                 return RedirectToAction("Login", "Admin");
-            }
-
-
+            }           
+           
         }
 
 
@@ -493,11 +439,6 @@ namespace CRM.Controllers
                     Value = x.Id.ToString(),
                     Text = x.CompanyName
                 }).ToList();
-                //ViewBag.Location = _context.WorkLocations.Select(x => new SelectListItem
-                //{
-                //    Value = x.Id.ToString(),
-                //    Text = x.AddressLine1
-                //}).ToList();
                 return View();
             }
             catch (Exception ex)
@@ -526,12 +467,10 @@ namespace CRM.Controllers
                 Value=x.AddressLine1
             }).ToList();
 
-           // var locationsJson = JsonConvert.SerializeObject(locationsJ);
-
             return Json(locationsJson);
         }
         [HttpPost]
-        public async Task<IActionResult> GenerateSalary(string customerId)
+        public async Task<IActionResult> GenerateSalary(string customerId,int Month,int year)
         {
             try
             {
@@ -541,7 +480,7 @@ namespace CRM.Controllers
                     Text = x.CompanyName
                 }).ToList();
                 GenerateSalary salary = new GenerateSalary();
-                salary.GeneratedSalaries = await _ICrmrpo.GenerateSalary(customerId);
+                salary.GeneratedSalaries = await _ICrmrpo.GenerateSalary(customerId, Month, year);
                
                 return View(salary);
             }

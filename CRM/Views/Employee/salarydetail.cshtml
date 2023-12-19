@@ -196,7 +196,7 @@ function gensal(){
             $('#datatable tbody tr').each(function (index) {
                 var customer = {};
                 customer.Id = $(this).find('td:eq(0)').text().trim();
-                customer.EmployeeId = $(this).find('td:eq(2)').text().trim();
+                customer.EmployeeId = $(this).find('td:eq(3)').text().trim();
                 customer.Attendance = $(this).find('input[name="Attendance"]').val();
                 if (customer.Attendance === "") {
                     alert("Please fill in all Attendance fields.");
@@ -216,12 +216,12 @@ function gensal(){
                     async:'false',
                  
                     success: function (data) {
-                   if( (tbody.children().length-1)==@Model.Count())
+                   if( (tbody.children().length)==@Model.Count())
                    {
-                        location.reload();
+                      //  location.reload();
+                        window.location.href = '/Employee/GenerateSalary';
                     }
                         debugger;
-                        //alert(data);
                     },
                    
                     error: function (err) {

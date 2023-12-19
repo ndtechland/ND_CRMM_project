@@ -44,7 +44,6 @@
                                         <div class="form-group col-sm">
                                     <label for="validationCustom0">Company Name</label>
                                             @Html.DropDownListFor(model => model.CustomerID, new SelectList(ViewBag.CustomerName, "Value", "Text"), "-- Select CompanyName --", new { @class = "form-control",onchange="Locations()"})
-                                    <span asp-validation-for="CustomerID" class="text-danger"></span>
                                 </div>
                                 <div class="form-group col-sm">
                                     <label for="validationCustom0">Work Location</label>
@@ -56,7 +55,8 @@
                                     <div class="form-group col-sm">
                                         <label for="validationCustom0">Month</label>
                                         <select class="form-control" asp-for="Month">
-                                             <option>-- Select Month --</option>
+
+                                                <option>-- Select Month --</option>
                                             <option value="1">January</option>
                                             <option value="2">February</option>
                                             <option value="3">March</option>
@@ -76,7 +76,7 @@
                                         <label for="validationCustom0">Year</label>
                                         <select class="form-control col-md-" asp-for="Year">
                                                 <option>-- Select Year --</option>
-                                            <option value="O1">2022-2023</option>
+                                            <option value="2023">2023</option>
                                         </select>
                                     </div>
                                     </div>
@@ -93,7 +93,7 @@
                                             <div class="card">
                                                 <div class="card-body">
                                                     <div class=" table-responsive">
-                                                        @if (Model != null)
+                                                        @if (Model != null && Model.GeneratedSalaries.Count >0)
                                                         {
                                                             <table id="datatable" class="table table-responsive">
                                                                 <thead>
@@ -119,7 +119,7 @@
                                                                 <tbody>
                                                                     @{
                                                                         var count = 0;
-                                                                        @foreach (var item in Model.GeneratedSalaries)
+                                                                        foreach (var item in Model.GeneratedSalaries)
                                                                         {
                                                                             count++;
                                                                             <tr>
@@ -137,12 +137,9 @@
                                                                             </tr>
                                                                         }
                                                                     }                                                                   
-                                                                    }
+                                                          
                                                                 </tbody>
                                                             </table>
-                                                        }
-                                                        else{
-
                                                         }
                                                     </div>
 
