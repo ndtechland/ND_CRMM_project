@@ -487,8 +487,10 @@ namespace CRM.Controllers
                     Text = x.CompanyName
                 }).ToList();
                 GenerateSalary salary = new GenerateSalary();
+
                 salary.GeneratedSalaries = await _ICrmrpo.GenerateSalary(customerId, Month, year);
                
+
                 return View(salary);
             }
             catch (Exception ex)
@@ -496,7 +498,9 @@ namespace CRM.Controllers
 
                 throw new Exception("Error : " + ex.Message);
             }
-        }
+
+        }       
+
 
         public IActionResult SalarySlipInPDF()
         {
@@ -509,7 +513,7 @@ namespace CRM.Controllers
 
                 throw new Exception("Error : " + ex.Message);
             }
-        }       
-
+        }
+       
     }
 }
