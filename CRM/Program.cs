@@ -14,5 +14,7 @@ namespace CRM
                 {
                     webBuilder.UseStartup<Startup>();
                 });
+
+       
     }
 }

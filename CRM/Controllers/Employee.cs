@@ -1,4 +1,5 @@
 ﻿using CRM.Models.Crm;
+using CRM.Models.CRM;
 using CRM.Models.DTO;
 using CRM.Repository;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,12 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+
+using Syncfusion.Pdf;
+using Syncfusion.Pdf.Graphics;
+using Syncfusion.Drawing;
+using System.IO;
+
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace CRM.Controllers
@@ -18,17 +25,17 @@ namespace CRM.Controllers
     {
         private readonly admin_NDCrMContext _context;
         private readonly ICrmrpo _ICrmrpo;
-        
+
 
         public Employee(ICrmrpo _ICrmrpo, admin_NDCrMContext _context)
         {
             this._context = _context;
             this._ICrmrpo = _ICrmrpo;
-          
+
         }
         public IActionResult EmployeeRegistration()
         {
-            
+
             if (HttpContext.Session.GetString("UserName") != null)
             {
                 //var emp = new EmpMultiform();
@@ -76,7 +83,7 @@ namespace CRM.Controllers
                 }).ToList();
                 return View();
             }
-           
+
             else
             {
                 return RedirectToAction("Login", "Admin");
@@ -96,8 +103,8 @@ namespace CRM.Controllers
                 //}
                 //else
                 //{
-                    ModelState.Clear();
-                    return View();
+                ModelState.Clear();
+                return View();
                 //}
             }
             catch (Exception Ex)
@@ -107,13 +114,13 @@ namespace CRM.Controllers
         }
 
         [HttpGet]
-        public  IActionResult EmployeeBasicinfo()
+        public IActionResult EmployeeBasicinfo()
         {
 
             if (HttpContext.Session.GetString("UserName") != null)
             {
                 var emp = new EmployeePersonalDetail();
-                 
+
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 ViewBag.UserName = AddedBy;
                 ViewBag.StateId = _context.StateMasters
@@ -128,14 +135,14 @@ namespace CRM.Controllers
                 ViewBag.EmployeeAge = age;
                 return View(emp);
 
-          
+
             }
             else
             {
                 return RedirectToAction("Login", "Admin");
             }
         }
-        
+
         public async Task<IActionResult> Employeelist()
         {
             if (HttpContext.Session.GetString("UserName") != null)
@@ -144,7 +151,7 @@ namespace CRM.Controllers
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 ViewBag.UserName = AddedBy;
                 return View(response);
-                
+
             }
             else
             {
@@ -192,9 +199,9 @@ namespace CRM.Controllers
 
         }
 
-       
-         public async Task<IActionResult> EmployeeBasicinfoList()
-          {
+
+        public async Task<IActionResult> EmployeeBasicinfoList()
+        {
             if (HttpContext.Session.GetString("UserName") != null)
             {
                 var response = await _ICrmrpo.EmployeeBasicinfoList();
@@ -207,7 +214,7 @@ namespace CRM.Controllers
                 return RedirectToAction("Login", "Admin");
             }
 
-         }
+        }
 
 
         public async Task<IActionResult> DeleteEmployee(int id)
@@ -215,7 +222,7 @@ namespace CRM.Controllers
             try
             {
                 var data = _context.EmployeeRegistrations.Find(id);
-                if(data != null)
+                if (data != null)
                 {
                     data.IsDeleted = true;
                     _context.SaveChanges();
@@ -232,11 +239,11 @@ namespace CRM.Controllers
             try
             {
                 var data = _context.EmployeePersonalDetails.Find(id);
-                if(data!=null)
+                if (data != null)
                 {
                     data.IsDeleted = true;
                     _context.SaveChanges();
-                }               
+                }
                 return RedirectToAction("EmployeeBasicinfoList");
             }
             catch (Exception ex)
@@ -245,7 +252,7 @@ namespace CRM.Controllers
             }
         }
         [HttpGet]
-        public JsonResult Edit (int id)
+        public JsonResult Edit(int id)
         {
             var emp = _ICrmrpo.GetempPersonalDetailById(id);
             var statedata = _context.StateMasters.ToList();
@@ -286,20 +293,20 @@ namespace CRM.Controllers
             var gender = _context.GenderMasters.ToList();
             var worklocation = _context.WorkLocations.ToList();
             var designation = _context.DesignationMasters.ToList();
-            var department=_context.DepartmentMasters.ToList();
-            var MonthlyCTC = _context.EmployeeSalaryDetails.Where(x =>x.EmployeeId == data.EmployeeId).FirstOrDefault();
+            var department = _context.DepartmentMasters.ToList();
+            var MonthlyCTC = _context.EmployeeSalaryDetails.Where(x => x.EmployeeId == data.EmployeeId).FirstOrDefault();
             var result = new
             {
                 Data = data,
                 Gender = gender,
                 Worklocation = worklocation,
-                Designation=designation,
-                Department=department,
+                Designation = designation,
+                Department = department,
                 MonthlyCTC = MonthlyCTC,
 
             };
             return new JsonResult(result);
-          
+
         }
 
         [HttpPost]
@@ -332,7 +339,7 @@ namespace CRM.Controllers
             {
                 var data = _context.EmployeeRegistrations.Find(id);
                 //EmpId
-                
+
                 EmployeeSalaryDetail empd = new EmployeeSalaryDetail();
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 ViewBag.UserName = AddedBy;
@@ -382,7 +389,7 @@ namespace CRM.Controllers
                 decimal total = 0;
                 foreach (var item in response)
                 {
-                     total += (decimal)item.MonthlyCtc;
+                    total += (decimal)item.MonthlyCtc;
                 }
                 ViewBag.TotalAmmount = total;
                 string AddedBy = HttpContext.Session.GetString("UserName");
@@ -451,20 +458,20 @@ namespace CRM.Controllers
         [HttpPost]
         public IActionResult GetLocationsByCustomer(string customerId)
         {
-            var locations = _context.CustomerRegistrations.FirstOrDefault(x => x.Id ==Convert.ToInt32(customerId));
+            var locations = _context.CustomerRegistrations.FirstOrDefault(x => x.Id == Convert.ToInt32(customerId));
             string[] strlocation = locations.WorkLocation?.Split(new string[] { "," },
                                   StringSplitOptions.None);
-            List<WorkLocation> locationlist =new List<WorkLocation>();
+            List<WorkLocation> locationlist = new List<WorkLocation>();
             foreach (var loc in strlocation)
             {
-                 locationlist.Add(_context.WorkLocations.FirstOrDefault(x=>x.Id ==Convert.ToInt32(loc)));
+                locationlist.Add(_context.WorkLocations.FirstOrDefault(x => x.Id == Convert.ToInt32(loc)));
             }
 
 
             var locationsJson = locationlist.Select(x => new SelectListItem
             {
                 Text = x.Id.ToString(),
-                Value=x.AddressLine1
+                Value = x.AddressLine1
             }).ToList();
 
             return Json(locationsJson);
@@ -483,6 +490,19 @@ namespace CRM.Controllers
                 salary.GeneratedSalaries = await _ICrmrpo.GenerateSalary(customerId, Month, year);
                
                 return View(salary);
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("Error : " + ex.Message);
+            }
+        }
+
+        public IActionResult SalarySlipInPDF()
+        {
+            try
+            {
+                return View();
             }
             catch (Exception ex)
             {
