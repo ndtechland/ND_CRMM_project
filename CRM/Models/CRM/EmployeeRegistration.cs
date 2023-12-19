@@ -24,7 +24,7 @@ namespace CRM.Models.Crm
         public string DesignationId { get; set; } = null!;
         public string DepartmentId { get; set; } = null!;
         public bool? IsDeleted { get; set; }
-        public string CustomerID { get; set; } 
+        public int? CustomerId { get; set; }
 
         public virtual ICollection<EmployeeLogin> EmployeeLogins { get; set; }
         public virtual ICollection<EmployeeRole> EmployeeRoles { get; set; }

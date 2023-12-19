@@ -410,6 +410,8 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Id).HasColumnName("ID");
 
+                entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
+
                 entity.Property(e => e.DateOfJoining)
                     .HasColumnType("date")
                     .HasColumnName("Date_Of_Joining");

@@ -484,7 +484,6 @@ namespace CRM.Controllers
 
             return Json(new { success = true, message = "Data saved successfully." });
         }
-   
         public IActionResult GenerateSalary()
         {
             try
@@ -494,11 +493,11 @@ namespace CRM.Controllers
                     Value = x.Id.ToString(),
                     Text = x.CompanyName
                 }).ToList();
-                ViewBag.Location = _context.WorkLocations.Select(x => new SelectListItem
-                {
-                    Value = x.Id.ToString(),
-                    Text = x.AddressLine1
-                }).ToList();
+                //ViewBag.Location = _context.WorkLocations.Select(x => new SelectListItem
+                //{
+                //    Value = x.Id.ToString(),
+                //    Text = x.AddressLine1
+                //}).ToList();
                 return View();
             }
             catch (Exception ex)
@@ -511,7 +510,6 @@ namespace CRM.Controllers
         [HttpPost]
         public IActionResult GetLocationsByCustomer(string customerId)
         {
-            
             var locations = _context.CustomerRegistrations.FirstOrDefault(x => x.Id ==Convert.ToInt32(customerId));
             string[] strlocation = locations.WorkLocation?.Split(new string[] { "," },
                                   StringSplitOptions.None);
@@ -528,19 +526,30 @@ namespace CRM.Controllers
                 Value=x.AddressLine1
             }).ToList();
 
-
            // var locationsJson = JsonConvert.SerializeObject(locationsJ);
 
             return Json(locationsJson);
         }
+        [HttpPost]
+        public async Task<IActionResult> GenerateSalary(string customerId)
+        {
+            try
+            {
+                ViewBag.CustomerName = _context.CustomerRegistrations.Select(x => new SelectListItem
+                {
+                    Value = x.Id.ToString(),
+                    Text = x.CompanyName
+                }).ToList();
+                GenerateSalary salary = new GenerateSalary();
+                salary.GeneratedSalaries = await _ICrmrpo.GenerateSalary(customerId);
+               
+                return View(salary);
+            }
+            catch (Exception ex)
+            {
 
-
-
-
-
-
-
-
-
+                throw new Exception("Error : " + ex.Message);
+            }
+        }       
     }
 }

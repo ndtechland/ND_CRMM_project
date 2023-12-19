@@ -4,18 +4,13 @@
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
 
-
 <div class="page-wrapper">
     <div class="page-body-wrapper">
         <div class="page-sidebar">
-        </div>
-        <!-- Page Sidebar Ends-->
-        <!-- Right sidebar Start-->
-        <!-- Right sidebar Ends-->
+        </div>      
 
         <div class="page-body">
 
-            <!-- Container-fluid starts-->
             <div class="container-fluid">
                 <div class="page-header">
                     <div class="row">
@@ -44,7 +39,7 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-body">
-                                <form asp-action="GenerateSalary" autocomplete="off">
+                                <form asp-action="GenerateSalary" autocomplete="off" method="post">
                                     <div class="row">
                                         <div class="form-group col-sm">
                                     <label for="validationCustom0">Company Name</label>
@@ -53,8 +48,10 @@
                                 </div>
                                 <div class="form-group col-sm">
                                     <label for="validationCustom0">Work Location</label>
-                                            @Html.DropDownListFor(model => model.LocationID, new SelectList(ViewBag.Location, "Value", "Text"), "-- Select WorkLocation --", new { @class = "form-control", id="LocationID"})
-                                    <span asp-validation-for="LocationID" class="text-danger"></span>
+                                            <select class="form-control col-md-" id="LocationID" asp-for="LocationID">
+                                                <option>--Select WorkLocation--</option>
+                                              
+                                            </select>                                 
                                 </div>
                                     <div class="form-group col-sm">
                                         <label for="validationCustom0">Month</label>
@@ -89,6 +86,71 @@
                                         <input type="submit" value="Search" class="btn btn-primary" />
                                     </div>
                                 </form>
+                                <div class="container-fluid">
+                                    <div class="row">
+
+                                        <div class="col-sm-12">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <div class=" table-responsive">
+                                                        @if (Model != null)
+                                                        {
+                                                            <table id="datatable" class="table table-responsive">
+                                                                <thead>
+                                                                    <tr style="background-color: #00baf2;">
+                                                                        <th nowrap>Sl. No.</th>
+                                                                        <th>
+                                                                            @Html.DisplayNameFor(model => model.EmployeeId)
+                                                                        </th>
+                                                                        <th>
+                                                                            @Html.DisplayNameFor(model => model.EmployeeName)
+                                                                        </th>
+                                                                        <th>
+                                                                            @Html.DisplayNameFor(model => model.MonthlyCtc)
+                                                                        </th>
+                                                                        <th>
+                                                                            @Html.DisplayNameFor(model => model.MonthlyGrossPay)
+                                                                        </th>
+
+
+                                                                        <th>Action</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @{
+                                                                        var count = 0;
+                                                                        @foreach (var item in Model.GeneratedSalaries)
+                                                                        {
+                                                                            count++;
+                                                                            <tr>
+                                                                                <td>@count</td>
+                                                                                <td>@item.EmployeeId</td>
+                                                                                <td>@item.EmployeeName</td>
+                                                                                <td>@item.MonthlyCtc</td>
+                                                                                <td>@item.MonthlyGrossPay</td>
+                                                                                <td>
+                                                                                    <div>
+                                                                                        <a href="#" class="fa fa-edit m-2 font-success" data-bs-toggle="modal"></a>
+                                                                                        <a href="" class="fa fa-trash font-danger"></a>
+                                                                                    </div>
+                                                                                </td>
+                                                                            </tr>
+                                                                        }
+                                                                    }                                                                   
+                                                                    }
+                                                                </tbody>
+                                                            </table>
+                                                        }
+                                                        else{
+
+                                                        }
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
