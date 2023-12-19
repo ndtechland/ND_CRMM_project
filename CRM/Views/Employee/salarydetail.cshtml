@@ -5,17 +5,14 @@
     ViewData["Title"] = "salarydetail";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
+
 <div class="page-wrapper">
     <div class="page-body-wrapper">
         <div class="page-sidebar">
         </div>
-        <!-- Page Sidebar Ends-->
-        <!-- Right sidebar Start-->
-        <!-- Right sidebar Ends-->
 
         <div class="page-body">
 
-            <!-- Container-fluid starts-->
             <div class="container-fluid">
                 <div class="page-header">
                     <div class="row">
@@ -37,8 +34,7 @@
                     </div>
                 </div>
             </div>
-            <!-- Container-fluid Ends-->
-            <!-- Container-fluid starts-->
+  
             <div class="container-fluid">
                 <div class="row">
 
@@ -78,31 +74,31 @@
                                             @{
                                                 var count = 0;
                                           
-                                            @foreach (var item in Model)
+                                                                        @foreach (var item in Model)
                                             {
                                                     count++;
-                                                    <tr class="table-row">
-                                                        <td>@count</td>
-                                                                        <td style="display:none">
-                                                         @item.Id
-                                                                        </td><td>
-                                                        @Html.DisplayFor(modelItem => item.FirstName)
-                                                                        </td>                                                                     
-                                                                        <td>
-                                                        @Html.DisplayFor(modelItem => item.EmployeeId)
-                                                                        </td>
-                                                                      
-                                                                             
-                                                                                    <td>
-                                                        @Html.DisplayFor(modelItem => item.MonthlyCtc)
-                                                                                    </td>
+                                                                                <tr class="table-row">
+                                                                                    <td>@count</td>
+                                                                                                    <td style="display:none">
+                                                                                     @item.Id
+                                                                                                    </td><td>
+                                                                                    @Html.DisplayFor(modelItem => item.FirstName)
+                                                                                                    </td>                                                                     
+                                                                                                    <td>
+                                                                                    @Html.DisplayFor(modelItem => item.EmployeeId)
+                                                                                                    </td>
+                                                                                                  
+                                                                                                         
+                                                                                                                <td>
+                                                                                    @Html.DisplayFor(modelItem => item.MonthlyCtc)
+                                                                                                                </td>
 
-                                                                    <td>
-                                                                    <input type="text"  name="Attendance" class="form-control" minlength="1" maxlength="2" style="height: 40px; width: 94px;" />
-                                                                         </td>
+                                                                                                <td>
+                                                                                                <input type="text"  name="Attendance" class="form-control" minlength="1" maxlength="2" style="height: 40px; width: 94px;" />
+                                                                                                     </td>
 
-                                                                        
-                                                                    </tr>
+                                                                                                    
+                                                                                                </tr>
                                                 }
                                             }
                                         </tbody>
@@ -121,9 +117,6 @@
                     </div>
                 </div>
             </div>
-            <div id="pagination-container">
-                <ul id="pagination" class="pagination"></ul>
-            </div>
         </div>
 
 
@@ -135,61 +128,12 @@
 
 
 
-<script>
-    var currentPage = 1;
-    var rowsPerPage = 20;
-    $(document).ready(function () {
-        function paginateTable() {
-            var table = $('#datatable');
-            var rows = table.find('tbody tr');
 
-
-            var totalPages = Math.ceil(rows.length / rowsPerPage);
-
-
-            var pagination = $('#pagination');
-            pagination.empty();
-
-            for (var i = 1; i <= totalPages; i++) {
-                var link = $('<li class="page-item"><a class="page-link" href="#">' + i + '</a></li>');
-
-
-                if (i === currentPage) {
-                    link.addClass('active');
-                }
-
-                pagination.append(link);
-            }
-
-
-            var startIndex = (currentPage - 1) * rowsPerPage;
-            var endIndex = startIndex + rowsPerPage;
-
-            rows.hide().slice(startIndex, endIndex).show();
-        }
-
-
-        paginateTable();
-
-        $(document).on('click', '#pagination li a', function (event) {
-            event.preventDefault();
-
-            var clickedPage = parseInt($(this).text());
-
-
-            currentPage = clickedPage;
-            paginateTable();
-
-
-            $('html, body').animate({ scrollTop: $('#table-container').offset().top }, 'slow');
-        });
-    });
-
-</script>
 
 <script>
    
 function gensal(){
+    var check = true;
         var tbody = $("#datatable tbody");
     if (tbody.children().length != 1) {
             var modeldata = new Array;
@@ -200,38 +144,43 @@ function gensal(){
                 customer.Attendance = $(this).find('input[name="Attendance"]').val();
                 if (customer.Attendance === "") {
                     alert("Please fill in all Attendance fields.");
+                    check = false;
                     return false; 
                 }
                 modeldata.push(customer);
             });
 
             ///
+            if (check == true)
+            {
                 $.ajax({
 
                     url: '/Employee/Empattendance',
-                data: { customers: modeldata },
+                    data: { customers: modeldata },
                     //data: { 'id': id, 'Attendance': atten },
                     dataType: 'json',
                     type: 'post',
-                    async:'false',
-                 
+                    async: 'false',
+
                     success: function (data) {
-                   if( (tbody.children().length)==@Model.Count())
-                   {
-                      //  location.reload();
-                        window.location.href = '/Employee/GenerateSalary';
-                    }
+                        if (data.data == true) {
+                            alert("Your salary already genrated for this month");
+                            return false;
+                        }
+                       
+                        if ((tbody.children().length) == @Model.Count()) {
+                            //location.reload();
+                            alert("Data saved successfully.");
+                            window.location.href = '/Employee/GenerateSalary';
+                        }
                         debugger;
                     },
-                   
+
                     error: function (err) {
 
                     }
                 });
-            ///
-
-     
-        
+            }    
     }
     else {
        
@@ -239,6 +188,8 @@ function gensal(){
 
     }
 }
+
+   
 
     $(function () {
         $("input[name='Attendance']").on('input', function (e) {
