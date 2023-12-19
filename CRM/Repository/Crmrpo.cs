@@ -387,9 +387,6 @@ namespace CRM.Repository
             return result;
         }
 
-        //public async Task<int> EmployeeBankDetail(EmployeeBankDetail model)
-        //{
-        //}
 
         public Quation GetempQuationById(int id)
         {
@@ -465,7 +462,7 @@ namespace CRM.Repository
             }
         }
 
-        public async Task<List<GenerateSalary>> GenerateSalary(string customerId)
+        public async Task<List<GenerateSalary>> GenerateSalary(string customerId, int Month, int year)
         {
             try
             {
@@ -474,6 +471,8 @@ namespace CRM.Repository
                 cmd.CommandType = CommandType.StoredProcedure;
 
                 cmd.Parameters.Add(new SqlParameter("@CustomerID", SqlDbType.Int) { Value = Convert.ToInt32(customerId) });
+                cmd.Parameters.Add(new SqlParameter("@Month", SqlDbType.Int) { Value = Convert.ToInt32(Month) });
+                cmd.Parameters.Add(new SqlParameter("@year", SqlDbType.Int) { Value = Convert.ToInt32(year) });
                 cmd.CommandType = CommandType.StoredProcedure;
                 con.Open();
                 SqlDataReader rdr = cmd.ExecuteReader();

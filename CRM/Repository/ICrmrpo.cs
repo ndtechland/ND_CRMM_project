@@ -32,7 +32,6 @@ namespace CRM.Repository
         public Task<int> Quation(Quation model);
         public Task<List<Quation>> QuationList();
 
-        //public Task<int> EmployeeBankDetail(EmployeeBankDetail model);
 
 
         public Quation GetempQuationById(int id);
@@ -41,7 +40,7 @@ namespace CRM.Repository
 
         public Task<List<salarydetail>> salarydetail();
 
-        public Task<List<GenerateSalary>> GenerateSalary(string customerId);
+        public Task<List<GenerateSalary>> GenerateSalary(string customerId, int Month, int year);
 
 
     }
