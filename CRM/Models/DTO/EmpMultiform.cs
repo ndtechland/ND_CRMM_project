@@ -1,4 +1,7 @@
-﻿namespace CRM.Models.DTO
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
+
+namespace CRM.Models.DTO
 {
     public class EmpMultiform
     {
@@ -14,6 +17,7 @@
         public int DepartmentID { get; set; }
 
         // Salary Details
+        [NotMapped]
         public decimal AnnualCTC { get; set; }
         public decimal Basic { get; set; }
         public decimal HouseRentAllowance { get; set; }
@@ -38,8 +42,8 @@
         // Bank Details
         public string? AccountHolderName { get; set; }
         public string? BankName { get; set; }
-        public int AccountNumber { get; set; }
-        public int ReEnterAccountNumber { get; set; }
+        public Int64 AccountNumber { get; set; }
+        public Int64 ReEnterAccountNumber { get; set; }
         public string? IFSC { get; set; }
         public int AccountTypeID { get; set; }
     }
