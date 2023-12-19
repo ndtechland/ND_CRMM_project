@@ -6,17 +6,6 @@
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        var message = "@ViewBag.Message";
-
-        if (message) {
-            alert(message);
-        }
-    });
-</script>
 <div class="page-wrapper">
     <div class="page-body-wrapper">
         <div class="page-sidebar">
@@ -85,31 +74,31 @@
                                             @{
                                                 var count = 0;
                                           
-                                            @foreach (var item in Model)
+                                                                        @foreach (var item in Model)
                                             {
                                                     count++;
-                                                    <tr class="table-row">
-                                                        <td>@count</td>
-                                                                        <td style="display:none">
-                                                         @item.Id
-                                                                        </td><td>
-                                                        @Html.DisplayFor(modelItem => item.FirstName)
-                                                                        </td>                                                                     
-                                                                        <td>
-                                                        @Html.DisplayFor(modelItem => item.EmployeeId)
-                                                                        </td>
-                                                                      
-                                                                             
-                                                                                    <td>
-                                                        @Html.DisplayFor(modelItem => item.MonthlyCtc)
-                                                                                    </td>
+                                                                                <tr class="table-row">
+                                                                                    <td>@count</td>
+                                                                                                    <td style="display:none">
+                                                                                     @item.Id
+                                                                                                    </td><td>
+                                                                                    @Html.DisplayFor(modelItem => item.FirstName)
+                                                                                                    </td>                                                                     
+                                                                                                    <td>
+                                                                                    @Html.DisplayFor(modelItem => item.EmployeeId)
+                                                                                                    </td>
+                                                                                                  
+                                                                                                         
+                                                                                                                <td>
+                                                                                    @Html.DisplayFor(modelItem => item.MonthlyCtc)
+                                                                                                                </td>
 
-                                                                    <td>
-                                                                    <input type="text"  name="Attendance" class="form-control" minlength="1" maxlength="2" style="height: 40px; width: 94px;" />
-                                                                         </td>
+                                                                                                <td>
+                                                                                                <input type="text"  name="Attendance" class="form-control" minlength="1" maxlength="2" style="height: 40px; width: 94px;" />
+                                                                                                     </td>
 
-                                                                        
-                                                                    </tr>
+                                                                                                    
+                                                                                                </tr>
                                                 }
                                             }
                                         </tbody>
@@ -144,6 +133,7 @@
 <script>
    
 function gensal(){
+    var check = true;
         var tbody = $("#datatable tbody");
     if (tbody.children().length != 1) {
             var modeldata = new Array;
@@ -154,39 +144,43 @@ function gensal(){
                 customer.Attendance = $(this).find('input[name="Attendance"]').val();
                 if (customer.Attendance === "") {
                     alert("Please fill in all Attendance fields.");
+                    check = false;
                     return false; 
                 }
                 modeldata.push(customer);
             });
 
             ///
+            if (check == true)
+            {
                 $.ajax({
 
                     url: '/Employee/Empattendance',
-                data: { customers: modeldata },
+                    data: { customers: modeldata },
                     //data: { 'id': id, 'Attendance': atten },
                     dataType: 'json',
                     type: 'post',
-                    async:'false',
-                 
+                    async: 'false',
+
                     success: function (data) {
-                    alert("Data saved successfully.");
-                   if( (tbody.children().length)==@Model.Count())
-                   {
-                        //location.reload();
-                        window.location.href = '/Employee/GenerateSalary';
-                    }
+                        if (data.data == true) {
+                            alert("Your salary already genrated for this month");
+                            return false;
+                        }
+                       
+                        if ((tbody.children().length) == @Model.Count()) {
+                            //location.reload();
+                            alert("Data saved successfully.");
+                            window.location.href = '/Employee/GenerateSalary';
+                        }
                         debugger;
                     },
-                   
+
                     error: function (err) {
 
                     }
                 });
-            ///
-
-     
-        
+            }    
     }
     else {
        
