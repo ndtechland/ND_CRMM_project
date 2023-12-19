@@ -379,11 +379,7 @@ namespace CRM.Controllers
             if (HttpContext.Session.GetString("UserName") != null)
             {
                 var response = await _ICrmrpo.salarydetail();
-                var month = _context.Empattendances.Where(x => x.Month == DateTime.Now.Month);
-                if(month != null)
-                {
-                    ViewBag.Message = "Your salary already genrated for this month";
-                }
+                
                 decimal total = 0;
                 foreach (var item in response)
                 {
@@ -404,12 +400,22 @@ namespace CRM.Controllers
 
         [HttpPost]
         public JsonResult Empattendance(List<Empattendance> customers)
-        {    
+        {
+            bool IsActive = false;
+            var month = _context.Empattendances.Where(x => x.Month == DateTime.Now.Month).ToList();
+            if (month.Count > 0)
+            {
+                //ViewBag.Message = "Your salary already genrated for this month";
+                IsActive = true;
+                
+            }
+            if (IsActive == false)
+            {
                 foreach (var item in customers)
                 {
-                if (item.Id != 0)
-                {
-                    
+                    if (item.Id != 0)
+                    {
+
                         Empattendance emp = new Empattendance
                         {
                             EmployeeId = item.EmployeeId,
@@ -421,11 +427,12 @@ namespace CRM.Controllers
 
                         _context.Empattendances.Add(emp);
                         _context.SaveChanges();
-                
+
+                    }
                 }
             }
 
-            return Json(new { success = true, message = "Data saved successfully." });
+            return Json(new { success = true, message = "Data saved successfully.", Data= IsActive });
         }
         public IActionResult GenerateSalary()
         {
