@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using System.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using Microsoft.Extensions.Primitives;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NuGet.DependencyResolver;
@@ -465,7 +464,41 @@ namespace CRM.Repository
                 emp = null;
             }
         }
-       
+
+        public async Task<List<GenerateSalary>> GenerateSalary(string customerId)
+        {
+            try
+            {
+                SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
+                SqlCommand cmd = new SqlCommand("GetGenerateSalary", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.Add(new SqlParameter("@CustomerID", SqlDbType.Int) { Value = Convert.ToInt32(customerId) });
+                cmd.CommandType = CommandType.StoredProcedure;
+                con.Open();
+                SqlDataReader rdr = cmd.ExecuteReader();
+                List<GenerateSalary> emp = new List<GenerateSalary>();
+                while (rdr.Read())
+                {
+                    var emps = new GenerateSalary()
+                    {
+                        EmployeeId = Convert.ToString(rdr["Employee_ID"]),
+                        EmployeeName = Convert.ToString(rdr["First_Name"]),
+                        MonthlyGrossPay = Convert.ToDecimal(rdr["MonthlyGrossPay"]),
+                        MonthlyCtc = Convert.ToDecimal(rdr["MonthlyCTC"])
+                    };
+
+                    emp.Add(emps);
+                }
+                return emp;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+
+        }
     }
 
 }

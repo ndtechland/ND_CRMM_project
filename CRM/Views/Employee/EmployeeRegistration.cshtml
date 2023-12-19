@@ -151,8 +151,8 @@
 
                                                             <select name="GenderID" class="form-control ">
                                                                 <option value="0">-select Gender--</option>
-                                                                <option value="1">Male</option>
-                                                                <option value="2">Femail</option>
+                                                                <option value="1">Female</option>
+                                                                <option value="2">Male</option>
                                                                 <option value="3">Other</option>
 
                                                             </select>
@@ -163,8 +163,8 @@
                                                         <label>Customer Name</label>
                                                         <div class="form-group">
 
-                                                            <select class="form-control" name="CustomerID" id="ddCustomerID">
-                                                                <option value="0">--Select Company Name--</option>
+                                                            <select class="form-control" name="CustomerID" id="ddCustomerID" onchange="Locations()">
+                                                                <option value="0">--Select Company--</option>
 
 
                                                             </select>
@@ -176,7 +176,7 @@
                                                         <div class="form-group">
 
                                                             <select class="form-control" name="WorkLocationID" id="ddlWorkLocationID">
-                                                                <option value="0">-Select Work Location--</option>
+                                                                <option value="0">-Select WorkLocation--</option>
 
 
                                                             </select>
@@ -721,3 +721,35 @@
 </script>
 
 
+<script>
+    function Locations() {
+        var customerId = $("#ddCustomerID").val();
+        if (customerId !== "") {
+            $.ajax({
+                url: '/Employee/GetLocationsByCustomer?customerId=' + customerId,
+                type: "post",
+                //data: customerId,
+                success: function (response) {
+                    populateLocations(response);
+                },
+                error: function (error) {
+                    console.error("Error loading locations: " + error);
+                }
+            });
+        } else {
+            // Clear the Locations dropdown if no customer is selected
+            $("#ddlWorkLocationID").empty();
+            $("#ddlWorkLocationID").append('<option value="">--Select WorkLocation--</option>');
+        }
+    }
+
+    function populateLocations(response) {
+        $("#ddlWorkLocationID").empty();
+        $("#ddlWorkLocationID").append('<option value="">--Select WorkLocation--</option>');
+
+
+        $.each(response, function (i, response) {
+            $("#ddlWorkLocationID").append('<option value="' + response.text + '">' + response.value + '</option>');
+        });
+    }
+</script>

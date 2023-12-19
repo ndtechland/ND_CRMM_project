@@ -41,6 +41,7 @@ namespace CRM.Repository
 
         public Task<List<salarydetail>> salarydetail();
 
+        public Task<List<GenerateSalary>> GenerateSalary(string customerId);
 
 
     }
