@@ -5,17 +5,25 @@
     ViewData["Title"] = "salarydetail";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var message = "@ViewBag.Message";
+
+        if (message) {
+            alert(message);
+        }
+    });
+</script>
 <div class="page-wrapper">
     <div class="page-body-wrapper">
         <div class="page-sidebar">
         </div>
-        <!-- Page Sidebar Ends-->
-        <!-- Right sidebar Start-->
-        <!-- Right sidebar Ends-->
 
         <div class="page-body">
 
-            <!-- Container-fluid starts-->
             <div class="container-fluid">
                 <div class="page-header">
                     <div class="row">
@@ -37,8 +45,7 @@
                     </div>
                 </div>
             </div>
-            <!-- Container-fluid Ends-->
-            <!-- Container-fluid starts-->
+  
             <div class="container-fluid">
                 <div class="row">
 
@@ -121,9 +128,6 @@
                     </div>
                 </div>
             </div>
-            <div id="pagination-container">
-                <ul id="pagination" class="pagination"></ul>
-            </div>
         </div>
 
 
@@ -135,57 +139,7 @@
 
 
 
-<script>
-    var currentPage = 1;
-    var rowsPerPage = 20;
-    $(document).ready(function () {
-        function paginateTable() {
-            var table = $('#datatable');
-            var rows = table.find('tbody tr');
 
-
-            var totalPages = Math.ceil(rows.length / rowsPerPage);
-
-
-            var pagination = $('#pagination');
-            pagination.empty();
-
-            for (var i = 1; i <= totalPages; i++) {
-                var link = $('<li class="page-item"><a class="page-link" href="#">' + i + '</a></li>');
-
-
-                if (i === currentPage) {
-                    link.addClass('active');
-                }
-
-                pagination.append(link);
-            }
-
-
-            var startIndex = (currentPage - 1) * rowsPerPage;
-            var endIndex = startIndex + rowsPerPage;
-
-            rows.hide().slice(startIndex, endIndex).show();
-        }
-
-
-        paginateTable();
-
-        $(document).on('click', '#pagination li a', function (event) {
-            event.preventDefault();
-
-            var clickedPage = parseInt($(this).text());
-
-
-            currentPage = clickedPage;
-            paginateTable();
-
-
-            $('html, body').animate({ scrollTop: $('#table-container').offset().top }, 'slow');
-        });
-    });
-
-</script>
 
 <script>
    
@@ -216,9 +170,10 @@ function gensal(){
                     async:'false',
                  
                     success: function (data) {
+                    alert("Data saved successfully.");
                    if( (tbody.children().length)==@Model.Count())
                    {
-                      //  location.reload();
+                        //location.reload();
                         window.location.href = '/Employee/GenerateSalary';
                     }
                         debugger;
@@ -239,6 +194,8 @@ function gensal(){
 
     }
 }
+
+   
 
     $(function () {
         $("input[name='Attendance']").on('input', function (e) {
