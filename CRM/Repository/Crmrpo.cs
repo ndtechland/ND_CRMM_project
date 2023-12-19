@@ -108,46 +108,54 @@ namespace CRM.Repository
         }
         public async Task<int> EmpRegistration(EmpMultiform model)
         {
-            var parameter = new List<SqlParameter>();
-            parameter.Add(new SqlParameter("@FirstName", model.FirstName));
-            parameter.Add(new SqlParameter("@MiddleName", model.MiddleName));
-            parameter.Add(new SqlParameter("@LastName", model.LastName));
-            parameter.Add(new SqlParameter("@DateOfJoining", model.DateOfJoining));
-            parameter.Add(new SqlParameter("@WorkEmail", model.WorkEmail));
-            parameter.Add(new SqlParameter("@GenderID", model.GenderID));
-            parameter.Add(new SqlParameter("@WorkLocationID", model.WorkLocationID));
-            parameter.Add(new SqlParameter("@DesignationID", model.DesignationID));
-            parameter.Add(new SqlParameter("@DepartmentID", model.DepartmentID));
-            //-- Salary Details
-            parameter.Add(new SqlParameter("@AnnualCTC", model.AnnualCTC));
-            parameter.Add(new SqlParameter("@Basic", model.Basic));
-            parameter.Add(new SqlParameter("@HouseRentAllowance", model.HouseRentAllowance));
-            parameter.Add(new SqlParameter("@ConveyanceAllowance", model.ConveyanceAllowance));
-            parameter.Add(new SqlParameter("@FixedAllowance", model.FixedAllowance));
-            parameter.Add(new SqlParameter("@EPF", model.EPF));
-            parameter.Add(new SqlParameter("@MonthlyGrossPay", model.MonthlyGrossPay));
-            parameter.Add(new SqlParameter("@MonthlyCTC", model.MonthlyCTC));
-            //
-            parameter.Add(new SqlParameter("@Personal_Email_Address", model.PersonalEmailAddress));
-            parameter.Add(new SqlParameter("@Mobile_Number", model.MobileNumber));
-            parameter.Add(new SqlParameter("@Date_Of_Birth", model.DateOfBirth));
-            parameter.Add(new SqlParameter("@Father_Name", model.FatherName));
-            parameter.Add(new SqlParameter("@PAN", model.PAN));
-            parameter.Add(new SqlParameter("@Address_Line_1", model.AddressLine1));
-            parameter.Add(new SqlParameter("@Address_Line_2", model.AddressLine2));
-            parameter.Add(new SqlParameter("@City", model.City));
-            parameter.Add(new SqlParameter("@State_ID", model.StateID));
-            parameter.Add(new SqlParameter("@Pincode", model.Pincode));
-            //
-            parameter.Add(new SqlParameter("@Account_Holder_Name", model.AccountHolderName));
-            parameter.Add(new SqlParameter("@Bank_Name", model.BankName));
-            parameter.Add(new SqlParameter("@Account_Number", model.AccountNumber));
-            parameter.Add(new SqlParameter("@Re_Enter_Account_Number", model.ReEnterAccountNumber));
-            parameter.Add(new SqlParameter("@IFSC", model.IFSC));
-            parameter.Add(new SqlParameter("@Account_Type_ID", model.AccountTypeID));
-            var result = await Task.Run(() => _context.Database.ExecuteSqlRawAsync(@"exec EmployeeRegistration @FirstName,@MiddleName,@LastName,@DateOfJoining,@WorkEmail,@GenderID,@WorkLocationID,@DesignationID,@DepartmentID, @AnnualCTC,@Basic,@HouseRentAllowance,@ConveyanceAllowance,@FixedAllowance,@EPF,@MonthlyGrossPay,@MonthlyCTC,@Personal_Email_Address,@Mobile_Number, @Date_Of_Birth,@Father_Name,@PAN,@Address_Line_1,@Address_Line_2,@City, @State_ID,@Pincode,@Account_Holder_Name,@Bank_Name,@Account_Number,@Re_Enter_Account_Number,@IFSC,@Account_Type_ID",parameter.ToArray()));
+            try
+            {
 
-            return result;
+                var parameter = new List<SqlParameter>();
+                parameter.Add(new SqlParameter("@FirstName", model.FirstName));
+                parameter.Add(new SqlParameter("@MiddleName", model.MiddleName));
+                parameter.Add(new SqlParameter("@LastName", model.LastName));
+                parameter.Add(new SqlParameter("@DateOfJoining", model.DateOfJoining));
+                parameter.Add(new SqlParameter("@WorkEmail", model.WorkEmail));
+                parameter.Add(new SqlParameter("@GenderID", model.GenderID));
+                parameter.Add(new SqlParameter("@WorkLocationID", model.WorkLocationID));
+                parameter.Add(new SqlParameter("@DesignationID", model.DesignationID));
+                parameter.Add(new SqlParameter("@DepartmentID", model.DepartmentID));
+                //-- Salary Details
+                parameter.Add(new SqlParameter("@AnnualCTC", model.AnnualCTC));
+                parameter.Add(new SqlParameter("@Basic", model.Basic));
+                parameter.Add(new SqlParameter("@HouseRentAllowance", model.HouseRentAllowance));
+                parameter.Add(new SqlParameter("@ConveyanceAllowance", model.ConveyanceAllowance));
+                parameter.Add(new SqlParameter("@FixedAllowance", model.FixedAllowance));
+                parameter.Add(new SqlParameter("@EPF", model.EPF));
+                parameter.Add(new SqlParameter("@MonthlyGrossPay", model.MonthlyGrossPay));
+                parameter.Add(new SqlParameter("@MonthlyCTC", model.MonthlyCTC));
+                //
+                parameter.Add(new SqlParameter("@Personal_Email_Address", model.PersonalEmailAddress));
+                parameter.Add(new SqlParameter("@Mobile_Number", model.MobileNumber));
+                parameter.Add(new SqlParameter("@Date_Of_Birth", model.DateOfBirth));
+                parameter.Add(new SqlParameter("@Father_Name", model.FatherName));
+                parameter.Add(new SqlParameter("@PAN", model.PAN));
+                parameter.Add(new SqlParameter("@Address_Line_1", model.AddressLine1));
+                parameter.Add(new SqlParameter("@Address_Line_2", model.AddressLine2));
+                parameter.Add(new SqlParameter("@City", model.City));
+                parameter.Add(new SqlParameter("@State_ID", model.StateID));
+                parameter.Add(new SqlParameter("@Pincode", model.Pincode));
+                //
+                parameter.Add(new SqlParameter("@Account_Holder_Name", model.AccountHolderName));
+                parameter.Add(new SqlParameter("@Bank_Name", model.BankName));
+                parameter.Add(new SqlParameter("@Account_Number", model.AccountNumber));
+                parameter.Add(new SqlParameter("@Re_Enter_Account_Number", model.ReEnterAccountNumber));
+                parameter.Add(new SqlParameter("@IFSC", model.IFSC));
+                parameter.Add(new SqlParameter("@Account_Type_ID", model.AccountTypeID));
+                var result = await Task.Run(() => _context.Database.ExecuteSqlRawAsync(@"exec EmployeeRegistration @FirstName,@MiddleName,@LastName,@DateOfJoining,@WorkEmail,@GenderID,@WorkLocationID,@DesignationID,@DepartmentID,@AnnualCTC,@Basic,@HouseRentAllowance,@ConveyanceAllowance,@FixedAllowance,@EPF,@MonthlyGrossPay,@MonthlyCTC,@Personal_Email_Address,@Mobile_Number, @Date_Of_Birth,@Father_Name,@PAN,@Address_Line_1,@Address_Line_2,@City, @State_ID,@Pincode,@Account_Holder_Name,@Bank_Name,@Account_Number,@Re_Enter_Account_Number,@IFSC,@Account_Type_ID", parameter.ToArray()));
+
+                return result;
+            }
+            catch (Exception Ex)
+            {
+                throw new Exception("Error:" + Ex.Message);
+            }
         }
 
 
@@ -499,6 +507,8 @@ namespace CRM.Repository
 
 
         }
+
+
     }
 
 }
