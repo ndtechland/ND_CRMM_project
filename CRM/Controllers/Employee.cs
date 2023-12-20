@@ -9,19 +9,14 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
+using Rotativa.AspNetCore;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
-
 using System.Net;
+using System.Text;
 
 
-using Syncfusion.Pdf;
-using Syncfusion.Pdf.Graphics;
-using Syncfusion.Drawing;
-using System.IO;
-
-
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+//using Microsoft.TeamFoundation.WorkItemTracking.Internals;
 
 namespace CRM.Controllers
 {
@@ -29,12 +24,18 @@ namespace CRM.Controllers
     {
         private readonly admin_NDCrMContext _context;
         private readonly ICrmrpo _ICrmrpo;
+        private readonly PdfService _pdfService;
+        private readonly IWebHostEnvironment _webHostEnvironment;
+
+    
 
 
-        public Employee(ICrmrpo _ICrmrpo, admin_NDCrMContext _context)
+        public Employee(ICrmrpo _ICrmrpo, admin_NDCrMContext _context, PdfService pdfService)
         {
             this._context = _context;
             this._ICrmrpo = _ICrmrpo;
+            this._pdfService = pdfService;
+            
 
         }
         public IActionResult EmployeeRegistration()
@@ -512,11 +513,11 @@ namespace CRM.Controllers
 
 
         }       
+
         public IActionResult sendmail()
         {
            return View();
         }
-
 
 
         //public IActionResult DownloadPdf(int id, int oid)
@@ -599,12 +600,100 @@ namespace CRM.Controllers
                 throw new Exception("Error : " + ex.Message);
             }
         }
-       
+
+        public IActionResult DownloadSalarySlip()
+        {
+            // Generate HTML content for Salary Slip dynamically
+            var salarySlipHtml = GenerateSalarySlipHtml("hello");
+
+            // Generate and return the PDF file
+            var pdfBytes = _pdfService.GeneratePdf(salarySlipHtml);
+
+            return File(pdfBytes, "application/pdf", "SalarySlip.pdf");
+        }
+
+        private string GenerateSalarySlipHtml(string username)
+        {
+            // Dynamically generate HTML content for Salary Slip based on your data
+            // This is just a placeholder example; you should customize it based on your actual requirements
+            var htmlContent = @"
+            <html>
+            <head>
+                <style>
+                    /* Add your CSS styles here */
+                    body {
+                        font-family: Arial, sans-serif;
+                    }
+                    .salary-slip {
+                        padding: 20px;
+                        border: 1px solid #ccc;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class='salary-slip'>
+                    <h1>Salary Slip</h1>
+                    <p>Employee: John Doe</p>
+                    <p>Salary: ${username}</p>
+                    <!-- Add more details as needed -->
+                </div>
+            </body>
+            </html>";
+
+            return htmlContent;
+        }
+
+        public IActionResult Employer() 
+        {
+            try
+            {
+                return View();
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("Error : " + ex.Message);
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> Employer(Employeer_EPF model)
+        {
+            try
+            {
+                var response = await _ICrmrpo.Employer(model);
+                
+                ModelState.Clear();
+                return View();
+               
+            }
+            catch (Exception Ex)
+            {
+                throw new Exception("Error:" + Ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> Employee_list()
+        {
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                var response = await _ICrmrpo.EmployerList();
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName = AddedBy;
+                return View(response);
+
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
+
+
+        }
 
     }
 
 
-  }       
+}       
 
 
   

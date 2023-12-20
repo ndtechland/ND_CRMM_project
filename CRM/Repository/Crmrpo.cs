@@ -507,7 +507,24 @@ namespace CRM.Repository
 
         }
 
+        public async Task<int> Employer(Employeer_EPF model)
+        {
+            var parameter = new List<SqlParameter>();
+            parameter.Add(new SqlParameter("@EPF_Number", model.EPF_Number));
+            parameter.Add(new SqlParameter("@Deduction_Cycle", model.Deduction_Cycle));
+            parameter.Add(new SqlParameter("@Employer_Contribution_Rate", model.Employer_Contribution_Rate));
 
+            var result = await Task.Run(() => _context.Database
+           .ExecuteSqlRawAsync(@"exec USP_Employeer_EPF  @EPF_Number, @Deduction_Cycle,@Employer_Contribution_Rate", parameter.ToArray()));
+
+            return result;
+        }
+
+        public async Task<List<Employeer_EPF>> EmployerList()
+        {
+            var result = await _context.Employeer_EPFs.FromSqlRaw<Employeer_EPF>("EmployerList").ToListAsync();
+            return result;
+        }
     }
 
 }
