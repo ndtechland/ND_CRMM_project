@@ -4,6 +4,10 @@ using CRM.Repository;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Principal;
 using CRM.Models.DTO;
+using DinkToPdf.Contracts;
+using DinkToPdf;
+using BaselineTypeDiscovery;
+using Rotativa.AspNetCore;
 
 namespace CRM
 {
@@ -30,6 +34,11 @@ namespace CRM
             services.AddControllersWithViews();
             services.AddScoped<ICrmrpo, Crmrpo>();
             services.AddScoped<IEmailService, EmailService>();
+
+            services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
+            services.AddSingleton<PdfService>();
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -49,7 +58,7 @@ namespace CRM
             app.UseStaticFiles();
             app.UseSession();
             app.UseRouting();
-
+           
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
