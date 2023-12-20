@@ -12,11 +12,28 @@ using Newtonsoft.Json;
 using Rotativa.AspNetCore;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+
+using System.IO;
+using IronPdf;
+using IronPdf.Engines.Chrome;
+using IronPdf.Rendering;
+
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using System.Reflection.Emit;
+using Org.BouncyCastle.Utilities;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using SixLabors.ImageSharp.Drawing;
+using System.Drawing.Printing;
+using System.Net;
+using Microsoft.Extensions.Options;
+
 using System.Net;
 using System.Text;
 
 
 //using Microsoft.TeamFoundation.WorkItemTracking.Internals;
+
 
 namespace CRM.Controllers
 {
@@ -24,6 +41,16 @@ namespace CRM.Controllers
     {
         private readonly admin_NDCrMContext _context;
         private readonly ICrmrpo _ICrmrpo;
+
+        private readonly IConfiguration _configuration;
+       
+
+        public Employee(ICrmrpo _ICrmrpo, admin_NDCrMContext _context,IConfiguration configuration)
+        {
+            this._context = _context;
+            this._ICrmrpo = _ICrmrpo;
+            _configuration = configuration;
+
         private readonly PdfService _pdfService;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
@@ -36,6 +63,7 @@ namespace CRM.Controllers
             this._ICrmrpo = _ICrmrpo;
             this._pdfService = pdfService;
             
+
 
         }
         public IActionResult EmployeeRegistration()
@@ -592,7 +620,52 @@ namespace CRM.Controllers
         {
             try
             {
-                return View();
+                var result = (from emp in _context.EmployeeRegistrations
+                              join empsalary in _context.EmployeeSalaryDetails on emp.Id equals empsalary.EmpId
+                              join empbank in _context.EmployeeBankDetails on emp.Id equals empbank.EmployeeRegistrationId
+                              join worklocation in _context.WorkLocations on emp.WorkLocationId equals worklocation.Id.ToString()
+                              join designation in _context.DesignationMasters on emp.DesignationId equals designation.Id.ToString()
+                              select new SalarySlipDetails
+                              {
+                                  Id = emp.Id,
+                                  EmpCode = emp.EmployeeId,
+                                  PFNo = "",
+                                  ESINo = "",
+                                  Designation = designation.DesignationName,
+                                  EMPName = "",
+                                  NOD = "",
+                                  ModeofPay = "",
+                                  AcNo = "",
+                                  WorkingBranch = "",
+                                  BasicAmount = "",
+                                  DA = "",
+                                  HRA = "",
+                                  WA = "",
+                                  CA = "",
+                                  CCA = "",
+                                  MA = "",
+                                  SalesIncentive = "",
+                                  LeaveEncashment = "",
+                                  HolidayWages = "",
+                                  SpecialAllowance = "",
+                                  Bonus = "",
+                                  IndividualIncentive = "",
+                                  TotalEarning = "",
+                                  NetPay = "",
+                                  InWords = "",
+                                  PF = "",
+                                  ESI = "",
+                                  TDS = "",
+                                  LOP = "",
+                                  PT = "",
+                                  SPLDeduction = "",
+                                  EWF = "",
+                                  CD = "",
+                                  TotalDeductions = "",
+
+                              }) ;
+                             
+                              return View();
             }
             catch (Exception ex)
             {
@@ -600,6 +673,13 @@ namespace CRM.Controllers
                 throw new Exception("Error : " + ex.Message);
             }
         }
+
+       
+        public IActionResult DocPDF()
+        {
+            try
+            {
+
 
         public IActionResult DownloadSalarySlip()
         {
@@ -690,6 +770,25 @@ namespace CRM.Controllers
 
         }
 
+
+                var rendere = new ChromePdfRenderer();
+                WebClient client = new WebClient();
+                // Create a PDF from a HTML string using C#
+                string SlipURL = _configuration.GetValue<string>("URL") + "/Employee/SalarySlipInPDF";
+                
+                var pdf = rendere.RenderHtmlAsPdf(client.DownloadString(SlipURL));
+
+                // Export to a file or Stream
+                pdf.SaveAs("output.pdf");
+
+                return File(pdf.Stream, "application/pdf", "SalarySlip.pdf");
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 
 
