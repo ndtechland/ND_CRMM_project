@@ -148,7 +148,7 @@ namespace CRM.Repository
                 parameter.Add(new SqlParameter("@Re_Enter_Account_Number", model.ReEnterAccountNumber));
                 parameter.Add(new SqlParameter("@IFSC", model.IFSC));
                 parameter.Add(new SqlParameter("@Account_Type_ID", model.AccountTypeID));
-                var result = await Task.Run(() => _context.Database.ExecuteSqlRawAsync(@"exec EmployeeRegistration @FirstName,@MiddleName,@LastName,@DateOfJoining,@WorkEmail,@GenderID,@WorkLocationID,@DesignationID,@DepartmentID,@AnnualCTC,@Basic,@HouseRentAllowance,@ConveyanceAllowance,@FixedAllowance,@EPF,@MonthlyGrossPay,@MonthlyCTC,@Personal_Email_Address,@Mobile_Number, @Date_Of_Birth,@Father_Name,@PAN,@Address_Line_1,@Address_Line_2,@City, @State_ID,@Pincode,@Account_Holder_Name,@Bank_Name,@Account_Number,@Re_Enter_Account_Number,@IFSC,@Account_Type_ID", parameter.ToArray()));
+                var result = await Task.Run(() => _context.Database.ExecuteSqlRawAsync(@"exec EmployeeRegistration @FirstName,@MiddleName,@LastName,@DateOfJoining,@WorkEmail,@GenderID,@WorkLocationID,@DesignationID,@DepartmentID,@AnnualCTC,@Basic,@HouseRentAllowance,@ConveyanceAllowance,@FixedAllowance,@EPF,@MonthlyGrossPay,@MonthlyCTC,@Personal_Email_Address,@Mobile_Number,@Date_Of_Birth,@Father_Name,@PAN,@Address_Line_1,@Address_Line_2,@City,@State_ID,@Pincode,@Account_Holder_Name,@Bank_Name,@Account_Number,@Re_Enter_Account_Number,@IFSC,@Account_Type_ID", parameter.ToArray()));
 
                 return result;
             }
@@ -507,7 +507,24 @@ namespace CRM.Repository
 
         }
 
+        public async Task<int> Employer(Employeer_EPF model)
+        {
+            var parameter = new List<SqlParameter>();
+            parameter.Add(new SqlParameter("@EPF_Number", model.EPF_Number));
+            parameter.Add(new SqlParameter("@Deduction_Cycle", model.Deduction_Cycle));
+            parameter.Add(new SqlParameter("@Employer_Contribution_Rate", model.Employer_Contribution_Rate));
 
+            var result = await Task.Run(() => _context.Database
+           .ExecuteSqlRawAsync(@"exec USP_Employeer_EPF  @EPF_Number, @Deduction_Cycle,@Employer_Contribution_Rate", parameter.ToArray()));
+
+            return result;
+        }
+
+        public async Task<List<Employeer_EPF>> EmployerList()
+        {
+            var result = await _context.Employeer_EPFs.FromSqlRaw<Employeer_EPF>("EmployerList").ToListAsync();
+            return result;
+        }
     }
 
 }

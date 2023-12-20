@@ -9,8 +9,10 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
+using Rotativa.AspNetCore;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+
 using System.IO;
 using IronPdf;
 using IronPdf.Engines.Chrome;
@@ -26,12 +28,20 @@ using System.Drawing.Printing;
 using System.Net;
 using Microsoft.Extensions.Options;
 
+using System.Net;
+using System.Text;
+
+
+//using Microsoft.TeamFoundation.WorkItemTracking.Internals;
+
+
 namespace CRM.Controllers
 {
     public class Employee : Controller
     {
         private readonly admin_NDCrMContext _context;
         private readonly ICrmrpo _ICrmrpo;
+
         private readonly IConfiguration _configuration;
        
 
@@ -40,6 +50,20 @@ namespace CRM.Controllers
             this._context = _context;
             this._ICrmrpo = _ICrmrpo;
             _configuration = configuration;
+
+        private readonly PdfService _pdfService;
+        private readonly IWebHostEnvironment _webHostEnvironment;
+
+    
+
+
+        public Employee(ICrmrpo _ICrmrpo, admin_NDCrMContext _context, PdfService pdfService)
+        {
+            this._context = _context;
+            this._ICrmrpo = _ICrmrpo;
+            this._pdfService = pdfService;
+            
+
 
         }
         public IActionResult EmployeeRegistration()
@@ -471,10 +495,13 @@ namespace CRM.Controllers
         [HttpPost]
         public IActionResult GetLocationsByCustomer(string customerId)
         {
-            var locations = _context.CustomerRegistrations.FirstOrDefault(x => x.Id == Convert.ToInt32(customerId));
-            string[] strlocation = locations.WorkLocation?.Split(new string[] { "," },
-                                  StringSplitOptions.None);
-            List<WorkLocation> locationlist = new List<WorkLocation>();
+
+            var locations = _context.CustomerRegistrations.FirstOrDefault(x => x.Id ==Convert.ToInt32(customerId));
+            string[] strlocation = locations.WorkLocation?.Split(new string[] { "," },StringSplitOptions.None);
+            List<WorkLocation> locationlist =new List<WorkLocation>();
+
+           
+
             foreach (var loc in strlocation)
             {
                 locationlist.Add(_context.WorkLocations.FirstOrDefault(x => x.Id == Convert.ToInt32(loc)));
@@ -514,6 +541,79 @@ namespace CRM.Controllers
 
 
         }       
+
+        public IActionResult sendmail()
+        {
+           return View();
+        }
+
+
+        //public IActionResult DownloadPdf(int id, int oid)
+        //{
+        //    //GeneratePdf(id, oid);
+        //    string filePath = "../savedPDF/index.html";
+
+        //    if (System.IO.File.Exists(filePath))
+        //    {
+        //        // Read the file bytes
+        //        byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
+
+        //        // Set the Content-Disposition header to suggest the filename to browsers
+        //        var contentDisposition = new System.Net.Mime.ContentDisposition
+        //        {
+        //            FileName = "Input.pdf",
+        //            Inline = false // Force the browser to prompt for download
+        //        };
+        //        Response.Headers.Add("Content-Disposition", contentDisposition.ToString());
+
+        //        // Set the content type to PDF
+        //        Response.ContentType = "application/pdf";
+
+        //        // Return the file as a FileResult
+        //        return File(fileBytes, "application/pdf");
+        //    }
+        //    else
+        //    {
+        //        // If the file doesn't exist, return a 404 Not Found response
+        //        return null;
+        //    }
+        //}
+
+        //public void GeneratePdf(int id, int oid)
+        //{
+        //    using (WebClient client = new WebClient())
+        //    {
+        //        // Define the URL to the HTML content
+        //        string url = $"https://admin.organicdeal.in/Home/Invoice?oid={oid}";
+
+        //        // Download the HTML content from the URL
+        //        string htmlContent = client.DownloadString(url);
+
+        //        // Specify the file path where you want to save the HTML content
+        //        string htmlFilePath = "../savedHTML/index.html";
+
+        //        // Save the HTML content to the specified file path
+        //        System.IO.File.WriteAllText(htmlFilePath, htmlContent);
+        //    }
+
+        //    // instantiate the html to pdf converter
+        //    HtmlToPdf converter = new HtmlToPdf();
+
+        //    // get html file path
+        //    var htmlFilePath = "../savedHTML/index.html";
+
+        //    // convert the html to pdf
+        //    PdfDocument doc = converter.ConvertHtmlString(System.IO.File.ReadAllText(htmlFilePath));
+
+        //    // specify the file path for saving the PDF
+        //    var pdfFilePath = "../savedPDF/index.pdf";
+
+        //    // save the pdf document
+        //    doc.Save(pdfFilePath);
+
+        //    // close the pdf document
+        //    doc.Close();
+        //}
 
 
         public IActionResult SalarySlipInPDF()
@@ -573,11 +673,103 @@ namespace CRM.Controllers
                 throw new Exception("Error : " + ex.Message);
             }
         }
+
        
         public IActionResult DocPDF()
         {
             try
             {
+
+
+        public IActionResult DownloadSalarySlip()
+        {
+            // Generate HTML content for Salary Slip dynamically
+            var salarySlipHtml = GenerateSalarySlipHtml("hello");
+
+            // Generate and return the PDF file
+            var pdfBytes = _pdfService.GeneratePdf(salarySlipHtml);
+
+            return File(pdfBytes, "application/pdf", "SalarySlip.pdf");
+        }
+
+        private string GenerateSalarySlipHtml(string username)
+        {
+            // Dynamically generate HTML content for Salary Slip based on your data
+            // This is just a placeholder example; you should customize it based on your actual requirements
+            var htmlContent = @"
+            <html>
+            <head>
+                <style>
+                    /* Add your CSS styles here */
+                    body {
+                        font-family: Arial, sans-serif;
+                    }
+                    .salary-slip {
+                        padding: 20px;
+                        border: 1px solid #ccc;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class='salary-slip'>
+                    <h1>Salary Slip</h1>
+                    <p>Employee: John Doe</p>
+                    <p>Salary: ${username}</p>
+                    <!-- Add more details as needed -->
+                </div>
+            </body>
+            </html>";
+
+            return htmlContent;
+        }
+
+        public IActionResult Employer() 
+        {
+            try
+            {
+                return View();
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("Error : " + ex.Message);
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> Employer(Employeer_EPF model)
+        {
+            try
+            {
+                var response = await _ICrmrpo.Employer(model);
+                
+                ModelState.Clear();
+                return View();
+               
+            }
+            catch (Exception Ex)
+            {
+                throw new Exception("Error:" + Ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> Employee_list()
+        {
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                var response = await _ICrmrpo.EmployerList();
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName = AddedBy;
+                return View(response);
+
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
+
+
+        }
+
 
                 var rendere = new ChromePdfRenderer();
                 WebClient client = new WebClient();
@@ -600,7 +792,7 @@ namespace CRM.Controllers
     }
 
 
-  }       
+}       
 
 
   
