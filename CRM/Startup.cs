@@ -14,7 +14,9 @@ namespace CRM
             Configuration = configuration;
         }
 
+
         public IConfiguration Configuration { get; }
+
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -30,6 +32,8 @@ namespace CRM
             services.AddControllersWithViews();
             services.AddScoped<ICrmrpo, Crmrpo>();
             services.AddScoped<IEmailService, EmailService>();
+
+            services.Configure<URL>(Configuration.GetSection("URL"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
