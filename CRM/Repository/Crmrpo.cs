@@ -343,28 +343,6 @@ namespace CRM.Repository
             return result;
         }
 
-
-        //public async Task<int> Gengeneratesalary(EmployeeSalaryDetail model)
-        //{
-        //    var parameter = new List<SqlParameter>();
-        //    parameter.Add(new SqlParameter("@EmployeeID", model.EmployeeId));
-        //    parameter.Add(new SqlParameter("@EmployeeName", model.EmployeeName));
-        //    parameter.Add(new SqlParameter("@Basic", model.Basic));
-        //    parameter.Add(new SqlParameter("@HouseRentAllowance", model.HouseRentAllowance));
-        //    parameter.Add(new SqlParameter("@ConveyanceAllowance", model.ConveyanceAllowance));
-        //    parameter.Add(new SqlParameter("@FixedAllowance", model.FixedAllowance));
-        //    parameter.Add(new SqlParameter("@EPF", model.Epf));
-        //    parameter.Add(new SqlParameter("@MonthlyGrossPay", model.MonthlyGrossPay));
-        //    parameter.Add(new SqlParameter("@MonthlyCTC", model.MonthlyCtc));
-        //    parameter.Add(new SqlParameter("@EmpId", model.EmpId));
-        //    parameter.Add(new SqlParameter("@IsDeleted", "0"));
-        //    var result = await Task.Run(() => _context.Database
-        //   .ExecuteSqlRawAsync(@"exec sp_Employee_Salary_Details @EmployeeID,@EmployeeName,@Basic,@HouseRentAllowance,@ConveyanceAllowance,@FixedAllowance,@EPF,@MonthlyGrossPay,@MonthlyCTC,@EmpId,@IsDeleted", parameter.ToArray()));
-
-        //    return result;
-        //}
-
-
         public async Task<int> Quation(Quation model)
         {
 
@@ -489,6 +467,7 @@ namespace CRM.Repository
                 {
                     var emps = new GenerateSalary()
                     {
+                        Id = Convert.ToInt32(rdr["id"]),
                         EmployeeId = Convert.ToString(rdr["Employee_ID"]),
                         EmployeeName = Convert.ToString(rdr["First_Name"]),
                         MonthlyGrossPay = Convert.ToDecimal(rdr["MonthlyGrossPay"]),

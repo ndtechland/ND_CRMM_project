@@ -98,6 +98,9 @@
                                                             <table id="datatable" class="table table-responsive">
                                                                 <thead>
                                                                     <tr style="background-color: #00baf2;">
+                                                                        <th hidden>
+                                                                        ID
+                                                                       </th>
                                                                         <th nowrap>Sl. No.</th>
                                                                         <th>
                                                                             @Html.DisplayNameFor(model => model.EmployeeId)
@@ -124,18 +127,16 @@
                                                                             count++;
                                                                             <tr>
                                                                                 <td>@count</td>
+                                                                                <td style="display:none">
+                                                                                    @item.Id
+                                                                                </td>
                                                                                 <td>@item.EmployeeId</td>
                                                                                 <td>@item.EmployeeName</td>
                                                                                 <td>@item.MonthlyCtc</td>
                                                                                 <td>@item.MonthlyGrossPay</td>
                                                                                 <td>
                                                                                     <div>
-
-                                                                                        <a href="#" class="fa fa-file-pdf-o font-danger" data-bs-toggle="modal"></a>
-
-                                                                                        <a href="@Url.Action("DocPDF","Employee")" class="fa fa-file-pdf-o font-danger"></a>
-
-                                                                                        <a href="" class="fa fa-trash font-danger"></a>
+                                                                                        <a href="@Url.Action("SalarySlipInPDF","Employee",new { id=item.Id})" class="fa fa-file-pdf-o font-danger"></a>
                                                                                         <a href="" class="fa fa-envelope-o" aria-hidden="true"></a>
                                                                                     </div>
                                                                                 </td>
