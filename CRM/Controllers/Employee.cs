@@ -560,14 +560,14 @@ namespace CRM.Controllers
 
         }
 
-        public IActionResult DocPDF()
+        public IActionResult DocPDF(int id)
         {
             // instantiate a html to pdf converter object
             HtmlToPdf converter = new HtmlToPdf();
            
             WebClient client = new WebClient();
                    // Create a PDF from a HTML string using C#
-            string SlipURL = _configuration.GetValue<string>("URL") + "/Employee/SalarySlipInPDF";
+            string SlipURL = _configuration.GetValue<string>("URL") + "/Employee/SalarySlipInPDF?id="+id+"";
             // create a new pdf document converting an url
             PdfDocument doc = converter.ConvertUrl(SlipURL);
 
