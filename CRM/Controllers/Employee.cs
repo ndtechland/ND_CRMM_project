@@ -14,9 +14,14 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Net;
 using System.Text;
-using IronPdf;
-using IronPdf.Engines.Chrome;
-using IronPdf.Rendering;
+//using IronPdf;
+//using IronPdf.Engines.Chrome;
+//using IronPdf.Rendering;
+using Microsoft.AspNetCore.Components.RenderTree;
+//using IronPdf.Editing;
+using System.IO;
+using Org.BouncyCastle.Asn1.Mozilla;
+using SelectPdf;
 
 
 //using Microsoft.TeamFoundation.WorkItemTracking.Internals;
@@ -583,33 +588,38 @@ namespace CRM.Controllers
 
         }
 
-
         public IActionResult DocPDF()
         {
-            try
-            {
+            // instantiate a html to pdf converter object
+            HtmlToPdf converter = new HtmlToPdf();
+           
+            WebClient client = new WebClient();
+                   // Create a PDF from a HTML string using C#
+            string SlipURL = _configuration.GetValue<string>("URL") + "/Employee/SalarySlipInPDF";
+            // create a new pdf document converting an url
+            PdfDocument doc = converter.ConvertUrl(SlipURL);
 
-                var rendere = new ChromePdfRenderer();
-                WebClient client = new WebClient();
-                // Create a PDF from a HTML string using C#
-                string SlipURL = _configuration.GetValue<string>("URL") + "/Employee/SalarySlipInPDF";
+            // save pdf document
+            //doc.Save("Sample.pdf");
 
-                var pdf = rendere.RenderHtmlAsPdf(client.DownloadString(SlipURL));
+            byte[] pdf = doc.Save();
 
-                // Export to a file or Stream
-                pdf.SaveAs("/Pdffile/output.pdf");
+            // close pdf document
+            doc.Close();
 
-                return File(pdf.Stream, "application/pdf", "SalarySlip.pdf");
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-
+            // return resulted pdf document
+            FileResult fileResult = new FileContentResult(pdf, "application/pdf");
+            fileResult.FileDownloadName = "SalarySlip.pdf";
+            return fileResult;
+            //return File(, "application/pdf", "SalarySlip.pdf");
         }
+
     }
 }
+
+             
+                
+
 
 
 
