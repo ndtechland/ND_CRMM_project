@@ -18,9 +18,7 @@ namespace CRM
             Configuration = configuration;
         }
 
-
         public IConfiguration Configuration { get; }
-
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -37,12 +35,8 @@ namespace CRM
             services.AddScoped<ICrmrpo, Crmrpo>();
             services.AddScoped<IEmailService, EmailService>();
 
-
-            services.Configure<URL>(Configuration.GetSection("URL"));
-
             services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
             services.AddSingleton<PdfService>();
-
 
 
         }

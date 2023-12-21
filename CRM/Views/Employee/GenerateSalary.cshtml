@@ -39,10 +39,6 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-body">
-
-                                @Html.ActionLink("Salary Slip In PDF","DocPDF","Employee")
-
-
                                 <form asp-action="GenerateSalary" autocomplete="off" method="post">
                                     <div class="row">
                                         <div class="form-group col-sm">
@@ -135,12 +131,9 @@
                                                                                 <td>
                                                                                     <div>
 
-                                                                                        <a href="/Employee/SalarySlipInPDF" class="fa fa-edit m-2 font-success" data-bs-toggle="modal"></a>
-
                                                                                         <a href="#" class="fa fa-file-pdf-o font-danger" data-bs-toggle="modal"></a>
 
                                                                                         <a href="@Url.Action("SalarySlipInPDF","Employee")" class="fa fa-file-pdf-o font-danger"></a>
-
 
                                                                                         <a href="" class="fa fa-trash font-danger"></a>
                                                                                         <a href="" class="fa fa-envelope-o" aria-hidden="true"></a>
