@@ -743,12 +743,6 @@ namespace CRM.Controllers
         }
 
 
-
-        
-
-    }
-
-
         public IActionResult DocPDF()
         {
             try
@@ -774,8 +768,17 @@ namespace CRM.Controllers
 
         }
     }
+}
 
-}       
+
+
+
+
+       
+
+
+
+    
 
 
   
