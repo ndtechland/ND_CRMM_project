@@ -344,25 +344,25 @@ namespace CRM.Repository
         }
 
 
-        public async Task<int> Gengeneratesalary(EmployeeSalaryDetail model)
-        {
-            var parameter = new List<SqlParameter>();
-            parameter.Add(new SqlParameter("@EmployeeID", model.EmployeeId));
-            parameter.Add(new SqlParameter("@EmployeeName", model.EmployeeName));
-            parameter.Add(new SqlParameter("@Basic", model.Basic));
-            parameter.Add(new SqlParameter("@HouseRentAllowance", model.HouseRentAllowance));
-            parameter.Add(new SqlParameter("@ConveyanceAllowance", model.ConveyanceAllowance));
-            parameter.Add(new SqlParameter("@FixedAllowance", model.FixedAllowance));
-            parameter.Add(new SqlParameter("@EPF", model.Epf));
-            parameter.Add(new SqlParameter("@MonthlyGrossPay", model.MonthlyGrossPay));
-            parameter.Add(new SqlParameter("@MonthlyCTC", model.MonthlyCtc));
-            parameter.Add(new SqlParameter("@EmpId", model.EmpId));
-            parameter.Add(new SqlParameter("@IsDeleted", "0"));
-            var result = await Task.Run(() => _context.Database
-           .ExecuteSqlRawAsync(@"exec sp_Employee_Salary_Details @EmployeeID,@EmployeeName,@Basic,@HouseRentAllowance,@ConveyanceAllowance,@FixedAllowance,@EPF,@MonthlyGrossPay,@MonthlyCTC,@EmpId,@IsDeleted", parameter.ToArray()));
+        //public async Task<int> Gengeneratesalary(EmployeeSalaryDetail model)
+        //{
+        //    var parameter = new List<SqlParameter>();
+        //    parameter.Add(new SqlParameter("@EmployeeID", model.EmployeeId));
+        //    parameter.Add(new SqlParameter("@EmployeeName", model.EmployeeName));
+        //    parameter.Add(new SqlParameter("@Basic", model.Basic));
+        //    parameter.Add(new SqlParameter("@HouseRentAllowance", model.HouseRentAllowance));
+        //    parameter.Add(new SqlParameter("@ConveyanceAllowance", model.ConveyanceAllowance));
+        //    parameter.Add(new SqlParameter("@FixedAllowance", model.FixedAllowance));
+        //    parameter.Add(new SqlParameter("@EPF", model.Epf));
+        //    parameter.Add(new SqlParameter("@MonthlyGrossPay", model.MonthlyGrossPay));
+        //    parameter.Add(new SqlParameter("@MonthlyCTC", model.MonthlyCtc));
+        //    parameter.Add(new SqlParameter("@EmpId", model.EmpId));
+        //    parameter.Add(new SqlParameter("@IsDeleted", "0"));
+        //    var result = await Task.Run(() => _context.Database
+        //   .ExecuteSqlRawAsync(@"exec sp_Employee_Salary_Details @EmployeeID,@EmployeeName,@Basic,@HouseRentAllowance,@ConveyanceAllowance,@FixedAllowance,@EPF,@MonthlyGrossPay,@MonthlyCTC,@EmpId,@IsDeleted", parameter.ToArray()));
 
-            return result;
-        }
+        //    return result;
+        //}
 
 
         public async Task<int> Quation(Quation model)

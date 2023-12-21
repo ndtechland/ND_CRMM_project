@@ -337,55 +337,55 @@ namespace CRM.Controllers
             }
         }
 
-        [HttpGet("Employee/Gengeneratesalary")]
-        public IActionResult Gengeneratesalary(int? id, string name)
-        {
-            if (HttpContext.Session.GetString("UserName") != null)
-            {
-                var data = _context.EmployeeRegistrations.Find(id);
-                //EmpId
+        //[HttpGet("Employee/Gengeneratesalary")]
+        //public IActionResult Gengeneratesalary(int? id, string name)
+        //{
+        //    if (HttpContext.Session.GetString("UserName") != null)
+        //    {
+        //        var data = _context.EmployeeRegistrations.Find(id);
+        //        //EmpId
 
-                EmployeeSalaryDetail empd = new EmployeeSalaryDetail();
-                string AddedBy = HttpContext.Session.GetString("UserName");
-                ViewBag.UserName = AddedBy;
-                if (data != null)
-                {
-                    empd.EmployeeId = data.EmployeeId;
-                    empd.EmployeeName = data.FirstName;
-                    empd.EmpId = data.Id;
+        //        EmployeeSalaryDetail empd = new EmployeeSalaryDetail();
+        //        string AddedBy = HttpContext.Session.GetString("UserName");
+        //        ViewBag.UserName = AddedBy;
+        //        if (data != null)
+        //        {
+        //            empd.EmployeeId = data.EmployeeId;
+        //            empd.EmployeeName = data.FirstName;
+        //            empd.EmpId = data.Id;
 
-                }
-                return View(empd);
-            }
-            else
-            {
-                return RedirectToAction("Login", "Admin");
-            }
-        }
+        //        }
+        //        return View(empd);
+        //    }
+        //    else
+        //    {
+        //        return RedirectToAction("Login", "Admin");
+        //    }
+        //}
 
-        [HttpPost]
-        public async Task<IActionResult> Gengeneratesalary(EmployeeSalaryDetail model)
-        {
-            try
-            {
-                var response = await _ICrmrpo.Gengeneratesalary(model);
-                if (response != null)
-                {
+        //[HttpPost]
+        //public async Task<IActionResult> Gengeneratesalary(EmployeeSalaryDetail model)
+        //{
+        //    try
+        //    {
+        //        var response = await _ICrmrpo.Gengeneratesalary(model);
+        //        if (response != null)
+        //        {
 
-                    return RedirectToAction("Employeelist", "Employee");
-                    ViewBag.Message = "registration Successfully.";
-                }
-                else
-                {
-                    ModelState.Clear();
-                    return View();
-                }
-            }
-            catch (Exception Ex)
-            {
-                throw new Exception("Error:" + Ex.Message);
-            }
-        }
+        //            return RedirectToAction("Employeelist", "Employee");
+        //            ViewBag.Message = "registration Successfully.";
+        //        }
+        //        else
+        //        {
+        //            ModelState.Clear();
+        //            return View();
+        //        }
+        //    }
+        //    catch (Exception Ex)
+        //    {
+        //        throw new Exception("Error:" + Ex.Message);
+        //    }
+        //}
         public async Task<IActionResult> salarydetail()
         {          
             if (HttpContext.Session.GetString("UserName") != null)
