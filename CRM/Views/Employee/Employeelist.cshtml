@@ -131,7 +131,6 @@
                                                             <div>
                                                                 <a href="#" class="fa fa-edit m-2 font-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="EditEmployee(@item.Id)"></a>
                                                                 <a href="@Url.Action("DeleteEmployee","Employee",new { id=item.Id})" class="fa fa-trash font-danger"></a>
-                                                                <a href="@Url.Action("Gengeneratesalary", "Employee", new { id = item.Id })" class="fa fa-money"></a>
                                                             </div>
                                                         </td>
                                                     </tr>
