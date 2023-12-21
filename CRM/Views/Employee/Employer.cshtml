@@ -58,7 +58,7 @@
                                     <div class="row">
                                          <div class="col-md-4">
                                         <label>EPF Number</label>
-                                            <input class="form-control" name="EPF_Number" id="validationCustom1" type="number" required="">
+                                            <input class="form-control" name="EPF_Number" id="validationCustom1" type="text" required="">
                                     </div>
                                     <div class="col-md-4">
                                         <label>Employer Contribution Rate</label>
@@ -96,3 +96,11 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.2.1/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/js/select2.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    $(function () {
+        $("input[name='EPF_Number']").on('input', function (e) {
+            $(this).val($(this).val().replace(/[^0-9]/g, ''));
+        });
+    });
+</script>

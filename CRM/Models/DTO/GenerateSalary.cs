@@ -2,6 +2,7 @@
 {
     public class GenerateSalary
     {
+        public int Id { get; set; }
         public long CustomerID { get; set; }
         public long LocationID { get; set; }
         public DateTime Month { get; set; }
