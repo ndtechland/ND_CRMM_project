@@ -20,6 +20,9 @@ namespace CRM.Models.Crm
         public int AccountTypeId { get; set; }
         public bool? IsDeleted { get; set; }
         public string? EmpId { get; set; }
+        public string? EpfNumber { get; set; }
+        public string? DeductionCycle { get; set; }
+        public string? EmployeeContributionRate { get; set; }
 
         public virtual ICollection<Payroll> Payrolls { get; set; }
     }
