@@ -592,6 +592,51 @@ namespace CRM.Controllers
         {
             try
             {
+                var result = (from emp in _context.EmployeeRegistrations
+                              join empsalary in _context.EmployeeSalaryDetails on emp.Id equals empsalary.EmpId
+                              join empbank in _context.EmployeeBankDetails on emp.Id equals empbank.EmployeeRegistrationId
+                              join worklocation in _context.WorkLocations on emp.WorkLocationId equals worklocation.Id.ToString()
+                              join designation in _context.DesignationMasters on emp.DesignationId equals designation.Id.ToString()
+                              select new SalarySlipDetails
+                              {
+                                  Id = emp.Id,
+                                  EmpCode = emp.EmployeeId,
+                                  PFNo = "",
+                                  ESINo = "",
+                                  Designation = designation.DesignationName,
+                                  EMPName = "",
+                                  NOD = "",
+                                  ModeofPay = "",
+                                  AcNo = "",
+                                  WorkingBranch = "",
+                                  BasicAmount = "",
+                                  DA = "",
+                                  HRA = "",
+                                  WA = "",
+                                  CA = "",
+                                  CCA = "",
+                                  MA = "",
+                                  SalesIncentive = "",
+                                  LeaveEncashment = "",
+                                  HolidayWages = "",
+                                  SpecialAllowance = "",
+                                  Bonus = "",
+                                  IndividualIncentive = "",
+                                  TotalEarning = "",
+                                  NetPay = "",
+                                  InWords = "",
+                                  PF = "",
+                                  ESI = "",
+                                  TDS = "",
+                                  LOP = "",
+                                  PT = "",
+                                  SPLDeduction = "",
+                                  EWF = "",
+                                  CD = "",
+                                  TotalDeductions = "",
+
+                              });
+
                 return View();
             }
             catch (Exception ex)
@@ -601,16 +646,16 @@ namespace CRM.Controllers
             }
         }
 
-        public IActionResult DownloadSalarySlip()
-        {
-            // Generate HTML content for Salary Slip dynamically
-            var salarySlipHtml = GenerateSalarySlipHtml("hello");
+        //public IActionResult DownloadSalarySlip()
+        //{
+        //    // Generate HTML content for Salary Slip dynamically
+        //    var salarySlipHtml = GenerateSalarySlipHtml("hello");
 
-            // Generate and return the PDF file
-            var pdfBytes = _pdfService.GeneratePdf(salarySlipHtml);
+        //    // Generate and return the PDF file
+        //    var pdfBytes = _pdfService.GeneratePdf(salarySlipHtml);
 
-            return File(pdfBytes, "application/pdf", "SalarySlip.pdf");
-        }
+        //    return File(pdfBytes, "application/pdf", "SalarySlip.pdf");
+        //}
 
         private string GenerateSalarySlipHtml(string username)
         {
@@ -689,6 +734,9 @@ namespace CRM.Controllers
 
 
         }
+
+
+        
 
     }
 
