@@ -14,7 +14,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Net;
 using System.Text;
-using DinkToPdf;
 using IronPdf;
 using IronPdf.Engines.Chrome;
 using IronPdf.Rendering;
@@ -28,17 +27,15 @@ namespace CRM.Controllers
     {
         private readonly admin_NDCrMContext _context;
         private readonly ICrmrpo _ICrmrpo;
-        private readonly PdfService _pdfService;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IConfiguration _configuration;
 
 
 
-        public Employee(ICrmrpo _ICrmrpo, admin_NDCrMContext _context, PdfService pdfService, IConfiguration configuration)
+        public Employee(ICrmrpo _ICrmrpo, admin_NDCrMContext _context, IConfiguration configuration)
         {
             this._context = _context;
             this._ICrmrpo = _ICrmrpo;
-            this._pdfService = pdfService;
             _configuration = configuration;
 
         }
@@ -343,56 +340,6 @@ namespace CRM.Controllers
                 throw new Exception("Error:" + Ex.Message);
             }
         }
-
-        //[HttpGet("Employee/Gengeneratesalary")]
-        //public IActionResult Gengeneratesalary(int? id, string name)
-        //{
-        //    if (HttpContext.Session.GetString("UserName") != null)
-        //    {
-        //        var data = _context.EmployeeRegistrations.Find(id);
-        //        //EmpId
-
-        //        EmployeeSalaryDetail empd = new EmployeeSalaryDetail();
-        //        string AddedBy = HttpContext.Session.GetString("UserName");
-        //        ViewBag.UserName = AddedBy;
-        //        if (data != null)
-        //        {
-        //            empd.EmployeeId = data.EmployeeId;
-        //            empd.EmployeeName = data.FirstName;
-        //            empd.EmpId = data.Id;
-
-        //        }
-        //        return View(empd);
-        //    }
-        //    else
-        //    {
-        //        return RedirectToAction("Login", "Admin");
-        //    }
-        //}
-
-        //[HttpPost]
-        //public async Task<IActionResult> Gengeneratesalary(EmployeeSalaryDetail model)
-        //{
-        //    try
-        //    {
-        //        var response = await _ICrmrpo.Gengeneratesalary(model);
-        //        if (response != null)
-        //        {
-
-        //            return RedirectToAction("Employeelist", "Employee");
-        //            ViewBag.Message = "registration Successfully.";
-        //        }
-        //        else
-        //        {
-        //            ModelState.Clear();
-        //            return View();
-        //        }
-        //    }
-        //    catch (Exception Ex)
-        //    {
-        //        throw new Exception("Error:" + Ex.Message);
-        //    }
-        //}
         public async Task<IActionResult> salarydetail()
         {
             if (HttpContext.Session.GetString("UserName") != null)
@@ -527,74 +474,6 @@ namespace CRM.Controllers
         }
 
 
-        //public IActionResult DownloadPdf(int id, int oid)
-        //{
-        //    //GeneratePdf(id, oid);
-        //    string filePath = "../savedPDF/index.html";
-
-        //    if (System.IO.File.Exists(filePath))
-        //    {
-        //        // Read the file bytes
-        //        byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
-
-        //        // Set the Content-Disposition header to suggest the filename to browsers
-        //        var contentDisposition = new System.Net.Mime.ContentDisposition
-        //        {
-        //            FileName = "Input.pdf",
-        //            Inline = false // Force the browser to prompt for download
-        //        };
-        //        Response.Headers.Add("Content-Disposition", contentDisposition.ToString());
-
-        //        // Set the content type to PDF
-        //        Response.ContentType = "application/pdf";
-
-        //        // Return the file as a FileResult
-        //        return File(fileBytes, "application/pdf");
-        //    }
-        //    else
-        //    {
-        //        // If the file doesn't exist, return a 404 Not Found response
-        //        return null;
-        //    }
-        //}
-
-        //public void GeneratePdf(int id, int oid)
-        //{
-        //    using (WebClient client = new WebClient())
-        //    {
-        //        // Define the URL to the HTML content
-        //        string url = $"https://admin.organicdeal.in/Home/Invoice?oid={oid}";
-
-        //        // Download the HTML content from the URL
-        //        string htmlContent = client.DownloadString(url);
-
-        //        // Specify the file path where you want to save the HTML content
-        //        string htmlFilePath = "../savedHTML/index.html";
-
-        //        // Save the HTML content to the specified file path
-        //        System.IO.File.WriteAllText(htmlFilePath, htmlContent);
-        //    }
-
-        //    // instantiate the html to pdf converter
-        //    HtmlToPdf converter = new HtmlToPdf();
-
-        //    // get html file path
-        //    var htmlFilePath = "../savedHTML/index.html";
-
-        //    // convert the html to pdf
-        //    PdfDocument doc = converter.ConvertHtmlString(System.IO.File.ReadAllText(htmlFilePath));
-
-        //    // specify the file path for saving the PDF
-        //    var pdfFilePath = "../savedPDF/index.pdf";
-
-        //    // save the pdf document
-        //    doc.Save(pdfFilePath);
-
-        //    // close the pdf document
-        //    doc.Close();
-        //}
-
-
         public IActionResult SalarySlipInPDF()
         {
             try
@@ -653,47 +532,6 @@ namespace CRM.Controllers
             }
         }
 
-        //public IActionResult DownloadSalarySlip()
-        //{
-        //    // Generate HTML content for Salary Slip dynamically
-        //    var salarySlipHtml = GenerateSalarySlipHtml("hello");
-
-        //    // Generate and return the PDF file
-        //    var pdfBytes = _pdfService.GeneratePdf(salarySlipHtml);
-
-        //    return File(pdfBytes, "application/pdf", "SalarySlip.pdf");
-        //}
-
-        private string GenerateSalarySlipHtml(string username)
-        {
-            // Dynamically generate HTML content for Salary Slip based on your data
-            // This is just a placeholder example; you should customize it based on your actual requirements
-            var htmlContent = @"
-            <html>
-            <head>
-                <style>
-                    /* Add your CSS styles here */
-                    body {
-                        font-family: Arial, sans-serif;
-                    }
-                    .salary-slip {
-                        padding: 20px;
-                        border: 1px solid #ccc;
-                    }
-                </style>
-            </head>
-            <body>
-                <div class='salary-slip'>
-                    <h1>Salary Slip</h1>
-                    <p>Employee: John Doe</p>
-                    <p>Salary: ${username}</p>
-                    <!-- Add more details as needed -->
-                </div>
-            </body>
-            </html>";
-
-            return htmlContent;
-        }
 
         public IActionResult Employer()
         {
