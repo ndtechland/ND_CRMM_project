@@ -33,6 +33,7 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\Image\" />
+    <Folder Include="wwwroot\Pdffile\" />
   </ItemGroup>
 
 </Project>

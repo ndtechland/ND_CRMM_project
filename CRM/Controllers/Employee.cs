@@ -473,23 +473,28 @@ namespace CRM.Controllers
             return View();
         }
 
-
-        public IActionResult SalarySlipInPDF()
+        [Route("Employee/SalarySlipInPDF")]
+        public IActionResult SalarySlipInPDF(int? id)
         {
             try
             {
                 var result = (from emp in _context.EmployeeRegistrations
-                              join empsalary in _context.EmployeeSalaryDetails on emp.Id equals empsalary.EmpId
-                              join empbank in _context.EmployeeBankDetails on emp.Id equals empbank.EmployeeRegistrationId
-                              join worklocation in _context.WorkLocations on emp.WorkLocationId equals worklocation.Id.ToString()
-                              join designation in _context.DesignationMasters on emp.DesignationId equals designation.Id.ToString()
+                              join empsalary in _context.EmployeeSalaryDetails on emp.Id equals empsalary.EmpId into salaryJoin
+                              from empsalary in salaryJoin.DefaultIfEmpty()
+                              join empbank in _context.EmployeeBankDetails on emp.Id equals empbank.EmployeeRegistrationId into bankJoin
+                              from empbank in bankJoin.DefaultIfEmpty()
+                              join worklocation in _context.WorkLocations on emp.WorkLocationId equals worklocation.Id.ToString() into locationJoin
+                              from worklocation in locationJoin.DefaultIfEmpty()
+                              join designation in _context.DesignationMasters on emp.DesignationId equals designation.Id.ToString() into designationJoin
+                              from designation in designationJoin.DefaultIfEmpty()
+                              where emp.Id == id
                               select new SalarySlipDetails
                               {
                                   Id = emp.Id,
                                   EmpCode = emp.EmployeeId,
                                   PFNo = "",
                                   ESINo = "",
-                                  Designation = designation.DesignationName,
+                                  Designation = designation != null ? designation.DesignationName : "",
                                   EMPName = "",
                                   NOD = "",
                                   ModeofPay = "",
@@ -520,15 +525,13 @@ namespace CRM.Controllers
                                   EWF = "",
                                   CD = "",
                                   TotalDeductions = "",
+                              }).ToList();
 
-                              });
-
-                return View();
+                return View(result);
             }
             catch (Exception ex)
             {
-
-                throw new Exception("Error : " + ex.Message);
+                throw new Exception("Error: " + ex.Message);
             }
         }
 
@@ -594,7 +597,7 @@ namespace CRM.Controllers
                 var pdf = rendere.RenderHtmlAsPdf(client.DownloadString(SlipURL));
 
                 // Export to a file or Stream
-                pdf.SaveAs("output.pdf");
+                pdf.SaveAs("/Pdffile/output.pdf");
 
                 return File(pdf.Stream, "application/pdf", "SalarySlip.pdf");
             }
@@ -612,12 +615,13 @@ namespace CRM.Controllers
 
 
 
-       
 
 
 
-    
 
 
-  
+
+
+
+
 
