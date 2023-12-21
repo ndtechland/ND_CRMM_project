@@ -1,0 +1,98 @@
+﻿@model CRM.Models.Crm.Employeer_EPF
+@{
+    ViewData["Title"] = "Employer";
+    Layout = "~/Views/Shared/_adminLayout.cshtml";
+}
+
+
+
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-css/1.4.6/select2-bootstrap.min.css">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/css/select2.min.css" rel="stylesheet" />
+  
+
+</head>
+
+<div class="page-wrapper">
+    <div class="page-body-wrapper">
+        <div class="page-sidebar">
+        </div>
+
+        <div class="page-body">
+
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="page-header-left">
+                                <h2>
+                                    Employer Details
+                                </h2>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <ol class="breadcrumb pull-right">
+                                <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
+                                <li class="breadcrumb-item">CRM</li>
+                                <li class="breadcrumb-item active">Employee</li>
+                                <li class="breadcrumb-item active">Employer</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Container-fluid Ends-->
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="row">
+
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <form asp-action="Employer" autocomplete="off">
+                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                    <div class="row">
+                                         <div class="col-md-4">
+                                        <label>EPF Number</label>
+                                            <input class="form-control" name="EPF_Number" id="validationCustom1" type="number" required="">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label>Employer Contribution Rate</label>
+                                            <input class="form-control" name="Employer_Contribution_Rate" id="validationCustom1" type="text" required="">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="validationCustom0">Deduction Cycle</label>
+                                            <select name="Deduction_Cycle" class="form-control ">
+                                            <option value="0">-- select --</option>
+                                            <option value="M">Monthly</option>
+                                            <option value="Y">Yearly</option>
+                                        </select>
+                                    </div>
+                                        
+                                    </div>
+                                   
+                                    </br>
+                                    <div class="form-group" style="display:flex; justify-content:center;">
+                                        <input type="submit" value="Save" class="btn btn-primary" />
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>
+<!-- Add this in the head section of your HTML -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.2.1/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/js/select2.min.js"></script>
