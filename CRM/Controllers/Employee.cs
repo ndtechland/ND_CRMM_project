@@ -479,53 +479,25 @@ namespace CRM.Controllers
             try
             {
                 var result = (from emp in _context.EmployeeRegistrations
-                              join empsalary in _context.EmployeeSalaryDetails on emp.Id equals empsalary.EmpId into salaryJoin
-                              from empsalary in salaryJoin.DefaultIfEmpty()
-                              join empbank in _context.EmployeeBankDetails on emp.Id equals empbank.EmployeeRegistrationId into bankJoin
-                              from empbank in bankJoin.DefaultIfEmpty()
-                              join worklocation in _context.WorkLocations on emp.WorkLocationId equals worklocation.Id.ToString() into locationJoin
-                              from worklocation in locationJoin.DefaultIfEmpty()
-                              join designation in _context.DesignationMasters on emp.DesignationId equals designation.Id.ToString() into designationJoin
-                              from designation in designationJoin.DefaultIfEmpty()
+                              join empsalary in _context.EmployeeSalaryDetails on emp.Id equals empsalary.EmpId 
+                              join empbank in _context.EmployeeBankDetails on emp.Id equals empbank.EmployeeRegistrationId 
+                              join empatt in _context.Empattendances on emp.EmployeeId equals empatt.EmployeeId
+                              join worklocation in _context.WorkLocations on emp.WorkLocationId equals worklocation.Id.ToString() 
+                              join designation in _context.DesignationMasters on emp.DesignationId equals designation.Id.ToString() 
                               where emp.Id == id
                               select new SalarySlipDetails
                               {
-                                  Id = emp.Id,
-                                  EmpCode = emp.EmployeeId,
-                                  PFNo = "",
-                                  ESINo = "",
-                                  Designation = designation != null ? designation.DesignationName : "",
-                                  EMPName = "",
-                                  NOD = "",
-                                  ModeofPay = "",
-                                  AcNo = "",
-                                  WorkingBranch = "",
-                                  BasicAmount = "",
-                                  DA = "",
-                                  HRA = "",
-                                  WA = "",
-                                  CA = "",
-                                  CCA = "",
-                                  MA = "",
-                                  SalesIncentive = "",
-                                  LeaveEncashment = "",
-                                  HolidayWages = "",
-                                  SpecialAllowance = "",
-                                  Bonus = "",
-                                  IndividualIncentive = "",
-                                  TotalEarning = "",
-                                  NetPay = "",
-                                  InWords = "",
-                                  PF = "",
-                                  ESI = "",
-                                  TDS = "",
-                                  LOP = "",
-                                  PT = "",
-                                  SPLDeduction = "",
-                                  EWF = "",
-                                  CD = "",
-                                  TotalDeductions = "",
-                              }).ToList();
+                                  Employee_ID = emp.EmployeeId,
+                                  First_Name = emp.FirstName,
+                                  Address_Line_1 = worklocation.AddressLine1,
+                                  Epf = empsalary.Epf,
+                                  Designation_Name = designation.DesignationName,
+                                  Bank_Name = empbank.BankName,
+                                  Account_Number = empbank.AccountNumber,
+                                  Basic = empsalary.Basic,
+                                  //EPF_Number =  empbank.EpfNumber
+
+                              }).FirstOrDefault();
 
                 return View(result);
             }

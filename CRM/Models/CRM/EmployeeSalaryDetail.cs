@@ -17,5 +17,6 @@ namespace CRM.Models.Crm
         public decimal? MonthlyGrossPay { get; set; }
         public decimal? MonthlyCtc { get; set; }
         public int? EmpId { get; set; }
+        public decimal? AnnualCtc { get; set; }
     }
 }
