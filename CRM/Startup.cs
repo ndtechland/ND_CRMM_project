@@ -4,8 +4,6 @@ using CRM.Repository;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Principal;
 using CRM.Models.DTO;
-using DinkToPdf.Contracts;
-using DinkToPdf;
 using BaselineTypeDiscovery;
 using Rotativa.AspNetCore;
 using System.Security.Policy;
@@ -35,9 +33,6 @@ namespace CRM
             services.AddControllersWithViews();
             services.AddScoped<ICrmrpo, Crmrpo>();
             services.AddScoped<IEmailService, EmailService>();
-
-            services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
-            services.AddSingleton<PdfService>();
             services.Configure<URL>(Configuration.GetSection("URL"));
 
 
