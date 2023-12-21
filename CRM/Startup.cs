@@ -8,6 +8,7 @@ using DinkToPdf.Contracts;
 using DinkToPdf;
 using BaselineTypeDiscovery;
 using Rotativa.AspNetCore;
+using System.Security.Policy;
 
 namespace CRM
 {
@@ -37,6 +38,8 @@ namespace CRM
 
             services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
             services.AddSingleton<PdfService>();
+            services.Configure<URL>(Configuration.GetSection("URL"));
+
 
 
         }
