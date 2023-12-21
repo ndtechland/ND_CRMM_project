@@ -14,6 +14,10 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Net;
 using System.Text;
+using DinkToPdf;
+using IronPdf;
+using IronPdf.Engines.Chrome;
+using IronPdf.Rendering;
 
 
 //using Microsoft.TeamFoundation.WorkItemTracking.Internals;
@@ -26,18 +30,21 @@ namespace CRM.Controllers
         private readonly ICrmrpo _ICrmrpo;
         private readonly PdfService _pdfService;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IConfiguration _configuration;
 
-    
 
 
-        public Employee(ICrmrpo _ICrmrpo, admin_NDCrMContext _context, PdfService pdfService)
+        public Employee(ICrmrpo _ICrmrpo, admin_NDCrMContext _context, PdfService pdfService, IConfiguration configuration)
         {
             this._context = _context;
             this._ICrmrpo = _ICrmrpo;
             this._pdfService = pdfService;
-            
+            _configuration = configuration;
 
         }
+
+
+
         public IActionResult EmployeeRegistration()
         {
 
@@ -387,11 +394,11 @@ namespace CRM.Controllers
         //    }
         //}
         public async Task<IActionResult> salarydetail()
-        {          
+        {
             if (HttpContext.Session.GetString("UserName") != null)
             {
                 var response = await _ICrmrpo.salarydetail();
-                
+
                 decimal total = 0;
                 foreach (var item in response)
                 {
@@ -405,8 +412,8 @@ namespace CRM.Controllers
             else
             {
                 return RedirectToAction("Login", "Admin");
-            }           
-           
+            }
+
         }
 
 
@@ -419,7 +426,7 @@ namespace CRM.Controllers
             {
                 //ViewBag.Message = "Your salary already genrated for this month";
                 IsActive = true;
-                
+
             }
             if (IsActive == false)
             {
@@ -444,7 +451,7 @@ namespace CRM.Controllers
                 }
             }
 
-            return Json(new { success = true, message = "Data saved successfully.", Data= IsActive });
+            return Json(new { success = true, message = "Data saved successfully.", Data = IsActive });
         }
         public IActionResult GenerateSalary()
         {
@@ -468,11 +475,11 @@ namespace CRM.Controllers
         public IActionResult GetLocationsByCustomer(string customerId)
         {
 
-            var locations = _context.CustomerRegistrations.FirstOrDefault(x => x.Id ==Convert.ToInt32(customerId));
-            string[] strlocation = locations.WorkLocation?.Split(new string[] { "," },StringSplitOptions.None);
-            List<WorkLocation> locationlist =new List<WorkLocation>();
+            var locations = _context.CustomerRegistrations.FirstOrDefault(x => x.Id == Convert.ToInt32(customerId));
+            string[] strlocation = locations.WorkLocation?.Split(new string[] { "," }, StringSplitOptions.None);
+            List<WorkLocation> locationlist = new List<WorkLocation>();
 
-           
+
 
             foreach (var loc in strlocation)
             {
@@ -489,7 +496,7 @@ namespace CRM.Controllers
             return Json(locationsJson);
         }
         [HttpPost]
-        public async Task<IActionResult> GenerateSalary(string customerId,int Month,int year)
+        public async Task<IActionResult> GenerateSalary(string customerId, int Month, int year)
         {
             try
             {
@@ -501,7 +508,7 @@ namespace CRM.Controllers
                 GenerateSalary salary = new GenerateSalary();
 
                 salary.GeneratedSalaries = await _ICrmrpo.GenerateSalary(customerId, Month, year);
-               
+
 
                 return View(salary);
             }
@@ -512,11 +519,11 @@ namespace CRM.Controllers
             }
 
 
-        }       
+        }
 
         public IActionResult sendmail()
         {
-           return View();
+            return View();
         }
 
 
@@ -643,7 +650,7 @@ namespace CRM.Controllers
             return htmlContent;
         }
 
-        public IActionResult Employer() 
+        public IActionResult Employer()
         {
             try
             {
@@ -661,10 +668,10 @@ namespace CRM.Controllers
             try
             {
                 var response = await _ICrmrpo.Employer(model);
-                
+
                 ModelState.Clear();
                 return View();
-               
+
             }
             catch (Exception Ex)
             {
@@ -690,8 +697,32 @@ namespace CRM.Controllers
 
         }
 
-    }
 
+        public IActionResult DocPDF()
+        {
+            try
+            {
+
+                var rendere = new ChromePdfRenderer();
+                WebClient client = new WebClient();
+                // Create a PDF from a HTML string using C#
+                string SlipURL = _configuration.GetValue<string>("URL") + "/Employee/SalarySlipInPDF";
+
+                var pdf = rendere.RenderHtmlAsPdf(client.DownloadString(SlipURL));
+
+                // Export to a file or Stream
+                pdf.SaveAs("output.pdf");
+
+                return File(pdf.Stream, "application/pdf", "SalarySlip.pdf");
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+        }
+    }
 
 }       
 
