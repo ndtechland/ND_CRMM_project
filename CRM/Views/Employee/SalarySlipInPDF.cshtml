@@ -6,13 +6,14 @@
 
 
     <div class="container mt-5 mb-5">
-
+    
         <div class="row">
             <div class="col-md-12">
                 <div class="text-center lh-1 mb-2">
-                    <h6 class="fw-bold">Payslip</h6> <span class="fw-normal">Payment slip for the month of June 2021</span>
+                <img src="~/assets/images/layout-2/logo/logo.png" style="margin: -45px;"/>
+                <h6 class="fw-bold">N D Techland Private Limited</h6> <span class="fw-normal">Payment slip for the month of @Model.Month @Model.Year</span>
                 </div>
-                <div class="d-flex justify-content-end"> <span>Working Branch:ROHINI</span> </div>
+            <div class="d-flex justify-content-end"> <span>Working Branch:@Model.Address_Line_1</span> </div>
                 <div class="row">
                     <div class="col-md-10">
                         <div class="row">
@@ -20,15 +21,15 @@
                                 <div> <span class="fw-bolder">EMP Code</span> <small class="ms-3">@Model.Employee_ID</small> </div>
                             </div>
                             <div class="col-md-6">
-                                <div> <span class="fw-bolder">EMP Name</span> <small class="ms-3">Ashok</small> </div>
+                            <div> <span class="fw-bolder">EMP Name</span> <small class="ms-3">@Model.First_Name</small> </div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6">
-                                <div> <span class="fw-bolder">PF No.</span> <small class="ms-3">101523065714</small> </div>
+                            <div> <span class="fw-bolder">PF No.</span> <small class="ms-3">@Model.EPF_Number</small> </div>
                             </div>
                             <div class="col-md-6">
-                                <div> <span class="fw-bolder">NOD</span> <small class="ms-3">28</small> </div>
+                            <div> <span class="fw-bolder">NOD</span> <small class="ms-3">@Model.Id</small> </div>
                             </div>
                         </div>
                         <div class="row">
@@ -36,21 +37,24 @@
                                 <div> <span class="fw-bolder">ESI No.</span> <small class="ms-3"></small> </div>
                             </div>
                             <div class="col-md-6">
-                                <div> <span class="fw-bolder">Mode of Pay</span> <small class="ms-3">SBI</small> </div>
+                                <div> <span class="fw-bolder">Mode of Pay</span> <small class="ms-3">@Model.Bank_Name</small> </div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6">
-                                <div> <span class="fw-bolder">Designation</span> <small class="ms-3">Marketing Staff (MK)</small> </div>
+                                <div> <span class="fw-bolder">Designation</span> <small class="ms-3">@Model.Designation_Name</small> </div>
                             </div>
-                            <div class="col-md-6">
-                                <div> <span class="fw-bolder">Ac No.</span> <small class="ms-3">*******0701</small> </div>
+                        <div class="col-md-6">
+                            <div>
+                                <span class="fw-bolder">Ac No.</span>
+                                <small class="ms-3" id="accountNumber">@Model.Account_Number</small>
                             </div>
+                        </div>
                         </div>
                     </div>
                     <table class="mt-4 table table-bordered">
                         <thead class="bg-dark text-white">
-                            <tr>
+                        <tr style="background-color: #00baf2;">
                                 <th scope="col">Earnings</th>
                                 <th scope="col">Amount</th>
                                 <th scope="col">Deductions</th>
@@ -60,9 +64,9 @@
                         <tbody>
                             <tr>
                                 <th scope="row">Basic</th>
-                                <td>16250.00</td>
+                                <td>@Model.Basic</td>
                                 <td>PF</td>
-                                <td>1800.00</td>
+                                 <td>@Model.Epf</td>
                             </tr>
                             <tr>
                                 <th scope="row">DA</th>
@@ -72,7 +76,7 @@
                             </tr>
                             <tr>
                                 <th scope="row">HRA</th>
-                                <td>1650.00 </td>
+                                <td>@Model.HouseRentAllowance</td>
                                 <td>TDS</td>
                                 <td>0.00</td>
                             </tr>
@@ -83,54 +87,16 @@
                                 <td>0.00</td>
                             </tr>
                             <tr>
-                                <th scope="row">CA</th>
-                                <td>0.00 </td>
+                            <th scope="row">SPL. Deduction</th>
+                            <td>500.00</td>
                                 <td>PT</td>
                                 <td>0.00</td>
                             </tr>
                             <tr>
-                                <th scope="row">CCA</th>
-                                <td>0.00 </td>
-                                <td>SPL. Deduction</td>
-                                <td>500.00</td>
-                            </tr>
-                            <tr>
                                 <th scope="row">MA</th>
-                                <td>3000.00</td>
-                                <td>EWF</td>
-                                <td>0.00</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Sales Incentive</th>
-                                <td>0.00</td>
-                                <td>CD</td>
-                                <td>0.00</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Leave Encashment</th>
-                                <td>0.00</td>
-                                <td colspan="2"></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Holiday Wages</th>
-                                <td>500.00</td>
-                                <td colspan="2"></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Special Allowance</th>
-                                <td>100.00</td>
-                                <td colspan="2"></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Bonus</th>
-                                <td>1400.00</td>
-                                <td colspan="2"></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Individual Incentive</th>
-                                <td>2400.00</td>
-                                <td colspan="2"></td>
-                            </tr>
+                                <td>3000.00</td>                                
+                            <td colspan="2"></td>
+                            </tr>                           
                             <tr class="border-top">
                                 <th scope="row">Total Earning</th>
                                 <td>25970.00</td>
@@ -142,9 +108,6 @@
                 </div>
                 <div class="row">
                     <div class="col-md-4"> <br> <span class="fw-bold">Net Pay : 24528.00</span> </div>
-                    <div class="border col-md-8">
-                        <div class="d-flex flex-column"> <span>In Words</span> <span>Twenty Five thousand nine hundred seventy only</span> </div>
-                    </div>
                 </div>
                 <div class="d-flex justify-content-end">
                     <div class="d-flex flex-column mt-2"> <span class="fw-bolder">For Kalyan Jewellers</span> <span class="mt-4">Authorised Signatory</span> </div>
@@ -156,5 +119,18 @@
     </div>
 
 
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+    window.onload = function () {
+        var accountNumberElement = document.getElementById("accountNumber");
+        if (accountNumberElement) {
+            var accountNumber = accountNumberElement.innerText;
+
+            // Replace the actual account number with "********" followed by the last four digits
+            var maskedAccountNumber = "********" + accountNumber.slice(-4);
+
+            // Update the content of the element
+            accountNumberElement.innerText = maskedAccountNumber;
+        }
+    };
+</script>
