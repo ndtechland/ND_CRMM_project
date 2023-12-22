@@ -13,9 +13,5 @@ namespace CRM.Models.Crm
         public DateTime Date { get; set; }
         public string Report { get; set; } = null!;
         public int TotalAmount { get; set; }
-
-        public virtual EmployeeBankDetail BankDetails { get; set; } = null!;
-        public virtual EmployeeRegistration Employee { get; set; } = null!;
-        public virtual EmployeeLeaveMaster Leave { get; set; } = null!;
     }
 }

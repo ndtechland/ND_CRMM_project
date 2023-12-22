@@ -22,6 +22,8 @@ using Microsoft.AspNetCore.Components.RenderTree;
 using System.IO;
 using Org.BouncyCastle.Asn1.Mozilla;
 using SelectPdf;
+using static CRM.Controllers.Employee;
+using System.Globalization;
 
 
 //using Microsoft.TeamFoundation.WorkItemTracking.Internals;
@@ -484,14 +486,15 @@ namespace CRM.Controllers
             try
             {
                 var result = (from emp in _context.EmployeeRegistrations
-                              join empsalary in _context.EmployeeSalaryDetails on emp.Id equals empsalary.EmpId 
-                              join empbank in _context.EmployeeBankDetails on emp.Id equals empbank.EmployeeRegistrationId 
+                              join empsalary in _context.EmployeeSalaryDetails on emp.Id equals empsalary.EmpId
+                              join empbank in _context.EmployeeBankDetails on emp.Id equals empbank.EmployeeRegistrationId
                               join empatt in _context.Empattendances on emp.EmployeeId equals empatt.EmployeeId
-                              join worklocation in _context.WorkLocations on emp.WorkLocationId equals worklocation.Id.ToString() 
-                              join designation in _context.DesignationMasters on emp.DesignationId equals designation.Id.ToString() 
+                              join worklocation in _context.WorkLocations on emp.WorkLocationId equals worklocation.Id.ToString()
+                              join designation in _context.DesignationMasters on emp.DesignationId equals designation.Id.ToString()
                               where emp.Id == id
                               select new SalarySlipDetails
                               {
+                                  Id = emp.Id,
                                   Employee_ID = emp.EmployeeId,
                                   First_Name = emp.FirstName,
                                   Address_Line_1 = worklocation.AddressLine1,
@@ -500,8 +503,10 @@ namespace CRM.Controllers
                                   Bank_Name = empbank.BankName,
                                   Account_Number = empbank.AccountNumber,
                                   Basic = empsalary.Basic,
-                                  //EPF_Number =  empbank.EpfNumber
-
+                                  EPF_Number = empbank.EpfNumber,
+                                  Month = getMonthName(Convert.ToInt32(empatt.Month)),
+                                  Year=empatt.Year,
+                                  HouseRentAllowance=empsalary.HouseRentAllowance,
                               }).FirstOrDefault();
 
                 return View(result);
@@ -584,6 +589,55 @@ namespace CRM.Controllers
             fileResult.FileDownloadName = "SalarySlip.pdf";
             return fileResult;
             //return File(, "application/pdf", "SalarySlip.pdf");
+        }
+        public static string getMonthName(int monthValue)
+        {
+            string monthName = "";
+
+            switch (monthValue)
+            {
+                case 1:
+                    monthName = "January";
+                    break;
+                case 2:
+                    monthName = "February";
+                    break;
+                case 3:
+                    monthName = "March";
+                    break;
+                case 4:
+                    monthName = "April";
+                    break;
+                case 5:
+                    monthName = "May";
+                    break;
+                case 6:
+                    monthName = "June";
+                    break;
+                case 7:
+                    monthName = "July";
+                    break;
+                case 8:
+                    monthName = "August";
+                    break;
+                case 9:
+                    monthName = "September";
+                    break;
+                case 10:
+                    monthName = "October";
+                    break;
+                case 11:
+                    monthName = "November";
+                    break;
+                case 12:
+                    monthName = "December";
+                    break;
+                default:
+                    monthName = "Invalid Month";
+                    break;
+            }
+
+            return monthName;
         }
 
     }

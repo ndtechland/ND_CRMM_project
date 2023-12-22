@@ -499,9 +499,9 @@ namespace CRM.Repository
             return result;
         }
 
-        public async Task<List<Employeer_EPF>> EmployerList()
+        public async Task<List<EmployeerEpf>> EmployerList()
         {
-            var result = await _context.Employeer_EPFs.FromSqlRaw<Employeer_EPF>("EmployerList").ToListAsync();
+            var result = await _context.EmployeerEpfs.FromSqlRaw<EmployeerEpf>("EmployerList").ToListAsync();
             return result;
         }
     }

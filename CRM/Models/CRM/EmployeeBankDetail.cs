@@ -5,11 +5,6 @@ namespace CRM.Models.Crm
 {
     public partial class EmployeeBankDetail
     {
-        public EmployeeBankDetail()
-        {
-            Payrolls = new HashSet<Payroll>();
-        }
-
         public int Id { get; set; }
         public int EmployeeRegistrationId { get; set; }
         public string AccountHolderName { get; set; } = null!;
@@ -23,7 +18,5 @@ namespace CRM.Models.Crm
         public string? EpfNumber { get; set; }
         public string? DeductionCycle { get; set; }
         public string? EmployeeContributionRate { get; set; }
-
-        public virtual ICollection<Payroll> Payrolls { get; set; }
     }
 }

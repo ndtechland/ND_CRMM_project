@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CRM.Models.Crm.Employeer_EPF>
+﻿@model IEnumerable<CRM.Models.Crm.EmployeerEpf>
 
 @{
     ViewData["Title"] = "EmployerList";
@@ -77,14 +77,14 @@
                                                     <tr class="table-row">
                                                         <td>@count</td>
                                                         <td>
-                                                            @Html.DisplayFor(modelItem => item.EPF_Number)
+                                                            @Html.DisplayFor(modelItem => item.EpfNumber)
                                                         </td>
                                                         <td>
-                                                            @(item.Deduction_Cycle == "M" ? "Monthly" : "Yearly")
+                                                            @(item.DeductionCycle == "M" ? "Monthly" : "Yearly")
                                                            
                                                         </td>
                                                         <td>
-                                                            @Html.DisplayFor(modelItem => item.Employer_Contribution_Rate)
+                                                            @Html.DisplayFor(modelItem => item.EmployerContributionRate)
                                                         </td>
 
                                                         <td>
