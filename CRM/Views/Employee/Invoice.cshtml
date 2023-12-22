@@ -1,0 +1,285 @@
+﻿@model CRM.Models.DTO.InvoiceDTO
+@{
+    Layout = null;
+    string ModeofPayment = "";
+
+}
+ 
+<!DOCTYPE html>
+<!--
+  Invoice template by invoicebus.com
+  To customize this template consider following this guide https://invoicebus.com/how-to-create-invoice-template/
+  This template is under Invoicebus Template License, see https://invoicebus.com/templates/license/
+-->
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Invoice</title>
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta name="description" content="Invoicebus Invoice Template">
+    <meta name="author" content="Invoicebus">
+
+    <meta name="template-hash" content="91216e926eab41d8aa403bf4b00f4e19">
+
+    <link href="/stylesheets/template.css" rel="stylesheet" />
+    <link href="/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <style media="print">
+        .noprint {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    @if (Model.InvoiceMaster != null || Model.InvoiceDetails != null)
+    {
+        <div id="container">
+
+
+            <div class="right-invoice">
+                <section id="memo">
+                    <button type="button" style=" margin-left :100px;" class="btn btn-info noprint" onclick="window.print()">Print</button>
+                    <div class="logo">
+                        @*@<img src="~/Images/Future-Choice-Hospitality.jpg" />@*@
+
+                    </div>
+                    <div class="company-info">
+                        <div style=" font-size: large">Future Choice Hospitality India Limited</div>
+                        <br>
+                        <span><b>Address:</b>Second floor</span>
+                        <span>G-14,Sector 3,Noida,</span><br />
+                        <span>Gautam Buddha Nagar,Uttar Pradesh 201301</span>
+                        <br />
+                        <span><b>Contact No. :</b>+91 0120 - 4250389,4546038</span>
+                        <br>
+                        <span><b>Email :</b>info@futurechoiceclub.com</span>
+
+
+                        <br />
+                        <span><b>GST NO :</b> 09AADCF9447NIZW</span>
+                    </div>
+
+                </section>
+
+                <section id="client-info">
+                    <h2 style="color:#062d66;font-weight:bold;">Tax Invoice</h2>
+                    <section id="invoice-title-number">
+                        <div class="title-top">
+                            <span class="x-hidden"></span>
+                            <span>@Model.InvoiceMaster.InvoiceDate</span><br>
+                            <span id="number">Invoice Number #@Model.InvoiceMaster.InvoiceNumber</span>
+                        </div>
+
+                    </section>
+
+                    <div class="client-name">
+                        <span>@Model.InvoiceMaster.CompanyName</span>
+                    </div>
+                    <div>
+                        <span><b>Add:</b>@Model.InvoiceMaster.CompanyAddress</span>
+                    </div>
+                    <div>
+                         <span><b>Email:</b>@Model.InvoiceMaster.Email</span>
+                    </div>
+                    <div>
+                        <span><b>GST Number :</b>@Model.InvoiceMaster.CustomrGstn</span>
+                    </div>
+                    <div>
+                        <span><b>Mob:</b>@Model.InvoiceMaster.Mobile</span>
+                    </div>
+
+                    <div>
+                        <span>@Model.InvoiceMaster.PhoneNumber</span>
+                    </div>
+                    @if (@Model.InvoiceMaster.ModeOfPayment == 1)
+                    {
+                        ModeofPayment = "Cash Payment";
+                    }
+                    @if (@Model.InvoiceMaster.ModeOfPayment == 2)
+                    {
+                        ModeofPayment = "Online Payment";
+                    }
+                    @if (@Model.InvoiceMaster.ModeOfPayment == 3)
+                    {
+                        ModeofPayment = "Cheque Payment";
+                    }
+                    <div>
+                        <span>@ModeofPayment</span>
+                    </div>
+                </section>
+                <div class="clearfix"></div>
+                <div class="clearfix"></div>
+                <section>
+                    <table class="table table-striped">
+                        <tr>
+                            <th>Product</th>  
+                            <th>HSN</th>
+                            <th>Invoice Value(Rs.)</th> 
+                            @{
+                                if (string.IsNullOrEmpty(@Model.InvoiceDetails.Sum(a => a.TaxInPercent).ToString()) || Model.InvoiceDetails.Sum(a => a.TaxInPercent) == 0)
+                                {
+                                    <th>IGST Tax(%)</th>
+
+
+                                }
+                                else
+                                {
+                                    <th>CGST Tax(%)</th>
+                                    <th>SGST Tax(%)</th>
+
+
+                                }
+
+                            }
+                        </tr>
+                        @foreach (var item in Model.InvoiceDetails)
+                        {
+                            <tr>
+                                <td>@item.ProductName</td>
+                                <td>@item.InvoiceDetail_HSN</td>
+                                <td>@item.UnitPrice</td> 
+                                @{
+                                    if (string.IsNullOrEmpty(@Model.InvoiceDetails.Sum(a => a.TaxInPercent).ToString()) || Model.InvoiceDetails.Sum(a => a.TaxInPercent) == 0)
+                                    {
+
+                                        <td>@item.IGST_TaxInPercent</td>
+
+
+                                    }
+                                    else
+                                    {
+
+
+                                        <td>@item.TaxInPercent</td>
+                                        <td>@item.SGST_TaxInPercent</td>
+
+                                    }
+
+                                } 
+                            </tr>
+                        }
+                    </table>
+                </section>
+                <section id="sums">
+                    <table cellpadding="0" cellspacing="0"> 
+                        <tr> 
+
+                            <th style="font-size : medium;">Taxable Value</th>
+
+                            @{
+                                if (string.IsNullOrEmpty(@Model.InvoiceDetails.Sum(a => a.TaxInPercent).ToString()) || Model.InvoiceDetails.Sum(a => a.TaxInPercent) == 0)
+                                {
+
+
+                                    decimal? totalIGSTPer = Model.InvoiceDetails.Sum(a => a.IGST_TaxInPercent);
+                                    decimal? unitprice = Model.InvoiceMaster.AmountPaid;
+                                    decimal? TotalGST = unitprice - (unitprice * (100 / (100 + totalIGSTPer)));
+                                    decimal? invoicevaluewithoutgst = unitprice - TotalGST;
+
+                                    <td>@String.Format("{0:F2}", invoicevaluewithoutgst)</td>
+                                }
+                                else
+                                {
+
+                                    decimal? totalCGSTPer = Model.InvoiceDetails.Sum(a => a.TaxInPercent);
+                                    decimal? totalSGSTper = Model.InvoiceDetails.Sum(a => a.SGST_TaxInPercent);
+                                    decimal? unitprice = Model.InvoiceMaster.AmountPaid;
+                                    decimal? totalCGSTAddSGST = totalCGSTPer + totalSGSTper;
+                                    decimal? TotalGST = unitprice - (unitprice * (100 / (100 + totalCGSTAddSGST)));
+                                    decimal? invoicevaluewithoutgst = unitprice - TotalGST;
+
+                                    <td>@String.Format("{0:F2}", invoicevaluewithoutgst)</td>
+
+                                }
+
+                            } 
+
+                        </tr>
+
+                        <tr>
+
+                            @{
+                                if (string.IsNullOrEmpty(@Model.InvoiceDetails.Sum(a => a.TaxInPercent).ToString()) || Model.InvoiceDetails.Sum(a => a.TaxInPercent) == 0)
+                                {
+                                    <th>Total IGST Amount</th>  
+                                    decimal? totalIGSTPer = Model.InvoiceDetails.Sum(a => a.IGST_TaxInPercent);
+                                    decimal? unitprice = Model.InvoiceMaster.AmountPaid;
+                                    decimal? TotalGST = unitprice - (unitprice * (100 / (100 + totalIGSTPer)));
+                                    <td>@String.Format("{0:F2}", TotalGST)</td>
+
+                                }
+                                else
+                                {
+                                    <th>Total CGST and SGST Amount</th>
+                                    decimal? totalCGSTPer = Model.InvoiceDetails.Sum(a => a.TaxInPercent);
+                                    decimal? totalSGSTper = Model.InvoiceDetails.Sum(a => a.SGST_TaxInPercent);
+                                    decimal? unitprice = Model.InvoiceMaster.AmountPaid;
+                                    decimal? totalCGSTAddSGST = totalCGSTPer + totalSGSTper;
+                                    decimal? TotalGST = unitprice - (unitprice * (100 / (100 + totalCGSTAddSGST))); 
+                                    <td>@String.Format("{0:F2}", TotalGST)</td>
+
+                                }
+
+                            }
+
+                        </tr>
+                        <tr> 
+
+                            <th style="font-size : medium;">Invoice Value</th>
+
+                            @{
+                                if (Model.InvoiceDetails.Any(a => a.TaxInPercent == null || a.TaxInPercent == 0 ||a.SGST_TaxInPercent==null||a.SGST_TaxInPercent==0))
+                                {
+                                    //decimal? totalIGSTPer = Model.InvoiceDetails.Sum(a => a.IGST_TaxInPercent);
+                                    //decimal? amount = Model.InvoiceMaster.AmountPaid;
+                                    //decimal? TotalInvoiceValue = amount - (amount - (amount * (100 / (100 + totalIGSTPer))));
+                                    decimal? TotalInvoiceValue = @Model.InvoiceDetails.Sum(a => a.UnitPrice);
+                                    <td>@String.Format("{0:F2}", TotalInvoiceValue)</td>
+                                }
+                                else
+                                {
+
+                                    //decimal? totalCGSTPer = Model.InvoiceDetails.Sum(a => a.TaxInPercent);
+                                    //decimal? totalSGSTper = Model.InvoiceDetails.Sum(a => a.SGST_TaxInPercent);
+                                    //decimal? amount = Model.InvoiceMaster.AmountPaid;
+                                    //decimal? totalCGSTAddSGST = totalCGSTPer + totalSGSTper;
+                                    //decimal? TotalInvoiceValue = amount - (amount - (amount * (100 / (100 + totalCGSTAddSGST))));
+                                    decimal? TotalInvoiceValue = @Model.InvoiceDetails.Sum(a => a.UnitPrice);
+                                    <td>@String.Format("{0:F2}", TotalInvoiceValue) </td> 
+                                }
+                                 
+                            } 
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <td> <b>@ViewBag.inword</b></td>
+                        </tr> 
+                    </table> 
+                </section>
+                <div class="clearfix"></div>
+                <section id="terms">
+
+                    <span>Terms and Conditions</span>
+                    <div>
+                        1.Our responsibility cesses as soon as the service has delivered .<br />
+                        2.Payment wil be made by only Cheque, DD, card or online.<br />
+                        3.Interest will be charges  21% p.a if payment is not received on or before due date .<br />
+                        4.Any error by oversight in the bill will be adjusted. <br />
+                        5.Subject to Noida Jurisdiction.<br />
+                        6.E. & O.E
+                    </div>
+                    <img src="/Images/stampn.png" style="height:80px; margin-left:77%">
+                </section>
+            </div>
+        </div>
+    }
+    else
+    {
+        <h4>No record found</h4>
+    }
+     
+
+</body>
+</html>

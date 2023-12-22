@@ -586,6 +586,20 @@ namespace CRM.Controllers
             //return File(, "application/pdf", "SalarySlip.pdf");
         }
 
+
+        public IActionResult Invoice(int id)
+        {
+            try
+            {
+                return View();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
     }
 }
 
