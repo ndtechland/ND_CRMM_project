@@ -218,6 +218,8 @@ namespace CRM.Models.Crm
                     .HasColumnType("date")
                     .HasColumnName("Start_date");
 
+                entity.Property(e => e.State).HasMaxLength(255);
+
                 entity.Property(e => e.WorkLocation)
                     .HasMaxLength(255)
                     .HasColumnName("Work_Location");

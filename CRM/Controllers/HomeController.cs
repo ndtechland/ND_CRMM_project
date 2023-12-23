@@ -5,6 +5,7 @@ using CRM.Repository;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
@@ -43,22 +44,19 @@ namespace CRM.Controllers
                 var emp = new Customer();
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 ViewBag.UserName = AddedBy;
-                ViewBag.ProductDetails = _context.ProductMasters
-              .Select(p => new SelectListItem
+                ViewBag.ProductDetails = _context.ProductMasters.Select(p => new SelectListItem
               {
                   Value = p.Id.ToString(),
-                  Text = p.ProductName
-              })
-               .ToList();
-                ViewBag.WorkLocations = _context.WorkLocations
-              .Select(p => new SelectListItem
+                  Text = p.ProductName,                 
+              }).ToList();
+                ViewBag.WorkLocations = _context.WorkLocations.Select(p => new SelectListItem
               {
                   Value = p.Id.ToString(),
                   Text = p.AddressLine1
-              })
-               .ToList();
-                return View(emp);
+              }).ToList();      
+                return View(emp);               
             }
+
             else
             {
                 return RedirectToAction("Login", "Admin");
@@ -164,21 +162,6 @@ namespace CRM.Controllers
         //======Invoice Section========//
         [HttpGet]
         public IActionResult Invoice()
-        {
-            if (HttpContext.Session.GetString("UserName") != null)
-            {
-                string AddedBy = HttpContext.Session.GetString("UserName");
-                ViewBag.UserName = AddedBy;
-                return View();
-            }
-            else
-            {
-                return RedirectToAction("Login", "Admin");
-            }
-        }
-
-
-        public IActionResult CustomerDetails()
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
@@ -531,6 +514,27 @@ namespace CRM.Controllers
             {
                 throw new Exception();
             }
+        }
+
+        [HttpGet]
+        public JsonResult product(int? id)
+        {
+            var data = (from pm in _context.ProductMasters
+                          join gm in _context.GstMasters on pm.Gst equals gm.Id.ToString()
+                          where pm.Id == id
+                          select new Customer
+                          {
+                              Scgst = gm.Scgst,
+                              Cgst = gm.Cgst,
+                              Igst = gm.Igst,
+                              Price=pm.Price,
+                              HsnSacCode=pm.HsnSacCode,
+                          }).FirstOrDefault();
+            var result = new
+            {
+                Data = data,
+            };
+            return new JsonResult(result);
         }
     }
 
