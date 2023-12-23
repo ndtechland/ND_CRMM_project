@@ -92,12 +92,12 @@ namespace CRM.Repository
             parameter.Add(new SqlParameter("@GST_Number", model.GstNumber));
             parameter.Add(new SqlParameter("@Billing_Address", model.BillingAddress));
             parameter.Add(new SqlParameter("@Product_Details", model.ProductDetails));
-            //parameter.Add(new SqlParameter("@GenrateInvoice", model.GenrateInvoice));
             parameter.Add(new SqlParameter("@Start_date", model.StartDate));
             parameter.Add(new SqlParameter("@Renew_Date", model.RenewDate));
+            parameter.Add(new SqlParameter("@State", model.State));
 
             var result = await Task.Run(() => _context.Database
-           .ExecuteSqlRawAsync(@"exec CustomerRegistration @Company_Name, @Work_Location,@Mobile_number,@Alternate_number,@Email,@GST_Number,@Billing_Address,@Product_Details,@Start_date,@Renew_Date", parameter.ToArray()));
+           .ExecuteSqlRawAsync(@"exec CustomerRegistration @Company_Name, @Work_Location,@Mobile_number,@Alternate_number,@Email,@GST_Number,@Billing_Address,@Product_Details,@Start_date,@Renew_Date,@State", parameter.ToArray()));
 
             return result;
         }
@@ -157,38 +157,10 @@ namespace CRM.Repository
                 throw new Exception("Error:" + Ex.Message);
             }
         }
-
-
-
         public async Task<List<StateMaster>> GetAllState()
         {
             return await _context.StateMasters.ToListAsync();
-        }
-        //====EmployeeBasicinfo==//
-        public async Task<int> EmployeeBasicinfo(EmployeePersonalDetail model)
-        {
-            {
-                var parameter = new List<SqlParameter>();
-                parameter.Add(new SqlParameter("@Action", 1));
-                parameter.Add(new SqlParameter("@ID", model.Id));
-                parameter.Add(new SqlParameter("@Personal_Email_Address", model.PersonalEmailAddress));
-                parameter.Add(new SqlParameter("@Mobile_Number", model.MobileNumber));
-                parameter.Add(new SqlParameter("@Date_Of_Birth", model.DateOfBirth));
-                parameter.Add(new SqlParameter("@Father_Name", model.FatherName));
-                parameter.Add(new SqlParameter("@PAN", model.Pan));
-                parameter.Add(new SqlParameter("@Address_Line_1", model.AddressLine1));
-                parameter.Add(new SqlParameter("@Address_Line_2", model.AddressLine2));
-                parameter.Add(new SqlParameter("@City", model.City));
-                parameter.Add(new SqlParameter("@State_ID", model.StateId));
-                parameter.Add(new SqlParameter("@Pincode", model.Pincode));
-                parameter.Add(new SqlParameter("@IsDeleted", "0"));
-                var result = await Task.Run(() => _context.Database
-               .ExecuteSqlRawAsync(@"exec sp_Employee_Personal_Details  @Action,@ID,@Personal_Email_Address,
-            @Mobile_Number,@Date_Of_Birth,@Father_Name,@PAN,@Address_Line_1,
-              @Address_Line_2,@City,@State_ID,@Pincode,@IsDeleted", parameter.ToArray()));
-                return result;
-            }
-        }
+        }        
         public async Task<int> Banner(BannerMaster model)
         {
             var parameter = new List<SqlParameter>();
@@ -230,38 +202,6 @@ namespace CRM.Repository
             }
             return (emp);
 
-        }
-
-        public async Task<List<EmployeePersonalDetail>> EmployeeBasicinfoList()
-        {
-            List<EmployeePersonalDetail> emp = new List<EmployeePersonalDetail>();
-            SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
-            SqlCommand cmd = new SqlCommand("EmployeeBasicinfoList", con);
-            cmd.CommandType = CommandType.StoredProcedure;
-            con.Open();
-            SqlDataReader rdr = cmd.ExecuteReader();
-            while (rdr.Read())
-            {
-                var emps = new EmployeePersonalDetail()
-                {
-                    Id = Convert.ToInt32(rdr["id"]),
-                    PersonalEmailAddress = Convert.ToString(rdr["PersonalEmailAddress"]),
-                    MobileNumber = Convert.ToString(rdr["MobileNumber"]),
-                    DateOfBirth = (DateTime)(rdr["DateOfBirth"] != DBNull.Value ? Convert.ToDateTime(rdr["DateOfBirth"]) : (DateTime?)null),
-                    Age = Convert.ToInt32(rdr["Age"]),
-                    FatherName = Convert.ToString(rdr["FatherName"]),
-                    Pan = Convert.ToString(rdr["Pan"]),
-                    AddressLine1 = Convert.ToString(rdr["AddressLine1"]),
-                    AddressLine2 = Convert.ToString(rdr["AddressLine2"]),
-                    City = Convert.ToString(rdr["City"]),
-                    StateId = Convert.ToString(rdr["StateId"]),
-                    Pincode = Convert.ToString(rdr["Pincode"]),
-
-                };
-
-                emp.Add(emps);
-            }
-            return (emp);
         }
 
         public ProductMaster GetproductById(int id)

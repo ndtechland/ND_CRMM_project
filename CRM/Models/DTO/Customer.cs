@@ -16,5 +16,12 @@ namespace CRM.Models.DTO
         public string? ProductDetails { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime RenewDate { get; set; }
+        public string? Scgst { get; set; }
+        public string? Cgst { get; set; }
+        public string? Igst { get; set; }
+        public string? Gst { get; set; }
+        public string? HsnSacCode { get; set; } 
+        public double Price { get; set; }
+        public string? State { get; set; }
     }
 }

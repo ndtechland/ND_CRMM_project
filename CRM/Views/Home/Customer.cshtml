@@ -139,8 +139,8 @@
                                     <div class="row">
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Company Name</label>
-                                            <input asp-for="CompanyName" class="form-control" />
-                                            <span asp-validation-for="CompanyName" class="text-danger"></span>
+                                            <input asp-for="CompanyName" placeholder="CompanyName" class="form-control" />
+                                            <span asp-validation-for="CompanyName"  class="text-danger"></span>
                                         </div>
                                         <div class="form-group  col-sm ">
                                             <label for="validationCustom0">Work Location</label>
@@ -151,37 +151,37 @@
                                     <div class="row">
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Mobile Number</label>
-                                            <input type="text" asp-for="MobileNumber" class="form-control" minlength="10" maxlength="10" onkeydown="validateNumericInput(event)" required />
+                                            <input type="text" asp-for="MobileNumber" placeholder="MobileNumber" class="form-control" minlength="10" maxlength="10" onkeydown="validateNumericInput(event)" required />
                                             <span asp-validation-for="MobileNumber" class="text-danger"></span>
                                         </div>
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Alternate Number</label>
-                                            <input type="text" asp-for="AlternateNumber" class="form-control" minlength="10" maxlength="10" onkeydown="validateNumericInput(event)" required />
+                                            <input type="text" asp-for="AlternateNumber" placeholder="AlternateNumber" class="form-control" minlength="10" maxlength="10" onkeydown="validateNumericInput(event)" required />
                                             <span asp-validation-for="AlternateNumber" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Email</label>
-                                            <input type="email" asp-for="Email" class="form-control" required />
+                                            <input type="email" asp-for="Email" placeholder="Email" class="form-control" required />
                                             <span asp-validation-for="Email" class="text-danger"></span>
                                         </div>
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Gst Number</label>
-                                            <input asp-for="GstNumber" class="form-control" required />
+                                            <input asp-for="GstNumber" id="GstNumber" class="form-control" placeholder="GstNumber" maxlength="15" minlength="15"  onblur="ValidateGST()" required />
                                             <span asp-validation-for="GstNumber" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Billing Address</label>
-                                            <input asp-for="BillingAddress" class="form-control" required />
+                                            <input asp-for="BillingAddress" placeholder="BillingAddress" class="form-control" required />
                                             <span asp-validation-for="BillingAddress" class="text-danger"></span>
                                         </div>
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Product Details</label>
 
-                                            @Html.DropDownListFor(model => model.ProductDetails, new SelectList(ViewBag.ProductDetails, "Value", "Text"), "-- Select Product --", new { @class = "form-control" })
+                                            @Html.DropDownListFor(model => model.ProductDetails, new SelectList(ViewBag.ProductDetails, "Value", "Text"), "-- Select Product --", new { @class = "form-control", onchange  ="onProductChange()"})
 
                                             <span asp-validation-for="ProductDetails" class="text-danger"></span>
                                         </div>
@@ -189,24 +189,24 @@
                                     <div class="row">
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Start Date</label>
-                                            <input name="StartDate" type="date" class="form-control" required />
+                                            <input name="StartDate" type="date"  class="form-control" required />
                                             <span asp-validation-for="StartDate" class="text-danger"></span>
                                         </div>
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Renew Date</label>
-                                            <input name="RenewDate" type="date" class="form-control" required />
+                                            <input name="RenewDate" type="date"  class="form-control" required />
                                             <span asp-validation-for="RenewDate" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Price</label>
-                                            <input type="Price" asp-for="Email" class="form-control" required />
-                                            <span asp-validation-for="Email" class="text-danger"></span>
+                                            <input class="form-control" name="Price" placeholder="00.0" id="Price" type="text" readonly>
+                                            <span asp-validation-for="Price" class="text-danger"></span>
                                         </div>
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">State</label>
-                                            <select id="State" class="form-control">
+                                            <select asp-for="State" id="State" class="form-control">
                                                 <option value="">--Select State--</option>
                                                 <option value="UP">UP</option>
                                                 <option value="Other">Other</option>
@@ -218,36 +218,22 @@
 
                                     <div class="row">
                                         <div class="form-group col-sm">
-                                            <label for="validationCustom0">IGST</label>
-                                            <input name="IGST" type="text" class="form-control" required id="IGST" readonly disabled />
-                                            @*<span asp-validation-for="IGST" class="text-danger"></span>*@
+                                            <label for="validationCustom0">HSN Code</label>
+                                            <input type="text" asp-for="HsnSacCode" id="HsnSacCode" placeholder="HsnSacCode" class="form-control" readonly />
                                         </div>
+                                        <div class="form-group col-sm">
+                                            <label for="validationCustom0">IGST</label>
+                                            <input type="Igst" asp-for="Igst" id="IGST" placeholder="00.0" class="form-control" readonly />
+                                       </div>
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">SGST</label>
-                                            <input name="SGST" type="text" class="form-control" required id="SGST" readonly disabled />
-                                            @*<span asp-validation-for="SGST" class="text-danger"></span>*@
-                                        </div>
+                                            <input type="Scgst" asp-for="Scgst" id="SGST" placeholder="00.0" class="form-control" readonly />
+                                       </div>
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">CGST</label>
-                                            <input name="CGST" type="text" class="form-control" required id="CGST" readonly disabled />
-                                            @*<span asp-validation-for="CGST" class="text-danger"></span>*@
+                                            <input type="Cgst" asp-for="Cgst" id="CGST" placeholder="00.0" class="form-control" readonly />
                                         </div>
                                     </div>
-
-
-                                    @*<div class="row">
-                                        <label for="validationCustom0">Location</label>
-                                        <select class="form-group col-sm js-select2" multiple="multiple">
-                                            <option value="O1" data-badge="">Option1</option>
-                                            <option value="O2" data-badge="">Option2</option>
-                                            <option value="O3" data-badge="">Option3</option>
-                                            <option value="O4" data-badge="">Option4</option>
-                                            <option value="O5" data-badge="">Option5</option>
-                                            <option value="O6" data-badge="">Option6</option>
-                                            <option value="O7" data-badge="">Option7</option>
-                                        </select>
-                                    </div>*@
-
 
                                     <div class="form-group" style="display:flex; justify-content:center;">
                                         <input type="submit" value="Save" class="btn btn-primary" />
@@ -263,40 +249,74 @@
 
 
     </div>
-
+    <input hidden type="text" id="iGST" value="" />
+    <input hidden type="text" id="cGST" value="" />
+    <input hidden type="text" id="sGST" value="" />
+    <input hidden type="text" id="hsnSacCode" value="" />
+    <input hidden type="text" id="price" value="" />
 </div>
 <!-- Add this in the head section of your HTML -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.2.1/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/js/select2.min.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
 @section scripts {
 
     <script>
 
         $(document).ready(function () {
-            // Event listener for state dropdown change
             $('#State').change(function () {
                 var selectedState = $(this).val();
-
-                // Check if UP is selected
                 if (selectedState === 'UP') {
-                    // Fill in CGST and SGST values
-                    $('#CGST').val('2.5');
-                    $('#SGST').val('2.5');
-                    $('#IGST').val(''); // Clear IGST value
+                    $('#CGST').val($('#cGST').val());
+                    $('#SGST').val($('#sGST').val());
+                    $('#HsnSacCode').val($('#hsnSacCode').val());
+                    $('#Price').val($('#price').val());
+                    $('#IGST').val(''); 
                 } else {
-                    // Fill in IGST value and clear CGST and SGST values
-                    $('#IGST').val('5');
-                    $('#CGST').val('6');
-                    $('#SGST').val('6');
-                }
+                    $('#IGST').val($('#iGST').val());
+                    $('#CGST').val('');
+                    $('#SGST').val('');
+                    $('#HsnSacCode').val($('#hsnSacCode').val());
+                    $('#Price').val($('#price').val());
+                }               
             });
         });
     </script>
 }
+<script>    
+        function onProductChange() {
+            var id = $("#ProductDetails").val();
+            $.ajax({
+                url: '/Home/product?id=' + id,
+                type: 'GET',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                success: function (response) {
 
-<script>
+                    $('#CGST').val('');
+                    $('#SGST').val('');
+                    $('#HsnSacCode').val('');
+                    $('#Price').val('');
+                    $('#IGST').val('');
+                    $('#State').val('');
+                    if (response) {
+                        $('#cGST').val(response.data.cgst);
+                        $('#iGST').val(response.data.igst);
+                        $('#sGST').val(response.data.scgst);
+                        $('#hsnSacCode').val(response.data.hsnSacCode);
+                        $('#price').val(response.data.price);
+                    }
+                    else {
+                        alert('Data not found');
+                    }
+                    
+                },
+                error: function () {
+                    alert('Error fetching data');
+                }
+            });
+        }
     function validateNumericInput(event) {
         // Allow: backspace, delete, tab, escape, enter
         if ([46, 8, 9, 27, 13].indexOf(event.keyCode) !== -1 ||
@@ -312,16 +332,30 @@
         if ((event.shiftKey || (event.keyCode < 48 || event.keyCode > 57)) && (event.keyCode < 96 || event.keyCode > 105)) {
             event.preventDefault();
         }
-    }
+
+    }      
+        function ValidateGST() {
+            var Obj = document.getElementById("GstNumber");
+            if (Obj.value != "") {
+                ObjVal = Obj.value;
+                var gstPat = /^([0-9]{2}[a-zA-Z]{4}([a-zA-Z]{1}|[0-9]{1})[0-9]{4}[a-zA-Z]{1}([a-zA-Z]|[0-9]){3}){0,15}$/;
+                if (ObjVal.search(gstPat) == -1) {
+                    swal("Invalid GstNumber. It should be in this 11AAAAA1111Z1A1 format'");
+                    Obj.value = '';
+                    return false;
+                }
+                else {
+                }
+            }
+        }
 </script>
 
 <script type="text/javascript">
     $(".js-select2").select2({
         closeOnSelect: false,
         placeholder: "--Select WorkLocation--",
-        // allowHtml: true,
         allowClear: true,
-        tags: true // создает новые опции на лету
+        tags: true 
     });
 </script>
 

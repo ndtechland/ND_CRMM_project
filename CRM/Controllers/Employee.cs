@@ -14,11 +14,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Net;
 using System.Text;
-//using IronPdf;
-//using IronPdf.Engines.Chrome;
-//using IronPdf.Rendering;
 using Microsoft.AspNetCore.Components.RenderTree;
-//using IronPdf.Editing;
 using System.IO;
 using Org.BouncyCastle.Asn1.Mozilla;
 using SelectPdf;
@@ -26,7 +22,6 @@ using static CRM.Controllers.Employee;
 using System.Globalization;
 
 
-//using Microsoft.TeamFoundation.WorkItemTracking.Internals;
 
 namespace CRM.Controllers
 {
@@ -129,36 +124,6 @@ namespace CRM.Controllers
             }
         }
 
-        [HttpGet]
-        public IActionResult EmployeeBasicinfo()
-        {
-
-            if (HttpContext.Session.GetString("UserName") != null)
-            {
-                var emp = new EmployeePersonalDetail();
-
-                string AddedBy = HttpContext.Session.GetString("UserName");
-                ViewBag.UserName = AddedBy;
-                ViewBag.StateId = _context.StateMasters
-              .Select(s => new SelectListItem
-              {
-                  Value = s.Id.ToString(),
-                  Text = s.StateName
-              })
-               .ToList();
-                DateTime dob = DateTime.Now;
-                int age = CalculatAge(dob);
-                ViewBag.EmployeeAge = age;
-                return View(emp);
-
-
-            }
-            else
-            {
-                return RedirectToAction("Login", "Admin");
-            }
-        }
-
         public async Task<IActionResult> Employeelist()
         {
             if (HttpContext.Session.GetString("UserName") != null)
@@ -176,30 +141,7 @@ namespace CRM.Controllers
 
 
         }
-        [HttpPost]
-        public async Task<IActionResult> EmployeeBasicinfo(EmployeePersonalDetail model)
-        {
-            try
-            {
-                var response = await _ICrmrpo.EmployeeBasicinfo(model);
-                if (response != null)
-                {
-
-                    return RedirectToAction("EmployeeBasicinfo", "Employee");
-                    TempData["msg"] = "EmployeeBasicinfo Successfully.";
-                }
-                else
-                {
-                    ModelState.Clear();
-                    return View();
-                }
-            }
-            catch (Exception Ex)
-            {
-                throw new Exception("Error:" + Ex.Message);
-            }
-        }
-
+     
         public static int CalculatAge(DateTime DOB)
         {
             DateTime currentDate = DateTime.Now;
@@ -214,24 +156,6 @@ namespace CRM.Controllers
             return age;
 
         }
-
-
-        public async Task<IActionResult> EmployeeBasicinfoList()
-        {
-            if (HttpContext.Session.GetString("UserName") != null)
-            {
-                var response = await _ICrmrpo.EmployeeBasicinfoList();
-                string AddedBy = HttpContext.Session.GetString("UserName");
-                ViewBag.UserName = AddedBy;
-                return View(response);
-            }
-            else
-            {
-                return RedirectToAction("Login", "Admin");
-            }
-
-        }
-
 
         public async Task<IActionResult> DeleteEmployee(int id)
         {
@@ -640,11 +564,12 @@ namespace CRM.Controllers
             return monthName;
         }
 
-
-        public IActionResult Invoice(int id)
+        [Route("Employee/Invoice")]
+        public IActionResult Invoice()
         {
             try
             {
+              //  int id
                 return View();
             }
             catch (Exception)
@@ -652,8 +577,7 @@ namespace CRM.Controllers
 
                 throw;
             }
-        }
-
+        }        
     }
 }
 
