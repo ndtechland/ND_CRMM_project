@@ -52,6 +52,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<TransactionDetail> TransactionDetails { get; set; } = null!;
         public virtual DbSet<WorkLocation> WorkLocations { get; set; } = null!;
         public virtual DbSet<Employeer_EPF> Employeer_EPFs { get; set; } = null!;
+        public virtual DbSet<EmployeeImportExcel> EmpMultiforms { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

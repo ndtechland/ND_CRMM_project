@@ -1,4 +1,6 @@
-﻿namespace CRM.Models.DTO
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace CRM.Models.DTO
 {
     public class GenerateSalary
     {

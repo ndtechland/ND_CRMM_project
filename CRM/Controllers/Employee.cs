@@ -17,9 +17,9 @@ using System.Text;
 using IronPdf;
 using IronPdf.Engines.Chrome;
 using IronPdf.Rendering;
-
-
-//using Microsoft.TeamFoundation.WorkItemTracking.Internals;
+using System.Data;
+using MimeKit.Encodings;
+using Fingers10.ExcelExport.ActionResults;
 
 namespace CRM.Controllers
 {
@@ -40,9 +40,7 @@ namespace CRM.Controllers
 
         }
 
-
-
-        public IActionResult EmployeeRegistration()
+        public IActionResult EmployeeRegistration(string id)
         {
 
             if (HttpContext.Session.GetString("UserName") != null)
@@ -79,18 +77,117 @@ namespace CRM.Controllers
                     Value = w.Id.ToString(),
                     Text = w.DesignationName
                 }).ToList();
-
+                //States dropdown
                 ViewBag.States = _context.StateMasters.Select(w => new SelectListItem
                 {
                     Value = w.Id.ToString(),
                     Text = w.StateName
                 }).ToList();
+                //CustomerName dropdown
                 ViewBag.CustomerName = _context.CustomerRegistrations.Select(x => new SelectListItem
                 {
                     Value = x.Id.ToString(),
                     Text = x.CompanyName
                 }).ToList();
+
+                ViewBag.Emp_Reg_Code = "";
+                ViewBag.First_Name = "";
+                ViewBag.Middle_Name = "";
+                ViewBag.Last_Name = "";
+                ViewBag.Date_Of_Joining = "";
+                ViewBag.Work_Email = "";
+                ViewBag.Gender_ID = "";
+                ViewBag.Work_Location_ID = "";
+                ViewBag.Designation_ID = "";
+                ViewBag.Department_ID = "";
+                ViewBag.CustomerID = "";
+                ViewBag.Basic = "";
+                ViewBag.AnnualCTC = "";
+                ViewBag.HouseRentAllowance = "";
+                ViewBag.ConveyanceAllowance = "";
+                ViewBag.FixedAllowance = "";
+                ViewBag.EPF = "";
+                ViewBag.MonthlyGrossPay = "";
+                ViewBag.MonthlyCTC = "";
+                ViewBag.Personal_Email_Address = "";
+                ViewBag.Mobile_Number = "";
+                ViewBag.Date_Of_Birth = "";
+                ViewBag.Age = "";
+                ViewBag.Father_Name = "";
+                ViewBag.PAN = "";
+                ViewBag.Address_Line_1 = "";
+                ViewBag.Address_Line_2 = "";
+                ViewBag.City = "";
+                ViewBag.State_ID = "";
+                ViewBag.Pincode = "";
+                ViewBag.Account_Holder_Name = "";
+                ViewBag.Bank_Name = "";
+                ViewBag.Account_Number = "";
+                ViewBag.Re_Enter_Account_Number = "";
+                ViewBag.IFSC = "";
+                ViewBag.Account_Type_ID = "";
+                ViewBag.EPF_Number = "";
+                ViewBag.Deduction_Cycle = "";
+                ViewBag.Employee_Contribution_Rate = "";
+
+                ViewBag.btnText = "SAVE";
+
+                if (id != null)
+                {
+                    DataTable dtEmployeeRecord = _ICrmrpo.GetEmployDetailById(id);
+                    if (dtEmployeeRecord != null && dtEmployeeRecord.Rows.Count > 0)
+                    {
+                        DataRow row = dtEmployeeRecord.Rows[0] as DataRow; // Explicit cast to DataRow
+                        if (row != null)
+                        {
+
+                            ViewBag.First_Name = row["First_Name"].ToString();
+                            ViewBag.Middle_Name = row["Middle_Name"].ToString();
+                            ViewBag.Last_Name = row["Last_Name"].ToString();
+                            ViewBag.Date_Of_Joining = row["Date_Of_Joining"].ToString();
+                            ViewBag.Work_Email = row["Work_Email"].ToString();
+                            ViewBag.Gender_ID = row["Gender_ID"].ToString();
+                            ViewBag.Work_Location_ID = row["Work_Location_ID"].ToString();
+                            ViewBag.Designation_ID = row["Designation_ID"].ToString();
+                            ViewBag.Department_ID = row["Department_ID"].ToString();
+                            ViewBag.CustomerID = row["CustomerID"].ToString();
+                            ViewBag.Basic = row["Basic"].ToString();
+                            ViewBag.AnnualCTC = row["AnnualCTC"].ToString();
+                            ViewBag.HouseRentAllowance = row["HouseRentAllowance"].ToString();
+                            ViewBag.ConveyanceAllowance = row["ConveyanceAllowance"].ToString();
+                            ViewBag.FixedAllowance = row["FixedAllowance"].ToString();
+                            ViewBag.EPF = row["EPF"].ToString();
+                            ViewBag.MonthlyGrossPay = row["MonthlyGrossPay"].ToString();
+                            ViewBag.MonthlyCTC = row["MonthlyCTC"].ToString();
+                            ViewBag.Personal_Email_Address = row["Personal_Email_Address"].ToString();
+                            ViewBag.Mobile_Number = row["Mobile_Number"].ToString();
+                            ViewBag.Date_Of_Birth = row["Date_Of_Birth"].ToString();
+                            ViewBag.Age = row["Age"].ToString();
+                            ViewBag.Father_Name = row["Father_Name"].ToString();
+                            ViewBag.PAN = row["PAN"].ToString();
+                            ViewBag.Address_Line_1 = row["Address_Line_1"].ToString();
+                            ViewBag.Address_Line_2 = row["Address_Line_2"].ToString();
+                            ViewBag.City = row["City"].ToString();
+                            ViewBag.State_ID = row["State_ID"].ToString();
+                            ViewBag.Pincode = row["Pincode"].ToString();
+                            ViewBag.Account_Holder_Name = row["Account_Holder_Name"].ToString();
+                            ViewBag.Bank_Name = row["Bank_Name"].ToString();
+                            ViewBag.Account_Number = row["Account_Number"].ToString();
+                            ViewBag.Re_Enter_Account_Number = row["Re_Enter_Account_Number"].ToString();
+                            ViewBag.IFSC = row["IFSC"].ToString();
+                            ViewBag.Account_Type_ID = row["Account_Type_ID"].ToString();
+                            ViewBag.EPF_Number = row["EPF_Number"].ToString();
+                            ViewBag.Deduction_Cycle = row["Deduction_Cycle"].ToString();
+                            ViewBag.Employee_Contribution_Rate = row["Employee_Contribution_Rate"].ToString();
+                            ViewBag.Emp_Reg_Code = id;
+                            ViewBag.btnText = "UPDATE";
+
+                        }
+
+                    }
+                }
                 return View();
+
             }
 
             else
@@ -98,23 +195,25 @@ namespace CRM.Controllers
                 return RedirectToAction("Login", "Admin");
             }
         }
+      
         [HttpPost]
         public async Task<IActionResult> EmployeeRegistration(EmpMultiform model)
         {
             try
             {
-                var response = await _ICrmrpo.EmpRegistration(model);
-                //if (response != null)
-                //{
+                string Mode = "INS";
+                string Empid = "";
+                if (model.Emp_Reg_ID != "" && model.Emp_Reg_ID != null)
+                {
+                    Mode = "UPD";
+                    Empid = model.Emp_Reg_ID;
+                }
 
-                //    return RedirectToAction("Employeelist", "Employee");
-                //    ViewBag.Message = "registration Successfully.";
-                //}
-                //else
-                //{
+                var response = await _ICrmrpo.EmpRegistration(model, Mode, Empid);
+
                 ModelState.Clear();
                 return View();
-                //}
+
             }
             catch (Exception Ex)
             {
@@ -154,11 +253,12 @@ namespace CRM.Controllers
 
         public async Task<IActionResult> Employeelist()
         {
+            List<EmployeeRegistration> response = new List<EmployeeRegistration>();
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                var response = await _ICrmrpo.EmployeeList();
+                response = await _ICrmrpo.EmployeeList();
                 string AddedBy = HttpContext.Session.GetString("UserName");
-                ViewBag.UserName = AddedBy;
+                //ViewBag.UserName = AddedBy;
                 return View(response);
 
             }
@@ -421,26 +521,30 @@ namespace CRM.Controllers
         [HttpPost]
         public IActionResult GetLocationsByCustomer(string customerId)
         {
-
-            var locations = _context.CustomerRegistrations.FirstOrDefault(x => x.Id == Convert.ToInt32(customerId));
-            string[] strlocation = locations.WorkLocation?.Split(new string[] { "," }, StringSplitOptions.None);
-            List<WorkLocation> locationlist = new List<WorkLocation>();
-
-
-
-            foreach (var loc in strlocation)
+            var locationsJsonblank = "";
+            if (!string.IsNullOrEmpty(customerId))
             {
-                locationlist.Add(_context.WorkLocations.FirstOrDefault(x => x.Id == Convert.ToInt32(loc)));
+                var locations = _context.CustomerRegistrations.FirstOrDefault(x => x.Id == Convert.ToInt32(customerId));
+                string[] strlocation = locations.WorkLocation?.Split(new string[] { "," }, StringSplitOptions.None);
+                List<WorkLocation> locationlist = new List<WorkLocation>();
+
+                foreach (var loc in strlocation)
+                {
+                    locationlist.Add(_context.WorkLocations.FirstOrDefault(x => x.Id == Convert.ToInt32(loc)));
+                }
+
+
+                var locationsJson = locationlist.Select(x => new SelectListItem
+                {
+                    Text = x.Id.ToString(),
+                    Value = x.AddressLine1
+                }).ToList();
+
+                return Json(locationsJson);
             }
 
+            return Json(locationsJsonblank);
 
-            var locationsJson = locationlist.Select(x => new SelectListItem
-            {
-                Text = x.Id.ToString(),
-                Value = x.AddressLine1
-            }).ToList();
-
-            return Json(locationsJson);
         }
         [HttpPost]
         public async Task<IActionResult> GenerateSalary(string customerId, int Month, int year)
@@ -568,7 +672,7 @@ namespace CRM.Controllers
             {
                 var response = await _ICrmrpo.EmployerList();
                 string AddedBy = HttpContext.Session.GetString("UserName");
-                ViewBag.UserName = AddedBy;
+                // ViewBag.UserName = AddedBy;
                 return View(response);
 
             }
@@ -604,6 +708,20 @@ namespace CRM.Controllers
                 throw;
             }
 
+        }
+        //-----ImportToExcelEmployeeList
+        public IActionResult ImportToExcelEmployeeList()
+        {
+            try
+            {
+                var response =  _ICrmrpo.EmployeeListForExcel();
+                return File(response, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Employee_List.xlsx");
+            }
+            catch (Exception Ex)
+            {
+                throw Ex;
+            }
+           
         }
     }
 }

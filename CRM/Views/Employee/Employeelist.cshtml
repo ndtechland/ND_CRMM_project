@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CRM.Models.DTO.EmployeeList>
+﻿@model IEnumerable<CRM.Models.Crm.EmployeeRegistration>
 
 
 @{
@@ -33,9 +33,15 @@
                                 <li class="breadcrumb-item active">Employee</li>
                                 <li class="breadcrumb-item active">EmployeeList</li>
                             </ol>
+                            
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <div>
+                <img src="~/image/execimage.png" style="height:50px; margin-left:1121px;width:53px;cursor:pointer" title="Export To Excel" onclick="ExportExcelfn()" />
+                
             </div>
             <!-- Container-fluid Ends-->
             <!-- Container-fluid starts-->
@@ -51,22 +57,22 @@
                                             <tr style="background-color: #00baf2;">
                                                 <th nowrap>Sl. No.</th>
                                                 <th>
-                                                    @Html.DisplayNameFor(model => model.FirstName)
+                                                    First Name
                                                 </th>
                                                 <th>
-                                                    @Html.DisplayNameFor(model => model.MiddleName)
+                                                    Middle Name
                                                 </th>
                                                 <th>
-                                                    @Html.DisplayNameFor(model => model.LastName)
+                                                   Last Name
                                                 </th>
                                                 <th>
-                                                    @Html.DisplayNameFor(model => model.EmployeeId)
+                                                    Employee ID
                                                 </th>
                                                 <th>
-                                                    @Html.DisplayNameFor(model => model.DateOfJoining)
+                                                   Date Of Joining 
                                                 </th>
                                                 <th>
-                                                    @Html.DisplayNameFor(model => model.WorkEmail)
+                                                   Work Email
                                                 </th>
                                                 <th>
                                                     Gender
@@ -80,9 +86,7 @@
                                                 <th>
                                                     Department
                                                 </th>
-                                                <th>
-                                                    Salary
-                                                </th>
+                                              
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -124,12 +128,10 @@
                                                         <td>
                                                             @Html.DisplayFor(modelItem => item.DepartmentId)
                                                         </td>
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => item.MonthlyCTC)
-                                                        </td>
+                                                      
                                                         <td>
                                                             <div>
-                                                                <a href="#" class="fa fa-edit m-2 font-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="EditEmployee(@item.Id)"></a>
+                                                                <a href="EmployeeRegistration?id=@item.EmployeeId" class="fa fa-edit m-2 font-success"></a>
                                                                 <a href="@Url.Action("DeleteEmployee","Employee",new { id=item.Id})" class="fa fa-trash font-danger"></a>
                                                             </div>
                                                         </td>
@@ -225,6 +227,11 @@
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
+    function ExportExcelfn()
+    {
+        
+        window.location.href = 'ImportToExcelEmployeeList'
+    }
     function EditEmployee(id) {
         debugger;
         $.ajax({

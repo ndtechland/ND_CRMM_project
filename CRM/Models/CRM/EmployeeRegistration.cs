@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CRM.Models.Crm
 {
@@ -25,6 +26,8 @@ namespace CRM.Models.Crm
         public string DepartmentId { get; set; } = null!;
         public bool? IsDeleted { get; set; }
         public int? CustomerId { get; set; }
+        [NotMapped]
+        public int? LocationId { get; set; }
 
         public virtual ICollection<EmployeeLogin> EmployeeLogins { get; set; }
         public virtual ICollection<EmployeeRole> EmployeeRoles { get; set; }

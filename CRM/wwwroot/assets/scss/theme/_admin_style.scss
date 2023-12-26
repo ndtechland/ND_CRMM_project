@@ -994,12 +994,19 @@ div{
     }
   }
 }
+les_wrapper .dataTables_filter input[type="search"] {
+    border: 1px solid black!important;
+    padding: 0 15px;
+    margin-left: 10px;
+    height: 37px;
+    border-radius: 0;
+}
 .dataTables_wrapper {
   .dataTables_length {
     margin-bottom: 30px;
     label {
       select {
-        border-color: $light-semi-gray;
+        border-color:black!important;
       }
     }
   }

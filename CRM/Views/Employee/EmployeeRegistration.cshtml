@@ -109,16 +109,16 @@
                                                 <div class="row">
                                                     <div class="col">
                                                         <label>Frist Name</label>
-                                                        <input class="form-control" name="FirstName" id="validationCustom1" type="text" required>
+                                                        <input class="form-control" value='@ViewBag.First_Name' name="FirstName" id="FirstName" type="text" required>
                                                     </div>
 
                                                     <div class="col">
                                                         <label>MiddleName</label>
-                                                        <input class="form-control" name="MiddleName" id="validationCustom1" type="text" required>
+                                                        <input class="form-control" value='@ViewBag.Middle_Name' name="MiddleName" id="MiddleName" type="text" required>
                                                     </div>
                                                     <div class="col">
                                                         <label>Last Name</label>
-                                                        <input class="form-control " name="LastName" id="validationCustom1" type="text" required>
+                                                        <input class="form-control " value='@ViewBag.Last_Name' name="LastName" id="LastName" type="text" required>
                                                     </div>
 
                                                 </div>
@@ -128,7 +128,8 @@
                                                     <div class="col-md-6">
                                                         <label>Work Email</label>
                                                         <div class="form-group">
-                                                            <input class="form-control " name="WorkEmail" id="validationCustom1" type="email" required>
+                                                            <input type="hidden" name="Emp_Reg_ID" value='@ViewBag.Emp_Reg_Code' />
+                                                            <input class="form-control " value='@ViewBag.Work_Email' name="WorkEmail" id="WorkEmail" type="email" required>
 
                                                         </div>
                                                     </div>
@@ -137,7 +138,7 @@
                                                         <label>Date Of Joining</label>
                                                         <div class="form-group">
 
-                                                            <input class="form-control " name="DateOfJoining" id="validationCustom1" type="date" required>
+                                                            <input class="form-control " value='@ViewBag.Date_Of_Joining' name="DateOfJoining" id="DateOfJoining" type="date" required>
 
                                                         </div>
                                                     </div>
@@ -149,7 +150,7 @@
                                                         <label>Gender</label>
                                                         <div class="form-group">
 
-                                                            <select name="GenderID" class="form-control ">
+                                                            <select name="GenderID" id="ddlGender" class="form-control ">
                                                                 <option value="0">-select Gender--</option>
                                                                 <option value="1">Female</option>
                                                                 <option value="2">Male</option>
@@ -165,8 +166,6 @@
 
                                                             <select class="form-control" name="CustomerID" id="ddCustomerID" onchange="Locations()">
                                                                 <option value="0">--Select Company--</option>
-
-
                                                             </select>
                                                         </div>
                                                     </div>
@@ -213,74 +212,20 @@
                                             </div>
 
                                             <div class="step step-2">
-                                                <h4 class="text-danger">Salary Details</h4>
-                                                <div class="row">
-                                                    <div class="col">
-                                                        <label>Annual CTC</label>
-                                                        <input class="form-control " name="AnnualCTC" id="txtAnnualCTC" type="text" required>
-                                                    </div>
-                                                    <div class="col">
-                                                        <label>Basic</label>
-                                                        <input class="form-control " name="Basic" id="txtBasicSalary" type="text" required="">
-                                                    </div>
-                                                    <div class="col">
-                                                        <label>HouseRent Allowance</label>
-                                                        <input class="form-control " name="HouseRentAllowance" id="txtHouseRentAllowance" type="text" required="">
-                                                    </div>
-
-                                                </div>
-
-                                                <div class="row">
-
-                                                    <div class="col">
-                                                        <label>ConveyanceAllowance</label>
-                                                        <input class="form-control " name="ConveyanceAllowance" id="validationCustom1" type="text" required="">
-                                                    </div>
-                                                    <div class="col">
-                                                        <label>FixedAllowance</label>
-                                                        <input class="form-control " name="FixedAllowance" id="validationCustom1" type="text" required="">
-                                                    </div>
-                                                    <div class="col">
-                                                        <label>EPF</label>
-                                                        <input class="form-control " name="EPF" id="txtEPF" type="text" required="">
-                                                    </div>
-
-                                                </div>
-
-                                                <div class="row">
-                                                    <div class="col">
-                                                        <label>MonthlyCtc</label>
-                                                        <input class="form-control " name="MonthlyCTC" id="txtMonthlyCTC" type="text" required="">
-                                                    </div>
-                                                    <div class="col">
-                                                        <label>MonthlyGrossPay</label>
-                                                        <input class="form-control " name="MonthlyGrossPay" id="txtMonthlyGrossPay" type="text" required="">
-                                                    </div>
-
-                                                </div>
-                                                <br />
-                                                <div class="pull-right">
-                                                    <button type="button" class="btn btn-primary prev-step">Previous</button>
-                                                    <button type="button" class="btn btn-primary next-step">Next</button>
-                                                </div>
-                                            </div>
-
-
-                                            <div class="step step-3">
                                                 <h4 class="text-danger">Persnal info.</h4>
                                                 <div class="row">
                                                     <div class="col">
                                                         <label>PersonalEmailAddress</label>
-                                                        <input class="form-control " name="PersonalEmailAddress" id="validationCustom1" type="email" required="">
+                                                        <input class="form-control " value='@ViewBag.Personal_Email_Address' name="PersonalEmailAddress" id="PersonalEmailAddress" type="email" required="">
                                                     </div>
 
                                                     <div class="col">
                                                         <label>MobileNumber</label>
-                                                        <input class="form-control " name="MobileNumber" id="validationCustom1" type="text" required="">
+                                                        <input class="form-control " value='@ViewBag.Mobile_Number' name="MobileNumber" id="MobileNumber" type="text" required="">
                                                     </div>
                                                     <div class="col">
                                                         <label>DateOfBirth</label>
-                                                        <input class="form-control " name="DateOfBirth" id="dobInput" type="date" required="">
+                                                        <input class="form-control " value='@ViewBag.Date_Of_Birth' name="DateOfBirth" id="dobInput" type="date" required="">
                                                     </div>
 
                                                 </div>
@@ -288,16 +233,16 @@
                                                 <div class="row">
                                                     <div class="col">
                                                         <label>Age</label>
-                                                        <input class="form-control " id="ageInput" type="text" required="">
+                                                        <input class="form-control " value='@ViewBag.Age' id="ageInput" type="text" required="">
                                                     </div>
 
                                                     <div class="col">
                                                         <label>FatherName</label>
-                                                        <input class="form-control " name="FatherName" id="validationCustom1" type="text" required="">
+                                                        <input class="form-control " value='@ViewBag.Father_Name' name="FatherName" id="FatherName" type="text" required="">
                                                     </div>
                                                     <div class="col">
                                                         <label>Pan</label>
-                                                        <input class="form-control " name="PAN" id="validationCustom1" type="text" required="">
+                                                        <input class="form-control " value='@ViewBag.PAN' name="PAN" id="PAN" type="text" required="">
                                                     </div>
 
                                                 </div>
@@ -305,16 +250,16 @@
                                                 <div class="row">
                                                     <div class="col">
                                                         <label>AddressLine1</label>
-                                                        <input class="form-control " name="AddressLine1" id="validationCustom1" type="text" required="">
+                                                        <input class="form-control " value='@ViewBag.Address_Line_1' name="AddressLine1" id="AddressLine1" type="text" required="">
                                                     </div>
 
                                                     <div class="col">
                                                         <label>AddressLine2</label>
-                                                        <input class="form-control " name="AddressLine2" id="validationCustom1" type="text" required="">
+                                                        <input class="form-control " value='@ViewBag.Address_Line_2' name="AddressLine2" id="AddressLine2" type="text" required="">
                                                     </div>
                                                     <div class="col">
                                                         <label>City</label>
-                                                        <input class="form-control " name="City" id="validationCustom1" type="text" required="">
+                                                        <input class="form-control " value='@ViewBag.City' name="City" id="City" type="text" required="">
                                                     </div>
 
                                                 </div>
@@ -323,12 +268,12 @@
                                                         <label>State</label>
                                                         <select class="form-control " id="ddlState" name="StateID">
                                                             <option value="0">-select State--</option>
-                                                            
+
                                                         </select>
                                                     </div>
                                                     <div class="col">
                                                         <label>Pincode</label>
-                                                        <input class="form-control " name="Pincode" id="validationCustom1" type="text" required="">
+                                                        <input class="form-control " value='@ViewBag.Pincode' name="Pincode" id="Pincode" type="text" required="">
                                                     </div>
 
                                                 </div>
@@ -340,44 +285,59 @@
                                                     <button type="button" class="btn btn-primary next-step">Next</button>
                                                 </div>
                                             </div>
-
-
-
-                                            <div class="step step-4">
+                                            <div class="step step-3">
                                                 <h4 class="text-danger">Payment info</h4>
                                                 <div class="row">
                                                     <div class="col">
                                                         <label>Account Holder Name</label>
-                                                        <input class="form-control " name="AccountHolderName" id="validationCustom1" type="text" required="">
+                                                        <input class="form-control " value='@ViewBag.Account_Holder_Name' name="AccountHolderName" id="AccountHolderName" type="text" required="">
                                                     </div>
                                                     <div class="col">
                                                         <label>Bank Name</label>
-                                                        <input class="form-control " name="BankName" id="validationCustom1" type="text" required="">
+                                                        <input class="form-control " value='@ViewBag.Bank_Name' name="BankName" id="BankName" type="text" required="">
                                                     </div>
-                                                </div>
-
-                                                <div class="row">
                                                     <div class="col">
                                                         <label>Account Number</label>
-                                                        <input class="form-control " name="AccountNumber" id="validationCustom1" type="number" required="">
-                                                    </div>
-                                                    <div class="col">
-                                                        <label>Re-enter Account Number</label>
-                                                        <input class="form-control " name="ReEnterAccountNumber" id="validationCustom1" type="number" required="">
+                                                        <input class="form-control " value='@ViewBag.Account_Number' name="AccountNumber" id="AccountNumber" type="number" required="">
                                                     </div>
                                                 </div>
 
                                                 <div class="row">
                                                     <div class="col">
+                                                        <label>Re-enter Account Number</label>
+                                                        <input class="form-control " value='@ViewBag.Re_Enter_Account_Number' name="ReEnterAccountNumber" id="ReEnterAccountNumber" type="number" required="">
+                                                    </div>
+                                                    <div class="col">
                                                         <label>IFSC</label>
-                                                        <input class="form-control " name="IFSC" id="validationCustom1" type="text" required="">
+                                                        <input class="form-control " value='@ViewBag.IFSC' name="IFSC" id="IFSC" type="text" required="">
+                                                    </div>
+
+                                                    <div class="col">
+                                                        <label>EPF Number</label>
+                                                        <input class="form-control " value='@ViewBag.EPF_Number' name="EPF_Number" id="EPF_Number" type="text" required="">
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <label>Employee Contribution Rate</label>
+                                                        <input class="form-control " value='@ViewBag.Employee_Contribution_Rate' name="Employee_Contribution_Rate" id="Employee_Contribution_Rate" type="text" required="">
+                                                    </div>
+
+                                                    <div class="col">
+                                                        <label for="validationCustom0">Deduction Cycle</label>
+                                                        <select id="ddlDeductionTime" name="Deduction_Cycle" class="form-control ">
+                                                            <option value="0">-- select --</option>
+                                                            <option value="M">Monthly</option>
+                                                            <option value="Y">Yearly</option>
+                                                        </select>
                                                     </div>
                                                     <div class="col" style="padding:20px;">
                                                         <label>Account Type</label>
                                                         <br />
                                                         <div class="d-flex gap-2">
-                                                            <input type="radio" name="AccountTypeID" value="1">current
-                                                            <input type="radio" name="AccountTypeID" value="2">savings
+                                                            <input type="radio" id="rdAcountCurrent" name="AccountTypeID" value="1">current
+                                                            <input type="radio" id="rdAcountSaving" name="AccountTypeID" value="2">savings
                                                         </div>
                                                         <div>
                                                         </div>
@@ -385,9 +345,63 @@
 
                                                 </div>
                                                 <br />
+                                                <div class="pull-right">
+                                                    <button type="button" class="btn btn-primary prev-step">Previous</button>
+                                                    <button type="button" class="btn btn-primary next-step">Next</button>
+                                                </div>
+                                            </div>
+
+                                            <div class="step step-4">
+                                                <h4 class="text-danger">Salary Details</h4>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <label>Annual CTC</label>
+                                                        <input class="form-control " value='@ViewBag.AnnualCTC' name="AnnualCTC" id="txtAnnualCTC" type="text" required>
+                                                    </div>
+                                                    <div class="col">
+                                                        <label>Basic</label>
+                                                        <input class="form-control " value='@ViewBag.Basic' value='@ViewBag.Personal_Email_Address' name="Basic" id="txtBasicSalary" type="text" required="">
+                                                    </div>
+                                                    <div class="col">
+                                                        <label>HouseRent Allowance</label>
+                                                        <input class="form-control " value='@ViewBag.HouseRentAllowance' name="HouseRentAllowance" id="txtHouseRentAllowance" type="text" required="">
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="row">
+
+                                                    <div class="col">
+                                                        <label>ConveyanceAllowance</label>
+                                                        <input class="form-control " value='@ViewBag.ConveyanceAllowance' name="ConveyanceAllowance" id="ConveyanceAllowance" type="text" required="">
+                                                    </div>
+                                                    <div class="col">
+                                                        <label>FixedAllowance</label>
+                                                        <input class="form-control " value='@ViewBag.FixedAllowance' name="FixedAllowance" id="FixedAllowance" type="text" required="">
+                                                    </div>
+                                                    <div class="col">
+                                                        <label>EPF</label>
+                                                        <input class="form-control " value='@ViewBag.EPF' name="EPF" id="txtEPF" type="text" required="">
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <label>MonthlyCtc</label>
+                                                        <input class="form-control " value='@ViewBag.MonthlyCTC' name="MonthlyCTC" id="txtMonthlyCTC" type="text" required="">
+                                                    </div>
+                                                    <div class="col">
+                                                        <label>MonthlyGrossPay</label>
+                                                        <input class="form-control " value='@ViewBag.MonthlyGrossPay' name="MonthlyGrossPay" id="txtMonthlyGrossPay" type="text" required="">
+                                                    </div>
+
+                                                </div>
+                                                <br />
+
                                                 <div class="pull-right mt-4" style="padding:20px;">
                                                     <button type="button" class="btn btn-primary prev-step">Previous</button>
-                                                    <input type="submit" class="btn btn-primary" value="Submit" />
+                                                    <input type="submit" class="btn btn-primary" value='@ViewBag.btnText ' />
                                                 </div>
                                             </div>
 
@@ -593,63 +607,78 @@
 
 <script>
 
-  
 
-    function bindcustomer() {
+    function bindcustomer(CustomerId) {
         var itemsList = @Json.Serialize(ViewBag.CustomerName);
         debugger
         var dropdown = $("#ddCustomerID");
         $.each(itemsList, function (index, item) {
             dropdown.append($('<option></option>').val(item.value).text(item.text));
         });
+        if (CustomerId != "") {
+            $("#ddCustomerID").val(CustomerId)
+        }
     }
 
-    function bindworkLocation() {
+
+    function bindworkLocation(WorkLocationId) {
         var itemsList = @Json.Serialize(ViewBag.WorkLocation);
         debugger
         var dropdown = $("#ddlWorkLocationID");
         $.each(itemsList, function (index, item) {
             dropdown.append($('<option></option>').val(item.value).text(item.text));
         });
+        if (WorkLocationId != "") {
+            $("#ddlWorkLocationID").val(WorkLocationId)
+        }
     }
 
-    function bindDesigation() {
+    function bindDesigation(DesignationID) {
         var itemsListforDesigation = @Json.Serialize(ViewBag.Designation);
         debugger
         var dropdownforDesigation = $("#ddDesignationID");
         $.each(itemsListforDesigation, function (index, item) {
             dropdownforDesigation.append($('<option></option>').val(item.value).text(item.text));
         });
+        if (DesignationID != "") {
+            $("#ddDesignationID").val(DesignationID)
+        }
     }
 
 
-    function bindDepartment() {
+    function bindDepartment(DepartmentID) {
         var itemsListforDepartment = @Json.Serialize(ViewBag.Department);
         debugger
         var dropdownforDepartment = $("#ddDepartmentID");
         $.each(itemsListforDepartment, function (index, item) {
             dropdownforDepartment.append($('<option></option>').val(item.value).text(item.text));
         });
+        if (DepartmentID != "") {
+            $("#ddDepartmentID").val(DepartmentID)
+        }
     }
 
-    function bindStates() {
+    function bindStates(StateId) {
         var itemsListforStates = @Json.Serialize(ViewBag.States);
         debugger
         var dropdownforState = $("#ddlState");
         $.each(itemsListforStates, function (index, item) {
             dropdownforState.append($('<option></option>').val(item.value).text(item.text));
         });
+        if (StateId != "") {
+            $("#ddlState").val(StateId)
+        }
     }
-   
+
 </script>
 
 <script type="text/javascript">
     $(document).ready(function () {
-        bindworkLocation();
-        bindDepartment();
-        bindDesigation();
-        bindStates();
-        bindcustomer();
+        bindworkLocation("");
+        bindDepartment("");
+        bindDesigation("");
+        bindStates("");
+        bindcustomer("");
 
     })
 </script>
@@ -678,7 +707,7 @@
                 var monthlySalary = annualSalary / 12;
                 var basicSalary = annualSalary / 2;
                 var houseRent = basicSalary / 2;
-                var EPFCalculation = monthlySalary*12/100;
+                var EPFCalculation = monthlySalary * 12 / 100;
                 var MonthlyGross = monthlySalary - EPFCalculation;
 
                 // Update the value of the monthly salary input
@@ -716,7 +745,7 @@
                 $("#ageInput").val('');
             }
         });
-        
+
     });
 </script>
 
@@ -752,4 +781,74 @@
             $("#ddlWorkLocationID").append('<option value="' + response.text + '">' + response.value + '</option>');
         });
     }
+</script>
+
+
+<script type="text/javascript">
+
+    var Gender_id = '@ViewBag.Gender_ID';
+    if (Gender_id != "") {
+        $("#ddlGender").val(Gender_id);
+    }
+
+    var customerid = '@ViewBag.CustomerID';
+    var workid = '@ViewBag.Work_Location_ID';
+    var designationid = '@ViewBag.Designation_ID';
+    var departmentid = '@ViewBag.Department_ID';
+    var stateid = '@ViewBag.State_ID';
+
+    if (customerid != "") {
+        bindcustomer(customerid);
+    }
+
+    if (workid != "") {
+        bindworkLocation(workid);
+    }
+
+    if (departmentid != "") {
+        bindDepartment(departmentid);
+    }
+
+    if (designationid != "") {
+        bindDesigation(designationid);
+    }
+
+    if (stateid != "") {
+        bindStates(stateid);
+    }
+
+
+    var deductiontime = '@ViewBag.Deduction_Cycle';
+    if (deductiontime != "") {
+        $("#ddlDeductionTime").val(deductiontime);
+    }
+
+
+    var acounttype = '@ViewBag.Account_Type_ID';
+    if (acounttype != "") {
+        if (acounttype == "1") {
+            $("#rdAcountCurrent").prop("checked", true);
+            $("#rdAcountSaving").prop("checked", false);
+        }
+        if (acounttype == "2") {
+            $("#rdAcountCurrent").prop("checked", false);
+            $("#rdAcountSaving").prop("checked", true);
+        }
+    }
+
+
+    var DOBJ = '@ViewBag.Date_Of_Joining';
+    if (DOBJ != "") {
+        var formattedDate = DOBJ ? new Date(DOBJ).toISOString().split('T')[0] : '';
+        $('#DateOfJoining').val(formattedDate);
+    }
+
+
+    var DOBBirth = '@ViewBag.Date_Of_Birth';
+    if (DOBBirth != "") {
+        var formatDOB = DOBBirth ? new Date(DOBBirth).toISOString().split('T')[0] : '';
+        $('#dobInput').val(formatDOB);
+    }
+
+
 </script>
