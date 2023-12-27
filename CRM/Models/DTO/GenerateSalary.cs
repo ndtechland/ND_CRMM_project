@@ -1,7 +1,9 @@
-﻿namespace CRM.Models.DTO
+﻿using System.ComponentModel.DataAnnotations;
+namespace CRM.Models.DTO
 {
     public class GenerateSalary
     {
+        [Key]
         public int Id { get; set; }
         public long CustomerID { get; set; }
         public long LocationID { get; set; }

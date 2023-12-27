@@ -6,6 +6,8 @@ namespace CRM.Models.DTO
     public class EmpMultiform
     {
         // Personal Information
+        public int id { get; set; }
+        public int? CustomerID { get; set; }
         public string? FirstName { get; set; }
         public string? MiddleName { get; set; }
         public string? LastName { get; set; }
@@ -15,6 +17,7 @@ namespace CRM.Models.DTO
         public int WorkLocationID { get; set; }
         public int DesignationID { get; set; }
         public int DepartmentID { get; set; }
+        public string? Emp_Reg_ID { get; set; }
 
         // Salary Details
         [NotMapped]
@@ -46,5 +49,12 @@ namespace CRM.Models.DTO
         public Int64 ReEnterAccountNumber { get; set; }
         public string? IFSC { get; set; }
         public int AccountTypeID { get; set; }
+
+        [NotMapped]
+        public string? EPF_Number { get; set; }
+        [NotMapped]
+        public string? Deduction_Cycle { get; set; }
+        [NotMapped]
+        public string? Employee_Contribution_Rate { get; set; }
     }
 }

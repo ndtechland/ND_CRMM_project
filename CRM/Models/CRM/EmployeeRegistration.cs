@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CRM.Models.Crm
 {
@@ -9,6 +10,7 @@ namespace CRM.Models.Crm
         {
             EmployeeLogins = new HashSet<EmployeeLogin>();
             EmployeeRoles = new HashSet<EmployeeRole>();
+            Payrolls = new HashSet<Payroll>();
         }
 
         public int Id { get; set; }
@@ -24,8 +26,11 @@ namespace CRM.Models.Crm
         public string DepartmentId { get; set; } = null!;
         public bool? IsDeleted { get; set; }
         public int? CustomerId { get; set; }
+        [NotMapped]
+        public int? LocationId { get; set; }
 
         public virtual ICollection<EmployeeLogin> EmployeeLogins { get; set; }
         public virtual ICollection<EmployeeRole> EmployeeRoles { get; set; }
+        public virtual ICollection<Payroll> Payrolls { get; set; }
     }
 }

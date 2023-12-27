@@ -14,7 +14,7 @@ using System.Reflection;
 using System;
 using System.Reflection.Metadata;
 using System.Drawing;
-
+using ClosedXML.Excel;
 
 namespace CRM.Repository
 {
@@ -106,12 +106,15 @@ namespace CRM.Repository
             var result = await _context.CustomerRegistrations.FromSqlRaw<CustomerRegistration>("Customerlist").ToListAsync();
             return result;
         }
-        public async Task<int> EmpRegistration(EmpMultiform model)
+        public async Task<int> EmpRegistration(EmpMultiform model, string Mode, string Emp_Reg_ID)
         {
             try
             {
 
                 var parameter = new List<SqlParameter>();
+                parameter.Add(new SqlParameter("@mode", Mode));
+                parameter.Add(new SqlParameter("@Emp_RegID", Emp_Reg_ID));
+                parameter.Add(new SqlParameter("@Customer_Id", model.CustomerID));
                 parameter.Add(new SqlParameter("@FirstName", model.FirstName));
                 parameter.Add(new SqlParameter("@MiddleName", model.MiddleName));
                 parameter.Add(new SqlParameter("@LastName", model.LastName));
@@ -120,6 +123,7 @@ namespace CRM.Repository
                 parameter.Add(new SqlParameter("@GenderID", model.GenderID));
                 parameter.Add(new SqlParameter("@WorkLocationID", model.WorkLocationID));
                 parameter.Add(new SqlParameter("@DesignationID", model.DesignationID));
+                parameter.Add(new SqlParameter("@DepartmentID", model.DepartmentID));
                 parameter.Add(new SqlParameter("@DepartmentID", model.DepartmentID));
                 //-- Salary Details
                 parameter.Add(new SqlParameter("@AnnualCTC", model.AnnualCTC));
@@ -147,8 +151,11 @@ namespace CRM.Repository
                 parameter.Add(new SqlParameter("@Account_Number", model.AccountNumber));
                 parameter.Add(new SqlParameter("@Re_Enter_Account_Number", model.ReEnterAccountNumber));
                 parameter.Add(new SqlParameter("@IFSC", model.IFSC));
+                parameter.Add(new SqlParameter("@EPF_Number", model.EPF_Number));
+                parameter.Add(new SqlParameter("@Deduction_Cycle", model.Deduction_Cycle));
+                parameter.Add(new SqlParameter("@Employee_Contribution_Rate", model.Employee_Contribution_Rate));
                 parameter.Add(new SqlParameter("@Account_Type_ID", model.AccountTypeID));
-                var result = await Task.Run(() => _context.Database.ExecuteSqlRawAsync(@"exec EmployeeRegistration @FirstName,@MiddleName,@LastName,@DateOfJoining,@WorkEmail,@GenderID,@WorkLocationID,@DesignationID,@DepartmentID,@AnnualCTC,@Basic,@HouseRentAllowance,@ConveyanceAllowance,@FixedAllowance,@EPF,@MonthlyGrossPay,@MonthlyCTC,@Personal_Email_Address,@Mobile_Number,@Date_Of_Birth,@Father_Name,@PAN,@Address_Line_1,@Address_Line_2,@City,@State_ID,@Pincode,@Account_Holder_Name,@Bank_Name,@Account_Number,@Re_Enter_Account_Number,@IFSC,@Account_Type_ID", parameter.ToArray()));
+                var result = await Task.Run(() => _context.Database.ExecuteSqlRawAsync(@"exec EmployeeRegistration @mode,@Emp_RegID,@Customer_Id,@FirstName,@MiddleName,@LastName,@DateOfJoining,@WorkEmail,@GenderID,@WorkLocationID,@DesignationID,@DepartmentID,@AnnualCTC,@Basic,@HouseRentAllowance,@ConveyanceAllowance,@FixedAllowance,@EPF,@MonthlyGrossPay,@MonthlyCTC,@Personal_Email_Address,@Mobile_Number,@Date_Of_Birth,@Father_Name,@PAN,@Address_Line_1,@Address_Line_2,@City,@State_ID,@Pincode,@Account_Holder_Name,@Bank_Name,@Account_Number,@Re_Enter_Account_Number,@IFSC,@EPF_Number,@Deduction_Cycle,@Employee_Contribution_Rate,@Account_Type_ID", parameter.ToArray()));
 
                 return result;
             }
@@ -157,6 +164,7 @@ namespace CRM.Repository
                 throw new Exception("Error:" + Ex.Message);
             }
         }
+
         public async Task<List<StateMaster>> GetAllState()
         {
             return await _context.StateMasters.ToListAsync();
@@ -172,9 +180,9 @@ namespace CRM.Repository
            .ExecuteSqlRawAsync(@"exec Sp_Banner @BannerImage,@Bannerdescription,@BannerPath,@AddedBy", parameter.ToArray()));
             return result;
         }
-        public async Task<List<EmployeeList>> EmployeeList()
+        public async Task<List<EmployeeRegistration>> EmployeeList()
         {
-            List<EmployeeList> emp = new List<EmployeeList>();
+            List<EmployeeRegistration> emp = new List<EmployeeRegistration>();
             SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
             SqlCommand cmd = new SqlCommand("EmployeeRegistrationList", con);
             cmd.CommandType = CommandType.StoredProcedure;
@@ -182,7 +190,7 @@ namespace CRM.Repository
             SqlDataReader rdr = cmd.ExecuteReader();
             while (rdr.Read())
             {
-                var emps = new EmployeeList()
+                var emps = new EmployeeRegistration()
                 {
                     Id = Convert.ToInt32(rdr["id"]),
                     FirstName = Convert.ToString(rdr["FirstName"]),
@@ -195,7 +203,7 @@ namespace CRM.Repository
                     WorkLocationId = Convert.ToString(rdr["WorkLocationId"]),
                     DesignationId = Convert.ToString(rdr["DesignationId"]),
                     DepartmentId = Convert.ToString(rdr["DepartmentId"]),
-                    MonthlyCTC = Convert.ToString(rdr["MonthlyCTC"])
+                    //MonthlyCTC = Convert.ToString(rdr["MonthlyCTC"])
                 };
 
                 emp.Add(emps);
@@ -439,10 +447,171 @@ namespace CRM.Repository
             return result;
         }
 
-        public async Task<List<EmployeerEpf>> EmployerList()
+        public async Task<List<Employeer_EPF>> EmployerList()
         {
-            var result = await _context.EmployeerEpfs.FromSqlRaw<EmployeerEpf>("EmployerList").ToListAsync();
+            var result = await _context.Employeer_EPFs.FromSqlRaw<Employeer_EPF>("EmployerList").ToListAsync();
             return result;
+        }
+
+        public DataTable GetEmployDetailById(string EmpId)
+        {
+
+            SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
+            SqlCommand cmd = new SqlCommand("USP_GetEmployeeDetailById", con);
+            cmd.Parameters.AddWithValue("@EmpId", EmpId);
+            cmd.CommandType = CommandType.StoredProcedure;
+            con.Open();
+            SqlDataAdapter da = new SqlDataAdapter();
+            da.SelectCommand = cmd;
+            DataTable dt = new DataTable();
+            da.Fill(dt);
+            return dt;
+
+        }
+        //for excel
+        public byte[] EmployeeListForExcel()
+        {
+            List<EmployeeImportExcel> employeeList = _context.EmpMultiforms.FromSqlRaw<EmployeeImportExcel>("USP_GetEmployeeDetails").ToListAsync().Result;
+
+            using (var workbook = new XLWorkbook())
+            {
+
+                var worksheet = workbook.Worksheets.Add("EmployeeList");
+                var currentwork = 1;
+                worksheet.Cell(currentwork, 1).Value = "Sr.No.";
+                worksheet.Cell(currentwork, 1).Style.Fill.BackgroundColor = XLColor.Yellow;
+
+                worksheet.Cell(currentwork, 2).Value = "First Name";
+                worksheet.Cell(currentwork, 2).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 3).Value = "Middle Name";
+                worksheet.Cell(currentwork, 3).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 4).Value = "Last Name";
+                worksheet.Cell(currentwork, 4).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 5).Value = "Employee ID";
+                worksheet.Cell(currentwork, 5).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 6).Value = "Date Of Joining";
+                worksheet.Cell(currentwork, 6).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 7).Value = "Work Email";
+                worksheet.Cell(currentwork, 7).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 8).Value = "Gender";
+                worksheet.Cell(currentwork, 8).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 9).Value = "Work Location";
+                worksheet.Cell(currentwork, 9).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 10).Value = "Designation";
+                worksheet.Cell(currentwork, 10).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 11).Value = "Department";
+                worksheet.Cell(currentwork, 11).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 12).Value = "Customer Name";
+                worksheet.Cell(currentwork, 12).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 13).Value = "Personal Email Address";
+                worksheet.Cell(currentwork, 13).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 14).Value = "Mobile Number";
+                worksheet.Cell(currentwork, 14).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 15).Value = "Date Of Birth";
+                worksheet.Cell(currentwork, 15).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 16).Value = "Age";
+                worksheet.Cell(currentwork, 16).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 17).Value = "Father Name";
+                worksheet.Cell(currentwork, 17).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 18).Value = "PAN";
+                worksheet.Cell(currentwork, 18).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 19).Value = "Address Line 1";
+                worksheet.Cell(currentwork, 19).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 20).Value = "Address Line 2";
+                worksheet.Cell(currentwork, 20).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 21).Value = "City";
+                worksheet.Cell(currentwork, 21).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 22).Value = "State";
+                worksheet.Cell(currentwork, 22).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 23).Value = "Pin Code";
+                worksheet.Cell(currentwork, 23).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 24).Value = "Account Holder Name";
+                worksheet.Cell(currentwork, 24).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 25).Value = "Bank Name";
+                worksheet.Cell(currentwork, 25).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 26).Value = "Account Number";
+                worksheet.Cell(currentwork, 26).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 27).Value = "Re-enter Account Number";
+                worksheet.Cell(currentwork, 27).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 28).Value = "IFSC";
+                worksheet.Cell(currentwork, 28).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 29).Value = "EPF Number";
+                worksheet.Cell(currentwork, 29).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 30).Value = "Employee Contribution Rate";
+                worksheet.Cell(currentwork, 30).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 31).Value = "Deduction Cycle";
+                worksheet.Cell(currentwork, 31).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 32).Value = "Account Type";
+                worksheet.Cell(currentwork, 32).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 33).Value = "Annual CTC";
+                worksheet.Cell(currentwork, 33).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 34).Value = "Basic";
+                worksheet.Cell(currentwork, 34).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 35).Value = "HouseRent Allowance";
+                worksheet.Cell(currentwork, 35).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 36).Value = "Conveyance Allowance";
+                worksheet.Cell(currentwork, 36).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 37).Value = "Fixed Allowance";
+                worksheet.Cell(currentwork, 37).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 38).Value = "EPF";
+                worksheet.Cell(currentwork, 38).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 39).Value = "Monthly CTC";
+                worksheet.Cell(currentwork, 39).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 40).Value = "Monthly Gross Pay";
+                worksheet.Cell(currentwork, 40).Style.Fill.BackgroundColor = XLColor.Yellow;
+                currentwork++;
+
+                var index = 1;
+                foreach (var item in employeeList)
+                {
+                    worksheet.Cell(currentwork, 1).Value = index++;
+                    worksheet.Cell(currentwork, 2).Value = item.FirstName;
+                    worksheet.Cell(currentwork, 3).Value = item.MiddleName;
+                    worksheet.Cell(currentwork, 4).Value = item.LastName;
+                    worksheet.Cell(currentwork, 5).Value = item.EmployeeId;
+                    worksheet.Cell(currentwork, 6).Value = item.DateOfJoining;
+                    worksheet.Cell(currentwork, 7).Value = item.WorkEmail;
+                    worksheet.Cell(currentwork, 8).Value = item.Gender;
+                    worksheet.Cell(currentwork, 9).Value = item.WorkLocation;
+                    worksheet.Cell(currentwork, 10).Value = item.DesignationName;
+                    worksheet.Cell(currentwork, 11).Value = item.DepartmentName;
+                    worksheet.Cell(currentwork, 12).Value = item.CustomerName;
+                    worksheet.Cell(currentwork, 13).Value = item.PersonalEmailAddress;
+                    worksheet.Cell(currentwork, 14).Value = item.Mobile;
+                    worksheet.Cell(currentwork, 15).Value = item.DateOfBirth;
+                    worksheet.Cell(currentwork, 16).Value = "n/A";
+                    worksheet.Cell(currentwork, 17).Value = item.FatherName;
+                    worksheet.Cell(currentwork, 18).Value = item.PAN;
+                    worksheet.Cell(currentwork, 19).Value = item.AddressLine1;
+                    worksheet.Cell(currentwork, 20).Value = item.AddressLine2;
+                    worksheet.Cell(currentwork, 21).Value = item.City;
+                    worksheet.Cell(currentwork, 22).Value = item.State;
+                    worksheet.Cell(currentwork, 23).Value = item.Pincode;
+                    worksheet.Cell(currentwork, 24).Value = item.AccountHolderName;
+                    worksheet.Cell(currentwork, 25).Value = item.BankName;
+                    worksheet.Cell(currentwork, 26).Value = item.AccountNumber;
+                    worksheet.Cell(currentwork, 27).Value = item.ReEnterAccountNumber;
+                    worksheet.Cell(currentwork, 28).Value = item.IFSC;
+                    worksheet.Cell(currentwork, 29).Value = item.EPF_Number;
+                    worksheet.Cell(currentwork, 30).Value = item.Employee_Contribution_Rate;
+                    worksheet.Cell(currentwork, 31).Value = item.Deduction_Cycle;
+                    worksheet.Cell(currentwork, 32).Value = item.AccountType;
+                    worksheet.Cell(currentwork, 33).Value = item.AnnualCTC;
+                    worksheet.Cell(currentwork, 34).Value = item.Basic;
+                    worksheet.Cell(currentwork, 35).Value = item.HouseRentAllowance;
+                    worksheet.Cell(currentwork, 36).Value = item.ConveyanceAllowance;
+                    worksheet.Cell(currentwork, 37).Value = item.FixedAllowance;
+                    worksheet.Cell(currentwork, 38).Value = item.EPF;
+                    worksheet.Cell(currentwork, 39).Value = item.MonthlyCTC;
+                    worksheet.Cell(currentwork, 40).Value = item.MonthlyGrossPay;
+                    currentwork++;
+                }
+                using (var stram = new MemoryStream())
+                {
+                    workbook.SaveAs(stram);
+                    return stram.ToArray();
+                }
+            }
         }
     }
 
