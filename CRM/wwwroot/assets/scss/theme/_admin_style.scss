@@ -994,94 +994,118 @@ div{
     }
   }
 }
+les_wrapper .dataTables_filter input[type="search"] {
+    border: 1px solid black !important;
+    padding: 0 15px;
+    margin-left: 10px;
+    height: 37px;
+    border-radius: 0;
+}
+
 .dataTables_wrapper {
-  .dataTables_length {
-    margin-bottom: 30px;
-    label {
-      select {
-        border-color: $light-semi-gray;
-      }
-    }
-  }
-  .dataTables_filter {
-    input[type="search"] {
-      border: 1px solid $light-semi-gray;
-      padding: 0 15px;
-      margin-left: 10px;
-      height: 37px;
-      border-radius: 0;
-    }
-  }
-  .dataTables_paginate {
-    margin-left: 15px !important;
-    border: 1px solid #f6f7fb;
-    border-radius: 0.25rem;
-    padding-top: 0;
-    .paginate_button {
-      &.current, &:active {
-        background: $primary-color;
-        color: $white !important;
-        border: 1px solid $primary-color;
-        box-shadow: none;
-      }
-      &:hover {
-        border: 1px solid $primary-color;
-        color: $dark-color !important;
-        background: transparent !important;
-      }
-    }
-  }
-  table {
-    &.dataTable {
-      border: 1px solid #ebf1ff;
-      width: 100%;
-      overflow-x: auto;
-      &.row-border,&.display{
-        tbody{
-          th,td{
-            border-top: 1px solid #ebf1ff !important;
-          }
+    .dataTables_length {
+        margin-bottom: 30px;
+
+        label {
+            select {
+                border-color: black !important;
+            }
         }
-      }
-      tbody{
-        tr{
-          background-color: rgba(241, 244, 251, 0.5);
-          &:hover{
-            background-color: rgba(241, 244, 251, 0.7);
-          }
-          .sorting_1{
-            background-color: rgba(241, 244, 251, 0.2) !important;
-          }
-          &.odd{
-            background-color: $white;
-          }
-        }
-      }
-      .vendor-list {
-        align-items: center;
-        img {
-          margin-right: 20px;
-          height: 40px;
-          width: auto !important;
-        }
-      }
-      td {
-        padding: 0.75rem !important;
-      }
-      th{
-        background-color: #f1f4fb !important;
-        padding: 24px 0.75rem!important;
-      }
-      thead {
-        .sorting, .sorting_asc, .sorting_desc, .sorting_asc_disabled, .sorting_desc_disabled {
-          &:before,
-          &:after {
-            bottom: 25px;
-          }
-        }
-      }
     }
-  }
+
+    .dataTables_filter {
+        input[type="search"] {
+            border: 1px solid $light-semi-gray;
+            padding: 0 15px;
+            margin-left: 10px;
+            height: 37px;
+            border-radius: 0;
+        }
+    }
+
+    .dataTables_paginate {
+        margin-left: 15px !important;
+        border: 1px solid #f6f7fb;
+        border-radius: 0.25rem;
+        padding-top: 0;
+
+        .paginate_button {
+            &.current, &:active {
+                background: $primary-color;
+                color: $white !important;
+                border: 1px solid $primary-color;
+                box-shadow: none;
+            }
+
+            &:hover {
+                border: 1px solid $primary-color;
+                color: $dark-color !important;
+                background: transparent !important;
+            }
+        }
+    }
+
+    table {
+        &.dataTable {
+            border: 1px solid #ebf1ff;
+            width: 100%;
+            overflow-x: auto;
+
+            &.row-border, &.display {
+                tbody {
+                    th, td {
+                        border-top: 1px solid #ebf1ff !important;
+                    }
+                }
+            }
+
+            tbody {
+                tr {
+                    background-color: rgba(241, 244, 251, 0.5);
+
+                    &:hover {
+                        background-color: rgba(241, 244, 251, 0.7);
+                    }
+
+                    .sorting_1 {
+                        background-color: rgba(241, 244, 251, 0.2) !important;
+                    }
+
+                    &.odd {
+                        background-color: $white;
+                    }
+                }
+            }
+
+            .vendor-list {
+                align-items: center;
+
+                img {
+                    margin-right: 20px;
+                    height: 40px;
+                    width: auto !important;
+                }
+            }
+
+            td {
+                padding: 0.75rem !important;
+            }
+
+            th {
+                background-color: #f1f4fb !important;
+                padding: 24px 0.75rem !important;
+            }
+
+            thead {
+                .sorting, .sorting_asc, .sorting_desc, .sorting_asc_disabled, .sorting_desc_disabled {
+                    &:before,
+                    &:after {
+                        bottom: 25px;
+                    }
+                }
+            }
+        }
+    }
 }
 .category-table {
   table {

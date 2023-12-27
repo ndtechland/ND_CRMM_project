@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CRM.Models.Crm.EmployeerEpf>
+﻿@model IEnumerable<CRM.Models.Crm.Employeer_EPF>
 
 @{
     ViewData["Title"] = "EmployerList";
@@ -36,6 +36,7 @@
                     </div>
                 </div>
             </div>
+
             <!-- Container-fluid Ends-->
             <!-- Container-fluid starts-->
             <div class="container-fluid">
@@ -77,14 +78,14 @@
                                                     <tr class="table-row">
                                                         <td>@count</td>
                                                         <td>
-                                                            @Html.DisplayFor(modelItem => item.EpfNumber)
+                                                            @Html.DisplayFor(modelItem => item.EPF_Number)
                                                         </td>
                                                         <td>
-                                                            @(item.DeductionCycle == "M" ? "Monthly" : "Yearly")
-                                                           
+                                                            @(item.Deduction_Cycle == "M" ? "Monthly" : "Yearly")
+
                                                         </td>
                                                         <td>
-                                                            @Html.DisplayFor(modelItem => item.EmployerContributionRate)
+                                                            @Html.DisplayFor(modelItem => item.Employer_Contribution_Rate)
                                                         </td>
 
                                                         <td>
@@ -93,7 +94,7 @@
                                                         <td>
                                                             @(item.IsActive == true ? "Active" : "In-Active")
                                                         </td>
-                                                       
+
                                                         <td>
                                                             <div>
                                                                 <i class="fa fa-edit me-2 font-success"></i>
