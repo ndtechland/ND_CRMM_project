@@ -23,7 +23,9 @@ using System.Globalization;
 using System.Data;
 using MimeKit.Encodings;
 using Fingers10.ExcelExport.ActionResults;
-
+using System.Net.Mail;
+using MimeKit;
+using Microsoft.AspNetCore.Hosting;
 
 
 namespace CRM.Controllers
@@ -34,14 +36,18 @@ namespace CRM.Controllers
         private readonly ICrmrpo _ICrmrpo;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IConfiguration _configuration;
+        private readonly IEmailService _IEmailService;
+       
 
 
 
-        public Employee(ICrmrpo _ICrmrpo, admin_NDCrMContext _context, IConfiguration configuration)
+        public Employee(ICrmrpo _ICrmrpo, admin_NDCrMContext _context, IConfiguration configuration, IEmailService _IEmailService)
         {
             this._context = _context;
             this._ICrmrpo = _ICrmrpo;
+            this._IEmailService= _IEmailService;
             _configuration = configuration;
+           
 
         }
 
@@ -453,7 +459,7 @@ namespace CRM.Controllers
             }
         }
 
-        [HttpPost]
+    
         [HttpPost]
         public IActionResult GetLocationsByCustomer(string customerId)
         {
@@ -507,12 +513,7 @@ namespace CRM.Controllers
 
 
         }
-
-
-        public IActionResult sendmail()
-        {
-            return View();
-        }
+       
 
         [Route("Employee/SalarySlipInPDF")]
         public IActionResult SalarySlipInPDF(int? id)
@@ -593,14 +594,14 @@ namespace CRM.Controllers
 
 
         }
-
+        //  send  pdf and mail //
         public IActionResult DocPDF(int id)
         {
             // instantiate a html to pdf converter object
             HtmlToPdf converter = new HtmlToPdf();
            
             WebClient client = new WebClient();
-                   // Create a PDF from a HTML string using C#
+            // Create a PDF from a HTML string using C#
             string SlipURL = _configuration.GetValue<string>("URL") + "/Employee/SalarySlipInPDF?id="+id+"";
             // create a new pdf document converting an url
             PdfDocument doc = converter.ConvertUrl(SlipURL);
@@ -616,6 +617,23 @@ namespace CRM.Controllers
             // return resulted pdf document
             FileResult fileResult = new FileContentResult(pdf, "application/pdf");
             fileResult.FileDownloadName = "SalarySlip.pdf";
+
+            var result = (from emp in _context.EmployeeRegistrations
+                          
+                          where emp.Id == id
+                          select new SalarySlipDetails
+                          {
+                              Id = emp.Id,
+                              Employee_ID = emp.EmployeeId,
+                              First_Name = emp.FirstName,
+                              Email_Id = emp.WorkEmail
+
+                          }).FirstOrDefault();
+            string Email_Subject = "Salary Slip for " + result.Employee_ID + "";
+            string Email_body = "Hello " + result.First_Name + " ("+ result.Employee_ID + ") please find your attached salary slip...." ;
+
+
+            _IEmailService.SendEmailAsync(result.Email_Id, Email_Subject, Email_body, pdf, "SalarySlip.pdf", "application/pdf");
             return fileResult;
             //return File(, "application/pdf", "SalarySlip.pdf");
         }
@@ -700,8 +718,10 @@ namespace CRM.Controllers
             }
 
         }
+        
     }
 }
+
 
              
                 

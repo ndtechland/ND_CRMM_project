@@ -1,4 +1,6 @@
 ﻿
+using Syncfusion.Pdf.Graphics;
+
 namespace CRM
 {
     public class Program
@@ -14,7 +16,6 @@ namespace CRM
                 {
                     webBuilder.UseStartup<Startup>();
                 });
-
-       
+        
     }
 }
