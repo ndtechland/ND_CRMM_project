@@ -161,7 +161,7 @@
                                                     </div>
 
                                                     <div class="col-md-3">
-                                                        <label>Customer Name</label>
+                                                        <label>Company Name</label>
                                                         <div class="form-group">
 
                                                             <select class="form-control" name="CustomerID" id="ddCustomerID" onchange="Locations()">
@@ -207,7 +207,7 @@
                                                 </div>
 
                                                 <div class="pull-right">
-                                                    <button type="button" class="btn btn-primary next-step">Next</button>
+                                                    <button type="button" id="btnFirstTab" class="btn btn-primary next-step">Next</button>
                                                 </div>
                                             </div>
 
@@ -850,5 +850,73 @@
         $('#dobInput').val(formatDOB);
     }
 
+
+</script>
+
+<script type="text/javascript">
+    function openErrorPopUp(errorMessage) {
+        var arryMessage;
+        var message = '';
+        if (errorMessage == undefined) {
+            document.location.reload(true);
+        }
+        arryMessage = errorMessage.split(",");
+        var length = arryMessage.length;
+
+        if (arryMessage[arryMessage.length - 1] == "") {
+            length = length - 1;
+        }
+        errorMessage = "";
+        for (var i = 0; i < length; i++) {
+            if (arryMessage[i] != '') {
+                errorMessage = errorMessage + (parseInt(i) + 1) + "." + arryMessage[i] + "<br/>";
+            }
+        }
+
+        message = errorMessage;
+        $('#errorMessage').html(message);
+        $('#errorMessage1').html(message);
+        errorPopUp('error');
+    }
+
+    function errorPopUp(Type) {
+        if (Type == 'success') {
+            $('#closemodal').removeClass('btn-danger');
+            $('#closemodal').addClass('btn-success');
+            $('#myModal').modal('show');
+            setTimeout(function () {
+                $("#myModal").modal('hide');
+            }, 10000);
+        }
+        else if (Type == 'error') {
+            $('#closemodal').removeClass('btn-success');
+            $('#closemodal').addClass('btn-danger');
+            $('#myModal').modal('show');
+        }
+    }
+
+    document.getElementById('btnFirstTab').addEventListener('click', function (event) {
+
+        var errormessage = '';
+        if ($("#FirstName").val().trim() == '') {
+            errormessage += 'Please Enter First Name,'
+        }
+        if ($("#MiddleName").val().trim() == '') {
+            errormessage += 'Please Enter Middle Name,'
+        }
+        if ($("#LastName").val().trim() == '') {
+
+            errormessage += 'Please Enter Last Name'
+        }
+        if (errormessage != '') {
+            if ($(this).hasClass('next-step')) {
+                // Stop the click event
+                return false; // or use event.preventDefault();
+            }
+            event.preventDefault();
+            openErrorPopUp(errormessage);
+            return false;
+        }
+    });
 
 </script>
