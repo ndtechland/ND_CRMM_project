@@ -18,7 +18,7 @@ namespace CRM.Repository
         public Task<List<StateMaster>> GetAllState();
         public Task<int> Banner(BannerMaster model);
         // EmployeeList
-        public Task<List<EmployeeRegistration>> EmployeeList();
+        public Task<List<EmployeeImportExcel>> EmployeeList();
 
         public ProductMaster GetproductById(int id);
         public Task<int> updateproduct(ProductMaster model);

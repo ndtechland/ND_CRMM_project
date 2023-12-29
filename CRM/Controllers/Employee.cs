@@ -235,20 +235,17 @@ namespace CRM.Controllers
 
         public async Task<IActionResult> Employeelist()
         {
-            List<EmployeeRegistration> response = new List<EmployeeRegistration>();
+            List<EmployeeImportExcel> response = new List<EmployeeImportExcel>();
             if (HttpContext.Session.GetString("UserName") != null)
             {
                 response = await _ICrmrpo.EmployeeList();
                 string AddedBy = HttpContext.Session.GetString("UserName");
-                //ViewBag.UserName = AddedBy;
                 return View(response);
-
             }
             else
             {
                 return RedirectToAction("Login", "Admin");
             }
-
 
         }
 
@@ -404,7 +401,6 @@ namespace CRM.Controllers
 
         }
 
-
         [HttpPost]
         public JsonResult Empattendance(List<Empattendance> customers)
         {
@@ -458,8 +454,6 @@ namespace CRM.Controllers
                 throw new Exception("Error : " + ex.Message);
             }
         }
-
-    
         [HttpPost]
         public IActionResult GetLocationsByCustomer(string customerId)
         {
@@ -514,7 +508,6 @@ namespace CRM.Controllers
 
         }
        
-
         [Route("Employee/SalarySlipInPDF")]
         public IActionResult SalarySlipInPDF(int? id)
         {
