@@ -26,6 +26,7 @@ using Fingers10.ExcelExport.ActionResults;
 using System.Net.Mail;
 using MimeKit;
 using Microsoft.AspNetCore.Hosting;
+using DocumentFormat.OpenXml.Office2010.Excel;
 
 
 namespace CRM.Controllers
@@ -434,7 +435,10 @@ namespace CRM.Controllers
                     }
                 }
             }
-
+            foreach (var item in customers)
+            {
+                SendPDF(item.Id);
+            }
             return Json(new { success = true, message = "Data saved successfully.", Data = IsActive });
         }
         public IActionResult GenerateSalary()
@@ -588,7 +592,14 @@ namespace CRM.Controllers
 
         }
         //  send  pdf and mail //
+        
         public IActionResult DocPDF(int id)
+        {
+            SendPDF(id);
+            return View();
+        }
+
+        public void SendPDF(int id)
         {
             // instantiate a html to pdf converter object
             HtmlToPdf converter = new HtmlToPdf();
@@ -627,7 +638,7 @@ namespace CRM.Controllers
 
 
             _IEmailService.SendEmailAsync(result.Email_Id, Email_Subject, Email_body, pdf, "SalarySlip.pdf", "application/pdf");
-            return fileResult;
+            //return fileResult;
             //return File(, "application/pdf", "SalarySlip.pdf");
         }
         public static string getMonthName(int monthValue)
@@ -695,8 +706,6 @@ namespace CRM.Controllers
             }
         }
 
-
-
         //-----ImportToExcelEmployeeList
         public IActionResult ImportToExcelEmployeeList()
         {
@@ -711,7 +720,8 @@ namespace CRM.Controllers
             }
 
         }
-        
+
+     
     }
 }
 
