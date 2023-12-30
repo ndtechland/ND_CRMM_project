@@ -294,6 +294,10 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Entry).HasColumnType("date");
 
+                entity.Property(e => e.GenerateSalary).HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.Lop).HasColumnType("decimal(18, 2)");
+
                 entity.Property(e => e.Year).HasColumnName("year");
             });
 

@@ -1,305 +1,159 @@
-﻿@{
-    ViewData["Title"] = " Invoice List";
-    Layout = "~/Views/Shared/_adminLayout.cshtml";
-}
-
-<html>
-  <body>
-    <div class="page-wrapper">
-        <div class="page-body-wrapper">
-            <div class="page-sidebar">
-            </div>
-            <!-- Page Sidebar Ends-->
-            <!-- Right sidebar Start-->
-            <!-- Right sidebar Ends-->
-
-            <div class="page-body">
-
-                <!-- Container-fluid starts-->
-                <div class="container-fluid">
-                    <div class="page-header">
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <div class="page-header-left">
-                                    <h3>
-                                        Invoice List
-                                    </h3>
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-                                <ol class="breadcrumb pull-right">
-                                    <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
-                                    <li class="breadcrumb-item">Invoice</li>
-                                    <li class="breadcrumb-item active">Invoice</li>
-                                </ol>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-    <!-- Container-fluid Ends-->
-    <!-- Container-fluid starts-->
-    <div class="container-fluid">
-        <div class="card">
-            <div class="card-header">
-                <h5>Invoice Details</h5>
-            </div>
-            <div class="card-body vendor-table">
-                <table class="display" id="basic-1">
-                    <thead>
-                        <tr>
-                            <th>Invoice</th>
-                            <th>Products</th>
-                            <th>Store Name</th>
-                            <th>Create Date</th>
-                            <th>Wallet Balance</th>
-                            <th>Revenue</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <div class="d-flex vendor-list">
-                                    <img src="../assets/images/team/2.jpg" alt="" class="img-fluid img-40 rounded-circle blur-up lazyloaded">
-                                    <span>Petey Cruiser</span>
-                                </div>
-                            </td>
-                            <td>1670</td>
-                            <td>Warephase</td>
-                            <td>8/10/18</td>
-                            <td>$576132</td>
-                            <td>$9761266</td>
-                            <td>
-                                <div>
-                                    <i class="fa fa-edit me-2 font-success"></i>
-                                    <i class="fa fa-trash font-danger"></i>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="d-flex vendor-list">
-                                    <img src="../assets/images/dashboard/user5.jpg" alt="" class="img-fluid img-40 rounded-circle blur-up lazyloaded">
-                                    <span>Rowan torres</span>
-                                </div>
-                            </td>
-                            <td>790</td>
-                            <td>Sunnamplex</td>
-                            <td>5/6/18</td>
-                            <td>$87610</td>
-                            <td>$631479</td>
-                            <td>
-                                <div>
-                                    <i class="fa fa-edit me-2 font-success"></i>
-                                    <i class="fa fa-trash font-danger"></i>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="d-flex vendor-list">
-                                    <img src="../assets/images/dashboard/boy-2.png" alt="" class="img-fluid img-40 rounded-circle blur-up lazyloaded">
-                                    <span>Gray Brody</span>
-                                </div>
-                            </td>
-                            <td>579</td>
-                            <td>Conecom</td>
-                            <td>25/2/18</td>
-                            <td>$245508</td>
-                            <td>$1279520</td>
-                            <td>
-                                <div>
-                                    <i class="fa fa-edit me-2 font-success"></i>
-                                    <i class="fa fa-trash font-danger"></i>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="d-flex vendor-list">
-                                    <img src="../assets/images/dashboard/user.png" alt="" class="img-fluid img-40 rounded-circle blur-up lazyloaded">
-                                    <span>Lane Skylar</span>
-                                </div>
-                            </td>
-                            <td>8972</td>
-                            <td>Golddex</td>
-                            <td>30/3/18</td>
-                            <td>$7812483</td>
-                            <td>$8761424</td>
-                            <td>
-                                <div>
-                                    <i class="fa fa-edit me-2 font-success"></i>
-                                    <i class="fa fa-trash font-danger"></i>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="d-flex vendor-list">
-                                    <img src="../assets/images/dashboard/designer.jpg" alt="" class="img-fluid img-40 rounded-circle blur-up lazyloaded">
-                                    <span>Colton Clay</span>
-                                </div>
-                            </td>
-                            <td>9710</td>
-                            <td>Green-Plus</td>
-                            <td>6/5/18</td>
-                            <td>$780250</td>
-                            <td>$8793611</td>
-                            <td>
-                                <div>
-                                    <i class="fa fa-edit me-2 font-success"></i>
-                                    <i class="fa fa-trash font-danger"></i>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="d-flex vendor-list">
-                                    <img src="../assets/images/dashboard/user2.jpg" alt="" class="img-fluid img-40 rounded-circle blur-up lazyloaded">
-                                    <span>Woters maxine</span>
-                                </div>
-                            </td>
-                            <td>680</td>
-                            <td>Kan-code</td>
-                            <td>15/4/18</td>
-                            <td>$27910</td>
-                            <td>$579214</td>
-                            <td>
-                                <div>
-                                    <i class="fa fa-edit me-2 font-success"></i>
-                                    <i class="fa fa-trash font-danger"></i>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="d-flex vendor-list">
-                                    <img src="../assets/images/dashboard/user1.jpg" alt="" class="img-fluid img-40 rounded-circle blur-up lazyloaded">
-                                    <span>Lane Skylar</span>
-                                </div>
-                            </td>
-                            <td>8678</td>
-                            <td>Plexzap</td>
-                            <td>4/8/18</td>
-                            <td>$89340</td>
-                            <td>$10285255</td>
-                            <td>
-                                <div>
-                                    <i class="fa fa-edit me-2 font-success"></i>
-                                    <i class="fa fa-trash font-danger"></i>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="d-flex vendor-list">
-                                    <img src="../assets/images/dashboard/user3.jpg" alt="" class="img-fluid img-40 rounded-circle blur-up lazyloaded">
-                                    <span>Perez Alonzo</span>
-                                </div>
-                            </td>
-                            <td>3476</td>
-                            <td>Betatech</td>
-                            <td>17/9/18</td>
-                            <td>$32451</td>
-                            <td>$647212</td>
-                            <td>
-                                <div>
-                                    <i class="fa fa-edit me-2 font-success"></i>
-                                    <i class="fa fa-trash font-danger"></i>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="d-flex vendor-list">
-                                    <img src="../assets/images/team/3.jpg" alt="" class="img-fluid img-40 rounded-circle blur-up lazyloaded">
-                                    <span>Anna Mull</span>
-                                </div>
-                            </td>
-                            <td>1670</td>
-                            <td>Zotware</td>
-                            <td>8/10/18</td>
-                            <td>$576132</td>
-                            <td>$9761266</td>
-                            <td>
-                                <div>
-                                    <i class="fa fa-edit me-2 font-success"></i>
-                                    <i class="fa fa-trash font-danger"></i>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="d-flex vendor-list">
-                                    <img src="../assets/images/team/1.jpg" alt="" class="img-fluid img-40 rounded-circle blur-up lazyloaded">
-                                    <span>Paige Turner</span>
-                                </div>
-                            </td>
-                            <td>4680</td>
-                            <td>Finhigh</td>
-                            <td>11/7/18</td>
-                            <td>$87616</td>
-                            <td>$947611</td>
-                            <td>
-                                <div>
-                                    <i class="fa fa-edit me-2 font-success"></i>
-                                    <i class="fa fa-trash font-danger"></i>
-                                </div>
-                            </td>
-                        </tr>
-
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+﻿<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+<div>
+    <h1 class="text-center">Tax Invoice</h1>
 </div>
-<footer class="footer">
-    <div class="container-fluid">
+<div class="container mx-auto " style="border: 1px solid black;">
         <div class="row">
-            <div class="col-md-6 footer-copyright">
-                <p class="mb-0">Copyright 2019 © Bigdeal All rights reserved.</p>
+            <div class=" col-12" style="border: 1px solid black;">
+                  <div>
+                    <h3 class="text-center">GA DIGITAL WEB WORD PRIVATE LIMITED</h3>
+                </div>
+                <div>
+                    <h6 class="text-center">No.1, Hargobind Enclave, Vikas Marg Extension, Delhi-110092.</h6>
+                </div>
+                <div>
+                    <h6 class="text-center">(Websites, Software Development, E-Commerce, Hardware Maintenance, Manning of Call Center etc.)</h6>
+                </div>
             </div>
-            <div class="col-md-6">
-                <p class="pull-right mb-0">Hand crafted & made with<i class="fa fa-heart"></i></p>
+
+        </div>
+        <div class="row">
+            <div class=" col-md-6" style="border: 1px solid black;">
+              <div>
+                  <h6>No. DEL/2023/1182
+                      <br />
+                      Dated:-01.12.2023
+                      <br />
+                      GST no.07DELC08153F1DT
+                  </h6>
+              </div>
+            </div>
+            <div class="  col-md-6 " style="border: 1px solid black;">
+                <div>
+                  <h6>PAN NO. AACCG1290R
+                      <br />
+                      GST NO.-07AACCG1290R1Z7
+                  </h6>
+              </div>
             </div>
         </div>
-    </div>
-</footer>
+        <div class="row">
+            <div class=" col-12" style="border: 1px solid black;">
+                <div>
+                  <h5>Name: The ELECTION OFFICER (P&amp;I)
+                      <br />
+                      O/o CEO, DELHI
+                      <br />
+                      Old St. Stephen&#39;s College Building, Kashmere Gate,
+                      <br />
+                      Lothian Rd, Old Delhi,
+                      <br />
+                      Delhi, 110006
+                  </h5>
+              </div>
+            </div>
 
     </div>
+        <div class="row" style="border: 1px solid black;">
+            <div class="col" style="border: 1px solid black;color: red;">
+                 <div>
+                  <h5 class="text-center">HSN/SAC
+                      <br />
+                      (Code)
+                  </h5>                 
+              </div>                
+            </div>
+        <div class="col" style="border: 1px solid black;">
+                 <div>
+                <h5 class="text-center">Description of the Job</h5>
+            </div>
+            </div>
+        <div class="col" style="border: 1px solid black;">
+               <div>
+                <h5 class="text-center">Amount
+                    <br />
+                    (In Rs.)
+                </h5>
 
-</div>
-
-<!-- latest jquery-->
-<script src="../assets/js/jquery-3.3.1.min.js"></script>
-
-<!-- Bootstrap js-->
-<script src="../assets/js/popper.min.js"></script>
-<script src="../assets/js/bootstrap.js"></script>
-
-<!-- feather icon js-->
-<script src="../assets/js/icons/feather-icon/feather.min.js"></script>
-<script src="../assets/js/icons/feather-icon/feather-icon.js"></script>
-
-<!-- Sidebar jquery-->
-<script src="../assets/js/sidebar-menu.js"></script>
-
-<!-- Datatables js-->
-<script src="../assets/js/datatables/jquery.dataTables.min.js"></script>
-<script src="../assets/js/datatables/custom-basic.js"></script>
-
-<!--Customizer admin-->
-<script src="../assets/js/admin-customizer.js"></script>
-
-<!-- lazyload js-->
-<script src="../assets/js/lazysizes.min.js"></script>
-
-<!--right sidebar js-->
-<script src="../assets/js/chat-menu.js"></script>
-
-<!--script admin-->
-<script src="../assets/js/admin-script.js"></script>
-
-</body>
-</html>
+            </div>
+            </div>
+        </div>
+        <div class="row align-items-start " style="border: 1px solid black;">
+            <div class="col" style="border: 1px solid black;height: 250px;">
+               @* One of three columns*@
+            </div>
+            <div class="col" style="border: 1px solid black;height: 250px;">
+            <h6>
+                Bill for providing for staff Deployed for the month of
+                Nov 23 (10 data entry Operator)
+            </h6>
+            <br />
+            <br />
+            <h6>
+                Add CGST @@9%
+            </h6>
+            <br />      
+            <h6>
+                Add SGST @@ 9%
+            </h6>
+        </div>
+            <div class="col" style="border: 1px solid black;height: 250px;">
+                <br />
+            <h5 class="text-center">
+                Rs.239738/-
+                </h5>
+                <br />
+            <h5 class="text-center">
+                Rs. 21576/-
+            </h5>
+            <br />
+            <h5 class="text-center">
+                Rs. 21576/-
+            </h5>
+            </div>
+        </div>
+        <div class="row">
+            <div class=" col-md-8" style="border: 1px solid black;">
+                <h6>
+                Total: (Rs. In words) Two Lac Eighty-Two Thousand Eight
+                Hundred Ninety Only.
+                </h6>
+            </div>
+            <div class="  col-md-4 " style="border: 1px solid black;">
+            <h5 class="text-center">
+                Rs. 282890/-
+                </h5>
+            </div>
+        </div>
+        <div class="row">
+            <div class=" col-12" style="border: 1px solid black;">
+            <h5 style="color: #00adff;">
+                Bank Details:- Yes Bank Ltd. ,
+                <br />
+                Indrapuram Branch
+                <br />
+                Account No. :- &#39;012784100000013
+                <br />
+                IFSC Code:- YESB0000127
+                </h5>
+                 <h6>
+                Terms and Conditions :
+                <br />
+                Payment by cheques/DD only.
+                <br />
+                Cheque/DD should be made in favour of GA Digital Web Word (P) Ltd., payable at Delhi.
+                <br />
+                Subject to Delhi Jurisdiction
+                <br/>
+                Interest @@ 24% will be charged if payment is not cleared within 10 days.
+            </h6>
+            </div>       
+           
+       
+        </div>
+    </div>
+      <div>
+    <h6 style="text-align:right;margin-right: 185px;color: #000000c2;">
+            For GA DIGITAL WEB WORD PRIVATE LIMITED
+        </h6>
+    </div>

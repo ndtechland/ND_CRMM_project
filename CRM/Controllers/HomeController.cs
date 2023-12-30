@@ -161,7 +161,7 @@ namespace CRM.Controllers
 
         //======Invoice Section========//
         [HttpGet]
-        public IActionResult Invoice()
+        public IActionResult Invoicelist()
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
@@ -535,6 +535,20 @@ namespace CRM.Controllers
                 Data = data,
             };
             return new JsonResult(result);
+        }
+        [HttpGet]
+        public IActionResult Invoice()
+        {
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName = AddedBy;
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
         }
     }
 
