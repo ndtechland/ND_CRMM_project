@@ -26,9 +26,9 @@
                     <div class="row">
                         <div class="col-lg-6">
                             <div class="page-header-left">
-                                <h2>
+                                <h3>
                                     Salarydetail List
-                                </h2>
+                                </h3>
                             </div>
                         </div>
                         <div class="col-lg-6">
@@ -61,6 +61,67 @@
                                                     {
                                                         <option value="@item.Value">@item.Text</option>
                                                     }
+
+                            <div class="card-body">
+                                <div style="text-align: right;">
+                                    <button type="submit" class="btn btn-primary" style="color: black; border: 2px solid black;" onclick="gensal();">
+                                        <i class="fa fa-plus"></i> Generate Salary
+                                    </button>
+                                </div>
+
+
+                                <div class="modal-header">
+                                </div>
+                                <div class=" table-responsive">
+                                    <table id="datatable" class="table table-responsive">
+                                        <thead>
+                                            <tr style="background-color: #00baf2;">
+                                                <th hidden>
+                                                   ID
+                                                </th>
+                                                <th nowrap>Sl. No.</th>
+                                                <th>
+                                                   Employee Name
+                                                </th>
+                                                <th>
+                                                    EmployeeId
+                                                </th>                                            
+                                                 <th>
+                                                    MonthlyCtc
+                                                </th>
+                                                <th>Attendance</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{
+                                                var count = 0;
+                                          
+                                                                        @foreach (var item in Model)
+                                            {
+                                                    count++;
+                                                                                <tr class="table-row">
+                                                        <td>@count</td>
+                                                                                                    <td style="display:none">
+                                                                                     @item.Id
+                                                                                                    </td><td>
+                                                                                    @Html.DisplayFor(modelItem => item.FirstName)
+                                                                                                    </td>                                                                     
+                                                                                                    <td>
+                                                                                    @Html.DisplayFor(modelItem => item.EmployeeId)
+                                                                                                    </td>
+                                                                                                  
+                                                                                                         
+                                                                                                                <td>
+                                                                                    @Html.DisplayFor(modelItem => item.MonthlyCtc)
+                                                                                                                </td>
+
+                                                                                                <td>
+                                                                                                <input type="text"  name="Attendance" class="form-control" minlength="1" maxlength="2" style="height: 40px; width: 94px;" />
+                                                                                                     </td>
+
+                                                                                                    
+                                                                               </tr>
+
                                                 }
                                             </select>
                                         </div>
@@ -169,11 +230,7 @@
 
 </div>
 
-
-
-
-
-
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
 <script>
    

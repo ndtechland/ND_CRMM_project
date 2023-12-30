@@ -3,6 +3,7 @@
     public class SalarySlipDetails
     {
         public int Id { get; set; }
+        public string? Email_Id { get; set; }
         public string? Employee_ID { get; set; }
         public decimal Epf { get; set; }
         public string? EPF_Number { get; set; }

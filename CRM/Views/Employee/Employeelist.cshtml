@@ -1,10 +1,10 @@
-﻿@model IEnumerable<CRM.Models.DTO.EmployeeList>
-
+﻿@model IEnumerable<CRM.Models.Crm.EmployeeImportExcel>
 
 @{
     ViewData["Title"] = "Employeelist";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
+
 <div class="page-wrapper">
     <div class="page-body-wrapper">
         <div class="page-sidebar">
@@ -21,9 +21,9 @@
                     <div class="row">
                         <div class="col-lg-6">
                             <div class="page-header-left">
-                                <h2>
+                                <h3>
                                     Employee List
-                                </h2>
+                                </h3>
                             </div>
                         </div>
                         <div class="col-lg-6">
@@ -33,9 +33,15 @@
                                 <li class="breadcrumb-item active">Employee</li>
                                 <li class="breadcrumb-item active">EmployeeList</li>
                             </ol>
+
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <div>
+                <img src="~/image/execimage.png" style="height:50px; margin-left:1121px;width:53px;cursor:pointer" title="Export To Excel" onclick="ExportExcelfn()" />
+
             </div>
             <!-- Container-fluid Ends-->
             <!-- Container-fluid starts-->
@@ -51,38 +57,130 @@
                                             <tr style="background-color: #00baf2;">
                                                 <th nowrap>Sl. No.</th>
                                                 <th>
-                                                    @Html.DisplayNameFor(model => model.FirstName)
+                                                    First Name
                                                 </th>
                                                 <th>
-                                                    @Html.DisplayNameFor(model => model.MiddleName)
+                                                    Middle Name
                                                 </th>
                                                 <th>
-                                                    @Html.DisplayNameFor(model => model.LastName)
+                                                    Last Name
                                                 </th>
                                                 <th>
-                                                    @Html.DisplayNameFor(model => model.EmployeeId)
+                                                    Employee ID
                                                 </th>
                                                 <th>
-                                                    @Html.DisplayNameFor(model => model.DateOfJoining)
+                                                    Date Of Joining
                                                 </th>
                                                 <th>
-                                                    @Html.DisplayNameFor(model => model.WorkEmail)
+                                                    Work Email
                                                 </th>
                                                 <th>
                                                     Gender
                                                 </th>
                                                 <th>
-                                                   WorkLocation
+                                                    WorkLocation
                                                 </th>
                                                 <th>
-                                                   Designation
+                                                    Designation
                                                 </th>
                                                 <th>
                                                     Department
                                                 </th>
+
                                                 <th>
-                                                    Salary
+                                                    AnnualCTC
                                                 </th>
+
+                                                <th>
+                                                    Basic
+                                                </th>
+                                                <th>
+                                                    HouseRentAllowance
+                                                </th>
+                                                <th>
+                                                    ConveyanceAllowance
+                                                </th>
+                                                <th>
+                                                    FixedAllowance
+                                                </th>
+                                                <th>
+                                                    EPF
+                                                </th>
+                                                <th>
+                                                 MonthlyGrossPay
+                                                </th>
+                                               
+                                                <th>
+                                                    PersonalEmailAddress
+                                                </th>
+                                                <th>
+                                                    MobileNumber
+                                                  </th>
+
+                                                <th>
+                                                    DateOfBirth
+                                                </th>
+                                                <th>
+                                                    Age
+                                                </th>
+                                                <th>
+                                                    FatherName
+                                                </th>
+                                                <th>
+                                                    PAN
+                                                </th>
+
+                                                <th>
+                                                    AddressLine1
+                                                </th>
+
+                                                <th>
+                                                    AddressLine2
+                                                </th>
+
+                                                <th>
+                                                    City
+                                                </th>
+                                                <th>
+                                                    State
+                                                </th>
+
+                                                <th>
+                                                    Pincode
+                                                </th>
+
+                                                <th>
+                                                    AccountHolderName
+                                                </th>
+                                                <th>
+                                                    BankName
+                                                </th>
+                                                <th>
+                                                    AccountNumber
+                                                </th>
+                                                <th>
+                                                    ReEnterAccountNumber
+                                                </th>
+                                                <th>
+                                                    IFSC
+                                                </th>
+                                                <th>
+                                                 AccountType                      
+                                                </th>
+
+                                                <th>
+                                                    EPF_Number
+                                                </th>
+
+                                                <th>
+                                                    Deduction_Cycle
+
+                                                </th>
+
+                                                <th>
+                                                    Employee_Contribution_Rate
+                                                </th>
+
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -91,7 +189,7 @@
                                                 var count = 0;
                                                 @foreach (var item in Model)
                                                 {
-                                                     count++;
+                                                    count++;
                                                     <tr class="table-row">
                                                         <td>@count</td>
                                                         <td>
@@ -113,41 +211,141 @@
                                                             @Html.DisplayFor(modelItem => item.WorkEmail)
                                                         </td>
                                                         <td>
-                                                            @Html.DisplayFor(modelItem => item.GenderId)
+                                                            @Html.DisplayFor(modelItem => item.Gender)
                                                         </td>
                                                         <td>
-                                                            @Html.DisplayFor(modelItem => item.WorkLocationId)
+                                                            @Html.DisplayFor(modelItem => item.WorkLocation)
                                                         </td>
                                                         <td>
-                                                            @Html.DisplayFor(modelItem => item.DesignationId)
+                                                            @Html.DisplayFor(modelItem => item.DesignationName)
                                                         </td>
                                                         <td>
-                                                            @Html.DisplayFor(modelItem => item.DepartmentId)
+                                                            @Html.DisplayFor(modelItem => item.DepartmentName)
                                                         </td>
+
+
+                                                        <td>
+                                                             @Html.DisplayFor(modelItem => item.Basic)
+                                                        </td>
+
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.HouseRentAllowance)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.ConveyanceAllowance)
+                                                        </td>
+
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.FixedAllowance)
+                                                        </td>
+
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.EPF)
+                                                        </td>
+
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.MonthlyGrossPay)
+                                                        </td>
+
                                                         <td>
                                                             @Html.DisplayFor(modelItem => item.MonthlyCTC)
                                                         </td>
+
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.PersonalEmailAddress)
+                                                        </td>
+
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.Mobile)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.DateOfBirth)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.Age)
+                                                        </td>
+
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.FatherName)
+                                                        </td>
+
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.PAN)
+                                                        </td>
+
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.AddressLine1)
+                                                        </td>
+
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.AddressLine2)
+                                                        </td>
+
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.City)
+                                                        </td>
+
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.State)
+                                                        </td>
+
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.Pincode)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.AccountHolderName)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.BankName)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.AccountNumber)
+                                                        </td>
+
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.ReEnterAccountNumber)
+                                                        </td>
+
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.IFSC)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.AccountType)
+                                                        </td>
+
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.EPF_Number)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.Deduction_Cycle)
+                                                        </td>
+
+
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.Employee_Contribution_Rate)
+                                                        </td>
+
                                                         <td>
                                                             <div>
-                                                                <a href="#" class="fa fa-edit m-2 font-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="EditEmployee(@item.Id)"></a>
-                                                                <a href="@Url.Action("DeleteEmployee","Employee",new { id=item.Id})" class="fa fa-trash font-danger"></a>
+                                                                <a href="EmployeeRegistration?id=@item.Emp_Reg_ID" class="fa fa-edit m-2 font-success"></a>
+                                                                <a href="@Url.Action("DeleteEmployee","Employee",new { id=item.EmployeeId})" class="fa fa-trash font-danger"></a>
                                                             </div>
                                                         </td>
                                                     </tr>
                                                 }
                                             }
                                         </tbody>
-                                    </table>                                 
+                                    </table>
                                 </div>
-                                
+
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-               <div id="pagination-container">
-               <ul id="pagination" class="pagination"></ul>
-                </div>
+            <div id="pagination-container">
+                <ul id="pagination" class="pagination"></ul>
+            </div>
         </div>
 
 
@@ -188,25 +386,25 @@
                                     <input class="form-control" id="WorkEmail" name="WorkEmail" type="text" required="">
                                 </div>
                             </div>
-                             <div class="row">
-                            <div class="form-group col-sm">
-                            <label for="validationCustom0">Gender</label>
-                              <select id="GenderId" name="GenderId" class="form-control searchableselect"></select>
-                            </div>
-                            <div class="form-group col-sm">
-                            <label for="validationCustom0">Work Location</label>
-                             <select id="WorkLocationId" name="WorkLocationId" class="form-control searchableselect"></select>
-                            </div>
+                            <div class="row">
+                                <div class="form-group col-sm">
+                                    <label for="validationCustom0">Gender</label>
+                                    <select id="GenderId" name="GenderId" class="form-control searchableselect"></select>
+                                </div>
+                                <div class="form-group col-sm">
+                                    <label for="validationCustom0">Work Location</label>
+                                    <select id="WorkLocationId" name="WorkLocationId" class="form-control searchableselect"></select>
+                                </div>
                             </div>
                             <div class="row">
-                            <div class="form-group col-sm">
-                            <label for="validationCustom0">Designation</label>
-                              <select id="DesignationId" name="DesignationId" class="form-control searchableselect"></select>
-                            </div>
-                            <div class="form-group col-sm">
-                            <label for="validationCustom0">Department</label>
-                            <select id="DepartmentId" name="DepartmentId" class="form-control searchableselect"></select>
-                            </div>
+                                <div class="form-group col-sm">
+                                    <label for="validationCustom0">Designation</label>
+                                    <select id="DesignationId" name="DesignationId" class="form-control searchableselect"></select>
+                                </div>
+                                <div class="form-group col-sm">
+                                    <label for="validationCustom0">Department</label>
+                                    <select id="DepartmentId" name="DepartmentId" class="form-control searchableselect"></select>
+                                </div>
                                 <div class="form-group col-sm">
                                     <label for="validationCustom0">Salary</label>
                                     <input class="form-control" id="MonthlyCTC" name="MonthlyCTC" type="text" required="">
@@ -225,6 +423,10 @@
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
+    function ExportExcelfn() {
+
+        window.location.href = 'ImportToExcelEmployeeList'
+    }
     function EditEmployee(id) {
         debugger;
         $.ajax({
@@ -336,4 +538,3 @@
     });
 
 </script>
-
