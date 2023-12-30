@@ -11,7 +11,5 @@ namespace CRM.Models.Crm
         public int? Year { get; set; }
         public int? Attendance { get; set; }
         public DateTime? Entry { get; set; }
-        public decimal? Lop { get; set; }
-        public decimal? GenerateSalary { get; set; }
     }
 }
