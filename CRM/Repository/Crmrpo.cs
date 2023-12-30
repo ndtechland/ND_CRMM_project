@@ -14,7 +14,9 @@ using System.Reflection;
 using System;
 using System.Reflection.Metadata;
 using System.Drawing;
+using Syncfusion.Drawing;
 using ClosedXML.Excel;
+
 
 namespace CRM.Repository
 {
@@ -337,13 +339,15 @@ namespace CRM.Repository
         }
 
 
-        public async Task<List<salarydetail>> salarydetail()
+        public async Task<List<salarydetail>> salarydetail(string customerId,string WorkLocation)
         {
             List<salarydetail> emp = new List<salarydetail>();
             try
             {
                 SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
                 SqlCommand cmd = new SqlCommand("sp_SalaryDetail", con);
+                cmd.Parameters.Add(new SqlParameter("@CustomerID", SqlDbType.Int) { Value = Convert.ToInt32(customerId) });
+                cmd.Parameters.Add(new SqlParameter("@WorkLocation", SqlDbType.Int) { Value = Convert.ToInt32(WorkLocation) });
                 cmd.CommandType = CommandType.StoredProcedure;
                 con.Open();
                 SqlDataReader rdr = cmd.ExecuteReader();
@@ -377,7 +381,6 @@ namespace CRM.Repository
             {
                 SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
                 SqlCommand cmd = new SqlCommand("GetGenerateSalary", con);
-                cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Add(new SqlParameter("@CustomerID", SqlDbType.Int) { Value = Convert.ToInt32(customerId) });
                 cmd.Parameters.Add(new SqlParameter("@Month", SqlDbType.Int) { Value = Convert.ToInt32(Month) });
                 cmd.Parameters.Add(new SqlParameter("@year", SqlDbType.Int) { Value = Convert.ToInt32(year) });
@@ -426,6 +429,45 @@ namespace CRM.Repository
             var result = await _context.Employeer_EPFs.FromSqlRaw<Employeer_EPF>("EmployerList").ToListAsync();
             return result;
         }
+
+        public async Task<List<Invoice>> GenerateInvoice(string customerId, int Month, int year,string WorkLocation)
+        {
+            try
+            {
+                SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
+                SqlCommand cmd = new SqlCommand("GenerateInvoice", con);
+                cmd.Parameters.Add(new SqlParameter("@CustomerID", SqlDbType.Int) { Value = Convert.ToInt32(customerId) });
+                cmd.Parameters.Add(new SqlParameter("@Month", SqlDbType.Int) { Value = Convert.ToInt32(Month) });
+                cmd.Parameters.Add(new SqlParameter("@year", SqlDbType.Int) { Value = Convert.ToInt32(year) });
+                cmd.Parameters.Add(new SqlParameter("@WorkLocation", SqlDbType.Int) { Value = Convert.ToInt32(WorkLocation) });
+                cmd.CommandType = CommandType.StoredProcedure;
+                con.Open();
+                SqlDataReader rdr = cmd.ExecuteReader();
+                List<Invoice> emp = new List<Invoice>();
+                while (rdr.Read())
+                {
+                    var emps = new Invoice()
+                    {
+                        EmployeeCount = Convert.ToInt32(rdr["EmployeeCount"]),
+                        Company_Name = Convert.ToString(rdr["Company_Name"]),
+                        Billing_Address = Convert.ToString(rdr["Billing_Address"]),
+                        GST_Number = Convert.ToString(rdr["GST_Number"]),
+                        HSN_SAC_Code = Convert.ToString(rdr["HSN_SAC_Code"]),
+                        Cgst = Convert.ToString(rdr["Cgst"]),
+                        Scgst = Convert.ToString(rdr["Scgst"]),
+                        Igst = Convert.ToString(rdr["Igst"]),
+                        State = Convert.ToString(rdr["State"]),
+                    };
+
+                    emp.Add(emps);
+                }
+                return emp;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+}
 
         public DataTable GetEmployDetailById(string EmpId)
         {
@@ -586,6 +628,7 @@ namespace CRM.Repository
                     return stram.ToArray();
                 }
             }
+
         }
     }
 

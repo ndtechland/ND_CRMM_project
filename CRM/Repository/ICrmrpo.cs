@@ -32,13 +32,13 @@ namespace CRM.Repository
         public Task<int> Iupdate(Quation model);
         public DataTable ForgetPassword(AdminLogin model);
 
-        public Task<List<salarydetail>> salarydetail();
+        public Task<List<salarydetail>> salarydetail(string customerId, string WorkLocation);
 
         public Task<List<GenerateSalary>> GenerateSalary(string customerId, int Month, int year);
         public Task<int> Employer(Employeer_EPF model);
+        public Task<List<EmployeerEpf>> EmployerList();
+        public Task<List<Invoice>> GenerateInvoice(string customerId, int Month, int year, string WorkLocation);
         public Task<List<Employeer_EPF>> EmployerList();
-
-
         public DataTable GetEmployDetailById(string EmpId);
         //for excel
         public byte[] EmployeeListForExcel();
