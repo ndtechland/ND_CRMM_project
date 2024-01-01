@@ -54,7 +54,7 @@
                                         <div class="form-group col-md-3">
                                             <label for="validationCustom0">Company Name</label>
                                             <select class="form-control" id="CustomerID" name="CustomerID" onchange="Locations()">
-                                            <option>-- Select CompanyName --</option>
+                                                <option value="">-- Select CompanyName --</option>
                                                  
                                                     @foreach (var item in ViewBag.CustomerName)
                                                     {
@@ -65,18 +65,16 @@
                                         <div class="form-group col-md-3">
                                             <label for="validationCustom0">Work Location</label>
                                             <select class="form-control" id="LocationID" name="WorkLocation">
-                                                <option>--Select WorkLocation--</option>
+                                                <option value="">--Select WorkLocation--</option>
 
                                             </select>
                                         </div>
+                                        <div class="form-button col-md-3" style="display:flex; justify-content:center;">
+                                            <input type="submit" value="Search" class="btn btn-primary button" onclick="return validateForm();" />
+                                        </div>
                                     </div>
-                                    <div class="form-button col-md-3" style="display:flex; justify-content:center;">
-                                        <input type="submit" value="Search" class="btn btn-primary button" />
-                                    </div>
+                                   
                                 </form>
-
-                                <div class="modal-header">
-                                </div>
                                 <div class=" table-responsive">
                                       @if (Model != null && Model.Any())
                                     {
@@ -85,8 +83,7 @@
                                                 <i class="fa fa-plus"></i> Generate Salary
                                             </button>
                                         </div>
-                                        <br />
-                                        <br />
+                                        <br />                                 
                                     <table id="datatable" class="table table-responsive">
                                         <thead>
                                             <tr style="background-color: #00baf2;">
@@ -110,31 +107,31 @@
                                             @{
                                                 var count = 0;
                                           
-                                                                        @foreach (var item in Model)
+                                                                            @foreach (var item in Model)
                                             {
                                                     count++;
-                                                                                <tr class="table-row">
-                                                        <td>@count</td>
-                                                                                                    <td style="display:none">
-                                                                                     @item.Id
-                                                                                                    </td><td>
-                                                                                    @Html.DisplayFor(modelItem => item.FirstName)
-                                                                                                    </td>                                                                     
-                                                                                                    <td>
-                                                                                    @Html.DisplayFor(modelItem => item.EmployeeId)
-                                                                                                    </td>
-                                                                                                  
-                                                                                                         
-                                                                                                                <td>
-                                                                                    @Html.DisplayFor(modelItem => item.MonthlyCtc)
-                                                                                                                </td>
+                                                                                    <tr class="table-row">
+                                                            <td>@count</td>
+                                                                                                        <td style="display:none">
+                                                                                         @item.Id
+                                                                                                        </td><td>
+                                                                                        @Html.DisplayFor(modelItem => item.FirstName)
+                                                                                                        </td>                                                                     
+                                                                                                        <td>
+                                                                                        @Html.DisplayFor(modelItem => item.EmployeeId)
+                                                                                                        </td>
+                                                                                                      
+                                                                                                             
+                                                                                                                    <td>
+                                                                                        @Html.DisplayFor(modelItem => item.MonthlyCtc)
+                                                                                                                    </td>
 
-                                                            <td>
-                                                                <input type="text" id="Attendance" name="Attendance" class="form-control" minlength="1" maxlength="2" style="height: 40px; width: 94px;" onchange="validateDay();" />
-                                                            </td>
+                                                                <td>
+                                                                    <input type="text" id="Attendance" name="Attendance" class="form-control" minlength="1" maxlength="2" style="height: 40px; width: 94px;" onchange="validateDay();" />
+                                                                </td>
 
-                                                                                                    
-                                                                               </tr>
+                                                                                                        
+                                                                                   </tr>
                                                 }
                                             }
                                         </tbody>
@@ -152,7 +149,7 @@
                                             <label class="form-group">Total Monthly CTC</label>
                                         </div>
                                         <div class="col-md-4" >
-                                            <input type="text" id="TotalAmount" value="@ViewBag.TotalAmmount" class="form-group" style="border: none;margin-left: -30px;" readonly />
+                                            <input type="text" id="TotalAmount" value="@ViewBag.TotalAmmount" class="form-group" style="border: none;margin-left: -62px;" readonly />
                                         </div>
                                     </div>
                                 }
@@ -169,7 +166,7 @@
 </div>
         <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
-        <script>
+ <script>
 
             function gensal() {
                 var check = true;
@@ -209,13 +206,7 @@
                                 if ((tbody.children().length) == @Model.Count()) {
                                     //location.reload();
                                     alert("Data saved successfully.");
-                                    window.location.href = '/Employee/GenerateSalary';
-                                }
-                                if (day >= 1 && day <= 30) {
-                                    alert('Valid day!');
-                                } else {
-                                    alert('Invalid day. Please enter a day between 1 and 30.');
-                                }
+                                }                               
                                 debugger;
                             },
 
@@ -240,9 +231,9 @@
                 });
             });
         </script>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-        <script>
+ <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+ <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+ <script>
             function validateDay() {
                 var inputElement = document.getElementById('Attendance');
                 var day = parseInt(inputElement.value, 10);
@@ -258,7 +249,7 @@
             }
         </script>
 
-        <script>
+<script>
             function Locations() {
                 var customerId = $("#CustomerID").val();
                 if (customerId !== "") {
@@ -288,7 +279,21 @@
                 });
             }
         </script>
+<script>
+    function validateForm() {
+        var CustomerID = document.getElementById('CustomerID').value;
+        var WorkLocation = document.getElementById('LocationID').value;
 
+        if (CustomerID === '') {
+            alert("Please select Company.");
+            return false;
+        }
+        if (WorkLocation === '') {
+            alert("Please select WorkLocation.");
+            return false;
+        }
+    }
+</script>
 
 
 
