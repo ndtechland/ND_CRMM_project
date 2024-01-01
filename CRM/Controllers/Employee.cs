@@ -381,6 +381,7 @@ namespace CRM.Controllers
             }
         }
         [HttpGet]
+        [Route("Employee/salarydetail")]
         public async Task<IActionResult> salarydetail(string customerId, string WorkLocation)
         {
             if (HttpContext.Session.GetString("UserName") != null)
@@ -545,7 +546,15 @@ namespace CRM.Controllers
                     }).ToList();
                     GenerateSalary salary = new GenerateSalary();
                     salary.GeneratedSalaries = await _ICrmrpo.GenerateSalary(customerId, Month, year);
-                    return View(salary);
+                    if(salary.GeneratedSalaries.Count >0)
+                    {
+                        return View(salary); 
+                    }
+                    else
+                    {
+                        ViewBag.ErrorMessage ="No data found";
+                        return View();
+                    }
                 }
                 else
                 {
@@ -746,6 +755,7 @@ namespace CRM.Controllers
             return monthName;
         }
         [HttpGet]
+        [Route("Employee/Invoice")]
         public async Task<IActionResult> Invoice(string customerId, int Month, int year, string WorkLocation)
         {
             try

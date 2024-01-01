@@ -42,17 +42,17 @@
                         <div class="card">
                             <div class="card-body">
                                 <div style="text-align: right;">
-                                    <button type="submit" class="btn btn-primary" style="color: black; border: 2px solid black;" onclick="generateInvoice()">
+                                    <button type="submit" class="btn btn-primary" style="color: black; border: 2px solid black;" onclick="return generateInvoice()">
                                         <i class="fa fa-plus"></i> Generate Invoice
                                     </button>
                                 </div>
-
+                                <div></div>
                                 <form asp-action="GenerateSalary" autocomplete="off" method="post">
                                     <div class="row">
                                         <div class="form-group col-md-3">
                                             <label for="validationCustom0">Company Name</label>
-                                            <select class="form-control" id="CustomerID" name="CustomerID" onchange="Locations()" style="width: 235px;">
-                                                <option>-- Select CompanyName --</option>
+                                            <select class="form-control" id="CustomerID" name="CustomerID" onchange="Locations()">
+                                                <option value="">-- Select CompanyName --</option>
 
                                                 @foreach (var item in ViewBag.CustomerName)
                                                 {
@@ -63,7 +63,7 @@
                                 <div class="form-group col-sm">
                                     <label for="validationCustom0">Work Location</label>
                                             <select class="form-control col-md-" id="LocationID" name="LocationID">
-                                                <option>--Select WorkLocation--</option>
+                                                <option value="">--Select WorkLocation--</option>
                                               
                                             </select>                                 
                                 </div>
@@ -71,7 +71,7 @@
                                         <label for="validationCustom0">Month</label>
                                         <select id="Month" class="form-control" name="Month">
 
-                                                <option>-- Select Month --</option>
+                                                <option value="">-- Select Month --</option>
                                             <option value="1">January</option>
                                             <option value="2">February</option>
                                             <option value="3">March</option>
@@ -90,7 +90,7 @@
                                     <div class="form-group col-sm">
                                         <label for="validationCustom0">Year</label>
                                             <select id="Year" class="form-control col-md-" name="Year">
-                                                <option>-- Select Year --</option>
+                                                <option value="">-- Select Year --</option>
                                             <option value="2023">2023</option>
                                         </select>
                                     </div>
