@@ -161,7 +161,7 @@ namespace CRM.Controllers
 
         //======Invoice Section========//
         [HttpGet]
-        public IActionResult Invoice()
+        public IActionResult Invoicelist()
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
