@@ -21,7 +21,7 @@
         public string? InWords { get; set; }
         public string? ESI { get; set; }
         public string? TDS { get; set; }
-        public string? LOP { get; set; }
+        public decimal? Lop { get; set; }
         public string? PT { get; set; }
         public string? SPLDeduction { get; set; }
         public string? TotalDeductions { get; set; }
