@@ -490,7 +490,11 @@ namespace CRM.Controllers
         {
             try
             {
-                ViewBag.CustomerName = _context.CustomerRegistrations.Select(x => new SelectListItem
+                if (HttpContext.Session.GetString("UserName") != null)
+                {
+                    string AddedBy = HttpContext.Session.GetString("UserName");
+                    ViewBag.UserName = AddedBy;
+                    ViewBag.CustomerName = _context.CustomerRegistrations.Select(x => new SelectListItem
                 {
                     Value = x.Id.ToString(),
                     Text = x.CompanyName
@@ -498,6 +502,11 @@ namespace CRM.Controllers
                 ViewBag.ErrorMessage = TempData["ErrorMessage"];
                 return View();
             }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
+        }
             catch (Exception ex)
             {
 
@@ -575,36 +584,46 @@ namespace CRM.Controllers
         {
             try
             {
-                var result = (from emp in _context.EmployeeRegistrations
-                              join empsalary in _context.EmployeeSalaryDetails on emp.Id equals empsalary.EmpId
-                              join empbank in _context.EmployeeBankDetails on emp.Id equals empbank.EmployeeRegistrationId
-                              join empatt in _context.Empattendances on emp.EmployeeId equals empatt.EmployeeId
-                              join worklocation in _context.WorkLocations on emp.WorkLocationId equals worklocation.Id.ToString()
-                              join designation in _context.DesignationMasters on emp.DesignationId equals designation.Id.ToString()
-                              where emp.Id == id
-                              select new SalarySlipDetails
-                              {
-                                  Id = emp.Id,
-                                  Employee_ID = emp.EmployeeId,
-                                  First_Name = emp.FirstName,
-                                  Address_Line_1 = worklocation.AddressLine1,
-                                  Epf = empsalary.Epf,
-                                  Designation_Name = designation.DesignationName,
-                                  Bank_Name = empbank.BankName,
-                                  Account_Number = empbank.AccountNumber,
-                                  Basic = empsalary.Basic,
-                                  EPF_Number = empbank.EpfNumber,
-                                  Month = getMonthName(Convert.ToInt32(empatt.Month)),
-                                  Year = empatt.Year,
-                                  HouseRentAllowance = empsalary.HouseRentAllowance,
-                              }).FirstOrDefault();
-                if (result != null)
+                if (HttpContext.Session.GetString("UserName") != null)
                 {
-                    return View(result);
-                }
+                    string AddedBy = HttpContext.Session.GetString("UserName");
+                    ViewBag.UserName = AddedBy;
+                    var result = (from emp in _context.EmployeeRegistrations
+                                  join empsalary in _context.EmployeeSalaryDetails on emp.Id equals empsalary.EmpId
+                                  join empbank in _context.EmployeeBankDetails on emp.Id equals empbank.EmployeeRegistrationId
+                                  join empatt in _context.Empattendances on emp.EmployeeId equals empatt.EmployeeId
+                                  join worklocation in _context.WorkLocations on emp.WorkLocationId equals worklocation.Id.ToString()
+                                  join designation in _context.DesignationMasters on emp.DesignationId equals designation.Id.ToString()
+                                  where emp.Id == id
+                                  select new SalarySlipDetails
+                                  {
+                                      Id = emp.Id,
+                                      Employee_ID = emp.EmployeeId,
+                                      First_Name = emp.FirstName,
+                                      Address_Line_1 = worklocation.AddressLine1,
+                                      Epf = empsalary.Epf,
+                                      Designation_Name = designation.DesignationName,
+                                      Bank_Name = empbank.BankName,
+                                      Account_Number = empbank.AccountNumber,
+                                      Basic = empsalary.Basic,
+                                      EPF_Number = empbank.EpfNumber,
+                                      Month = getMonthName(Convert.ToInt32(empatt.Month)),
+                                      Year = empatt.Year,
+                                      HouseRentAllowance = empsalary.HouseRentAllowance,
+                                      Lop = empatt.Lop,
+                                  }).FirstOrDefault();
+                    if (result != null)
+                    {
+                        return View(result);
+                    }
+                    else
+                    {
+                        return RedirectToAction("GenerateSalary");
+                    }
+                }           
                 else
                 {
-                    return RedirectToAction("GenerateSalary");
+                    return RedirectToAction("Login", "Admin");
                 }
             }
             catch (Exception ex)
@@ -618,7 +637,16 @@ namespace CRM.Controllers
         {
             try
             {
-                return View();
+                if (HttpContext.Session.GetString("UserName") != null)
+                {
+                    string AddedBy = HttpContext.Session.GetString("UserName");
+                    ViewBag.UserName = AddedBy;
+                    return View();
+                }
+                else
+                {
+                    return RedirectToAction("Login", "Admin");
+                }
             }
             catch (Exception ex)
             {
@@ -643,18 +671,18 @@ namespace CRM.Controllers
             }
         }
 
-        //public async Task<IActionResult> Employee_list()
-        //{
-        //    {
-        //        var response = await _ICrmrpo.EmployerList();
-        //        string AddedBy = HttpContext.Session.GetString("UserName");
-        //        // ViewBag.UserName = AddedBy;
-        //        return View(response);
+        public async Task<IActionResult> Employee_list()
+        {
+            {
+                var response = await _ICrmrpo.EmployerList();
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                // ViewBag.UserName = AddedBy;
+                return View(response);
 
-        //    }
+            }
 
 
-        //}
+        }
         //  send  pdf and mail //
 
         public IActionResult DocPDF(int id)
