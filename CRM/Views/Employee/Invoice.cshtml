@@ -131,37 +131,43 @@
                 </h5>
             </div>
             <div class="col" style="border: 1px solid black;height: 300px;">
-                <h6>
-                    Bill for providing for staff Deployed for the month of
-                    Nov 23 (10 data entry Operator)
-                </h6>
+                <div>
+                    <h6>
+                        Bill for providing for staff Deployed for the month of
+                        Nov 23 (10 data entry Operator)
+                    </h6>
+                </div>
                 <br />
-                @if (Model.State == "UP")
-                {
-                    <h6 class="text-center" style="margin-top:3px;">
-                        Add CGST @@ @Model.Cgst%
-                    </h6>
-                    <br />
-                    <h6 class="text-center" style="margin-top:3px;">
-                        Add SGST @@ @Model.Scgst%
-                    </h6>
-                }
-                else
-                {
-                    <h6 class="text-center" style="margin-top:3px;">
-                        Add IGST @@ @Model.Igst%
-                    </h6>
-                }
-
+                <div>
+                    @if (Model.State == "UP")
+                    {
+                        <h6 class="text-center" style="margin-top:3px;">
+                            Add CGST @@ @Model.Cgst%
+                        </h6>
+                        <br />
+                        <h6 class="text-center" style="margin-top:3px;">
+                            Add SGST @@ @Model.Scgst%
+                        </h6>
+                    }
+                    else
+                    {
+                        <h6 class="text-center" style="margin-top:3px;">
+                            Add IGST @@ @Model.Igst%
+                        </h6>
+                    }
+                </div>
             </div>
             <div class="col" style="border: 1px solid black;height: 300px;">
-                <h6 class="text-center" style="margin-top:3px;">
-                    Rs.239738/-
-                </h6>
+                <div>
+                    <h6 class="text-center" style="margin-top:3px;">
+                        Rs.239738/-
+                    </h6>
+                </div>                
                 <br />
+                <div>
                 @if (Model.State == "UP")
                 {
-                    <h6 class="text-center" style="margin-top:3px;">
+                    <h6 class="text-center" style="margin-top:43px;">
                         Rs. 21576/-
                     </h6>
                     <br />
@@ -175,6 +181,7 @@
                         Rs.239738/-
                     </h6>
                 }
+                </div>
             </div>
         </div>
         <div class="row">

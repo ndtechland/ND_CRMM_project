@@ -107,31 +107,30 @@
                                             @{
                                                 var count = 0;
                                           
-                                                                            @foreach (var item in Model)
+                                                                                    @foreach (var item in Model)
                                             {
                                                     count++;
-                                                                                    <tr class="table-row">
-                                                            <td>@count</td>
-                                                                                                        <td style="display:none">
-                                                                                         @item.Id
-                                                                                                        </td><td>
-                                                                                        @Html.DisplayFor(modelItem => item.FirstName)
-                                                                                                        </td>                                                                     
-                                                                                                        <td>
-                                                                                        @Html.DisplayFor(modelItem => item.EmployeeId)
-                                                                                                        </td>
-                                                                                                      
-                                                                                                             
-                                                                                                                    <td>
-                                                                                        @Html.DisplayFor(modelItem => item.MonthlyCtc)
-                                                                                                                    </td>
-
+                                                                                            <tr class="table-row">
+                                                                    <td>@count</td>
+                                                                                                                <td style="display:none">
+                                                                                                 @item.Id
+                                                                                                                </td><td>
+                                                                                                @Html.DisplayFor(modelItem => item.FirstName)
+                                                                                                                </td>                                                                     
+                                                                                                                <td>
+                                                                                                @Html.DisplayFor(modelItem => item.EmployeeId)
+                                                                                                                </td>
+                                                                                                              
+                                                                                                                     
+                                                                                                                            <td>
+                                                                                                @Html.DisplayFor(modelItem => item.MonthlyCtc)
+                                                                                                                            </td>
                                                                 <td>
-                                                                    <input type="text" id="Attendance" name="Attendance" class="form-control" minlength="1" maxlength="2" style="height: 40px; width: 94px;" onchange="validateDay();" />
+                                                                <input type="text" id="Attendance" name="Attendance" class="form-control attnd" minlength="1" maxlength="2" style="height: 40px; width: 94px;" onkeyup="fnc(this)" />
                                                                 </td>
 
-                                                                                                        
-                                                                                   </tr>
+                                                                                                                
+                                                                                           </tr>
                                                 }
                                             }
                                         </tbody>
@@ -199,11 +198,13 @@
 
                             success: function (data) {
                                 if (data.data == true) {
+                                $(".attnd").val("");
                                     alert("Your salary already genrated for this month");
                                     return false;
                                 }
 
                                 if ((tbody.children().length) == @Model.Count()) {
+                                    $(".attnd").val("");
                                     //location.reload();
                                     alert("Data saved successfully.");
                                 }                               
@@ -222,9 +223,6 @@
 
                 }
             }
-
-
-
             $(function () {
                 $("input[name='Attendance']").on('input', function (e) {
                     $(this).val($(this).val().replace(/[^0-9]/g, ''));
@@ -233,21 +231,18 @@
         </script>
  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
- <script>
-            function validateDay() {
-                var inputElement = document.getElementById('Attendance');
-                var day = parseInt(inputElement.value, 10);
+<script type="text/javascript">
+    function fnc(inputElement) {
+        var value = inputElement.value;
 
-                if (day > 30) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Invalid day',
-                        text: 'Please enter a day between 1 and 30.',
-                        confirmButtonColor: '#00baf2'
-                    });
-                }
-            }
-        </script>
+        if (parseInt(value) < 0 || isNaN(value)) {
+            inputElement.value = '';
+        } else if (parseInt(value) > 30) {
+            alert("Number is greater than 30");
+            inputElement.value = '';
+        }
+    }
+</script>
 
 <script>
             function Locations() {
@@ -294,9 +289,6 @@
         }
     }
 </script>
-
-
-
 
 
 
