@@ -51,8 +51,8 @@
                                     <div class="row">
                                         <div class="form-group col-md-3">
                                             <label for="validationCustom0">Company Name</label>
-                                            <select class="form-control" id="CustomerID" name="CustomerID" onchange="Locations()">
-                                                <option value="">-- Select CompanyName --</option>
+                                            <select class="form-control" id="CustomerID" name="CustomerID" onchange="return Locations()">
+                                                <option value="">-- Select Company --</option>
 
                                                 @foreach (var item in ViewBag.CustomerName)
                                                 {
@@ -92,13 +92,14 @@
                                             <select id="Year" class="form-control col-md-" name="Year">
                                                 <option value="">-- Select Year --</option>
                                             <option value="2023">2023</option>
+                                            <option value="2024">2024</option>
                                         </select>
                                     </div>
                                     </div>
                                 
 
                                     <div class="form-button" style="display:flex; justify-content:center;">
-                                        <input type="submit" value="Search" class="btn btn-primary" onclick="validateForm()" />
+                                        <input type="submit" value="Search" class="btn btn-primary" onclick="return validateForm()" />
                                     </div>
                                 </form>
                                 <div class="container-fluid">
@@ -140,22 +141,22 @@
                                                                         foreach (var item in Model.GeneratedSalaries)
                                                                         {
                                                                             count++;
-                                                                                     <tr>
-                                                                                    <td>@count</td>
-                                                                                    <td style="display:none">
-                                                                                     @item.Id
-                                                                                  </td>
-                                                                                   <td>@item.EmployeeId</td>
-                                                                                 <td>@item.EmployeeName</td>
-                                                                                 <td>@item.MonthlyCtc</td>
-                                                                                <td>@item.MonthlyGrossPay</td>
-                                                                                <td>
-                                                                                 <div>
-                                                                                <a href="@Url.Action("DocPDF","Employee",new { id=item.Id})" class="fa fa-file-pdf-o font-danger"></a>
-                                                                                 <a href="" class="fa fa-envelope-o" aria-hidden="true"></a>
-                                                                                  </div>
-                                                                                 </td>
-                                                                                 </tr>
+                                                                                             <tr>
+                                                                                            <td>@count</td>
+                                                                                            <td style="display:none">
+                                                                                             @item.Id
+                                                                                          </td>
+                                                                                           <td>@item.EmployeeId</td>
+                                                                                         <td>@item.EmployeeName</td>
+                                                                                         <td>@item.MonthlyCtc</td>
+                                                                                        <td>@item.MonthlyGrossPay</td>
+                                                                                        <td>
+                                                                                         <div>
+                                                                                        <a href="@Url.Action("DocPDF","Employee",new { id=item.Id})" class="fa fa-file-pdf-o font-danger"></a>
+                                                                                         <a href="" class="fa fa-envelope-o" aria-hidden="true"></a>
+                                                                                          </div>
+                                                                                         </td>
+                                                                                         </tr>
                                                                         }
                                                                 }                                                                   
                                                           
@@ -188,6 +189,7 @@
                 type: "post",
                 success: function (response) {
                     populateLocations(response);
+                    return false;
                 },
                 error: function (error) {
                     console.error("Error loading locations: " + error);
@@ -214,11 +216,26 @@ function validateForm() {
         var CustomerID = document.getElementById('CustomerID').value;
         var Month = document.getElementById('Month').value;
         var Year = document.getElementById('Year').value;
+        var WorkLocation = document.getElementById('LocationID').value;
 
-        if (CustomerID === '' || Month === '' || Year === '') {
-            alert("Please select One for Company, Month, and Year.");
-  }       
-    }  
+        if (CustomerID === '') {
+            alert("Please select Company.");
+            return false;
+        }
+        if (WorkLocation === '') {
+            alert("Please select WorkLocation.");
+            return false;
+        }
+        if (Month === '') {
+            alert("Please select Month.");
+            return false;
+        }
+        if (Year === '') {
+            alert("Please select Year.");
+            return false;
+        }
+      
+  }        
 </script>
 <script>    
     function generateInvoice(){
@@ -230,6 +247,10 @@ function validateForm() {
             alert("Please select Company.");
             return false;
         }
+        if (WorkLocation === '') {
+            alert("Please select WorkLocation.");
+            return false;
+        }
         if (Month === '') {
             alert("Please select Month.");
             return false;
@@ -237,11 +258,7 @@ function validateForm() {
         if (Year === '') {
             alert("Please select Year.");
             return false;
-        }
-        if (WorkLocation === '') {
-            alert("Please select WorkLocation.");
-            return false;
-        }
+        }       
         if (CustomerID != null || Month != null || Year != null || WorkLocation !=null)
         {
             window.location.href = '/Employee/Invoice?customerId=' + CustomerID + '&Month=' + Month + '&year=' + Year + '&WorkLocation=' + WorkLocation;
