@@ -418,9 +418,7 @@ namespace CRM.Controllers
 
             try
             {
-                var month = await _context.Empattendances
-                    .Where(x => x.Month == DateTime.Now.Month)
-                    .ToListAsync();
+                var month = await _context.Empattendances.Where(x => x.Month == DateTime.Now.Month).ToListAsync();
 
                 if (month.Count > 0)
                 {
@@ -542,10 +540,14 @@ namespace CRM.Controllers
 
         }
         [HttpPost]
-        public async Task<IActionResult> GenerateSalary(string customerId, int Month, int year)
+        public async Task<IActionResult> GenerateSalary(string customerId,int locationid, int Month, int year)
         {
             try
             {
+                ViewBag.custid = customerId;
+                ViewBag.locid = locationid;
+                ViewBag.monthid = Month;
+                ViewBag.yearid = year;
                 if (customerId != null && Month != null && year != null)
                 {
                     ViewBag.CustomerName = _context.CustomerRegistrations.Select(x => new SelectListItem

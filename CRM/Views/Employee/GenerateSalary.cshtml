@@ -51,7 +51,7 @@
                                     <div class="row">
                                         <div class="form-group col-md-3">
                                             <label for="validationCustom0">Company Name</label>
-                                            <select class="form-control" id="CustomerID" name="CustomerID" onchange="return Locations()">
+                                            <select class="form-control" id="CustomerID" name="CustomerID" onchange="Locations()">
                                                 <option value="">-- Select Company --</option>
 
                                                 @foreach (var item in ViewBag.CustomerName)
@@ -141,22 +141,22 @@
                                                                         foreach (var item in Model.GeneratedSalaries)
                                                                         {
                                                                             count++;
-                                                                                             <tr>
-                                                                                            <td>@count</td>
-                                                                                            <td style="display:none">
-                                                                                             @item.Id
-                                                                                          </td>
-                                                                                           <td>@item.EmployeeId</td>
-                                                                                         <td>@item.EmployeeName</td>
-                                                                                         <td>@item.MonthlyCtc</td>
-                                                                                        <td>@item.MonthlyGrossPay</td>
-                                                                                        <td>
-                                                                                         <div>
-                                                                                        <a href="@Url.Action("DocPDF","Employee",new { id=item.Id})" class="fa fa-file-pdf-o font-danger"></a>
-                                                                                         <a href="" class="fa fa-envelope-o" aria-hidden="true"></a>
-                                                                                          </div>
-                                                                                         </td>
-                                                                                         </tr>
+                                                                                                                         <tr>
+                                                                                                                        <td>@count</td>
+                                                                                                                        <td style="display:none">
+                                                                                                                         @item.Id
+                                                                                                                      </td>
+                                                                                                                       <td>@item.EmployeeId</td>
+                                                                                                                     <td>@item.EmployeeName</td>
+                                                                                                                     <td>@item.MonthlyCtc</td>
+                                                                                                                    <td>@item.MonthlyGrossPay</td>
+                                                                                                                    <td>
+                                                                                                                     <div>
+                                                                                                                    <a href="@Url.Action("DocPDF","Employee",new { id=item.Id})" class="fa fa-file-pdf-o font-danger"></a>
+                                                                                                                     <a href="" class="fa fa-envelope-o" aria-hidden="true"></a>
+                                                                                                                      </div>
+                                                                                                                     </td>
+                                                                                                                     </tr>
                                                                         }
                                                                 }                                                                   
                                                           
@@ -178,9 +178,37 @@
         </div>
     </div>
  </div>
+<input hidden type="text" id="custid" value="@ViewBag.custid" />
+<input hidden type="text" id="locid" value="@ViewBag.locid" />
+<input hidden type="text" id="monthid" value="@ViewBag.monthid" />
+<input hidden type="text" id="yearid" value="@ViewBag.yearid" />
  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
 <script>
+
+    $("#CustomerID").val($("#custid").val());
+   //// $("#LocationID").val($("#locid").val());
+   $("#Month").val($("#monthid").val());
+    $("#Year").val($("#yearid").val());
+   // $(document).ready(function(){       
+   //         var customerId = $("#CustomerID").val();
+   //         if (customerId !== "") {
+   //             $.ajax({
+   //                 url: '/Employee/GetLocationsByCustomer?customerId=' + customerId,
+   //                 type: "post",
+   //                 success: function (response) {
+   //                 populateLocationsref(response);
+   //                 },
+   //                 error: function (error) {
+   //                     console.error("Error loading locations: " + error);
+   //                 }
+   //             });
+   //         } else {
+   //             //$("#LocationID").empty();
+   //             //$("#LocationID").append('<option value="">--Select WorkLocation--</option>');
+   //         $("#LocationID").val($("#locid").val());
+   //         }
+   // })
     function Locations() {
         var customerId = $("#CustomerID").val();
         if (customerId !== "") {
@@ -189,7 +217,6 @@
                 type: "post",
                 success: function (response) {
                     populateLocations(response);
-                    return false;
                 },
                 error: function (error) {
                     console.error("Error loading locations: " + error);
@@ -198,6 +225,7 @@
         } else {
             $("#LocationID").empty();
             $("#LocationID").append('<option value="">--Select WorkLocation--</option>');
+            
         }
     }
 
@@ -205,9 +233,21 @@
         $("#LocationID").empty();
         $("#LocationID").append('<option value="">--Select WorkLocation--</option>');
 
+        $.each(response, function (i, response) {
+            $("#LocationID").append('<option value="' + response.text + '">' + response.value + '</option>');
+        });
+    }
+    function populateLocationsref(response){
+        $("#LocationID").empty();
+        $("#LocationID").append('<option value="">--Select WorkLocation--</option>');
+        var id = $("#locid").val();
 
         $.each(response, function (i, response) {
             $("#LocationID").append('<option value="' + response.text + '">' + response.value + '</option>');
+        });
+
+        $.each(response, function (id) {
+            $("#LocationID").val(id);
         });
     }
 </script>
