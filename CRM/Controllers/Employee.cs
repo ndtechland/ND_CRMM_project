@@ -235,22 +235,33 @@ namespace CRM.Controllers
             }
         }
 
-        //public async Task<IActionResult> Employeelist()
-        //{
-        //    List<EmployeeImportExcel> response = new List<EmployeeImportExcel>();
-        //    if (HttpContext.Session.GetString("UserName") != null)
-        //    {
-        //        response = await _ICrmrpo.EmployeeList();
-        //        string AddedBy = HttpContext.Session.GetString("UserName");
-        //        return View(response);
-        //    }
-        //    else
-        //    {
-        //        return RedirectToAction("Login", "Admin");
-        //    }
 
-        //}
+        public async Task<IActionResult> Employeelist()
+        {
+            try
+            {
+                List<EmployeeImportExcel> response = new List<EmployeeImportExcel>();
+                if (HttpContext.Session.GetString("UserName") != null)
+                {
 
+                    response = await _ICrmrpo.EmployeeList();
+                    string AddedBy = HttpContext.Session.GetString("UserName");
+                    return View(response);
+                }
+                else
+                {
+                    return RedirectToAction("Login", "Admin");
+                }
+            }
+            catch (Exception Ex)
+            {
+
+                throw new Exception("Error:" + Ex.Message);
+            }
+
+        }
+
+       
         public static int CalculatAge(DateTime DOB)
         {
             DateTime currentDate = DateTime.Now;
@@ -827,19 +838,19 @@ namespace CRM.Controllers
 
 
         //-----ImportToExcelEmployeeList
-        //public IActionResult ImportToExcelEmployeeList()
-        //{
-        //    try
-        //    {
-        //        var response = _ICrmrpo.EmployeeListForExcel();
-        //        return File(response, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Employee_List.xlsx");
-        //    }
-        //    catch (Exception Ex)
-        //    {
-        //        throw Ex;
-        //    }
+        public IActionResult ImportToExcelEmployeeList()
+        {
+            try
+           {
+                var response = _ICrmrpo.EmployeeListForExcel();
+                return File(response, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Employee_List.xlsx");
+            }
+           catch (Exception Ex)
+            {
+               throw Ex;
+           }
 
-        //}
+        }
 
     }
     }

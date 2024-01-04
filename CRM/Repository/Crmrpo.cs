@@ -182,12 +182,16 @@ namespace CRM.Repository
            .ExecuteSqlRawAsync(@"exec Sp_Banner @BannerImage,@Bannerdescription,@BannerPath,@AddedBy", parameter.ToArray()));
             return result;
         }
-        //public async Task<List<EmployeeImportExcel>> EmployeeList()
-        //{
-        //    List<EmployeeImportExcel> employeeList = _context.EmpMultiforms.FromSqlRaw<EmployeeImportExcel>("USP_GetEmployeeDetails").ToListAsync().Result;
 
-        //    return employeeList;
-        //}
+        public async Task<List<EmployeeImportExcel>> EmployeeList()
+        {
+            List<EmployeeImportExcel> employeeList = _context.EmpMultiforms.FromSqlRaw<EmployeeImportExcel>("USP_GetEmployeeDetails").ToListAsync().Result;
+
+            return employeeList;
+        }
+
+
+
 
         public ProductMaster GetproductById(int id)
         {
@@ -484,151 +488,151 @@ namespace CRM.Repository
 
         }
         //for excel
-        //public byte[] EmployeeListForExcel()
-        //{
-        //    List<EmployeeImportExcel> employeeList = _context.EmpMultiforms.FromSqlRaw<EmployeeImportExcel>("USP_GetEmployeeDetails").ToListAsync().Result;
+        public byte[] EmployeeListForExcel()
+        {
+            List<EmployeeImportExcel> employeeList = _context.EmpMultiforms.FromSqlRaw<EmployeeImportExcel>("USP_GetEmployeeDetails").ToListAsync().Result;
 
-        //    using (var workbook = new XLWorkbook())
-        //    {
+            using (var workbook = new XLWorkbook())
+           {
 
-        //        var worksheet = workbook.Worksheets.Add("EmployeeList");
-        //        var currentwork = 1;
-        //        worksheet.Cell(currentwork, 1).Value = "Sr.No.";
-        //        worksheet.Cell(currentwork, 1).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        //worksheet.Cell(currentwork, 2).Value = "First Name";
-        //        //worksheet.Cell(currentwork, 2).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        //worksheet.Cell(currentwork, 3).Value = "Middle Name";
-        //        //worksheet.Cell(currentwork, 3).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 2).Value = "Employee Name";
-        //        worksheet.Cell(currentwork, 2).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 3).Value = "Employee ID";
-        //        worksheet.Cell(currentwork, 3).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 4).Value = "Date Of Joining";
-        //        worksheet.Cell(currentwork, 4).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 5).Value = "Work Email";
-        //        worksheet.Cell(currentwork, 5).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 6).Value = "Gender";
-        //        worksheet.Cell(currentwork, 6).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 7).Value = "Work Location";
-        //        worksheet.Cell(currentwork, 7).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 8).Value = "Designation";
-        //        worksheet.Cell(currentwork, 8).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 9).Value = "Department";
-        //        worksheet.Cell(currentwork, 9).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 10).Value = "Company Name";
-        //        worksheet.Cell(currentwork, 10).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 11).Value = "Personal Email Address";
-        //        worksheet.Cell(currentwork, 11).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 12).Value = "Mobile Number";
-        //        worksheet.Cell(currentwork, 12).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 13).Value = "Date Of Birth";
-        //        worksheet.Cell(currentwork, 13).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 14).Value = "Age";
-        //        worksheet.Cell(currentwork, 14).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 15).Value = "Father Name";
-        //        worksheet.Cell(currentwork, 15).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 16).Value = "PAN";
-        //        worksheet.Cell(currentwork, 16).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        //worksheet.Cell(currentwork, 19).Value = "Address Line 1";
-        //        //worksheet.Cell(currentwork, 19).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        //worksheet.Cell(currentwork, 20).Value = "Address Line 2";
-        //        //worksheet.Cell(currentwork, 20).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        //worksheet.Cell(currentwork, 21).Value = "City";
-        //        //worksheet.Cell(currentwork, 21).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        //worksheet.Cell(currentwork, 22).Value = "State";
-        //        //worksheet.Cell(currentwork, 22).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        //worksheet.Cell(currentwork, 23).Value = "Pin Code";
-        //        //worksheet.Cell(currentwork, 23).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        //worksheet.Cell(currentwork, 24).Value = "Account Holder Name";
-        //        //worksheet.Cell(currentwork, 24).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 17).Value = "Bank Name";
-        //        worksheet.Cell(currentwork, 17).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 18).Value = "Account Number";
-        //        worksheet.Cell(currentwork, 18).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        //worksheet.Cell(currentwork, 27).Value = "Re-enter Account Number";
-        //        //worksheet.Cell(currentwork, 27).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 19).Value = "IFSC";
-        //        worksheet.Cell(currentwork, 19).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 20).Value = "EPF Number";
-        //        worksheet.Cell(currentwork, 20).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 21).Value = "Employee Contribution Rate";
-        //        worksheet.Cell(currentwork, 21).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 22).Value = "Deduction Cycle";
-        //        worksheet.Cell(currentwork, 22).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 23).Value = "Account Type";
-        //        worksheet.Cell(currentwork, 23).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 24).Value = "Annual CTC";
-        //        worksheet.Cell(currentwork, 24).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        //worksheet.Cell(currentwork, 34).Value = "Basic";
-        //        //worksheet.Cell(currentwork, 34).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        //worksheet.Cell(currentwork, 35).Value = "HouseRent Allowance";
-        //        //worksheet.Cell(currentwork, 35).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        //worksheet.Cell(currentwork, 36).Value = "Conveyance Allowance";
-        //        //worksheet.Cell(currentwork, 36).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        //worksheet.Cell(currentwork, 37).Value = "Fixed Allowance";
-        //        //worksheet.Cell(currentwork, 37).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 25).Value = "EPF";
-        //        worksheet.Cell(currentwork, 25).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        //worksheet.Cell(currentwork, 39).Value = "Monthly CTC";
-        //        //worksheet.Cell(currentwork, 39).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 26).Value = "Monthly Gross Pay";
-        //        worksheet.Cell(currentwork, 26).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        currentwork++;
+               var worksheet = workbook.Worksheets.Add("EmployeeList");
+                var currentwork = 1;
+                worksheet.Cell(currentwork, 1).Value = "Sr.No.";
+                worksheet.Cell(currentwork, 1).Style.Fill.BackgroundColor = XLColor.Yellow;
+                //worksheet.Cell(currentwork, 2).Value = "First Name";
+                //worksheet.Cell(currentwork, 2).Style.Fill.BackgroundColor = XLColor.Yellow;
+                //worksheet.Cell(currentwork, 3).Value = "Middle Name";
+                //worksheet.Cell(currentwork, 3).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 2).Value = "Employee Name";
+                worksheet.Cell(currentwork, 2).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 3).Value = "Employee ID";
+                worksheet.Cell(currentwork, 3).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 4).Value = "Date Of Joining";
+                worksheet.Cell(currentwork, 4).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 5).Value = "Work Email";
+                worksheet.Cell(currentwork, 5).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 6).Value = "Gender";
+                worksheet.Cell(currentwork, 6).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 7).Value = "Work Location";
+                worksheet.Cell(currentwork, 7).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 8).Value = "Designation";
+                worksheet.Cell(currentwork, 8).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 9).Value = "Department";
+                worksheet.Cell(currentwork, 9).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 10).Value = "Company Name";
+                worksheet.Cell(currentwork, 10).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 11).Value = "Personal Email Address";
+                worksheet.Cell(currentwork, 11).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 12).Value = "Mobile Number";
+                worksheet.Cell(currentwork, 12).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 13).Value = "Date Of Birth";
+                worksheet.Cell(currentwork, 13).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 14).Value = "Age";
+                worksheet.Cell(currentwork, 14).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 15).Value = "Father Name";
+                worksheet.Cell(currentwork, 15).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 16).Value = "PAN";
+                worksheet.Cell(currentwork, 16).Style.Fill.BackgroundColor = XLColor.Yellow;
+                //worksheet.Cell(currentwork, 19).Value = "Address Line 1";
+                //worksheet.Cell(currentwork, 19).Style.Fill.BackgroundColor = XLColor.Yellow;
+                //worksheet.Cell(currentwork, 20).Value = "Address Line 2";
+                //worksheet.Cell(currentwork, 20).Style.Fill.BackgroundColor = XLColor.Yellow;
+                //worksheet.Cell(currentwork, 21).Value = "City";
+                //worksheet.Cell(currentwork, 21).Style.Fill.BackgroundColor = XLColor.Yellow;
+                //worksheet.Cell(currentwork, 22).Value = "State";
+                //worksheet.Cell(currentwork, 22).Style.Fill.BackgroundColor = XLColor.Yellow;
+                //worksheet.Cell(currentwork, 23).Value = "Pin Code";
+                //worksheet.Cell(currentwork, 23).Style.Fill.BackgroundColor = XLColor.Yellow;
+                //worksheet.Cell(currentwork, 24).Value = "Account Holder Name";
+                //worksheet.Cell(currentwork, 24).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 17).Value = "Bank Name";
+                worksheet.Cell(currentwork, 17).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 18).Value = "Account Number";
+                worksheet.Cell(currentwork, 18).Style.Fill.BackgroundColor = XLColor.Yellow;
+                //worksheet.Cell(currentwork, 27).Value = "Re-enter Account Number";
+                //worksheet.Cell(currentwork, 27).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 19).Value = "IFSC";
+                worksheet.Cell(currentwork, 19).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 20).Value = "EPF Number";
+                worksheet.Cell(currentwork, 20).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 21).Value = "Employee Contribution Rate";
+                worksheet.Cell(currentwork, 21).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 22).Value = "Deduction Cycle";
+                worksheet.Cell(currentwork, 22).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 23).Value = "Account Type";
+                worksheet.Cell(currentwork, 23).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 24).Value = "Annual CTC";
+                worksheet.Cell(currentwork, 24).Style.Fill.BackgroundColor = XLColor.Yellow;
+                //worksheet.Cell(currentwork, 34).Value = "Basic";
+                //worksheet.Cell(currentwork, 34).Style.Fill.BackgroundColor = XLColor.Yellow;
+                //worksheet.Cell(currentwork, 35).Value = "HouseRent Allowance";
+                //worksheet.Cell(currentwork, 35).Style.Fill.BackgroundColor = XLColor.Yellow;
+                //worksheet.Cell(currentwork, 36).Value = "Conveyance Allowance";
+                //worksheet.Cell(currentwork, 36).Style.Fill.BackgroundColor = XLColor.Yellow;
+                //worksheet.Cell(currentwork, 37).Value = "Fixed Allowance";
+                //worksheet.Cell(currentwork, 37).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 25).Value = "EPF";
+                worksheet.Cell(currentwork, 25).Style.Fill.BackgroundColor = XLColor.Yellow;
+                //worksheet.Cell(currentwork, 39).Value = "Monthly CTC";
+                //worksheet.Cell(currentwork, 39).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 26).Value = "Monthly Gross Pay";
+                worksheet.Cell(currentwork, 26).Style.Fill.BackgroundColor = XLColor.Yellow;
+                currentwork++;
 
-        //        var index = 1;
-        //        foreach (var item in employeeList)
-        //        {
+                var index = 1;
+                foreach (var item in employeeList)
+                {
 
-        //            worksheet.Cell(currentwork, 1).Value = index++;
-        //            //worksheet.Cell(currentwork, 2).Value = item.FirstName;
-        //            //worksheet.Cell(currentwork, 3).Value = item.MiddleName;
-        //            worksheet.Cell(currentwork, 2).Value = item.MiddleName == null ? "" + item.FirstName + " " + "" + ' ' + "" + "" + item.LastName + "" : "" + item.FirstName + "" + "" + ' ' + "" + "" + item.MiddleName + "" + "" + ' ' + "" + "" + item.LastName + "";
-        //            worksheet.Cell(currentwork, 3).Value = item.EmployeeId;
-        //            worksheet.Cell(currentwork, 4).Value = item.DateOfJoining;
-        //            worksheet.Cell(currentwork, 5).Value = item.WorkEmail;
-        //            worksheet.Cell(currentwork, 6).Value = item.Gender;
-        //            worksheet.Cell(currentwork, 7).Value = item.WorkLocation;
-        //            worksheet.Cell(currentwork, 8).Value = item.DesignationName;
-        //            worksheet.Cell(currentwork, 9).Value = item.DepartmentName;
-        //            worksheet.Cell(currentwork, 10).Value = item.CustomerName;
-        //            worksheet.Cell(currentwork, 11).Value = item.PersonalEmailAddress;
-        //            worksheet.Cell(currentwork, 12).Value = item.Mobile;
-        //            worksheet.Cell(currentwork, 13).Value = item.DateOfBirth;
-        //            worksheet.Cell(currentwork, 14).Value = item.Age;
-        //            worksheet.Cell(currentwork, 15).Value = item.FatherName;
-        //            worksheet.Cell(currentwork, 16).Value = item.PAN;
-        //            //worksheet.Cell(currentwork, 19).Value = item.AddressLine1;
-        //            //worksheet.Cell(currentwork, 20).Value = item.AddressLine2;
-        //            //worksheet.Cell(currentwork, 21).Value = item.City;
-        //            //worksheet.Cell(currentwork, 22).Value = item.State;
-        //            //worksheet.Cell(currentwork, 23).Value = item.Pincode;
-        //            //worksheet.Cell(currentwork, 24).Value = item.AccountHolderName;
-        //            worksheet.Cell(currentwork, 17).Value = item.BankName;
-        //            worksheet.Cell(currentwork, 18).Value = item.AccountNumber;
-        //            //worksheet.Cell(currentwork, 27).Value = item.ReEnterAccountNumber;
-        //            worksheet.Cell(currentwork, 19).Value = item.IFSC;
-        //            worksheet.Cell(currentwork, 20).Value = item.EPF_Number;
-        //            worksheet.Cell(currentwork, 21).Value = item.Employee_Contribution_Rate;
-        //            worksheet.Cell(currentwork, 22).Value = item.Deduction_Cycle;
-        //            worksheet.Cell(currentwork, 23).Value = item.AccountType;
-        //            worksheet.Cell(currentwork, 24).Value = item.AnnualCTC;
-        //            //worksheet.Cell(currentwork, 34).Value = item.Basic;
-        //            //worksheet.Cell(currentwork, 35).Value = item.HouseRentAllowance;
-        //            //worksheet.Cell(currentwork, 36).Value = item.ConveyanceAllowance;
-        //            //worksheet.Cell(currentwork, 37).Value = item.FixedAllowance;
-        //            worksheet.Cell(currentwork, 25).Value = item.EPF;
-        //            //worksheet.Cell(currentwork, 39).Value = item.MonthlyCTC;
-        //            worksheet.Cell(currentwork, 26).Value = item.MonthlyGrossPay;
-        //            currentwork++;
-        //        }
-        //        using (var stram = new MemoryStream())
-        //        {
-        //            workbook.SaveAs(stram);
-        //            return stram.ToArray();
-        //        }
-        //    }
+                    worksheet.Cell(currentwork, 1).Value = index++;
+                    //worksheet.Cell(currentwork, 2).Value = item.FirstName;
+                    //worksheet.Cell(currentwork, 3).Value = item.MiddleName;
+                    worksheet.Cell(currentwork, 2).Value = item.MiddleName == null ? "" + item.FirstName + " " + "" + ' ' + "" + "" + item.LastName + "" : "" + item.FirstName + "" + "" + ' ' + "" + "" + item.MiddleName + "" + "" + ' ' + "" + "" + item.LastName + "";
+                    worksheet.Cell(currentwork, 3).Value = item.EmployeeId;
+                    worksheet.Cell(currentwork, 4).Value = item.DateOfJoining;
+                    worksheet.Cell(currentwork, 5).Value = item.WorkEmail;
+                    worksheet.Cell(currentwork, 6).Value = item.Gender;
+                    worksheet.Cell(currentwork, 7).Value = item.WorkLocation;
+                    worksheet.Cell(currentwork, 8).Value = item.DesignationName;
+                    worksheet.Cell(currentwork, 9).Value = item.DepartmentName;
+                    worksheet.Cell(currentwork, 10).Value = item.CustomerName;
+                    worksheet.Cell(currentwork, 11).Value = item.PersonalEmailAddress;
+                    worksheet.Cell(currentwork, 12).Value = item.Mobile;
+                    worksheet.Cell(currentwork, 13).Value = item.DateOfBirth;
+                    worksheet.Cell(currentwork, 14).Value = item.Age;
+                    worksheet.Cell(currentwork, 15).Value = item.FatherName;
+                    worksheet.Cell(currentwork, 16).Value = item.PAN;
+                    //worksheet.Cell(currentwork, 19).Value = item.AddressLine1;
+                    //worksheet.Cell(currentwork, 20).Value = item.AddressLine2;
+                    //worksheet.Cell(currentwork, 21).Value = item.City;
+                    //worksheet.Cell(currentwork, 22).Value = item.State;
+                    //worksheet.Cell(currentwork, 23).Value = item.Pincode;
+                    //worksheet.Cell(currentwork, 24).Value = item.AccountHolderName;
+                    worksheet.Cell(currentwork, 17).Value = item.BankName;
+                    worksheet.Cell(currentwork, 18).Value = item.AccountNumber;
+                    //worksheet.Cell(currentwork, 27).Value = item.ReEnterAccountNumber;
+                    worksheet.Cell(currentwork, 19).Value = item.IFSC;
+                    worksheet.Cell(currentwork, 20).Value = item.EPF_Number;
+                    worksheet.Cell(currentwork, 21).Value = item.Employee_Contribution_Rate;
+                    worksheet.Cell(currentwork, 22).Value = item.Deduction_Cycle;
+                    worksheet.Cell(currentwork, 23).Value = item.AccountType;
+                    worksheet.Cell(currentwork, 24).Value = item.AnnualCTC;
+                    //worksheet.Cell(currentwork, 34).Value = item.Basic;
+                    //worksheet.Cell(currentwork, 35).Value = item.HouseRentAllowance;
+                    //worksheet.Cell(currentwork, 36).Value = item.ConveyanceAllowance;
+                    //worksheet.Cell(currentwork, 37).Value = item.FixedAllowance;
+                    worksheet.Cell(currentwork, 25).Value = item.EPF;
+                    //worksheet.Cell(currentwork, 39).Value = item.MonthlyCTC;
+                    worksheet.Cell(currentwork, 26).Value = item.MonthlyGrossPay;
+                    currentwork++;
+                }
+                using (var stram = new MemoryStream())
+                {
+                    workbook.SaveAs(stram);
+                    return stram.ToArray();
+               }
+            }
 
-        //}
+        }
     }
 
 }

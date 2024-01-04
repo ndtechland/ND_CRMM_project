@@ -55,34 +55,47 @@
                                     <table id="datatable" class="table table-responsive">
                                         <thead>
                                             <tr style="background-color: #00baf2;">
-                                                <th nowrap>Sl. No.</th>
+                                                <th nowrap>
+                                                    Sl. No.
+
+                                                </th>
+                                                
                                                 <th>
                                                     First Name
                                                 </th>
+
                                                 <th>
                                                     Middle Name
                                                 </th>
+
                                                 <th>
                                                     Last Name
                                                 </th>
+
                                                 <th>
                                                     Employee ID
                                                 </th>
+
                                                 <th>
                                                     Date Of Joining
                                                 </th>
+
                                                 <th>
                                                     Work Email
                                                 </th>
+
                                                 <th>
                                                     Gender
                                                 </th>
+
                                                 <th>
                                                     WorkLocation
                                                 </th>
+
                                                 <th>
                                                     Designation
                                                 </th>
+
                                                 <th>
                                                     Department
                                                 </th>
@@ -94,38 +107,48 @@
                                                 <th>
                                                     Basic
                                                 </th>
+
                                                 <th>
                                                     HouseRentAllowance
                                                 </th>
+
                                                 <th>
                                                     ConveyanceAllowance
                                                 </th>
+
                                                 <th>
                                                     FixedAllowance
                                                 </th>
+
                                                 <th>
                                                     EPF
                                                 </th>
+
                                                 <th>
-                                                 MonthlyGrossPay
+                                                    MonthlyGrossPay
                                                 </th>
-                                               
+
+
                                                 <th>
                                                     PersonalEmailAddress
                                                 </th>
+
                                                 <th>
                                                     MobileNumber
-                                                  </th>
+                                                </th>
 
                                                 <th>
                                                     DateOfBirth
                                                 </th>
+
                                                 <th>
                                                     Age
                                                 </th>
+
                                                 <th>
                                                     FatherName
                                                 </th>
+
                                                 <th>
                                                     PAN
                                                 </th>
@@ -141,6 +164,7 @@
                                                 <th>
                                                     City
                                                 </th>
+
                                                 <th>
                                                     State
                                                 </th>
@@ -152,20 +176,25 @@
                                                 <th>
                                                     AccountHolderName
                                                 </th>
+
                                                 <th>
                                                     BankName
                                                 </th>
+
                                                 <th>
                                                     AccountNumber
                                                 </th>
+
                                                 <th>
                                                     ReEnterAccountNumber
                                                 </th>
+
                                                 <th>
                                                     IFSC
                                                 </th>
+
                                                 <th>
-                                                 AccountType                      
+                                                    AccountType
                                                 </th>
 
                                                 <th>
@@ -181,7 +210,9 @@
                                                     Employee_Contribution_Rate
                                                 </th>
 
-                                                <th>Action</th>
+                                                <th>
+                                                    Action
+                                                </th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -202,7 +233,7 @@
                                                             @Html.DisplayFor(modelItem => item.LastName)
                                                         </td>
                                                         <td>
-                                                            @Html.DisplayFor(modelItem => item.EmployeeId)
+                                                            @Html.DisplayFor(modelItem => item.Emp_Reg_ID)
                                                         </td>
                                                         <td>
                                                             @Html.DisplayFor(modelItem => item.DateOfJoining)
@@ -223,9 +254,12 @@
                                                             @Html.DisplayFor(modelItem => item.DepartmentName)
                                                         </td>
 
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.AnnualCTC)
+                                                        </td>
 
                                                         <td>
-                                                             @Html.DisplayFor(modelItem => item.Basic)
+                                                            @Html.DisplayFor(modelItem => item.Basic)
                                                         </td>
 
                                                         <td>
@@ -247,9 +281,6 @@
                                                             @Html.DisplayFor(modelItem => item.MonthlyGrossPay)
                                                         </td>
 
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => item.MonthlyCTC)
-                                                        </td>
 
                                                         <td>
                                                             @Html.DisplayFor(modelItem => item.PersonalEmailAddress)
