@@ -14,7 +14,9 @@ using System.Reflection;
 using System;
 using System.Reflection.Metadata;
 using System.Drawing;
+using Syncfusion.Drawing;
 using ClosedXML.Excel;
+
 
 namespace CRM.Repository
 {
@@ -124,7 +126,7 @@ namespace CRM.Repository
                 parameter.Add(new SqlParameter("@WorkLocationID", model.WorkLocationID));
                 parameter.Add(new SqlParameter("@DesignationID", model.DesignationID));
                 parameter.Add(new SqlParameter("@DepartmentID", model.DepartmentID));
-                
+
                 //-- Salary Details
                 parameter.Add(new SqlParameter("@AnnualCTC", model.AnnualCTC));
                 parameter.Add(new SqlParameter("@Basic", model.Basic));
@@ -168,7 +170,7 @@ namespace CRM.Repository
         public async Task<List<StateMaster>> GetAllState()
         {
             return await _context.StateMasters.ToListAsync();
-        }        
+        }
         public async Task<int> Banner(BannerMaster model)
         {
             var parameter = new List<SqlParameter>();
@@ -180,12 +182,16 @@ namespace CRM.Repository
            .ExecuteSqlRawAsync(@"exec Sp_Banner @BannerImage,@Bannerdescription,@BannerPath,@AddedBy", parameter.ToArray()));
             return result;
         }
+
         public async Task<List<EmployeeImportExcel>> EmployeeList()
         {
             List<EmployeeImportExcel> employeeList = _context.EmpMultiforms.FromSqlRaw<EmployeeImportExcel>("USP_GetEmployeeDetails").ToListAsync().Result;
 
             return employeeList;
         }
+
+
+
 
         public ProductMaster GetproductById(int id)
         {
@@ -304,12 +310,12 @@ namespace CRM.Repository
 
         public async Task<int> Iupdate(Quation model)
         {
-           int result;
+            int result;
             try
 
             {
                 var parameter = new List<SqlParameter>();
-               
+
                 parameter.Add(new SqlParameter("@action", 2));
                 parameter.Add(new SqlParameter("@ID", model.Id));
                 parameter.Add(new SqlParameter("@Company_Name", model.CompanyName));
@@ -321,7 +327,7 @@ namespace CRM.Repository
                 parameter.Add(new SqlParameter("@Amount", model.Amount));
                 parameter.Add(new SqlParameter("@Mobile", model.Mobile));
                 parameter.Add(new SqlParameter("@IsDeleted", '0'));
-               
+
 
                 result = await Task.Run(() => _context.Database
                .ExecuteSqlRawAsync(@"exec SP_Quation @action,@ID,@Company_Name,
@@ -332,18 +338,20 @@ namespace CRM.Repository
             catch (Exception Ex)
             {
                 throw new Exception(Ex.Message);
-           }
+            }
             return result;
         }
 
 
-        public async Task<List<salarydetail>> salarydetail()
+        public async Task<List<salarydetail>> salarydetail(string customerId, string WorkLocation)
         {
             List<salarydetail> emp = new List<salarydetail>();
             try
             {
                 SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
                 SqlCommand cmd = new SqlCommand("sp_SalaryDetail", con);
+                cmd.Parameters.Add(new SqlParameter("@CustomerID", SqlDbType.Int) { Value = Convert.ToInt32(customerId) });
+                cmd.Parameters.Add(new SqlParameter("@WorkLocation", SqlDbType.Int) { Value = Convert.ToInt32(WorkLocation) });
                 cmd.CommandType = CommandType.StoredProcedure;
                 con.Open();
                 SqlDataReader rdr = cmd.ExecuteReader();
@@ -353,7 +361,7 @@ namespace CRM.Repository
                     {
                         Id = Convert.ToInt32(rdr["id"]),
                         FirstName = rdr["FirstName"] == DBNull.Value ? null : Convert.ToString(rdr["FirstName"]),
-                        EmployeeId = rdr["EmployeeId"] == DBNull.Value ? null : Convert.ToString(rdr["EmployeeId"]),                     
+                        EmployeeId = rdr["EmployeeId"] == DBNull.Value ? null : Convert.ToString(rdr["EmployeeId"]),
                         MonthlyCtc = rdr["MonthlyCtc"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["MonthlyCtc"])
                     };
 
@@ -377,7 +385,6 @@ namespace CRM.Repository
             {
                 SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
                 SqlCommand cmd = new SqlCommand("GetGenerateSalary", con);
-                cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Add(new SqlParameter("@CustomerID", SqlDbType.Int) { Value = Convert.ToInt32(customerId) });
                 cmd.Parameters.Add(new SqlParameter("@Month", SqlDbType.Int) { Value = Convert.ToInt32(Month) });
                 cmd.Parameters.Add(new SqlParameter("@year", SqlDbType.Int) { Value = Convert.ToInt32(year) });
@@ -405,7 +412,6 @@ namespace CRM.Repository
                 throw ex;
             }
 
-
         }
 
         public async Task<int> Employer(Employeer_EPF model)
@@ -421,10 +427,49 @@ namespace CRM.Repository
             return result;
         }
 
-        public async Task<List<Employeer_EPF>> EmployerList()
+        public async Task<List<EmployeerEpf>> EmployerList()
         {
-            var result = await _context.Employeer_EPFs.FromSqlRaw<Employeer_EPF>("EmployerList").ToListAsync();
+            var result = await _context.EmployeerEpfs.FromSqlRaw<EmployeerEpf>("EmployerList").ToListAsync();
             return result;
+        }
+
+        public async Task<List<Invoice>> GenerateInvoice(string customerId, int Month, int year, string WorkLocation)
+        {
+            try
+            {
+                SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
+                SqlCommand cmd = new SqlCommand("GenerateInvoice", con);
+                cmd.Parameters.Add(new SqlParameter("@CustomerID", SqlDbType.Int) { Value = Convert.ToInt32(customerId) });
+                cmd.Parameters.Add(new SqlParameter("@Month", SqlDbType.Int) { Value = Convert.ToInt32(Month) });
+                cmd.Parameters.Add(new SqlParameter("@year", SqlDbType.Int) { Value = Convert.ToInt32(year) });
+                cmd.Parameters.Add(new SqlParameter("@WorkLocation", SqlDbType.Int) { Value = Convert.ToInt32(WorkLocation) });
+                cmd.CommandType = CommandType.StoredProcedure;
+                con.Open();
+                SqlDataReader rdr = cmd.ExecuteReader();
+                List<Invoice> emp = new List<Invoice>();
+                while (rdr.Read())
+                {
+                    var emps = new Invoice()
+                    {
+                        EmployeeCount = Convert.ToInt32(rdr["EmployeeCount"]),
+                        Company_Name = Convert.ToString(rdr["Company_Name"]),
+                        Billing_Address = Convert.ToString(rdr["Billing_Address"]),
+                        GST_Number = Convert.ToString(rdr["GST_Number"]),
+                        HSN_SAC_Code = Convert.ToString(rdr["HSN_SAC_Code"]),
+                        Cgst = Convert.ToString(rdr["Cgst"]),
+                        Scgst = Convert.ToString(rdr["Scgst"]),
+                        Igst = Convert.ToString(rdr["Igst"]),
+                        State = Convert.ToString(rdr["State"]),
+                    };
+
+                    emp.Add(emps);
+                }
+                return emp;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public DataTable GetEmployDetailById(string EmpId)
@@ -448,9 +493,9 @@ namespace CRM.Repository
             List<EmployeeImportExcel> employeeList = _context.EmpMultiforms.FromSqlRaw<EmployeeImportExcel>("USP_GetEmployeeDetails").ToListAsync().Result;
 
             using (var workbook = new XLWorkbook())
-            {
+           {
 
-                var worksheet = workbook.Worksheets.Add("EmployeeList");
+               var worksheet = workbook.Worksheets.Add("EmployeeList");
                 var currentwork = 1;
                 worksheet.Cell(currentwork, 1).Value = "Sr.No.";
                 worksheet.Cell(currentwork, 1).Style.Fill.BackgroundColor = XLColor.Yellow;
@@ -537,11 +582,11 @@ namespace CRM.Repository
                 var index = 1;
                 foreach (var item in employeeList)
                 {
-                    
+
                     worksheet.Cell(currentwork, 1).Value = index++;
                     //worksheet.Cell(currentwork, 2).Value = item.FirstName;
                     //worksheet.Cell(currentwork, 3).Value = item.MiddleName;
-                    worksheet.Cell(currentwork, 2).Value = item.MiddleName == null ? ""+ item.FirstName +" " +""+ ' '+"" + ""+ item.LastName + "" : "" + item.FirstName + "" + "" + ' ' + "" + "" + item.MiddleName + "" + "" + ' ' + "" + "" + item.LastName + "";
+                    worksheet.Cell(currentwork, 2).Value = item.MiddleName == null ? "" + item.FirstName + " " + "" + ' ' + "" + "" + item.LastName + "" : "" + item.FirstName + "" + "" + ' ' + "" + "" + item.MiddleName + "" + "" + ' ' + "" + "" + item.LastName + "";
                     worksheet.Cell(currentwork, 3).Value = item.EmployeeId;
                     worksheet.Cell(currentwork, 4).Value = item.DateOfJoining;
                     worksheet.Cell(currentwork, 5).Value = item.WorkEmail;
@@ -584,10 +629,10 @@ namespace CRM.Repository
                 {
                     workbook.SaveAs(stram);
                     return stram.ToArray();
-                }
+               }
             }
+
         }
     }
 
 }
-

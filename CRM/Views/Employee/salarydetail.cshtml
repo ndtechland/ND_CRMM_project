@@ -5,7 +5,15 @@
     ViewData["Title"] = "salarydetail";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
-
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<style>
+           .button {
+        width: 124px;
+        margin-left:0px;
+        height: 38px;
+        margin-top: 33px;
+    }
+</style>
 <div class="page-wrapper">
     <div class="page-body-wrapper">
         <div class="page-sidebar">
@@ -41,16 +49,41 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-body">
-                                <div style="text-align: right;">
-                                    <button type="submit" class="btn btn-primary" style="color: black; border: 2px solid black;" onclick="gensal();">
-                                        <i class="fa fa-plus"></i> Generate Salary
-                                    </button>
-                                </div>
+                                <form asp-action="salarydetail" autocomplete="off" method="get">                                  
+                                    <div class="row">
+                                        <div class="form-group col-md-3">
+                                            <label for="validationCustom0">Company Name</label>
+                                            <select class="form-control" id="CustomerID" name="CustomerID" onchange="Locations()">
+                                                <option value="">-- Select Company --</option>
+                                                 
+                                                    @foreach (var item in ViewBag.CustomerName)
+                                                    {
+                                                        <option value="@item.Value">@item.Text</option>
+                                                    }
+                                            </select>
+                                           </div>
+                                        <div class="form-group col-md-3">
+                                            <label for="validationCustom0">Work Location</label>
+                                            <select class="form-control" id="LocationID" name="WorkLocation">
+                                                <option value="">--Select WorkLocation--</option>
 
-
-                                <div class="modal-header">
-                                </div>
+                                            </select>
+                                        </div>
+                                        <div class="form-button col-md-3" style="display:flex; justify-content:center;">
+                                            <input type="submit" value="Search" class="btn btn-primary button" onclick="return validateForm();" />
+                                        </div>
+                                    </div>
+                                   
+                                </form>
                                 <div class=" table-responsive">
+                                      @if (Model != null && Model.Any())
+                                    {
+                                        <div style="text-align: right;">
+                                            <button type="submit" class="btn btn-primary" style="color: black; border: 2px solid black;" onclick="gensal();">
+                                                <i class="fa fa-plus"></i> Generate Salary
+                                            </button>
+                                        </div>
+                                        <br />                                 
                                     <table id="datatable" class="table table-responsive">
                                         <thead>
                                             <tr style="background-color: #00baf2;">
@@ -74,44 +107,51 @@
                                             @{
                                                 var count = 0;
                                           
-                                                                        @foreach (var item in Model)
+                                                                                    @foreach (var item in Model)
                                             {
                                                     count++;
-                                                                                <tr class="table-row">
-                                                        <td>@count</td>
-                                                                                                    <td style="display:none">
-                                                                                     @item.Id
-                                                                                                    </td><td>
-                                                                                    @Html.DisplayFor(modelItem => item.FirstName)
-                                                                                                    </td>                                                                     
-                                                                                                    <td>
-                                                                                    @Html.DisplayFor(modelItem => item.EmployeeId)
-                                                                                                    </td>
-                                                                                                  
-                                                                                                         
+                                                                                            <tr class="table-row">
+                                                                    <td>@count</td>
+                                                                                                                <td style="display:none">
+                                                                                                 @item.Id
+                                                                                                                </td><td>
+                                                                                                @Html.DisplayFor(modelItem => item.FirstName)
+                                                                                                                </td>                                                                     
                                                                                                                 <td>
-                                                                                    @Html.DisplayFor(modelItem => item.MonthlyCtc)
+                                                                                                @Html.DisplayFor(modelItem => item.EmployeeId)
                                                                                                                 </td>
+                                                                                                              
+                                                                                                                     
+                                                                                                                            <td>
+                                                                                                @Html.DisplayFor(modelItem => item.MonthlyCtc)
+                                                                                                                            </td>
+                                                                <td>
+                                                                <input type="text" id="Attendance" name="Attendance" class="form-control attnd" minlength="1" maxlength="2" style="height: 40px; width: 94px;" onkeyup="fnc(this)" />
+                                                                </td>
 
-                                                                                                <td>
-                                                                                                <input type="text"  name="Attendance" class="form-control" minlength="1" maxlength="2" style="height: 40px; width: 94px;" />
-                                                                                                     </td>
-
-                                                                                                    
-                                                                               </tr>
+                                                                                                                
+                                                                                           </tr>
                                                 }
                                             }
                                         </tbody>
                                     </table>
+                                    }
+                                    else
+                                    {
+                                        <script>alert('No salary details found.');</script>
+                                    }
                                 </div>
-                                <div class="row">
-                                    <div class="col-md-8" >
-                                        <label class="form-group">Total Monthly CTC</label>
+                                @if (Model != null && Model.Any())
+                                {
+                                    <div class="row">
+                                        <div class="col-md-8" >
+                                            <label class="form-group">Total Monthly CTC</label>
+                                        </div>
+                                        <div class="col-md-4" >
+                                            <input type="text" id="TotalAmount" value="@ViewBag.TotalAmmount" class="form-group" style="border: none;margin-left: -62px;" readonly />
+                                        </div>
                                     </div>
-                                    <div class="col-md-4" >
-                                        <input type="text" id="TotalAmount" value="@ViewBag.TotalAmmount" class="form-group" style="border: none;margin-left: -30px;" readonly />
-                                    </div>
-                                </div>
+                                }
                             </div>
                         </div>
                     </div>
@@ -123,78 +163,132 @@
     </div>
 
 </div>
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script>
-   
-function gensal(){
-    var check = true;
-        var tbody = $("#datatable tbody");
-    if (tbody.children().length != 1) {
-            var modeldata = new Array;
-            $('#datatable tbody tr').each(function (index) {
-                var customer = {};
-                customer.Id = $(this).find('td:eq(0)').text().trim();
-                customer.EmployeeId = $(this).find('td:eq(3)').text().trim();
-                customer.Attendance = $(this).find('input[name="Attendance"]').val();
-                if (customer.Attendance === "") {
-                    alert("Please fill in all Attendance fields.");
-                    check = false;
-                    return false; 
-                }
-                modeldata.push(customer);
-            });
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
-            ///
-            if (check == true)
-            {
-                $.ajax({
+ <script>
 
-                    url: '/Employee/Empattendance',
-                    data: { customers: modeldata },
-                    //data: { 'id': id, 'Attendance': atten },
-                    dataType: 'json',
-                    type: 'post',
-                    async: 'false',
-
-                    success: function (data) {
-                        if (data.data == true) {
-                            alert("Your salary already genrated for this month");
+            function gensal() {
+                var check = true;
+                var tbody = $("#datatable tbody");
+                if (tbody.children().length != 1) {
+                    var modeldata = new Array;
+                    $('#datatable tbody tr').each(function (index) {
+                        var customer = {};
+                        customer.Id = $(this).find('td:eq(0)').text().trim();
+                        customer.EmployeeId = $(this).find('td:eq(3)').text().trim();
+                        customer.Attendance = $(this).find('input[name="Attendance"]').val();
+                        if (customer.Attendance === "") {
+                            alert("Please fill in all Attendance fields.");
+                            check = false;
                             return false;
                         }
-                       
-                        if ((tbody.children().length) == @Model.Count()) {
-                            //location.reload();
-                            alert("Data saved successfully.");
-                            window.location.href = '/Employee/GenerateSalary';
-                        }
-                        debugger;
-                    },
+                        modeldata.push(customer);
+                    });
 
-                    error: function (err) {
+                    ///
+                    if (check == true) {
+                        $.ajax({
 
+                            url: '/Employee/Empattendance',
+                            data: { customers: modeldata },
+                            //data: { 'id': id, 'Attendance': atten },
+                            dataType: 'json',
+                            type: 'post',
+                            async: 'false',
+
+                            success: function (data) {
+                                if (data.data == true) {
+                                $(".attnd").val("");
+                                    alert("Your salary already genrated for this month");
+                                    return false;
+                                }
+
+                                if ((tbody.children().length) == @Model.Count()) {
+                                    $(".attnd").val("");
+                                    //location.reload();
+                                    alert("Data saved successfully.");
+                                }                               
+                                debugger;
+                            },
+
+                            error: function (err) {
+
+                            }
+                        });
                     }
+                }
+                else {
+
+                    return false;
+
+                }
+            }
+            $(function () {
+                $("input[name='Attendance']").on('input', function (e) {
+                    $(this).val($(this).val().replace(/[^0-9]/g, ''));
                 });
-            }    
+            });
+        </script>
+ <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+ <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script type="text/javascript">
+    function fnc(inputElement) {
+        var value = inputElement.value;
+
+        if (parseInt(value) < 0 || isNaN(value)) {
+            inputElement.value = '';
+        } else if (parseInt(value) > 30) {
+            alert("Number is greater than 30");
+            inputElement.value = '';
+        }
     }
-    else {
-       
-        return false;
-
-    }
-}
-
-   
-
-    $(function () {
-        $("input[name='Attendance']").on('input', function (e) {
-            $(this).val($(this).val().replace(/[^0-9]/g, ''));
-        });
-    });
 </script>
 
+<script>
+            function Locations() {
+                var customerId = $("#CustomerID").val();
+                if (customerId !== "") {
+                    $.ajax({
+                        url: '/Employee/GetLocationsByCustomer?customerId=' + customerId,
+                        type: "post",
+                        success: function (response) {
+                            populateLocations(response);
+                        },
+                        error: function (error) {
+                            console.error("Error loading locations: " + error);
+                        }
+                    });
+                } else {
+                    $("#LocationID").empty();
+                    $("#LocationID").append('<option value="">--Select WorkLocation--</option>');
+                }
+            }
+
+            function populateLocations(response) {
+                $("#LocationID").empty();
+                $("#LocationID").append('<option value="">--Select WorkLocation--</option>');
 
 
+                $.each(response, function (i, response) {
+                    $("#LocationID").append('<option value="' + response.text + '">' + response.value + '</option>');
+                });
+            }
+        </script>
+<script>
+    function validateForm() {
+        var CustomerID = document.getElementById('CustomerID').value;
+        var WorkLocation = document.getElementById('LocationID').value;
 
+        if (CustomerID === '') {
+            alert("Please select Company.");
+            return false;
+        }
+        if (WorkLocation === '') {
+            alert("Please select WorkLocation.");
+            return false;
+        }
+    }
+</script>
 
 
 

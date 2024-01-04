@@ -11,7 +11,7 @@ namespace CRM.Models.Crm
         public string BankName { get; set; } = null!;
         public int AccountNumber { get; set; }
         public int ReEnterAccountNumber { get; set; }
-        public string Ifsc { get; set; } = null!;
+        public string? Ifsc { get; set; }
         public int AccountTypeId { get; set; }
         public bool? IsDeleted { get; set; }
         public string? EmpId { get; set; }

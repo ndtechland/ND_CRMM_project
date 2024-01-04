@@ -3,12 +3,14 @@
     ViewData["Title"] = "GenerateSalary";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
-
+@if (ViewBag.ErrorMessage != null)
+{
+    <script>alert('@ViewBag.ErrorMessage');</script>
+}
 <div class="page-wrapper">
     <div class="page-body-wrapper">
         <div class="page-sidebar">
-        </div>      
-
+        </div>
         <div class="page-body">
 
             <div class="container-fluid">
@@ -39,24 +41,37 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-body">
+                                <div style="text-align: right;">
+                                    <button type="submit" class="btn btn-primary" style="color: black; border: 2px solid black;" onclick="return generateInvoice()">
+                                        <i class="fa fa-plus"></i> Generate Invoice
+                                    </button>
+                                </div>
+                                <div></div>
                                 <form asp-action="GenerateSalary" autocomplete="off" method="post">
                                     <div class="row">
-                                        <div class="form-group col-sm">
-                                    <label for="validationCustom0">Company Name</label>
-                                            @Html.DropDownListFor(model => model.CustomerID, new SelectList(ViewBag.CustomerName, "Value", "Text"), "-- Select CompanyName --", new { @class = "form-control",onchange="Locations()"})
-                                </div>
+                                        <div class="form-group col-md-3">
+                                            <label for="validationCustom0">Company Name</label>
+                                            <select class="form-control" id="CustomerID" name="CustomerID" onchange="Locations()">
+                                                <option value="">-- Select Company --</option>
+
+                                                @foreach (var item in ViewBag.CustomerName)
+                                                {
+                                                    <option value="@item.Value">@item.Text</option>
+                                                }
+                                            </select>
+                                        </div>
                                 <div class="form-group col-sm">
                                     <label for="validationCustom0">Work Location</label>
-                                            <select class="form-control col-md-" id="LocationID" asp-for="LocationID">
-                                                <option>--Select WorkLocation--</option>
+                                            <select class="form-control col-md-" id="LocationID" name="LocationID">
+                                                <option value="">--Select WorkLocation--</option>
                                               
                                             </select>                                 
                                 </div>
                                     <div class="form-group col-sm">
                                         <label for="validationCustom0">Month</label>
-                                        <select class="form-control" asp-for="Month">
+                                        <select id="Month" class="form-control" name="Month">
 
-                                                <option>-- Select Month --</option>
+                                                <option value="">-- Select Month --</option>
                                             <option value="1">January</option>
                                             <option value="2">February</option>
                                             <option value="3">March</option>
@@ -74,16 +89,17 @@
 
                                     <div class="form-group col-sm">
                                         <label for="validationCustom0">Year</label>
-                                        <select class="form-control col-md-" asp-for="Year">
-                                                <option>-- Select Year --</option>
+                                            <select id="Year" class="form-control col-md-" name="Year">
+                                                <option value="">-- Select Year --</option>
                                             <option value="2023">2023</option>
+                                            <option value="2024">2024</option>
                                         </select>
                                     </div>
                                     </div>
                                 
 
-                                    <div class="form-group" style="display:flex; justify-content:center;">
-                                        <input type="submit" value="Search" class="btn btn-primary" />
+                                    <div class="form-button" style="display:flex; justify-content:center;">
+                                        <input type="submit" value="Search" class="btn btn-primary" onclick="return validateForm()" />
                                     </div>
                                 </form>
                                 <div class="container-fluid">
@@ -103,16 +119,16 @@
                                                                        </th>
                                                                         <th nowrap>Sl. No.</th>
                                                                         <th>
-                                                                            @Html.DisplayNameFor(model => model.EmployeeId)
+                                                                            EmployeeId
                                                                         </th>
                                                                         <th>
-                                                                            @Html.DisplayNameFor(model => model.EmployeeName)
+                                                                            EmployeeName
                                                                         </th>
                                                                         <th>
-                                                                            @Html.DisplayNameFor(model => model.MonthlyCtc)
+                                                                           MonthlyCtc
                                                                         </th>
                                                                         <th>
-                                                                            @Html.DisplayNameFor(model => model.MonthlyGrossPay)
+                                                                            MonthlyGrossPay
                                                                         </th>
 
 
@@ -125,24 +141,22 @@
                                                                         foreach (var item in Model.GeneratedSalaries)
                                                                         {
                                                                             count++;
-                                                                            <tr>
-                                                                                <td>@count</td>
-                                                                                <td style="display:none">
-                                                                                    @item.Id
-                                                                                </td>
-                                                                                <td>@item.EmployeeId</td>
-                                                                                <td>@item.EmployeeName</td>
-                                                                                <td>@item.MonthlyCtc</td>
-                                                                                <td>@item.MonthlyGrossPay</td>
-                                                                                <td>
-                                                                                    <div>
-                                                                                        <a href="@Url.Action("DocPDF","Employee",new { id=item.Id})" class="fa fa-file-pdf-o font-danger"></a>
-                                                                                        <a href="" class="fa fa-envelope-o" aria-hidden="true"></a>
-                                                                                        <a href="@Url.Action("Invoice","Employee",new { id=item.Id})" class="fa fa-file-pdf-o font-danger"></a>
-
-                                                                                    </div>
-                                                                                </td>
-                                                                            </tr>
+                                                                                                                         <tr>
+                                                                                                                        <td>@count</td>
+                                                                                                                        <td style="display:none">
+                                                                                                                         @item.Id
+                                                                                                                      </td>
+                                                                                                                       <td>@item.EmployeeId</td>
+                                                                                                                     <td>@item.EmployeeName</td>
+                                                                                                                     <td>@item.MonthlyCtc</td>
+                                                                                                                    <td>@item.MonthlyGrossPay</td>
+                                                                                                                    <td>
+                                                                                                                     <div>
+                                                                                                                    <a href="@Url.Action("DocPDF","Employee",new { id=item.Id})" class="fa fa-file-pdf-o font-danger"></a>
+                                                                                                                     <a href="" class="fa fa-envelope-o" aria-hidden="true"></a>
+                                                                                                                      </div>
+                                                                                                                     </td>
+                                                                                                                     </tr>
                                                                         }
                                                                 }                                                                   
                                                           
@@ -164,17 +178,43 @@
         </div>
     </div>
  </div>
-
+<input hidden type="text" id="custid" value="@ViewBag.custid" />
+<input hidden type="text" id="locid" value="@ViewBag.locid" />
+<input hidden type="text" id="monthid" value="@ViewBag.monthid" />
+<input hidden type="text" id="yearid" value="@ViewBag.yearid" />
  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
 <script>
+
+    $("#CustomerID").val($("#custid").val());
+   //// $("#LocationID").val($("#locid").val());
+   $("#Month").val($("#monthid").val());
+    $("#Year").val($("#yearid").val());
+   // $(document).ready(function(){       
+   //         var customerId = $("#CustomerID").val();
+   //         if (customerId !== "") {
+   //             $.ajax({
+   //                 url: '/Employee/GetLocationsByCustomer?customerId=' + customerId,
+   //                 type: "post",
+   //                 success: function (response) {
+   //                 populateLocationsref(response);
+   //                 },
+   //                 error: function (error) {
+   //                     console.error("Error loading locations: " + error);
+   //                 }
+   //             });
+   //         } else {
+   //             //$("#LocationID").empty();
+   //             //$("#LocationID").append('<option value="">--Select WorkLocation--</option>');
+   //         $("#LocationID").val($("#locid").val());
+   //         }
+   // })
     function Locations() {
         var customerId = $("#CustomerID").val();
         if (customerId !== "") {
             $.ajax({
                 url: '/Employee/GetLocationsByCustomer?customerId=' + customerId,
                 type: "post",
-                //data: customerId,
                 success: function (response) {
                     populateLocations(response);
                 },
@@ -183,9 +223,9 @@
                 }
             });
         } else {
-            // Clear the Locations dropdown if no customer is selected
             $("#LocationID").empty();
             $("#LocationID").append('<option value="">--Select WorkLocation--</option>');
+            
         }
     }
 
@@ -193,11 +233,76 @@
         $("#LocationID").empty();
         $("#LocationID").append('<option value="">--Select WorkLocation--</option>');
 
-
         $.each(response, function (i, response) {
             $("#LocationID").append('<option value="' + response.text + '">' + response.value + '</option>');
         });
     }
+    function populateLocationsref(response){
+        $("#LocationID").empty();
+        $("#LocationID").append('<option value="">--Select WorkLocation--</option>');
+        var id = $("#locid").val();
+
+        $.each(response, function (i, response) {
+            $("#LocationID").append('<option value="' + response.text + '">' + response.value + '</option>');
+        });
+
+        $.each(response, function (id) {
+            $("#LocationID").val(id);
+        });
+    }
 </script>
+<script>
+function validateForm() {
+        var CustomerID = document.getElementById('CustomerID').value;
+        var Month = document.getElementById('Month').value;
+        var Year = document.getElementById('Year').value;
+        var WorkLocation = document.getElementById('LocationID').value;
 
-
+        if (CustomerID === '') {
+            alert("Please select Company.");
+            return false;
+        }
+        if (WorkLocation === '') {
+            alert("Please select WorkLocation.");
+            return false;
+        }
+        if (Month === '') {
+            alert("Please select Month.");
+            return false;
+        }
+        if (Year === '') {
+            alert("Please select Year.");
+            return false;
+        }
+      
+  }        
+</script>
+<script>    
+    function generateInvoice(){
+    var CustomerID = $("#CustomerID").val();
+    var Month = $("#Month").val();
+    var Year = $("#Year").val();
+    var WorkLocation = $("#LocationID").val();
+        if (CustomerID === '') {
+            alert("Please select Company.");
+            return false;
+        }
+        if (WorkLocation === '') {
+            alert("Please select WorkLocation.");
+            return false;
+        }
+        if (Month === '') {
+            alert("Please select Month.");
+            return false;
+        }
+        if (Year === '') {
+            alert("Please select Year.");
+            return false;
+        }       
+        if (CustomerID != null || Month != null || Year != null || WorkLocation !=null)
+        {
+            window.location.href = '/Employee/Invoice?customerId=' + CustomerID + '&Month=' + Month + '&year=' + Year + '&WorkLocation=' + WorkLocation;
+        }        
+       
+    }       
+</script>

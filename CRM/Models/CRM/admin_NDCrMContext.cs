@@ -51,8 +51,6 @@ namespace CRM.Models.Crm
         public virtual DbSet<TaxDeductor> TaxDeductors { get; set; } = null!;
         public virtual DbSet<TransactionDetail> TransactionDetails { get; set; } = null!;
         public virtual DbSet<WorkLocation> WorkLocations { get; set; } = null!;
-        public virtual DbSet<EmployeeImportExcel> EmpMultiforms { get; set; } = null!;
-        public virtual DbSet<Employeer_EPF> Employeer_EPFs { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -296,6 +294,10 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Entry).HasColumnType("date");
 
+                entity.Property(e => e.GenerateSalary).HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.Lop).HasColumnType("decimal(18, 2)");
+
                 entity.Property(e => e.Year).HasColumnName("year");
             });
 
@@ -336,7 +338,7 @@ namespace CRM.Models.Crm
                     .HasColumnName("EPF_Number");
 
                 entity.Property(e => e.Ifsc)
-                    .HasMaxLength(10)
+                    .HasMaxLength(11)
                     .HasColumnName("IFSC");
 
                 entity.Property(e => e.ReEnterAccountNumber).HasColumnName("Re_Enter_Account_Number");
