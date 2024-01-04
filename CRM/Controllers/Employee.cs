@@ -28,6 +28,7 @@ using MimeKit;
 using Microsoft.AspNetCore.Hosting;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using DocumentFormat.OpenXml.Wordprocessing;
+using System;
 
 
 namespace CRM.Controllers
@@ -467,6 +468,15 @@ namespace CRM.Controllers
                             }
 
                             transaction.Commit();
+                            bool single = false;
+                            foreach (var item in customers)
+                            {
+                                if (customers.Count() == 1)
+                                {
+                                     single = true;
+                                }
+                                SendPDF(item.Id, single);
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -487,11 +497,6 @@ namespace CRM.Controllers
 
                 return Json(new { success = false, message = "Error occurred while checking existing data." });
             }
-
-            foreach (var item in customers)
-            {
-                SendPDF(item.Id);
-            }
             return Json(new { success = true, message = "Data saved successfully.", Data = isActive });
         }
 
@@ -499,22 +504,18 @@ namespace CRM.Controllers
         {
             try
             {
-                if (HttpContext.Session.GetString("UserName") != null)
-                {
+                
+                
                     string AddedBy = HttpContext.Session.GetString("UserName");
                     ViewBag.UserName = AddedBy;
                     ViewBag.CustomerName = _context.CustomerRegistrations.Select(x => new SelectListItem
-                {
+                    {
                     Value = x.Id.ToString(),
                     Text = x.CompanyName
-                }).ToList();
-                ViewBag.ErrorMessage = TempData["ErrorMessage"];
-                return View();
-            }
-            else
-            {
-                return RedirectToAction("Login", "Admin");
-            }
+                     }).ToList();
+                     ViewBag.ErrorMessage = TempData["ErrorMessage"];
+                     return View();
+           
         }
             catch (Exception ex)
             {
@@ -597,9 +598,9 @@ namespace CRM.Controllers
         {
             try
             {
-                if (HttpContext.Session.GetString("UserName") != null)
-                {
-                    string AddedBy = HttpContext.Session.GetString("UserName");
+                //if (HttpContext.Session.GetString("UserName") != null)
+               // {
+                    string AddedBy = HttpContext.Session.Id;
                     ViewBag.UserName = AddedBy;
                     var result = (from emp in _context.EmployeeRegistrations
                                   join empsalary in _context.EmployeeSalaryDetails on emp.Id equals empsalary.EmpId
@@ -631,13 +632,14 @@ namespace CRM.Controllers
                     }
                     else
                     {
-                        return RedirectToAction("GenerateSalary");
-                    }
-                }           
-                else
-                {
-                    return RedirectToAction("Login", "Admin");
+                    // return RedirectToAction("GenerateSalary");
+                    return View(result);
                 }
+                //}           
+                //else
+               // {
+                //    return RedirectToAction("Login", "Admin");
+                //}
             }
             catch (Exception ex)
             {
@@ -700,11 +702,49 @@ namespace CRM.Controllers
 
         public IActionResult DocPDF(int id)
         {
-            SendPDF(id);
-            return View();
+            bool single = true;
+            // instantiate a html to pdf converter object
+            HtmlToPdf converter = new HtmlToPdf();
+
+            WebClient client = new WebClient();
+            // Create a PDF from a HTML string using C#
+            string SlipURL = _configuration.GetValue<string>("URL") + "/Employee/SalarySlipInPDF?id=" + id + "";
+            // create a new pdf document converting an url
+            PdfDocument doc = converter.ConvertUrl(SlipURL);
+
+            // save pdf document
+            //doc.Save("Sample.pdf");
+
+            byte[] pdf = doc.Save();
+
+            // close pdf document
+            doc.Close();
+
+            // return resulted pdf document
+            FileResult fileResult = new FileContentResult(pdf, "application/pdf");
+            fileResult.FileDownloadName = "SalarySlip.pdf";
+
+            var result = (from emp in _context.EmployeeRegistrations
+
+                          where emp.Id == id
+                          select new SalarySlipDetails
+                          {
+                              Id = emp.Id,
+                              Employee_ID = emp.EmployeeId,
+                              First_Name = emp.FirstName,
+                              Email_Id = emp.WorkEmail
+
+                          }).FirstOrDefault();
+            string Email_Subject = "Salary Slip for " + result.Employee_ID + "";
+            string Email_body = "Hello " + result.First_Name + " (" + result.Employee_ID + ") please find your attached salary slip....";
+
+
+            _IEmailService.SendEmailAsync(result.Email_Id, Email_Subject, Email_body, pdf, "SalarySlip.pdf", "application/pdf");
+
+            return fileResult;
         }
 
-        public void SendPDF(int id)
+        public void SendPDF(int id,bool single = false)
         {
             // instantiate a html to pdf converter object
             HtmlToPdf converter = new HtmlToPdf();
@@ -743,12 +783,13 @@ namespace CRM.Controllers
 
 
             _IEmailService.SendEmailAsync(result.Email_Id, Email_Subject, Email_body, pdf, "SalarySlip.pdf", "application/pdf");
+            
             //return fileResult;
             //return File(, "application/pdf", "SalarySlip.pdf");
         }
         public static string getMonthName(int monthValue)
         {
-            string monthName = "";
+            string monthName = string.Empty;
 
             switch (monthValue)
             {

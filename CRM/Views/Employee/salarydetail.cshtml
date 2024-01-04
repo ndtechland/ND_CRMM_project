@@ -174,7 +174,7 @@
                     var modeldata = new Array;
                     $('#datatable tbody tr').each(function (index) {
                         var customer = {};
-                        customer.Id = $(this).find('td:eq(0)').text().trim();
+                        customer.Id = $(this).find('td:eq(1)').text().trim();
                         customer.EmployeeId = $(this).find('td:eq(3)').text().trim();
                         customer.Attendance = $(this).find('input[name="Attendance"]').val();
                         if (customer.Attendance === "") {
