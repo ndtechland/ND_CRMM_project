@@ -183,8 +183,8 @@ namespace CRM.Repository
         public async Task<List<EmployeeImportExcel>> EmployeeList()
         {
             List<EmployeeImportExcel> employeeList = _context.EmpMultiforms.FromSqlRaw<EmployeeImportExcel>("USP_GetEmployeeDetails").ToListAsync().Result;
-           
-                return employeeList;
+
+            return employeeList;
         }
 
         public ProductMaster GetproductById(int id)

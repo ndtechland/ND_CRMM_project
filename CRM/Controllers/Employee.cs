@@ -236,20 +236,28 @@ namespace CRM.Controllers
 
         public async Task<IActionResult> Employeelist()
         {
-            List<EmployeeImportExcel> response = new List<EmployeeImportExcel>();
-            if (HttpContext.Session.GetString("UserName") != null)
+            try
             {
-                response = await _ICrmrpo.EmployeeList();
-                string AddedBy = HttpContext.Session.GetString("UserName");
-                return View(response);
+                List<EmployeeImportExcel> response = new List<EmployeeImportExcel>();
+                if (HttpContext.Session.GetString("UserName") != null)
+                {
+
+                    response = await _ICrmrpo.EmployeeList();
+                    string AddedBy = HttpContext.Session.GetString("UserName");
+                    return View(response);
+                }
+                else
+                {
+                    return RedirectToAction("Login", "Admin");
+                }
             }
-            else
+            catch (Exception Ex)
             {
-                return RedirectToAction("Login", "Admin");
+
+                throw new Exception("Error:" + Ex.Message);
             }
 
         }
-
         public static int CalculatAge(DateTime DOB)
         {
             DateTime currentDate = DateTime.Now;

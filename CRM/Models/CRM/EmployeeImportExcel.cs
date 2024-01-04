@@ -7,7 +7,7 @@ namespace CRM.Models.Crm
     public partial class EmployeeImportExcel
     {
         // Personal Information
-        public int id { get; set; }
+        public int? id { get; set; }
 
         public string? FirstName { get; set; }
         public int? CustomerID { get; set; }
