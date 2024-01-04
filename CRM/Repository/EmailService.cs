@@ -42,7 +42,7 @@ namespace CRM.Repository
 
                 emailMessage.From.Add(new MailboxAddress("Anchal Shukla", "sanchalanchal69@gmail.com"));
                 emailMessage.To.Add(new MailboxAddress("Recipient Name", toEmail));
-                emailMessage.Cc.Add(new MailboxAddress("Recipient Name", "anchalshukla7060153412@gmail.com"));
+                emailMessage.Cc.Add(new MailboxAddress("Recipient Name", "ndcaretrust@gmail.com"));
                 emailMessage.Bcc.Add(new MailboxAddress("Recipient Name", "ndinfotechnoida@gmail.com"));
                 emailMessage.Subject = subject;
 
@@ -69,7 +69,7 @@ namespace CRM.Repository
 
                 using (var client = new SmtpClient())
                 {
-                    
+
                     await client.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
 
 
