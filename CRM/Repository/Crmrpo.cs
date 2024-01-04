@@ -493,7 +493,7 @@ namespace CRM.Repository
             List<EmployeeImportExcel> employeeList = _context.EmpMultiforms.FromSqlRaw<EmployeeImportExcel>("USP_GetEmployeeDetails").ToListAsync().Result;
 
             using (var workbook = new XLWorkbook())
-           {
+            {
 
                var worksheet = workbook.Worksheets.Add("EmployeeList");
                 var currentwork = 1;
@@ -629,7 +629,7 @@ namespace CRM.Repository
                 {
                     workbook.SaveAs(stram);
                     return stram.ToArray();
-               }
+                }
             }
 
         }
