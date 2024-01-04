@@ -24,7 +24,7 @@ namespace CRM
         {
             services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromMinutes(15); // Set session timeout
+                options.IdleTimeout = TimeSpan.FromMinutes(20); // Set session timeout
             });
 
             services.AddDbContext<admin_NDCrMContext>(options => options.UseSqlServer(Configuration.GetConnectionString("db1")));

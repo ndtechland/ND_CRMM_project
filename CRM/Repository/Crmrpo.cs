@@ -190,9 +190,6 @@ namespace CRM.Repository
             return employeeList;
         }
 
-
-
-
         public ProductMaster GetproductById(int id)
         {
             return _context.ProductMasters.Find(id);

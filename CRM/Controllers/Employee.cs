@@ -497,6 +497,7 @@ namespace CRM.Controllers
 
                 return Json(new { success = false, message = "Error occurred while checking existing data." });
             }
+
             return Json(new { success = true, message = "Data saved successfully.", Data = isActive });
         }
 
@@ -596,12 +597,17 @@ namespace CRM.Controllers
         [Route("Employee/SalarySlipInPDF")]
         public IActionResult SalarySlipInPDF(int? id)
         {
+           
             try
             {
-                //if (HttpContext.Session.GetString("UserName") != null)
-               // {
+
+
+                {
+                   
+
                     string AddedBy = HttpContext.Session.Id;
                     ViewBag.UserName = AddedBy;
+
                     var result = (from emp in _context.EmployeeRegistrations
                                   join empsalary in _context.EmployeeSalaryDetails on emp.Id equals empsalary.EmpId
                                   join empbank in _context.EmployeeBankDetails on emp.Id equals empbank.EmployeeRegistrationId
@@ -632,6 +638,12 @@ namespace CRM.Controllers
                     }
                     else
                     {
+
+                        return RedirectToAction("GenerateSalary");
+                    }
+                }           
+                
+
                     // return RedirectToAction("GenerateSalary");
                     return View(result);
                 }
@@ -640,6 +652,7 @@ namespace CRM.Controllers
                // {
                 //    return RedirectToAction("Login", "Admin");
                 //}
+
             }
             catch (Exception ex)
             {
@@ -699,7 +712,6 @@ namespace CRM.Controllers
 
         }
         //  send  pdf and mail //
-
         public IActionResult DocPDF(int id)
         {
             bool single = true;
@@ -745,6 +757,7 @@ namespace CRM.Controllers
         }
 
         public void SendPDF(int id,bool single = false)
+
         {
             // instantiate a html to pdf converter object
             HtmlToPdf converter = new HtmlToPdf();
@@ -783,8 +796,12 @@ namespace CRM.Controllers
 
 
             _IEmailService.SendEmailAsync(result.Email_Id, Email_Subject, Email_body, pdf, "SalarySlip.pdf", "application/pdf");
+
+            return fileResult;
+
             
             //return fileResult;
+
             //return File(, "application/pdf", "SalarySlip.pdf");
         }
         public static string getMonthName(int monthValue)
@@ -877,7 +894,6 @@ namespace CRM.Controllers
         }
 
 
-
         //-----ImportToExcelEmployeeList
         public IActionResult ImportToExcelEmployeeList()
         {
@@ -894,7 +910,7 @@ namespace CRM.Controllers
         }
 
     }
-    }
+}
 
 
 
