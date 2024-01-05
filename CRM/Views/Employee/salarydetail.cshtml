@@ -170,7 +170,7 @@
             function gensal() {
                 var check = true;
                 var tbody = $("#datatable tbody");
-                if (tbody.children().length != 1) {
+                if (tbody.children().length > 0) {
                     var modeldata = new Array;
                     $('#datatable tbody tr').each(function (index) {
                         var customer = {};
