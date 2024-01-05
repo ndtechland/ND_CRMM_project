@@ -400,7 +400,8 @@ namespace CRM.Controllers
             {
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 ViewBag.UserName = AddedBy;
-
+                ViewBag.custid = customerId;
+                ViewBag.locid = WorkLocation;
                 var response = await _ICrmrpo.salarydetail(customerId, WorkLocation);
                 decimal total = 0.00M;
                 foreach (var item in response)
