@@ -113,7 +113,7 @@
                                                     </div>
 
                                                     <div class="col">
-                                                        <label>MiddleName</label>
+                                                        <label>Middle Name</label>
                                                         <input class="form-control" value='@ViewBag.Middle_Name' name="MiddleName" id="MiddleName" type="text" required>
                                                     </div>
                                                     <div class="col">
@@ -215,16 +215,16 @@
                                                 <h4 class="text-danger">Persnal info.</h4>
                                                 <div class="row">
                                                     <div class="col">
-                                                        <label>PersonalEmailAddress</label>
+                                                        <label>Personal Email Address</label>
                                                         <input class="form-control " value='@ViewBag.Personal_Email_Address' name="PersonalEmailAddress" id="PersonalEmailAddress" type="email" required="">
                                                     </div>
 
                                                     <div class="col">
-                                                        <label>MobileNumber</label>
+                                                        <label>Mobile Number</label>
                                                         <input class="form-control " value='@ViewBag.Mobile_Number' name="MobileNumber" id="MobileNumber" type="text" required="">
                                                     </div>
                                                     <div class="col">
-                                                        <label>DateOfBirth</label>
+                                                        <label>Date Of Birth</label>
                                                         <input class="form-control " value='@ViewBag.Date_Of_Birth' name="DateOfBirth" id="dobInput" type="date" required="">
                                                     </div>
 
@@ -237,7 +237,7 @@
                                                     </div>
 
                                                     <div class="col">
-                                                        <label>FatherName</label>
+                                                        <label>Father Name</label>
                                                         <input class="form-control " value='@ViewBag.Father_Name' name="FatherName" id="FatherName" type="text" required="">
                                                     </div>
                                                     <div class="col">
@@ -249,12 +249,12 @@
 
                                                 <div class="row">
                                                     <div class="col">
-                                                        <label>AddressLine1</label>
+                                                        <label>Address 1</label>
                                                         <input class="form-control " value='@ViewBag.Address_Line_1' name="AddressLine1" id="AddressLine1" type="text" required="">
                                                     </div>
 
                                                     <div class="col">
-                                                        <label>AddressLine2</label>
+                                                        <label>Address 2</label>
                                                         <input class="form-control " value='@ViewBag.Address_Line_2' name="AddressLine2" id="AddressLine2" type="text" required="">
                                                     </div>
                                                     <div class="col">
@@ -372,11 +372,11 @@
                                                 <div class="row">
 
                                                     <div class="col">
-                                                        <label>ConveyanceAllowance</label>
+                                                        <label>Conveyance Allowance</label>
                                                         <input class="form-control " value='@ViewBag.ConveyanceAllowance' name="ConveyanceAllowance" id="ConveyanceAllowance" type="text" required="">
                                                     </div>
                                                     <div class="col">
-                                                        <label>FixedAllowance</label>
+                                                        <label>Fixed Allowance</label>
                                                         <input class="form-control " value='@ViewBag.FixedAllowance' name="FixedAllowance" id="FixedAllowance" type="text" required="">
                                                     </div>
                                                     <div class="col">
@@ -388,11 +388,11 @@
 
                                                 <div class="row">
                                                     <div class="col">
-                                                        <label>MonthlyCtc</label>
+                                                        <label>Monthly CTC</label>
                                                         <input class="form-control " value='@ViewBag.MonthlyCTC' name="MonthlyCTC" id="txtMonthlyCTC" type="text" required="">
                                                     </div>
                                                     <div class="col">
-                                                        <label>MonthlyGrossPay</label>
+                                                        <label>Monthly GrossPay</label>
                                                         <input class="form-control " value='@ViewBag.MonthlyGrossPay' name="MonthlyGrossPay" id="txtMonthlyGrossPay" type="text" required="">
                                                     </div>
 
@@ -914,6 +914,8 @@
 
             errormessage += 'Please Enter Work Email,'
         }
+
+        
         var dateOfJoining = $("#DateOfJoining").val();
         var dateRegex = /^\d{4}-\d{2}-\d{2}$/;
         if (!dateRegex.test(dateOfJoining)) {
@@ -954,10 +956,9 @@
             return false;
 
         }
-        else
-        {
+        else {
             return true;
-            
+
         }
     });
 
@@ -1144,8 +1145,8 @@
             errormessage += 'Please enter a valid date in the format mm/dd/yyyy,';
 
         }
-        
-        
+
+
         if ($("#ddlGender").val().trim() == '0') {
 
             errormessage += 'Please Select Gender,'
@@ -1168,12 +1169,6 @@
         }
         return errormessage;
     }
-
-
-
-
-
-
 
     function ValidateSecondTab() {
         var errormessage = '';
@@ -1245,9 +1240,6 @@
         return errormessage;
     }
 
-
-
-
     function ValidateThirdTab() {
         var errormessage = '';
         if ($("#AccountHolderName").val().trim() == '') {
@@ -1313,9 +1305,6 @@
         return errormessage;
     }
 
-
-
-
     function ValidateMainTab() {
         var errormessage = '';
 
@@ -1340,37 +1329,36 @@
 
         return errormessage;
     }
-    function fnValidate()
-    {
+    function fnValidate() {
 
-        var errormsg1=ValidateFirstTab();
-        var errormsg2=ValidateSecondTab();
-        var errormsg3=ValidateThirdTab();
-        var errormsg4=ValidateMainTab();
+        var errormsg1 = ValidateFirstTab();
+        var errormsg2 = ValidateSecondTab();
+        var errormsg3 = ValidateThirdTab();
+        var errormsg4 = ValidateMainTab();
         if (errormsg1 != '') {
 
-            
+
             openErrorPopUp(errormsg1);
             return false;
 
         }
         if (errormsg2 != '') {
 
-            
+
             openErrorPopUp(errormsg2);
             return false;
 
         }
         if (errormsg3 != '') {
 
-            
+
             openErrorPopUp(errormsg3);
             return false;
 
         }
         if (errormsg4 != '') {
 
-            
+
             openErrorPopUp(errormsg4);
             return false;
 
@@ -1398,3 +1386,6 @@
 
 
 </script>
+
+
+
