@@ -262,7 +262,7 @@ namespace CRM.Controllers
 
         }
 
-       
+
         public static int CalculatAge(DateTime DOB)
         {
             DateTime currentDate = DateTime.Now;
@@ -468,14 +468,10 @@ namespace CRM.Controllers
                             }
 
                             transaction.Commit();
-                            bool single = false;
+                          
                             foreach (var item in customers)
                             {
-                                if (customers.Count() == 1)
-                                {
-                                     single = true;
-                                }
-                                SendPDF(item.Id, single);
+                                SendPDF(item.Id);
                             }
                         }
                         catch (Exception ex)
@@ -497,7 +493,6 @@ namespace CRM.Controllers
 
                 return Json(new { success = false, message = "Error occurred while checking existing data." });
             }
-
             return Json(new { success = true, message = "Data saved successfully.", Data = isActive });
         }
 
@@ -505,19 +500,19 @@ namespace CRM.Controllers
         {
             try
             {
-                
-                
-                    string AddedBy = HttpContext.Session.GetString("UserName");
-                    ViewBag.UserName = AddedBy;
-                    ViewBag.CustomerName = _context.CustomerRegistrations.Select(x => new SelectListItem
-                    {
+
+
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName = AddedBy;
+                ViewBag.CustomerName = _context.CustomerRegistrations.Select(x => new SelectListItem
+                {
                     Value = x.Id.ToString(),
                     Text = x.CompanyName
-                     }).ToList();
-                     ViewBag.ErrorMessage = TempData["ErrorMessage"];
-                     return View();
-           
-        }
+                }).ToList();
+                ViewBag.ErrorMessage = TempData["ErrorMessage"];
+                return View();
+
+            }
             catch (Exception ex)
             {
 
@@ -553,7 +548,7 @@ namespace CRM.Controllers
 
         }
         [HttpPost]
-        public async Task<IActionResult> GenerateSalary(string customerId,int locationid, int Month, int year)
+        public async Task<IActionResult> GenerateSalary(string customerId, int locationid, int Month, int year)
         {
             try
             {
@@ -570,20 +565,20 @@ namespace CRM.Controllers
                     }).ToList();
                     GenerateSalary salary = new GenerateSalary();
                     salary.GeneratedSalaries = await _ICrmrpo.GenerateSalary(customerId, Month, year);
-                    if(salary.GeneratedSalaries.Count >0)
+                    if (salary.GeneratedSalaries.Count > 0)
                     {
-                        return View(salary); 
+                        return View(salary);
                     }
                     else
                     {
-                        ViewBag.ErrorMessage ="No data found";
+                        ViewBag.ErrorMessage = "No data found";
                         return View();
                     }
                 }
                 else
                 {
                     return RedirectToAction("GenerateSalary");
-                }                                  
+                }
             }
             catch (Exception ex)
             {
@@ -597,62 +592,46 @@ namespace CRM.Controllers
         [Route("Employee/SalarySlipInPDF")]
         public IActionResult SalarySlipInPDF(int? id)
         {
-           
             try
             {
-
-
+                //if (HttpContext.Session.GetString("UserName") != null)
+                // {
+                string AddedBy = HttpContext.Session.Id;
+                ViewBag.UserName = AddedBy;
+                var result = (from emp in _context.EmployeeRegistrations
+                              join empsalary in _context.EmployeeSalaryDetails on emp.Id equals empsalary.EmpId
+                              join empbank in _context.EmployeeBankDetails on emp.Id equals empbank.EmployeeRegistrationId
+                              join empatt in _context.Empattendances on emp.EmployeeId equals empatt.EmployeeId
+                              join worklocation in _context.WorkLocations on emp.WorkLocationId equals worklocation.Id.ToString()
+                              join designation in _context.DesignationMasters on emp.DesignationId equals designation.Id.ToString()
+                              where emp.Id == id
+                              select new SalarySlipDetails
+                              {
+                                  Id = emp.Id,
+                                  Employee_ID = emp.EmployeeId,
+                                  First_Name = emp.FirstName,
+                                  Address_Line_1 = worklocation.AddressLine1,
+                                  Epf = empsalary.Epf,
+                                  Designation_Name = designation.DesignationName,
+                                  Bank_Name = empbank.BankName,
+                                  Account_Number = empbank.AccountNumber,
+                                  Basic = empsalary.Basic,
+                                  EPF_Number = empbank.EpfNumber,
+                                  Month = getMonthName(Convert.ToInt32(empatt.Month)),
+                                  Year = empatt.Year,
+                                  HouseRentAllowance = empsalary.HouseRentAllowance,
+                                  Lop = empatt.Lop,
+                              }).FirstOrDefault();
+                if (result != null)
                 {
-                   
-
-                    string AddedBy = HttpContext.Session.Id;
-                    ViewBag.UserName = AddedBy;
-
-                    var result = (from emp in _context.EmployeeRegistrations
-                                  join empsalary in _context.EmployeeSalaryDetails on emp.Id equals empsalary.EmpId
-                                  join empbank in _context.EmployeeBankDetails on emp.Id equals empbank.EmployeeRegistrationId
-                                  join empatt in _context.Empattendances on emp.EmployeeId equals empatt.EmployeeId
-                                  join worklocation in _context.WorkLocations on emp.WorkLocationId equals worklocation.Id.ToString()
-                                  join designation in _context.DesignationMasters on emp.DesignationId equals designation.Id.ToString()
-                                  where emp.Id == id
-                                  select new SalarySlipDetails
-                                  {
-                                      Id = emp.Id,
-                                      Employee_ID = emp.EmployeeId,
-                                      First_Name = emp.FirstName,
-                                      Address_Line_1 = worklocation.AddressLine1,
-                                      Epf = empsalary.Epf,
-                                      Designation_Name = designation.DesignationName,
-                                      Bank_Name = empbank.BankName,
-                                      Account_Number = empbank.AccountNumber,
-                                      Basic = empsalary.Basic,
-                                      EPF_Number = empbank.EpfNumber,
-                                      Month = getMonthName(Convert.ToInt32(empatt.Month)),
-                                      Year = empatt.Year,
-                                      HouseRentAllowance = empsalary.HouseRentAllowance,
-                                      Lop = empatt.Lop,
-                                  }).FirstOrDefault();
-                    if (result != null)
-                    {
-                        return View(result);
-                    }
-                    else
-                    {
-
-                        return RedirectToAction("GenerateSalary");
-                    }
-                }           
-                
-
-                    // return RedirectToAction("GenerateSalary");
                     return View(result);
                 }
-                //}           
-                //else
-               // {
-                //    return RedirectToAction("Login", "Admin");
-                //}
-
+                else
+                {
+                    
+                    return View(result);
+                }
+                
             }
             catch (Exception ex)
             {
@@ -704,7 +683,6 @@ namespace CRM.Controllers
             {
                 var response = await _ICrmrpo.EmployerList();
                 string AddedBy = HttpContext.Session.GetString("UserName");
-                // ViewBag.UserName = AddedBy;
                 return View(response);
 
             }
@@ -712,9 +690,10 @@ namespace CRM.Controllers
 
         }
         //  send  pdf and mail //
+
         public IActionResult DocPDF(int id)
         {
-            bool single = true;
+          
             // instantiate a html to pdf converter object
             HtmlToPdf converter = new HtmlToPdf();
 
@@ -723,9 +702,6 @@ namespace CRM.Controllers
             string SlipURL = _configuration.GetValue<string>("URL") + "/Employee/SalarySlipInPDF?id=" + id + "";
             // create a new pdf document converting an url
             PdfDocument doc = converter.ConvertUrl(SlipURL);
-
-            // save pdf document
-            //doc.Save("Sample.pdf");
 
             byte[] pdf = doc.Save();
 
@@ -756,8 +732,7 @@ namespace CRM.Controllers
             return fileResult;
         }
 
-        public void SendPDF(int id,bool single = false)
-
+        public void SendPDF(int id)
         {
             // instantiate a html to pdf converter object
             HtmlToPdf converter = new HtmlToPdf();
@@ -797,12 +772,6 @@ namespace CRM.Controllers
 
             _IEmailService.SendEmailAsync(result.Email_Id, Email_Subject, Email_body, pdf, "SalarySlip.pdf", "application/pdf");
 
-            return fileResult;
-
-            
-            //return fileResult;
-
-            //return File(, "application/pdf", "SalarySlip.pdf");
         }
         public static string getMonthName(int monthValue)
         {
@@ -882,7 +851,7 @@ namespace CRM.Controllers
                 else
                 {
                     return RedirectToAction("GenerateSalary");
-                }           
+                }
             }
             catch (Exception ex)
             {
@@ -894,40 +863,24 @@ namespace CRM.Controllers
         }
 
 
+
         //-----ImportToExcelEmployeeList
         public IActionResult ImportToExcelEmployeeList()
         {
             try
-           {
+            {
                 var response = _ICrmrpo.EmployeeListForExcel();
                 return File(response, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Employee_List.xlsx");
             }
-           catch (Exception Ex)
+            catch (Exception Ex)
             {
-               throw Ex;
-           }
+                throw Ex;
+            }
 
         }
 
     }
 }
-
-
-
-             
-                
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

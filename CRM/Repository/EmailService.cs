@@ -39,14 +39,11 @@ namespace CRM.Repository
             try
             {
                 var emailMessage = new MimeMessage();
-
                 emailMessage.From.Add(new MailboxAddress("Anchal Shukla", "sanchalanchal69@gmail.com"));
                 emailMessage.To.Add(new MailboxAddress("Recipient Name", toEmail));
                 emailMessage.Cc.Add(new MailboxAddress("Recipient Name", "ndcaretrust@gmail.com"));
                 emailMessage.Bcc.Add(new MailboxAddress("Recipient Name", "ndinfotechnoida@gmail.com"));
                 emailMessage.Subject = subject;
-
-               
 
                 var textPart = new TextPart("plain")
                 {
@@ -71,8 +68,6 @@ namespace CRM.Repository
                 {
 
                     await client.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
-
-
                     await client.AuthenticateAsync("sanchalanchal69@gmail.com", "zommitmpkowdhkei");
                     await client.SendAsync(emailMessage);
                     await client.DisconnectAsync(true);
