@@ -375,7 +375,7 @@ namespace CRM.Repository
             }
         }
 
-        public async Task<List<GenerateSalary>> GenerateSalary(string customerId, int Month, int year)
+        public async Task<List<GenerateSalary>> GenerateSalary(string customerId, int Month, int year, string WorkLocation)
         {
             try
             {
@@ -384,6 +384,7 @@ namespace CRM.Repository
                 cmd.Parameters.Add(new SqlParameter("@CustomerID", SqlDbType.Int) { Value = Convert.ToInt32(customerId) });
                 cmd.Parameters.Add(new SqlParameter("@Month", SqlDbType.Int) { Value = Convert.ToInt32(Month) });
                 cmd.Parameters.Add(new SqlParameter("@year", SqlDbType.Int) { Value = Convert.ToInt32(year) });
+                cmd.Parameters.Add(new SqlParameter("@WorkLocation", SqlDbType.Int) { Value = Convert.ToInt32(WorkLocation) });
                 cmd.CommandType = CommandType.StoredProcedure;
                 con.Open();
                 SqlDataReader rdr = cmd.ExecuteReader();

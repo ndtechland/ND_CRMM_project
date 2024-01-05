@@ -540,15 +540,15 @@ namespace CRM.Controllers
 
         }
         [HttpPost]
-        public async Task<IActionResult> GenerateSalary(string customerId,int locationid, int Month, int year)
+        public async Task<IActionResult> GenerateSalary(string customerId, int Month, int year,string WorkLocation)
         {
             try
             {
                 ViewBag.custid = customerId;
-                ViewBag.locid = locationid;
+                ViewBag.locid = WorkLocation;
                 ViewBag.monthid = Month;
                 ViewBag.yearid = year;
-                if (customerId != null && Month != null && year != null)
+                if (customerId != null && Month != null && year != null && WorkLocation != null)
                 {
                     ViewBag.CustomerName = _context.CustomerRegistrations.Select(x => new SelectListItem
                     {
@@ -556,7 +556,7 @@ namespace CRM.Controllers
                         Text = x.CompanyName
                     }).ToList();
                     GenerateSalary salary = new GenerateSalary();
-                    salary.GeneratedSalaries = await _ICrmrpo.GenerateSalary(customerId, Month, year);
+                    salary.GeneratedSalaries = await _ICrmrpo.GenerateSalary(customerId, Month, year,WorkLocation);
                     if(salary.GeneratedSalaries.Count >0)
                     {
                         return View(salary); 
