@@ -185,6 +185,8 @@
     </div>
 
 </div>
+<input hidden type="text" id="custid" value="@ViewBag.custid" />
+<input hidden type="text" id="locid" value="@ViewBag.locid" />
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
 <script>
@@ -192,7 +194,7 @@
     function gensal() {
         var check = true;
         var tbody = $("#datatable tbody");
-        if (tbody.children().length != 1) {
+        if (tbody.children().length > 0) {
             var modeldata = new Array;
             $('#datatable tbody tr').each(function (index) {
                 var customer = {};
@@ -267,6 +269,11 @@
 </script>
 
 <script>
+    $(document).ready(function () {
+        $("#CustomerID").val($("#custid").val());
+        $("#LocationID").val($("#locid").val());
+        Locations();
+    });
     function Locations() {
         var customerId = $("#CustomerID").val();
         if (customerId !== "") {
@@ -294,6 +301,10 @@
         $.each(response, function (i, response) {
             $("#LocationID").append('<option value="' + response.text + '">' + response.value + '</option>');
         });
+        var locId = $("#locid").val();
+        if (locId !== "") {
+            $("#LocationID").val(locId);
+        }
     }
 </script>
 <script>
