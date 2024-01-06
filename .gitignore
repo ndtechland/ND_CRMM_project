@@ -5,3 +5,4 @@
 /.vs/CRM/FileContentIndex
 /CRM/obj/Debug/net6.0
 /CRM
+/CRM/Views/Employee/EmployeeRegistration.cshtml
