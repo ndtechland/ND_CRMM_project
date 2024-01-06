@@ -7,19 +7,37 @@
 }
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <style>
-           .button {
+    .button {
         width: 124px;
-        margin-left:0px;
+        margin-left: 0px;
         height: 38px;
         margin-top: 33px;
     }
 </style>
+
+<style>
+    .se-pre-con {
+        position: fixed;
+        left: 0px;
+        top: 0px;
+        width: 100%;
+        height: 100%;
+        z-index: 100001;
+        background: url('../assets/images/layout-2/logo/loddergif.gif') center no-repeat transparent;
+        background-color: #0f0e0e;
+        opacity: 0.5;
+    }
+</style>
+
+
+
 <div class="page-wrapper">
     <div class="page-body-wrapper">
         <div class="page-sidebar">
         </div>
 
         <div class="page-body">
+            <div id="dvloader" class="se-pre-con" style="display:none"></div>
 
             <div class="container-fluid">
                 <div class="page-header">
@@ -42,26 +60,28 @@
                     </div>
                 </div>
             </div>
-  
+
             <div class="container-fluid">
                 <div class="row">
 
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-body">
-                                <form asp-action="salarydetail" autocomplete="off" method="get">                                  
+
+                                <form asp-action="salarydetail" autocomplete="off" method="get">
+
                                     <div class="row">
                                         <div class="form-group col-md-3">
                                             <label for="validationCustom0">Company Name</label>
                                             <select class="form-control" id="CustomerID" name="CustomerID" onchange="Locations()">
                                                 <option value="">-- Select Company --</option>
-                                                 
-                                                    @foreach (var item in ViewBag.CustomerName)
-                                                    {
-                                                        <option value="@item.Value">@item.Text</option>
-                                                    }
+
+                                                @foreach (var item in ViewBag.CustomerName)
+                                                {
+                                                    <option value="@item.Value">@item.Text</option>
+                                                }
                                             </select>
-                                           </div>
+                                        </div>
                                         <div class="form-group col-md-3">
                                             <label for="validationCustom0">Work Location</label>
                                             <select class="form-control" id="LocationID" name="WorkLocation">
@@ -72,69 +92,71 @@
                                         <div class="form-button col-md-3" style="display:flex; justify-content:center;">
                                             <input type="submit" value="Search" class="btn btn-primary button" onclick="return validateForm();" />
                                         </div>
+
                                     </div>
-                                   
+
                                 </form>
                                 <div class=" table-responsive">
-                                      @if (Model != null && Model.Any())
+                                    @if (Model != null && Model.Any())
                                     {
                                         <div style="text-align: right;">
-                                            <button type="submit" class="btn btn-primary" style="color: black; border: 2px solid black;" onclick="gensal();">
+                                            <button type="submit" class="btn btn-primary" id="myButton" style="color: black; border: 2px solid black;" onclick="gensal();">
                                                 <i class="fa fa-plus"></i> Generate Salary
                                             </button>
                                         </div>
-                                        <br />                                 
-                                    <table id="datatable" class="table table-responsive">
-                                        <thead>
-                                            <tr style="background-color: #00baf2;">
-                                                <th hidden>
-                                                   ID
-                                                </th>
-                                                <th nowrap>Sl. No.</th>
-                                                <th>
-                                                   Employee Name
-                                                </th>
-                                                <th>
-                                                    EmployeeId
-                                                </th>                                            
-                                                 <th>
-                                                    MonthlyCtc
-                                                </th>
-                                                <th>Attendance</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @{
-                                                var count = 0;
-                                          
-                                                                                    @foreach (var item in Model)
-                                            {
-                                                    count++;
-                                                                                            <tr class="table-row">
-                                                                    <td>@count</td>
-                                                                                                                <td style="display:none">
-                                                                                                 @item.Id
-                                                                                                                </td><td>
-                                                                                                @Html.DisplayFor(modelItem => item.FirstName)
-                                                                                                                </td>                                                                     
-                                                                                                                <td>
-                                                                                                @Html.DisplayFor(modelItem => item.EmployeeId)
-                                                                                                                </td>
-                                                                                                              
-                                                                                                                     
-                                                                                                                            <td>
-                                                                                                @Html.DisplayFor(modelItem => item.MonthlyCtc)
-                                                                                                                            </td>
-                                                                <td>
-                                                                <input type="text" id="Attendance" name="Attendance" class="form-control attnd" minlength="1" maxlength="2" style="height: 40px; width: 94px;" onkeyup="fnc(this)" />
-                                                                </td>
+                                        <br />
+                                        <table id="datatable" class="table table-responsive">
+                                            <thead>
+                                                <tr style="background-color: #00baf2;">
+                                                    <th hidden>
+                                                        ID
+                                                    </th>
+                                                    <th nowrap>Sl. No.</th>
+                                                    <th>
+                                                        Employee Name
+                                                    </th>
+                                                    <th>
+                                                        EmployeeId
+                                                    </th>
+                                                    <th>
+                                                        MonthlyCtc
+                                                    </th>
+                                                    <th>Attendance</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @{
+                                                    var count = 0;
 
-                                                                                                                
-                                                                                           </tr>
+                                                    @foreach (var item in Model)
+                                                    {
+                                                        count++;
+                                                        <tr class="table-row">
+                                                            <td>@count</td>
+                                                            <td style="display:none">
+                                                                @item.Id
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(modelItem => item.FirstName)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(modelItem => item.EmployeeId)
+                                                            </td>
+
+
+                                                            <td>
+                                                                @Html.DisplayFor(modelItem => item.MonthlyCtc)
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" id="Attendance" name="Attendance" class="form-control attnd" minlength="1" maxlength="2" style="height: 40px; width: 94px;" onkeyup="fnc(this)" />
+                                                            </td>
+
+
+                                                        </tr>
+                                                    }
                                                 }
-                                            }
-                                        </tbody>
-                                    </table>
+                                            </tbody>
+                                        </table>
                                     }
                                     else
                                     {
@@ -144,10 +166,10 @@
                                 @if (Model != null && Model.Any())
                                 {
                                     <div class="row">
-                                        <div class="col-md-8" >
+                                        <div class="col-md-8">
                                             <label class="form-group">Total Monthly CTC</label>
                                         </div>
-                                        <div class="col-md-4" >
+                                        <div class="col-md-4">
                                             <input type="text" id="TotalAmount" value="@ViewBag.TotalAmmount" class="form-group" style="border: none;margin-left: -62px;" readonly />
                                         </div>
                                     </div>
@@ -163,75 +185,74 @@
     </div>
 
 </div>
-<input hidden type="text" id="custid" value="@ViewBag.custid" />
-<input hidden type="text" id="locid" value="@ViewBag.locid" />
-        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
- <script>   
-     function gensal() {
-                var check = true;
-                var tbody = $("#datatable tbody");
-                if (tbody.children().length > 0) {
-                    var modeldata = new Array;
-                    $('#datatable tbody tr').each(function (index) {
-                        var customer = {};
-                        customer.Id = $(this).find('td:eq(1)').text().trim();
-                        customer.EmployeeId = $(this).find('td:eq(3)').text().trim();
-                        customer.Attendance = $(this).find('input[name="Attendance"]').val();
-                        if (customer.Attendance === "") {
-                            alert("Please fill in all Attendance fields.");
-                            check = false;
+<script>
+
+    function gensal() {
+        var check = true;
+        var tbody = $("#datatable tbody");
+        if (tbody.children().length != 1) {
+            var modeldata = new Array;
+            $('#datatable tbody tr').each(function (index) {
+                var customer = {};
+                customer.Id = $(this).find('td:eq(1)').text().trim();
+                customer.EmployeeId = $(this).find('td:eq(3)').text().trim();
+                customer.Attendance = $(this).find('input[name="Attendance"]').val();
+                if (customer.Attendance === "") {
+                    alert("Please fill in all Attendance fields.");
+                    check = false;
+                    return false;
+                }
+                modeldata.push(customer);
+            });
+
+            ///
+            if (check == true) {
+                $.ajax({
+
+                    url: '/Employee/Empattendance',
+                    data: { customers: modeldata },
+                    //data: { 'id': id, 'Attendance': atten },
+                    dataType: 'json',
+                    type: 'post',
+                    async: 'false',
+
+                    success: function (data) {
+                        if (data.data == true) {
+                            $(".attnd").val("");
+                            alert("Your salary already genrated for this month");
                             return false;
                         }
-                        modeldata.push(customer);
-                    });
 
-                    ///
-                    if (check == true) {
-                        $.ajax({
+                        if ((tbody.children().length) == @Model.Count()) {
+                            $(".attnd").val("");
+                            //location.reload();
+                            alert("Data saved successfully.");
+                        }
+                        debugger;
+                    },
 
-                            url: '/Employee/Empattendance',
-                            data: { customers: modeldata },
-                            //data: { 'id': id, 'Attendance': atten },
-                            dataType: 'json',
-                            type: 'post',
-                            async: 'false',
+                    error: function (err) {
 
-                            success: function (data) {
-                                if (data.data == true) {
-                                $(".attnd").val("");
-                                    alert("Your salary already genrated for this month");
-                                    return false;
-                                }
-
-                                if ((tbody.children().length) == @Model.Count()) {
-                                    $(".attnd").val("");
-                                    //location.reload();
-                                    alert("Data saved successfully.");
-                                }                               
-                                debugger;
-                            },
-
-                            error: function (err) {
-
-                            }
-                        });
                     }
-                }
-                else {
-
-                    return false;
-
-                }
-            }
-    $(function () {
-   $("input[name='Attendance']").on('input', function (e) {
-    $(this).val($(this).val().replace(/[^0-9]/g, ''));
                 });
-            });
-   </script>
- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+            }
+        }
+        else {
+
+            return false;
+
+        }
+    }
+    $(function () {
+        $("input[name='Attendance']").on('input', function (e) {
+            $(this).val($(this).val().replace(/[^0-9]/g, ''));
+        });
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <script type="text/javascript">
     function fnc(inputElement) {
         var value = inputElement.value;
@@ -244,16 +265,8 @@
         }
     }
 </script>
+
 <script>
-
-    $(document).ready(function () {
-
-        $("#CustomerID").val($("#custid").val());
-        $("#LocationID").val($("#locid").val());
-
-        Locations();
-    });
-
     function Locations() {
         var customerId = $("#CustomerID").val();
         if (customerId !== "") {
@@ -277,15 +290,10 @@
         $("#LocationID").empty();
         $("#LocationID").append('<option value="">--Select WorkLocation--</option>');
 
+
         $.each(response, function (i, response) {
             $("#LocationID").append('<option value="' + response.text + '">' + response.value + '</option>');
         });
-
-
-        var locId = $("#locid").val();
-        if (locId !== "") {
-            $("#LocationID").val(locId);
-        }
     }
 </script>
 <script>
@@ -303,6 +311,23 @@
         }
     }
 </script>
+
+<script type="text/javascript">
+
+    $(document).ajaxStart(function () {
+        $("#dvloader").css("display", "block");
+    });
+
+    $(document).ajaxStop(function () {
+        $(".se-pre-con").fadeOut("slow");
+
+    });
+    $(document).ajaxError(function () {
+        $(".se-pre-con").fadeOut("slow");
+
+    });
+</script>
+
 
 
 
