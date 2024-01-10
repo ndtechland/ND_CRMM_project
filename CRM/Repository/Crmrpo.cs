@@ -16,6 +16,7 @@ using System.Reflection.Metadata;
 using System.Drawing;
 using Syncfusion.Drawing;
 using ClosedXML.Excel;
+using Humanizer;
 
 
 namespace CRM.Repository
@@ -287,7 +288,7 @@ namespace CRM.Repository
 
 
             var result = await Task.Run(() => _context.Database
-           .ExecuteSqlRawAsync(@"exec SP_Quation @Action,@ID,@Company_Name,@Customer_Name,@Email,@Sales_Person_Name,@Product_ID,@Subject,@Amount,@Mobile", parameter.ToArray()));
+           .ExecuteSqlRawAsync(@"exec SP_Quation @Action,@ID,@Company_Name,@Customer_Name,@Email,@Sales_Person_Name,@Product_ID,@Subject,@Amount,@Mobile,@IsDeleted", parameter.ToArray()));
 
             return result;
         }
@@ -359,7 +360,9 @@ namespace CRM.Repository
                         Id = Convert.ToInt32(rdr["id"]),
                         FirstName = rdr["FirstName"] == DBNull.Value ? null : Convert.ToString(rdr["FirstName"]),
                         EmployeeId = rdr["EmployeeId"] == DBNull.Value ? null : Convert.ToString(rdr["EmployeeId"]),
-                        MonthlyCtc = rdr["MonthlyCtc"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["MonthlyCtc"])
+                        MonthlyCtc = rdr["MonthlyCtc"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["MonthlyCtc"]),
+                        CustomerID = (long)(rdr["CustomerID"] == DBNull.Value ? 0m : Convert.ToDecimal(rdr["CustomerID"])),
+                        FatherName = rdr["FirstName"] == DBNull.Value ? null : Convert.ToString(rdr["FatherName"]),
                     };
 
                     emp.Add(emps);
@@ -458,6 +461,7 @@ namespace CRM.Repository
                         Scgst = Convert.ToString(rdr["Scgst"]),
                         Igst = Convert.ToString(rdr["Igst"]),
                         State = Convert.ToString(rdr["State"]),
+                        GenerateSalary = Convert.ToDecimal(rdr["GenerateSalary"]),
                     };
 
                     emp.Add(emps);
@@ -630,6 +634,91 @@ namespace CRM.Repository
                 }
             }
 
+        }
+        public WorkLocation GetWorkLocationById(int id)
+        {
+            return _context.WorkLocations.Find(id);
+        }
+        public async Task<int> updateWorkLocation(WorkLocation model)
+        {
+            var parameter = new List<SqlParameter>();
+            parameter.Add(new SqlParameter("@id", model.Id));
+            parameter.Add(new SqlParameter("@AddressLine", model.AddressLine1));
+            parameter.Add(new SqlParameter("@Commissoninpercentage", model.Commissoninpercentage));
+          
+
+            var result = await Task.Run(() => _context.Database
+           .ExecuteSqlRawAsync(@"exec sp_updateWorkLocation @id,@AddressLine,@Commissoninpercentage", parameter.ToArray()));
+
+            return result;
+        }
+
+        public DesignationMaster GetDesignationById(int id)
+        {
+            return _context.DesignationMasters.Find(id);
+        }
+        public async Task<int> updateDesignation(DesignationMaster model)
+        {
+            var parameter = new List<SqlParameter>();
+            parameter.Add(new SqlParameter("@id", model.Id));
+            parameter.Add(new SqlParameter("@DesignationName", model.DesignationName));
+
+            var result = await Task.Run(() => _context.Database
+           .ExecuteSqlRawAsync(@"exec sp_updateDesignation @id,@DesignationName", parameter.ToArray()));
+
+            return result;
+        }
+        public DepartmentMaster GetDepartmentById(int id)
+        {
+            return _context.DepartmentMasters.Find(id);
+        }
+        public async Task<int> updateDepartment(DepartmentMaster model)
+        {
+            var parameter = new List<SqlParameter>();
+            parameter.Add(new SqlParameter("@id", model.Id));
+            parameter.Add(new SqlParameter("@DepartmentName", model.DepartmentName));
+
+            var result = await Task.Run(() => _context.Database
+           .ExecuteSqlRawAsync(@"exec sp_updateDepartment @id,@DepartmentName", parameter.ToArray()));
+
+            return result;
+        }
+        public Customer GetCustomerById(int id)
+        {
+            Customer cs = new Customer();
+            try
+            {
+                SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
+                SqlCommand cmd = new SqlCommand("sp_GetCustomerById", con);
+                cmd.Parameters.Add(new SqlParameter("@id", SqlDbType.Int) { Value = Convert.ToInt32(id) });
+                cmd.CommandType = CommandType.StoredProcedure;
+                con.Open();
+                SqlDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    cs = new Customer()
+                    {
+                        Id = Convert.ToInt32(rdr["id"]),
+                        CompanyName = rdr["Company_Name"] == DBNull.Value ? null : Convert.ToString(rdr["Company_Name"]),
+                        WorkLocation = rdr["Work_Location"] == DBNull.Value? new string[0] : ((string)rdr["Work_Location"]).Split(','),
+                    MobileNumber = rdr["Mobile_number"] == DBNull.Value ? null : Convert.ToString(rdr["Mobile_number"]),
+                        AlternateNumber = (rdr["Alternate_number"] == DBNull.Value ? null : Convert.ToString(rdr["Alternate_number"])),
+                        Email = rdr["Email"] == DBNull.Value ? null : Convert.ToString(rdr["Email"]),
+                        GstNumber = rdr["GST_Number"] == DBNull.Value ? null : Convert.ToString(rdr["GST_Number"]),
+                        BillingAddress = rdr["Billing_Address"] == DBNull.Value ? null : Convert.ToString(rdr["Billing_Address"]),
+                        ProductDetails = rdr["ProductDetails"] == DBNull.Value ? null : Convert.ToString(rdr["ProductDetails"]),
+                        StartDate = (DateTime)(rdr["Start_date"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(rdr["Start_date"])),
+                         RenewDate = (DateTime)(rdr["Renew_Date"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(rdr["Renew_Date"])),
+                        State = rdr["State"] == DBNull.Value ? null : Convert.ToString(rdr["State"]),
+
+                    };
+                }
+                return cs;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 

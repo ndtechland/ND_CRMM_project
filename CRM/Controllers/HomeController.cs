@@ -36,12 +36,31 @@ namespace CRM.Controllers
 
 
         }
-        public IActionResult Customer()
+        [Route("Home/Customer")]
+        public IActionResult Customer(int id=0)
         {
 
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                var emp = new Customer();
+                if(id !=0)
+                {
+                    var data = _ICrmrpo.GetCustomerById(id);
+                    if(data != null)
+                    {
+                        ViewBag.ProductDetails = _context.ProductMasters.Select(p => new SelectListItem
+                        {
+                            Value = p.Id.ToString(),
+                            Text = p.ProductName,
+                        }).ToList();
+                        ViewBag.WorkLocations = _context.WorkLocations.Select(p => new SelectListItem
+                        {
+                            Value = p.Id.ToString(),
+                            Text = p.AddressLine1
+                        }).ToList();
+                        return View(data);
+                    }
+                }
+                //var emp = new Customer();
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 ViewBag.UserName = AddedBy;
                 ViewBag.ProductDetails = _context.ProductMasters.Select(p => new SelectListItem
@@ -54,7 +73,7 @@ namespace CRM.Controllers
                   Value = p.Id.ToString(),
                   Text = p.AddressLine1
               }).ToList();      
-                return View(emp);               
+                return View();               
             }
 
             else
@@ -536,6 +555,141 @@ namespace CRM.Controllers
             };
             return new JsonResult(result);
         }
+
+        public JsonResult EditWorkLocation(int id)
+        {
+            var loc = new WorkLocation();
+            var data = _ICrmrpo.GetWorkLocationById(id);
+            loc.Id = data.Id;
+            loc.AddressLine1 = data.AddressLine1;
+            loc.Commissoninpercentage = data.Commissoninpercentage;
+           
+            var result = new
+            {
+                loc = loc,
+            };
+            return new JsonResult(result);
+        }
+        [HttpPost]
+        public async Task<IActionResult> EditWorkLocation(WorkLocation model)
+        {
+            try
+            {
+                var Location = await _ICrmrpo.updateWorkLocation(model);
+                if (Location != null)
+                {
+                    TempData["ErrorMessage"] = "Work Location update Successfully.";
+                    return RedirectToAction("WorkLocationlist", "Home");
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Work Location not update.";
+                    ModelState.Clear();
+                    return View();
+                }
+            }
+            catch (Exception Ex)
+            {
+                throw new Exception("Error:" + Ex.Message);
+            }
+        }
+
+        public JsonResult EditDesignation(int id)
+        {
+            var loc = new DesignationMaster();
+            var data = _ICrmrpo.GetDesignationById(id);
+            loc.Id = data.Id;
+            loc.DesignationName = data.DesignationName;
+            var result = new
+            {
+                loc = loc,
+            };
+            return new JsonResult(result);
+        }
+        [HttpPost]
+        public async Task<IActionResult> EditDesignation(DesignationMaster model)
+        {
+            try
+            {
+                var Designation = await _ICrmrpo.updateDesignation(model);
+                if (Designation != null)
+                {
+                    TempData["ErrorMessage"] = "Designation update Successfully.";
+                    return RedirectToAction("Designationlist", "Home");
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Designation not update.";
+                    ModelState.Clear();
+                    return View();
+                }
+            }
+            catch (Exception Ex)
+            {
+                throw new Exception("Error:" + Ex.Message);
+            }
+        }
+        public JsonResult EditDepartment(int id)
+        {
+            var loc = new DepartmentMaster();
+            var data = _ICrmrpo.GetDepartmentById(id);
+            loc.Id = data.Id;
+            loc.DepartmentName = data.DepartmentName;
+            var result = new
+            {
+                loc = loc,
+            };
+            return new JsonResult(result);
+        }
+        [HttpPost]
+        public async Task<IActionResult> EditDepartment(DepartmentMaster model)
+        {
+            try
+            {
+                var Department = await _ICrmrpo.updateDepartment(model);
+                if (Department != null)
+                {
+                    TempData["ErrorMessage"] = "Department update Successfully.";
+                    return RedirectToAction("Departmentlist", "Home");
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Department not update.";
+                    ModelState.Clear();
+                    return View();
+                }
+            }
+            catch (Exception Ex)
+            {
+                throw new Exception("Error:" + Ex.Message);
+            }
+        }
+        //public JsonResult EditCustomer(int id)
+        //{
+        //    var loc = new CustomerRegistration();
+        //    var data = _ICrmrpo.GetCustomerById(id);
+        //    var location = _context.WorkLocations.ToList();
+        //    var product = _context.ProductMasters.ToList();
+        //    loc.Id = data.Id;
+        //    loc.CompanyName = data.CompanyName;
+        //    loc.WorkLocation = data.WorkLocation;
+        //    loc.MobileNumber = data.MobileNumber;
+        //    loc.AlternateNumber = data.AlternateNumber;
+        //    loc.Email = data.Email;
+        //    loc.GstNumber=data.GstNumber;
+        //    loc.BillingAddress = data.BillingAddress;
+        //    loc.ProductDetails=data.ProductDetails;
+        //    loc.StartDate = data.StartDate;
+        //    loc.RenewDate = data.RenewDate;
+        //    loc.State=data.State;
+        //    var result = new
+        //    {
+        //        loc = loc,
+        //        Location= location,
+        //        Product= product,
+        //    };
+        //    return new JsonResult(result);
+        //}
     }
 
 }

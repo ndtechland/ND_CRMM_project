@@ -4,7 +4,6 @@
     ViewData["Title"] = "Customer";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
-
 <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
@@ -97,6 +96,7 @@
 
 </head>
 
+
 <div class="page-wrapper">
     <div class="page-body-wrapper">
         <div class="page-sidebar">
@@ -134,8 +134,9 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-body">
-                                <form asp-action="Customer" autocomplete="off">
-                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>                                   
+                                <form asp-action="Customer" method="post" autocomplete="off">
+                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                    <input name="Id" type="text" id="Id" style="display:none">
                                     <div class="row">
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Company Name</label>
@@ -350,15 +351,7 @@
         }
 </script>
 
-<script type="text/javascript">
-    $(".js-select2").select2({
-        closeOnSelect: false,
-        placeholder: "--Select WorkLocation--",
-        allowClear: true,
-        tags: true 
-    });
-</script>
-    <script>
+<script>
         function validateWorkLocation(selectElement) {
             var selectedValues = Array.from(selectElement.selectedOptions, option => option.value);
 
@@ -369,7 +362,7 @@
             }
         }
     </script>
-    <script>
+<script>
         function validateState(selectElement) {
             if (selectElement.value === "") {
                 selectElement.setCustomValidity('Please select State');
@@ -378,5 +371,43 @@
             }
         }
     </script>
+    <script type="text/javascript">
+        $(".js-select2").select2({
+            closeOnSelect: false,
+            placeholder: "--Select WorkLocation--",
+            allowClear: true,
+            tags: true,
+        }).on('change', function (e) {
+            var selectedValues = $(this).val();
+            $('#WorkLocation').text('Selected Values: ' + selectedValues.join(', '));
+        });
+    </script>
+    <script>
+        var workLocations = @Html.Raw(Json.Serialize(Model != null && Model.WorkLocation != null ? Model.WorkLocation : null));
+
+        $(document).ready(function () {
+            $('.js-select2').val(workLocations);
+            $('.js-select2').trigger('change');
+            var selectedText = workLocations ? workLocations.join(', ') : '';
+            $('#WorkLocation').next('.select2-container').find('.select2-selection__rendered').attr('title', selectedText);
+            $('#WorkLocation').next('.select2-container').find('.select2-selection__rendered').text(selectedText);
+        });
+    </script>
+
+
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

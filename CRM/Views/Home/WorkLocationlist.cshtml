@@ -4,18 +4,15 @@
     ViewData["Title"] = "WorkLocationlist";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
-
+@if (TempData["ErrorMessage"] != null)
+{
+    <script>alert('@TempData["ErrorMessage"]');</script>
+}
 <div class="page-wrapper">
     <div class="page-body-wrapper">
         <div class="page-sidebar">
         </div>
-        <!-- Page Sidebar Ends-->
-        <!-- Right sidebar Start-->
-        <!-- Right sidebar Ends-->
-
         <div class="page-body">
-
-            <!-- Container-fluid starts-->
             <div class="container-fluid">
                 <div class="page-header">
                     <div class="row">
@@ -36,8 +33,6 @@
                     </div>
                 </div>
             </div>
-            <!-- Container-fluid Ends-->
-            <!-- Container-fluid starts-->
             <div class="container-fluid">
                 <div class="row">
 
@@ -60,7 +55,7 @@
                                                     Address
                                                 </th>
                                                 <th>
-                                                    Commissoninpercentage
+                                                    Commissonin percentage
                                                 </th>
                                                 <th>Action</th>
                                             </tr>
@@ -68,24 +63,24 @@
                                         <tbody>
                                             @{
                                                 var count = 0;
-                                            @foreach (var item in Model)
+                                                @foreach (var item in Model)
                                             {
                                                     count++;
-                                                    <tr class="table-row">
-                                                    <td>@count</td>
-                                                    <td>
-                                                        @Html.DisplayFor(modelItem => item.AddressLine1)
-                                                    </td>
+                                                        <tr class="table-row">
+                                                        <td>@count</td>
                                                         <td>
-                                                            @Html.DisplayFor(modelItem => item.Commissoninpercentage)
+                                                            @Html.DisplayFor(modelItem => item.AddressLine1)
                                                         </td>
-                                                    <td>
-                                                        <div>
-                                                            <a href="#" class="fa fa-edit m-2 font-success"></a>
-                                                            <a href="@Url.Action("DeleteWorkLocation","Home",new { id=item.Id})" class="fa fa-trash font-danger"></a>
-                                                        </div>
-                                                    </td>
-                                                </tr>
+                                                            <td>
+                                                                @Html.DisplayFor(modelItem => item.Commissoninpercentage)
+                                                            </td>
+                                                        <td>
+                                                            <div>
+                                                                    <a href="#" class="fa fa-edit m-2 font-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="EditWorkLocation(@item.Id)"></a>
+                                                                    <a href="@Url.Action("DeleteWorkLocation","Home",new { id=item.Id})" class="fa fa-trash font-danger"></a>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
                                             }
                                             }
                                         </tbody>
@@ -103,3 +98,65 @@
     </div>
 
 </div>
+
+
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Edit WorkLocation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <form action="EditWorkLocation" method="post" autocomplete="off">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <input name="Id" type="text" id="Id" style="display:none">
+
+                            <div class="row">
+                                <div class="form-group col-sm">
+                                    <label for="validationCustom0">Address</label>
+                                    <input class="form-control" id="AddressLine" name="AddressLine1" type="text" required="">
+
+                                </div>
+                                <div class="form-group col-sm">
+                                    <label for="validationCustom0">Commissonin percentage</label>
+                                    <input class="form-control" id="Commissonin" name="Commissoninpercentage" type="text" required="">
+
+                                </div>
+                            </div>
+                           
+                           
+                            <button class="btn btn-warning" id="btnUpdate">Update</button>
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    function EditWorkLocation(id) {
+        debugger;
+        $.ajax({
+            url: '/Home/EditWorkLocation?id=' + id,
+            type: 'GET',
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            success: function (response) {
+                debugger;
+                $('#Id').val(response.loc.id);
+                $('#AddressLine').val(response.loc.addressLine1);
+                $('#Commissonin').val(response.loc.commissoninpercentage);
+                $('#staticBackdrop').modal('show');
+            },
+            error: function () {
+                alert('Data not found');
+            }
+        });
+    }
+</script>
