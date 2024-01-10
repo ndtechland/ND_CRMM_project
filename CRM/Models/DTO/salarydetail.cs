@@ -7,7 +7,7 @@
          public string? EmployeeId { get; set; }
         public string? WorkLocation { get; set; }
         public long CustomerID { get; set; }
-
+        public string? FatherName { get; set; }
         public decimal? MonthlyCtc { get; set; }
         public bool? IsDeleted { get; set; }
        

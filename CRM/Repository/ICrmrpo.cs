@@ -43,6 +43,12 @@ namespace CRM.Repository
         //for excel
          public byte[] EmployeeListForExcel();
 
-
+        public WorkLocation GetWorkLocationById(int id);
+        public Task<int> updateWorkLocation(WorkLocation model);
+        public DesignationMaster GetDesignationById(int id);
+        public Task<int> updateDesignation(DesignationMaster model);
+        public DepartmentMaster GetDepartmentById(int id);
+        public Task<int> updateDepartment(DepartmentMaster model);
+        public Customer GetCustomerById(int id);
     }
 }

@@ -45,6 +45,7 @@
         public Nullable<decimal> remain { get; set; }
         public string? BankName { get; set; }
         public string? State { get; set; }
+        public decimal? GenerateSalary { get; set; }
 
     }
 }

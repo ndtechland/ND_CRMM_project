@@ -431,12 +431,16 @@ namespace CRM.Controllers
 
             try
             {
-                var month = await _context.Empattendances.Where(x => x.Month == DateTime.Now.Month).ToListAsync();
-
-                if (month.Count > 0)
+                foreach (Empattendance empattendance in customers)
                 {
-                    isActive = true;
+                    var month = await _context.Empattendances.Where(x => x.Month == DateTime.Now.Month && x.EmployeeId == empattendance.EmployeeId ).ToListAsync();
+                    if (month.Count > 0)
+                    {
+                        isActive = true;
+                    }
                 }
+
+                
 
                 if (!isActive)
                 {
@@ -869,8 +873,6 @@ namespace CRM.Controllers
 
         }
 
-
-
         //-----ImportToExcelEmployeeList
         public IActionResult ImportToExcelEmployeeList()
         {
@@ -885,6 +887,7 @@ namespace CRM.Controllers
             }
 
         }
+       
 
     }
 }

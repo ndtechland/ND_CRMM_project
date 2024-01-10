@@ -116,11 +116,15 @@
                                                         Employee Name
                                                     </th>
                                                     <th>
+                                                        FatherName
+                                                    </th>
+                                                    <th>
                                                         EmployeeId
                                                     </th>
                                                     <th>
                                                         MonthlyCtc
                                                     </th>
+                                                    
                                                     <th>Attendance</th>
                                                 </tr>
                                             </thead>
@@ -136,8 +140,14 @@
                                                             <td style="display:none">
                                                                 @item.Id
                                                             </td>
+                                                              <td style="display:none">
+                                                                @item.CustomerID
+                                                            </td>
                                                             <td>
                                                                 @Html.DisplayFor(modelItem => item.FirstName)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(modelItem => item.FatherName)
                                                             </td>
                                                             <td>
                                                                 @Html.DisplayFor(modelItem => item.EmployeeId)
@@ -199,7 +209,9 @@
             $('#datatable tbody tr').each(function (index) {
                 var customer = {};
                 customer.Id = $(this).find('td:eq(1)').text().trim();
-                customer.EmployeeId = $(this).find('td:eq(3)').text().trim();
+                customer.CustomerID = $(this).find('td:eq(2)').text().trim();
+                customer.FatherName = $(this).find('td:eq(4)').text().trim();
+                customer.EmployeeId = $(this).find('td:eq(5)').text().trim();
                 customer.Attendance = $(this).find('input[name="Attendance"]').val();
                 if (customer.Attendance === "") {
                     alert("Please fill in all Attendance fields.");
