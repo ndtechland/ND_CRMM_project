@@ -507,8 +507,6 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Basic).HasColumnType("decimal(18, 0)");
 
-                entity.Property(e => e.ConveyanceAllowance).HasColumnType("decimal(18, 0)");
-
                 entity.Property(e => e.EmpId).HasColumnName("EmpID");
 
                 entity.Property(e => e.EmployeeId)
@@ -521,8 +519,9 @@ namespace CRM.Models.Crm
                     .HasColumnType("decimal(18, 0)")
                     .HasColumnName("EPF");
 
-                entity.Property(e => e.FixedAllowance)
+                entity.Property(e => e.Esic)
                     .HasColumnType("decimal(18, 0)")
+                    .HasColumnName("ESIC")
                     .HasDefaultValueSql("((1400.00))");
 
                 entity.Property(e => e.HouseRentAllowance).HasColumnType("decimal(18, 0)");
@@ -532,6 +531,8 @@ namespace CRM.Models.Crm
                     .HasColumnName("MonthlyCTC");
 
                 entity.Property(e => e.MonthlyGrossPay).HasColumnType("decimal(18, 0)");
+
+                entity.Property(e => e.TravellingAllowance).HasColumnType("decimal(18, 0)");
             });
 
             modelBuilder.Entity<EmployeerEpf>(entity =>
