@@ -33,8 +33,8 @@ namespace CRM.Models.Crm
         public decimal AnnualCTC { get; set; }
         public decimal Basic { get; set; }
         public decimal HouseRentAllowance { get; set; }
-        public decimal ConveyanceAllowance { get; set; }
-        public decimal FixedAllowance { get; set; }
+        public decimal TravellingAllowance { get; set; }
+        public decimal ESIC { get; set; }
         public decimal EPF { get; set; }
         public decimal MonthlyGrossPay { get; set; }
         public decimal MonthlyCTC { get; set; }

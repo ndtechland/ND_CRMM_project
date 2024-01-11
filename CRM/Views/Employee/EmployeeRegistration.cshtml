@@ -102,7 +102,7 @@
                                         <div class="step-circle" onclick="displayStep(4)">4</div>
                                     </div>
                                     <div class="tab-pane fade active show" id="account" role="tabpanel" aria-labelledby="account-tab">
-                                        <form class="needs-validation user-add" id="multi-step-form" method="post" asp-action="EmployeeRegistration">
+                                        <form class="needs-validation user-add" id="multi-step-form" method="post" asp-action="EmployeeRegistration" autocomplete="off">
                                             <div class="step step-1">
                                                 <h4 class="text-danger">Basic info </h4>
 
@@ -359,25 +359,26 @@
                                                         <input class="form-control " value='@ViewBag.AnnualCTC' name="AnnualCTC" id="txtAnnualCTC" type="text" required>
                                                     </div>
                                                     <div class="col">
+                                                        <label>Travelling Allowance</label>
+                                                        @*<label>Conveyance Allowance</label>*@
+                                                        <input class="form-control " value='@ViewBag.ConveyanceAllowance' name="TravellingAllowance" id="ConveyanceAllowance" type="text" required="">
+                                                    </div>
+                                                    <div class="col">
+                                                       @* <label>Fixed Allowance</label>*@
+                                                        <label>ESIC</label>
+                                                        <input class="form-control " value='@ViewBag.FixedAllowance' name="ESIC" id="FixedAllowance" type="text" required="">
+                                                    </div>                                         
+
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col">
                                                         <label>Basic</label>
                                                         <input class="form-control " value='@ViewBag.Basic' value='@ViewBag.Personal_Email_Address' name="Basic" placeholder="00.0" id="txtBasicSalary" type="text" required="" readonly>
                                                     </div>
                                                     <div class="col">
                                                         <label>HouseRent Allowance</label>
                                                         <input class="form-control " value='@ViewBag.HouseRentAllowance' name="HouseRentAllowance" placeholder="00.0" id="txtHouseRentAllowance" type="text" required="" readonly>
-                                                    </div>
-
-                                                </div>
-
-                                                <div class="row">
-
-                                                    <div class="col">
-                                                        <label>Conveyance Allowance</label>
-                                                        <input class="form-control " value='@ViewBag.ConveyanceAllowance' name="ConveyanceAllowance" id="ConveyanceAllowance" type="text" required="">
-                                                    </div>
-                                                    <div class="col">
-                                                        <label>Fixed Allowance</label>
-                                                        <input class="form-control " value='@ViewBag.FixedAllowance' name="FixedAllowance" id="FixedAllowance" type="text" required="">
                                                     </div>
                                                     <div class="col">
                                                         <label>EPF</label>

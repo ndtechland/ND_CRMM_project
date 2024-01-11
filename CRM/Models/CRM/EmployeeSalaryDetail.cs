@@ -10,8 +10,8 @@ namespace CRM.Models.Crm
         public string EmployeeName { get; set; } = null!;
         public decimal Basic { get; set; }
         public decimal HouseRentAllowance { get; set; }
-        public decimal ConveyanceAllowance { get; set; }
-        public decimal FixedAllowance { get; set; }
+        public decimal TravellingAllowance { get; set; }
+        public decimal Esic { get; set; }
         public decimal Epf { get; set; }
         public bool? IsDeleted { get; set; }
         public decimal? MonthlyGrossPay { get; set; }
