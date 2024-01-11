@@ -268,9 +268,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/js/select2.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
 @section scripts {
-
+}
 <script>
-
         $(document).ready(function () {
             $('#State').change(function () {
                 var selectedState = $(this).val();
@@ -290,7 +289,7 @@
             });
         });
     </script>
-}
+
 <script>    
         function onProductChange() {
             var id = $("#ProductDetails").val();
@@ -378,19 +377,37 @@
             allowClear: true,
             tags: true,
         }).on('change', function (e) {
-            var selectedValues = $(this).val();
+            var selectedValues = $(this).text();
             $('#WorkLocation').text('Selected Values: ' + selectedValues.join(', '));
         });
     </script>
     <script>
         var workLocations = @Html.Raw(Json.Serialize(Model != null && Model.WorkLocation != null ? Model.WorkLocation : null));
-
+    var worklocName = '@Html.Raw(Json.Serialize(ViewBag.WorkLocations))'
+    var jsList = JSON.parse(worklocName);
+    var selectedTextName = '';
+    for (var i = 0; i < workLocations.length; i++) {
+        for (var j = 0; j < jsList.length; j++) {
+            if (workLocations[i] == jsList[j].value)
+            {
+                    if (selectedTextName == '') 
+                    {
+                    //$('#WorkLocation').next('.select2-container').find('.select2-selection__rendered').text(selectedTextName);
+                        selectedTextName += jsList[i].text;
+                    } else {
+                        selectedTextName = selectedTextName + ', ' + jsList[i].text;
+                    }
+               
+                }
+            }
+        }
+    
         $(document).ready(function () {
             $('.js-select2').val(workLocations);
             $('.js-select2').trigger('change');
             var selectedText = workLocations ? workLocations.join(', ') : '';
             $('#WorkLocation').next('.select2-container').find('.select2-selection__rendered').attr('title', selectedText);
-            $('#WorkLocation').next('.select2-container').find('.select2-selection__rendered').text(selectedText);
+        $('#WorkLocation').next('.select2-container').find('.select2-selection__rendered').text(selectedTextName);
         });
     </script>
 
