@@ -113,11 +113,11 @@
                                                 </th>
 
                                                 <th>
-                                                    Conveyance Allowance
+                                                    Travelling Allowance
                                                 </th>
 
                                                 <th>
-                                                    FixedAllowance
+                                                    ESIC
                                                 </th>
 
                                                 <th>
@@ -236,7 +236,7 @@
                                                             @Html.DisplayFor(modelItem => item.Emp_Reg_ID)
                                                         </td>
                                                         <td>
-                                                            @Html.DisplayFor(modelItem => item.DateOfJoining)
+                                                           @item.DateOfJoining.ToString("dd/mm/yyyy")
                                                         </td>
                                                         <td>
                                                             @Html.DisplayFor(modelItem => item.WorkEmail)
@@ -266,11 +266,11 @@
                                                             @Html.DisplayFor(modelItem => item.HouseRentAllowance)
                                                         </td>
                                                         <td>
-                                                            @Html.DisplayFor(modelItem => item.ConveyanceAllowance)
+                                                            @Html.DisplayFor(modelItem => item.TravellingAllowance)
                                                         </td>
 
                                                         <td>
-                                                            @Html.DisplayFor(modelItem => item.FixedAllowance)
+                                                            @Html.DisplayFor(modelItem => item.ESIC)
                                                         </td>
 
                                                         <td>
@@ -520,7 +520,7 @@
 </script>
 <script>
     var currentPage = 1;
-    var rowsPerPage = 20;
+    var rowsPerPage = 10;
     $(document).ready(function () {
         function paginateTable() {
             var table = $('#datatable');
