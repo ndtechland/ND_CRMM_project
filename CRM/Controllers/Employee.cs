@@ -118,8 +118,8 @@ namespace CRM.Controllers
                 ViewBag.Basic = "";
                 ViewBag.AnnualCTC = "";
                 ViewBag.HouseRentAllowance = "";
-                ViewBag.ConveyanceAllowance = "";
-                ViewBag.FixedAllowance = "";
+                ViewBag.TravellingAllowance = "";
+                ViewBag.ESIC = "";
                 ViewBag.EPF = "";
                 ViewBag.MonthlyGrossPay = "";
                 ViewBag.MonthlyCTC = "";
@@ -168,8 +168,8 @@ namespace CRM.Controllers
                             ViewBag.Basic = row["Basic"].ToString();
                             ViewBag.AnnualCTC = row["AnnualCTC"].ToString();
                             ViewBag.HouseRentAllowance = row["HouseRentAllowance"].ToString();
-                            ViewBag.ConveyanceAllowance = row["ConveyanceAllowance"].ToString();
-                            ViewBag.FixedAllowance = row["FixedAllowance"].ToString();
+                            ViewBag.TravellingAllowance = row["TravellingAllowance"].ToString();
+                            ViewBag.ESIC = row["ESIC"].ToString();
                             ViewBag.EPF = row["EPF"].ToString();
                             ViewBag.MonthlyGrossPay = row["MonthlyGrossPay"].ToString();
                             ViewBag.MonthlyCTC = row["MonthlyCTC"].ToString();

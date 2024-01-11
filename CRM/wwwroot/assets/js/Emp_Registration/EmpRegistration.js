@@ -487,12 +487,12 @@ function ValidateMainTab() {
     }
 
 
-    if ($("#ConveyanceAllowance").val().trim() == '') {
+    if ($("#TravellingAllowance").val().trim() == '') {
 
         errormessage += 'Please Enter Conveyance Allowance,'
     }
 
-    if ($("#FixedAllowance").val().trim() == '') {
+    if ($("#ESIC").val().trim() == '') {
 
         errormessage += 'Please Enter Fixed Allowance'
     }
