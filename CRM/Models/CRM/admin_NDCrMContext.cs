@@ -52,7 +52,6 @@ namespace CRM.Models.Crm
         public virtual DbSet<TransactionDetail> TransactionDetails { get; set; } = null!;
         public virtual DbSet<WorkLocation> WorkLocations { get; set; } = null!;
         public virtual DbSet<EmployeeImportExcel> EmpMultiforms { get; set; } = null!;
-
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -531,6 +530,8 @@ namespace CRM.Models.Crm
                     .HasColumnName("MonthlyCTC");
 
                 entity.Property(e => e.MonthlyGrossPay).HasColumnType("decimal(18, 0)");
+
+                entity.Property(e => e.Professionaltax).HasColumnType("decimal(18, 0)");
 
                 entity.Property(e => e.TravellingAllowance).HasColumnType("decimal(18, 0)");
             });

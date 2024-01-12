@@ -143,6 +143,7 @@ namespace CRM.Controllers
                 ViewBag.EPF_Number = "";
                 ViewBag.Deduction_Cycle = "";
                 ViewBag.Employee_Contribution_Rate = "";
+                ViewBag.Professionaltax = "";
 
                 ViewBag.btnText = "SAVE";
 
@@ -193,6 +194,7 @@ namespace CRM.Controllers
                             ViewBag.EPF_Number = row["EPF_Number"].ToString();
                             ViewBag.Deduction_Cycle = row["Deduction_Cycle"].ToString();
                             ViewBag.Employee_Contribution_Rate = row["Employee_Contribution_Rate"].ToString();
+                            ViewBag.Professionaltax = row["Professionaltax"].ToString();
                             ViewBag.Emp_Reg_Code = id;
                             ViewBag.btnText = "UPDATE";
 
@@ -887,7 +889,50 @@ namespace CRM.Controllers
             }
 
         }
-       
+        public JsonResult EditSalaryDetails(string EmployeeId)
+        {
+            var empSalaryDetail = new EmployeeSalaryDetail();
+            var data = _ICrmrpo.GetempSalaryDetailtById(EmployeeId); 
+            empSalaryDetail.EmployeeId = data.EmployeeId;
+            empSalaryDetail.AnnualCtc = data.AnnualCtc;
+            empSalaryDetail.Esic = data.Esic;
+            empSalaryDetail.TravellingAllowance = data.TravellingAllowance;
+            empSalaryDetail.Professionaltax = data.Professionaltax;
+            empSalaryDetail.Basic = data.Basic;
+            empSalaryDetail.HouseRentAllowance = data.HouseRentAllowance;
+            empSalaryDetail.Epf = data.Epf;
+            empSalaryDetail.MonthlyCtc = data.MonthlyCtc;
+            empSalaryDetail.MonthlyGrossPay = data.MonthlyGrossPay;
+            var result = new
+            {
+                empSalaryDetail = empSalaryDetail,
+
+            };
+            return new JsonResult(result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditSalaryDetails(EmployeeSalaryDetail model)
+        {
+            try
+            {
+                var Salary = await _ICrmrpo.updateSalaryDetail(model);
+                if (Salary != null)
+                {
+                    ViewBag.Message= "salarydetail update Successfully.";
+                    return RedirectToAction("salarydetail", "Employee");
+                }
+                else
+                {
+                    ModelState.Clear();
+                    return View();
+                }
+            }
+            catch (Exception Ex)
+            {
+                throw new Exception("Error:" + Ex.Message);
+            }
+        }
 
     }
 }
