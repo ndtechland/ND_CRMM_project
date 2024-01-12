@@ -26,6 +26,7 @@ namespace CRM.Models.DTO
         public decimal HouseRentAllowance { get; set; }
         public decimal TravellingAllowance { get; set; }
         public decimal ESIC { get; set; }
+        public decimal Professionaltax { get; set; }
         public decimal EPF { get; set; }
         public decimal MonthlyGrossPay { get; set; }
         public decimal MonthlyCTC { get; set; }

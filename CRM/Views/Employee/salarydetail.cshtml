@@ -5,6 +5,10 @@
     ViewData["Title"] = "salarydetail";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
+@if (ViewBag.Message != null)
+{
+    <script>alert('@ViewBag.Message');</script>
+}
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <style>
     .button {
@@ -45,7 +49,7 @@
                         <div class="col-lg-6">
                             <div class="page-header-left">
                                 <h3>
-                                    Salarydetail List
+                                    Salary detail List
                                 </h3>
                             </div>
                         </div>
@@ -112,20 +116,21 @@
                                                         ID
                                                     </th>
                                                     <th nowrap>Sl. No.</th>
-                                                    <th>
+                                                    <th nowrap>
                                                         Employee Name
                                                     </th>
-                                                    <th>
-                                                        FatherName
+                                                    <th nowrap>
+                                                        Father Name
                                                     </th>
-                                                    <th>
-                                                        EmployeeId
+                                                    <th nowrap>
+                                                        Employee Id
                                                     </th>
-                                                    <th>
-                                                        MonthlyCtc
+                                                    <th nowrap>
+                                                        Monthly CTC
                                                     </th>
                                                     
-                                                    <th>Attendance</th>
+                                                    <th nowrap>Attendance</th>
+                                                    <th nowrap>Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -159,6 +164,11 @@
                                                             </td>
                                                             <td>
                                                                 <input type="text" id="Attendance" name="Attendance" class="form-control attnd" minlength="1" maxlength="2" style="height: 40px; width: 94px;" onkeyup="fnc(this)" />
+                                                            </td>
+                                                            <td>
+                                                                <a href="#" class="fa fa-edit m-2 font-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="EditSalaryDetails('@item.EmployeeId')">
+                                                                    Edit Salary
+                                                                </a>
                                                             </td>
 
 
@@ -351,6 +361,159 @@
     });
 </script>
 
+<script>
+    function EditSalaryDetails(EmployeeId) {
+        debugger;
+        $.ajax({
+            url: '/Employee/EditSalaryDetails?EmployeeId=' + EmployeeId,
+            type: 'GET',
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            success: function (response) {
+                debugger;
+                $('#Employee').val(response.empSalaryDetail.employeeId);
+                $('#txtAnnualCTC').val(response.empSalaryDetail.annualCtc);
+                $('#TravellingAllowance').val(response.empSalaryDetail.travellingAllowance);
+                $('#ESIC').val(response.empSalaryDetail.esic);
+                $('#Professionaltax').val(response.empSalaryDetail.professionaltax);
+                $('#txtBasicSalary').val(response.empSalaryDetail.basic);
+                $('#txtHouseRentAllowance').val(response.empSalaryDetail.houseRentAllowance);
+                $('#txtMonthlyCTC').val(response.empSalaryDetail.monthlyCtc);
+                $('#txtMonthlyGrossPay').val(response.empSalaryDetail.monthlyGrossPay);
+                $('#txtEPF').val(response.empSalaryDetail.epf);
+               
+                $('#staticBackdrop').modal('show');
+
+            },
+            error: function () {
+                alert('Data not found');
+            }
+        });
+    }
+</script>
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Edit Salary Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <form action="EditSalaryDetails" method="post" autocomplete="off">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <input name="EmployeeId" type="text" id="Employee" style="display:none">
+                            <div class="row">
+                                <div class="col">
+                                    <label>Annual CTC</label>
+                                    <input class="form-control " name="AnnualCTC" id="txtAnnualCTC" type="text" required>
+                                </div>
+                                <div class="col">
+                                    <label>Travelling Allowance</label>
+                                    <input class="form-control "  name="TravellingAllowance" id="TravellingAllowance" type="text" required="">
+                                </div>                               
+                            </div>
+                            <div class="row">
+                              <div class="col">
+                                    <label>ESIC</label>
+                                    <input class="form-control "  name="ESIC" id="ESIC" type="text" required="">
+                                </div>
+                                <div class="col">
+                                    <label>Professional tax</label>
+                                    <input class="form-control " name="Professionaltax" id="Professionaltax" type="text" required="" readonly>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <label>Basic</label>
+                                    <input class="form-control "  name="Basic" placeholder="00.0" id="txtBasicSalary" type="text" required="" readonly>
+                                </div>
+                                <div class="col">
+                                    <label>HouseRent Allowance</label>
+                                    <input class="form-control "  name="HouseRentAllowance" placeholder="00.0" id="txtHouseRentAllowance" type="text" required="" readonly>
+                                </div>                               
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <label>EPF</label>
+                                    <input class="form-control "  name="EPF" placeholder="00.0" id="txtEPF" type="text" required="" readonly>
+                                </div>
+                                <div class="col">
+                                    <label>Monthly CTC</label>
+                                    <input class="form-control "  name="MonthlyCTC" placeholder="00.0" id="txtMonthlyCTC" type="text" required="" readonly>
+                                </div>
+                            </div>
+                            <div class="row">
+                               
+                                <div class="col">
+                                    <label>Monthly GrossPay</label>
+                                    <input class="form-control " name="MonthlyGrossPay" placeholder="00.0" id="txtMonthlyGrossPay" type="text" required="" readonly>
+                                </div>
+
+                            </div>
+                            <div style="margin-top: 15px">
+                                 <button class="btn btn-warning" id="btnUpdate">Update</button>
+                                 <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                            </div>
+                           
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        // Get the annual salary input element
+        var annualSalaryInput = $('#txtAnnualCTC');
+
+        // Get the monthly salary input element
+        var monthlySalaryInput = $('#txtMonthlyCTC');
+        var basicSalaryInput = $('#txtBasicSalary');
+        var basicSalaryInput = $('#txtBasicSalary');
+        var HouseRentAllowanceInput = $('#txtHouseRentAllowance');
+        var EPFInput = $('#txtEPF');
+        var MonthlyGrossPayInput = $('#txtMonthlyGrossPay');
+        var ProfessionalInput = $('#Professionaltax');
+
+        // Attach an input event listener to the annual salary input
+        annualSalaryInput.on('input', function () {
+            // Get the value from the annual salary input
+            var annualSalary = parseFloat($(this).val());
+
+            // Check if the entered value is a valid number
+            if (!isNaN(annualSalary)) {
+                // Calculate monthly salary (assuming 12 months in a year)
+                var monthlySalary = annualSalary / 12;
+                var basicSalary = annualSalary / 2;
+                var houseRent = basicSalary / 2;
+                var EPFCalculation = monthlySalary * 12 / 100;
+                var MonthlyGross = monthlySalary - EPFCalculation;
+                var Professional = monthlySalary * 0.75 / 100;
+
+                // Update the value of the monthly salary input
+                monthlySalaryInput.val(monthlySalary.toFixed(2));
+                basicSalaryInput.val(basicSalary.toFixed(2));
+                HouseRentAllowanceInput.val(houseRent.toFixed(2));
+                EPFInput.val(EPFCalculation.toFixed(2));
+                MonthlyGrossPayInput.val(MonthlyGross.toFixed(2));
+                ProfessionalInput.val(Professional.toFixed(2));
+            } else {
+                // If the entered value is not a valid number, clear the monthly salary input
+                monthlySalaryInput.val('');
+                basicSalaryInput.val('');
+                HouseRentAllowanceInput.val('');
+                EPFInput.val('');
+                MonthlyGrossPayInput.val('');
+                ProfessionalInput.val('');
+            }
+        });
+    });
+</script>
 
 
 
