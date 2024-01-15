@@ -86,7 +86,6 @@ namespace CRM.Repository
         }
         public async Task<int> Customer(Customer model)
         {
-
             var parameter = new List<SqlParameter>();
             parameter.Add(new SqlParameter("@Company_Name", model.CompanyName));
             parameter.Add(new SqlParameter("@Work_Location", string.Join(",", model.WorkLocation)));
@@ -690,6 +689,7 @@ namespace CRM.Repository
             Customer cs = new Customer();
             try
             {
+                DateTime startDate;
                 SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
                 SqlCommand cmd = new SqlCommand("sp_GetCustomerById", con);
                 cmd.Parameters.Add(new SqlParameter("@id", SqlDbType.Int) { Value = Convert.ToInt32(id) });
@@ -710,12 +710,12 @@ namespace CRM.Repository
                         BillingAddress = rdr["Billing_Address"] == DBNull.Value ? null : Convert.ToString(rdr["Billing_Address"]),
                         ProductDetails = rdr["ProductDetails"] == DBNull.Value ? null : Convert.ToString(rdr["ProductDetails"]),
                         StartDate = (DateTime)(rdr["Start_date"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(rdr["Start_date"])),
-                         RenewDate = (DateTime)(rdr["Renew_Date"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(rdr["Renew_Date"])),
+                        RenewDate = (DateTime)(rdr["Renew_Date"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(rdr["Renew_Date"])),
                         State = rdr["State"] == DBNull.Value ? null : Convert.ToString(rdr["State"]),
-
+                        
                     };
                 }
-                return cs;
+                return cs; 
             }
             catch (Exception ex)
             {
@@ -742,7 +742,25 @@ namespace CRM.Repository
             parameters.Add(new SqlParameter("@Professionaltax", model.Professionaltax));
             var result = await _context.Database.ExecuteSqlRawAsync(@"exec sp_SalaryDetails @EmployeeID,@AnnualCTC,@Basic,@HouseRentAllowance,@TravellingAllowance,@ESIC,@EPF,@MonthlyGrossPay,@MonthlyCTC,@Professionaltax", parameters.ToArray());
            return result;
-        }        
+        }
+        public async Task<int> updateCustomerReg(Customer model)
+        {
+            var parameter = new List<SqlParameter>();
+            parameter.Add(new SqlParameter("@id", model.Id));
+            parameter.Add(new SqlParameter("@Company_Name", model.CompanyName));
+            parameter.Add(new SqlParameter("@Work_Location", string.Join(",", model.WorkLocation)));
+            parameter.Add(new SqlParameter("@Mobile_number", model.MobileNumber));
+            parameter.Add(new SqlParameter("@Alternate_number", model.AlternateNumber));
+            parameter.Add(new SqlParameter("@Email", model.Email));
+            parameter.Add(new SqlParameter("@GST_Number", model.GstNumber));
+            parameter.Add(new SqlParameter("@Billing_Address", model.BillingAddress));
+            parameter.Add(new SqlParameter("@Product_Details", model.ProductDetails));
+            parameter.Add(new SqlParameter("@Start_date", model.StartDate));
+            parameter.Add(new SqlParameter("@Renew_Date", model.RenewDate));
+            parameter.Add(new SqlParameter("@State", model.State));
+            var result = await _context.Database.ExecuteSqlRawAsync(@"exec sp_updateCustomer_Reg @id,@Company_Name, @Work_Location,@Mobile_number,@Alternate_number,@Email,@GST_Number,@Billing_Address,@Product_Details,@Start_date,@Renew_Date,@State", parameter.ToArray());
+            return result;
+        }
     }
 
 }

@@ -145,7 +145,7 @@
                                         </div>
                                         <div class="form-group  col-sm ">
                                             <label for="validationCustom0">Work Location</label>
-                                            @Html.DropDownListFor(model => model.WorkLocation, new MultiSelectList(ViewBag.WorkLocations, "Value", "Text"), "-- Select WorkLocation --", new { @class = "form-control js-select2",@multiple="multiple",name="WorkLocation",id="WorkLocation",required="required",onchange = "validateWorkLocation(this)",oninvalid="this.setCustomValidity('Please select WorkLocation')" ,oninput="this.setCustomValidity('')" })
+                                            @Html.DropDownListFor(model => model.WorkLocation, new MultiSelectList(ViewBag.WorkLocations, "Value", "Text"), "-- Select WorkLocation --", new { @class = "form-control js-select2",@multiple="multiple",name="WorkLocation",id="WorkLocation",onchange = "validateWorkLocation(this)",oninvalid="this.setCustomValidity('Please select WorkLocation')" ,oninput="this.setCustomValidity('')" })
                                             <span asp-validation-for="WorkLocation" class="text-danger"></span>
                                         </div>
                                     </div>
@@ -196,12 +196,12 @@
                                     <div class="row">
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Start Date</label>
-                                            <input name="StartDate" type="date" class="form-control" required="" oninvalid="this.setCustomValidity('Please select StartDate')" oninput="this.setCustomValidity('')" />
+                                            <input name="StartDate" type="date" id="StartDate" class="form-control text-box single-line" required="" oninvalid="this.setCustomValidity('Please select StartDate')" oninput="this.setCustomValidity('')" value="@ViewBag.startDate" />
                                             <span asp-validation-for="StartDate" class="text-danger"></span>
                                         </div>
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Renew Date</label>
-                                            <input name="RenewDate" type="date" class="form-control" required="" oninvalid="this.setCustomValidity('Please select RenewDate')" oninput="this.setCustomValidity('')" />
+                                            <input name="RenewDate" type="date" class="form-control" required="" oninvalid="this.setCustomValidity('Please select RenewDate')" oninput="this.setCustomValidity('')" value="@ViewBag.renewDate"/>
                                             <span asp-validation-for="RenewDate" class="text-danger"></span>
                                         </div>
                                     </div>
@@ -269,6 +269,27 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
 @section scripts {
 }
+
+<script>
+        $(document).ready(function () {
+            onProductChange();
+            function mess() {
+                if('@ViewBag.state' != null)
+                {
+                   
+                    $('#State').val('@ViewBag.state');
+                    //onProductChange();
+                     $('#State').trigger('change');
+
+                }
+            }
+            setTimeout(mess,1000);
+           
+        });
+ </script>
+
+
+
 <script>
         $(document).ready(function () {
             $('#State').change(function () {
@@ -279,6 +300,7 @@
                     $('#HsnSacCode').val($('#hsnSacCode').val());
                     $('#Price').val($('#price').val());
                     $('#IGST').val(''); 
+                   
                 } else {
                     $('#IGST').val($('#iGST').val());
                     $('#CGST').val('');
@@ -305,7 +327,7 @@
                     $('#HsnSacCode').val('');
                     $('#Price').val('');
                     $('#IGST').val('');
-                    $('#State').val('');
+                $('#State').val('');
                     if (response) {
                         $('#cGST').val(response.data.cgst);
                         $('#iGST').val(response.data.igst);
@@ -410,14 +432,7 @@
         $('#WorkLocation').next('.select2-container').find('.select2-selection__rendered').text(selectedTextName);
         });
     </script>
-
-
-   
-
-
-
-
-
+  
 
 
 

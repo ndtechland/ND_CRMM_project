@@ -57,6 +57,9 @@ namespace CRM.Controllers
                             Value = p.Id.ToString(),
                             Text = p.AddressLine1
                         }).ToList();
+                        ViewBag.state = data.State;
+                        ViewBag.startDate = ((DateTime)data.StartDate).ToString("yyyy-MM-dd");
+                        ViewBag.renewDate = ((DateTime)data.RenewDate).ToString("yyyy-MM-dd");
                         return View(data);
                     }
                 }
@@ -82,15 +85,21 @@ namespace CRM.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> Customer(Customer model)
+        public async Task<IActionResult> Customer(Customer model )
         {
             try
-            {              
+            {
                 var response = await _ICrmrpo.Customer(model);
+                if(model.Id != null)
+                {
+                    var data = await _ICrmrpo.updateCustomerReg(model);
+                    return RedirectToAction("CustomerList", "Home");
+                    TempData["msg"] = "Update Successfully.";
+                }
                 if (response != null)
                 {
                     return RedirectToAction("CustomerList", "Home");
-                    TempData["msg"] = "Regiter Successfully.";
+                    TempData["msg"] = "Registration Successfully.";
                 }
                 else
                 {
@@ -663,33 +672,7 @@ namespace CRM.Controllers
             {
                 throw new Exception("Error:" + Ex.Message);
             }
-        }
-        //public JsonResult EditCustomer(int id)
-        //{
-        //    var loc = new CustomerRegistration();
-        //    var data = _ICrmrpo.GetCustomerById(id);
-        //    var location = _context.WorkLocations.ToList();
-        //    var product = _context.ProductMasters.ToList();
-        //    loc.Id = data.Id;
-        //    loc.CompanyName = data.CompanyName;
-        //    loc.WorkLocation = data.WorkLocation;
-        //    loc.MobileNumber = data.MobileNumber;
-        //    loc.AlternateNumber = data.AlternateNumber;
-        //    loc.Email = data.Email;
-        //    loc.GstNumber=data.GstNumber;
-        //    loc.BillingAddress = data.BillingAddress;
-        //    loc.ProductDetails=data.ProductDetails;
-        //    loc.StartDate = data.StartDate;
-        //    loc.RenewDate = data.RenewDate;
-        //    loc.State=data.State;
-        //    var result = new
-        //    {
-        //        loc = loc,
-        //        Location= location,
-        //        Product= product,
-        //    };
-        //    return new JsonResult(result);
-        //}
+        }  
     }
 
 }
