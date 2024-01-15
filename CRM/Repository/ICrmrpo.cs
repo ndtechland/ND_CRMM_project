@@ -52,6 +52,7 @@ namespace CRM.Repository
         public Customer GetCustomerById(int id);
         public EmployeeSalaryDetail GetempSalaryDetailtById(string EmployeeId);
         public Task<int> updateSalaryDetail(EmployeeSalaryDetail model);
+        public Task<int> updateCustomerReg(Customer model);
 
     }
 }
