@@ -128,9 +128,7 @@
                                                         <td>
                                                             <div>
                                                                 <a href="@Url.Action("Customer","Home",new { id=item.Id})" class="fa fa-edit m-2 font-success"></a>
-                                                                <i class="fa fa-trash font-danger"></i>
-
-
+                                                                <a href="@Url.Action("DeleteCustomer","Home",new { id=item.Id})" class="fa fa-trash font-danger"></a>
                                                             </div>
                                                         </td>
                                                     </tr>
