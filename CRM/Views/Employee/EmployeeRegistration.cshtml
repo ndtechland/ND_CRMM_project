@@ -369,7 +369,7 @@
                                                     <div class="col">
                                                        @* <label>Fixed Allowance</label>*@
                                                         <label>ESIC</label>
-                                                        <input class="form-control " value='@ViewBag.ESIC' name="ESIC" id="ESIC" type="text" required="">
+                                                        <input class="form-control " value='@ViewBag.ESIC' name="ESIC" id="ESIC" type="text" required="" readonly>
                                                     </div>                                         
                                                     <div class="col">
                                                         <label>Professional tax</label>
@@ -703,7 +703,8 @@
         var HouseRentAllowanceInput = $('#txtHouseRentAllowance');
         var EPFInput = $('#txtEPF');
         var MonthlyGrossPayInput = $('#txtMonthlyGrossPay');
-          var ProfessionalInput = $('#Professionaltax');
+          var ESICInput = $('#ESIC');
+        var ProfessionaltaxInput = $('#Professionaltax');
 
         // Attach an input event listener to the annual salary input
         annualSalaryInput.on('input', function () {
@@ -718,14 +719,29 @@
                 var houseRent = basicSalary / 2;
                 var EPFCalculation = monthlySalary * 12 / 100;
                 var MonthlyGross = monthlySalary - EPFCalculation;
-                var Professional = monthlySalary * 0.75 / 100;
+                var ESIC = monthlySalary * 0.75 / 100;
+                var professionaltax;
+           switch (true) {
+                case monthlySalary < 2001:
+                    professionaltax = 200;
+                    break;
+                case monthlySalary < 15001:
+                    professionaltax = 0;
+                    break;
+                case monthlySalary > 15000:
+                    professionaltax = 150;
+                    break;
+                default:
+                    professionaltax = 0;  
+            }
                 // Update the value of the monthly salary input
                 monthlySalaryInput.val(monthlySalary.toFixed(2));
                 basicSalaryInput.val(basicSalary.toFixed(2));
                 HouseRentAllowanceInput.val(houseRent.toFixed(2));
                 EPFInput.val(EPFCalculation.toFixed(2));
                 MonthlyGrossPayInput.val(MonthlyGross.toFixed(2));
-                ProfessionalInput.val(Professional.toFixed(2));
+                ESICInput.val(ESIC.toFixed(2));
+                 ProfessionaltaxInput.val(professionaltax.toFixed(2));
             } else {
                 // If the entered value is not a valid number, clear the monthly salary input
                 monthlySalaryInput.val('');
@@ -733,7 +749,8 @@
                 HouseRentAllowanceInput.val('');
                 EPFInput.val('');
                 MonthlyGrossPayInput.val('');
-                ProfessionalInput.val('');
+                ESICInput.val('');
+                ProfessionaltaxInput.val('');
             }
         });
 

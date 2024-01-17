@@ -3,6 +3,7 @@ using CRM.Models.CRM;
 using CRM.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Asn1.Esf;
 using System.Data;
 
 namespace CRM.Repository
@@ -53,6 +54,5 @@ namespace CRM.Repository
         public EmployeeSalaryDetail GetempSalaryDetailtById(string EmployeeId);
         public Task<int> updateSalaryDetail(EmployeeSalaryDetail model);
         public Task<int> updateCustomerReg(Customer model);
-
     }
 }

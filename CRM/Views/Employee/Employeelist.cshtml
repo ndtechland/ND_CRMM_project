@@ -359,7 +359,7 @@
                                                         <td>
                                                             <div>
                                                                 <a href="EmployeeRegistration?id=@item.Emp_Reg_ID" class="fa fa-edit m-2 font-success"></a>
-                                                                <a href="@Url.Action("DeleteEmployee","Employee",new { id=item.EmployeeId})" class="fa fa-trash font-danger"></a>
+                                                                <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteEmployee","Employee", new { id = item.EmployeeId })')" class="fa fa-trash font-danger"></a>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -568,4 +568,12 @@
         });
     });
 
+</script>
+<script>
+    function confirmDelete(url) {
+        var result = confirm("Are you sure you want to delete?");
+        if (result) {
+            window.location.href = url;
+        }
+    }
 </script>
