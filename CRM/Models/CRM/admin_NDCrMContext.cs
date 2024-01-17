@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using CRM.Models.CRM;
+using CRM.Models.DTO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -524,6 +526,8 @@ namespace CRM.Models.Crm
                     .HasDefaultValueSql("((1400.00))");
 
                 entity.Property(e => e.HouseRentAllowance).HasColumnType("decimal(18, 0)");
+
+                entity.Property(e => e.Incentive).HasColumnType("decimal(18, 0)");
 
                 entity.Property(e => e.MonthlyCtc)
                     .HasColumnType("decimal(18, 0)")

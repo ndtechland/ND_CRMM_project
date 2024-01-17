@@ -19,5 +19,6 @@ namespace CRM.Models.Crm
         public int? EmpId { get; set; }
         public decimal? AnnualCtc { get; set; }
         public decimal? Professionaltax { get; set; }
+        public decimal? Incentive { get; set; }
     }
 }

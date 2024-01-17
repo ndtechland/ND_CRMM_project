@@ -29,7 +29,8 @@ using Microsoft.AspNetCore.Hosting;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using DocumentFormat.OpenXml.Wordprocessing;
 using System;
-
+using System.Text.Json;
+using ClosedXML.Excel;
 
 namespace CRM.Controllers
 {
@@ -465,7 +466,7 @@ namespace CRM.Controllers
                                         Year = DateTime.Now.Year,
                                         Attendance = item.Attendance,
                                         Entry = DateTime.Now,
-                                        GenerateSalary = decimal.Round((decimal)(ctc.MonthlyCtc / 30 * item.Attendance), 2),
+                                        GenerateSalary = decimal.Round((decimal)(ctc.MonthlyCtc / 25 * item.Attendance), 2),
                                         Lop = (decimal)(ctc.MonthlyCtc) - decimal.Round((decimal)(ctc.MonthlyCtc / 30 * item.Attendance), 2),
                                     };
 
@@ -903,6 +904,7 @@ namespace CRM.Controllers
             empSalaryDetail.Epf = data.Epf;
             empSalaryDetail.MonthlyCtc = data.MonthlyCtc;
             empSalaryDetail.MonthlyGrossPay = data.MonthlyGrossPay;
+            empSalaryDetail.Incentive = data.Incentive;
             var result = new
             {
                 empSalaryDetail = empSalaryDetail,
@@ -933,7 +935,92 @@ namespace CRM.Controllers
                 throw new Exception("Error:" + Ex.Message);
             }
         }
+        [HttpGet]
+        [Route("Employee/ESCDownloadExcel")]
+        public async Task<IActionResult> ESCDownloadExcel()
+        {
+            List<ECS> employeeList =await ESCExcel("customerId", "WorkLocation");
 
+            using (var workbook = new XLWorkbook())
+            {
+                var worksheet = workbook.Worksheets.Add("ESC");
+                var currentRow = 1;
+
+                worksheet.Cell(currentRow, 1).Value = "Sr.No.";
+                worksheet.Cell(currentRow, 1).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentRow, 2).Value = "Employee ID";
+                worksheet.Cell(currentRow, 2).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentRow, 3).Value = "Employee Name";
+                worksheet.Cell(currentRow, 3).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentRow, 4).Value = "Account Number";
+                worksheet.Cell(currentRow, 4).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentRow, 5).Value = "IFSC";
+                worksheet.Cell(currentRow, 5).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentRow, 6).Value = "netpayment";
+                worksheet.Cell(currentRow, 6).Style.Fill.BackgroundColor = XLColor.Yellow;
+
+                currentRow++;
+
+                var index = 1;
+                foreach (var item in employeeList)
+                {
+                    worksheet.Cell(currentRow, 1).Value = index++;
+                    worksheet.Cell(currentRow, 2).Value = item.EmployeeId;
+                    worksheet.Cell(currentRow, 3).Value = item.FirstName;
+                    worksheet.Cell(currentRow, 4).Value = item.AccountNumber;
+                    worksheet.Cell(currentRow, 5).Value = item.Ifsc;
+                    worksheet.Cell(currentRow, 6).Value = item.netpayment;
+                    currentRow++;
+                }
+
+                using (var stream = new MemoryStream())
+                {
+                    workbook.SaveAs(stream);
+                    stream.Seek(0, SeekOrigin.Begin);
+
+                    return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "ESCData.xlsx");
+                }
+            }
+        }
+
+
+        public async Task<List<ECS>> ESCExcel(string customerId, string WorkLocation)
+        {
+            List<ECS> emp = new List<ECS>();
+            try
+            {
+                SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
+                SqlCommand cmd = new SqlCommand("sp_ECSSalary", con);
+                cmd.Parameters.Add(new SqlParameter("@CustomerID", SqlDbType.Int) { Value = Convert.ToInt32(customerId) });
+                cmd.Parameters.Add(new SqlParameter("@WorkLocation", SqlDbType.Int) { Value = Convert.ToInt32(WorkLocation) });
+                cmd.CommandType = CommandType.StoredProcedure;
+                con.Open();
+                SqlDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    var emps = new ECS()
+                    {
+                        Id = Convert.ToInt32(rdr["id"]),
+                        FirstName = rdr["FirstName"] == DBNull.Value ? null : Convert.ToString(rdr["FirstName"]),
+                        EmployeeId = rdr["EmployeeId"] == DBNull.Value ? null : Convert.ToString(rdr["EmployeeId"]),
+                        AccountNumber = (int)(rdr["AccountNumber"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["AccountNumber"])),
+                        Ifsc = rdr["Ifsc"] == DBNull.Value ? null : Convert.ToString(rdr["Ifsc"]),
+                        netpayment = rdr["netpayment"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["netpayment"]),
+                    };
+
+                    emp.Add(emps);
+                }
+                return emp;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                emp = null;
+            }
+        }
     }
 }
 

@@ -104,9 +104,13 @@
                                     @if (Model != null && Model.Any())
                                     {
                                         <div style="text-align: right;">
+                                            <button type="button" class="btn btn-primary" id="downloadButton" style="color: black; border: 2px solid black;" onclick="ESCExcelfn()">
+                                                ECS
+                                            </button>
                                             <button type="submit" class="btn btn-primary" id="myButton" style="color: black; border: 2px solid black;" onclick="gensal();">
                                                 <i class="fa fa-plus"></i> Generate Salary
                                             </button>
+                                            
                                         </div>
                                         <br />
                                         <table id="datatable" class="table table-responsive">
@@ -199,6 +203,9 @@
                     </div>
                 </div>
             </div>
+            <div id="pagination-container">
+                <ul id="pagination" class="pagination"></ul>
+            </div>
         </div>
 
 
@@ -210,7 +217,10 @@
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
 <script>
+    function ESCExcelfn() {
 
+        window.location.href = '/Employee/ESCDownloadExcel'
+    }
     function gensal() {
         var check = true;
         var tbody = $("#datatable tbody");
@@ -381,6 +391,7 @@
                 $('#txtMonthlyCTC').val(response.empSalaryDetail.monthlyCtc);
                 $('#txtMonthlyGrossPay').val(response.empSalaryDetail.monthlyGrossPay);
                 $('#txtEPF').val(response.empSalaryDetail.epf);
+                $('#txtIncentive').val(response.empSalaryDetail.incentive);
                
                 $('#staticBackdrop').modal('show');
 
@@ -417,7 +428,7 @@
                             <div class="row">
                               <div class="col">
                                     <label>ESIC</label>
-                                    <input class="form-control "  name="ESIC" id="ESIC" type="text" required="">
+                                    <input class="form-control " name="ESIC" id="ESIC" type="text" required="" readonly>
                                 </div>
                                 <div class="col">
                                     <label>Professional tax</label>
@@ -450,6 +461,10 @@
                                     <label>Monthly GrossPay</label>
                                     <input class="form-control " name="MonthlyGrossPay" placeholder="00.0" id="txtMonthlyGrossPay" type="text" required="" readonly>
                                 </div>
+                                <div class="col">
+                                    <label>Incentive / Advance </label>
+                                    <input class="form-control " name="Incentive" placeholder="00.0" id="txtIncentive" type="text" required="">
+                                </div>
 
                             </div>
                             <div style="margin-top: 15px">
@@ -478,7 +493,8 @@
         var HouseRentAllowanceInput = $('#txtHouseRentAllowance');
         var EPFInput = $('#txtEPF');
         var MonthlyGrossPayInput = $('#txtMonthlyGrossPay');
-        var ProfessionalInput = $('#Professionaltax');
+        var ESICInput = $('#ESIC');
+        var ProfessionaltaxInput = $('#Professionaltax');
 
         // Attach an input event listener to the annual salary input
         annualSalaryInput.on('input', function () {
@@ -493,7 +509,21 @@
                 var houseRent = basicSalary / 2;
                 var EPFCalculation = monthlySalary * 12 / 100;
                 var MonthlyGross = monthlySalary - EPFCalculation;
-                var Professional = monthlySalary * 0.75 / 100;
+                var ESIC = monthlySalary * 0.75 / 100;
+                var professionaltax;
+                switch (true) {
+                    case monthlySalary < 2001:
+                        professionaltax = 200;
+                        break;
+                    case monthlySalary < 15001:
+                        professionaltax = 0;
+                        break;
+                    case monthlySalary > 15000:
+                        professionaltax = 150;
+                        break;
+                    default:
+                        professionaltax = 0;
+                }
 
                 // Update the value of the monthly salary input
                 monthlySalaryInput.val(monthlySalary.toFixed(2));
@@ -501,7 +531,8 @@
                 HouseRentAllowanceInput.val(houseRent.toFixed(2));
                 EPFInput.val(EPFCalculation.toFixed(2));
                 MonthlyGrossPayInput.val(MonthlyGross.toFixed(2));
-                ProfessionalInput.val(Professional.toFixed(2));
+                ESICInput.val(ESIC.toFixed(2));
+                ProfessionaltaxInput.val(professionaltax.toFixed(2));                
             } else {
                 // If the entered value is not a valid number, clear the monthly salary input
                 monthlySalaryInput.val('');
@@ -509,13 +540,60 @@
                 HouseRentAllowanceInput.val('');
                 EPFInput.val('');
                 MonthlyGrossPayInput.val('');
-                ProfessionalInput.val('');
+                ESICInput.val('');
+                ProfessionaltaxInput.val('');
             }
         });
     });
 </script>
+<script>
+    var currentPage = 1;
+    var rowsPerPage = 10;
+    $(document).ready(function () {
+        function paginateTable() {
+            var table = $('#datatable');
+            var rows = table.find('tbody tr');
 
 
+            var totalPages = Math.ceil(rows.length / rowsPerPage);
 
 
+            var pagination = $('#pagination');
+            pagination.empty();
 
+            for (var i = 1; i <= totalPages; i++) {
+                var link = $('<li class="page-item"><a class="page-link" href="#">' + i + '</a></li>');
+
+
+                if (i === currentPage) {
+                    link.addClass('active');
+                }
+
+                pagination.append(link);
+            }
+
+
+            var startIndex = (currentPage - 1) * rowsPerPage;
+            var endIndex = startIndex + rowsPerPage;
+
+            rows.hide().slice(startIndex, endIndex).show();
+        }
+
+
+        paginateTable();
+
+        $(document).on('click', '#pagination li a', function (event) {
+            event.preventDefault();
+
+            var clickedPage = parseInt($(this).text());
+
+
+            currentPage = clickedPage;
+            paginateTable();
+
+
+            $('html, body').animate({ scrollTop: $('#table-container').offset().top }, 'slow');
+        });
+    });
+
+</script>

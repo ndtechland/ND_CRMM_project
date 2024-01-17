@@ -23,9 +23,10 @@ namespace CRM.Repository
 {
     public class Crmrpo : ICrmrpo
     {
+        private const string V = "netpayment";
         private admin_NDCrMContext _context;
         //public virtual DbSet<EmployeeImportExcel> EmpMultiforms { get; set; } = null!;
-
+        //public virtual DbSet<ECS> ECSs { get; set; } = null!;
         public Crmrpo(admin_NDCrMContext context)
         {
             _context = context;
@@ -740,8 +741,9 @@ namespace CRM.Repository
             parameters.Add(new SqlParameter("@MonthlyGrossPay", model.MonthlyGrossPay));
             parameters.Add(new SqlParameter("@MonthlyCTC", model.MonthlyCtc));
             parameters.Add(new SqlParameter("@Professionaltax", model.Professionaltax));
-            var result = await _context.Database.ExecuteSqlRawAsync(@"exec sp_SalaryDetails @EmployeeID,@AnnualCTC,@Basic,@HouseRentAllowance,@TravellingAllowance,@ESIC,@EPF,@MonthlyGrossPay,@MonthlyCTC,@Professionaltax", parameters.ToArray());
-           return result;
+            parameters.Add(new SqlParameter("@Incentive", model.Incentive));
+            var result = await _context.Database.ExecuteSqlRawAsync(@"exec sp_SalaryDetails @EmployeeID,@AnnualCTC,@Basic,@HouseRentAllowance,@TravellingAllowance,@ESIC,@EPF,@MonthlyGrossPay,@MonthlyCTC,@Professionaltax,@Incentive", parameters.ToArray());
+            return result;
         }
         public async Task<int> updateCustomerReg(Customer model)
         {
@@ -761,6 +763,7 @@ namespace CRM.Repository
             var result = await _context.Database.ExecuteSqlRawAsync(@"exec sp_updateCustomer_Reg @id,@Company_Name, @Work_Location,@Mobile_number,@Alternate_number,@Email,@GST_Number,@Billing_Address,@Product_Details,@Start_date,@Renew_Date,@State", parameter.ToArray());
             return result;
         }
+
     }
 
 }
