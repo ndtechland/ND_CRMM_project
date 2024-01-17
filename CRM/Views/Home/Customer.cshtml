@@ -136,7 +136,7 @@
                             <div class="card-body">
                                 <form asp-action="Customer" method="post" autocomplete="off">
                                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                                    <input name="Id" type="text" id="Id" style="display:none">
+                                    @Html.TextBoxFor(Model => Model.Id,new{@class="from-control" ,@hidden="hidden"})
                                     <div class="row">
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Company Name</label>

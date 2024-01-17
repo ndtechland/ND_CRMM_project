@@ -37,6 +37,7 @@ namespace CRM.Controllers
 
         }
         [Route("Home/Customer")]
+        [HttpGet]
         public IActionResult Customer(int id=0)
         {
 
@@ -672,7 +673,25 @@ namespace CRM.Controllers
             {
                 throw new Exception("Error:" + Ex.Message);
             }
-        }  
+        }
+        public async Task<IActionResult> DeleteCustomer(int id)
+        {
+            try
+            {
+                var data = _context.CustomerRegistrations.Find(id);
+                if (data != null)
+                {
+                    _context.CustomerRegistrations.Remove(data);
+                    _context.SaveChanges();
+                }
+                return RedirectToAction("CustomerList");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception();
+            }
+        }
+
     }
 
 }
