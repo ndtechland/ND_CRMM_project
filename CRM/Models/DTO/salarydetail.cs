@@ -10,7 +10,8 @@
         public string? FatherName { get; set; }
         public decimal? MonthlyCtc { get; set; }
         public bool? IsDeleted { get; set; }
-       
+        public decimal? Incentive { get; set; }
+
 
     }
 }

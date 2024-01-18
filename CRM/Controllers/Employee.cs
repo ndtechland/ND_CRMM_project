@@ -417,6 +417,7 @@ namespace CRM.Controllers
                     Value = x.Id.ToString(),
                     Text = x.CompanyName
                 }).ToList();
+                ViewBag.Message = TempData["ErrorMessage"];
                 return View(response);
             }
             else
@@ -457,6 +458,15 @@ namespace CRM.Controllers
                                 var ctc = await _context.EmployeeSalaryDetails
                                     .Where(x => x.EmployeeId == item.EmployeeId)
                                     .FirstOrDefaultAsync();
+                                if (ctc.Incentive != null)
+                                {
+                                    if (ctc.Incentive != null && ctc.Incentive >= 0)
+                                    {
+                                        ctc.Incentive = 0;
+                                        await _context.SaveChangesAsync();
+                                    }
+                                }
+
                                 if (item.Id != 0)
                                 {
                                     Empattendance emp = new Empattendance
@@ -466,6 +476,7 @@ namespace CRM.Controllers
                                         Year = DateTime.Now.Year,
                                         Attendance = item.Attendance,
                                         Entry = DateTime.Now,
+                                        Incentive= item.Incentive,
                                         GenerateSalary = decimal.Round((decimal)(ctc.MonthlyCtc / 25 * item.Attendance), 2),
                                         Lop = (decimal)(ctc.MonthlyCtc) - decimal.Round((decimal)(ctc.MonthlyCtc / 30 * item.Attendance), 2),
                                     };
@@ -935,52 +946,68 @@ namespace CRM.Controllers
                 throw new Exception("Error:" + Ex.Message);
             }
         }
-
+        [HttpGet]
         [Route("/Employee/ESCDownloadExcel")]
-        public async Task<IActionResult> ESCDownloadExcel(string customerId,string WorkLocation)
+        public async Task<IActionResult> ESCDownloadExcel(string customerId, string WorkLocation)
         {
-            var employeeList = await _ICrmrpo.ESCExcel(customerId,WorkLocation);
-
-            using (var workbook = new XLWorkbook())
+            try
             {
-                var worksheet = workbook.Worksheets.Add("ESC");
-                var currentRow = 1;
-
-                worksheet.Cell(currentRow, 1).Value = "Sr.No.";
-                worksheet.Cell(currentRow, 1).Style.Fill.BackgroundColor = XLColor.Yellow;
-                worksheet.Cell(currentRow, 2).Value = "Employee ID";
-                worksheet.Cell(currentRow, 2).Style.Fill.BackgroundColor = XLColor.Yellow;
-                worksheet.Cell(currentRow, 3).Value = "Employee Name";
-                worksheet.Cell(currentRow, 3).Style.Fill.BackgroundColor = XLColor.Yellow;
-                worksheet.Cell(currentRow, 4).Value = "Account Number";
-                worksheet.Cell(currentRow, 4).Style.Fill.BackgroundColor = XLColor.Yellow;
-                worksheet.Cell(currentRow, 5).Value = "IFSC";
-                worksheet.Cell(currentRow, 5).Style.Fill.BackgroundColor = XLColor.Yellow;
-                worksheet.Cell(currentRow, 6).Value = "netpayment";
-                worksheet.Cell(currentRow, 6).Style.Fill.BackgroundColor = XLColor.Yellow;
-
-                currentRow++;
-
-                var index = 1;
-                foreach (var item in employeeList)
+                var employeeList = await _ICrmrpo.ESCExcel(customerId, WorkLocation).ConfigureAwait(false); 
+                if(employeeList.Count != 0)
                 {
-                    worksheet.Cell(currentRow, 1).Value = index++;
-                    worksheet.Cell(currentRow, 2).Value = item.EmployeeId;
-                    worksheet.Cell(currentRow, 3).Value = item.FirstName;
-                    worksheet.Cell(currentRow, 4).Value = item.AccountNumber;
-                    worksheet.Cell(currentRow, 5).Value = item.Ifsc;
-                    worksheet.Cell(currentRow, 6).Value = item.netpayment;
-                    currentRow++;
+                    using (var workbook = new XLWorkbook())
+                    {
+                        var worksheet = workbook.Worksheets.Add("ESC");
+                        var currentRow = 1;
+
+                        worksheet.Cell(currentRow, 1).Value = "Sr.No.";
+                        worksheet.Cell(currentRow, 1).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 2).Value = "Employee ID";
+                        worksheet.Cell(currentRow, 2).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 3).Value = "Employee Name";
+                        worksheet.Cell(currentRow, 3).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 4).Value = "Account Number";
+                        worksheet.Cell(currentRow, 4).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 5).Value = "IFSC";
+                        worksheet.Cell(currentRow, 5).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 6).Value = "netpayment";
+                        worksheet.Cell(currentRow, 6).Style.Fill.BackgroundColor = XLColor.Yellow;
+
+                        currentRow++;
+
+                        var index = 1;
+                        foreach (var item in employeeList)
+                        {
+                            worksheet.Cell(currentRow, 1).Value = index++;
+                            worksheet.Cell(currentRow, 2).Value = item.EmployeeId;
+                            worksheet.Cell(currentRow, 3).Value = item.FirstName;
+                            worksheet.Cell(currentRow, 4).Value = item.AccountNumber;
+                            worksheet.Cell(currentRow, 5).Value = item.Ifsc;
+                            worksheet.Cell(currentRow, 6).Value = item.netpayment;
+                            currentRow++;
+                        }
+
+
+                        using (var stream = new MemoryStream())
+                        {
+                            workbook.SaveAs(stream);
+                            stream.Seek(0, SeekOrigin.Begin);
+                            var fileBytes = stream.ToArray();
+                            return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Ecsreport.xlsx");
+                        }
+                    }
                 }
-
-                using (var stream = new MemoryStream())
+                else
                 {
-                    workbook.SaveAs(stream);
-                    stream.ToArray();
-                    //stream.Seek(0, SeekOrigin.Begin);
-                    return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "ESCData.xlsx");
-                }   
+                    TempData["ErrorMessage"] = "No salary details found.";
+                    return RedirectToAction("salarydetail", "Employee");
+                }
             }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+           
         }
     }
 }

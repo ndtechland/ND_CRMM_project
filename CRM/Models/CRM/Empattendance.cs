@@ -13,5 +13,6 @@ namespace CRM.Models.Crm
         public DateTime? Entry { get; set; }
         public decimal? Lop { get; set; }
         public decimal? GenerateSalary { get; set; }
+        public decimal? Incentive { get; set; }
     }
 }

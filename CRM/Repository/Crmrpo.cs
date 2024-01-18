@@ -25,7 +25,6 @@ namespace CRM.Repository
     {
         private admin_NDCrMContext _context;
         //public virtual DbSet<EmployeeImportExcel> EmpMultiforms { get; set; } = null!;
-        //public virtual DbSet<ECS> ECSs { get; set; } = null!;
         public Crmrpo(admin_NDCrMContext context)
         {
             _context = context;
@@ -364,6 +363,7 @@ namespace CRM.Repository
                         MonthlyCtc = rdr["MonthlyCtc"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["MonthlyCtc"]),
                         CustomerID = (long)(rdr["CustomerID"] == DBNull.Value ? 0m : Convert.ToDecimal(rdr["CustomerID"])),
                         FatherName = rdr["FirstName"] == DBNull.Value ? null : Convert.ToString(rdr["FatherName"]),
+                        Incentive = rdr["Incentive"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["Incentive"]),
                     };
 
                     emp.Add(emps);
@@ -712,7 +712,6 @@ namespace CRM.Repository
                         StartDate = (DateTime)(rdr["Start_date"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(rdr["Start_date"])),
                         RenewDate = (DateTime)(rdr["Renew_Date"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(rdr["Renew_Date"])),
                         State = rdr["State"] == DBNull.Value ? null : Convert.ToString(rdr["State"]),
-                        
                     };
                 }
                 return cs; 
@@ -779,7 +778,6 @@ namespace CRM.Repository
                 {
                     var emps = new ECS()
                     {
-                        Id = Convert.ToInt32(rdr["id"]),
                         FirstName = rdr["FirstName"] == DBNull.Value ? null : Convert.ToString(rdr["FirstName"]),
                         EmployeeId = rdr["EmployeeId"] == DBNull.Value ? null : Convert.ToString(rdr["EmployeeId"]),
                         AccountNumber = (int)(rdr["AccountNumber"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["AccountNumber"])),
@@ -795,10 +793,6 @@ namespace CRM.Repository
             catch (Exception ex)
             {
                 throw ex;
-            }
-            finally
-            {
-                emp = null;
             }
         }
     }
