@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using CRM.Models.CRM;
-using CRM.Models.DTO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -297,6 +295,8 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.Entry).HasColumnType("date");
 
                 entity.Property(e => e.GenerateSalary).HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.Incentive).HasColumnType("decimal(18, 0)");
 
                 entity.Property(e => e.Lop).HasColumnType("decimal(18, 2)");
 
