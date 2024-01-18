@@ -935,11 +935,11 @@ namespace CRM.Controllers
                 throw new Exception("Error:" + Ex.Message);
             }
         }
-        [HttpGet]
-        [Route("Employee/ESCDownloadExcel")]
-        public async Task<IActionResult> ESCDownloadExcel()
+
+        [Route("/Employee/ESCDownloadExcel")]
+        public async Task<IActionResult> ESCDownloadExcel(string customerId,string WorkLocation)
         {
-            List<ECS> employeeList =await ESCExcel("customerId", "WorkLocation");
+            var employeeList = await _ICrmrpo.ESCExcel(customerId,WorkLocation);
 
             using (var workbook = new XLWorkbook())
             {
@@ -976,49 +976,10 @@ namespace CRM.Controllers
                 using (var stream = new MemoryStream())
                 {
                     workbook.SaveAs(stream);
-                    stream.Seek(0, SeekOrigin.Begin);
-
+                    stream.ToArray();
+                    //stream.Seek(0, SeekOrigin.Begin);
                     return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "ESCData.xlsx");
-                }
-            }
-        }
-
-
-        public async Task<List<ECS>> ESCExcel(string customerId, string WorkLocation)
-        {
-            List<ECS> emp = new List<ECS>();
-            try
-            {
-                SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
-                SqlCommand cmd = new SqlCommand("sp_ECSSalary", con);
-                cmd.Parameters.Add(new SqlParameter("@CustomerID", SqlDbType.Int) { Value = Convert.ToInt32(customerId) });
-                cmd.Parameters.Add(new SqlParameter("@WorkLocation", SqlDbType.Int) { Value = Convert.ToInt32(WorkLocation) });
-                cmd.CommandType = CommandType.StoredProcedure;
-                con.Open();
-                SqlDataReader rdr = cmd.ExecuteReader();
-                while (rdr.Read())
-                {
-                    var emps = new ECS()
-                    {
-                        Id = Convert.ToInt32(rdr["id"]),
-                        FirstName = rdr["FirstName"] == DBNull.Value ? null : Convert.ToString(rdr["FirstName"]),
-                        EmployeeId = rdr["EmployeeId"] == DBNull.Value ? null : Convert.ToString(rdr["EmployeeId"]),
-                        AccountNumber = (int)(rdr["AccountNumber"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["AccountNumber"])),
-                        Ifsc = rdr["Ifsc"] == DBNull.Value ? null : Convert.ToString(rdr["Ifsc"]),
-                        netpayment = rdr["netpayment"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["netpayment"]),
-                    };
-
-                    emp.Add(emps);
-                }
-                return emp;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                emp = null;
+                }   
             }
         }
     }
