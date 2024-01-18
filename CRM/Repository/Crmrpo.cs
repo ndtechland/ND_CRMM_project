@@ -23,7 +23,6 @@ namespace CRM.Repository
 {
     public class Crmrpo : ICrmrpo
     {
-        private const string V = "netpayment";
         private admin_NDCrMContext _context;
         //public virtual DbSet<EmployeeImportExcel> EmpMultiforms { get; set; } = null!;
         //public virtual DbSet<ECS> ECSs { get; set; } = null!;
