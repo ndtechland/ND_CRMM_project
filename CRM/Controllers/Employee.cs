@@ -402,9 +402,36 @@ namespace CRM.Controllers
             if (HttpContext.Session.GetString("UserName") != null)
             {
                 string AddedBy = HttpContext.Session.GetString("UserName");
-                ViewBag.UserName = AddedBy;
-                ViewBag.custid = customerId;
-                ViewBag.locid = WorkLocation;
+               TempData["UserName"] = AddedBy;
+                TempData["custid"]   = customerId;
+                TempData["locid"]  = WorkLocation;
+                //
+                if(AddedBy!=null)
+                {  HttpContext.Session.SetString("UserName", AddedBy); }
+                else
+                {
+                    AddedBy = HttpContext.Session.GetString("UserName");
+                  
+                }
+                if (customerId!=null)
+                {
+                HttpContext.Session.SetString("custid", customerId);
+                }
+                else
+                {
+                    customerId = HttpContext.Session.GetString("custid");
+                }
+                
+                if(WorkLocation!=null)
+                {
+                     HttpContext.Session.SetString("locid", WorkLocation);
+                }
+                else
+                {
+                    WorkLocation = HttpContext.Session.GetString("locid");
+                }
+                //
+
                 var response = await _ICrmrpo.salarydetail(customerId, WorkLocation);
                 decimal total = 0.00M;
                 foreach (var item in response)
@@ -443,10 +470,7 @@ namespace CRM.Controllers
                         isActive = true;
                     }
                 }
-
-                
-
-                if (!isActive)
+               if (!isActive)
                 {
                     using (var transaction = _context.Database.BeginTransaction())
                     {
@@ -477,8 +501,8 @@ namespace CRM.Controllers
                                         Attendance = item.Attendance,
                                         Entry = DateTime.Now,
                                         Incentive= item.Incentive,
-                                        GenerateSalary = decimal.Round((decimal)(ctc.MonthlyCtc / 25 * item.Attendance), 2),
-                                        Lop = (decimal)(ctc.MonthlyCtc) - decimal.Round((decimal)(ctc.MonthlyCtc / 30 * item.Attendance), 2),
+                                        GenerateSalary = decimal.Round((decimal)(ctc.MonthlyCtc / 25 * item.Attendance), 2) + item.Incentive,
+                                        Lop = (decimal)(ctc.MonthlyCtc) - decimal.Round((decimal)(ctc.MonthlyCtc / 25 * item.Attendance), 2),
                                     };
 
                                     _context.Empattendances.Add(emp);
@@ -938,7 +962,7 @@ namespace CRM.Controllers
                 else
                 {
                     ModelState.Clear();
-                    return View();
+                    return RedirectToAction("salarydetail", "Employee");
                 }
             }
             catch (Exception Ex)
