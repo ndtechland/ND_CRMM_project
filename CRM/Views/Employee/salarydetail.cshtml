@@ -94,7 +94,7 @@
                                             </select>
                                         </div>
                                         <div class="form-button col-md-3" style="display:flex; justify-content:center;">
-                                            <input type="submit" value="Search" class="btn btn-primary button" onclick="return validateForm();" />
+                                            <input type="submit" value="Search" class="btn btn-primary button" id="sbtn" onclick="return validateForm();" />
                                         </div>
 
                                     </div>
@@ -141,43 +141,43 @@
                                                 @{
                                                     var count = 0;
 
-                                                        @foreach (var item in Model)
+                                                            @foreach (var item in Model)
                                                     {
                                                         count++;
-                                                            <tr class="table-row">
-                                                                <td>@count</td>
-                                                                <td style="display:none">
-                                                                    @item.Id
+                                                                <tr class="table-row">
+                                                                    <td>@count</td>
+                                                                    <td style="display:none">
+                                                                        @item.Id
+                                                                    </td>
+                                                                      <td style="display:none">
+                                                                        @item.CustomerID
+                                                                    </td>
+                                                                    <td>
+                                                                        @Html.DisplayFor(modelItem => item.FirstName)
+                                                                    </td>
+                                                                    <td>
+                                                                        @Html.DisplayFor(modelItem => item.FatherName)
+                                                                    </td>
+                                                                    <td>
+                                                                        @Html.DisplayFor(modelItem => item.EmployeeId)
+                                                                    </td>
+                                                                <td style="display:none" id="hiddenIncentive">
+                                                                    @item.Incentive
                                                                 </td>
-                                                                  <td style="display:none">
-                                                                    @item.CustomerID
-                                                                </td>
-                                                                <td>
-                                                                    @Html.DisplayFor(modelItem => item.FirstName)
-                                                                </td>
-                                                                <td>
-                                                                    @Html.DisplayFor(modelItem => item.FatherName)
-                                                                </td>
-                                                                <td>
-                                                                    @Html.DisplayFor(modelItem => item.EmployeeId)
-                                                                </td>
-                                                            <td style="display:none" id="hiddenIncentive">
-                                                                @item.Incentive
-                                                            </td>
-                                                                <td>
-                                                                    @Html.DisplayFor(modelItem => item.MonthlyCtc)
-                                                                </td>
-                                                                <td>
-                                                                    <input type="text" id="Attendance" name="Attendance" class="form-control attnd" minlength="1" maxlength="2" style="height: 40px; width: 94px;" onkeyup="fnc(this)" />
-                                                                </td>
-                                                                <td>
-                                                                    <a href="#" class="fa fa-edit m-2 font-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="EditSalaryDetails('@item.EmployeeId')">
-                                                                        Edit Salary
-                                                                    </a>
-                                                                </td>
+                                                                    <td>
+                                                                        @Html.DisplayFor(modelItem => item.MonthlyCtc)
+                                                                    </td>
+                                                                    <td>
+                                                                        <input type="text" id="Attendance" name="Attendance" class="form-control attnd" minlength="1" maxlength="2" style="height: 40px; width: 94px;" onkeyup="fnc(this)" />
+                                                                    </td>
+                                                                    <td>
+                                                                        <a href="#" class="fa fa-edit m-2 font-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="EditSalaryDetails('@item.EmployeeId')">
+                                                                            Edit Salary
+                                                                        </a>
+                                                                    </td>
 
 
-                                                            </tr>
+                                                                </tr>
                                                     }
                                                 }
                                             </tbody>
@@ -213,8 +213,9 @@
     </div>
 
 </div>
-<input hidden type="text" id="custid" value="@ViewBag.custid" />
-<input hidden type="text" id="locid" value="@ViewBag.locid" />
+<input hidden type="text" id="custid" value="@Context.Session.GetString("custid")" />
+<input hidden type="text" id="locid" value="@Context.Session.GetString("locid")" />
+
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
 <script>
@@ -426,6 +427,7 @@
                         <form action="EditSalaryDetails" method="post" autocomplete="off">
                             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                             <input name="EmployeeId" type="text" id="Employee" style="display:none">
+
                             <div class="row">
                                 <div class="col">
                                     <label>Annual CTC</label>
