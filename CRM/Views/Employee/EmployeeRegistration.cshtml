@@ -371,12 +371,10 @@
                                                         <input class="form-control " value='@ViewBag.AnnualCTC' name="AnnualCTC" id="txtAnnualCTC" type="text" required>
                                                     </div>
                                                     <div class="col">
-                                                        <label>Travelling Allowance</label>
-                                                        @*<label>Conveyance Allowance</label>*@
-                                                        <input class="form-control " value='@ViewBag.TravellingAllowance' name="TravellingAllowance" id="TravellingAllowance" type="text" required="">
+                                                        <label>Service Charge</label>
+                                                        <input class="form-control " value='@ViewBag.servicecharge' name="servicecharge" id="Servicecharge" type="text" required="" readonly>
                                                     </div>
                                                     <div class="col">
-                                                       @* <label>Fixed Allowance</label>*@
                                                         <label>ESIC</label>
                                                         <input class="form-control " value='@ViewBag.ESIC' name="ESIC" id="ESIC" type="text" required="" readonly>
                                                     </div>                                         
@@ -714,6 +712,7 @@
         var MonthlyGrossPayInput = $('#txtMonthlyGrossPay');
           var ESICInput = $('#ESIC');
         var ProfessionaltaxInput = $('#Professionaltax');
+        var servicechargeInput = $('#Servicecharge');
 
         // Attach an input event listener to the annual salary input
         annualSalaryInput.on('input', function () {
@@ -743,6 +742,16 @@
                 default:
                     professionaltax = 0;  
             }
+                var servicecharge;
+
+                switch (true) {
+                    case monthlySalary <= 40000:
+                        servicecharge = monthlySalary * 0.0118; // 1.18% of monthlySalary
+                        break;
+                    case monthlySalary > 40000:
+                        servicecharge = monthlySalary * 0.035; // 3.5% of monthlySalary
+                        break;
+                }
                 // Update the value of the monthly salary input
                 monthlySalaryInput.val(monthlySalary.toFixed(2));
                 basicSalaryInput.val(basicSalary.toFixed(2));
@@ -750,7 +759,8 @@
                 EPFInput.val(EPFCalculation.toFixed(2));
                 MonthlyGrossPayInput.val(MonthlyGross.toFixed(2));
                 ESICInput.val(ESIC.toFixed(2));
-                 ProfessionaltaxInput.val(professionaltax.toFixed(2));
+                ProfessionaltaxInput.val(professionaltax.toFixed(2));
+                servicechargeInput.val(servicecharge.toFixed(2));
             } else {
                 // If the entered value is not a valid number, clear the monthly salary input
                 monthlySalaryInput.val('');
@@ -760,6 +770,7 @@
                 MonthlyGrossPayInput.val('');
                 ESICInput.val('');
                 ProfessionaltaxInput.val('');
+                servicechargeInput.val('');
             }
         });
 
@@ -1385,14 +1396,14 @@ function ValidateMainTab() {
     }
 
 
-    if ($("#TravellingAllowance").val().trim() == '') {
+    if ($("#servicecharge").val().trim() == '') {
 
-        errormessage += 'Please Enter  TravellingAllowance,'
+        errormessage += 'Please Enter  ServiceCharge,'
     }
 
     if ($("#ESIC").val().trim() == '') {
 
-        errormessage += 'Please Enter Fixed ESIC'
+        errormessage += 'Please Enter  ESIC'
     }
      if ($("#Professionaltax").val().trim() == '') {
 

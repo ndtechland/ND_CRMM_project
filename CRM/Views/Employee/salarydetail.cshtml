@@ -404,6 +404,7 @@
                 $('#txtMonthlyGrossPay').val(response.empSalaryDetail.monthlyGrossPay);
                 $('#txtEPF').val(response.empSalaryDetail.epf);
                 $('#txtIncentive').val(response.empSalaryDetail.incentive);
+                $('#txtTravellingAllowance').val(response.empSalaryDetail.travellingAllowance);
                 $('#hiddenIncentive').text(response.empSalaryDetail.incentive);
                 $('#staticBackdrop').modal('show');
 
@@ -477,6 +478,13 @@
                                 <div class="col">
                                     <label>Incentive / Advance </label>
                                     <input class="form-control " name="Incentive" placeholder="00.0" id="txtIncentive" type="text" required="">
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <label>Travelling Allowance </label>
+                                    <input class="form-control " name="TravellingAllowance" placeholder="00.0" id="txtTravellingAllowance" type="text" required="">
                                 </div>
 
                             </div>

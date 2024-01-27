@@ -133,6 +133,7 @@ namespace CRM.Controllers
                 ViewBag.Employee_Contribution_Rate = "";
                 ViewBag.Professionaltax = "";
                 ViewBag.nominee = "";
+                @ViewBag.servicecharge = "";
 
                 ViewBag.btnText = "SAVE";
 
@@ -185,6 +186,7 @@ namespace CRM.Controllers
                             ViewBag.Employee_Contribution_Rate = row["Employee_Contribution_Rate"].ToString();
                             ViewBag.Professionaltax = row["Professionaltax"].ToString();
                             ViewBag.nominee = row["nominee"].ToString();
+                            @ViewBag.servicecharge = row["servicecharge"].ToString();
                             ViewBag.Emp_Reg_Code = id;
                             ViewBag.btnText = "UPDATE";
 
@@ -471,11 +473,12 @@ namespace CRM.Controllers
                                 var ctc = await _context.EmployeeSalaryDetails
                                     .Where(x => x.EmployeeId == item.EmployeeId)
                                     .FirstOrDefaultAsync();
-                                if (ctc.Incentive != null)
+                                if (ctc.Incentive != null && ctc.TravellingAllowance !=null)
                                 {
-                                    if (ctc.Incentive != null && ctc.Incentive >= 0)
+                                    if (ctc.Incentive != null && ctc.Incentive >= 0 && ctc.TravellingAllowance != null && ctc.TravellingAllowance >= 0)
                                     {
                                         ctc.Incentive = 0;
+                                        ctc.TravellingAllowance = 0;
                                         await _context.SaveChangesAsync();
                                     }
                                 }
@@ -929,6 +932,7 @@ namespace CRM.Controllers
             empSalaryDetail.MonthlyCtc = data.MonthlyCtc;
             empSalaryDetail.MonthlyGrossPay = data.MonthlyGrossPay;
             empSalaryDetail.Incentive = data.Incentive;
+            empSalaryDetail.TravellingAllowance = data.TravellingAllowance;
             var result = new
             {
                 empSalaryDetail = empSalaryDetail,

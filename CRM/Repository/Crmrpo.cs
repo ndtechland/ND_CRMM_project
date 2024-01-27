@@ -137,6 +137,7 @@ namespace CRM.Repository
                 parameter.Add(new SqlParameter("@MonthlyGrossPay", model.MonthlyGrossPay));
                 parameter.Add(new SqlParameter("@MonthlyCTC", model.MonthlyCTC));
                 parameter.Add(new SqlParameter("@Professionaltax", model.Professionaltax));
+                parameter.Add(new SqlParameter("@servicecharge", model.Servicecharge));
                 //
                 parameter.Add(new SqlParameter("@Personal_Email_Address", model.PersonalEmailAddress));
                 parameter.Add(new SqlParameter("@Mobile_Number", model.MobileNumber));
@@ -159,7 +160,7 @@ namespace CRM.Repository
                 parameter.Add(new SqlParameter("@Employee_Contribution_Rate", model.Employee_Contribution_Rate));
                 parameter.Add(new SqlParameter("@Account_Type_ID", model.AccountTypeID));
                 parameter.Add(new SqlParameter("@nominee", model.nominee));
-                var result = await Task.Run(() => _context.Database.ExecuteSqlRawAsync(@"exec EmployeeRegistration @mode,@Emp_RegID,@Customer_Id,@FirstName,@MiddleName,@LastName,@DateOfJoining,@WorkEmail,@GenderID,@WorkLocationID,@DesignationID,@DepartmentID,@AnnualCTC,@Basic,@HouseRentAllowance,@TravellingAllowance,@ESIC,@EPF,@MonthlyGrossPay,@MonthlyCTC,@Professionaltax,@Personal_Email_Address,@Mobile_Number,@Date_Of_Birth,@Father_Name,@PAN,@Address_Line_1,@Address_Line_2,@City,@State_ID,@Pincode,@Account_Holder_Name,@Bank_Name,@Account_Number,@Re_Enter_Account_Number,@IFSC,@EPF_Number,@Deduction_Cycle,@Employee_Contribution_Rate,@Account_Type_ID,@nominee", parameter.ToArray()));
+                var result = await Task.Run(() => _context.Database.ExecuteSqlRawAsync(@"exec EmployeeRegistration @mode,@Emp_RegID,@Customer_Id,@FirstName,@MiddleName,@LastName,@DateOfJoining,@WorkEmail,@GenderID,@WorkLocationID,@DesignationID,@DepartmentID,@AnnualCTC,@Basic,@HouseRentAllowance,@TravellingAllowance,@ESIC,@EPF,@MonthlyGrossPay,@MonthlyCTC,@Professionaltax,@servicecharge,@Personal_Email_Address,@Mobile_Number,@Date_Of_Birth,@Father_Name,@PAN,@Address_Line_1,@Address_Line_2,@City,@State_ID,@Pincode,@Account_Holder_Name,@Bank_Name,@Account_Number,@Re_Enter_Account_Number,@IFSC,@EPF_Number,@Deduction_Cycle,@Employee_Contribution_Rate,@Account_Type_ID,@nominee", parameter.ToArray()));
 
                 return result;
             }
