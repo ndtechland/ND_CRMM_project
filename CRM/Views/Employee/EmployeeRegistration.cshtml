@@ -320,6 +320,7 @@
                                                         <input class="form-control " value='@ViewBag.EPF_Number' name="EPF_Number" id="EPF_Number" type="text" required="">
                                                     </div>
                                                 </div>
+                                                
 
                                                 <div class="row">
                                                     <div class="col">
@@ -335,6 +336,14 @@
                                                             <option value="Y">Yearly</option>
                                                         </select>
                                                     </div>
+                                                 
+                                                    <div class="col">
+                                                        <label>Nominees Name</label>
+                                                        <input class="form-control " value='@ViewBag.nominee' name="nominee" id="nominee" type="text" required="">
+                                                    </div>
+
+                                                </div>
+                                                <div class="row">
                                                     <div class="col" style="padding:20px;">
                                                         <label>Account Type</label>
                                                         <br />
@@ -1092,6 +1101,9 @@ document.getElementById('btnThirdTab').addEventListener('click', function (event
     if ($("#AccountHolderName").val().trim() == '') {
         errormessage += 'Please Enter Account Holder Name,'
     }
+        if ($("#nominee").val().trim() == '') {
+            errormessage += 'Please Enter Nominee Name,'
+        }
 
     if ($("#BankName").val().trim() == '') {
 

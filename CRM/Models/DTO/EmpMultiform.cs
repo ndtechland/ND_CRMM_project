@@ -50,6 +50,7 @@ namespace CRM.Models.DTO
         public Int64 ReEnterAccountNumber { get; set; }
         public string? IFSC { get; set; }
         public int AccountTypeID { get; set; }
+        public string nominee { get; set; }
 
         [NotMapped]
         public string? EPF_Number { get; set; }
