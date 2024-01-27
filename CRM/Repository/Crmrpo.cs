@@ -796,6 +796,82 @@ namespace CRM.Repository
                 throw ex;
             }
         }
+
+        public async Task<List<GenerateSalaryReportDTO>> GenerateSalaryReport(string customerId, int Month, int year, string WorkLocation)
+        {
+            try
+            {
+                SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
+                SqlCommand cmd = new SqlCommand("GetGenerateSalary_Report", con);
+                cmd.Parameters.Add(new SqlParameter("@CustomerID", SqlDbType.Int) { Value = Convert.ToInt32(customerId) });
+                cmd.Parameters.Add(new SqlParameter("@Month", SqlDbType.Int) { Value = Convert.ToInt32(Month) });
+                cmd.Parameters.Add(new SqlParameter("@year", SqlDbType.Int) { Value = Convert.ToInt32(year) });
+                cmd.Parameters.Add(new SqlParameter("@WorkLocation", SqlDbType.Int) { Value = Convert.ToInt32(WorkLocation) });
+                cmd.CommandType = CommandType.StoredProcedure;
+                con.Open();
+                SqlDataReader rdr = cmd.ExecuteReader();
+                List<GenerateSalaryReportDTO> emp = new List<GenerateSalaryReportDTO>();
+                while (rdr.Read())
+                {
+                    var emps = new GenerateSalaryReportDTO()
+                    {
+                        Id = Convert.ToInt32(rdr["id"]),
+                        EmployeeId = Convert.ToString(rdr["Employee_ID"]),
+                        EmployeeName = Convert.ToString(rdr["First_Name"]),
+                        MonthlyGrossPay = Convert.ToDecimal(rdr["MonthlyGrossPay"]),
+                        MonthlyCtc = Convert.ToDecimal(rdr["MonthlyCTC"]),
+                        GenerateSalary = Convert.ToDecimal(rdr["GenerateSalary"]),
+                        EPF = Convert.ToDecimal(rdr["EPF"]),
+                        ESIC = Convert.ToDecimal(rdr["ESIC"])
+                    };
+
+                    emp.Add(emps);
+                }
+                return emp;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+        }
+
+        public async Task<List<EPFReportDTO>> EPFReport(string customerId, int Month, int year, string WorkLocation)
+        {
+            try
+            {
+                SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
+                SqlCommand cmd = new SqlCommand("GetEPF_Report", con);
+                cmd.Parameters.Add(new SqlParameter("@CustomerID", SqlDbType.Int) { Value = Convert.ToInt32(customerId) });
+                cmd.Parameters.Add(new SqlParameter("@Month", SqlDbType.Int) { Value = Convert.ToInt32(Month) });
+                cmd.Parameters.Add(new SqlParameter("@year", SqlDbType.Int) { Value = Convert.ToInt32(year) });
+                cmd.Parameters.Add(new SqlParameter("@WorkLocation", SqlDbType.Int) { Value = Convert.ToInt32(WorkLocation) });
+                cmd.CommandType = CommandType.StoredProcedure;
+                con.Open();
+                SqlDataReader rdr = cmd.ExecuteReader();
+                List<EPFReportDTO> emp = new List<EPFReportDTO>();
+                while (rdr.Read())
+                {
+                    var emps = new EPFReportDTO()
+                    {
+                        Id = Convert.ToInt32(rdr["id"]),
+                        EmployeeId = Convert.ToString(rdr["Employee_ID"]),
+                        EmployeeName = Convert.ToString(rdr["EmployeeName"]),
+                        MonthlyCtc = Convert.ToDecimal(rdr["MonthlyCTC"]),
+                        PAN = Convert.ToString(rdr["PAN"])
+                    };
+
+                    emp.Add(emps);
+                }
+                return emp;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+        }
+
     }
 
 }
