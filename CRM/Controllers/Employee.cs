@@ -60,10 +60,6 @@ namespace CRM.Controllers
 
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                //var emp = new EmpMultiform();
-                //string AddedBy = HttpContext.Session.GetString("UserName");
-                //ViewBag.UserName = AddedBy;
-                ////WorkLocation dropdown 
                 ViewBag.WorkLocation = _context.WorkLocations
                 .Select(w => new SelectListItem
                 {
@@ -71,15 +67,6 @@ namespace CRM.Controllers
                     Text = w.AddressLine1
                 })
                  .ToList();
-                ////Gender dropdown 
-                //ViewBag.Gender = _context.GenderMasters
-                //.Select(w => new SelectListItem
-                //{
-                //    Value = w.Id.ToString(),
-                //    Text = w.GenderName
-                //})
-                // .ToList();
-                ////Department dropdown 
                 ViewBag.Department = _context.DepartmentMasters.Select(w => new SelectListItem
                 {
                     Value = w.Id.ToString(),
