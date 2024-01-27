@@ -31,6 +31,7 @@ using DocumentFormat.OpenXml.Wordprocessing;
 using System;
 using System.Text.Json;
 using ClosedXML.Excel;
+using Microsoft.TeamFoundation.TestManagement.WebApi;
 
 namespace CRM.Controllers
 {
@@ -1075,6 +1076,12 @@ namespace CRM.Controllers
 
 
                     salary.GenerateSalaryReports = await _ICrmrpo.GenerateSalaryReport(customerId, Month, year, WorkLocation);
+                    decimal total = 0.00M;
+                    foreach (var item in salary.GenerateSalaryReports)
+                    {
+                        total += (decimal)item.GenerateSalary;
+                    }
+                    ViewBag.TotalAmmount = total;
                     if (salary.GenerateSalaryReports.Count > 0)
 
                     {
@@ -1168,6 +1175,73 @@ namespace CRM.Controllers
 
         }
 
+        public IActionResult ESIReport()
+        {
+            try
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName = AddedBy;
+                ViewBag.CustomerName = _context.CustomerRegistrations.Select(x => new SelectListItem
+                {
+                    Value = x.Id.ToString(),
+                    Text = x.CompanyName
+                }).ToList();
+                ViewBag.ErrorMessage = TempData["ErrorMessage"];
+                return View();
+
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("Error : " + ex.Message);
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> ESIReport(string customerId, int Month, int year, string WorkLocation)
+
+        {
+            try
+            {
+                ViewBag.custid = customerId;
+                ViewBag.locid = WorkLocation;
+                ViewBag.monthid = Month;
+                ViewBag.yearid = year;
+                if (customerId != null && Month != null && year != null && WorkLocation != null)
+                {
+                    ViewBag.CustomerName = _context.CustomerRegistrations.Select(x => new SelectListItem
+                    {
+                        Value = x.Id.ToString(),
+                        Text = x.CompanyName
+                    }).ToList();
+                    EPFReportDTO salary = new EPFReportDTO();
+
+
+
+                    salary.EPFReports = await _ICrmrpo.ESIReport(customerId, Month, year, WorkLocation);
+                    if (salary.EPFReports.Count > 0)
+
+                    {
+                        return View(salary);
+                    }
+                    else
+                    {
+                        ViewBag.ErrorMessage = "No data found";
+                        return View();
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("EPFReport");
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("Error : " + ex.Message);
+            }
+
+
+        }
     }
 }
 
