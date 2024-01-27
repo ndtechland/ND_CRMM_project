@@ -366,6 +366,7 @@ namespace CRM.Repository
                         CustomerID = (long)(rdr["CustomerID"] == DBNull.Value ? 0m : Convert.ToDecimal(rdr["CustomerID"])),
                         FatherName = rdr["FirstName"] == DBNull.Value ? null : Convert.ToString(rdr["FatherName"]),
                         Incentive = rdr["Incentive"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["Incentive"]),
+                        TravellingAllowance = rdr["TravellingAllowance"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["TravellingAllowance"]),
                     };
 
                     emp.Add(emps);

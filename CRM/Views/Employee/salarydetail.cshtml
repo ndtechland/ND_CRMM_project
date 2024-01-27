@@ -164,6 +164,9 @@
                                                                 <td style="display:none" id="hiddenIncentive">
                                                                     @item.Incentive
                                                                 </td>
+                                                            <td style="display:none" id="hiddenTravellingAllowance">
+                                                                @item.TravellingAllowance
+                                                            </td>
                                                                     <td>
                                                                         @Html.DisplayFor(modelItem => item.MonthlyCtc)
                                                                     </td>
@@ -244,6 +247,7 @@
                 customer.FatherName = $(this).find('td:eq(4)').text().trim();
                 customer.EmployeeId = $(this).find('td:eq(5)').text().trim();
                 customer.Incentive = $(this).find('td:eq(6)').text().trim();
+                customer.TravellingAllowance = $(this).find('td:eq(7)').text().trim();
                 customer.Attendance = $(this).find('input[name="Attendance"]').val();
                 if (customer.Attendance === "") {
                     alert("Please fill in all Attendance fields.");
@@ -404,8 +408,8 @@
                 $('#txtMonthlyGrossPay').val(response.empSalaryDetail.monthlyGrossPay);
                 $('#txtEPF').val(response.empSalaryDetail.epf);
                 $('#txtIncentive').val(response.empSalaryDetail.incentive);
-                $('#txtTravellingAllowance').val(response.empSalaryDetail.travellingAllowance);
                 $('#hiddenIncentive').text(response.empSalaryDetail.incentive);
+                $('#hiddenTravellingAllowance').text(response.empSalaryDetail.travellingAllowance);
                 $('#staticBackdrop').modal('show');
 
             },
@@ -478,13 +482,6 @@
                                 <div class="col">
                                     <label>Incentive / Advance </label>
                                     <input class="form-control " name="Incentive" placeholder="00.0" id="txtIncentive" type="text" required="">
-                                </div>
-
-                            </div>
-                            <div class="row">
-                                <div class="col-6">
-                                    <label>Travelling Allowance </label>
-                                    <input class="form-control " name="TravellingAllowance" placeholder="00.0" id="txtTravellingAllowance" type="text" required="">
                                 </div>
 
                             </div>

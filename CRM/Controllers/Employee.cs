@@ -493,6 +493,7 @@ namespace CRM.Controllers
                                         Attendance = item.Attendance,
                                         Entry = DateTime.Now,
                                         Incentive= item.Incentive,
+                                        TravellingAllowance=item.TravellingAllowance,
                                         GenerateSalary = decimal.Round((decimal)(ctc.MonthlyCtc / 25 * item.Attendance), 2) + item.Incentive,
                                         Lop = (decimal)(ctc.MonthlyCtc) - decimal.Round((decimal)(ctc.MonthlyCtc / 25 * item.Attendance), 2),
                                     };
@@ -667,8 +668,7 @@ namespace CRM.Controllers
                 }
                 else
                 {
-                    
-                    return View(result);
+                    return View();
                 }
                 
             }
@@ -765,10 +765,17 @@ namespace CRM.Controllers
             string Email_Subject = "Salary Slip for " + result.Employee_ID + "";
             string Email_body = "Hello " + result.First_Name + " (" + result.Employee_ID + ") please find your attached salary slip....";
 
+            if(result != null)
+            {
+                _IEmailService.SendEmailAsync(result.Email_Id, Email_Subject, Email_body, pdf, "SalarySlip.pdf", "application/pdf");
+                return fileResult;
 
-            _IEmailService.SendEmailAsync(result.Email_Id, Email_Subject, Email_body, pdf, "SalarySlip.pdf", "application/pdf");
-
-            return fileResult;
+            }
+            else
+            {
+                return View();
+            }
+           
         }
 
         public void SendPDF(int id)
@@ -808,13 +815,12 @@ namespace CRM.Controllers
             string Email_Subject = "Salary Slip for " + result.Employee_ID + "";
             string Email_body = "Hello " + result.First_Name + " (" + result.Employee_ID + ") please find your attached salary slip....";
 
-
             _IEmailService.SendEmailAsync(result.Email_Id, Email_Subject, Email_body, pdf, "SalarySlip.pdf", "application/pdf");
 
         }
         public static string getMonthName(int monthValue)
         {
-            string monthName = string.Empty;
+            string monthName;
 
             switch (monthValue)
             {

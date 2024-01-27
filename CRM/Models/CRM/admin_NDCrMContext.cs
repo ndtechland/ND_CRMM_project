@@ -301,6 +301,8 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Lop).HasColumnType("decimal(18, 2)");
 
+                entity.Property(e => e.TravellingAllowance).HasColumnType("decimal(18, 0)");
+
                 entity.Property(e => e.Year).HasColumnName("year");
             });
 
