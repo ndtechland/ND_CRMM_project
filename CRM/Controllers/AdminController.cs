@@ -49,6 +49,7 @@ namespace CRM.Controllers
                 if (dtresponse != null && dtresponse.Rows.Count > 0)
                 {
                     HttpContext.Session.SetString("UserName", dtresponse.Rows[0]["UserName"].ToString());
+                    ViewBag.UserName = dtresponse.Rows[0]["UserName"].ToString();
                     return RedirectToAction("Dashboard", "Home");
 
                 }

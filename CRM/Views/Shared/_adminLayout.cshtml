@@ -69,13 +69,14 @@
                 <div class="nav-right col">
                     <ul class="nav-menus">
                         <li>
-                            <form class="form-inline search-form">
+                            <form class="form-inline search-form" autocomplete="off">
                                 <div class="form-group">
-                                    <input class="form-control-plaintext" type="search" placeholder="Search.."><span class="d-sm-none mobile-search"><i data-feather="search"></i></span>
+                                    <input class="form-control-plaintext" type="search" placeholder="Search.." id="Sidebarvalue-search"><span class="d-sm-none mobile-search"><i data-feather="search"></i></span>
                                 </div>
-                            </form>
+
+                            </form>                            
                         </li>
-                        <li>Hi ! <h5>@ViewBag.UserName</h5></li>
+                        <li><h5>Hi @ViewBag.UserName !</h5></li>
                         <li><a class="text-dark" href="#!" onclick="javascript:toggleFullScreen()"><i data-feather="maximize"></i></a></li>
                         @*<li><a href="javascript:void(0)"><i class="right_side_toggle" data-feather="message-square"></i><span class="dot"></span></a></li>*@
                         <li class="onhover-dropdown">
@@ -467,6 +468,22 @@
         })
 
     </script>
+    <!-- Search Bar-->
+<script>
+    const searchInput = document.getElementById('Sidebarvalue-search');
+    const menuItems = document.querySelectorAll('.sidebar-menu li');
 
+    searchInput.addEventListener('input', () => {
+        const query = searchInput.value.toLowerCase();
+        menuItems.forEach((item) => {
+            const itemName = item.textContent.toLowerCase();
+            if (itemName.includes(query)) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    });
+</script>
 </body>
 </html>
