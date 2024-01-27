@@ -18,5 +18,6 @@ namespace CRM.Models.Crm
         public string? EpfNumber { get; set; }
         public string? DeductionCycle { get; set; }
         public string? EmployeeContributionRate { get; set; }
+        public string? Nominee { get; set; }
     }
 }

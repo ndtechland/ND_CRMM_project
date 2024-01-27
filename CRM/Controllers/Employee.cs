@@ -145,6 +145,7 @@ namespace CRM.Controllers
                 ViewBag.Deduction_Cycle = "";
                 ViewBag.Employee_Contribution_Rate = "";
                 ViewBag.Professionaltax = "";
+                ViewBag.nominee = "";
 
                 ViewBag.btnText = "SAVE";
 
@@ -196,6 +197,7 @@ namespace CRM.Controllers
                             ViewBag.Deduction_Cycle = row["Deduction_Cycle"].ToString();
                             ViewBag.Employee_Contribution_Rate = row["Employee_Contribution_Rate"].ToString();
                             ViewBag.Professionaltax = row["Professionaltax"].ToString();
+                            ViewBag.nominee = row["nominee"].ToString();
                             ViewBag.Emp_Reg_Code = id;
                             ViewBag.btnText = "UPDATE";
 

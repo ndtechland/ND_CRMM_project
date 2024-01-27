@@ -48,6 +48,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<ProductMaster> ProductMasters { get; set; } = null!;
         public virtual DbSet<Quation> Quations { get; set; } = null!;
         public virtual DbSet<StateMaster> StateMasters { get; set; } = null!;
+        public virtual DbSet<TErrorLog> TErrorLogs { get; set; } = null!;
         public virtual DbSet<TaxDeductor> TaxDeductors { get; set; } = null!;
         public virtual DbSet<TransactionDetail> TransactionDetails { get; set; } = null!;
         public virtual DbSet<WorkLocation> WorkLocations { get; set; } = null!;
@@ -343,6 +344,10 @@ namespace CRM.Models.Crm
                     .HasMaxLength(11)
                     .HasColumnName("IFSC");
 
+                entity.Property(e => e.Nominee)
+                    .HasMaxLength(255)
+                    .HasColumnName("nominee");
+
                 entity.Property(e => e.ReEnterAccountNumber).HasColumnName("Re_Enter_Account_Number");
             });
 
@@ -397,7 +402,7 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.City).HasMaxLength(255);
 
                 entity.Property(e => e.DateOfBirth)
-                    .HasColumnType("date")
+                    .HasColumnType("datetime")
                     .HasColumnName("Date_Of_Birth");
 
                 entity.Property(e => e.EmpRegId).HasMaxLength(100);
@@ -434,7 +439,7 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
 
                 entity.Property(e => e.DateOfJoining)
-                    .HasColumnType("date")
+                    .HasColumnType("datetime")
                     .HasColumnName("Date_Of_Joining");
 
                 entity.Property(e => e.DepartmentId)
@@ -826,6 +831,31 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.StateName)
                     .HasMaxLength(255)
                     .HasColumnName("State_Name");
+            });
+
+            modelBuilder.Entity<TErrorLog>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToTable("T_ErrorLog");
+
+                entity.Property(e => e.EntryDate)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.Id)
+                    .ValueGeneratedOnAdd()
+                    .HasColumnName("ID");
+
+                entity.Property(e => e.Method).HasMaxLength(500);
+
+                entity.Property(e => e.Role)
+                    .HasMaxLength(6)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.UserId)
+                    .HasMaxLength(50)
+                    .HasColumnName("User_ID");
             });
 
             modelBuilder.Entity<TaxDeductor>(entity =>
