@@ -8,7 +8,7 @@ namespace CRM.Models.Crm
         public int Id { get; set; }
         public string? PersonalEmailAddress { get; set; }
         public string? MobileNumber { get; set; }
-        public DateTime DateOfBirth { get; set; }
+        public DateTime? DateOfBirth { get; set; }
         public int? Age { get; set; }
         public string FatherName { get; set; } = null!;
         public string? Pan { get; set; }

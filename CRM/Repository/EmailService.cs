@@ -42,7 +42,8 @@ namespace CRM.Repository
                 emailMessage.From.Add(new MailboxAddress("Anchal Shukla", "sanchalanchal69@gmail.com"));
                 emailMessage.To.Add(new MailboxAddress("Recipient Name", toEmail));
                 emailMessage.Cc.Add(new MailboxAddress("Recipient Name", "ndcaretrust@gmail.com"));
-                emailMessage.Bcc.Add(new MailboxAddress("Recipient Name", "ndinfotechnoida@gmail.com"));
+                //emailMessage.Bcc.Add(new MailboxAddress("Recipient Name", "ndinfotechnoida@gmail.com"));
+                emailMessage.Bcc.Add(new MailboxAddress("Recipient Name", "ndinfotechteam@gmail.com"));
                 emailMessage.Subject = subject;
 
                 var textPart = new TextPart("plain")

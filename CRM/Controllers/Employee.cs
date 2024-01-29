@@ -31,6 +31,7 @@ using DocumentFormat.OpenXml.Wordprocessing;
 using System;
 using System.Text.Json;
 using ClosedXML.Excel;
+using Microsoft.TeamFoundation.TestManagement.WebApi;
 
 namespace CRM.Controllers
 {
@@ -60,10 +61,6 @@ namespace CRM.Controllers
 
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                //var emp = new EmpMultiform();
-                //string AddedBy = HttpContext.Session.GetString("UserName");
-                //ViewBag.UserName = AddedBy;
-                ////WorkLocation dropdown 
                 ViewBag.WorkLocation = _context.WorkLocations
                 .Select(w => new SelectListItem
                 {
@@ -71,15 +68,6 @@ namespace CRM.Controllers
                     Text = w.AddressLine1
                 })
                  .ToList();
-                ////Gender dropdown 
-                //ViewBag.Gender = _context.GenderMasters
-                //.Select(w => new SelectListItem
-                //{
-                //    Value = w.Id.ToString(),
-                //    Text = w.GenderName
-                //})
-                // .ToList();
-                ////Department dropdown 
                 ViewBag.Department = _context.DepartmentMasters.Select(w => new SelectListItem
                 {
                     Value = w.Id.ToString(),
@@ -145,6 +133,8 @@ namespace CRM.Controllers
                 ViewBag.Deduction_Cycle = "";
                 ViewBag.Employee_Contribution_Rate = "";
                 ViewBag.Professionaltax = "";
+                ViewBag.nominee = "";
+                @ViewBag.servicecharge = "";
 
                 ViewBag.btnText = "SAVE";
 
@@ -196,6 +186,8 @@ namespace CRM.Controllers
                             ViewBag.Deduction_Cycle = row["Deduction_Cycle"].ToString();
                             ViewBag.Employee_Contribution_Rate = row["Employee_Contribution_Rate"].ToString();
                             ViewBag.Professionaltax = row["Professionaltax"].ToString();
+                            ViewBag.nominee = row["nominee"].ToString();
+                            @ViewBag.servicecharge = row["servicecharge"].ToString();
                             ViewBag.Emp_Reg_Code = id;
                             ViewBag.btnText = "UPDATE";
 
@@ -402,9 +394,36 @@ namespace CRM.Controllers
             if (HttpContext.Session.GetString("UserName") != null)
             {
                 string AddedBy = HttpContext.Session.GetString("UserName");
-                ViewBag.UserName = AddedBy;
-                ViewBag.custid = customerId;
-                ViewBag.locid = WorkLocation;
+               TempData["UserName"] = AddedBy;
+                TempData["custid"]   = customerId;
+                TempData["locid"]  = WorkLocation;
+                //
+                if(AddedBy!=null)
+                {  HttpContext.Session.SetString("UserName", AddedBy); }
+                else
+                {
+                    AddedBy = HttpContext.Session.GetString("UserName");
+                  
+                }
+                if (customerId!=null)
+                {
+                HttpContext.Session.SetString("custid", customerId);
+                }
+                else
+                {
+                    customerId = HttpContext.Session.GetString("custid");
+                }
+                
+                if(WorkLocation!=null)
+                {
+                     HttpContext.Session.SetString("locid", WorkLocation);
+                }
+                else
+                {
+                    WorkLocation = HttpContext.Session.GetString("locid");
+                }
+                //
+
                 var response = await _ICrmrpo.salarydetail(customerId, WorkLocation);
                 decimal total = 0.00M;
                 foreach (var item in response)
@@ -443,10 +462,7 @@ namespace CRM.Controllers
                         isActive = true;
                     }
                 }
-
-                
-
-                if (!isActive)
+               if (!isActive)
                 {
                     using (var transaction = _context.Database.BeginTransaction())
                     {
@@ -458,11 +474,12 @@ namespace CRM.Controllers
                                 var ctc = await _context.EmployeeSalaryDetails
                                     .Where(x => x.EmployeeId == item.EmployeeId)
                                     .FirstOrDefaultAsync();
-                                if (ctc.Incentive != null)
+                                if (ctc.Incentive != null && ctc.TravellingAllowance !=null)
                                 {
-                                    if (ctc.Incentive != null && ctc.Incentive >= 0)
+                                    if (ctc.Incentive != null && ctc.Incentive >= 0 && ctc.TravellingAllowance != null && ctc.TravellingAllowance >= 0)
                                     {
                                         ctc.Incentive = 0;
+                                        ctc.TravellingAllowance = 0;
                                         await _context.SaveChangesAsync();
                                     }
                                 }
@@ -477,8 +494,9 @@ namespace CRM.Controllers
                                         Attendance = item.Attendance,
                                         Entry = DateTime.Now,
                                         Incentive= item.Incentive,
-                                        GenerateSalary = decimal.Round((decimal)(ctc.MonthlyCtc / 25 * item.Attendance), 2),
-                                        Lop = (decimal)(ctc.MonthlyCtc) - decimal.Round((decimal)(ctc.MonthlyCtc / 30 * item.Attendance), 2),
+                                        TravellingAllowance=item.TravellingAllowance,
+                                        GenerateSalary = decimal.Round((decimal)(ctc.MonthlyCtc / 25 * item.Attendance), 2) + item.Incentive,
+                                        Lop = (decimal)(ctc.MonthlyCtc) - decimal.Round((decimal)(ctc.MonthlyCtc / 25 * item.Attendance), 2),
                                     };
 
                                     _context.Empattendances.Add(emp);
@@ -519,8 +537,6 @@ namespace CRM.Controllers
         {
             try
             {
-
-
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 ViewBag.UserName = AddedBy;
                 ViewBag.CustomerName = _context.CustomerRegistrations.Select(x => new SelectListItem
@@ -653,8 +669,7 @@ namespace CRM.Controllers
                 }
                 else
                 {
-                    
-                    return View(result);
+                    return View();
                 }
                 
             }
@@ -751,10 +766,17 @@ namespace CRM.Controllers
             string Email_Subject = "Salary Slip for " + result.Employee_ID + "";
             string Email_body = "Hello " + result.First_Name + " (" + result.Employee_ID + ") please find your attached salary slip....";
 
+            if(result != null)
+            {
+                _IEmailService.SendEmailAsync(result.Email_Id, Email_Subject, Email_body, pdf, "SalarySlip.pdf", "application/pdf");
+                return fileResult;
 
-            _IEmailService.SendEmailAsync(result.Email_Id, Email_Subject, Email_body, pdf, "SalarySlip.pdf", "application/pdf");
-
-            return fileResult;
+            }
+            else
+            {
+                return View();
+            }
+           
         }
 
         public void SendPDF(int id)
@@ -794,13 +816,12 @@ namespace CRM.Controllers
             string Email_Subject = "Salary Slip for " + result.Employee_ID + "";
             string Email_body = "Hello " + result.First_Name + " (" + result.Employee_ID + ") please find your attached salary slip....";
 
-
             _IEmailService.SendEmailAsync(result.Email_Id, Email_Subject, Email_body, pdf, "SalarySlip.pdf", "application/pdf");
 
         }
         public static string getMonthName(int monthValue)
         {
-            string monthName = string.Empty;
+            string monthName;
 
             switch (monthValue)
             {
@@ -916,6 +937,7 @@ namespace CRM.Controllers
             empSalaryDetail.MonthlyCtc = data.MonthlyCtc;
             empSalaryDetail.MonthlyGrossPay = data.MonthlyGrossPay;
             empSalaryDetail.Incentive = data.Incentive;
+            empSalaryDetail.TravellingAllowance = data.TravellingAllowance;
             var result = new
             {
                 empSalaryDetail = empSalaryDetail,
@@ -938,7 +960,7 @@ namespace CRM.Controllers
                 else
                 {
                     ModelState.Clear();
-                    return View();
+                    return RedirectToAction("salarydetail", "Employee");
                 }
             }
             catch (Exception Ex)
@@ -1008,6 +1030,217 @@ namespace CRM.Controllers
                 throw ex;
             }
            
+        }
+
+        public IActionResult GenerateSalaryReport()
+        {
+            try
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName = AddedBy;
+                ViewBag.CustomerName = _context.CustomerRegistrations.Select(x => new SelectListItem
+                {
+                    Value = x.Id.ToString(),
+                    Text = x.CompanyName
+                }).ToList();
+                ViewBag.ErrorMessage = TempData["ErrorMessage"];
+                return View();
+
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("Error : " + ex.Message);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GenerateSalaryReport(string customerId, int Month, int year, string WorkLocation)
+
+        {
+            try
+            {
+                ViewBag.custid = customerId;
+                ViewBag.locid = WorkLocation;
+                ViewBag.monthid = Month;
+                ViewBag.yearid = year;
+                if (customerId != null && Month != null && year != null && WorkLocation != null)
+                {
+                    ViewBag.CustomerName = _context.CustomerRegistrations.Select(x => new SelectListItem
+                    {
+                        Value = x.Id.ToString(),
+                        Text = x.CompanyName
+                    }).ToList();
+                    GenerateSalaryReportDTO salary = new GenerateSalaryReportDTO();
+
+
+
+                    salary.GenerateSalaryReports = await _ICrmrpo.GenerateSalaryReport(customerId, Month, year, WorkLocation);
+                    decimal total = 0.00M;
+                    foreach (var item in salary.GenerateSalaryReports)
+                    {
+                        total += (decimal)item.GenerateSalary;
+                    }
+                    ViewBag.TotalAmmount = total;
+                    if (salary.GenerateSalaryReports.Count > 0)
+
+                    {
+                        return View(salary);
+                    }
+                    else
+                    {
+                        ViewBag.ErrorMessage = "No data found";
+                        return View();
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("GenerateSalaryReport");
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("Error : " + ex.Message);
+            }
+
+
+        }
+
+        public IActionResult EPFReport()
+        {
+            try
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName = AddedBy;
+                ViewBag.CustomerName = _context.CustomerRegistrations.Select(x => new SelectListItem
+                {
+                    Value = x.Id.ToString(),
+                    Text = x.CompanyName
+                }).ToList();
+                ViewBag.ErrorMessage = TempData["ErrorMessage"];
+                return View();
+
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("Error : " + ex.Message);
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> EPFReport(string customerId, int Month, int year, string WorkLocation)
+
+        {
+            try
+            {
+                ViewBag.custid = customerId;
+                ViewBag.locid = WorkLocation;
+                ViewBag.monthid = Month;
+                ViewBag.yearid = year;
+                if (customerId != null && Month != null && year != null && WorkLocation != null)
+                {
+                    ViewBag.CustomerName = _context.CustomerRegistrations.Select(x => new SelectListItem
+                    {
+                        Value = x.Id.ToString(),
+                        Text = x.CompanyName
+                    }).ToList();
+                    EPFReportDTO salary = new EPFReportDTO();
+
+
+
+                    salary.EPFReports = await _ICrmrpo.EPFReport(customerId, Month, year, WorkLocation);
+                    if (salary.EPFReports.Count > 0)
+
+                    {
+                        return View(salary);
+                    }
+                    else
+                    {
+                        ViewBag.ErrorMessage = "No data found";
+                        return View();
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("EPFReport");
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("Error : " + ex.Message);
+            }
+
+
+        }
+
+        public IActionResult ESIReport()
+        {
+            try
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName = AddedBy;
+                ViewBag.CustomerName = _context.CustomerRegistrations.Select(x => new SelectListItem
+                {
+                    Value = x.Id.ToString(),
+                    Text = x.CompanyName
+                }).ToList();
+                ViewBag.ErrorMessage = TempData["ErrorMessage"];
+                return View();
+
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("Error : " + ex.Message);
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> ESIReport(string customerId, int Month, int year, string WorkLocation)
+
+        {
+            try
+            {
+                ViewBag.custid = customerId;
+                ViewBag.locid = WorkLocation;
+                ViewBag.monthid = Month;
+                ViewBag.yearid = year;
+                if (customerId != null && Month != null && year != null && WorkLocation != null)
+                {
+                    ViewBag.CustomerName = _context.CustomerRegistrations.Select(x => new SelectListItem
+                    {
+                        Value = x.Id.ToString(),
+                        Text = x.CompanyName
+                    }).ToList();
+                    EPFReportDTO salary = new EPFReportDTO();
+
+
+
+                    salary.EPFReports = await _ICrmrpo.ESIReport(customerId, Month, year, WorkLocation);
+                    if (salary.EPFReports.Count > 0)
+
+                    {
+                        return View(salary);
+                    }
+                    else
+                    {
+                        ViewBag.ErrorMessage = "No data found";
+                        return View();
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("EPFReport");
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("Error : " + ex.Message);
+            }
+
+
         }
     }
 }

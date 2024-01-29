@@ -1,0 +1,324 @@
+﻿@model CRM.Models.DTO.EPFReportDTO
+@{
+    ViewData["Title"] = "EPFReport";
+    Layout = "~/Views/Shared/_adminLayout.cshtml";
+}
+@if (ViewBag.ErrorMessage != null)
+{
+    <script>alert('@ViewBag.ErrorMessage');</script>
+}
+<div class="page-wrapper">
+    <div class="page-body-wrapper">
+        <div class="page-sidebar">
+        </div>
+        <div class="page-body">
+
+            <div class="container-fluid">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="page-header-left">
+                                <h2>
+                                    EPF Report
+                                </h2>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <ol class="breadcrumb pull-right">
+                                <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
+                                <li class="breadcrumb-item">HR Payrole</li>
+                                <li class="breadcrumb-item active">Report</li>
+                                <li class="breadcrumb-item active">EPF Summary</li>
+
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container-fluid">
+                <div class="row">
+
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body"> 
+                                <div></div>
+                                <form asp-action="EPFReport" autocomplete="off" method="post">
+                                    <div class="row">
+                                        <div class="form-group col-md-3">
+                                            <label for="validationCustom0">Company Name</label>
+                                            <select class="form-control" id="CustomerID" name="CustomerID" onchange="Locations()">
+                                                <option value="">-- Select Company --</option>
+ 
+
+                                                @foreach (var item in ViewBag.CustomerName)
+                                                {
+                                                    <option value="@item.Value">@item.Text</option>
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-sm">
+                                            <label for="validationCustom0">Work Location</label>
+                                            <select class="form-control col-md-" id="LocationID" name="WorkLocation">
+                                                <option value="">--Select WorkLocation--</option>
+
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-sm">
+                                            <label for="validationCustom0">Month</label>
+                                            <select id="Month" class="form-control" name="Month">
+
+                                                <option value="">-- Select Month --</option>
+                                                <option value="1">January</option>
+                                                <option value="2">February</option>
+                                                <option value="3">March</option>
+                                                <option value="4">April</option>
+                                                <option value="5">May</option>
+                                                <option value="6">Jun</option>
+                                                <option value="7">July</option>
+                                                <option value="8">August</option>
+                                                <option value="9">Septemper</option>
+                                                <option value="10">Octobar</option>
+                                                <option value="11">November</option>
+                                                <option value="12">December</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group col-sm">
+                                            <label for="validationCustom0">Year</label>
+                                            <select id="Year" class="form-control col-md-" name="Year">
+                                                <option value="">-- Select Year --</option>
+                                                <option value="2023">2023</option>
+                                                <option value="2024">2024</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="form-button" style="display:flex; justify-content:center;">
+                                        <input type="submit" value="Search" class="btn btn-primary" onclick="return validateForm()" />
+                                    </div>
+                                </form>
+                                <div class="container-fluid">
+                                    <div class="row">
+
+                                        <div class="col-sm-12">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <div class=" table-responsive">
+                                                        @if (Model != null && Model.EPFReports.Count > 0)
+                                                        {
+                                                            <table id="datatable" class="table table-responsive">
+                                                                <thead>
+                                                                    <tr style="background-color: #00baf2;">
+                                                                        <th hidden>
+                                                                            ID
+                                                                        </th>
+                                                                        <th nowrap>Sl. No.</th>
+                                                                        <th>
+                                                                            EmployeeId
+                                                                        </th>
+                                                                        <th>
+                                                                            EmployeeName
+                                                                        </th>
+                                                                        <th>
+                                                                            MonthlyCtc
+                                                                        </th> 
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @{
+                                                                        var count = 0;
+                                                                        foreach (var item in Model.EPFReports)
+                                                                        {
+                                                                            count++;
+                                                                            <tr>
+                                                                                <td>@count</td>
+                                                                                <td style="display:none">
+                                                                                    @item.Id
+                                                                                </td>
+                                                                                <td>@item.EmployeeId</td>
+                                                                                <td>@item.EmployeeName</td>
+                                                                                <td>@item.MonthlyCtc</td>
+                                                                                 
+                                                                            </tr>
+                                                                        }
+                                                                    }
+
+                                                                </tbody>
+                                                            </table>
+                                                        }
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="pagination-container">
+                                    <ul id="pagination" class="pagination"></ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<input hidden type="text" id="custid" value="@ViewBag.custid" />
+<input hidden type="text" id="locid" value="@ViewBag.locid" />
+<input hidden type="text" id="monthid" value="@ViewBag.monthid" />
+<input hidden type="text" id="yearid" value="@ViewBag.yearid" />
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    var currentPage = 1;
+    var rowsPerPage = 5;
+    $(document).ready(function () {
+        function paginateTable() {
+            var table = $('#datatable');
+            var rows = table.find('tbody tr');
+
+
+            var totalPages = Math.ceil(rows.length / rowsPerPage);
+
+
+            var pagination = $('#pagination');
+            pagination.empty();
+
+            for (var i = 1; i <= totalPages; i++) {
+                var link = $('<li class="page-item"><a class="page-link" href="#">' + i + '</a></li>');
+
+
+                if (i === currentPage) {
+                    link.addClass('active');
+                }
+
+                pagination.append(link);
+            }
+
+
+            var startIndex = (currentPage - 1) * rowsPerPage;
+            var endIndex = startIndex + rowsPerPage;
+
+            rows.hide().slice(startIndex, endIndex).show();
+        }
+
+
+        paginateTable();
+
+        $(document).on('click', '#pagination li a', function (event) {
+            event.preventDefault();
+
+            var clickedPage = parseInt($(this).text());
+
+
+            currentPage = clickedPage;
+            paginateTable();
+
+
+            $('html, body').animate({ scrollTop: $('#table-container').offset().top }, 'slow');
+        });
+    });
+
+</script>
+<script>
+
+    $(document).ready(function () {
+
+        $("#CustomerID").val($("#custid").val());
+        $("#Month").val($("#monthid").val());
+        $("#Year").val($("#yearid").val());
+        $("#LocationID").val($("#locid").val());
+
+        Locations();
+    });
+
+    function Locations() {
+        var customerId = $("#CustomerID").val();
+        if (customerId !== "") {
+            $.ajax({
+                url: '/Employee/GetLocationsByCustomer?customerId=' + customerId,
+                type: "post",
+                success: function (response) {
+                    populateLocations(response);
+                },
+                error: function (error) {
+                    console.error("Error loading locations: " + error);
+                }
+            });
+        } else {
+            $("#LocationID").empty();
+            $("#LocationID").append('<option value="">--Select WorkLocation--</option>');
+        }
+    }
+
+    function populateLocations(response) {
+        $("#LocationID").empty();
+        $("#LocationID").append('<option value="">--Select WorkLocation--</option>');
+
+        $.each(response, function (i, response) {
+            $("#LocationID").append('<option value="' + response.text + '">' + response.value + '</option>');
+        });
+
+
+        var locId = $("#locid").val();
+        if (locId !== "") {
+            $("#LocationID").val(locId);
+        }
+    }
+</script>
+<script>
+    function validateForm() {
+        var CustomerID = document.getElementById('CustomerID').value;
+        var Month = document.getElementById('Month').value;
+        var Year = document.getElementById('Year').value;
+        var WorkLocation = document.getElementById('LocationID').value;
+
+        if (CustomerID === '') {
+            alert("Please select Company.");
+            return false;
+        }
+        if (WorkLocation === '') {
+            alert("Please select WorkLocation.");
+            return false;
+        }
+        if (Month === '') {
+            alert("Please select Month.");
+            return false;
+        }
+        if (Year === '') {
+            alert("Please select Year.");
+            return false;
+        }
+
+    }
+</script>
+<script>
+    function generateInvoice() {
+        var CustomerID = $("#CustomerID").val();
+        var Month = $("#Month").val();
+        var Year = $("#Year").val();
+        var WorkLocation = $("#LocationID").val();
+        if (CustomerID === '') {
+            alert("Please select Company.");
+            return false;
+        }
+        if (WorkLocation === '') {
+            alert("Please select WorkLocation.");
+            return false;
+        }
+        if (Month === '') {
+            alert("Please select Month.");
+            return false;
+        }
+        if (Year === '') {
+            alert("Please select Year.");
+            return false;
+        }
+        if (CustomerID != null || Month != null || Year != null || WorkLocation != null) {
+            window.location.href = '/Employee/Invoice?customerId=' + CustomerID + '&Month=' + Month + '&year=' + Year + '&WorkLocation=' + WorkLocation;
+        }
+
+    }
+</script>

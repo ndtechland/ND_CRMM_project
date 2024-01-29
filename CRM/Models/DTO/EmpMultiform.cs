@@ -30,6 +30,7 @@ namespace CRM.Models.DTO
         public decimal EPF { get; set; }
         public decimal MonthlyGrossPay { get; set; }
         public decimal MonthlyCTC { get; set; }
+        public decimal? Servicecharge { get; set; }
 
         // Personal Info
         public string? PersonalEmailAddress { get; set; }
@@ -50,6 +51,7 @@ namespace CRM.Models.DTO
         public Int64 ReEnterAccountNumber { get; set; }
         public string? IFSC { get; set; }
         public int AccountTypeID { get; set; }
+        public string nominee { get; set; }
 
         [NotMapped]
         public string? EPF_Number { get; set; }
