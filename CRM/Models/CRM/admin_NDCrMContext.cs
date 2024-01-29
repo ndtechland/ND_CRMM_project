@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using CRM.Models.CRM;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
