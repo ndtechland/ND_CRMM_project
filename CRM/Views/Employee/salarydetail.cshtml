@@ -191,11 +191,11 @@
                                 @if (Model != null && Model.Any())
                                 {
                                     <div class="row">
-                                        <div class="col-md-8">
+                                        <div class="col-md-7">
                                             <label class="form-group">Total Monthly CTC</label>
                                         </div>
                                         <div class="col-md-4">
-                                            <input type="text" id="TotalAmount" value="@ViewBag.TotalAmmount" class="form-group" style="border: none;margin-left: -62px;" readonly />
+                                            <input type="text" id="TotalAmount" value="@ViewBag.TotalAmmount" class="form-group" style="border: none;margin-left: -10px;" readonly />
                                         </div>
                                     </div>
                                 }
@@ -273,7 +273,7 @@
                         if ((tbody.children().length) == @Model.Count()) {
                             $(".attnd").val("");
                             //location.reload();
-                            alert("Data saved successfully.");
+                            alert("Salary generated successfully.");
                         }
                         debugger;
                     },
