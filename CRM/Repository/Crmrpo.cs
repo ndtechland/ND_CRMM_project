@@ -120,7 +120,8 @@ namespace CRM.Repository
                 parameter.Add(new SqlParameter("@FirstName", model.FirstName));
                 parameter.Add(new SqlParameter("@MiddleName", model.MiddleName));
                 parameter.Add(new SqlParameter("@LastName", model.LastName));
-                parameter.Add(new SqlParameter("@DateOfJoining", model.DateOfJoining));
+                //parameter.Add(new SqlParameter("@DateOfJoining", model.DateOfJoining));
+                parameter.Add(new SqlParameter("@DateOfJoining", Convert.ToDateTime(model.DateOfJoining.ToString("dd/MM/yyyy"))));
                 parameter.Add(new SqlParameter("@WorkEmail", model.WorkEmail));
                 parameter.Add(new SqlParameter("@GenderID", model.GenderID));
                 parameter.Add(new SqlParameter("@WorkLocationID", model.WorkLocationID));
@@ -141,7 +142,8 @@ namespace CRM.Repository
                 //
                 parameter.Add(new SqlParameter("@Personal_Email_Address", model.PersonalEmailAddress));
                 parameter.Add(new SqlParameter("@Mobile_Number", model.MobileNumber));
-                parameter.Add(new SqlParameter("@Date_Of_Birth", model.DateOfBirth));
+                //parameter.Add(new SqlParameter("@Date_Of_Birth", model.DateOfBirth));
+                parameter.Add(new SqlParameter("@Date_Of_Birth", Convert.ToDateTime(model.DateOfBirth.ToString("dd/MM/yyyy"))));
                 parameter.Add(new SqlParameter("@Father_Name", model.FatherName));
                 parameter.Add(new SqlParameter("@PAN", model.PAN));
                 parameter.Add(new SqlParameter("@Address_Line_1", model.AddressLine1));
