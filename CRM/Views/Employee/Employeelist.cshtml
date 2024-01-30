@@ -209,7 +209,9 @@
                                                 <th nowrap>
                                                     Employee Contribution Rate
                                                 </th>
-
+                                                <th nowrap>
+                                                    Nominee name
+                                                </th>
                                                 <th nowrap>
                                                     Action
                                                 </th>
@@ -355,7 +357,10 @@
                                                         <td>
                                                             @Html.DisplayFor(modelItem => item.Employee_Contribution_Rate)
                                                         </td>
-
+                                                        
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.nominee)
+                                                        </td>
                                                         <td>
                                                             <div>
                                                                 <a href="EmployeeRegistration?id=@item.Emp_Reg_ID" class="fa fa-edit m-2 font-success"></a>
