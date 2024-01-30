@@ -1,17 +1,17 @@
-﻿using DocumentFormat.OpenXml.Office2010.Excel;
-using Org.BouncyCastle.Asn1.Ocsp;
+﻿using System;
+using System.Collections.Generic;
 
-namespace CRM.Models.CRM
+namespace CRM.Models.Crm
 {
-    public class TErrorLog
+    public partial class TErrorLog
     {
-            public int Id { get; set; }
-            public string? UserId { get; set; }
-            public string? Role { get; set; }
-            public string? Method { get; set; }
-            public string? Request { get; set; }
-            public string? Reponse { get; set; }
-            public string? Despcrtiption { get; set; }
-            public DateTime EntryDate { get; set; }
+        public long Id { get; set; }
+        public string UserId { get; set; } = null!;
+        public string? Role { get; set; }
+        public string? Method { get; set; }
+        public string? Request { get; set; }
+        public string? Reponse { get; set; }
+        public string? Despcrtiption { get; set; }
+        public DateTime? EntryDate { get; set; }
     }
 }

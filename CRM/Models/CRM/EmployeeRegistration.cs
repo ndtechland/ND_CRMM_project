@@ -5,12 +5,6 @@ namespace CRM.Models.Crm
 {
     public partial class EmployeeRegistration
     {
-        public EmployeeRegistration()
-        {
-            EmployeeLogins = new HashSet<EmployeeLogin>();
-            EmployeeRoles = new HashSet<EmployeeRole>();
-        }
-
         public int Id { get; set; }
         public string FirstName { get; set; } = null!;
         public string? MiddleName { get; set; }
@@ -24,8 +18,5 @@ namespace CRM.Models.Crm
         public string DepartmentId { get; set; } = null!;
         public bool? IsDeleted { get; set; }
         public int? CustomerId { get; set; }
-
-        public virtual ICollection<EmployeeLogin> EmployeeLogins { get; set; }
-        public virtual ICollection<EmployeeRole> EmployeeRoles { get; set; }
     }
 }

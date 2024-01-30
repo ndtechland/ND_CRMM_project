@@ -9,7 +9,5 @@ namespace CRM.Models.Crm
         public int EmployeeRegistrationId { get; set; }
         public string EmployeeRole1 { get; set; } = null!;
         public string? Description { get; set; }
-
-        public virtual EmployeeRegistration EmployeeRegistration { get; set; } = null!;
     }
 }
