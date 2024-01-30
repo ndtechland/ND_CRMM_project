@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using CRM.Models.CRM;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -380,12 +379,6 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.EmployeeId).HasColumnName("Employee_ID");
 
                 entity.Property(e => e.Password).HasMaxLength(120);
-
-                entity.HasOne(d => d.Employee)
-                    .WithMany(p => p.EmployeeLogins)
-                    .HasForeignKey(d => d.EmployeeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Employee_Login_Employee_ID");
             });
 
             modelBuilder.Entity<EmployeePersonalDetail>(entity =>
@@ -496,12 +489,6 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.EmployeeRole1)
                     .HasMaxLength(120)
                     .HasColumnName("Employee_Role");
-
-                entity.HasOne(d => d.EmployeeRegistration)
-                    .WithMany(p => p.EmployeeRoles)
-                    .HasForeignKey(d => d.EmployeeRegistrationId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Employee_Role_Employee_Registration_ID");
             });
 
             modelBuilder.Entity<EmployeeSalaryDetail>(entity =>
