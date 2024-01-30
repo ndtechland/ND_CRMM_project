@@ -120,7 +120,8 @@ namespace CRM.Repository
                 parameter.Add(new SqlParameter("@FirstName", model.FirstName));
                 parameter.Add(new SqlParameter("@MiddleName", model.MiddleName));
                 parameter.Add(new SqlParameter("@LastName", model.LastName));
-                parameter.Add(new SqlParameter("@DateOfJoining", model.DateOfJoining));
+                //parameter.Add(new SqlParameter("@DateOfJoining", model.DateOfJoining));
+                parameter.Add(new SqlParameter("@DateOfJoining", Convert.ToDateTime(model.DateOfJoining.ToString("dd/MM/yyyy"))));
                 parameter.Add(new SqlParameter("@WorkEmail", model.WorkEmail));
                 parameter.Add(new SqlParameter("@GenderID", model.GenderID));
                 parameter.Add(new SqlParameter("@WorkLocationID", model.WorkLocationID));
@@ -137,10 +138,12 @@ namespace CRM.Repository
                 parameter.Add(new SqlParameter("@MonthlyGrossPay", model.MonthlyGrossPay));
                 parameter.Add(new SqlParameter("@MonthlyCTC", model.MonthlyCTC));
                 parameter.Add(new SqlParameter("@Professionaltax", model.Professionaltax));
+                parameter.Add(new SqlParameter("@servicecharge", model.Servicecharge));
                 //personal detail
                 parameter.Add(new SqlParameter("@Personal_Email_Address", model.PersonalEmailAddress));
                 parameter.Add(new SqlParameter("@Mobile_Number", model.MobileNumber));
-                parameter.Add(new SqlParameter("@Date_Of_Birth", model.DateOfBirth));
+                //parameter.Add(new SqlParameter("@Date_Of_Birth", model.DateOfBirth));
+                parameter.Add(new SqlParameter("@Date_Of_Birth", Convert.ToDateTime(model.DateOfBirth.ToString("dd/MM/yyyy"))));
                 parameter.Add(new SqlParameter("@Father_Name", model.FatherName));
                 parameter.Add(new SqlParameter("@PAN", model.PAN));
                 parameter.Add(new SqlParameter("@Address_Line_1", model.AddressLine1));
@@ -159,7 +162,7 @@ namespace CRM.Repository
                 parameter.Add(new SqlParameter("@Employee_Contribution_Rate", model.Employee_Contribution_Rate));
                 parameter.Add(new SqlParameter("@Account_Type_ID", model.AccountTypeID));
                 parameter.Add(new SqlParameter("@nominee", model.nominee));
-                var result = await Task.Run(() => _context.Database.ExecuteSqlRawAsync(@"exec EmployeeRegistration @mode,@Emp_RegID,@Customer_Id,@FirstName,@MiddleName,@LastName,@DateOfJoining,@WorkEmail,@GenderID,@WorkLocationID,@DesignationID,@DepartmentID,@AnnualCTC,@Basic,@HouseRentAllowance,@TravellingAllowance,@ESIC,@EPF,@MonthlyGrossPay,@MonthlyCTC,@Professionaltax,@Personal_Email_Address,@Mobile_Number,@Date_Of_Birth,@Father_Name,@PAN,@Address_Line_1,@Address_Line_2,@City,@State_ID,@Pincode,@Account_Holder_Name,@Bank_Name,@Account_Number,@Re_Enter_Account_Number,@IFSC,@EPF_Number,@Deduction_Cycle,@Employee_Contribution_Rate,@Account_Type_ID,@nominee", parameter.ToArray()));
+                var result = await Task.Run(() => _context.Database.ExecuteSqlRawAsync(@"exec EmployeeRegistration @mode,@Emp_RegID,@Customer_Id,@FirstName,@MiddleName,@LastName,@DateOfJoining,@WorkEmail,@GenderID,@WorkLocationID,@DesignationID,@DepartmentID,@AnnualCTC,@Basic,@HouseRentAllowance,@TravellingAllowance,@ESIC,@EPF,@MonthlyGrossPay,@MonthlyCTC,@Professionaltax,@servicecharge,@Personal_Email_Address,@Mobile_Number,@Date_Of_Birth,@Father_Name,@PAN,@Address_Line_1,@Address_Line_2,@City,@State_ID,@Pincode,@Account_Holder_Name,@Bank_Name,@Account_Number,@Re_Enter_Account_Number,@IFSC,@EPF_Number,@Deduction_Cycle,@Employee_Contribution_Rate,@Account_Type_ID,@nominee", parameter.ToArray()));
 
                 return result;
             }
@@ -365,6 +368,7 @@ namespace CRM.Repository
                         CustomerID = (long)(rdr["CustomerID"] == DBNull.Value ? 0m : Convert.ToDecimal(rdr["CustomerID"])),
                         FatherName = rdr["FirstName"] == DBNull.Value ? null : Convert.ToString(rdr["FatherName"]),
                         Incentive = rdr["Incentive"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["Incentive"]),
+                        TravellingAllowance = rdr["TravellingAllowance"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["TravellingAllowance"]),
                     };
 
                     emp.Add(emps);
@@ -872,6 +876,41 @@ namespace CRM.Repository
 
         }
 
+        public async Task<List<EPFReportDTO>> ESIReport(string customerId, int Month, int year, string WorkLocation)
+        {
+            try
+            {
+                SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
+                SqlCommand cmd = new SqlCommand("GetEPF_Report", con);
+                cmd.Parameters.Add(new SqlParameter("@CustomerID", SqlDbType.Int) { Value = Convert.ToInt32(customerId) });
+                cmd.Parameters.Add(new SqlParameter("@Month", SqlDbType.Int) { Value = Convert.ToInt32(Month) });
+                cmd.Parameters.Add(new SqlParameter("@year", SqlDbType.Int) { Value = Convert.ToInt32(year) });
+                cmd.Parameters.Add(new SqlParameter("@WorkLocation", SqlDbType.Int) { Value = Convert.ToInt32(WorkLocation) });
+                cmd.CommandType = CommandType.StoredProcedure;
+                con.Open();
+                SqlDataReader rdr = cmd.ExecuteReader();
+                List<EPFReportDTO> emp = new List<EPFReportDTO>();
+                while (rdr.Read())
+                {
+                    var emps = new EPFReportDTO()
+                    {
+                        Id = Convert.ToInt32(rdr["id"]),
+                        EmployeeId = Convert.ToString(rdr["Employee_ID"]),
+                        EmployeeName = Convert.ToString(rdr["EmployeeName"]),
+                        MonthlyCtc = Convert.ToDecimal(rdr["MonthlyCTC"]),
+                        PAN = Convert.ToString(rdr["PAN"])
+                    };
+
+                    emp.Add(emps);
+                }
+                return emp;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+        }
     }
 
 }

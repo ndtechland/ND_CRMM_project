@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using CRM.Models.CRM;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -301,6 +302,8 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Lop).HasColumnType("decimal(18, 2)");
 
+                entity.Property(e => e.TravellingAllowance).HasColumnType("decimal(18, 0)");
+
                 entity.Property(e => e.Year).HasColumnName("year");
             });
 
@@ -541,6 +544,10 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.MonthlyGrossPay).HasColumnType("decimal(18, 0)");
 
                 entity.Property(e => e.Professionaltax).HasColumnType("decimal(18, 0)");
+
+                entity.Property(e => e.Servicecharge)
+                    .HasColumnType("decimal(18, 0)")
+                    .HasColumnName("servicecharge");
 
                 entity.Property(e => e.TravellingAllowance).HasColumnType("decimal(18, 0)");
             });

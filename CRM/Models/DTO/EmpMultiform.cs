@@ -30,6 +30,7 @@ namespace CRM.Models.DTO
         public decimal EPF { get; set; }
         public decimal MonthlyGrossPay { get; set; }
         public decimal MonthlyCTC { get; set; }
+        public decimal? Servicecharge { get; set; }
 
         // Personal Info
         public string? PersonalEmailAddress { get; set; }

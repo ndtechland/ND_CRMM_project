@@ -170,8 +170,22 @@
                                                                 </tbody>
                                                             </table>
                                                         }
+                                                          @*else
+                                                        {
+                                                           <script>alert('No salary details found.');</script>
+                                                        }*@
                                                     </div>
-
+                                                    @if (Model != null)
+                                                    {
+                                                        <div class="row">
+                                                            <div class="col-md-8">
+                                                                <label class="form-group">Total CTC</label>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <input type="text" id="TotalAmount" value="@ViewBag.TotalAmmount" class="form-group" style="border: none;margin-left: 87px;" readonly />
+                                                            </div>
+                                                        </div>
+                                                    }
                                                 </div>
                                             </div>
                                         </div>
