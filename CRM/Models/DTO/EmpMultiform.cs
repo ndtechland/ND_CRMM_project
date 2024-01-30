@@ -13,7 +13,7 @@ namespace CRM.Models.DTO
         public string? LastName { get; set; }
         public DateTime DateOfJoining { get; set; }
         public string? WorkEmail { get; set; }
-        public int GenderID { get; set; }
+        public string? GenderID { get; set; }
         public int WorkLocationID { get; set; }
         public int DesignationID { get; set; }
         public int DepartmentID { get; set; }

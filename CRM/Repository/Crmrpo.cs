@@ -112,7 +112,7 @@ namespace CRM.Repository
         {
             try
             {
-
+                //employee detail
                 var parameter = new List<SqlParameter>();
                 parameter.Add(new SqlParameter("@mode", Mode));
                 parameter.Add(new SqlParameter("@Emp_RegID", Emp_Reg_ID));
@@ -137,7 +137,7 @@ namespace CRM.Repository
                 parameter.Add(new SqlParameter("@MonthlyGrossPay", model.MonthlyGrossPay));
                 parameter.Add(new SqlParameter("@MonthlyCTC", model.MonthlyCTC));
                 parameter.Add(new SqlParameter("@Professionaltax", model.Professionaltax));
-                //
+                //personal detail
                 parameter.Add(new SqlParameter("@Personal_Email_Address", model.PersonalEmailAddress));
                 parameter.Add(new SqlParameter("@Mobile_Number", model.MobileNumber));
                 parameter.Add(new SqlParameter("@Date_Of_Birth", model.DateOfBirth));
@@ -148,7 +148,7 @@ namespace CRM.Repository
                 parameter.Add(new SqlParameter("@City", model.City));
                 parameter.Add(new SqlParameter("@State_ID", model.StateID));
                 parameter.Add(new SqlParameter("@Pincode", model.Pincode));
-                //
+                //bank detail
                 parameter.Add(new SqlParameter("@Account_Holder_Name", model.AccountHolderName));
                 parameter.Add(new SqlParameter("@Bank_Name", model.BankName));
                 parameter.Add(new SqlParameter("@Account_Number", model.AccountNumber));
