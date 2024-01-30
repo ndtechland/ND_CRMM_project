@@ -1142,20 +1142,20 @@ document.getElementById('btnThirdTab').addEventListener('click', function (event
         errormessage += 'reEnterAccountNumber Number is not valid,'
     }
 
-    var ifsc = $("#IFSC").val();
-    var ifscRegex = /^[A-Z]{4}[0][A-Z0-9]{6}$/;
+    //var ifsc = $("#IFSC").val();
+    //var ifscRegex = /^[A-Z]{4}[0][A-Z0-9]{6}$/;
 
-    if (!ifscRegex.test(ifsc)) {
-        errormessage += 'IFSC Code is  not valid,'
-    }
+    //if (!ifscRegex.test(ifsc)) {
+    //    errormessage += 'IFSC Code is  not valid,'
+    //}
 
 
-    var EPF = $("#EPF_Number").val();
-    var epfRegex = /^[A-Z]{3}\/[A-Z]{3}\/\d{6}\/\d{2}$/;
+    //var EPF = $("#EPF_Number").val();
+    //var epfRegex = /^[A-Z]{3}\/[A-Z]{3}\/\d{6}\/\d{2}$/;
 
-    if (!epfRegex.test(EPF)) {
-        errormessage += 'EPF Number is not valid,'
-    }
+    //if (!epfRegex.test(EPF)) {
+    //    errormessage += 'EPF Number is not valid,'
+    //}
 
     if ($("#Employee_Contribution_Rate").val().trim() == '') {
 
