@@ -13,7 +13,7 @@ namespace CRM.Models.DTO
         public string? LastName { get; set; }
         public DateTime DateOfJoining { get; set; }
         public string? WorkEmail { get; set; }
-        public string? GenderID { get; set; }
+        public int? GenderID { get; set; }
         public int WorkLocationID { get; set; }
         public int DesignationID { get; set; }
         public int DepartmentID { get; set; }
@@ -46,8 +46,8 @@ namespace CRM.Models.DTO
         // Bank Details
         public string? AccountHolderName { get; set; }
         public string? BankName { get; set; }
-        public Int64 AccountNumber { get; set; }
-        public Int64 ReEnterAccountNumber { get; set; }
+        public int AccountNumber { get; set; }
+        public int ReEnterAccountNumber { get; set; }
         public string? IFSC { get; set; }
         public int AccountTypeID { get; set; }
         public string nominee { get; set; }

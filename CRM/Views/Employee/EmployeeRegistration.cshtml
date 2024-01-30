@@ -889,6 +889,7 @@
 
 
 </script>
+ 
 
 <script>
 function openErrorPopUp(errorMessage) {
@@ -996,13 +997,14 @@ document.getElementById('btnFirstTab').addEventListener('click', function (event
 
         $(".next-step").off("click");
         openErrorPopUp(errormessage);
-        document.getElementById('btnFirstTab').addEventListener('click', () => displayStep(2));
+        
         return false;
 
     }
     else {
+            
         return true;
-
+            document.getElementById('btnFirstTab').addEventListener('click', () => displayStep(2));
     }
 });
 
@@ -1087,12 +1089,13 @@ document.getElementById('btnSecondTab').addEventListener('click', function (even
 
         $(".next-step").off("click");
         openErrorPopUp(errormessage);
-            document.getElementById('btnSecondTab').addEventListener('click', () => displayStep(3);
+            
         return false;
     }
     else {
+           
         return true;
-
+            document.getElementById('btnSecondTab').addEventListener('click', () => displayStep(3);
     }
 });
 
