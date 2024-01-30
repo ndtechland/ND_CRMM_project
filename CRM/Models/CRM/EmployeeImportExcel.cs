@@ -69,6 +69,7 @@ namespace CRM.Models.Crm
         public string? Deduction_Cycle { get; set; }
 
         public string? Employee_Contribution_Rate { get; set; }
+        public string nominee { get; set; }
 
     }
 }
