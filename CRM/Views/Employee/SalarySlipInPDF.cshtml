@@ -1,5 +1,5 @@
 ﻿@model CRM.Models.DTO.SalarySlipDetails
-
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 <!DOCTYPE html>
@@ -7,119 +7,125 @@
 <head>
 </head>
 <body>
+    @if (Model != null)
+    {
+        <div class="container mt-5 mb-5">
 
-    <div class="container mt-5 mb-5">
-
-        <div class="row">
-            <div class="col-md-12">
-                <div class="text-center lh-1 mb-2">
-                    <img src="~/assets/images/layout-2/logo/logo.png" style="margin: -45px;" />
-                    <h6 class="fw-bold">N D Techland Private Limited</h6> <span class="fw-normal">Payment slip for the month of @Model.Month @Model.Year</span>
-                </div>
-                <div class="d-flex justify-content-end"> <span>Working Branch:@Model.Address_Line_1</span> </div>
-                <div class="row">
-                    <div class="col-md-10">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div> <span class="fw-bolder">EMP Code</span> <small class="ms-3">@Model.Employee_ID</small> </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="text-center lh-1 mb-2">
+                        <img src="~/assets/images/layout-2/logo/logo.png" style="margin: -45px;" />
+                        <h6 class="fw-bold">N D Techland Private Limited</h6> <span class="fw-normal">Payment slip for the month of @Model.Month  @Model.Year</span>
+                    </div>
+                    <div class="d-flex justify-content-end"> <span>Working Branch:@Model.Address_Line_1</span> </div>
+                    <div class="row">
+                        <div class="col-md-10">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div> <span class="fw-bolder">EMP Code</span> <small class="ms-3">@Model.Employee_ID</small> </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div> <span class="fw-bolder">EMP Name</span> <small class="ms-3">@Model.First_Name</small> </div>
+                                </div>
                             </div>
-                            <div class="col-md-6">
-                                <div> <span class="fw-bolder">EMP Name</span> <small class="ms-3">@Model.First_Name</small> </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div> <span class="fw-bolder">PF No.</span> <small class="ms-3">@Model.EPF_Number</small> </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div> <span class="fw-bolder">NOD</span> <small class="ms-3">@Model.Id</small> </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div> <span class="fw-bolder">PF No.</span> <small class="ms-3">@Model.EPF_Number</small> </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div> <span class="fw-bolder">ESI No.</span> <small class="ms-3"></small> </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div> <span class="fw-bolder">Mode of Pay</span> <small class="ms-3">@Model.Bank_Name</small> </div>
+                                </div>
                             </div>
-                            <div class="col-md-6">
-                                <div> <span class="fw-bolder">NOD</span> <small class="ms-3">@Model.Id</small> </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div> <span class="fw-bolder">ESI No.</span> <small class="ms-3"></small> </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div> <span class="fw-bolder">Mode of Pay</span> <small class="ms-3">@Model.Bank_Name</small> </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div> <span class="fw-bolder">Designation</span> <small class="ms-3">@Model.Designation_Name</small> </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div>
-                                    <span class="fw-bolder">Ac No.</span>
-                                    <small class="ms-3" id="accountNumber">@Model.Account_Number</small>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div> <span class="fw-bolder">Designation</span> <small class="ms-3">@Model.Designation_Name</small> </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div>
+                                        <span class="fw-bolder">Ac No.</span>
+                                        <small class="ms-3" id="accountNumber">@Model.Account_Number</small>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                        <table class="mt-4 table table-bordered" style="width: 100%;">
+                            <thead class="bg-dark">
+                                <tr style="background-color: #00baf2;">
+                                    <th scope="col">Earnings</th>
+                                    <th scope="col">Amount</th>
+                                    <th scope="col">Deductions</th>
+                                    <th scope="col">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">Basic</th>
+                                    <td>@Model.Basic</td>
+                                    <td scope="row">PF</td>
+                                    <td>@Model.Epf</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">DA</th>
+                                    <td>550.00</td>
+                                    <td>ESI</td>
+                                    <td>142.00</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">HRA</th>
+                                    <td>@Model.HouseRentAllowance</td>
+                                    <td>TDS</td>
+                                    <td>0.00</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">WA</th>
+                                    <td>120.00 </td>
+                                    <td>LOP</td>
+                                    <td>@Model.Lop</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">SPL. Deduction</th>
+                                    <td>500.00</td>
+                                    <td>PT</td>
+                                    <td>0.00</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">MA</th>
+                                    <td>3000.00</td>
+                                    <td colspan="2"></td>
+                                </tr>
+                                <tr class="border-top">
+                                    <th scope="row">Total Earning</th>
+                                    <td>25970.00</td>
+                                    <td>Total Deductions</td>
+                                    <td>2442.00</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
-                    <table class="mt-4 table table-bordered" style="width: 100%;">
-                        <thead class="bg-dark">
-                            <tr style="background-color: #00baf2;">
-                                <th scope="col">Earnings</th>
-                                <th scope="col">Amount</th>
-                                <th scope="col">Deductions</th>
-                                <th scope="col">Amount</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <th scope="row">Basic</th>
-                                <td>@Model.Basic</td>
-                                <td scope="row">PF</td>
-                                <td>@Model.Epf</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">DA</th>
-                                <td>550.00</td>
-                                <td>ESI</td>
-                                <td>142.00</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">HRA</th>
-                                <td>@Model.HouseRentAllowance</td>
-                                <td>TDS</td>
-                                <td>0.00</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">WA</th>
-                                <td>120.00 </td>
-                                <td>LOP</td>
-                                <td>@Model.Lop</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">SPL. Deduction</th>
-                                <td>500.00</td>
-                                <td>PT</td>
-                                <td>0.00</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">MA</th>
-                                <td>3000.00</td>
-                                <td colspan="2"></td>
-                            </tr>
-                            <tr class="border-top">
-                                <th scope="row">Total Earning</th>
-                                <td>25970.00</td>
-                                <td>Total Deductions</td>
-                                <td>2442.00</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="row">
-                    <div class="col-md-4"> <br> <span class="fw-bold">Net Pay : 24528.00</span> </div>
-                </div>
-                <div class="d-flex justify-content-end">
-                    <div class="d-flex flex-column mt-2"> <span class="fw-bolder">N D Techland Private Limited</span> <span class="mt-4">Authorised Signatory</span> </div>
+                    <div class="row">
+                        <div class="col-md-4"> <br> <span class="fw-bold">Net Pay : 24528.00</span> </div>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <div class="d-flex flex-column mt-2"> <span class="fw-bolder">N D Techland Private Limited</span> <span class="mt-4">Authorised Signatory</span> </div>
+                    </div>
                 </div>
             </div>
+
+
         </div>
-
-
-    </div>
+    }
+   else
+    {
+        <script>alert('No data found.');</script>
+    }
 
 </body>
 </html>

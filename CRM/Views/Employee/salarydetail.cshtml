@@ -164,6 +164,9 @@
                                                                 <td style="display:none" id="hiddenIncentive">
                                                                     @item.Incentive
                                                                 </td>
+                                                            <td style="display:none" id="hiddenTravellingAllowance">
+                                                                @item.TravellingAllowance
+                                                            </td>
                                                                     <td>
                                                                         @Html.DisplayFor(modelItem => item.MonthlyCtc)
                                                                     </td>
@@ -191,11 +194,13 @@
                                 @if (Model != null && Model.Any())
                                 {
                                     <div class="row">
-                                        <div class="col-md-8">
+                                        <div class="col-md-7">
                                             <label class="form-group">Total Monthly CTC</label>
                                         </div>
                                         <div class="col-md-4">
-                                            <input type="text" id="TotalAmount" value="@ViewBag.TotalAmmount" class="form-group" style="border: none;margin-left: -62px;" readonly />
+
+                                            <input type="text" id="TotalAmount" value="@ViewBag.TotalAmmount" class="form-group" style="border: none;margin-left: -10px;" readonly />
+
                                         </div>
                                     </div>
                                 }
@@ -244,6 +249,7 @@
                 customer.FatherName = $(this).find('td:eq(4)').text().trim();
                 customer.EmployeeId = $(this).find('td:eq(5)').text().trim();
                 customer.Incentive = $(this).find('td:eq(6)').text().trim();
+                customer.TravellingAllowance = $(this).find('td:eq(7)').text().trim();
                 customer.Attendance = $(this).find('input[name="Attendance"]').val();
                 if (customer.Attendance === "") {
                     alert("Please fill in all Attendance fields.");
@@ -274,7 +280,7 @@
                         if ((tbody.children().length) == @Model.Count()) {
                             $(".attnd").val("");
                             //location.reload();
-                            alert("Data saved successfully.");
+                            alert("Salary generated successfully.");
                         }
                         debugger;
                     },
@@ -405,6 +411,7 @@
                 $('#txtEPF').val(response.empSalaryDetail.epf);
                 $('#txtIncentive').val(response.empSalaryDetail.incentive);
                 $('#hiddenIncentive').text(response.empSalaryDetail.incentive);
+                $('#hiddenTravellingAllowance').text(response.empSalaryDetail.travellingAllowance);
                 $('#staticBackdrop').modal('show');
 
             },
