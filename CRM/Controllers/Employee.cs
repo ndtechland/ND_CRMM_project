@@ -150,7 +150,8 @@ namespace CRM.Controllers
                             ViewBag.First_Name = row["First_Name"].ToString();
                             ViewBag.Middle_Name = row["Middle_Name"].ToString();
                             ViewBag.Last_Name = row["Last_Name"].ToString();
-                            ViewBag.Date_Of_Joining = row["Date_Of_Joining"].ToString();
+                            var dateJoining = row["Date_Of_Joining"].ToString();
+                            ViewBag.Date_Of_Joining = Convert.ToDateTime(dateJoining).ToString("dd/MM/yyyy"); 
                             ViewBag.Work_Email = row["Work_Email"].ToString();
                             ViewBag.Gender_ID = row["Gender_ID"].ToString();
                             ViewBag.Work_Location_ID = row["Work_Location_ID"].ToString();
@@ -167,7 +168,8 @@ namespace CRM.Controllers
                             ViewBag.MonthlyCTC = row["MonthlyCTC"].ToString();
                             ViewBag.Personal_Email_Address = row["Personal_Email_Address"].ToString();
                             ViewBag.Mobile_Number = row["Mobile_Number"].ToString();
-                            ViewBag.Date_Of_Birth = row["Date_Of_Birth"].ToString();
+                            var BirthDate = row["Date_Of_Birth"].ToString();
+                            ViewBag.Date_Of_Birth = Convert.ToDateTime(BirthDate).ToString("dd/MM/yyyy");
                             ViewBag.Age = row["Age"].ToString();
                             ViewBag.Father_Name = row["Father_Name"].ToString();
                             ViewBag.PAN = row["PAN"].ToString();
