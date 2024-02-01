@@ -32,6 +32,10 @@ using System;
 using System.Text.Json;
 using ClosedXML.Excel;
 using Microsoft.TeamFoundation.TestManagement.WebApi;
+using System.Diagnostics.Metrics;
+using NuGet.Versioning;
+using DocumentFormat.OpenXml.Drawing.Charts;
+using DataTable = System.Data.DataTable;
 
 namespace CRM.Controllers
 {
@@ -61,6 +65,7 @@ namespace CRM.Controllers
 
             if (HttpContext.Session.GetString("UserName") != null)
             {
+                ViewBag.UserName = HttpContext.Session.GetString("UserName");
                 ViewBag.WorkLocation = _context.WorkLocations
                 .Select(w => new SelectListItem
                 {
@@ -150,8 +155,7 @@ namespace CRM.Controllers
                             ViewBag.First_Name = row["First_Name"].ToString();
                             ViewBag.Middle_Name = row["Middle_Name"].ToString();
                             ViewBag.Last_Name = row["Last_Name"].ToString();
-                            var dateJoining = row["Date_Of_Joining"].ToString();
-                            ViewBag.Date_Of_Joining = Convert.ToDateTime(dateJoining).ToString("dd/MM/yyyy"); 
+                            ViewBag.Date_Of_Joining = ((DateTime)row["Date_Of_Joining"]).ToString("yyyy-MM-dd");
                             ViewBag.Work_Email = row["Work_Email"].ToString();
                             ViewBag.Gender_ID = row["Gender_ID"].ToString();
                             ViewBag.Work_Location_ID = row["Work_Location_ID"].ToString();
@@ -168,8 +172,7 @@ namespace CRM.Controllers
                             ViewBag.MonthlyCTC = row["MonthlyCTC"].ToString();
                             ViewBag.Personal_Email_Address = row["Personal_Email_Address"].ToString();
                             ViewBag.Mobile_Number = row["Mobile_Number"].ToString();
-                            var BirthDate = row["Date_Of_Birth"].ToString();
-                            ViewBag.Date_Of_Birth = Convert.ToDateTime(BirthDate).ToString("dd/MM/yyyy");
+                            ViewBag.Date_Of_Birth = Convert.ToDateTime(row["Date_Of_Birth"]).ToString("dd/MM/yyyy");                         
                             ViewBag.Age = row["Age"].ToString();
                             ViewBag.Father_Name = row["Father_Name"].ToString();
                             ViewBag.PAN = row["PAN"].ToString();
@@ -214,19 +217,24 @@ namespace CRM.Controllers
             {
                 string Mode = "INS";
                 string Empid = "";
-                if (model.Emp_Reg_ID != "" && model.Emp_Reg_ID != null)
+
+                if (!string.IsNullOrEmpty(model.Emp_Reg_ID))
                 {
                     Mode = "UPD";
                     Empid = model.Emp_Reg_ID;
                 }
+                else
+                {
+                    Empid = GenerateEmployeeId();
+                    model.EmployeeId = Empid;
+                }
 
                 var response = await _ICrmrpo.EmpRegistration(model, Mode, Empid);
+                
 
                 ModelState.Clear();
                 return View();
-
             }
-
             catch (Exception Ex)
             {
                 throw new Exception("Error:" + Ex.Message);
@@ -243,7 +251,7 @@ namespace CRM.Controllers
                 {
 
                     response = await _ICrmrpo.EmployeeList();
-                    string AddedBy = HttpContext.Session.GetString("UserName");
+                    ViewBag.UserName = HttpContext.Session.GetString("UserName");
                     return View(response);
                 }
                 else
@@ -258,7 +266,6 @@ namespace CRM.Controllers
             }
 
         }
-
 
         public static int CalculatAge(DateTime DOB)
         {
@@ -275,16 +282,24 @@ namespace CRM.Controllers
 
         }
 
-        public async Task<IActionResult> DeleteEmployee(int id)
+        public async Task<IActionResult> DeleteEmployee(string Emp_Reg_ID)
         {
             try
             {
-                var data = _context.EmployeeRegistrations.Find(id);
-                if (data != null)
+                var data = _context.EmployeeRegistrations.SingleOrDefault(e => e.EmployeeId == Emp_Reg_ID);
+                var data1 = _context.EmployeePersonalDetails.SingleOrDefault(e => e.EmpRegId == Emp_Reg_ID);
+                var data2 = _context.EmployeeSalaryDetails.SingleOrDefault(e => e.EmployeeId == Emp_Reg_ID);
+                var data3 = _context.EmployeeBankDetails.SingleOrDefault(e => e.EmpId == Emp_Reg_ID);
+
+                if (data != null && data1 != null && data2 != null && data3 != null)
                 {
                     data.IsDeleted = true;
+                    data1.IsDeleted = true;
+                    data2.IsDeleted = true;
+                    data3.IsDeleted = true;
                     _context.SaveChanges();
                 }
+
                 return RedirectToAction("Employeelist");
             }
             catch (Exception ex)
@@ -292,6 +307,7 @@ namespace CRM.Controllers
                 throw new Exception("An error occurred while deleting the employee:" + ex.Message);
             }
         }
+
         public async Task<IActionResult> DeleteBasicEmp(int id)
         {
             try
@@ -396,7 +412,8 @@ namespace CRM.Controllers
             if (HttpContext.Session.GetString("UserName") != null)
             {
                 string AddedBy = HttpContext.Session.GetString("UserName");
-               TempData["UserName"] = AddedBy;
+                ViewBag.UserName = AddedBy;
+                TempData["UserName"] = AddedBy;
                 TempData["custid"]   = customerId;
                 TempData["locid"]  = WorkLocation;
                 //
@@ -724,7 +741,7 @@ namespace CRM.Controllers
         {
             {
                 var response = await _ICrmrpo.EmployerList();
-                string AddedBy = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName= HttpContext.Session.GetString("UserName");
                 return View(response);
 
             }
@@ -1248,6 +1265,29 @@ namespace CRM.Controllers
 
 
         }
+       
+
+        private string GenerateEmployeeId()
+        {
+            var data = _context.EmployeeRegistrations.OrderByDescending(x => x.Id).FirstOrDefault();
+            string EmpID = string.Empty;
+
+            if (data != null && !string.IsNullOrEmpty(data.EmployeeId))
+            {
+                string[] parts = data.EmployeeId.Split('-');
+
+                if (parts.Length > 1 && int.TryParse(parts[2], out int numericValue))
+                {
+                    numericValue++;
+                    EmpID = $"ND-{DateTime.Now.Month}/{DateTime.Now.Year}-{numericValue}";
+                    
+                }
+            }
+            return EmpID;
+        }
+
+
+
     }
 }
 
