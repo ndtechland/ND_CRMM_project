@@ -735,13 +735,14 @@ namespace CRM.Controllers
 
         public IActionResult DocPDF(int id)
         {
-          
+            string schema=Request.Scheme;
+            string host = Request.Host.Value;
             // instantiate a html to pdf converter object
             HtmlToPdf converter = new HtmlToPdf();
 
             WebClient client = new WebClient();
             // Create a PDF from a HTML string using C#
-            string SlipURL = _configuration.GetValue<string>("URL") + "/Employee/SalarySlipInPDF?id=" + id + "";
+            string SlipURL = $"{schema}://{host}/Employee/SalarySlipInPDF?id={id}";
             // create a new pdf document converting an url
             PdfDocument doc = converter.ConvertUrl(SlipURL);
 
@@ -783,12 +784,15 @@ namespace CRM.Controllers
 
         public void SendPDF(int id)
         {
+            string schema = Request.Scheme;
+            string host = Request.Host.Value;
+
             // instantiate a html to pdf converter object
             HtmlToPdf converter = new HtmlToPdf();
 
             WebClient client = new WebClient();
             // Create a PDF from a HTML string using C#
-            string SlipURL = _configuration.GetValue<string>("URL") + "/Employee/SalarySlipInPDF?id=" + id + "";
+            string SlipURL = $"{schema}://{host}/Employee/SalarySlipInPDF?id={id}";
             // create a new pdf document converting an url
             PdfDocument doc = converter.ConvertUrl(SlipURL);
 
