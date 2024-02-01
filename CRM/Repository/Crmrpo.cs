@@ -114,6 +114,7 @@ namespace CRM.Repository
             try
             {
                 ///
+                model.EmployeeId = Emp_Reg_ID;
                 SqlConnection con = new SqlConnection(Configuration.GetConnectionString("db1"));
                 SqlCommand cmd = new SqlCommand("EmployeeRegistrationtest", con);
                 cmd.Parameters.AddWithValue("@mode", Mode);
