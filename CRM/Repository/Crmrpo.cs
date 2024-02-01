@@ -118,6 +118,7 @@ namespace CRM.Repository
                 SqlCommand cmd = new SqlCommand("EmployeeRegistrationtest", con);
                 cmd.Parameters.AddWithValue("@mode", Mode);
                 cmd.Parameters.AddWithValue("@Emp_RegID", Emp_Reg_ID);
+                cmd.Parameters.AddWithValue("@Employee_ID", model.EmployeeId);
                 cmd.Parameters.AddWithValue("@Customer_Id", model.CustomerID);
                 cmd.Parameters.AddWithValue("@FirstName", model.FirstName);
                 cmd.Parameters.AddWithValue("@MiddleName", model.MiddleName);

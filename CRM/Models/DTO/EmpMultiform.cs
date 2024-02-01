@@ -6,7 +6,7 @@ namespace CRM.Models.DTO
     public class EmpMultiform
     {
         // Personal Information
-        public int id { get; set; }
+        public int id { get; set; }        
         public int? CustomerID { get; set; }
         public string? FirstName { get; set; }
         public string? MiddleName { get; set; }
@@ -18,6 +18,7 @@ namespace CRM.Models.DTO
         public int DesignationID { get; set; }
         public int DepartmentID { get; set; }
         public string? Emp_Reg_ID { get; set; }
+        public string? EmployeeId { get; set; }
 
         // Salary Details
         [NotMapped]

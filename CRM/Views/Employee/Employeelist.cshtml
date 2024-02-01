@@ -364,7 +364,7 @@
                                                         <td>
                                                             <div>
                                                                 <a href="EmployeeRegistration?id=@item.Emp_Reg_ID" class="fa fa-edit m-2 font-success"></a>
-                                                                <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteEmployee","Employee", new { id = item.EmployeeId })')" class="fa fa-trash font-danger"></a>
+                                                                <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteEmployee","Employee", new { Emp_Reg_ID = item.Emp_Reg_ID })')" class="fa fa-trash font-danger"></a>
                                                             </div>
                                                         </td>
                                                     </tr>
