@@ -58,6 +58,7 @@ namespace CRM.Repository
         public Task<List<GenerateSalaryReportDTO>> GenerateSalaryReport(string customerId, int Month, int year, string WorkLocation);
         public Task<List<EPFReportDTO>> EPFReport(string customerId, int Month, int year, string WorkLocation);
         public Task<List<EPFReportDTO>> ESIReport(string customerId, int Month, int year, string WorkLocation);
-
+        public EmployeerEpf GetEmployer(int id);
+        public Task<int> updateEmployer(EmployeerEpf model);
     }
 }
