@@ -424,18 +424,18 @@ namespace CRM.Controllers
                     AddedBy = HttpContext.Session.GetString("UserName");
                   
                 }
-                if (customerId!=null)
+                if (customerId != null)
                 {
-                HttpContext.Session.SetString("custid", customerId);
+                    HttpContext.Session.SetString("custid", customerId);
                 }
                 else
                 {
                     customerId = HttpContext.Session.GetString("custid");
                 }
-                
-                if(WorkLocation!=null)
+
+                if (WorkLocation != null)
                 {
-                     HttpContext.Session.SetString("locid", WorkLocation);
+                    HttpContext.Session.SetString("locid", WorkLocation);
                 }
                 else
                 {
@@ -1286,10 +1286,64 @@ namespace CRM.Controllers
             return EmpID;
         }
 
-
-
-    }
+        public async Task<IActionResult> DeleteEmployer(int id)
+        {
+            try
+            {
+                var data = _context.EmployeerEpfs.Find(id);
+                if (data != null)
+                {
+                    _context.EmployeerEpfs.Remove(data);
+                    _context.SaveChanges();
+                }
+                return RedirectToAction("Employee_list");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception();
+            }
+        }
+        public JsonResult EditEmployer(int id)
+        {
+            var epf = new EmployeerEpf();
+            var data = _ICrmrpo.GetEmployer(id);
+            epf.Id = data.Id; 
+            epf.EpfNumber = data.EpfNumber;
+            epf.DeductionCycle = data.DeductionCycle;
+            epf.EmployerContributionRate = data.EmployerContributionRate;
+            var result = new
+            {
+                epf = epf,
+            };
+            return new JsonResult(result);
+        }
+        [HttpPost]
+        public async Task<IActionResult> EditEmployer(EmployeerEpf model)
+        {
+            try
+            {
+                var Location = await _ICrmrpo.updateEmployer(model);
+                if (Location != null)
+                {
+                    TempData["ErrorMessage"] = "Employer update Successfully.";
+                    return RedirectToAction("Employee_list", "Employee");
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Employer not update.";
+                    ModelState.Clear();
+                    return View();
+                }
+            }
+            catch (Exception Ex)
+            {
+                throw new Exception("Error:" + Ex.Message);
+            }
+            //}
+        }
 }
+}
+
 
 
 

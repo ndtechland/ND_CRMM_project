@@ -992,6 +992,26 @@ namespace CRM.Repository
             }
 
         }
+
+        public EmployeerEpf GetEmployer(int id)
+        {
+            return _context.EmployeerEpfs.Find(id);
+        }
+
+        public async Task<int> updateEmployer(EmployeerEpf model)
+        {
+            var parameter = new List<SqlParameter>();
+            parameter.Add(new SqlParameter("@id", model.Id));
+            parameter.Add(new SqlParameter("@EPF_Number", model.EpfNumber));
+            parameter.Add(new SqlParameter("@Deduction_Cycle", model.DeductionCycle));
+            parameter.Add(new SqlParameter("@Employer_Contribution_Rate", model.EmployerContributionRate));
+
+
+            var result = await Task.Run(() => _context.Database
+           .ExecuteSqlRawAsync(@"exec sp_updateEmployer @id,@EPF_Number,@Deduction_Cycle,@Employer_Contribution_Rate", parameter.ToArray()));
+
+            return result;
+        }
     }
 
 }

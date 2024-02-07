@@ -4,7 +4,10 @@
     ViewData["Title"] = "EmployerList";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
-
+@if (TempData["ErrorMessage"] != null)
+{
+    <script>alert('@TempData["ErrorMessage"]');</script>
+}
 <div class="page-wrapper">
     <div class="page-body-wrapper">
         <div class="page-sidebar">
@@ -81,7 +84,7 @@
                                                             @Html.DisplayFor(modelItem => item.EpfNumber)
                                                         </td>
                                                         <td>
-                                                            @(item.DeductionCycle == "M" ? "Monthly" : "Yearly")
+                                                            @(item.DeductionCycle)
 
                                                         </td>
                                                         <td>
@@ -97,8 +100,8 @@
 
                                                         <td>
                                                             <div>
-                                                                <i class="fa fa-edit me-2 font-success"></i>
-                                                                <i class="fa fa-trash font-danger"></i>
+                                                                <a href="#" class="fa fa-edit m-2 font-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="EditEmployer(@item.Id)"></a>
+                                                                <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteEmployer","Employee", new { Id= item.Id })')" class="fa fa-trash font-danger"></a>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -175,6 +178,79 @@
 
 </script>
 
+<script>
+    function confirmDelete(url) {
+        var result = confirm("Are you sure you want to delete?");
+        if (result) {
+            window.location.href = url;
+        }
+    }
+</script>
 
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Edit Employer</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <form action="EditEmployer" method="post" autocomplete="off">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <input name="Id" type="text" id="Id" style="display:none">
 
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label>EPF Number</label>
+                                    <input class="form-control" placeholder="Enter EPF Number " name="EpfNumber" id="EPFNumber" type="text" maxlength="15" minlength="15" required="">
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Employer Contribution Rate</label>
+                                    <input class="form-control" placeholder="Employer Contribution Rate" name="EmployerContributionRate" id="EmployerContributionRate" type="text" required="">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="validationCustom0">Deduction Cycle</label>
+                                <select name="DeductionCycle" id="DeductionCycle" class="form-control" required>
+                                    <option value="0">-- select --</option>
+                                    <option value="Monthly">Monthly</option>
+                                    <option value="Yearly">Yearly</option>
+                                </select>
+                            </div>
+                           </br>
+                            <button class="btn btn-warning" id="btnUpdate">Update</button>
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    function EditEmployer(id) {
+        debugger;
+        $.ajax({
+            url: '/Employee/EditEmployer?id=' + id,
+            type: 'GET',
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            success: function (response) {
+                debugger;
+                $('#Id').val(response.epf.id);
+                $('#EPFNumber').val(response.epf.epfNumber);
+                $('#EmployerContributionRate').val(response.epf.employerContributionRate);
+                $('#DeductionCycle').val(response.epf.deductionCycle);
+                $('#staticBackdrop').modal('show');
+            },
+            error: function () {
+                alert('Data not found');
+            }
+        });
+    }
+</script>
 

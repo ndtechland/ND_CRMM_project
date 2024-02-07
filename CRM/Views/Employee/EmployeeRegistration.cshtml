@@ -96,10 +96,10 @@
                                         <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                                     </div>
                                     <div class="step-container d-flex justify-content-between">
-                                        <div class="step-circle" onclick="displayStep(1)">1</div>
-                                        <div class="step-circle" onclick="displayStep(2)">2</div>
-                                        <div class="step-circle" onclick="displayStep(3)">3</div>
-                                        <div class="step-circle" onclick="displayStep(4)">4</div>
+                                        <div class="step-circle" @*onclick="displayStep(1)"*@>1</div>
+                                        <div class="step-circle" @*onclick="displayStep(2)"*@>2</div>
+                                        <div class="step-circle" @*onclick="displayStep(3)"*@>3</div>
+                                        <div class="step-circle" @*onclick="displayStep(4)"*@>4</div>
                                     </div>
                                     <div class="tab-pane fade active show" id="account" role="tabpanel" aria-labelledby="account-tab">
                                         <form class="needs-validation user-add" id="multi-step-form" method="post" asp-action="EmployeeRegistration" autocomplete="off">
@@ -207,7 +207,7 @@
                                                 </div>
 
                                                 <div class="pull-right">
-                                                    <button type="button" id="btnFirstTab" class="btn btn-primary next-step">Next</button>
+                                                    <button type="button" id="btnFirstTab" onclick="displayStep(2)" class="btn btn-primary next-step">Next</button>
                                                 </div>
                                             </div>
 
@@ -236,7 +236,7 @@
                                                 <div class="row">
                                                     <div class="col">
                                                         <label>Age</label>
-                                                        <input class="form-control " value='@ViewBag.Age' id="ageInput" type="text" required="">
+                                                        <input class="form-control " value='@ViewBag.Age' id="ageInput" type="text" required="" readonly>
                                                     </div>
 
                                                     <div class="col">
@@ -285,7 +285,7 @@
                                                 <div class="pull-right" style="margin-top:5px;">
 
                                                     <button type="button" class="btn btn-primary prev-step">Previous</button>
-                                                    <button type="button" id="btnSecondTab" class="btn btn-primary next-step">Next</button>
+                                                    <button type="button" id="btnSecondTab" onclick="displayStep(3)" class="btn btn-primary next-step">Next</button>
                                                 </div>
                                             </div>
                                             <div class="step step-3">
@@ -359,7 +359,7 @@
                                                 <br />
                                                 <div class="pull-right">
                                                     <button type="button" class="btn btn-primary prev-step">Previous</button>
-                                                    <button type="button" id="btnThirdTab" class="btn btn-primary next-step">Next</button>
+                                                    <button type="button" id="btnThirdTab" onclick="displayStep(4)" class="btn btn-primary next-step">Next</button>
                                                 </div>
                                             </div>
 
@@ -415,7 +415,7 @@
 
                                                 <div class="pull-right mt-4" style="padding:20px;">
                                                     <button type="button" class="btn btn-primary prev-step">Previous</button>
-                                                    <input type="submit" onclick="return fnValidate()" id="btnsave" class="btn btn-primary" value='@ViewBag.btnText' />
+                                                    <input type="submit" onclick="return fnValidate()"  id="btnsave" class="btn btn-primary" value='@ViewBag.btnText' />
                                                 </div>
                                             </div>
 
@@ -447,11 +447,8 @@
 <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/js/jquery.nice-select.min.js'></script>
 <!-- Initialization -->
 
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-
-
-
 <script>
     (function ($) {
         "use strict";
@@ -572,19 +569,322 @@
         nice_Select();
     })(jQuery);
 </script>
+
 <script>
     var currentStep = 1;
     var updateProgressBar;
+    var errormessage = '';
 
     function displayStep(stepNumber) {
         if (stepNumber >= 1 && stepNumber <= 4) {
-            $(".step-" + currentStep).hide();
-            $(".step-" + stepNumber).show();
-            currentStep = stepNumber;
-            updateProgressBar();
+            if (validateStep(currentStep)) {
+                $(".step-" + currentStep).hide();
+                $(".step-" + stepNumber).show();
+                currentStep = stepNumber;
+                updateProgressBar();
+            }
         }
     }
+    function fnValidate() {
+        var errormessage = '';
 
+        var AnnualCTC = $("#txtAnnualCTC").val();
+        var ctcRegex = /^\d+(\.\d{1,2})?$/;
+
+        if (!ctcRegex.test(AnnualCTC)) {
+            errormessage += 'Please Enter valid Annual CTC,'
+
+        }
+
+
+        //if ($("#Servicecharge").val().trim() == '') {
+
+        //    errormessage += 'Please Enter  ServiceCharge,'
+        //}
+
+        //if ($("#ESIC").val().trim() == '') {
+
+        //    errormessage += 'Please Enter  ESIC'
+        //}
+        //if ($("#Professionaltax").val().trim() == '') {
+
+        //    errormessage += 'Please Enter  Professionaltax,'
+        //}
+
+       if (errormessage !== '') {
+                $(".next-step").off("click");
+                openErrorPopUp(errormessage);
+                return false;
+       }
+    }
+
+
+    function validateStep(stepNumber) {
+        errormessage = '';
+     if (stepNumber === 1) {
+            if ($("#FirstName").val().trim() == '') {
+                errormessage += 'Please Enter First Name,'
+            }
+            //if ($("#MiddleName").val().trim() == '') {
+            //    errormessage += 'Please Enter Middle Name,'
+            //}
+            if ($("#LastName").val().trim() == '') {
+
+                errormessage += 'Please Enter Last Name,'
+            }
+            if ($("#WorkEmail").val().trim() == '') {
+
+                errormessage += 'Please Enter Work Email,'
+            }
+            var email = $("#WorkEmail").val();
+            var emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+            if (!emailRegex.test(email)) {
+                errormessage += 'Invalid Work Email Id,';
+
+            }
+
+
+            var dateOfJoining = $("#DateOfJoining").val();
+            var dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+            if (!dateRegex.test(dateOfJoining)) {
+                errormessage += 'Please enter a valid date in the format mm/dd/yyyy,';
+
+            }
+            var parts = dateOfJoining.split("/");
+            var selectedDate = new Date(parts[2], parts[0] - 1, parts[1]);
+            var currentDate = new Date();
+            if (selectedDate > currentDate) {
+                errormessage += 'Date of Joining cannot be in the future,';
+            }
+            if ($("#ddlGender").val().trim() == '0') {
+
+                errormessage += 'Please Select Gender,'
+            }
+            if ($("#ddCustomerID").val().trim() == '0') {
+
+                errormessage += 'Please Select Company,'
+            }
+            if ($("#ddlWorkLocationID").val().trim() == '0') {
+
+                errormessage += 'Please Select Work Location,'
+            }
+            if ($("#ddDesignationID").val().trim() == '0') {
+
+                errormessage += 'Please Select Designation,'
+            }
+            if ($("#ddDepartmentID").val().trim() == '0') {
+
+                errormessage += 'Please Select Department,'
+            }
+            if (errormessage !== '') {
+        $(".next-step").off("click");
+        openErrorPopUp(errormessage);
+        return false;
+    } 
+    else {
+        document.getElementById('btnFirstTab').addEventListener('click', function () {
+            displayStep(2);
+        });
+        return true;
+    }
+    }
+     if (stepNumber === 2) {
+            if ($("#PersonalEmailAddress").val().trim() == '') {
+                errormessage += 'Please Enter Personal Email Address,'
+            }
+            var email = $("#PersonalEmailAddress").val();
+            var emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+            if (!emailRegex.test(email) && email.trim() != '') {
+                errormessage += 'Invalid Personal Email Address,';
+
+            }
+
+            var mobileNumber = $("#MobileNumber").val();
+
+
+            var mobileRegex = /^[0-9]{10}$/;
+
+            if (!mobileRegex.test(mobileNumber)) {
+                errormessage += 'Please enter a valid 10-digit mobile number,'
+
+            }
+            var dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+
+            var inputValue = $("#dobInput").val();
+
+            if (!dateRegex.test(inputValue)) {
+                errormessage += 'Please enter a valid date of birth in the format dd/mm/yyyy,'
+
+            }           
+            if ($("#FatherName").val().trim() == '') {
+
+                errormessage += 'Please Enter Father Name,'
+            }
+
+            if ($("#PAN").val().trim() == '') {
+
+                errormessage += 'Please Enter Pan,'
+            }
+
+
+            var panNumber = $('#PAN').val().trim();
+
+
+            var panRegex = /^([A-Z]){5}([0-9]){4}([A-Z]){1}?$/;
+
+            if (!panRegex.test(panNumber)) {
+                errormessage += 'PAN Card is not valid,'
+            }
+
+            if ($("#AddressLine1").val().trim() == '') {
+
+                errormessage += 'Please Enter First AddressLine,'
+            }
+            if ($("#AddressLine2").val().trim() == '') {
+
+                errormessage += 'Please Enter second AddressLine,'
+            }
+            if ($("#City").val().trim() == '') {
+
+                errormessage += 'Please Enter City,'
+            }
+            if ($("#ddlState").val().trim() == '0') {
+
+                errormessage += 'Please Select State,'
+            }
+            if ($("#Pincode").val().trim() == '') {
+
+                errormessage += 'Please Enter Pincode'
+            }
+            if (errormessage !== '') {
+                $(".next-step").off("click");
+                openErrorPopUp(errormessage);
+                return false;
+            }
+            else {
+                document.getElementById('btnSecondTab').addEventListener('click', function () {
+                    displayStep(3);
+                });
+                return true;
+            }
+        }    
+      if (stepNumber === 3) {
+        if ($("#AccountHolderName").val().trim() == '') {
+        errormessage += 'Please Enter Account Holder Name,'
+        }
+        if ($("#nominee").val().trim() == '') {
+            errormessage += 'Please Enter Nominee Name,'
+        }
+
+    if ($("#BankName").val().trim() == '') {
+
+        errormessage += 'Please Enter BankName,'
+    }
+
+    var accountNumber = $("#AccountNumber").val();
+
+    var accountNumberRegex = /^\d+$/;
+
+    if (!accountNumberRegex.test(accountNumber)) {
+        errormessage += 'Account Number is not valid,'
+    }
+
+    var reEnterAccountNumber = $("#ReEnterAccountNumber").val();
+
+    var ReEnterAccountNumberRegex = /^\d+$/;
+
+    if (!ReEnterAccountNumberRegex.test(reEnterAccountNumber)) {
+        errormessage += 'Re-EnterAccountNumber Number is not valid,'
+    }
+
+    var ifsc = $("#IFSC").val();
+    var ifscRegex = /^[A-Z]{4}[0][A-Z0-9]{6}$/;
+
+    if (!ifscRegex.test(ifsc)) {
+        errormessage += 'IFSC Code is  not valid,'
+    }
+
+
+    //var EPF = $("#EPF_Number").val();
+    //var epfRegex = /^[A-Z]{3}\/[A-Z]{3}\/\d{6}\/\d{2}$/;
+
+    //if (!epfRegex.test(EPF)) {
+    //    errormessage += 'EPF Number is not valid,'
+    //}
+
+    if ($("#Employee_Contribution_Rate").val().trim() == '') {
+
+        errormessage += 'Please Enter Employee Contribution Rate,'
+    }
+
+
+
+    if ($("#ddlDeductionTime").val().trim() == '0') {
+
+        errormessage += 'Please Select Deduction Cycle,'
+    }
+
+
+    var selectedAccountType = $("input[name='AccountTypeID']:checked").val();
+
+    if (!selectedAccountType) {
+        errormessage += 'Please choose Account'
+
+    }
+            if (errormessage !== '') {
+                $(".next-step").off("click");
+                openErrorPopUp(errormessage);
+                return false;
+            }
+            else {
+                document.getElementById('btnThirdTab').addEventListener('click', function () {
+                    displayStep(4);
+                });
+                return true;
+            }
+        }    
+}
+
+
+    function openErrorPopUp(errorMessage) {
+        var arryMessage;
+        var message = '';
+        if (errorMessage == undefined) {
+            document.location.reload(true);
+        }
+        arryMessage = errorMessage.split(",");
+        var length = arryMessage.length;
+
+        if (arryMessage[arryMessage.length - 1] == "") {
+            length = length - 1;
+        }
+        errorMessage = "";
+        for (var i = 0; i < length; i++) {
+            if (arryMessage[i] != '') {
+                errorMessage = errorMessage + (parseInt(i) + 1) + "." + arryMessage[i] + "<br/>";
+            }
+        }
+
+        message = errorMessage;
+        $('#errorMessage').html(message);
+        $('#errorMessage1').html(message);
+        errorPopUp('error');
+    }
+    function errorPopUp(Type) {
+    if (Type == 'success') {
+        $('#closemodal').removeClass('btn-danger');
+        $('#closemodal').addClass('btn-success');
+        $('#myModal').modal('show');
+        setTimeout(function () {
+            $("#myModal").modal('hide');
+        }, 10000);
+    }
+    else if (Type == 'error') {
+        $('#closemodal').removeClass('btn-success');
+        $('#closemodal').addClass('btn-danger');
+        $('#myModal').modal('show');
+    }
+}
     $(document).ready(function () {
         $('#multi-step-form').find('.step').slice(1).hide();
 
@@ -593,7 +893,7 @@
             if (currentStep < 4) {
                 $(".step-" + currentStep).addClass("animate__animated animate__fadeOutLeft");
                 currentStep++;
-                setTimeout(function () {
+                  setTimeout(function () {
                     $(".step").removeClass("animate__animated animate__fadeOutLeft").hide();
                     $(".step-" + currentStep).show().addClass("animate__animated animate__fadeInRight");
                     updateProgressBar();
@@ -618,8 +918,9 @@
             $(".progress-bar").css("width", progressPercentage + "%");
         }
     });
-</script>
 
+
+</script>
 <script>
 
 
@@ -700,10 +1001,7 @@
 
 <script>
     $(document).ready(function () {
-        // Get the annual salary input element
         var annualSalaryInput = $('#txtAnnualCTC');
-
-        // Get the monthly salary input element
         var monthlySalaryInput = $('#txtMonthlyCTC');
         var basicSalaryInput = $('#txtBasicSalary');
         var basicSalaryInput = $('#txtBasicSalary');
@@ -713,15 +1011,9 @@
           var ESICInput = $('#ESIC');
         var ProfessionaltaxInput = $('#Professionaltax');
         var servicechargeInput = $('#Servicecharge');
-
-        // Attach an input event listener to the annual salary input
         annualSalaryInput.on('input', function () {
-            // Get the value from the annual salary input
             var annualSalary = parseFloat($(this).val());
-
-            // Check if the entered value is a valid number
             if (!isNaN(annualSalary)) {
-                // Calculate monthly salary (assuming 12 months in a year)
                 var monthlySalary = annualSalary / 12;
                 var basicSalary = annualSalary / 2;
                 var houseRent = basicSalary / 2;
@@ -752,7 +1044,6 @@
                         servicecharge = monthlySalary * 0.035; // 3.5% of monthlySalary
                         break;
                 }
-                // Update the value of the monthly salary input
                 monthlySalaryInput.val(monthlySalary.toFixed(2));
                 basicSalaryInput.val(basicSalary.toFixed(2));
                 HouseRentAllowanceInput.val(houseRent.toFixed(2));
@@ -762,7 +1053,6 @@
                 ProfessionaltaxInput.val(professionaltax.toFixed(2));
                 servicechargeInput.val(servicecharge.toFixed(2));
             } else {
-                // If the entered value is not a valid number, clear the monthly salary input
                 monthlySalaryInput.val('');
                 basicSalaryInput.val('');
                 HouseRentAllowanceInput.val('');
@@ -901,562 +1191,6 @@
 
 </script>
  
-
-<script>
-function openErrorPopUp(errorMessage) {
-    var arryMessage;
-    var message = '';
-    if (errorMessage == undefined) {
-        document.location.reload(true);
-    }
-    arryMessage = errorMessage.split(",");
-    var length = arryMessage.length;
-
-    if (arryMessage[arryMessage.length - 1] == "") {
-        length = length - 1;
-    }
-    errorMessage = "";
-    for (var i = 0; i < length; i++) {
-        if (arryMessage[i] != '') {
-            errorMessage = errorMessage + (parseInt(i) + 1) + "." + arryMessage[i] + "<br/>";
-        }
-    }
-
-    message = errorMessage;
-    $('#errorMessage').html(message);
-    $('#errorMessage1').html(message);
-    errorPopUp('error');
-}
-
-function errorPopUp(Type) {
-    if (Type == 'success') {
-        $('#closemodal').removeClass('btn-danger');
-        $('#closemodal').addClass('btn-success');
-        $('#myModal').modal('show');
-        setTimeout(function () {
-            $("#myModal").modal('hide');
-        }, 10000);
-    }
-    else if (Type == 'error') {
-        $('#closemodal').removeClass('btn-success');
-        $('#closemodal').addClass('btn-danger');
-        $('#myModal').modal('show');
-    }
-}
-
-
-document.getElementById('btnFirstTab').addEventListener('click', function (event) {
-    debugger
-
-    var errormessage = '';
-    if ($("#FirstName").val().trim() == '') {
-        errormessage += 'Please Enter First Name,'
-    }
-    //if ($("#MiddleName").val().trim() == '') {
-    //    errormessage += 'Please Enter Middle Name,'
-    //}
-    if ($("#LastName").val().trim() == '') {
-
-        errormessage += 'Please Enter Last Name,'
-    }
-    if ($("#WorkEmail").val().trim() == '') {
-
-        errormessage += 'Please Enter Work Email,'
-    }
-    var email = $("#WorkEmail").val();
-    var emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
-    if (!emailRegex.test(email)) {
-        errormessage += 'Invalid Work Email Id,';
-
-    }
-
-
-    var dateOfJoining = $("#DateOfJoining").val();
-    var dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-    if (!dateRegex.test(dateOfJoining)) {
-        errormessage += 'Please enter a valid date in the format mm/dd/yyyy,';
-
-    }
-    var parts = dateOfJoining.split("/");
-    var selectedDate = new Date(parts[2], parts[0] - 1, parts[1]);
-    var currentDate = new Date();
-    if (selectedDate > currentDate) {
-        errormessage += 'Date of Joining cannot be in the future,';
-    }
-    if ($("#ddlGender").val().trim() == '0') {
-
-        errormessage += 'Please Select Gender,'
-    }
-    if ($("#ddCustomerID").val().trim() == '0') {
-
-        errormessage += 'Please Select Company,'
-    }
-    if ($("#ddlWorkLocationID").val().trim() == '0') {
-
-        errormessage += 'Please Select Work Location,'
-    }
-    if ($("#ddDesignationID").val().trim() == '0') {
-
-        errormessage += 'Please Select Designation,'
-    }
-    if ($("#ddDepartmentID").val().trim() == '0') {
-
-        errormessage += 'Please Select Department,'
-    }
-    //
-    if (errormessage != '') {
-
-        $(".next-step").off("click");
-        openErrorPopUp(errormessage);
-        
-        return false;
-
-    }
-    else {
-            
-        return true;
-            document.getElementById('btnFirstTab').addEventListener('click', () => displayStep(2));
-    }
-});
-
-
-document.getElementById('btnSecondTab').addEventListener('click', function (event) {
-    debugger
-   
-    var errormessage = '';
-    if ($("#PersonalEmailAddress").val().trim() == '') {
-        errormessage += 'Please Enter Personal Email Address,'
-    }
-    var email = $("#PersonalEmailAddress").val();
-    var emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
-    if (!emailRegex.test(email)) {
-        errormessage += 'Invalid Personal Email Address,';
-
-    }
-
-    var mobileNumber = $("#MobileNumber").val();
-
-
-    var mobileRegex = /^[0-9]{10}$/;
-
-    if (!mobileRegex.test(mobileNumber)) {
-        errormessage += 'Please enter a valid 10-digit mobile number,'
-
-    }
-    var dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-
-    var inputValue = $("#dobInput").val();
-
-    if (!dateRegex.test(inputValue)) {
-        errormessage += 'Please enter a valid date of birth in the format dd/mm/yyyy,'
-
-    }
-    if ($("#ageInput").val().trim() == '') {
-
-        errormessage += 'Please Enter Age,'
-    }
-    if ($("#FatherName").val().trim() == '') {
-
-        errormessage += 'Please Enter Father Name,'
-    }
-
-    if ($("#PAN").val().trim() == '') {
-
-        errormessage += 'Please Enter Pan,'
-    }
-
-
-    var panNumber = $('#PAN').val().trim();
-
-
-    var panRegex = /^([A-Z]){5}([0-9]){4}([A-Z]){1}?$/;
-
-    if (!panRegex.test(panNumber)) {
-        errormessage += 'PAN Card is not valid,'
-    }
-
-    if ($("#AddressLine1").val().trim() == '') {
-
-        errormessage += 'Please Enter First AddressLine,'
-    }
-    if ($("#AddressLine2").val().trim() == '') {
-
-        errormessage += 'Please Enter second AddressLine,'
-    }
-    if ($("#City").val().trim() == '') {
-
-        errormessage += 'Please Enter City,'
-    }
-    if ($("#ddlState").val().trim() == '0') {
-
-        errormessage += 'Please Select State,'
-    }
-    if ($("#Pincode").val().trim() == '') {
-
-        errormessage += 'Please Enter Pincode'
-    }
-    //
-    if (errormessage != '') {
-
-        $(".next-step").off("click");
-        openErrorPopUp(errormessage);
-            
-        return false;
-    }
-    else {
-           
-        return true;
-            document.getElementById('btnSecondTab').addEventListener('click', () => displayStep(3);
-    }
-});
-
-document.getElementById('btnThirdTab').addEventListener('click', function (event) {
-    debugger
-
-    var errormessage = '';
-    if ($("#AccountHolderName").val().trim() == '') {
-        errormessage += 'Please Enter Account Holder Name,'
-    }
-        if ($("#nominee").val().trim() == '') {
-            errormessage += 'Please Enter Nominee Name,'
-        }
-
-    if ($("#BankName").val().trim() == '') {
-
-        errormessage += 'Please Enter BankName,'
-    }
-
-    var accountNumber = $("#AccountNumber").val();
-
-    var accountNumberRegex = /^\d+$/;
-
-    if (!accountNumberRegex.test(accountNumber)) {
-        errormessage += 'Account Number is not valid,'
-    }
-
-    var reEnterAccountNumber = $("#ReEnterAccountNumber").val();
-
-    var ReEnterAccountNumberRegex = /^\d+$/;
-
-    if (!ReEnterAccountNumberRegex.test(reEnterAccountNumber)) {
-        errormessage += 'reEnterAccountNumber Number is not valid,'
-    }
-
-    //var ifsc = $("#IFSC").val();
-    //var ifscRegex = /^[A-Z]{4}[0][A-Z0-9]{6}$/;
-
-    //if (!ifscRegex.test(ifsc)) {
-    //    errormessage += 'IFSC Code is  not valid,'
-    //}
-
-
-    //var EPF = $("#EPF_Number").val();
-    //var epfRegex = /^[A-Z]{3}\/[A-Z]{3}\/\d{6}\/\d{2}$/;
-
-    //if (!epfRegex.test(EPF)) {
-    //    errormessage += 'EPF Number is not valid,'
-    //}
-
-    if ($("#Employee_Contribution_Rate").val().trim() == '') {
-
-        errormessage += 'Please Enter Employee Contribution Rate,'
-    }
-
-
-
-    if ($("#ddlDeductionTime").val().trim() == '0') {
-
-        errormessage += 'Please Select Deduction Cycle,'
-    }
-
-
-    var selectedAccountType = $("input[name='AccountTypeID']:checked").val();
-
-    if (!selectedAccountType) {
-        errormessage += 'Please choose Account'
-
-    }
-
-
-    if (errormessage != '') {
-
-        $(".next-step").off("click");
-        openErrorPopUp(errormessage);
-        return false;
-
-    }
-    else {
-        return true;
-
-    }
-});
-function ValidateFirstTab() {
-    var errormessage = '';
-    if ($("#FirstName").val().trim() == '') {
-        errormessage += 'Please Enter First Name,'
-    }
-    if ($("#MiddleName").val().trim() == '') {
-        errormessage += 'Please Enter Middle Name,'
-    }
-    if ($("#LastName").val().trim() == '') {
-
-        errormessage += 'Please Enter Last Name,'
-    }
-    if ($("#WorkEmail").val().trim() == '') {
-
-        errormessage += 'Please Enter Work Email,'
-    }
-    var email = $("#WorkEmail").val();
-    var emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
-    if (!emailRegex.test(email)) {
-        errormessage += 'Invalid Work Email Id,';
-
-    }
-
-    var dateOfJoining = $("#DateOfJoining").val();
-    var dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-    if (!dateRegex.test(dateOfJoining)) {
-        errormessage += 'Please enter a valid date in the format mm/dd/yyyy,';
-
-    }
-
-
-    if ($("#ddlGender").val().trim() == '0') {
-
-        errormessage += 'Please Select Gender,'
-    }
-    if ($("#ddCustomerID").val().trim() == '0') {
-
-        errormessage += 'Please Select Company,'
-    }
-    if ($("#ddlWorkLocationID").val().trim() == '0') {
-
-        errormessage += 'Please Select Work Location,'
-    }
-    if ($("#ddDesignationID").val().trim() == '0') {
-
-        errormessage += 'Please Select Designation,'
-    }
-    if ($("#ddDepartmentID").val().trim() == '0') {
-
-        errormessage += 'Please Select Department,'
-    }
-    return errormessage;
-}
-
-function ValidateSecondTab() {
-    var errormessage = '';
-    if ($("#PersonalEmailAddress").val().trim() == '') {
-        errormessage += 'Please Enter Personal Email Address,'
-    }
-
-    var email = $("#PersonalEmailAddress").val();
-    var emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
-    if (!emailRegex.test(email)) {
-        errormessage += 'Invalid Personal Email Address,';
-
-    }
-
-
-    var mobileNumber = $("#MobileNumber").val();
-
-
-    var mobileRegex = /^[0-9]{10}$/;
-
-    if (!mobileRegex.test(mobileNumber)) {
-        errormessage += 'Please enter a valid 10-digit mobile number,'
-
-    }
-    var dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-
-    var inputValue = $("#dobInput").val();
-
-    if (!dateRegex.test(inputValue)) {
-        errormessage += 'Please enter a valid date of birth in the format dd/mm/yyyy,'
-
-    }
-    if ($("#ageInput").val().trim() == '') {
-
-        errormessage += 'Please Enter Age,'
-    }
-    if ($("#FatherName").val().trim() == '') {
-
-        errormessage += 'Please Enter Father Name,'
-    }
-
-    if ($("#PAN").val().trim() == '') {
-
-        errormessage += 'Please Enter Pan,'
-    }
-
-
-    var panNumber = $('#PAN').val().trim();
-
-
-    var panRegex = /^([A-Z]){5}([0-9]){4}([A-Z]){1}?$/;
-
-    if (!panRegex.test(panNumber)) {
-        errormessage += 'PAN Card is not valid,'
-    }
-
-    if ($("#AddressLine1").val().trim() == '') {
-
-        errormessage += 'Please Enter First AddressLine,'
-    }
-    if ($("#AddressLine2").val().trim() == '') {
-
-        errormessage += 'Please Enter second AddressLine,'
-    }
-    if ($("#City").val().trim() == '') {
-
-        errormessage += 'Please Enter City,'
-    }
-    if ($("#ddlState").val().trim() == '0') {
-
-        errormessage += 'Please Select State,'
-    }
-    if ($("#Pincode").val().trim() == '') {
-
-        errormessage += 'Please Enter Pincode'
-    }
-    return errormessage;
-}
-
-function ValidateThirdTab() {
-    var errormessage = '';
-    if ($("#AccountHolderName").val().trim() == '') {
-        errormessage += 'Please Enter Account Holder Name,'
-    }
-
-    if ($("#BankName").val().trim() == '') {
-
-        errormessage += 'Please Enter BankName,'
-    }
-
-    var accountNumber = $("#AccountNumber").val();
-
-    var accountNumberRegex = /^\d+$/;
-
-    if (!accountNumberRegex.test(accountNumber)) {
-        errormessage += 'Account Number is not valid,'
-    }
-
-    var reEnterAccountNumber = $("#ReEnterAccountNumber").val();
-
-    var ReEnterAccountNumberRegex = /^\d+$/;
-
-    if (!ReEnterAccountNumberRegex.test(reEnterAccountNumber)) {
-        errormessage += 'reEnterAccountNumber Number is not valid,'
-    }
-    if (accountNumber !== reEnterAccountNumber) {
-    errormessage += 'Re-entered Account Number does not match Account Number,';
-}
-    var ifsc = $("#IFSC").val();
-    var ifscRegex = /^[A-Z]{4}[0][A-Z0-9]{6}$/;
-
-    if (!ifscRegex.test(ifsc)) {
-        errormessage += 'IFSC Code is  not valid,'
-    }
-
-
-    var EPF = $("#EPF_Number").val();
-    var epfRegex = /^[A-Z]{3}\/[A-Z]{3}\/\d{6}\/\d{2}$/;
-
-    if (!epfRegex.test(EPF)) {
-        errormessage += 'EPF Number is not valid,'
-    }
-
-    if ($("#Employee_Contribution_Rate").val().trim() == '') {
-
-        errormessage += 'Please Enter Employee Contribution Rate,'
-    }
-
-
-
-    if ($("#ddlDeductionTime").val().trim() == '0') {
-
-        errormessage += 'Please Select Deduction Cycle,'
-    }
-
-
-    var selectedAccountType = $("input[name='AccountTypeID']:checked").val();
-
-    if (!selectedAccountType) {
-        errormessage += 'Please choose Account'
-
-    }
-
-    return errormessage;
-}
-
-function ValidateMainTab() {
-    var errormessage = '';
-
-    var AnnualCTC = $("#txtAnnualCTC").val();
-    var ctcRegex = /^\d+(\.\d{1,2})?$/;
-
-    if (!ctcRegex.test(AnnualCTC)) {
-        errormessage += 'Please Enter valid Annual CTC,'
-
-    }
-
-
-    if ($("#servicecharge").val().trim() == '') {
-
-        errormessage += 'Please Enter  ServiceCharge,'
-    }
-
-    if ($("#ESIC").val().trim() == '') {
-
-        errormessage += 'Please Enter  ESIC'
-    }
-     if ($("#Professionaltax").val().trim() == '') {
-
-        errormessage += 'Please Enter  Professionaltax,'
-    }
-
-    return errormessage;
-}
-function fnValidate() {
-
-    var errormsg1 = ValidateFirstTab();
-    var errormsg2 = ValidateSecondTab();
-    var errormsg3 = ValidateThirdTab();
-    var errormsg4 = ValidateMainTab();
-    if (errormsg1 != '') {
-
-
-        openErrorPopUp(errormsg1);
-        return false;
-
-    }
-    if (errormsg2 != '') {
-
-
-        openErrorPopUp(errormsg2);
-        return false;
-
-    }
-    if (errormsg3 != '') {
-
-
-        openErrorPopUp(errormsg3);
-        return false;
-
-    }
-    if (errormsg4 != '') {
-
-
-        openErrorPopUp(errormsg4);
-        return false;
-
-    }
-    return true;
-}
-
-
-</script>
-
 <script>
     $(document).ready(function () {
         $('#MobileNumber').on('keydown', function (e) {
