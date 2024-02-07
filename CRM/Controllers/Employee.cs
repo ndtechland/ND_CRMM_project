@@ -47,9 +47,6 @@ namespace CRM.Controllers
         private readonly IConfiguration _configuration;
         private readonly IEmailService _IEmailService;
 
-
-
-
         public Employee(ICrmrpo _ICrmrpo, admin_NDCrMContext _context, IConfiguration configuration, IEmailService _IEmailService)
         {
             this._context = _context;
@@ -1339,7 +1336,6 @@ namespace CRM.Controllers
             {
                 throw new Exception("Error:" + Ex.Message);
             }
-            //}
         }
 }
 }
