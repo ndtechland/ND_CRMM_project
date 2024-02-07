@@ -1,1 +1,8 @@
-
+on:
+  push:
+    branches:
+      - main
+      - my-test-branch
+    paths:
+      - 'src/**'
+      - '.github/workflows/my-workflow-file.yml'
