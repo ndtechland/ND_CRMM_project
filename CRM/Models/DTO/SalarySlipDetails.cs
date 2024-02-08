@@ -25,7 +25,7 @@
         public string? PT { get; set; }
         public string? SPLDeduction { get; set; }
         public string? TotalDeductions { get; set; }
-        public int Account_Number { get; set; }
+        public string? Account_Number { get; set; }
         public string? Bank_Name { get; set; }
         public string? Month { get; set; }
         public int? Year { get; set; }

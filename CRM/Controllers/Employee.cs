@@ -139,7 +139,8 @@ namespace CRM.Controllers
                 ViewBag.Employee_Contribution_Rate = "";
                 ViewBag.Professionaltax = "";
                 ViewBag.nominee = "";
-                @ViewBag.servicecharge = "";
+                ViewBag.servicecharge = "";
+                ViewBag.specialallowance = "";
 
                 ViewBag.btnText = "SAVE";
 
@@ -172,7 +173,7 @@ namespace CRM.Controllers
                             ViewBag.MonthlyCTC = row["MonthlyCTC"].ToString();
                             ViewBag.Personal_Email_Address = row["Personal_Email_Address"].ToString();
                             ViewBag.Mobile_Number = row["Mobile_Number"].ToString();
-                            ViewBag.Date_Of_Birth = Convert.ToDateTime(row["Date_Of_Birth"]).ToString("dd/MM/yyyy");                         
+                            ViewBag.Date_Of_Birth = ((DateTime)row["Date_Of_Birth"]).ToString("yyyy-MM-dd");
                             ViewBag.Age = row["Age"].ToString();
                             ViewBag.Father_Name = row["Father_Name"].ToString();
                             ViewBag.PAN = row["PAN"].ToString();
@@ -192,7 +193,8 @@ namespace CRM.Controllers
                             ViewBag.Employee_Contribution_Rate = row["Employee_Contribution_Rate"].ToString();
                             ViewBag.Professionaltax = row["Professionaltax"].ToString();
                             ViewBag.nominee = row["nominee"].ToString();
-                            @ViewBag.servicecharge = row["servicecharge"].ToString();
+                            ViewBag.servicecharge = row["servicecharge"].ToString();
+                            ViewBag.specialallowance = row["SpecialAllowance"].ToString();
                             ViewBag.Emp_Reg_Code = id;
                             ViewBag.btnText = "UPDATE";
 

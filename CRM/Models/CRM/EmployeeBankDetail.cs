@@ -9,8 +9,8 @@ namespace CRM.Models.Crm
         public int EmployeeRegistrationId { get; set; }
         public string AccountHolderName { get; set; } = null!;
         public string BankName { get; set; } = null!;
-        public int AccountNumber { get; set; }
-        public int ReEnterAccountNumber { get; set; }
+        public string? AccountNumber { get; set; }
+        public string? ReEnterAccountNumber { get; set; }
         public string? Ifsc { get; set; }
         public int AccountTypeId { get; set; }
         public bool? IsDeleted { get; set; }
