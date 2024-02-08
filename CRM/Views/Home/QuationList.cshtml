@@ -150,11 +150,11 @@
                     <div class="row">
                         <div class="form-group col-sm">
                             <label for="CompanyName">Company Name:</label>
-                            <input name="CompanyName" type="email" id="CompanyName" class="form-control">
+                            <input name="CompanyName" type="text" id="CompanyName" class="form-control">
                         </div>
                         <div class="form-group col-sm">
                             <label for="CustomerName">Customer Name:</label>
-                            <input name="CustomerName" type="tel" id="CustomerName" class="form-control">
+                            <input name="CustomerName" type="text" id="CustomerName" class="form-control">
                         </div>
 
                     </div>
@@ -189,7 +189,7 @@
                         </div>
                         <div class="form-group col-sm">
                             <label for="Mobile">Mobile:</label>
-                            <input name="Mobile" type="text" id="Mobile" class="form-control"  minlength="10" maxlength="10">
+                            <input name="Mobile" type="text" id="Mobile" class="form-control" minlength="10" maxlength="10" onkeydown="validateNumericInput(event)">
                         </div>
 
                     </div>
