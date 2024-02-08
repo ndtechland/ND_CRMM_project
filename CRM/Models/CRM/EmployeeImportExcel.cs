@@ -71,6 +71,8 @@ namespace CRM.Models.Crm
         public string? Employee_Contribution_Rate { get; set; }
         public string nominee { get; set; }
         public decimal? SpecialAllowance { get; set; }
+        public decimal? Servicecharge { get; set; }
+
 
     }
 }

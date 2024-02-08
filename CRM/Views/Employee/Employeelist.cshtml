@@ -119,6 +119,9 @@
                                                     Special Allowance
                                                 </th>
                                                 <th nowrap>
+                                                    Service Charge
+                                                </th>
+                                                <th nowrap>
                                                     ESIC
                                                 </th>
 
@@ -275,7 +278,9 @@
                                                         <td>
                                                             @Html.DisplayFor(modelItem => item.SpecialAllowance)
                                                         </td>
-
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.Servicecharge)
+                                                        </td>
                                                             <td>
                                                                 @Html.DisplayFor(modelItem => item.ESIC)
                                                             </td>

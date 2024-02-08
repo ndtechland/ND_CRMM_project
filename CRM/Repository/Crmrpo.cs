@@ -141,6 +141,7 @@ namespace CRM.Repository
                 cmd.Parameters.AddWithValue("@MonthlyGrossPay", model.MonthlyGrossPay);
                 cmd.Parameters.AddWithValue("@MonthlyCTC", model.MonthlyCTC);
                 cmd.Parameters.AddWithValue("@Professionaltax", model.Professionaltax);
+                cmd.Parameters.AddWithValue("@servicecharge", model.Servicecharge);
                 cmd.Parameters.AddWithValue("@SpecialAllowance", model.SpecialAllowance);
                 // Personal detail
                 cmd.Parameters.AddWithValue("@Personal_Email_Address", model.PersonalEmailAddress);
