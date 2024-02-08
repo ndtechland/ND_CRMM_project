@@ -141,8 +141,7 @@ namespace CRM.Repository
                 cmd.Parameters.AddWithValue("@MonthlyGrossPay", model.MonthlyGrossPay);
                 cmd.Parameters.AddWithValue("@MonthlyCTC", model.MonthlyCTC);
                 cmd.Parameters.AddWithValue("@Professionaltax", model.Professionaltax);
-                cmd.Parameters.Add(new SqlParameter("@servicecharge", model.Servicecharge));
-
+                cmd.Parameters.AddWithValue("@SpecialAllowance", model.SpecialAllowance);
                 // Personal detail
                 cmd.Parameters.AddWithValue("@Personal_Email_Address", model.PersonalEmailAddress);
                 cmd.Parameters.AddWithValue("@Mobile_Number", model.MobileNumber);
@@ -158,7 +157,7 @@ namespace CRM.Repository
                 // Bank detail
                 cmd.Parameters.AddWithValue("@Account_Holder_Name", model.AccountHolderName);
                 cmd.Parameters.AddWithValue("@Bank_Name", model.BankName);
-                cmd.Parameters.AddWithValue("@Account_Number", Convert.ToInt32(model.AccountNumber));
+                cmd.Parameters.AddWithValue("@Account_Number",model.AccountNumber);
                 cmd.Parameters.AddWithValue("@Re_Enter_Account_Number", model.ReEnterAccountNumber);
                 cmd.Parameters.AddWithValue("@IFSC", model.IFSC);
                 cmd.Parameters.AddWithValue("@EPF_Number", model.EPF_Number);
@@ -173,60 +172,6 @@ namespace CRM.Repository
                 DataTable dt = new DataTable();
                 da.Fill(dt);
                 return 1;
-                ///
-
-                //employee detail
-                //var parameter = new List<SqlParameter>();
-                //parameter.Add(new SqlParameter("@mode", Mode));
-                //parameter.Add(new SqlParameter("@Emp_RegID", Emp_Reg_ID));
-                //parameter.Add(new SqlParameter("@Customer_Id", model.CustomerID));
-                //parameter.Add(new SqlParameter("@FirstName", model.FirstName));
-                //parameter.Add(new SqlParameter("@MiddleName", model.MiddleName));
-                //parameter.Add(new SqlParameter("@LastName", model.LastName));
-                //parameter.Add(new SqlParameter("@DateOfJoining", model.DateOfJoining));
-                //parameter.Add(new SqlParameter("@WorkEmail", model.WorkEmail));
-                //parameter.Add(new SqlParameter("@GenderID", model.GenderID));
-                //parameter.Add(new SqlParameter("@WorkLocationID", model.WorkLocationID));
-                //parameter.Add(new SqlParameter("@DesignationID", model.DesignationID));
-                //parameter.Add(new SqlParameter("@DepartmentID", model.DepartmentID));
-
-                ////-- Salary Details
-                //parameter.Add(new SqlParameter("@AnnualCTC", model.AnnualCTC));
-                //parameter.Add(new SqlParameter("@Basic", model.Basic));
-                //parameter.Add(new SqlParameter("@HouseRentAllowance", model.HouseRentAllowance));
-                //parameter.Add(new SqlParameter("@TravellingAllowance", model.TravellingAllowance));
-                //parameter.Add(new SqlParameter("@ESIC", model.ESIC));
-                //parameter.Add(new SqlParameter("@EPF", model.EPF));
-                //parameter.Add(new SqlParameter("@MonthlyGrossPay", model.MonthlyGrossPay));
-                //parameter.Add(new SqlParameter("@MonthlyCTC", model.MonthlyCTC));
-                //parameter.Add(new SqlParameter("@Professionaltax", model.Professionaltax));
-                ////personal detail
-                //parameter.Add(new SqlParameter("@Personal_Email_Address", model.PersonalEmailAddress));
-                //parameter.Add(new SqlParameter("@Mobile_Number", model.MobileNumber));
-                //parameter.Add(new SqlParameter("@Date_Of_Birth", model.DateOfBirth));
-                //parameter.Add(new SqlParameter("@Father_Name", model.FatherName));
-                //parameter.Add(new SqlParameter("@PAN", model.PAN));
-                //parameter.Add(new SqlParameter("@Address_Line_1", model.AddressLine1));
-                //parameter.Add(new SqlParameter("@Address_Line_2", model.AddressLine2));
-                //parameter.Add(new SqlParameter("@City", model.City));
-                //parameter.Add(new SqlParameter("@State_ID", model.StateID));
-                //parameter.Add(new SqlParameter("@Pincode", model.Pincode));
-                ////bank detail
-                //parameter.Add(new SqlParameter("@Account_Holder_Name", model.AccountHolderName));
-                //parameter.Add(new SqlParameter("@Bank_Name", model.BankName));
-                //parameter.Add(new SqlParameter("@Account_Number", Convert.ToInt32(model.AccountNumber)));
-                //parameter.Add(new SqlParameter("@Re_Enter_Account_Number", model.ReEnterAccountNumber));
-                //parameter.Add(new SqlParameter("@IFSC", model.IFSC));
-                //parameter.Add(new SqlParameter("@EPF_Number", model.EPF_Number));
-                //parameter.Add(new SqlParameter("@Deduction_Cycle", model.Deduction_Cycle));
-                //parameter.Add(new SqlParameter("@Employee_Contribution_Rate", model.Employee_Contribution_Rate));
-                //parameter.Add(new SqlParameter("@Account_Type_ID", model.AccountTypeID));
-                //parameter.Add(new SqlParameter("@nominee", model.nominee));
-                //var result = await Task.Run(() => _context.Database.ExecuteSqlRawAsync(@"exec EmployeeRegistrationtest @mode,@Emp_RegID,@Customer_Id,@FirstName,@MiddleName,@LastName,@DateOfJoining,@WorkEmail,@GenderID,@WorkLocationID,@DesignationID,@DepartmentID,@AnnualCTC,@Basic,@HouseRentAllowance,@TravellingAllowance,@ESIC,@EPF,@MonthlyGrossPay,@MonthlyCTC,@Professionaltax,@Personal_Email_Address,@Mobile_Number,@Date_Of_Birth,@Father_Name,@PAN,@Address_Line_1,@Address_Line_2,@City,@State_ID,@Pincode,@Account_Holder_Name,@Bank_Name,@Account_Number,@Re_Enter_Account_Number,@IFSC,@EPF_Number,@Deduction_Cycle,@Employee_Contribution_Rate,@Account_Type_ID,@nominee", parameter.ToArray()));
-                //// parameter.Add(new SqlParameter("@Account_Number", model.AccountNumber));
-
-
-               // return result;
             }
             catch (SqlException sqlEx)
             {
@@ -238,12 +183,6 @@ namespace CRM.Repository
                     Console.WriteLine("Line Number: {0}", error.LineNumber);
                     Console.WriteLine("Source: {0}", error.Source);
                     Console.WriteLine("Server: {0}", error.Server);
-
-                    // Print additional details about the error
-                    //foreach (DictionaryEntry entry in error)
-                    //{
-                    //    Console.WriteLine("{0}: {1}", entry.Key, entry.Value);
-                    //}
                 }
 
                 throw new Exception("SQL Error: " + sqlEx.Message);

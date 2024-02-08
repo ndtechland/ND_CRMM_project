@@ -9,7 +9,6 @@ namespace CRM.Models.Crm
         public string FirstName { get; set; } = null!;
         public string? MiddleName { get; set; }
         public string? LastName { get; set; }
-        public string? EmployeeId { get; set; }
         public DateTime? DateOfJoining { get; set; }
         public string WorkEmail { get; set; } = null!;
         public string GenderId { get; set; } = null!;
@@ -18,5 +17,6 @@ namespace CRM.Models.Crm
         public string DepartmentId { get; set; } = null!;
         public bool? IsDeleted { get; set; }
         public int? CustomerId { get; set; }
+        public string? EmployeeId { get; set; }
     }
 }

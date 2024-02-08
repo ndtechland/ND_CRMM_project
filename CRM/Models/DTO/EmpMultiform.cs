@@ -32,6 +32,7 @@ namespace CRM.Models.DTO
         public decimal MonthlyGrossPay { get; set; }
         public decimal MonthlyCTC { get; set; }
         public decimal? Servicecharge { get; set; }
+        public decimal? SpecialAllowance { get; set; }
 
         // Personal Info
         public string? PersonalEmailAddress { get; set; }
@@ -48,8 +49,8 @@ namespace CRM.Models.DTO
         // Bank Details
         public string? AccountHolderName { get; set; }
         public string? BankName { get; set; }
-        public int AccountNumber { get; set; }
-        public int ReEnterAccountNumber { get; set; }
+        public string? AccountNumber { get; set; }
+        public string? ReEnterAccountNumber { get; set; }
         public string? IFSC { get; set; }
         public int AccountTypeID { get; set; }
         public string nominee { get; set; }
@@ -60,5 +61,7 @@ namespace CRM.Models.DTO
         public string? Deduction_Cycle { get; set; }
         [NotMapped]
         public string? Employee_Contribution_Rate { get; set; }
+
+
     }
 }

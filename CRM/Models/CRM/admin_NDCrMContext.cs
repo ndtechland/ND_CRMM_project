@@ -316,7 +316,9 @@ namespace CRM.Models.Crm
                     .HasMaxLength(255)
                     .HasColumnName("Account_Holder_Name");
 
-                entity.Property(e => e.AccountNumber).HasColumnName("Account_Number");
+                entity.Property(e => e.AccountNumber)
+                    .HasMaxLength(100)
+                    .HasColumnName("Account_Number");
 
                 entity.Property(e => e.AccountTypeId).HasColumnName("Account_Type_ID");
 
@@ -350,7 +352,9 @@ namespace CRM.Models.Crm
                     .HasMaxLength(255)
                     .HasColumnName("nominee");
 
-                entity.Property(e => e.ReEnterAccountNumber).HasColumnName("Re_Enter_Account_Number");
+                entity.Property(e => e.ReEnterAccountNumber)
+                    .HasMaxLength(100)
+                    .HasColumnName("Re_Enter_Account_Number");
             });
 
             modelBuilder.Entity<EmployeeLeaveMaster>(entity =>
@@ -447,9 +451,8 @@ namespace CRM.Models.Crm
                     .HasColumnName("Designation_ID");
 
                 entity.Property(e => e.EmployeeId)
-                    .HasMaxLength(95)
-                    .HasColumnName("Employee_ID")
-                    .HasComputedColumnSql("((((('ND-'+CONVERT([nvarchar],datepart(month,getdate())))+'/')+CONVERT([nvarchar],datepart(year,getdate())))+'-')+CONVERT([nvarchar],[ID]))", false);
+                    .HasMaxLength(100)
+                    .HasColumnName("Employee_ID");
 
                 entity.Property(e => e.FirstName)
                     .HasMaxLength(120)
@@ -535,6 +538,8 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.Servicecharge)
                     .HasColumnType("decimal(18, 0)")
                     .HasColumnName("servicecharge");
+
+                entity.Property(e => e.SpecialAllowance).HasColumnType("decimal(18, 0)");
 
                 entity.Property(e => e.TravellingAllowance).HasColumnType("decimal(18, 0)");
             });
