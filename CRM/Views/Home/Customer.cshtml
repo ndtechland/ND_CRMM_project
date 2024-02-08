@@ -140,7 +140,7 @@
                                     <div class="row">
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Company Name</label>
-                                            <input asp-for="CompanyName" id="CompanyName" placeholder="CompanyName" class="form-control" required="" oninvalid="this.setCustomValidity('Please Enter CompanyName')" oninput="this.setCustomValidity('')" />
+                                            <input asp-for="CompanyName" id="CompanyName" placeholder="Enter CompanyName" class="form-control" required="" oninvalid="this.setCustomValidity('Please Enter CompanyName')" oninput="this.setCustomValidity('')" />
                                             <span asp-validation-for="CompanyName" class="text-danger"></span>
                                         </div>
                                         <div class="form-group  col-sm ">
@@ -154,7 +154,7 @@
                                             <label for="validationCustom0">Mobile Number</label>
                                             <div class="input-group">
                                                 <span class="input-group-text" id="basic-addon1">+91</span>
-                                                <input type="tel" asp-for="MobileNumber" id="MobileNumber" placeholder="MobileNumber" class="form-control" minlength="10" maxlength="10" onkeydown="validateNumericInput(event)" required="" oninvalid="this.setCustomValidity('Please Enter MobileNumber')" oninput="this.setCustomValidity('')" />
+                                                <input type="tel" asp-for="MobileNumber" id="MobileNumber" placeholder="Enter MobileNumber" class="form-control" minlength="10" maxlength="10" onkeydown="validateNumericInput(event)" required="" oninvalid="this.setCustomValidity('Please Enter MobileNumber')" oninput="this.setCustomValidity('')" />
                                             </div>
                                             <span asp-validation-for="MobileNumber" class="text-danger"></span>
                                         </div>
@@ -162,7 +162,7 @@
                                             <label for="validationCustom0">Alternate Number</label>
                                             <div class="input-group">
                                                 <span class="input-group-text" id="basic-addon1">+91</span>
-                                                <input type="text" asp-for="AlternateNumber" placeholder="AlternateNumber" class="form-control" minlength="10" maxlength="10" onkeydown="validateNumericInput(event)" required="" oninvalid="this.setCustomValidity('Please Enter AlternateNumber')" oninput="this.setCustomValidity('')" />
+                                                <input type="text" asp-for="AlternateNumber" placeholder="Enter AlternateNumber" class="form-control" minlength="10" maxlength="10" onkeydown="validateNumericInput(event)" required="" oninvalid="this.setCustomValidity('Please Enter AlternateNumber')" oninput="this.setCustomValidity('')" />
                                             </div>
                                             <span asp-validation-for="MobileNumber" class="text-danger"></span>
                                         </div>
@@ -170,19 +170,19 @@
                                     <div class="row">
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Email</label>
-                                            <input type="email" asp-for="Email" placeholder="Email" class="form-control" required="" oninvalid="this.setCustomValidity('Please Enter Email')" oninput="this.setCustomValidity('')" />
+                                            <input type="email" asp-for="Email" placeholder="Enter Email" class="form-control" required="" oninvalid="this.setCustomValidity('Please Enter Email')" oninput="this.setCustomValidity('')" />
                                             <span asp-validation-for="Email" class="text-danger"></span>
                                         </div>
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Gst Number</label>
-                                            <input asp-for="GstNumber" id="GstNumber" class="form-control" placeholder="GstNumber" maxlength="15" minlength="15" onblur="ValidateGST()" required="" oninvalid="this.setCustomValidity('Please Enter GstNumber')" oninput="this.setCustomValidity('')" />
+                                            <input asp-for="GstNumber" id="GstNumber" class="form-control" placeholder="Enter GstNumber" maxlength="15" minlength="15" onblur="ValidateGST()" required="" oninvalid="this.setCustomValidity('Please Enter GstNumber')" oninput="this.setCustomValidity('')" />
                                             <span asp-validation-for="GstNumber" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Billing Address</label>
-                                            <input asp-for="BillingAddress" placeholder="BillingAddress" class="form-control" required="" oninvalid="this.setCustomValidity('Please Enter BillingAddress')" oninput="this.setCustomValidity('')" />
+                                            <input asp-for="BillingAddress" placeholder="Enter BillingAddress" class="form-control" required="" oninvalid="this.setCustomValidity('Please Enter BillingAddress')" oninput="this.setCustomValidity('')" />
                                             <span asp-validation-for="BillingAddress" class="text-danger"></span>
                                         </div>
                                         <div class="form-group col-sm">
