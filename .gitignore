@@ -1,8 +1,13 @@
-*.obj 
-*.bin 
-*.vs 
+# Ignore compiled files
+*.obj
+*.bin
+
+# Ignore Visual Studio files and directories
+.vs/
+/CRM/obj/
+
+# Ignore specific paths
 /.vs/CRM/FileContentIndex
-/.vs/CRM/FileContentIndex
-/CRM/obj/Debug/net6.0
 /CRM
 /CRM/Views/Employee/EmployeeRegistration.cshtml
+
