@@ -96,10 +96,10 @@
                                         <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                                     </div>
                                     <div class="step-container d-flex justify-content-between">
-                                        <div class="step-circle" @*onclick="displayStep(1)"*@>1</div>
-                                        <div class="step-circle" @*onclick="displayStep(2)"*@>2</div>
-                                        <div class="step-circle" @*onclick="displayStep(3)"*@>3</div>
-                                        <div class="step-circle" @*onclick="displayStep(4)"*@>4</div>
+                                        <div class="step-circle" onclick="displayStep(1)">1</div>
+                                        <div class="step-circle" onclick="displayStep(2)">2</div>
+                                        <div class="step-circle" onclick="displayStep(3)">3</div>
+                                        <div class="step-circle" onclick="displayStep(4)">4</div>
                                     </div>
                                     <div class="tab-pane fade active show" id="account" role="tabpanel" aria-labelledby="account-tab">
                                         <form class="needs-validation user-add" id="multi-step-form" method="post" asp-action="EmployeeRegistration" autocomplete="off">
@@ -366,58 +366,69 @@
                                             <div class="step step-4">
                                                 <h4 class="text-danger">Salary Details</h4>
                                                 <div class="row">
-                                                    <div class="col">
+                                                    @*<div class="col">
                                                         <label>Annual CTC</label>
-                                                        <input class="form-control " value='@ViewBag.AnnualCTC' name="AnnualCTC" placeholder="Enter AnnualCTC"  id="txtAnnualCTC" type="text" required>
+                                                         <input class="form-control" value='@ViewBag.AnnualCTC' name="AnnualCTC" placeholder="Enter AnnualCTC" id="txtAnnualCTC" type="hidden" required style="display: none;">
+                                                    </div>*@
+                                                        <input class="form-control" value='@ViewBag.AnnualCTC' name="AnnualCTC" placeholder="Enter AnnualCTC" id="txtAnnualCTC" type="hidden" required style="display: none;">
+                                                    <div class="col">
+                                                        <label>Monthly CTC</label>
+                                                        <input class="form-control " value='@ViewBag.MonthlyCTC' name="MonthlyCTC" placeholder="Enter Monthly CTC" placeholder="00.0" id="txtMonthlyCTC" type="text" required="">
                                                     </div>
                                                     <div class="col">
                                                         <label>Special Allowance</label>
                                                         <input class="form-control " value='@ViewBag.specialallowance' name="SpecialAllowance" id="SpecialAllowance" placeholder="Enter Special Allowance" type="text" required="">
                                                     </div>
                                                     <div class="col">
-                                                        <label>Service Charge</label>
-                                                        <input class="form-control " value='@ViewBag.servicecharge' name="servicecharge" id="Servicecharge" type="text" required="" readonly>
-                                                    </div>
-                                                    <div class="col">
-                                                        <label>ESIC</label>
-                                                        <input class="form-control " value='@ViewBag.ESIC' name="ESIC" id="ESIC" type="text" required="" readonly>
-                                                    </div>                                         
-                                                    <div class="col">
-                                                        <label>Professional tax</label>
-                                                        <input class="form-control " value='@ViewBag.Professionaltax' name="Professionaltax" id="Professionaltax" type="text" required="" readonly>
-                                                    </div>
-                                                </div>
-
-                                                <div class="row">
-                                                    <div class="col">
                                                         <label>Basic</label>
-                                                        <input class="form-control " value='@ViewBag.Basic' value='@ViewBag.Personal_Email_Address' name="Basic" placeholder="00.0" id="txtBasicSalary" type="text" required="" readonly>
+                                                        <input class="form-control " value='@ViewBag.Basic'  name="Basic" placeholder="00.0" id="txtBasicSalary" type="text" required="" readonly>
                                                     </div>
+                                                                                                       
+                                                    </div>
+                                                    <div class="row">
+                                                    
                                                     <div class="col">
                                                         <label>HouseRent Allowance</label>
                                                         <input class="form-control " value='@ViewBag.HouseRentAllowance' name="HouseRentAllowance" placeholder="00.0" id="txtHouseRentAllowance" type="text" required="" readonly>
                                                     </div>
                                                     <div class="col">
-                                                        <label>EPF</label>
-                                                        <input class="form-control " value='@ViewBag.EPF' name="EPF" placeholder="00.0" id="txtEPF" type="text" required="" readonly>
-                                                    </div>
-
-                                                </div>
-
-                                                <div class="row">
-                                                    <div class="col">
-                                                        <label>Monthly CTC</label>
-                                                        <input class="form-control " value='@ViewBag.MonthlyCTC' name="MonthlyCTC" placeholder="00.0" id="txtMonthlyCTC" type="text" required="" readonly>
-                                                    </div>
+                                                        <label>Gross</label>
+                                                        <input class="form-control " value='@ViewBag.gross' name="gross" id="txtgross" type="text" required="" readonly>
+                                                    </div> 
                                                     <div class="col">
                                                         <label>Monthly GrossPay</label>
                                                         <input class="form-control " value='@ViewBag.MonthlyGrossPay' name="MonthlyGrossPay" placeholder="00.0" id="txtMonthlyGrossPay" type="text" required="" readonly>
                                                     </div>
-
+                                                    <input class="form-control " value='@ViewBag.servicecharge' name="servicecharge" id="Servicecharge"  type="hidden" required style="display: none;">                                                                                                                                              
+                                                </div>
+                                                    <br />
+                                                     <h4 class="text-danger">Employee Contribution</h4>
+                                                     <div class="row">
+                                                    <div class="col">
+                                                        <label>EPF</label>
+                                                        <input class="form-control " value='@ViewBag.EPF' name="EPF" placeholder="00.0" id="txtEPF" type="text" required="" readonly>
+                                                    </div>
+                                                    <div class="col">
+                                                        <label>Professional tax</label>
+                                                        <input class="form-control " value='@ViewBag.Professionaltax' name="Professionaltax" placeholder="Enter Professional tax" id="Professionaltax" type="text" required="">
+                                                    </div>
+                                                    <div class="col">
+                                                        <label>ESIC</label>
+                                                        <input class="form-control " value='@ViewBag.ESIC' name="ESIC" id="ESIC" type="text" required="" readonly>
+                                                    </div>
+                                                    <div class="col">
+                                                        <label>TDS (<span id="displayTdsPercentage">@ViewBag.Tdspercentage</span>%)</label>
+                                                        <input class="form-control" value='@ViewBag.Amount' name="Amount" placeholder="00.0" id="txtAmount" type="text" required="" readonly>
+                                                        <input class="form-control" name="TdsPercentage" value='@ViewBag.Tdspercentage' placeholder="00.0" id="txtTdspercentage" type="text" required="" style="display: none;">
+                                                    </div>
+                                                </div>
+                                                <br />
+                                                <h4 class="text-danger">Employer Contribution</h4>
+                                                <div class="row">    
                                                 </div>
                                                 <br />
 
-                                                <div class="pull-right mt-4" style="padding:20px;">
+                                                <div class="pull-right mt-5" style="padding:20px;">
                                                     <button type="button" class="btn btn-primary prev-step">Previous</button>
                                                     <input type="submit" onclick="return fnValidate()"  id="btnsave" class="btn btn-primary" value='@ViewBag.btnText' />
                                                 </div>
@@ -592,31 +603,21 @@
     function fnValidate() {
         var errormessage = '';
 
-        var AnnualCTC = $("#txtAnnualCTC").val();
+        var MonthlyCTC = $("#txtMonthlyCTC").val();
         var ctcRegex = /^\d+(\.\d{1,2})?$/;
 
-        if (!ctcRegex.test(AnnualCTC)) {
-            errormessage += 'Please Enter valid Annual CTC,'
+        if (!ctcRegex.test(MonthlyCTC)) {
+            errormessage += 'Please Enter valid Monthly CTC,'
 
         }
         if ($("#SpecialAllowance").val().trim() == '') {
 
                 errormessage += 'Please Enter Special Allowance,'
             }
+        if ($("#Professionaltax").val().trim() == '') {
 
-        //if ($("#Servicecharge").val().trim() == '') {
-
-        //    errormessage += 'Please Enter  ServiceCharge,'
-        //}
-
-        //if ($("#ESIC").val().trim() == '') {
-
-        //    errormessage += 'Please Enter  ESIC'
-        //}
-        //if ($("#Professionaltax").val().trim() == '') {
-
-        //    errormessage += 'Please Enter  Professionaltax,'
-        //}
+            errormessage += 'Please Enter  Professionaltax,'
+        }
 
        if (errormessage !== '') {
                 $(".next-step").off("click");
@@ -1007,42 +1008,53 @@
 
     })
 </script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
 <script>
     $(document).ready(function () {
         var annualSalaryInput = $('#txtAnnualCTC');
         var monthlySalaryInput = $('#txtMonthlyCTC');
         var basicSalaryInput = $('#txtBasicSalary');
-        var basicSalaryInput = $('#txtBasicSalary');
         var HouseRentAllowanceInput = $('#txtHouseRentAllowance');
         var EPFInput = $('#txtEPF');
         var MonthlyGrossPayInput = $('#txtMonthlyGrossPay');
-          var ESICInput = $('#ESIC');
+        var ESICInput = $('#ESIC');
         var ProfessionaltaxInput = $('#Professionaltax');
         var servicechargeInput = $('#Servicecharge');
-        annualSalaryInput.on('input', function () {
-            var annualSalary = parseFloat($(this).val());
-            if (!isNaN(annualSalary)) {
-                var monthlySalary = annualSalary / 12;
-                var basicSalary = annualSalary / 2;
+        var specialallowanceInput = $('#SpecialAllowance');
+        var grossInput = $('#txtgross');
+
+        monthlySalaryInput.on('input', function () {
+            var monthlySalary = parseFloat($(this).val());
+            if (!isNaN(monthlySalary)) {
+                var specialallowance = specialallowanceInput.val();
+                var annualSalary = monthlySalary * 12;
+                var basicSalary = monthlySalary / 2;
                 var houseRent = basicSalary / 2;
                 var EPFCalculation = monthlySalary * 12 / 100;
                 var MonthlyGross = monthlySalary - EPFCalculation;
-                var ESIC = monthlySalary * 0.75 / 100;
+                var Gross = basicSalary + houseRent + parseInt(specialallowance);
+                var ESIC;
+
+                if (Gross < 21000) {
+                     ESIC = 0; 
+                } else {
+                    ESIC = monthlySalary * 0.75 / 100;
+                }
                 var professionaltax;
-           switch (true) {
-                case monthlySalary < 2001:
-                    professionaltax = 200;
-                    break;
-                case monthlySalary < 15001:
-                    professionaltax = 0;
-                    break;
-                case monthlySalary > 15000:
-                    professionaltax = 150;
-                    break;
-                default:
-                    professionaltax = 0;  
-            }
+                switch (true) {
+                    case monthlySalary < 2001:
+                        professionaltax = 200;
+                        break;
+                    case monthlySalary < 15001:
+                        professionaltax = 0;
+                        break;
+                    case monthlySalary > 15000:
+                        professionaltax = 150;
+                        break;
+                    default:
+                        professionaltax = 0;
+                }
                 var servicecharge;
 
                 switch (true) {
@@ -1053,6 +1065,7 @@
                         servicecharge = monthlySalary * 0.035; // 3.5% of monthlySalary
                         break;
                 }
+                annualSalaryInput.val(annualSalary.toFixed(2));
                 monthlySalaryInput.val(monthlySalary.toFixed(2));
                 basicSalaryInput.val(basicSalary.toFixed(2));
                 HouseRentAllowanceInput.val(houseRent.toFixed(2));
@@ -1061,7 +1074,10 @@
                 ESICInput.val(ESIC.toFixed(2));
                 ProfessionaltaxInput.val(professionaltax.toFixed(2));
                 servicechargeInput.val(servicecharge.toFixed(2));
+                specialallowanceInput.val(specialallowance);
+                grossInput.val(Gross.toFixed(2));
             } else {
+                annualSalaryInput.val('');
                 monthlySalaryInput.val('');
                 basicSalaryInput.val('');
                 HouseRentAllowanceInput.val('');
@@ -1070,10 +1086,10 @@
                 ESICInput.val('');
                 ProfessionaltaxInput.val('');
                 servicechargeInput.val('');
+                specialallowanceInput.val('');
+                grossInput.val('');
             }
         });
-
-
 
         $("#dobInput").on("input", function () {
             debugger
@@ -1092,7 +1108,6 @@
                 $("#ageInput").val('');
             }
         });
-
     });
 </script>
 
@@ -1256,6 +1271,29 @@
 
     }
 </script>
+<script>
+    $(document).ready(function () {
+        $('#ddCustomerID').on('change', function (e) {
+            debugger;
+            $.ajax({
+                url: '/Employee/tdsDetails?CustomerId=' + $('#ddCustomerID').val(),
+                type: 'GET',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                success: function (response) {
+                    debugger;
+
+                     $('#txtAmount').val(response.employeerTd.amount);
+                    $('#txtTdspercentage').val(response.employeerTd.tdspercentage);
+                    $('#displayTdsPercentage').text(response.employeerTd.tdspercentage);
+                    $('#txtTdspercentage').show();
+                },
+            });
+
+        });
+    });
+</script>
+
 
 
 

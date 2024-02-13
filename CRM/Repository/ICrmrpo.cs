@@ -37,7 +37,7 @@ namespace CRM.Repository
 
         public Task<List<GenerateSalary>> GenerateSalary(string customerId, int Month, int year, string WorkLocation);
         public Task<int> Employer(Employeer_EPF model);
-        public Task<List<EmployeerEpf>> EmployerList();
+        public Task<List<EmployeerEpf>> EmployerList(string Deduction_Cycle);
         public Task<List<Invoice>> GenerateInvoice(string customerId, int Month, int year, string WorkLocation);
       
         public DataTable GetEmployDetailById(string EmpId);
@@ -60,5 +60,6 @@ namespace CRM.Repository
         public Task<List<EPFReportDTO>> ESIReport(string customerId, int Month, int year, string WorkLocation);
         public EmployeerEpf GetEmployer(int id);
         public Task<int> updateEmployer(EmployeerEpf model);
+        public EmployeerTd tdsDetails(int CustomerId);
     }
 }

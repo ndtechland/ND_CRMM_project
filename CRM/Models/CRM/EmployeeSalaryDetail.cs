@@ -22,5 +22,6 @@ namespace CRM.Models.Crm
         public decimal? Incentive { get; set; }
         public decimal? Servicecharge { get; set; }
         public decimal? SpecialAllowance { get; set; }
+        public decimal? Gross { get; set; }
     }
 }

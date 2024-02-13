@@ -6,7 +6,7 @@
 }
 @if (TempData["ErrorMessage"] != null)
 {
-    <script>alert('@TempData["ErrorMessage"]');</script>
+    <script>alert('@Html.Raw(TempData["ErrorMessage"])');</script>
 }
 <div class="page-wrapper">
     <div class="page-body-wrapper">
@@ -39,7 +39,28 @@
                     </div>
                 </div>
             </div>
-
+            <form asp-action="Employee_list" autocomplete="off" method="get">
+                <div class="row">
+                    <div class="form-group col-sm">
+                        <label for="validationCustom0">Deduction Cycle</label>
+                        <select name="Deduction_Cycle" id="deductionCycleDropdown" class="form-control" required style="width: 174px ">
+                            <option value="">-- select --</option>
+                            <option value="ESIC">ESIC</option>
+                            <option value="EPF">EPF</option>
+                        </select>
+                    </div>
+                </div>
+                <br />
+                <div class="form-button">
+                    <input type="submit" value="Search" class="btn btn-primary" onclick="return  searchFunction()"/>
+                </div>
+            </form>
+            <div style="text-align: right;">
+                <p>
+                    <a class="btn btn-primary" asp-action="Employer" style="color: black;"><i class="fa fa-plus"></i>Add Employer</a>
+                </p>
+            </div>
+            <br />
             <!-- Container-fluid Ends-->
             <!-- Container-fluid starts-->
             <div class="container-fluid">
@@ -48,67 +69,74 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-body">
-                                <div class=" table-responsive">
-                                    <table id="datatable" class="table table-responsive">
-                                        <thead>
-                                            <tr style="background-color: #00baf2;">
-                                                <th nowrap>Sl. No.</th>
-                                                <th nowrap>
-                                                    EPF Number
-                                                </th>
-                                                <th nowrap>
-                                                    Deduction Cycle
-                                                </th>
-                                                <th nowrap>
-                                                    Employer Contribution Rate
-                                                </th>
-                                                <th nowrap>
-                                                    Added On
-                                                </th>
-                                                <th nowrap>
-                                                    Status
-                                                </th>
+                                <div class=" table-responsive">                                   
+                                    @if (Model != null && Model.Any())
+                                    {
+                                        <table id="datatable" class="table table-responsive">
+                                            <thead>
+                                                <tr style="background-color: #00baf2;">
+                                                    <th nowrap>Sl. No.</th>
+                                                    <th nowrap>
+                                                        EPF Number
+                                                    </th>
+                                                    <th nowrap>
+                                                        Deduction Cycle
+                                                    </th>
+                                                    <th nowrap>
+                                                        Employer Contribution Rate
+                                                    </th>
+                                                    <th nowrap>
+                                                        Added On
+                                                    </th>
+                                                    <th nowrap>
+                                                        Status
+                                                    </th>
 
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @{
-                                                var count = 0;
-                                                @foreach (var item in Model)
-                                                {
-                                                    count++;
-                                                    <tr class="table-row">
-                                                        <td>@count</td>
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => item.EpfNumber)
-                                                        </td>
-                                                        <td>
-                                                            @(item.DeductionCycle)
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @{
+                                                    var count = 0;
+                                                    @foreach (var item in Model)
+                                                    {
+                                                        count++;
+                                                        <tr class="table-row">
+                                                            <td>@count</td>
+                                                            <td>
+                                                                @Html.DisplayFor(modelItem => item.EpfNumber)
+                                                            </td>
+                                                            <td>
+                                                                @(
+                                                                item.DeductionCycle
+                                                                )
 
-                                                        </td>
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => item.EmployerContributionRate)
-                                                        </td>
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(modelItem => item.EmployerContributionRate)
+                                                            </td>
 
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => item.CreateDate)
-                                                        </td>
-                                                        <td>
-                                                            @(item.IsActive == true ? "Active" : "In-Active")
-                                                        </td>
+                                                            <td>
+                                                                @Html.DisplayFor(modelItem => item.CreateDate)
+                                                            </td>
+                                                            <td>
+                                                                @(
+                                                                item.IsActive == true ? "Active" : "In-Active"
+                                                                )
+                                                            </td>
 
-                                                        <td>
-                                                            <div>
-                                                                <a href="#" class="fa fa-edit m-2 font-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="EditEmployer(@item.Id)"></a>
-                                                                <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteEmployer","Employee", new { Id= item.Id })')" class="fa fa-trash font-danger"></a>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
+                                                            <td>
+                                                                <div>
+                                                                    <a href="#" class="fa fa-edit m-2 font-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="EditEmployer(@item.Id)"></a>
+                                                                    <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteEmployer","Employee", new { Id= item.Id })')" class="fa fa-trash font-danger"></a>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    }
                                                 }
-                                            }
-                                        </tbody>
-                                    </table>
+                                            </tbody>
+                                        </table>
+                                    }
                                 </div>
 
                             </div>
@@ -215,8 +243,8 @@
                                 <label for="validationCustom0">Deduction Cycle</label>
                                 <select name="DeductionCycle" id="DeductionCycle" class="form-control" required>
                                     <option value="0">-- select --</option>
-                                    <option value="Monthly">Monthly</option>
-                                    <option value="Yearly">Yearly</option>
+                                    <option value="ESIC">ESIC</option>
+                                    <option value="EPF">EPF</option>
                                 </select>
                             </div>
                            </br>
@@ -253,4 +281,13 @@
         });
     }
 </script>
+<script>
+    function searchFunction() {
+        var deductionCycle = document.getElementById('deductionCycleDropdown').value;
 
+        if (deductionCycle === '') {
+            alert("Please select Deduction Cycle.");
+            return false;
+        }
+    }
+</script>

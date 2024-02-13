@@ -33,6 +33,8 @@ namespace CRM.Models.DTO
         public decimal MonthlyCTC { get; set; }
         public decimal? Servicecharge { get; set; }
         public decimal? SpecialAllowance { get; set; }
+        public decimal? Gross { get; set; }
+
 
         // Personal Info
         public string? PersonalEmailAddress { get; set; }
@@ -61,6 +63,9 @@ namespace CRM.Models.DTO
         public string? Deduction_Cycle { get; set; }
         [NotMapped]
         public string? Employee_Contribution_Rate { get; set; }
+
+        public decimal? Tdspercentage { get; set; }
+        public decimal? Amount { get; set; }
 
 
     }
