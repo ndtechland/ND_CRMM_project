@@ -691,6 +691,89 @@ namespace CRM.Controllers
                 throw new Exception();
             }
         }
+        public IActionResult employeerTDS()
+        {
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName = AddedBy;
+                ViewBag.CustomerName = _context.CustomerRegistrations
+                    .Select(x => new SelectListItem
+                    {
+                        Value = x.Id.ToString(),
+                        Text = x.CompanyName
+                    }).ToList();
+                ViewBag.Message = TempData["ErrorMessage"];
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> employeerTDS(EmployeerTd model)
+        {
+            try
+            {
+                if (model != null)
+                {
+                    EmployeerTd master = new EmployeerTd
+                    {
+                        Amount = model.Amount,
+                        CustomerId=model.CustomerId,
+                        WorkLocationId=model.WorkLocationId,
+                        CreateDate=DateTime.Now.Date,
+                        Isactive=true,
+                        Tdspercentage=model.Tdspercentage,
+                    };
+                    _context.EmployeerTds.Add(master);
+                    _context.SaveChanges();
+                    TempData["ErrorMessage"] = "Employeer TDS Add";
+                    return RedirectToAction("employeerTDS");
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "data not save";
+                    ModelState.Clear();
+                    return View();
+                }
+            }
+            catch (Exception Ex)
+            {
+                throw new Exception("Error:" + Ex.Message);
+            }
+        }
+        [HttpPost]
+        public IActionResult GetLocationsByCustomer(string customerId)
+        {
+            if (!string.IsNullOrEmpty(customerId))
+            {
+                var locations = _context.CustomerRegistrations
+                    .AsEnumerable() 
+                    .Select(c => new
+                    {
+                        c.Id,
+                        WorkLocations = c.WorkLocation?.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                                                    .Select(loc => _context.WorkLocations.FirstOrDefault(w => w.Id == Convert.ToInt32(loc)))
+                                                    .Where(w => w != null)
+                    })
+                    .FirstOrDefault(x => x.Id == Convert.ToInt32(customerId));
+
+                if (locations != null && locations.WorkLocations != null)
+                {
+                    var locationList = locations.WorkLocations.Select(x => new SelectListItem
+                    {
+                        Value = x.Id.ToString(),
+                        Text = x.AddressLine1
+                    }).ToList();
+
+                    return Json(locationList);
+                }
+            }
+
+            return Json(new List<SelectListItem>());
+        }
 
     }
 

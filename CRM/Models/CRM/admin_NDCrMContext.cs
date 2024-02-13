@@ -37,6 +37,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<EmployeeRole> EmployeeRoles { get; set; } = null!;
         public virtual DbSet<EmployeeSalaryDetail> EmployeeSalaryDetails { get; set; } = null!;
         public virtual DbSet<EmployeerEpf> EmployeerEpfs { get; set; } = null!;
+        public virtual DbSet<EmployeerTd> EmployeerTds { get; set; } = null!;
         public virtual DbSet<GenderMaster> GenderMasters { get; set; } = null!;
         public virtual DbSet<GstMaster> GstMasters { get; set; } = null!;
         public virtual DbSet<HeadOfficeAddress> HeadOfficeAddresses { get; set; } = null!;
@@ -523,6 +524,10 @@ namespace CRM.Models.Crm
                     .HasColumnName("ESIC")
                     .HasDefaultValueSql("((1400.00))");
 
+                entity.Property(e => e.Gross)
+                    .HasColumnType("decimal(18, 0)")
+                    .HasColumnName("gross");
+
                 entity.Property(e => e.HouseRentAllowance).HasColumnType("decimal(18, 0)");
 
                 entity.Property(e => e.Incentive).HasColumnType("decimal(18, 0)");
@@ -561,6 +566,31 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.EpfNumber)
                     .HasMaxLength(120)
                     .HasColumnName("EPF_Number");
+            });
+
+            modelBuilder.Entity<EmployeerTd>(entity =>
+            {
+                entity.ToTable("EmployeerTDS");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Amount)
+                    .HasColumnType("decimal(18, 0)")
+                    .HasColumnName("amount");
+
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
+
+                entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
+
+                entity.Property(e => e.Isactive).HasColumnName("ISactive");
+
+                entity.Property(e => e.Tdspercentage)
+                    .HasColumnType("decimal(18, 2)")
+                    .HasColumnName("tdspercentage");
+
+                entity.Property(e => e.WorkLocationId)
+                    .HasMaxLength(120)
+                    .HasColumnName("Work_Location_ID");
             });
 
             modelBuilder.Entity<GenderMaster>(entity =>

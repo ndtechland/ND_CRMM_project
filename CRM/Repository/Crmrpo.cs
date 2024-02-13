@@ -143,6 +143,7 @@ namespace CRM.Repository
                 cmd.Parameters.AddWithValue("@Professionaltax", model.Professionaltax);
                 cmd.Parameters.AddWithValue("@servicecharge", model.Servicecharge);
                 cmd.Parameters.AddWithValue("@SpecialAllowance", model.SpecialAllowance);
+                cmd.Parameters.AddWithValue("@gross", model.Gross);
                 // Personal detail
                 cmd.Parameters.AddWithValue("@Personal_Email_Address", model.PersonalEmailAddress);
                 cmd.Parameters.AddWithValue("@Mobile_Number", model.MobileNumber);
@@ -455,11 +456,15 @@ namespace CRM.Repository
             return result;
         }
 
-        public async Task<List<EmployeerEpf>> EmployerList()
+        public async Task<List<EmployeerEpf>> EmployerList(string Deduction_Cycle)
         {
-            var result = await _context.EmployeerEpfs.FromSqlRaw<EmployeerEpf>("EmployerList").ToListAsync();
+            var result = await _context.EmployeerEpfs
+                .FromSqlInterpolated($"EXEC EmployerList {Deduction_Cycle}")
+                .ToListAsync();
+
             return result;
         }
+
 
         public async Task<List<Invoice>> GenerateInvoice(string customerId, int Month, int year, string WorkLocation)
         {
@@ -951,6 +956,10 @@ namespace CRM.Repository
            .ExecuteSqlRawAsync(@"exec sp_updateEmployer @id,@EPF_Number,@Deduction_Cycle,@Employer_Contribution_Rate", parameter.ToArray()));
 
             return result;
+        }
+        public EmployeerTd tdsDetails(int CustomerId)
+        {
+            return _context.EmployeerTds.Where(x => x.CustomerId == CustomerId).FirstOrDefault();
         }
     }
 

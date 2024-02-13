@@ -141,7 +141,9 @@ namespace CRM.Controllers
                 ViewBag.nominee = "";
                 ViewBag.servicecharge = "";
                 ViewBag.specialallowance = "";
-
+                ViewBag.gross = "";
+                ViewBag.Amount = "";
+                ViewBag.Tdspercentage = "";
                 ViewBag.btnText = "SAVE";
 
                 if (id != null)
@@ -195,6 +197,9 @@ namespace CRM.Controllers
                             ViewBag.nominee = row["nominee"].ToString();
                             ViewBag.servicecharge = row["servicecharge"].ToString();
                             ViewBag.specialallowance = row["SpecialAllowance"].ToString();
+                            ViewBag.gross = row["gross"].ToString();
+                            ViewBag.Amount = row["Amount"].ToString();
+                            ViewBag.Tdspercentage = row["tdspercentage"].ToString();
                             ViewBag.Emp_Reg_Code = id;
                             ViewBag.btnText = "UPDATE";
 
@@ -738,16 +743,31 @@ namespace CRM.Controllers
                 throw new Exception("Error:" + Ex.Message);
             }
         }
-
-        public async Task<IActionResult> Employee_list()
+        [HttpGet]
+        [Route("Employee/Employee_list")]
+        public async Task<IActionResult> Employee_list(string Deduction_Cycle)
         {
+            if(Deduction_Cycle !=null)
             {
-                var response = await _ICrmrpo.EmployerList();
+                var response = await _ICrmrpo.EmployerList(Deduction_Cycle);
                 ViewBag.UserName= HttpContext.Session.GetString("UserName");
-                return View(response);
+                if(response.Count > 0)
+                {
+                    return View(response);
 
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "No details found.";
+                    return RedirectToAction("Employee_list");
+
+                }
             }
-
+            else
+            {
+                ModelState.Clear();
+                return View();
+            }
 
         }
         //  send  pdf and mail //
@@ -1343,7 +1363,31 @@ namespace CRM.Controllers
             }
             //}
         }
-}
+        public JsonResult tdsDetails(int CustomerId)
+        {
+            var employeerTd = new EmployeerTd();
+            if (CustomerId > 0)
+            {
+                var data = _ICrmrpo.tdsDetails(CustomerId);
+                employeerTd.Tdspercentage = data.Tdspercentage;
+                employeerTd.Amount = data.Amount;
+
+                var result = new
+                {
+                    employeerTd = employeerTd,
+                };
+                return new JsonResult(result);
+            }
+            var errorResult = new JsonResult(new
+            {
+                error = "Invalid CustomerId. CustomerId must be greater than 0."
+            });
+            return errorResult;
+        }
+
+
+
+    }
 }
 
 

@@ -54,29 +54,48 @@
                             <div class="card-body">
                                 <form asp-action="Employer" autocomplete="off">
                                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                                    <div class="row">
-                                         <div class="col-md-4">
-                                        <label>EPF Number</label>
-                                            <input class="form-control" placeholder="Enter EPF Number " name="EPF_Number" id="validationCustom1" type="text" maxlength="15" minlength="15" required="">
-                                    </div>  
-                                    <div class="col-md-4">
-                                        <label>Employer Contribution Rate</label>
-                                            <input class="form-control" placeholder="Employer Contribution Rate" name="Employer_Contribution_Rate" id="validationCustom1" type="text" required="">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="validationCustom0">Deduction Cycle</label>
+                                    <div class="row" >
+                                        <div class="col-md-4">
+                                            <label for="validationCustom0">Deduction Cycle</label>
                                             <select name="Deduction_Cycle" class="form-control" required>
-                                            <option value="0">-- select --</option>
-                                                <option value="Monthly">Monthly</option>
-                                                <option value="Yearly">Yearly</option>
-                                        </select>
+                                                <option value="0">-- select --</option>
+                                                <option value="ESIC">ESIC</option>
+                                                <option value="EPF">EPF</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4 esic-fields">
+                                            <label>ESIC Percentage</label>
+                                            <div class="input-group">
+                                                <input class="form-control" placeholder="0.00" name="EPF_Number" id="validationCustom1" type="text" maxlength="15" minlength="15" required="">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">%</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    <div class="col-md-4 esic-fields">
+                                            <label>ESIC Contribution Rate</label>
+                                            <input class="form-control" placeholder="ESIC Contribution Rate" name="Employer_Contribution_Rate" id="validationCustom1" type="text" required="">
                                     </div>
-                                        
+                                        <div class="col-md-4 epf-fields">
+                                            <label>EPF Percentage</label>
+                                            <div class="input-group">
+                                                <input class="form-control" placeholder="0.00" name="EPF_Number" id="validationCustom1" type="text" maxlength="15" minlength="15" required="">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">%</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4 epf-fields">
+                                            <label>Employer Contribution Rate</label>
+                                            <input class="form-control" placeholder="Employer Contribution Rate" name="Employer_Contribution_Rate" id="validationCustom1" type="text" required="">
+                                        </div>
                                     </div>
                                    
-                                    </br>
+                                    <br />
                                     <div class="form-group" style="display:flex; justify-content:center;">
-                                        <input type="submit" value="Save" class="btn btn-primary" />
+                                        <input type="submit" value="Save" class="btn btn-primary" disabled style="display: none;" /> 
                                     </div>
                                 </form>
                             </div>
@@ -91,7 +110,6 @@
     </div>
 
 </div>
-<!-- Add this in the head section of your HTML -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.2.1/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/js/select2.min.js"></script>
@@ -108,3 +126,26 @@
         });
     });
 </script>
+<script>
+    $(document).ready(function () {
+        $('.btn.btn-primary').hide(); 
+        $('.esic-fields, .epf-fields').hide();
+
+        $('select[name="Deduction_Cycle"]').change(function () {
+            $('.esic-fields, .epf-fields').hide();
+            var selectedDeduction = $(this).val();
+            if (selectedDeduction === 'ESIC') {
+                $('.esic-fields').show();
+            } else if (selectedDeduction === 'EPF') {
+                $('.epf-fields').show();
+            }
+            toggleSaveButton();
+        });
+
+        function toggleSaveButton() {
+            var isESICorEPFSelected = ['ESIC', 'EPF'].includes($('select[name="Deduction_Cycle"]').val());
+            $('.btn.btn-primary').toggle(isESICorEPFSelected); 
+        }
+    });
+</script>
+

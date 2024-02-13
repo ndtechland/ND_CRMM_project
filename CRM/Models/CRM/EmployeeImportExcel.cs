@@ -72,6 +72,7 @@ namespace CRM.Models.Crm
         public string nominee { get; set; }
         public decimal? SpecialAllowance { get; set; }
         public decimal? Servicecharge { get; set; }
+        public decimal? gross { get; set; }
 
 
     }
