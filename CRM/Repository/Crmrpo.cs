@@ -135,7 +135,7 @@ namespace CRM.Repository
                 cmd.Parameters.AddWithValue("@AnnualCTC", model.AnnualCTC);
                 cmd.Parameters.AddWithValue("@Basic", model.Basic);
                 cmd.Parameters.AddWithValue("@HouseRentAllowance", model.HouseRentAllowance);
-                cmd.Parameters.AddWithValue("@TravellingAllowance", model.TravellingAllowance);
+                //cmd.Parameters.AddWithValue("@TravellingAllowance", model.TravellingAllowance);
                 cmd.Parameters.AddWithValue("@ESIC", model.ESIC);
                 cmd.Parameters.AddWithValue("@EPF", model.EPF);
                 cmd.Parameters.AddWithValue("@MonthlyGrossPay", model.MonthlyGrossPay);
@@ -144,6 +144,8 @@ namespace CRM.Repository
                 cmd.Parameters.AddWithValue("@servicecharge", model.Servicecharge);
                 cmd.Parameters.AddWithValue("@SpecialAllowance", model.SpecialAllowance);
                 cmd.Parameters.AddWithValue("@gross", model.Gross);
+                cmd.Parameters.AddWithValue("@amount", model.Amount);
+                cmd.Parameters.AddWithValue("@tdspercentage", model.Tdspercentage);
                 // Personal detail
                 cmd.Parameters.AddWithValue("@Personal_Email_Address", model.PersonalEmailAddress);
                 cmd.Parameters.AddWithValue("@Mobile_Number", model.MobileNumber);
@@ -445,6 +447,12 @@ namespace CRM.Repository
 
         public async Task<int> Employer(Employeer_EPF model)
         {
+            var epf = _context.EmployeerEpfs.ToList();
+            if(epf.Count > 0)
+            {
+                model.IsActive = false;
+                _context.SaveChanges();
+            }
             var parameter = new List<SqlParameter>();
             parameter.Add(new SqlParameter("@EPF_Number", model.EPF_Number));
             parameter.Add(new SqlParameter("@Deduction_Cycle", model.Deduction_Cycle));

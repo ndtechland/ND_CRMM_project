@@ -23,13 +23,13 @@ namespace CRM.Models.DTO
         // Salary Details
         [NotMapped]
         public decimal AnnualCTC { get; set; }
-        public decimal Basic { get; set; }
-        public decimal HouseRentAllowance { get; set; }
-        public decimal TravellingAllowance { get; set; }
-        public decimal ESIC { get; set; }
-        public decimal Professionaltax { get; set; }
-        public decimal EPF { get; set; }
-        public decimal MonthlyGrossPay { get; set; }
+        public decimal? Basic { get; set; }
+        public decimal? HouseRentAllowance { get; set; }
+        public decimal? TravellingAllowance { get; set; }
+        public decimal? ESIC { get; set; }
+        public decimal? Professionaltax { get; set; }
+        public decimal? EPF { get; set; }
+        public decimal? MonthlyGrossPay { get; set; }
         public decimal MonthlyCTC { get; set; }
         public decimal? Servicecharge { get; set; }
         public decimal? SpecialAllowance { get; set; }

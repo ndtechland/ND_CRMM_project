@@ -51,52 +51,50 @@
 
                     <div class="col-sm-12">
                         <div class="card">
-                            <div class="card-body">
-                                <form asp-action="Employer" autocomplete="off">
+                            <div class="card-body">                            
+                                <form action="Employer" method="post" autocomplete="off">
                                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                                    <div class="row" >
+                                    <div class="row">
                                         <div class="col-md-4">
                                             <label for="validationCustom0">Deduction Cycle</label>
-                                            <select name="Deduction_Cycle" class="form-control" required>
+                                            <select name="Deduction_Cycle" class="form-control" id="decycle" required>
                                                 <option value="0">-- select --</option>
                                                 <option value="ESIC">ESIC</option>
                                                 <option value="EPF">EPF</option>
                                             </select>
                                         </div>
-                                        <div class="col-md-4 esic-fields">
+                                        <div class="col-md-4" id="esic">
                                             <label>ESIC Percentage</label>
                                             <div class="input-group">
-                                                <input class="form-control" placeholder="0.00" name="EPF_Number" id="validationCustom1" type="text" maxlength="15" minlength="15" required="">
+                                                <input class="form-control" placeholder="0.00" name="ESIC_Percentage" id="validationCustom1" type="text" required="">
                                                 <div class="input-group-append">
                                                     <span class="input-group-text">%</span>
                                                 </div>
                                             </div>
                                         </div>
-
-                                    <div class="col-md-4 esic-fields">
+                                        <div class="col-md-4" id="esicrate">
                                             <label>ESIC Contribution Rate</label>
-                                            <input class="form-control" placeholder="ESIC Contribution Rate" name="Employer_Contribution_Rate" id="validationCustom1" type="text" required="">
-                                    </div>
-                                        <div class="col-md-4 epf-fields">
+                                            <input class="form-control" placeholder="ESIC Contribution Rate" name="ESIC_Contribution_Rate" id="validationCustom1" type="text" required="">
+                                        </div>
+                                        <div class="col-md-4" id="epf">
                                             <label>EPF Percentage</label>
                                             <div class="input-group">
-                                                <input class="form-control" placeholder="0.00" name="EPF_Number" id="validationCustom1" type="text" maxlength="15" minlength="15" required="">
+                                                <input class="form-control" placeholder="0.00" name="EPF_Percentage" id="validationCustom1" type="text" required="">
                                                 <div class="input-group-append">
                                                     <span class="input-group-text">%</span>
                                                 </div>
                                             </div>
                                         </div>
-
-                                        <div class="col-md-4 epf-fields">
+                                        <div class="col-md-4" id="epfrate">
                                             <label>Employer Contribution Rate</label>
                                             <input class="form-control" placeholder="Employer Contribution Rate" name="Employer_Contribution_Rate" id="validationCustom1" type="text" required="">
                                         </div>
                                     </div>
-                                   
                                     <br />
-                                    <div class="form-group" style="display:flex; justify-content:center;">
-                                        <input type="submit" value="Save" class="btn btn-primary" disabled style="display: none;" /> 
-                                    </div>
+                                   <div class="form-group" style="display:flex; justify-content:center;">
+                                        <input type="submit" value="Save" class="btn btn-primary" id="btnsave" />                                     
+                                        @*<button type="submit" value="Save" class="btn btn-primary" id="btnsave">Save</button>*@
+                                  </div>
                                 </form>
                             </div>
                         </div>
@@ -110,9 +108,7 @@
     </div>
 
 </div>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.2.1/js/bootstrap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/js/select2.min.js"></script>
+
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
     $(function () {
@@ -128,24 +124,57 @@
 </script>
 <script>
     $(document).ready(function () {
-        $('.btn.btn-primary').hide(); 
-        $('.esic-fields, .epf-fields').hide();
-
-        $('select[name="Deduction_Cycle"]').change(function () {
-            $('.esic-fields, .epf-fields').hide();
+       $('#btnsave').hide();
+        $('#esic').hide();
+        $('#esicrate').hide();
+        $('#epf').hide();
+        $('#epfrate').hide();
+    });
+        $('#decycle').change(function () {
+            $('#btnsave').show();
             var selectedDeduction = $(this).val();
             if (selectedDeduction === 'ESIC') {
-                $('.esic-fields').show();
+                $('#epf').hide();
+                $('#epfrate').hide();
+                $('#esic').show();
+                $('#esicrate').show();
             } else if (selectedDeduction === 'EPF') {
-                $('.epf-fields').show();
+                $('#esic').hide();
+                $('#esicrate').hide();
+                $('#epf').show();
+                $('#epfrate').show();
             }
-            toggleSaveButton();
+           
         });
 
-        function toggleSaveButton() {
-            var isESICorEPFSelected = ['ESIC', 'EPF'].includes($('select[name="Deduction_Cycle"]').val());
-            $('.btn.btn-primary').toggle(isESICorEPFSelected); 
-        }
-    });
+
+        //function toggleSaveButton() {
+        //    var isESICorEPFSelected = ['ESIC', 'EPF'].includes($('select[name="Deduction_Cycle"]').val());
+        //    if (isESICorEPFSelected) {
+        //        $('.btn.btn-primary').prop('disabled', false).show();
+        //    } else {
+        //        $('.btn.btn-primary').prop('disabled', true).hide();
+        //    }
+        //}
+    
 </script>
+@*<script>
+    $(document).ready(function () {
+        $('#btnsave').hide();
+        $("#esic, #esicrate, #epf, #epfrate").hide();
+        $("#decycle").change(function () {
+            $("#esic, #esicrate, #epf, #epfrate").hide();
+            $('#btnsave').show();
+            var selectedOption = $(this).val();
+            if (selectedOption === "ESIC") {
+                $("#esic, #esicrate").show();
+            } else if (selectedOption === "EPF") {
+                $("#epf, #epfrate").show();
+            }
+        });
+    });
+</script>*@
+
+
+
 
