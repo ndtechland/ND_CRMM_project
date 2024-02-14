@@ -4,18 +4,6 @@
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
 
-
-
-<head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-css/1.4.6/select2-bootstrap.min.css">
-
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/css/select2.min.css" rel="stylesheet" />
-  
-
-</head>
-
 <div class="page-wrapper">
     <div class="page-body-wrapper">
         <div class="page-sidebar">
@@ -51,9 +39,9 @@
 
                     <div class="col-sm-12">
                         <div class="card">
-                            <div class="card-body">                            
+                            <div class="card-body">
                                 <form action="Employer" method="post" autocomplete="off">
-                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                    @* <div asp-validation-summary="ModelOnly" class="text-danger"></div> *@
                                     <div class="row">
                                         <div class="col-md-4">
                                             <label for="validationCustom0">Deduction Cycle</label>
@@ -66,7 +54,7 @@
                                         <div class="col-md-4" id="esic">
                                             <label>ESIC Percentage</label>
                                             <div class="input-group">
-                                                <input class="form-control" placeholder="0.00" name="ESIC_Percentage" id="validationCustom1" type="text" required="">
+                                                <input class="form-control" placeholder="0.00" name="ESIC_Percentage" id="validationCustom1" type="text">
                                                 <div class="input-group-append">
                                                     <span class="input-group-text">%</span>
                                                 </div>
@@ -74,12 +62,12 @@
                                         </div>
                                         <div class="col-md-4" id="esicrate">
                                             <label>ESIC Contribution Rate</label>
-                                            <input class="form-control" placeholder="ESIC Contribution Rate" name="ESIC_Contribution_Rate" id="validationCustom1" type="text" required="">
+                                            <input class="form-control" placeholder="ESIC Contribution Rate" name="ESIC_Contribution_Rate" id="validationCustom1" type="text">
                                         </div>
                                         <div class="col-md-4" id="epf">
                                             <label>EPF Percentage</label>
                                             <div class="input-group">
-                                                <input class="form-control" placeholder="0.00" name="EPF_Percentage" id="validationCustom1" type="text" required="">
+                                                <input class="form-control" placeholder="0.00" name="EPF_Percentage" id="validationCustom1" type="text">
                                                 <div class="input-group-append">
                                                     <span class="input-group-text">%</span>
                                                 </div>
@@ -87,14 +75,14 @@
                                         </div>
                                         <div class="col-md-4" id="epfrate">
                                             <label>Employer Contribution Rate</label>
-                                            <input class="form-control" placeholder="Employer Contribution Rate" name="Employer_Contribution_Rate" id="validationCustom1" type="text" required="">
+                                            <input class="form-control" placeholder="Employer Contribution Rate" name="Employer_Contribution_Rate" id="validationCustom1" type="text">
                                         </div>
                                     </div>
                                     <br />
-                                   <div class="form-group" style="display:flex; justify-content:center;">
-                                        <input type="submit" value="Save" class="btn btn-primary" id="btnsave" />                                     
+                                    <div class="form-group" style="display:flex; justify-content:center;">
+                                        <input type="submit" value="Save" class="btn btn-primary" id="btnsave" />
                                         @*<button type="submit" value="Save" class="btn btn-primary" id="btnsave">Save</button>*@
-                                  </div>
+                                    </div>
                                 </form>
                             </div>
                         </div>
@@ -109,8 +97,9 @@
 
 </div>
 
+
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script>
+@* <script>
     $(function () {
         $("input[name='EPF_Number']").on('input', function (e) {
             $(this).val($(this).val().replace(/[^0-9]/g, ''));
@@ -121,7 +110,7 @@
             $(this).val($(this).val().replace(/[^0-9]/g, ''));
         });
     });
-</script>
+</script> *@
 <script>
     $(document).ready(function () {
        $('#btnsave').hide();
