@@ -501,6 +501,10 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Id).HasColumnName("ID");
 
+                entity.Property(e => e.Amount)
+                    .HasColumnType("decimal(18, 0)")
+                    .HasColumnName("amount");
+
                 entity.Property(e => e.AnnualCtc)
                     .HasColumnType("decimal(18, 0)")
                     .HasColumnName("AnnualCTC");
@@ -545,6 +549,10 @@ namespace CRM.Models.Crm
                     .HasColumnName("servicecharge");
 
                 entity.Property(e => e.SpecialAllowance).HasColumnType("decimal(18, 0)");
+
+                entity.Property(e => e.Tdspercentage)
+                    .HasColumnType("decimal(18, 0)")
+                    .HasColumnName("tdspercentage");
 
                 entity.Property(e => e.TravellingAllowance).HasColumnType("decimal(18, 0)");
             });
