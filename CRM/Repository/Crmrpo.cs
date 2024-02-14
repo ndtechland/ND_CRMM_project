@@ -161,7 +161,7 @@ namespace CRM.Repository
                 // Bank detail
                 cmd.Parameters.AddWithValue("@Account_Holder_Name", model.AccountHolderName);
                 cmd.Parameters.AddWithValue("@Bank_Name", model.BankName);
-                cmd.Parameters.AddWithValue("@Account_Number",model.AccountNumber);
+                cmd.Parameters.AddWithValue("@Account_Number", model.AccountNumber);
                 cmd.Parameters.AddWithValue("@Re_Enter_Account_Number", model.ReEnterAccountNumber);
                 cmd.Parameters.AddWithValue("@IFSC", model.IFSC);
                 cmd.Parameters.AddWithValue("@EPF_Number", model.EPF_Number);
@@ -444,24 +444,48 @@ namespace CRM.Repository
             }
 
         }
-
-        public async Task<int> Employer(Employeer_EPF model)
+        public async Task<int> Employer(EmployeerModelEPF model)
         {
-            var epf = _context.EmployeerEpfs.ToList();
-            if(epf.Count > 0)
+            var existingActiveRecords = _context.EmployeerEpfs.Where(e => e.IsActive && e.DeductionCycle == model.Deduction_Cycle).ToList();
+
+            if (existingActiveRecords.Count > 0)
             {
-                model.IsActive = false;
+                foreach (var record in existingActiveRecords)
+                {
+                    record.IsActive = false;
+                }
+
                 _context.SaveChanges();
             }
-            var parameter = new List<SqlParameter>();
-            parameter.Add(new SqlParameter("@EPF_Number", model.EPF_Number));
-            parameter.Add(new SqlParameter("@Deduction_Cycle", model.Deduction_Cycle));
-            parameter.Add(new SqlParameter("@Employer_Contribution_Rate", model.Employer_Contribution_Rate));
+            if (model.EsicEmployer_Contribution_Rate == null && model.EsicEPF_Number == null)
+            {
+                var parameter = new List<SqlParameter>
+    {
+        new SqlParameter("@EPF_Number", model.EPF_Number),
+        new SqlParameter("@Deduction_Cycle", model.Deduction_Cycle),
+        new SqlParameter("@Employer_Contribution_Rate", model.Employer_Contribution_Rate)
+    };
 
-            var result = await Task.Run(() => _context.Database
-           .ExecuteSqlRawAsync(@"exec USP_Employeer_EPF  @EPF_Number, @Deduction_Cycle,@Employer_Contribution_Rate", parameter.ToArray()));
+                var result = await Task.Run(() => _context.Database
+                    .ExecuteSqlRawAsync(@"exec USP_Employeer_EPF  @EPF_Number, @Deduction_Cycle, @Employer_Contribution_Rate", parameter.ToArray()));
 
-            return result;
+                return result;
+            }
+            else if (model.Employer_Contribution_Rate == null && model.EPF_Number == null)
+            {
+                var parameter = new List<SqlParameter>
+    {
+        new SqlParameter("@EPF_Number", model.EsicEPF_Number),
+        new SqlParameter("@Deduction_Cycle", model.Deduction_Cycle),
+        new SqlParameter("@Employer_Contribution_Rate", model.EsicEmployer_Contribution_Rate)
+    };
+
+                var result = await Task.Run(() => _context.Database
+                    .ExecuteSqlRawAsync(@"exec USP_Employeer_EPF  @EPF_Number, @Deduction_Cycle, @Employer_Contribution_Rate", parameter.ToArray()));
+
+                return result;
+            }
+            return 1;
         }
 
         public async Task<List<EmployeerEpf>> EmployerList(string Deduction_Cycle)
@@ -537,7 +561,7 @@ namespace CRM.Repository
             using (var workbook = new XLWorkbook())
             {
 
-               var worksheet = workbook.Worksheets.Add("EmployeeList");
+                var worksheet = workbook.Worksheets.Add("EmployeeList");
                 var currentwork = 1;
                 worksheet.Cell(currentwork, 1).Value = "Sr.No.";
                 worksheet.Cell(currentwork, 1).Style.Fill.BackgroundColor = XLColor.Yellow;
@@ -685,7 +709,7 @@ namespace CRM.Repository
             parameter.Add(new SqlParameter("@id", model.Id));
             parameter.Add(new SqlParameter("@AddressLine", model.AddressLine1));
             parameter.Add(new SqlParameter("@Commissoninpercentage", model.Commissoninpercentage));
-          
+
 
             var result = await Task.Run(() => _context.Database
            .ExecuteSqlRawAsync(@"exec sp_updateWorkLocation @id,@AddressLine,@Commissoninpercentage", parameter.ToArray()));
@@ -741,8 +765,8 @@ namespace CRM.Repository
                     {
                         Id = Convert.ToInt32(rdr["id"]),
                         CompanyName = rdr["Company_Name"] == DBNull.Value ? null : Convert.ToString(rdr["Company_Name"]),
-                        WorkLocation = rdr["Work_Location"] == DBNull.Value? new string[0] : ((string)rdr["Work_Location"]).Split(','),
-                    MobileNumber = rdr["Mobile_number"] == DBNull.Value ? null : Convert.ToString(rdr["Mobile_number"]),
+                        WorkLocation = rdr["Work_Location"] == DBNull.Value ? new string[0] : ((string)rdr["Work_Location"]).Split(','),
+                        MobileNumber = rdr["Mobile_number"] == DBNull.Value ? null : Convert.ToString(rdr["Mobile_number"]),
                         AlternateNumber = (rdr["Alternate_number"] == DBNull.Value ? null : Convert.ToString(rdr["Alternate_number"])),
                         Email = rdr["Email"] == DBNull.Value ? null : Convert.ToString(rdr["Email"]),
                         GstNumber = rdr["GST_Number"] == DBNull.Value ? null : Convert.ToString(rdr["GST_Number"]),
@@ -753,7 +777,7 @@ namespace CRM.Repository
                         State = rdr["State"] == DBNull.Value ? null : Convert.ToString(rdr["State"]),
                     };
                 }
-                return cs; 
+                return cs;
             }
             catch (Exception ex)
             {
@@ -763,7 +787,7 @@ namespace CRM.Repository
 
         public EmployeeSalaryDetail GetempSalaryDetailtById(string EmployeeId)
         {
-            return  _context.EmployeeSalaryDetails.Where(x => x.EmployeeId == EmployeeId ).FirstOrDefault();
+            return _context.EmployeeSalaryDetails.Where(x => x.EmployeeId == EmployeeId).FirstOrDefault();
         }
         public async Task<int> updateSalaryDetail(EmployeeSalaryDetail model)
         {

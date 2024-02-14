@@ -36,6 +36,7 @@ using System.Diagnostics.Metrics;
 using NuGet.Versioning;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using DataTable = System.Data.DataTable;
+using DocumentFormat.OpenXml.Office.CustomUI;
 
 namespace CRM.Controllers
 {
@@ -728,14 +729,14 @@ namespace CRM.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> Employer(Employeer_EPF model)
+        public async Task<IActionResult> Employer(EmployeerModelEPF model)
         {
             try
-            {
+            {                
                 var response = await _ICrmrpo.Employer(model);
 
                 ModelState.Clear();
-                return View();
+                return RedirectToAction("Employer");
 
             }
             catch (Exception Ex)
@@ -1383,6 +1384,16 @@ namespace CRM.Controllers
                 error = "Invalid CustomerId. CustomerId must be greater than 0."
             });
             return errorResult;
+        }
+        public JsonResult Epfesilist()
+        {
+           var employeerTd = new EmployeerEpf();
+           var data = _context.EmployeerEpfs.Where(e =>e.IsActive == true).ToList();
+            var result = new
+            {
+                data = data,
+            };
+            return new JsonResult(result); 
         }
 
 

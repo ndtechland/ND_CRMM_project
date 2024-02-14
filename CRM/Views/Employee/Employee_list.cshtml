@@ -116,9 +116,12 @@
                                                             </td>
                                                             <td>
                                                                 @(
-                                                                item.IsActive == true ? "Active" : "In-Active"
+                                                                item.IsActive == true ? "Active" : (false ? "De-Active" : "De-Active")
                                                                 )
                                                             </td>
+
+
+
 
                                                             <td>
                                                                 <div>

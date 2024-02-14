@@ -427,11 +427,11 @@
                                                 <div class="row">  
                                                     <div class="col">
                                                         <label>EPF</label>
-                                                        <input class="form-control " value='@ViewBag.EPF' name="EPF" placeholder="00.0" id="txtEPF" type="text" required="" readonly>
+                                                        <input class="form-control " name="EPF" placeholder="00.0" id="txtEPFMaster" type="text" required="" readonly>
                                                     </div>
                                                     <div class="col">
                                                         <label>ESIC</label>
-                                                        <input class="form-control " value='@ViewBag.ESIC' name="ESIC" id="ESIC" type="text" required="" readonly>
+                                                        <input class="form-control "  name="ESIC" id="ESICMaster" type="text" required="" readonly>
                                                     </div>
                                                 </div>
                                                 <br />
@@ -1033,84 +1033,6 @@
         var grossInput = $('#txtgross');
         var AmountInput = $('#txtAmount');
         var TdspercentageInput = $('#txtTdspercentage');
-
-
-        //monthlySalaryInput.on('input', function () {
-        //    var enteredValue = $(this).val();
-
-        //    // Regular expression to check if the entered value is a valid integer
-        //    var isValidInteger = /^\d+$/.test(enteredValue);
-
-        //    if (isValidInteger) {
-        //        var monthlySalary = parseInt(enteredValue);
-
-        //        var specialallowance = specialallowanceInput.val();
-        //        var amount = AmountInput.val();
-        //        var tdspercentage = TdspercentageInput.val();
-        //        var annualSalary = monthlySalary * 12;
-        //        var basicSalary = monthlySalary / 2;
-        //        var houseRent = basicSalary / 2;
-        //        var EPFCalculation = monthlySalary * 12 / 100;
-        //        var MonthlyGross = monthlySalary - EPFCalculation;
-        //        var Gross = basicSalary + houseRent + parseInt(specialallowance);
-        //        var ESIC;
-
-        //        if (Gross < 21000) {
-        //            ESIC = 0;
-        //        } else {
-        //            ESIC = monthlySalary * 0.75 / 100;
-        //        }
-        //        var professionaltax;
-        //        switch (true) {
-        //            case monthlySalary < 2001:
-        //                professionaltax = 200;
-        //                break;
-        //            case monthlySalary < 15001:
-        //                professionaltax = 0;
-        //                break;
-        //            case monthlySalary > 15000:
-        //                professionaltax = 150;
-        //                break;
-        //            default:
-        //                professionaltax = 0;
-        //        }
-        //        var servicecharge;
-        //        switch (true) {
-        //            case monthlySalary <= 40000:
-        //                servicecharge = monthlySalary * 0.0118; // 1.18% of monthlySalary
-        //                break;
-        //            case monthlySalary > 40000:
-        //                servicecharge = monthlySalary * 0.035; // 3.5% of monthlySalary
-        //                break;
-        //        }
-
-        //        // Update the input values
-        //        annualSalaryInput.val(annualSalary.toFixed(2));
-        //        monthlySalaryInput.val(monthlySalary);
-        //        basicSalaryInput.val(basicSalary.toFixed(2));
-        //        HouseRentAllowanceInput.val(houseRent.toFixed(2));
-        //        EPFInput.val(EPFCalculation.toFixed(2));
-        //        MonthlyGrossPayInput.val(MonthlyGross.toFixed(2));
-        //        ESICInput.val(ESIC.toFixed(2));
-        //        ProfessionaltaxInput.val(professionaltax.toFixed(2));
-        //        servicechargeInput.val(servicecharge.toFixed(2));
-        //        specialallowanceInput.val(specialallowance);
-        //        grossInput.val(Gross.toFixed(2));
-        //    } else {
-        //        // If the entered value is not a valid integer, clear all inputs
-        //        annualSalaryInput.val('');
-        //        monthlySalaryInput.val('');
-        //        basicSalaryInput.val('');
-        //        HouseRentAllowanceInput.val('');
-        //        EPFInput.val('');
-        //        MonthlyGrossPayInput.val('');
-        //        ESICInput.val('');
-        //        ProfessionaltaxInput.val('');
-        //        servicechargeInput.val('');
-        //        specialallowanceInput.val('');
-        //        grossInput.val('');
-        //    }
-        //});
         monthlySalaryInput.on('input', function () {
             var monthlySalary = parseInt($(this).val());
             if (!isNaN(monthlySalary)) {
@@ -1388,6 +1310,52 @@
 </script>
 
 
+
+<script>
+    $(document).ready(function(){
+                $.ajax({
+                url: '/Employee/Epfesilist',
+                type: 'GET',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                success: function (response) {
+                    debugger;
+                    for(var i = 0; i < response.data.length; i++)
+                    {
+                        if(response.data[i].deductionCycle == "ESIC")
+                        {
+                             $('#ESICMaster').val(response.data[i].epfNumber);
+                        }
+                        else if(response.data[i].deductionCycle == "EPF")
+                       {
+                            $('#txtEPFMaster').val(response.data[i].epfNumber);
+                       }
+                    }
+                },
+            });  
+    })
+
+</script>
+@*
+"data": [
+        {
+            "id": 10,
+            "epfNumber": "46",
+            "deductionCycle": "ESIC",
+            "employerContributionRate": "8765",
+            "createDate": "2024-02-14T16:27:58.833",
+            "isActive": true
+        },
+        {
+            "id": 12,
+            "epfNumber": "2",
+            "deductionCycle": "EPF",
+            "employerContributionRate": "8764",
+            "createDate": "2024-02-14T16:58:06.477",
+            "isActive": true
+        }
+    ]
+}*@
 
 
 

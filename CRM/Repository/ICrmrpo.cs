@@ -36,7 +36,7 @@ namespace CRM.Repository
         public Task<List<salarydetail>> salarydetail(string customerId, string WorkLocation);
 
         public Task<List<GenerateSalary>> GenerateSalary(string customerId, int Month, int year, string WorkLocation);
-        public Task<int> Employer(Employeer_EPF model);
+        public Task<int> Employer(EmployeerModelEPF model);
         public Task<List<EmployeerEpf>> EmployerList(string Deduction_Cycle);
         public Task<List<Invoice>> GenerateInvoice(string customerId, int Month, int year, string WorkLocation);
       
