@@ -522,7 +522,7 @@ namespace CRM.Controllers
                                         Attendance = item.Attendance,
                                         Entry = DateTime.Now,
                                         Incentive= item.Incentive,
-                                        TravellingAllowance=item.TravellingAllowance,
+                                        TravellingAllowance = item.TravellingAllowance,
                                         GenerateSalary = decimal.Round((decimal)(ctc.MonthlyCtc / 25 * item.Attendance), 2) + item.Incentive,
                                         Lop = (decimal)(ctc.MonthlyCtc) - decimal.Round((decimal)(ctc.MonthlyCtc / 25 * item.Attendance), 2),
                                     };
