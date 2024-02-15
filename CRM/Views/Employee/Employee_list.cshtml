@@ -43,8 +43,8 @@
                 <div class="row">
                     <div class="form-group col-sm">
                         <label for="validationCustom0">Deduction Cycle</label>
-                        <select name="Deduction_Cycle" id="deductionCycleDropdown" class="form-control" required style="width: 174px ">
-                            <option value="">-- select --</option>
+                        <select name="Deduction_Cycle" id="deductionCycleDropdown" class="form-control" required style="width: 255px ">
+                            <option value="">-- select Deduction Cycle --</option>
                             <option value="ESIC">ESIC</option>
                             <option value="EPF">EPF</option>
                         </select>
@@ -72,13 +72,13 @@
                                                 <tr style="background-color: #00baf2;">
                                                     <th nowrap>Sl. No.</th>
                                                     <th nowrap>
-                                                        EPF Number
+                                                        Percentage
                                                     </th>
                                                     <th nowrap>
                                                         Deduction Cycle
                                                     </th>
                                                     <th nowrap>
-                                                        Employer Contribution Rate
+                                                        Contribution Rate
                                                     </th>
                                                     <th nowrap>
                                                         Added On
@@ -230,7 +230,7 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <label>EPF Number</label>
-                                    <input class="form-control" placeholder="Enter EPF Number " name="EpfNumber" id="EPFNumber" type="text" maxlength="15" minlength="15" required="">
+                                    <input class="form-control" placeholder="Enter EPF Number " name="EpfNumber" id="EPFNumber" type="text" required="">
                                 </div>
                                 <div class="col-md-6">
                                     <label>Employer Contribution Rate</label>
@@ -245,7 +245,7 @@
                                     <option value="EPF">EPF</option>
                                 </select>
                             </div>
-                           </br>
+                         <br />
                             <button class="btn btn-warning" id="btnUpdate">Update</button>
                             <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
 

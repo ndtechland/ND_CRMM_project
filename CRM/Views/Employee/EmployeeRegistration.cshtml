@@ -426,12 +426,13 @@
                                                 <h4 class="text-danger">Employer Contribution</h4>
                                                 <div class="row">  
                                                     <div class="col">
-                                                        <label>EPF</label>
+                                                        <label>EPF (<span id="displayEPFMaster">@ViewBag.epfNumber</span>%)</label>
                                                         <input class="form-control " name="EPF" placeholder="00.0" id="txtEPFMaster" type="text" required="" readonly>
+                                                        <input class="form-control" name="Epf_Number" value='@ViewBag.epfNumber' placeholder="00.0" id="txtepfNumber" type="hidden" required="" style="display: none;">
                                                     </div>
                                                     <div class="col">
-                                                        <label>ESIC</label>
-                                                        <input class="form-control "  name="ESIC" id="ESICMaster" type="text" required="" readonly>
+                                                        <label>ESIC (<span id="displayESICMaster">@ViewBag.epfNumber</span>%)</label>
+                                                        <input class="form-control "  name="ESIC_Number" id="ESICMaster" type="text" required="" readonly>
                                                     </div>
                                                 </div>
                                                 <br />
@@ -1077,7 +1078,7 @@
                         break;
                 }
                 annualSalaryInput.val(annualSalary.toFixed(2));
-                monthlySalaryInput.val(monthlySalary.toFixed(2));
+                monthlySalaryInput.val(monthlySalary);
                 basicSalaryInput.val(basicSalary.toFixed(2));
                 HouseRentAllowanceInput.val(houseRent.toFixed(2));
                 EPFInput.val(EPFCalculation.toFixed(2));
@@ -1089,6 +1090,8 @@
                 grossInput.val(Gross.toFixed(2));
                 AmountInput.val(amount);
                 TdspercentageInput.val(tdspercentage);
+                var inputEvent = new Event('input');
+                document.getElementById('txtgross').dispatchEvent(inputEvent);
             } else {
                 annualSalaryInput.val('');
                 monthlySalaryInput.val('');
@@ -1103,9 +1106,10 @@
                 grossInput.val('');
                 AmountInput.val('');
                 TdspercentageInput.val('');
+
             }
         });
-
+       
         $("#dobInput").on("input", function () {
             debugger
             var birthdate = $(this).val();
@@ -1309,53 +1313,76 @@
     });
 </script>
 
-
-
 <script>
     $(document).ready(function(){
-                $.ajax({
-                url: '/Employee/Epfesilist',
-                type: 'GET',
-                dataType: 'json',
-                contentType: 'application/json; charset=utf-8',
-                success: function (response) {
-                    debugger;
-                    for(var i = 0; i < response.data.length; i++)
-                    {
-                        if(response.data[i].deductionCycle == "ESIC")
-                        {
-                             $('#ESICMaster').val(response.data[i].epfNumber);
+          var grossValue = parseFloat($('#txtgross').val());
+      
+        $.ajax({
+            url: '/Employee/Epfesilist',
+            type: 'GET',
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            success: function (response) {
+                for (var i = 0; i < response.data.length; i++) {
+                    if (response.data[i].deductionCycle == "ESIC") {
+                        $('#ESICMaster').val(response.data[i].epfNumber);
+                        if (grossValue < 21000) {
+                            console.log('Gross is less than 21000');
+                            var esicMasterValue = grossValue * response.data[i].epfNumber / 100;
+                            $('#ESICMaster').val(esicMasterValue);
+                            $('#displayESICMaster').text(response.data[i].epfNumber);
+                            $('#txtepfNumber').show();
+                        } else {
+                            $('#ESICMaster').val(0);
+                            $('#displayESICMaster').text(response.data[i].epfNumber);
+                            $('#txtepfNumber').show();
                         }
-                        else if(response.data[i].deductionCycle == "EPF")
-                       {
-                            $('#txtEPFMaster').val(response.data[i].epfNumber);
-                       }
+      
                     }
-                },
-            });  
-    })
+                    else if (response.data[i].deductionCycle == "EPF") {
+                        $('#txtEPFMaster').val(response.data[i].epfNumber);
+                        var basicValue = parseFloat($('#txtBasicSalary').val());
+                        var epfValue = basicValue * response.data[i].epfNumber / 100;
+                            $('#txtEPFMaster').val(epfValue);
+                        $('#displayEPFMaster').text(response.data[i].epfNumber);
+                        $('#txtepfNumber').show();
+                         
+                    }
+                }
+            },
+        });
 
+        
+    });
 </script>
-@*
-"data": [
+<script>
+     $('#txtgross').on('input', function() {
+           calesic();
+        calepf();
+    });
+        function calesic()
         {
-            "id": 10,
-            "epfNumber": "46",
-            "deductionCycle": "ESIC",
-            "employerContributionRate": "8765",
-            "createDate": "2024-02-14T16:27:58.833",
-            "isActive": true
-        },
+             var grossValue = parseFloat($('#txtgross').val());
+                    if (grossValue < 21000) {                        
+                            console.log('Gross is less than 21000');
+                            var esicMasterValue = grossValue * parseFloat($('#displayESICMaster').text()) / 100;
+                            $('#ESICMaster').val(esicMasterValue);
+                    } else {
+                       $('#ESICMaster').val(0);
+                    }
+        }   
+        
+        function calepf()
         {
-            "id": 12,
-            "epfNumber": "2",
-            "deductionCycle": "EPF",
-            "employerContributionRate": "8764",
-            "createDate": "2024-02-14T16:58:06.477",
-            "isActive": true
+                var basicValue = parseFloat($('#txtBasicSalary').val());
+        var epfValue = basicValue * parseFloat($('#displayEPFMaster').text()) / 100;
+                 $('#txtEPFMaster').val(epfValue);
+                    
+                     
+
         }
-    ]
-}*@
+</script>
+
 
 
 
