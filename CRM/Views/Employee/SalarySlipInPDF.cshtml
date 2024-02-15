@@ -15,42 +15,42 @@
                 <div class="col-md-12">
                     <div class="text-center lh-1 mb-2">
                         <img src="~/assets/images/layout-2/logo/logo.png" style="margin: -45px;" />
-                        <h6 class="fw-bold">N D Techland Private Limited</h6> <span class="fw-normal">Payment slip for the month of @Model.Month  @Model.Year</span>
+                        <h4 class="fw-bold"><b>N D Techland Private Limited</b></h4> <span class="fw-normal"><b>Payment slip for the month of @Model.Month  @Model.Year</b></span>
                     </div>
-                    <div class="d-flex justify-content-end"> <span>Working Branch:@Model.Address_Line_1</span> </div>
+                    <div class="d-flex justify-content-end"> <span><b>Working Branch:</b>@Model.Address_Line_1</span> </div>
                     <div class="row">
                         <div class="col-md-10">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <div> <span class="fw-bolder">EMP Code</span> <small class="ms-3">@Model.Employee_ID</small> </div>
+                                    <div> <span class="fw-bolder"><b>EMP Code:</b></span> <small class="ms-3">@Model.Employee_ID</small> </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div> <span class="fw-bolder">EMP Name</span> <small class="ms-3">@Model.First_Name</small> </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div> <span class="fw-bolder">PF No.</span> <small class="ms-3">@Model.EPF_Number</small> </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div> <span class="fw-bolder">NOD</span> <small class="ms-3">@Model.Id</small> </div>
+                                    <div> <span class="fw-bolder"><b>EMP Name:</b></span> <small class="ms-3">@Model.First_Name</small> </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-6">
-                                    <div> <span class="fw-bolder">ESI No.</span> <small class="ms-3"></small> </div>
+                                    <div> <span class="fw-bolder"><b>PF No:</b></span> <small class="ms-3">@Model.EPF_Number</small> </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div> <span class="fw-bolder">Mode of Pay</span> <small class="ms-3">@Model.Bank_Name</small> </div>
+                                    <div> <span class="fw-bolder"><b>NOD:</b></span> <small class="ms-3">@Model.Id</small> </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-6">
-                                    <div> <span class="fw-bolder">Designation</span> <small class="ms-3">@Model.Designation_Name</small> </div>
+                                    <div> <span class="fw-bolder"><b>ESI No:</b></span> <small class="ms-3"></small> </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div> <span class="fw-bolder"><b>Mode of Pay:</b></span> <small class="ms-3">@Model.Bank_Name</small> </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div> <span class="fw-bolder"><b>Designation:</b></span> <small class="ms-3">@Model.Designation_Name</small> </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div>
-                                        <span class="fw-bolder">Ac No.</span>
+                                        <span class="fw-bolder"><b>Ac No:</b></span>
                                         <small class="ms-3" id="accountNumber">@Model.Account_Number</small>
                                     </div>
                                 </div>
@@ -76,13 +76,13 @@
                                     <th scope="row">DA</th>
                                     <td>550.00</td>
                                     <td>ESI</td>
-                                    <td>142.00</td>
+                                    <td>@Model.Esic</td>
                                 </tr>
                                 <tr>
                                     <th scope="row">HRA</th>
                                     <td>@Model.HouseRentAllowance</td>
                                     <td>TDS</td>
-                                    <td>0.00</td>
+                                    <td>@Model.Amount</td>
                                 </tr>
                                 <tr>
                                     <th scope="row">WA</th>
@@ -92,30 +92,73 @@
                                 </tr>
                                 <tr>
                                     <th scope="row">SPL. Deduction</th>
-                                    <td>500.00</td>
+                                    <td>@Model.SpecialAllowance</td>
                                     <td>PT</td>
-                                    <td>0.00</td>
+                                    <td>@Model.Professionaltax</td>
                                 </tr>
                                 <tr>
-                                    <th scope="row">MA</th>
+                                    <th>MA</th>
                                     <td>3000.00</td>
-                                    <td colspan="2"></td>
+                                     <td></td>
+                                     <td></td>
+                                </tr>
+                                <tr>
+                                    <th>TA</th>
+                                    <td>@Model.TravellingAllowance</td>
+                                    <td></td>
+                                    <td></td>
                                 </tr>
                                 <tr class="border-top">
                                     <th scope="row">Total Earning</th>
-                                    <td>25970.00</td>
+                                    <td>
+                                        @{
+                                            decimal totalEarning = (Model.Basic ?? 0m) +
+                                            550.00m +
+                                            (Model.HouseRentAllowance ?? 0m) +
+                                            120.00m +
+                                            (Model.SpecialAllowance ?? 0m) +
+                                            3000.00m +
+                                            (Model.TravellingAllowance ?? 0m);
+
+                                            @totalEarning
+                                        }
+                                    </td>
+
                                     <td>Total Deductions</td>
-                                    <td>2442.00</td>
+                                    <td>
+                                        @{
+                                            decimal totaldeductions = (Model.Epf ?? 0m) +
+                                            (Model.Esic ?? 0m) +
+                                            (Model.Amount ?? 0m) +
+                                            (Model.Lop ?? 0m) +
+                                            (Model.Professionaltax ?? 0m) ;
+
+                                            @totaldeductions
+                                        }
+                                    </td>
+
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                     <div class="row">
-                        <div class="col-md-4"> <br> <span class="fw-bold">Net Pay : 24528.00</span> </div>
+                        <div class="col-md-4">
+                            <br>
+                            <span id="totalAmount"><b>Net Pay:</b> @(totalEarning - totaldeductions)</span>
+                        </div>
                     </div>
+                    <div id="result"></div>
+
+
                     <div class="d-flex justify-content-end">
-                        <div class="d-flex flex-column mt-2"> <span class="fw-bolder">N D Techland Private Limited</span> <span class="mt-4">Authorised Signatory</span> </div>
-                    </div>
+                      <div class="d-flex flex-column mt-2">
+                       <span class="fw-bolder">N D Techland Private Limited</span>
+                          <span class="mt-4">Authorised Signatory</span>
+                            <img src="~/assets/images/layout-2/logo/signature.png" alt="Signature Image" />
+
+                       </div>
+                      </div>
+
                 </div>
             </div>
 
@@ -145,6 +188,68 @@
         }
     };
 </script>
+<script>
+    function inWords(num) {
+        var units = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+        var teens = ['Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+        var tens = ['', 'Ten', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
 
+        function convertLessThanThousand(number) {
+            if (number === 0) {
+                return '';
+            } else if (number < 10) {
+                return units[number] + ' ';
+            } else if (number < 20) {
+                return teens[number - 11] + ' ';
+            } else if (number < 100) {
+                return tens[Math.floor(number / 10)] + ' ' + convertLessThanThousand(number % 10);
+            } else {
+                return units[Math.floor(number / 100)] + ' Hundred ' + convertLessThanThousand(number % 100);
+            }
+        }
+
+        if (num === 0) {
+            return 'Zero Only';
+        } else {
+            var result = '';
+            if (num < 0) {
+                result += 'Negative ';
+                num = Math.abs(num);
+            }
+
+            if (num >= 1000000) {
+                result += convertLessThanThousand(Math.floor(num / 1000000)) + ' Million ';
+                num %= 1000000;
+            }
+
+            if (num >= 1000) {
+                result += convertLessThanThousand(Math.floor(num / 1000)) + ' Thousand ';
+                num %= 1000;
+            }
+
+            result += convertLessThanThousand(Math.floor(num));
+
+            var decimalPart = '';
+            if (num % 1 !== 0) {
+                decimalPart = ' Point ';
+                var decimal = num.toFixed(2).toString().split('.')[1].replace(/^0+/, '');
+                for (var i = 0; i < decimal.length; i++) {
+                    decimalPart += units[parseInt(decimal[i])] + ' ';
+                }
+                decimalPart += 'Only.';
+            }
+
+            return (result + decimalPart).trim();
+        }
+    }
+    var totalAmountText = document.getElementById('totalAmount').innerText;
+    var number = parseFloat(totalAmountText.split(' ')[2]);
+    if (!isNaN(number)) {
+        var words = inWords(number);
+        document.getElementById('result').innerHTML = 'Net Pay (In words): ' + words;
+    } else {
+        document.getElementById('result').innerHTML = 'Invalid numeric value';
+    }
+</script>
 
 
