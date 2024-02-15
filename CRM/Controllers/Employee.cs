@@ -249,7 +249,8 @@ namespace CRM.Controllers
             }
         }
 
-
+        [Route("Employee/Employeelistg")]
+        [Route("Employee/Employeelists")]
         public async Task<IActionResult> Employeelist()
         {
             try
@@ -1077,7 +1078,7 @@ namespace CRM.Controllers
             }
            
         }
-
+        [Route("/Employee/GenerateSalaryReport")]
         public IActionResult GenerateSalaryReport()
         {
             try
