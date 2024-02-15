@@ -597,6 +597,7 @@ namespace CRM.Repository
                 worksheet.Cell(currentwork, 19).Style.Fill.BackgroundColor = XLColor.Yellow;
                 worksheet.Cell(currentwork, 20).Value = "EPF Number";
                 worksheet.Cell(currentwork, 20).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 20).Style.NumberFormat.NumberFormatId = 49;
                 worksheet.Cell(currentwork, 21).Value = "Employee Contribution Rate";
                 worksheet.Cell(currentwork, 21).Style.Fill.BackgroundColor = XLColor.Yellow;
                 worksheet.Cell(currentwork, 22).Value = "Deduction Cycle";
@@ -615,6 +616,7 @@ namespace CRM.Repository
                 //worksheet.Cell(currentwork, 37).Style.Fill.BackgroundColor = XLColor.Yellow;
                 worksheet.Cell(currentwork, 25).Value = "EPF";
                 worksheet.Cell(currentwork, 25).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 25).Style.NumberFormat.NumberFormatId = 1;
                 //worksheet.Cell(currentwork, 39).Value = "Monthly CTC";
                 //worksheet.Cell(currentwork, 39).Style.Fill.BackgroundColor = XLColor.Yellow;
                 worksheet.Cell(currentwork, 26).Value = "Monthly Gross Pay";

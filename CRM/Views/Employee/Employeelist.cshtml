@@ -4,7 +4,14 @@
     ViewData["Title"] = "Employeelist";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
-
+<link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css'>
+<link rel='stylesheet' href='https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css'>
+<style>
+    .dataTables_wrapper table.dataTable th {
+        background-color: #00baf2 !important;
+        padding: 24px 0.75rem !important;
+    }
+</style>
 <div class="page-wrapper">
     <div class="page-body-wrapper">
         <div class="page-sidebar">
@@ -51,7 +58,7 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-body">
-                                <div class=" table-responsive">
+                                <div class="table-responsive">
                                     <table id="datatable" class="table table-responsive">
                                         <thead>
                                             <tr style="background-color: #00baf2;">
@@ -537,7 +544,7 @@
         });
     }
 </script>
-<script>
+@* <script>
     var currentPage = 1;
     var rowsPerPage = 10;
     $(document).ready(function () {
@@ -587,7 +594,7 @@
         });
     });
 
-</script>
+</script> *@
 <script>
     function confirmDelete(url) {
         var result = confirm("Are you sure you want to delete?");
@@ -595,4 +602,40 @@
             window.location.href = url;
         }
     }
+</script>
+
+
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js'></script>
+<script src='https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js'></script>
+<script src='https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js'></script>
+<script src='https://cdn.datatables.net/buttons/1.2.2/js/buttons.colVis.min.js'></script>
+<script src='https://cdn.datatables.net/buttons/1.2.2/js/buttons.html5.min.js'></script>
+<script src='https://cdn.datatables.net/buttons/1.2.2/js/buttons.print.min.js'></script>
+<script src='https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js'></script>
+<script src='https://cdn.datatables.net/buttons/1.2.2/js/buttons.bootstrap.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js'></script>
+<script src='https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js'></script>
+
+<script>
+    $(document).ready(function () {
+        //Only needed for the filename of export files.
+        //Normally set in the title tag of your page.
+        document.title = 'Simple DataTable';
+        // DataTable initialisation
+        $('#datatable').DataTable(
+            {
+                "dom": '<"dt-buttons"Bf><"clear">lirtp',
+                "paging": true,
+                "autoWidth": true,
+                "buttons": [
+                    'colvis',
+                    'copyHtml5',
+                    'csvHtml5',
+                    'excelHtml5',
+                    'pdfHtml5',
+                    'print'
+                ]
+            }
+        );
+    });
 </script>
