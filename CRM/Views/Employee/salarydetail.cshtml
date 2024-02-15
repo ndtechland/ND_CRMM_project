@@ -104,6 +104,9 @@
                                     @if (Model != null && Model.Any())
                                     {
                                         <div style="text-align: right;">
+                                            <button type="button" class="btn btn-primary" id="downloadExcel" style="color: black; border: 2px solid black;" onclick="ExportExcelfn()">
+                                                Export
+                                            </button>
                                             <button type="button" class="btn btn-primary" id="downloadButton" style="color: black; border: 2px solid black;" onclick="ESCExcelfn()">
                                                 ECS
                                             </button>
@@ -112,6 +115,15 @@
                                             </button>
                                             
                                         </div>
+                                        <div>
+                                            <label for="file-upload" class="file-upload-label">
+                                                <span><b>Excel Import</b></span>
+                                                <input type="file" id="file-upload" name="upload" accept=".xlsx, .xls" required />
+                                            </label>
+                                            <button type="submit" value="Submit" class="btn btn-primary" onclick="showLoading()">Upload</button>
+                                        </div>
+                                        
+
                                         <br />
                                         <table id="datatable" class="table table-responsive">
                                             <thead>
@@ -141,46 +153,46 @@
                                                 @{
                                                     var count = 0;
 
-                                                            @foreach (var item in Model)
+                                                                        @foreach (var item in Model)
                                                     {
                                                         count++;
-                                                                <tr class="table-row">
-                                                                    <td>@count</td>
-                                                                    <td style="display:none">
-                                                                        @item.Id
-                                                                    </td>
-                                                                      <td style="display:none">
-                                                                        @item.CustomerID
-                                                                    </td>
-                                                                    <td>
-                                                                        @Html.DisplayFor(modelItem => item.FirstName)
-                                                                    </td>
-                                                                    <td>
-                                                                        @Html.DisplayFor(modelItem => item.FatherName)
-                                                                    </td>
-                                                                    <td>
-                                                                        @Html.DisplayFor(modelItem => item.EmployeeId)
-                                                                    </td>
-                                                                <td style="display:none" id="hiddenIncentive">
-                                                                    @item.Incentive
-                                                                </td>
-                                                            <td style="display:none" id="hiddenTravellingAllowance">
-                                                                @item.TravellingAllowance
-                                                            </td>
-                                                                    <td>
-                                                                        @Html.DisplayFor(modelItem => item.MonthlyCtc)
-                                                                    </td>
-                                                                    <td>
-                                                                        <input type="text" id="Attendance" name="Attendance" class="form-control attnd" minlength="1" maxlength="2" style="height: 40px; width: 94px;" onkeyup="fnc(this)" />
-                                                                    </td>
-                                                                    <td>
-                                                                        <a href="#" class="fa fa-edit m-2 font-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="EditSalaryDetails('@item.EmployeeId')">
-                                                                            Edit Salary
-                                                                        </a>
-                                                                    </td>
+                                                                            <tr class="table-row">
+                                                                                <td>@count</td>
+                                                                                <td style="display:none">
+                                                                                    @item.Id
+                                                                                </td>
+                                                                                  <td style="display:none">
+                                                                                    @item.CustomerID
+                                                                                </td>
+                                                                                <td>
+                                                                                    @Html.DisplayFor(modelItem => item.FirstName)
+                                                                                </td>
+                                                                                <td>
+                                                                                    @Html.DisplayFor(modelItem => item.FatherName)
+                                                                                </td>
+                                                                                <td>
+                                                                                    @Html.DisplayFor(modelItem => item.EmployeeId)
+                                                                                </td>
+                                                                            <td style="display:none" id="hiddenIncentive">
+                                                                                @item.Incentive
+                                                                            </td>
+                                                                        <td style="display:none" id="hiddenTravellingAllowance">
+                                                                            @item.TravellingAllowance
+                                                                        </td>
+                                                                                <td>
+                                                                                    @Html.DisplayFor(modelItem => item.MonthlyCtc)
+                                                                                </td>
+                                                                                <td>
+                                                                                    <input type="text" id="Attendance" name="Attendance" class="form-control attnd" minlength="1" maxlength="2" style="height: 40px; width: 94px;" onkeyup="fnc(this)" />
+                                                                                </td>
+                                                                                <td>
+                                                                                    <a href="#" class="fa fa-edit m-2 font-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="EditSalaryDetails('@item.EmployeeId')">
+                                                                                        Edit Salary
+                                                                                    </a>
+                                                                                </td>
 
 
-                                                                </tr>
+                                                                            </tr>
                                                     }
                                                 }
                                             </tbody>
@@ -565,6 +577,22 @@
             }
         });
     });
+
+
+    function ExportExcelfn() {
+        var customerId = document.getElementById("CustomerID").value;
+        var workLocation = document.getElementById("LocationID").value;
+        if (customerId === '') {
+            alert("Please select Company.");
+            return false;
+        }
+        if (workLocation === '') {
+            alert("Please select WorkLocation.");
+            return false;
+        }
+        window.location.href = '/Employee/ImportToExcelAttendance?customerId=' + customerId + '&WorkLocation=' + workLocation;
+    }
+
 </script>
 <script>
     var currentPage = 1;
@@ -616,4 +644,45 @@
         });
     });
 
+</script>
+
+<script>
+    function showLoading() {
+        var formData = new FormData();
+        formData.append('upload', $('#file-upload')[0].files[0]);
+
+        $.ajax({
+            url: '/Employee/ImportProductionExcel',
+            type: 'post',
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (data) {
+                if (data!=null||data.length!=0)
+                {
+                    data.forEach(function (item) {
+                        // Find the corresponding row in the table based on the employee ID
+                        var $row = $("td:contains('" + item.employeeId + "')").closest('tr');
+
+                        // Check if the row is found
+                        if ($row.length) {
+                            // Set the attendance value in the corresponding field in the table
+                         //   $row.find("td:eq(6)").text(item.attendance); // Assuming the attendance field is the 6th column (index 5)
+                            if (parseInt(item.attendance) < 30) {
+                                $row.find(".attnd").val(item.attendance);
+                            } else  {
+                                $row.find(".attnd").val(30);
+                            }
+                                
+                        }
+                    });
+                }
+                alert("Upload successful");
+            },
+            error: function () {
+                alert("Error uploading file");
+            }
+        });
+    }
 </script>

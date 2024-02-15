@@ -995,6 +995,50 @@ namespace CRM.Repository
         {
             return _context.EmployeerTds.Where(x => x.CustomerId == CustomerId).FirstOrDefault();
         }
+
+        public byte[] ImportToExcelAttendance(List<salarydetail> data)
+        {
+            
+           // List<EmployeeImportExcel> employeeList = _context.EmpMultiforms.FromSqlRaw<EmployeeImportExcel>("USP_GetEmployeeDetails").ToListAsync().Result;
+
+            using (var workbook = new XLWorkbook())
+            {
+
+                var worksheet = workbook.Worksheets.Add("EmployeeList");
+                var currentwork = 1;
+                worksheet.Cell(currentwork, 1).Value = "Sr.No.";
+                worksheet.Cell(currentwork, 1).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 2).Value = "Employee Name";
+                worksheet.Cell(currentwork, 2).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 3).Value = "Father Name";
+                worksheet.Cell(currentwork, 3).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 4).Value = "Employee Id";
+                worksheet.Cell(currentwork, 4).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 5).Value = "Monthly CTC";
+                worksheet.Cell(currentwork, 5).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 6).Value = "Attendance";
+                worksheet.Cell(currentwork, 6).Style.Fill.BackgroundColor = XLColor.Yellow;
+
+                currentwork++;
+
+                var index = 1;
+                foreach (var item in data)
+                {
+                    worksheet.Cell(currentwork, 1).Value = index++;
+                    worksheet.Cell(currentwork, 2).Value = item.FirstName;
+                    worksheet.Cell(currentwork, 3).Value = item.FatherName;
+                    worksheet.Cell(currentwork, 4).Value = item.EmployeeId;
+                    worksheet.Cell(currentwork, 5).Value = item.MonthlyCtc;
+                    currentwork++;
+                }
+                using (var stram = new MemoryStream())
+                {
+                    workbook.SaveAs(stram);
+                    return stram.ToArray();
+                }
+            }
+
+        }
     }
 
 }
