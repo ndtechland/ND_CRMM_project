@@ -37,6 +37,9 @@ using NuGet.Versioning;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using DataTable = System.Data.DataTable;
 using DocumentFormat.OpenXml.Office.CustomUI;
+using Humanizer;
+using Microsoft.AspNetCore.Http;
+using OfficeOpenXml;
 
 namespace CRM.Controllers
 {
@@ -238,7 +241,7 @@ namespace CRM.Controllers
                 }
 
                 var response = await _ICrmrpo.EmpRegistration(model, Mode, Empid);
-                
+
 
                 ModelState.Clear();
                 return View();
@@ -423,15 +426,15 @@ namespace CRM.Controllers
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 ViewBag.UserName = AddedBy;
                 TempData["UserName"] = AddedBy;
-                TempData["custid"]   = customerId;
-                TempData["locid"]  = WorkLocation;
+                TempData["custid"] = customerId;
+                TempData["locid"] = WorkLocation;
                 //
-                if(AddedBy!=null)
-                {  HttpContext.Session.SetString("UserName", AddedBy); }
+                if (AddedBy != null)
+                { HttpContext.Session.SetString("UserName", AddedBy); }
                 else
                 {
                     AddedBy = HttpContext.Session.GetString("UserName");
-                  
+
                 }
                 if (customerId != null)
                 {
@@ -484,13 +487,13 @@ namespace CRM.Controllers
             {
                 foreach (Empattendance empattendance in customers)
                 {
-                    var month = await _context.Empattendances.Where(x => x.Month == DateTime.Now.Month && x.EmployeeId == empattendance.EmployeeId ).ToListAsync();
+                    var month = await _context.Empattendances.Where(x => x.Month == DateTime.Now.Month && x.EmployeeId == empattendance.EmployeeId).ToListAsync();
                     if (month.Count > 0)
                     {
                         isActive = true;
                     }
                 }
-               if (!isActive)
+                if (!isActive)
                 {
                     using (var transaction = _context.Database.BeginTransaction())
                     {
@@ -502,7 +505,7 @@ namespace CRM.Controllers
                                 var ctc = await _context.EmployeeSalaryDetails
                                     .Where(x => x.EmployeeId == item.EmployeeId)
                                     .FirstOrDefaultAsync();
-                                if (ctc.Incentive != null && ctc.TravellingAllowance !=null)
+                                if (ctc.Incentive != null && ctc.TravellingAllowance != null)
                                 {
                                     if (ctc.Incentive != null && ctc.Incentive >= 0 && ctc.TravellingAllowance != null && ctc.TravellingAllowance >= 0)
                                     {
@@ -521,8 +524,8 @@ namespace CRM.Controllers
                                         Year = DateTime.Now.Year,
                                         Attendance = item.Attendance,
                                         Entry = DateTime.Now,
-                                        Incentive= item.Incentive,
-                                        TravellingAllowance=item.TravellingAllowance,
+                                        Incentive = item.Incentive,
+                                        TravellingAllowance = item.TravellingAllowance,
                                         GenerateSalary = decimal.Round((decimal)(ctc.MonthlyCtc / 25 * item.Attendance), 2) + item.Incentive,
                                         Lop = (decimal)(ctc.MonthlyCtc) - decimal.Round((decimal)(ctc.MonthlyCtc / 25 * item.Attendance), 2),
                                     };
@@ -533,7 +536,7 @@ namespace CRM.Controllers
                             }
 
                             transaction.Commit();
-                          
+
                             foreach (var item in customers)
                             {
                                 SendPDF(item.Id);
@@ -612,7 +615,7 @@ namespace CRM.Controllers
         }
         [HttpPost]
 
-        public async Task<IActionResult> GenerateSalary(string customerId, int Month, int year,string WorkLocation)
+        public async Task<IActionResult> GenerateSalary(string customerId, int Month, int year, string WorkLocation)
 
         {
             try
@@ -630,10 +633,10 @@ namespace CRM.Controllers
                     }).ToList();
                     GenerateSalary salary = new GenerateSalary();
 
-                   
 
-                    salary.GeneratedSalaries = await _ICrmrpo.GenerateSalary(customerId, Month, year,WorkLocation);
-                    if(salary.GeneratedSalaries.Count >0)
+
+                    salary.GeneratedSalaries = await _ICrmrpo.GenerateSalary(customerId, Month, year, WorkLocation);
+                    if (salary.GeneratedSalaries.Count > 0)
 
                     {
                         return View(salary);
@@ -699,7 +702,7 @@ namespace CRM.Controllers
                 {
                     return View();
                 }
-                
+
             }
             catch (Exception ex)
             {
@@ -733,7 +736,7 @@ namespace CRM.Controllers
         public async Task<IActionResult> Employer(EmployeerModelEPF model)
         {
             try
-            {                
+            {
                 var response = await _ICrmrpo.Employer(model);
 
                 ModelState.Clear();
@@ -749,11 +752,11 @@ namespace CRM.Controllers
         [Route("Employee/Employee_list")]
         public async Task<IActionResult> Employee_list(string Deduction_Cycle)
         {
-            if(Deduction_Cycle !=null)
+            if (Deduction_Cycle != null)
             {
                 var response = await _ICrmrpo.EmployerList(Deduction_Cycle);
-                ViewBag.UserName= HttpContext.Session.GetString("UserName");
-                if(response.Count > 0)
+                ViewBag.UserName = HttpContext.Session.GetString("UserName");
+                if (response.Count > 0)
                 {
                     return View(response);
 
@@ -776,7 +779,7 @@ namespace CRM.Controllers
 
         public IActionResult DocPDF(int id)
         {
-            string schema=Request.Scheme;
+            string schema = Request.Scheme;
             string host = Request.Host.Value;
             // instantiate a html to pdf converter object
             HtmlToPdf converter = new HtmlToPdf();
@@ -810,7 +813,7 @@ namespace CRM.Controllers
             string Email_Subject = "Salary Slip for " + result.Employee_ID + "";
             string Email_body = "Hello " + result.First_Name + " (" + result.Employee_ID + ") please find your attached salary slip....";
 
-            if(result != null)
+            if (result != null)
             {
                 _IEmailService.SendEmailAsync(result.Email_Id, Email_Subject, Email_body, pdf, "SalarySlip.pdf", "application/pdf");
                 return fileResult;
@@ -820,7 +823,7 @@ namespace CRM.Controllers
             {
                 return View();
             }
-           
+
         }
 
         public void SendPDF(int id)
@@ -972,7 +975,7 @@ namespace CRM.Controllers
         public JsonResult EditSalaryDetails(string EmployeeId)
         {
             var empSalaryDetail = new EmployeeSalaryDetail();
-            var data = _ICrmrpo.GetempSalaryDetailtById(EmployeeId); 
+            var data = _ICrmrpo.GetempSalaryDetailtById(EmployeeId);
             empSalaryDetail.EmployeeId = data.EmployeeId;
             empSalaryDetail.AnnualCtc = data.AnnualCtc;
             empSalaryDetail.Esic = data.Esic;
@@ -1001,7 +1004,7 @@ namespace CRM.Controllers
                 var Salary = await _ICrmrpo.updateSalaryDetail(model);
                 if (Salary != null)
                 {
-                    ViewBag.Message= "salarydetail update Successfully.";
+                    ViewBag.Message = "salarydetail update Successfully.";
                     return RedirectToAction("salarydetail", "Employee");
                 }
                 else
@@ -1021,8 +1024,8 @@ namespace CRM.Controllers
         {
             try
             {
-                var employeeList = await _ICrmrpo.ESCExcel(customerId, WorkLocation).ConfigureAwait(false); 
-                if(employeeList.Count != 0)
+                var employeeList = await _ICrmrpo.ESCExcel(customerId, WorkLocation).ConfigureAwait(false);
+                if (employeeList.Count != 0)
                 {
                     using (var workbook = new XLWorkbook())
                     {
@@ -1076,7 +1079,7 @@ namespace CRM.Controllers
             {
                 throw ex;
             }
-           
+
         }
         [Route("/Employee/GenerateSalaryReport")]
         public IActionResult GenerateSalaryReport()
@@ -1289,7 +1292,7 @@ namespace CRM.Controllers
 
 
         }
-       
+
 
         private string GenerateEmployeeId()
         {
@@ -1304,7 +1307,7 @@ namespace CRM.Controllers
                 {
                     numericValue++;
                     EmpID = $"ND-{DateTime.Now.Month}/{DateTime.Now.Year}-{numericValue}";
-                    
+
                 }
             }
             return EmpID;
@@ -1331,7 +1334,7 @@ namespace CRM.Controllers
         {
             var epf = new EmployeerEpf();
             var data = _ICrmrpo.GetEmployer(id);
-            epf.Id = data.Id; 
+            epf.Id = data.Id;
             epf.EpfNumber = data.EpfNumber;
             epf.DeductionCycle = data.DeductionCycle;
             epf.EmployerContributionRate = data.EmployerContributionRate;
@@ -1388,14 +1391,172 @@ namespace CRM.Controllers
         }
         public JsonResult Epfesilist()
         {
-           var employeerTd = new EmployeerEpf();
-           var data = _context.EmployeerEpfs.Where(e =>e.IsActive == true).ToList();
+            var employeerTd = new EmployeerEpf();
+            var data = _context.EmployeerEpfs.Where(e => e.IsActive == true).ToList();
             var result = new
             {
                 data = data,
             };
-            return new JsonResult(result); 
+            return new JsonResult(result);
         }
+
+        public IActionResult ImportToExcelAttendance(string customerId, string WorkLocation)
+        {
+            try
+            {
+                var data = _ICrmrpo.salarydetail(customerId, WorkLocation).Result;
+                var response = _ICrmrpo.ImportToExcelAttendance(data);
+                return File(response, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Employee_Attandence_List.xlsx");
+            }
+            catch (Exception Ex)
+            {
+                throw Ex;
+            }
+
+        }
+
+
+
+
+        [HttpPost]
+        public ActionResult ImportProductionExcel(IFormFile upload)
+        {
+
+            if (ModelState.IsValid)
+            {
+                if (upload != null && upload.Length > 0)
+                {
+                    Stream stream = upload.OpenReadStream();
+
+                    IXLWorkbook workbook = null;
+
+                    try
+                    {
+                        // Load workbook using ClosedXML
+                        workbook = new XLWorkbook(stream);
+                    }
+                    catch (Exception ex)
+                    {
+                        ModelState.AddModelError("File", "Unable to Upload file!");
+                        return View();
+                    }
+
+                    IXLWorksheet worksheet = workbook.Worksheets.First();
+
+                    DataTable dt = new DataTable();
+
+                    try
+                    {
+                        foreach (IXLCell cell in worksheet.Row(1).Cells())
+                        {
+                            string columnName = cell.Value.ToString();
+
+                            // Add the column to the DataTable
+                            dt.Columns.Add(columnName);
+                        }
+
+
+                        for (int row = 2; row <= worksheet.LastRowUsed().RowNumber(); row++)
+                        {
+                            DataRow newRow = dt.Rows.Add();
+                            for (int col = 1; col <= worksheet.LastColumnUsed().ColumnNumber(); col++)
+                            {
+                                newRow[col - 1] = worksheet.Cell(row, col).Value.ToString();
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        ModelState.AddModelError("File", "Error processing Excel file!");
+                        return View();
+                    }
+
+                    DataSet result = new DataSet();
+                    result.Tables.Add(dt);
+                    var rcount = 0;
+
+                    var attendance = new List<salarydetail>();
+
+                    foreach (DataRow row in dt.Rows)
+                    {
+                        var attend = new salarydetail();
+                        rcount++;
+
+                        var ccount = 0;
+                        foreach (DataColumn col in dt.Columns)
+                        {
+                            try
+                            {
+                                ccount++;
+                                Console.WriteLine(row[col]);
+                                if (col.Caption == "Sr.No.")
+                                {
+
+
+                                    attend.Id = Convert.ToInt32(row[col].ToString());
+                                }
+                                else if (col.Caption == "Employee Name")
+                                {
+                                    string financialYearValue = row[col].ToString().Trim();
+
+                                    // Check if the financial year value exists in the list of FinYear names
+                                    attend.FirstName = row[col].ToString();
+
+
+                                }
+                                else if (col.Caption == "Father Name")
+                                {
+                                    attend.FatherName = row[col].ToString();
+                                }
+                                else if (col.Caption == "Employee Id")
+                                {
+                                    attend.EmployeeId = row[col].ToString();
+                                }
+                                else if (col.Caption == "Monthly CTC")
+                                {
+                                    attend.MonthlyCtc = Convert.ToInt32(row[col].ToString());
+                                }
+                                else if (col.Caption == "Attendance")
+                                {
+                                    attend.Attendance = Convert.ToInt32(row[col].ToString());
+                                }
+
+
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.Write($" row number: {rcount}:{dt.Columns[ccount - 1]}");
+                                //  throw ex;
+                                continue;
+                            }
+                           
+
+
+                        }
+
+
+                        attendance.Add(attend);
+                    }
+                    return Json(attendance);
+
+
+                }
+
+
+            }
+            else
+            {
+                ModelState.AddModelError("File", "Please Upload Your file");
+            }
+            
+            return null;
+        }
+
+
+
+
+
+
 
 
 

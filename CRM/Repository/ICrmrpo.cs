@@ -43,6 +43,7 @@ namespace CRM.Repository
         public DataTable GetEmployDetailById(string EmpId);
         //for excel
          public byte[] EmployeeListForExcel();
+        
          public Task<List<ECS>> ESCExcel(string customerId,string WorkLocation);
 
         public WorkLocation GetWorkLocationById(int id);
@@ -61,5 +62,6 @@ namespace CRM.Repository
         public EmployeerEpf GetEmployer(int id);
         public Task<int> updateEmployer(EmployeerEpf model);
         public EmployeerTd tdsDetails(int CustomerId);
+        public byte[] ImportToExcelAttendance(List<salarydetail> data);
     }
 }
