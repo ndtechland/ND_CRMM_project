@@ -269,6 +269,11 @@
         </h6>
     </div> *@
 
+@*            <img src="~/assets/images/layout-2/logo/invoice.png" />
+*@        </h6>
+    </div>
+
+
 </body>
 </html>
 <script type="text/javascript">
@@ -326,7 +331,7 @@
             var decimalPart = '';
             if (num % 1 !== 0) {
                 decimalPart = ' Point ';
-                var decimal = num.toFixed(2).toString().split('.')[1].replace(/^0+/, ''); // Round to 2 decimal places and remove leading zeros
+                var decimal = num.toFixed(2).toString().split('.')[1].replace(/^0+/, ''); 
                 for (var i = 0; i < decimal.length; i++) {
                     decimalPart += units[parseInt(decimal[i])] + ' ';
                 }

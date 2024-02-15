@@ -676,6 +676,7 @@ namespace CRM.Controllers
                               join empatt in _context.Empattendances on emp.EmployeeId equals empatt.EmployeeId
                               join worklocation in _context.WorkLocations on emp.WorkLocationId equals worklocation.Id.ToString()
                               join designation in _context.DesignationMasters on emp.DesignationId equals designation.Id.ToString()
+                              join tds in _context.EmployeerTds on emp.CustomerId equals tds.CustomerId
                               where emp.Id == id
                               select new SalarySlipDetails
                               {
@@ -693,7 +694,13 @@ namespace CRM.Controllers
                                   Year = empatt.Year,
                                   HouseRentAllowance = empsalary.HouseRentAllowance,
                                   Lop = empatt.Lop,
+                                  Professionaltax=empsalary.Professionaltax,
+                                  TravellingAllowance=empatt.TravellingAllowance,
+                                  SpecialAllowance=empsalary.SpecialAllowance,
+                                  Esic=empsalary.Esic,
+                                  Amount=tds.Amount,
                               }).FirstOrDefault();
+
                 if (result != null)
                 {
                     return View(result);
