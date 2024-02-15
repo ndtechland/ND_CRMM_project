@@ -1088,6 +1088,7 @@ namespace CRM.Controllers
             }
 
         }
+        [HttpGet]
         [Route("/Employee/GenerateSalaryReport")]
         public IActionResult GenerateSalaryReport()
         {
@@ -1113,7 +1114,6 @@ namespace CRM.Controllers
 
         [HttpPost]
         public async Task<IActionResult> GenerateSalaryReport(string customerId, int Month, int year, string WorkLocation)
-
         {
             try
             {
@@ -1422,9 +1422,6 @@ namespace CRM.Controllers
 
         }
 
-
-
-
         [HttpPost]
         public ActionResult ImportProductionExcel(IFormFile upload)
         {
@@ -1558,13 +1555,6 @@ namespace CRM.Controllers
             
             return null;
         }
-
-
-
-
-
-
-
 
 
     }
