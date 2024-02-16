@@ -14,8 +14,9 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="text-center lh-1 mb-2">
-                        <img src="~/assets/images/layout-2/logo/logo.png" style="margin: -45px;" />
-                        <h4 class="fw-bold"><b>N D Techland Private Limited</b></h4> <span class="fw-normal"><b>Payment slip for the month of @Model.Month  @Model.Year</b></span>
+                        @*<img src="~/assets/images/layout-2/logo/logo.png" style="margin: -45px;" />*@
+                        <img src="~/assets/images/layout-2/logo/logo.png" style="width: 150px;height: 100px;" />
+                        <h4 class="fw-bold"><b>GA DIGITAL WEB WORD PRIVATE LIMITED</b></h4> <span class="fw-normal"><b>Payment slip for the month of @Model.Month  @Model.Year</b></span>
                     </div>
                     <div class="d-flex justify-content-end"> <span><b>Working Branch:</b>@Model.Address_Line_1</span> </div>
                     <div class="row">
@@ -57,14 +58,15 @@
                             </div>
                         </div>
                         <table class="mt-4 table table-bordered" style="width: 100%;">
-                            <thead class="bg-dark">
-                                <tr style="background-color: #00baf2;">
+                            <thead class="bg-dark text-white">
+                                <tr style="background-color: #000080;">
                                     <th scope="col">Earnings</th>
                                     <th scope="col">Amount</th>
                                     <th scope="col">Deductions</th>
                                     <th scope="col">Amount</th>
                                 </tr>
                             </thead>
+
                             <tbody>
                                 <tr>
                                     <th scope="row">Basic</th>
@@ -152,7 +154,7 @@
 
                     <div class="d-flex justify-content-end">
                       <div class="d-flex flex-column mt-2">
-                       <span class="fw-bolder">N D Techland Private Limited</span>
+                            <span class="fw-bolder">GA DIGITAL WEB WORD PRIVATE LIMITED</span>
                           <span class="mt-4">Authorised Signatory</span>
                             <img src="~/assets/images/layout-2/logo/signature.png" alt="Signature Image" />
 
