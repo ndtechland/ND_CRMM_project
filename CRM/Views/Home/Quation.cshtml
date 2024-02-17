@@ -45,31 +45,31 @@
                             <div class="row">
                                 <div class="form-group col-sm">
                                    <label class="control-label">Company Name</label>
-                                            <input asp-for="CompanyName" class="form-control" placeholder="Enter Company Name" required="" onkeydown="validateNumericInput(event)" oninvalid="this.setCustomValidity('Please Enter Company Name')" oninput="this.setCustomValidity('')" />
+                                            <input asp-for="CompanyName" class="form-control" placeholder="Enter Company Name" required=""  oninvalid="this.setCustomValidity('Please Enter Company Name')" oninput="this.setCustomValidity('')" />
                                     <span asp-validation-for="CompanyName" class="text-danger"></span>
                                 </div>
                                 <div class="form-group col-sm">
                                   <label class="control-label">Customer Name</label>
-                                            <input asp-for="CustomerName" class="form-control" placeholder="Enter Customer Name" required="" onkeydown="validateNumericInput(event)" oninvalid="this.setCustomValidity('Please Enter Customer Name')" oninput="this.setCustomValidity('')" />
+                                            <input asp-for="CustomerName" class="form-control" placeholder="Enter Customer Name" required=""  oninput="this.setCustomValidity('')" />
                                     <span asp-validation-for="CustomerName" class="text-danger"></span>
                                 </div>
                             </div>
              <div class="row">
             <div class="form-group col-sm">
                 <label asp-for="Email" class="control-label"></label>
-                                            <input type="email" asp-for="Email" class="form-control" placeholder="Enter Email" required="" onkeydown="validateNumericInput(event)" oninvalid="this.setCustomValidity('Please Enter Email')" oninput="this.setCustomValidity('')" />
+                                            <input type="email" asp-for="Email" class="form-control" placeholder="Enter Email" required=""  oninvalid="this.setCustomValidity('Please Enter Email')" oninput="this.setCustomValidity('')" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             <div class="form-group col-sm">
                 <label class="control-label">Sales Person Name</label>
-                                            <input asp-for="SalesPersonName" class="form-control" placeholder="Enter Sales Person Name" required="" onkeydown="validateNumericInput(event)" oninvalid="this.setCustomValidity('Please Enter Sales Person Name')" oninput="this.setCustomValidity('')" />
+                                            <input asp-for="SalesPersonName" class="form-control" placeholder="Enter Sales Person Name" required=""  oninvalid="this.setCustomValidity('Please Enter Sales Person Name')" oninput="this.setCustomValidity('')" />
                 <span asp-validation-for="SalesPersonName" class="text-danger"></span>
             </div>
             </div>
              <div class="row">
                 <div class="form-group col-sm">
                    <label for="validationCustom0">Product Name</label>
-                                            @Html.DropDownListFor(model => model.ProductId, new SelectList(ViewBag.ProductDetails, "Value", "Text"), "-- Select Product --", new { @class = "form-control",onchange = "validateProduct(this)",oninvalid="this.setCustomValidity('Please select Product')" ,oninput="this.setCustomValidity('')",required="required" })
+                    @Html.DropDownListFor(model => model.ProductId, new SelectList(ViewBag.ProductDetails, "Value", "Text"), "-- Select Product --", new { @class = "form-control",onchange = "validateProduct(this)",oninvalid="this.setCustomValidity('Please select Product')" ,oninput="this.setCustomValidity('')",required="required" })
 
                      <span asp-validation-for="ProductId" class="text-danger"></span>
                     </div>
@@ -113,6 +113,17 @@
         } else {
             selectElement.setCustomValidity('');
         }
+    }
+    function validateNumericInput(event) {
+        if ([46, 8, 9, 27, 13].indexOf(event.keyCode) !== -1 ||
+            (event.keyCode == 65 && event.ctrlKey === true) ||
+            (event.keyCode >= 35 && event.keyCode <= 39)) {
+            return;
+        }
+        if ((event.shiftKey || (event.keyCode < 48 || event.keyCode > 57)) && (event.keyCode < 96 || event.keyCode > 105)) {
+            event.preventDefault();
+        }
+
     }
 </script>
 
