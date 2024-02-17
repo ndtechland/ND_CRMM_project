@@ -1292,6 +1292,7 @@
 </script>
 <script>
     $(document).ready(function () {
+        var grossValue = parseFloat($('#txtgross').val());
         $('#ddCustomerID').on('change', function (e) {
             debugger;
             $.ajax({
@@ -1301,9 +1302,12 @@
                 contentType: 'application/json; charset=utf-8',
                 success: function (response) {
                     debugger;
-
-                     $('#txtAmount').val(response.employeerTd.amount);
-                    $('#txtTdspercentage').val(response.employeerTd.tdspercentage);
+                    if(response.employeerTd.amount <= grossValue){
+                      var amounttds =  response.employeerTd.amount * response.employeerTd.tdspercentage/ 100;
+                         $('#txtAmount').val(amounttds);
+                    }
+                    
+                    $('#txtTdspercentage').val(response.employeerTd.tdspercentage) ;
                     $('#displayTdsPercentage').text(response.employeerTd.tdspercentage);
                     $('#txtTdspercentage').show();
                 },
@@ -1326,8 +1330,7 @@
                 for (var i = 0; i < response.data.length; i++) {
                     if (response.data[i].deductionCycle == "ESIC") {
                         $('#ESICMaster').val(response.data[i].epfNumber);
-                        if (grossValue < 21000) {
-                            console.log('Gross is less than 21000');
+                        if (response.data[i].employerContributionRate <= grossValue)  {
                             var esicMasterValue = grossValue * response.data[i].epfNumber / 100;
                             $('#ESICMaster').val(esicMasterValue);
                             $('#displayESICMaster').text(response.data[i].epfNumber);
@@ -1341,9 +1344,9 @@
                     }
                     else if (response.data[i].deductionCycle == "EPF") {
                         $('#txtEPFMaster').val(response.data[i].epfNumber);
-                        var basicValue = parseFloat($('#txtBasicSalary').val());
-                        var epfValue = basicValue * response.data[i].epfNumber / 100;
-                            $('#txtEPFMaster').val(epfValue);
+                        //var groValue = parseFloat($('#txtgross').val());
+                        var epfValue = response.data[i].employerContributionRate * response.data[i].epfNumber / 100;
+                        $('#txtEPFMaster').val(epfValue);
                         $('#displayEPFMaster').text(response.data[i].epfNumber);
                         $('#txtepfNumber').show();
                          
@@ -1363,26 +1366,21 @@
         function calesic()
         {
              var grossValue = parseFloat($('#txtgross').val());
-                    if (grossValue < 21000) {                        
-                            console.log('Gross is less than 21000');
-                            var esicMasterValue = grossValue * parseFloat($('#displayESICMaster').text()) / 100;
-                            $('#ESICMaster').val(esicMasterValue);
+             if (grossValue > 21000) {                        
+              var esicMasterValue = grossValue * parseFloat($('#displayESICMaster').text()) / 100;
+              $('#ESICMaster').val(esicMasterValue);
                     } else {
-                       $('#ESICMaster').val(0);
-                    }
+              $('#ESICMaster').val(0);
+              }
         }   
         
         function calepf()
         {
-                var basicValue = parseFloat($('#txtBasicSalary').val());
-        var epfValue = basicValue * parseFloat($('#displayEPFMaster').text()) / 100;
-                 $('#txtEPFMaster').val(epfValue);
-                    
-                     
-
+        var groValue = parseFloat($('#txtgross').val());
+        var epfValue = response.data[i].employerContributionRate * response.data[i].epfNumber / 100;
+         $('#txtEPFMaster').val(epfValue);               
         }
 </script>
-
 
 
 
