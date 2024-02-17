@@ -63,6 +63,8 @@ namespace CRM.Repository
         public Task<int> updateEmployer(EmployeerEpf model);
         public EmployeerTd tdsDetails(int CustomerId);
         public byte[] ImportToExcelAttendance(List<salarydetail> data);
+        public List<State> BindState();
+        public List<City> BindCity(int stateId);
         public Task<List<monthlysalaryExcel>> monthlysalaryReport(string customerId, int Month, int year, string WorkLocation);
     }
 }

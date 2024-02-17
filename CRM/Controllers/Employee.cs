@@ -1090,6 +1090,7 @@ namespace CRM.Controllers
             }
 
         }
+
         [HttpGet]
         [Route("/Employee/GenerateSalaryReport")]
         public IActionResult GenerateSalaryReport()
