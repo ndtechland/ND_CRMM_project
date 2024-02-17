@@ -1041,6 +1041,35 @@ namespace CRM.Repository
 
         }
 
+        public List<State> BindState()
+        {
+            List<State> lstState = new List<State>();
+            try
+            {
+                lstState = _context.States.ToList();
+            }
+            catch (Exception ex)
+            {
+                ex.ToString();
+            }
+            return lstState;
+        }
+
+        public List<City> BindCity(int stateId)
+        {
+            List<City> lstCity = new List<City>();
+            try
+            {
+         
+
+                lstCity = _context.Cities.Where(a => a.StateId == stateId).ToList();
+            }
+            catch (Exception ex)
+            {
+                ex.ToString();
+            }
+            return lstCity;
+       }     
         public async Task<List<monthlysalaryExcel>> monthlysalaryReport(string customerId, int Month, int year, string WorkLocation)
         {
             List<monthlysalaryExcel> emp = new List<monthlysalaryExcel>();
