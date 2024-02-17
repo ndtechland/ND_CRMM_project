@@ -1088,7 +1088,7 @@ namespace CRM.Controllers
             }
 
         }
-        [Route("/Employee/GenerateSalaryReport")]
+        //[Route("/Employee/GenerateSalaryReport")]
         public IActionResult GenerateSalaryReport()
         {
             try

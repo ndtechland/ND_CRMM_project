@@ -22,6 +22,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<BillingDetail> BillingDetails { get; set; } = null!;
         public virtual DbSet<BillingHistory> BillingHistories { get; set; } = null!;
         public virtual DbSet<Category> Categories { get; set; } = null!;
+        public virtual DbSet<City> Cities { get; set; } = null!;
         public virtual DbSet<CustomerRegistration> CustomerRegistrations { get; set; } = null!;
         public virtual DbSet<DateFormatMaster> DateFormatMasters { get; set; } = null!;
         public virtual DbSet<DeductorNameMaster> DeductorNameMasters { get; set; } = null!;
@@ -48,6 +49,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<Payroll> Payrolls { get; set; } = null!;
         public virtual DbSet<ProductMaster> ProductMasters { get; set; } = null!;
         public virtual DbSet<Quation> Quations { get; set; } = null!;
+        public virtual DbSet<State> States { get; set; } = null!;
         public virtual DbSet<StateMaster> StateMasters { get; set; } = null!;
         public virtual DbSet<TErrorLog> TErrorLogs { get; set; } = null!;
         public virtual DbSet<TaxDeductor> TaxDeductors { get; set; } = null!;
@@ -178,6 +180,16 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.CategoryName).HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<City>(entity =>
+            {
+                entity.Property(e => e.City1)
+                    .HasMaxLength(255)
+                    .IsUnicode(false)
+                    .HasColumnName("city");
+
+                entity.Property(e => e.StateId).HasColumnName("State_id");
             });
 
             modelBuilder.Entity<CustomerRegistration>(entity =>
@@ -857,6 +869,14 @@ namespace CRM.Models.Crm
                     .HasColumnName("Sales_Person_Name");
 
                 entity.Property(e => e.Subject).HasMaxLength(255);
+            });
+
+            modelBuilder.Entity<State>(entity =>
+            {
+                entity.Property(e => e.SName)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("S_Name");
             });
 
             modelBuilder.Entity<StateMaster>(entity =>

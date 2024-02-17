@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using System.Net;
+//using System.Web.Http;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace CRM.Controllers
@@ -775,6 +777,37 @@ namespace CRM.Controllers
             return Json(new List<SelectListItem>());
         }
 
+
+        [HttpGet]
+        public List<State> BindStateDetails(int CountryId)
+        {
+
+            List<State> stateDetail = new List<State>();
+            try
+            {
+                stateDetail = _ICrmrpo.BindState();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+            return stateDetail;
+        }
+        [HttpGet]
+        public List<City> BindCityDetails(int stateId)
+        {
+            List<City> cityDetail = new List<City>();
+            try
+            {
+                cityDetail = _ICrmrpo.BindCity(stateId);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return cityDetail;
+        }
     }
 
 }
