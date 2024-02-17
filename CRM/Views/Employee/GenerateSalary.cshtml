@@ -42,6 +42,9 @@
                         <div class="card">
                             <div class="card-body">
                                 <div style="text-align: right;">
+                                    <button type="button" class="btn btn-primary" id="downloadButton" style="color: black; border: 2px solid black;" onclick="MonthlyExcelfn()">
+                                        Monthly Report
+                                    </button>
                                     <button type="submit" class="btn btn-primary" style="color: black; border: 2px solid black;" onclick="return generateInvoice()">
                                         <i class="fa fa-plus"></i> Generate Invoice
                                     </button>
@@ -338,3 +341,29 @@ function validateForm() {
        
     }       
 </script>
+<script>
+    function MonthlyExcelfn() {
+        var customerId = document.getElementById("CustomerID").value;
+        var workLocation = document.getElementById("LocationID").value;
+        var Month = document.getElementById('Month').value;
+        var Year = document.getElementById('Year').value;
+        if (customerId === '') {
+            alert("Please select Company.");
+            return false;
+        }
+        if (workLocation === '') {
+            alert("Please select WorkLocation.");
+            return false;
+        }
+        if (Month === '') {
+            alert("Please select Month.");
+            return false;
+        }
+        if (Year === '') {
+            alert("Please select Year.");
+            return false;
+        }
+        window.location.href = '/Employee/MonthlysalaryReport?customerId=' + customerId + '&WorkLocation=' + workLocation + '&Month=' + Month + '&Year=' + Year;
+    } 
+</script>
+

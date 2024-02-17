@@ -17,6 +17,7 @@ using System.Drawing;
 using Syncfusion.Drawing;
 using ClosedXML.Excel;
 using Humanizer;
+using Org.BouncyCastle.Asn1.X509;
 
 
 namespace CRM.Repository
@@ -1068,6 +1069,80 @@ namespace CRM.Repository
                 ex.ToString();
             }
             return lstCity;
+       }     
+        public async Task<List<monthlysalaryExcel>> monthlysalaryReport(string customerId, int Month, int year, string WorkLocation)
+        {
+            List<monthlysalaryExcel> emp = new List<monthlysalaryExcel>();
+            try
+            {
+                SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
+                SqlCommand cmd = new SqlCommand("sp_monthlySalaryreport", con);
+                cmd.Parameters.Add(new SqlParameter("@CustomerID", SqlDbType.Int) { Value = Convert.ToInt32(customerId) });
+                cmd.Parameters.Add(new SqlParameter("@WorkLocation", SqlDbType.Int) { Value = Convert.ToInt32(WorkLocation) });
+                cmd.Parameters.Add(new SqlParameter("@Month", SqlDbType.Int) { Value = Convert.ToInt32(Month) });
+                cmd.Parameters.Add(new SqlParameter("@year", SqlDbType.Int) { Value = Convert.ToInt32(year) });
+                cmd.CommandType = CommandType.StoredProcedure;
+                con.Open();
+                SqlDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    var emps = new monthlysalaryExcel()
+                    {
+                        FirstName = rdr["FirstName"] == DBNull.Value ? null : Convert.ToString(rdr["FirstName"]),
+                        CustomerName = rdr["CustomerName"] == DBNull.Value ? null : Convert.ToString(rdr["CustomerName"]),
+                        MiddleName = rdr["MiddleName"] == DBNull.Value ? null : Convert.ToString(rdr["MiddleName"]),
+                        LastName = rdr["LastName"] == DBNull.Value ? null : Convert.ToString(rdr["LastName"]),
+                        DateOfJoining = rdr["DateOfJoining"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(rdr["DateOfJoining"]),
+                        WorkEmail = rdr["WorkEmail"] == DBNull.Value ? null : Convert.ToString(rdr["WorkEmail"]),
+                        Gender = rdr["Gender"] == DBNull.Value ? null : Convert.ToString(rdr["Gender"]),
+                        WorkLocation = rdr["WorkLocation"] == DBNull.Value ? null : Convert.ToString(rdr["WorkLocation"]),
+                        DesignationName = rdr["DesignationName"] == DBNull.Value ? null : Convert.ToString(rdr["DesignationName"]),
+                        DepartmentName = rdr["DepartmentName"] == DBNull.Value ? null : Convert.ToString(rdr["DepartmentName"]),
+                        Emp_Reg_ID = rdr["Emp_Reg_ID"] == DBNull.Value ? null : Convert.ToString(rdr["Emp_Reg_ID"]),
+                        AnnualCTC = rdr["AnnualCTC"] == DBNull.Value ? 0.0m : Convert.ToDecimal(rdr["AnnualCTC"]),
+                        Basic = rdr["Basic"] == DBNull.Value ? 0.0m : Convert.ToDecimal(rdr["Basic"]),
+                        HouseRentAllowance = rdr["HouseRentAllowance"] == DBNull.Value ? 0.0m : Convert.ToDecimal(rdr["HouseRentAllowance"]),
+                        TravellingAllowance = rdr["TravellingAllowance"] == DBNull.Value ? 0.0m : Convert.ToDecimal(rdr["TravellingAllowance"]),
+                        ESIC = rdr["ESIC"] == DBNull.Value ? 0.0m : Convert.ToDecimal(rdr["ESIC"]),
+                        EPF = rdr["EPF"] == DBNull.Value ? 0.0m : Convert.ToDecimal(rdr["EPF"]),
+                        MonthlyGrossPay = rdr["MonthlyGrossPay"] == DBNull.Value ? 0.0m : Convert.ToDecimal(rdr["MonthlyGrossPay"]),
+                        MonthlyCTC = rdr["MonthlyCTC"] == DBNull.Value ? 0.0m : Convert.ToDecimal(rdr["MonthlyCTC"]),
+                        SpecialAllowance = rdr["SpecialAllowance"] == DBNull.Value ? 0.0m : Convert.ToDecimal(rdr["SpecialAllowance"]),
+                        gross = rdr["gross"] == DBNull.Value ? 0.0m : Convert.ToDecimal(rdr["gross"]),
+                        PersonalEmailAddress = rdr["PersonalEmailAddress"] == DBNull.Value ? null : Convert.ToString(rdr["PersonalEmailAddress"]),
+                        Mobile = rdr["Mobile"] == DBNull.Value ? null : Convert.ToString(rdr["Mobile"]),
+                        DateOfBirth = rdr["DateOfBirth"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(rdr["DateOfBirth"]),
+                        Age = rdr["Age"] == DBNull.Value ? 0 : Convert.ToInt32(rdr["Age"]),
+                        FatherName = rdr["FatherName"] == DBNull.Value ? null : Convert.ToString(rdr["FatherName"]),
+                        PAN = rdr["PAN"] == DBNull.Value ? null : Convert.ToString(rdr["PAN"]),
+                        AddressLine1 = rdr["AddressLine1"] == DBNull.Value ? null : Convert.ToString(rdr["AddressLine1"]),
+                        AddressLine2 = rdr["AddressLine2"] == DBNull.Value ? null : Convert.ToString(rdr["AddressLine2"]),
+                        City = rdr["City"] == DBNull.Value ? null : Convert.ToString(rdr["City"]),
+                        State = rdr["State"] == DBNull.Value ? null : Convert.ToString(rdr["State"]),
+                        Pincode = rdr["Pincode"] == DBNull.Value ? null : Convert.ToString(rdr["Pincode"]),
+                        AccountHolderName = rdr["AccountHolderName"] == DBNull.Value ? null : Convert.ToString(rdr["AccountHolderName"]),
+                        BankName = rdr["BankName"] == DBNull.Value ? null : Convert.ToString(rdr["BankName"]),
+                        AccountNumber = rdr["AccountNumber"] == DBNull.Value ? null : Convert.ToString(rdr["AccountNumber"]),
+                        ReEnterAccountNumber = rdr["ReEnterAccountNumber"] == DBNull.Value ? null : Convert.ToString(rdr["ReEnterAccountNumber"]),
+                        IFSC = rdr["Ifsc"] == DBNull.Value ? null : Convert.ToString(rdr["Ifsc"]),
+                        AccountType = rdr["AccountType"] == DBNull.Value ? null : Convert.ToString(rdr["AccountType"]),
+                        EPF_Number = rdr["EPF_Number"] == DBNull.Value ? null : Convert.ToString(rdr["EPF_Number"]),
+                        Deduction_Cycle = rdr["Deduction_Cycle"] == DBNull.Value ? null : Convert.ToString(rdr["Deduction_Cycle"]),
+                        Employee_Contribution_Rate = rdr["Employee_Contribution_Rate"] == DBNull.Value ? null : Convert.ToString(rdr["Employee_Contribution_Rate"]),
+                        nominee = rdr["nominee"] == DBNull.Value ? null : Convert.ToString(rdr["nominee"]),
+                        
+                        //netpayment = rdr["netpayment"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["netpayment"]),
+                    };
+
+                    emp.Add(emps);
+
+                }
+                return emp;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 
