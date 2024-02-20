@@ -895,7 +895,7 @@ namespace CRM.Repository
             parameter.Add(new SqlParameter("@Start_date", model.StartDate));
             parameter.Add(new SqlParameter("@Renew_Date", model.RenewDate));
             parameter.Add(new SqlParameter("@State", model.State));
-            parameter.Add(new SqlParameter("@stateId", model.State));
+            parameter.Add(new SqlParameter("@stateId", model.StateId));
             var result = await _context.Database.ExecuteSqlRawAsync(@"exec sp_updateCustomer_Reg @id,@Company_Name, @Work_Location,@Mobile_number,@Alternate_number,@Email,@GST_Number,@Billing_Address,@Product_Details,@Start_date,@Renew_Date,@State,@stateId", parameter.ToArray());
             return result;
         }

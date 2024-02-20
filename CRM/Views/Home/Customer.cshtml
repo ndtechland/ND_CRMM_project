@@ -176,7 +176,7 @@
                                             <label for="validationCustom0">Mobile Number</label>
                                             <div class="input-group">
                                                 <span class="input-group-text" id="basic-addon1">+91</span>
-                                                <input type="tel" asp-for="MobileNumber" id="MobileNumber" placeholder="Enter MobileNumber" class="form-control" minlength="10" maxlength="10" onkeydown="validateNumericInput(event)" required="" oninvalid="this.setCustomValidity('Please Enter MobileNumber')" oninput="this.setCustomValidity('')" />
+                                                <input type="tel" asp-for="MobileNumber" id="MobileNumber" placeholder="Enter MobileNumber" class="form-control" minlength="10" maxlength="10" onkeydown="validateNumericInput(event)" required="" oninvalid="this.setCustomValidity('Please Enter MobileNumber')" oninput="this.setCustomValidity('')" autocomplete="off"/>
                                             </div>
                                             <span asp-validation-for="MobileNumber" class="text-danger"></span>
                                         </div>
@@ -300,7 +300,7 @@
                 if('@ViewBag.state' != null)
                 {
                     $('#State').val('@ViewBag.state');
-                     $('#State').trigger('change');
+                     //$('#State').trigger('change');
                 }
             }
             setTimeout(mess,1000); 
@@ -455,7 +455,7 @@
 <script>
     $(document).ready(function () {
         var ddlState = $('#ddlState');
-        ddlState.append($("<option></option>").val('').html('-- Please Select State --'));
+        //ddlState.append($("<option></option>").val('').html('-- Please Select State --'));
         var selectedStateId = parseInt('@ViewBag.SelectedStateId');
         $('#stateid').val(selectedStateId);       
         $.ajax({
