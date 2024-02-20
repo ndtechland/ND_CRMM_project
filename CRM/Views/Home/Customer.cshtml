@@ -148,7 +148,9 @@
                                         <div class="form-group col-sm">
                                             <label class="control-label">State Name</label>
                                             <div>
-                                                <select class="form-control" name="StateId" id="ddlState"></select>
+                                                <select class="form-control" name="StateId" id="ddlState">
+                                                    <option value="">-- Please Select State --</option>
+                                                </select>
                                                 @*<select class="form-control" name="StateId" id="ddlState">
                                                     <option value="">-- Select State --</option>
                                                     @foreach (var state in ViewBag.States as IEnumerable<SelectListItem>)
