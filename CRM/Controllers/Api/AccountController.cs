@@ -9,7 +9,7 @@ using Microsoft.TeamFoundation.Common;
 
 namespace CRM.Controllers.Api
 {
-    //[Route("api/[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class AccountController : ControllerBase
     {
@@ -20,7 +20,7 @@ namespace CRM.Controllers.Api
             this._apiAccount = apiAccount;
             this._context = context;
         }
-        [Route("Account/Login")]
+        [Route("Login")]
         [HttpPost]
         public async Task<IActionResult> Login(LoginDTO model)
         {
