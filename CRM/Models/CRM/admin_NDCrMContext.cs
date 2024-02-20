@@ -55,6 +55,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<TaxDeductor> TaxDeductors { get; set; } = null!;
         public virtual DbSet<TransactionDetail> TransactionDetails { get; set; } = null!;
         public virtual DbSet<WorkLocation> WorkLocations { get; set; } = null!;
+        public virtual DbSet<WorkLocation1> WorkLocations1 { get; set; } = null!;
         public virtual DbSet<EmployeeImportExcel> EmpMultiforms { get; set; } = null!;
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -233,6 +234,8 @@ namespace CRM.Models.Crm
                     .HasColumnName("Start_date");
 
                 entity.Property(e => e.State).HasMaxLength(255);
+
+                entity.Property(e => e.StateId).HasColumnName("stateId");
 
                 entity.Property(e => e.WorkLocation)
                     .HasMaxLength(255)
@@ -482,6 +485,8 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.MiddleName)
                     .HasMaxLength(120)
                     .HasColumnName("Middle_Name");
+
+                entity.Property(e => e.RoleId).HasColumnName("RoleID");
 
                 entity.Property(e => e.WorkEmail)
                     .HasMaxLength(120)
@@ -986,6 +991,25 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.Commissoninpercentage)
                     .HasColumnType("decimal(18, 2)")
                     .HasColumnName("commissoninpercentage");
+            });
+
+            modelBuilder.Entity<WorkLocation1>(entity =>
+            {
+                entity.ToTable("WorkLocation");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.CityId).HasColumnName("CityID");
+
+                entity.Property(e => e.Commissoninpercentage)
+                    .HasColumnType("decimal(18, 0)")
+                    .HasColumnName("commissoninpercentage");
+
+                entity.Property(e => e.Createdate)
+                    .HasColumnType("datetime")
+                    .HasColumnName("createdate");
+
+                entity.Property(e => e.StateId).HasColumnName("stateId");
             });
 
             OnModelCreatingPartial(modelBuilder);

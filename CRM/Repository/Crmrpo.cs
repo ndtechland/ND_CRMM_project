@@ -99,16 +99,58 @@ namespace CRM.Repository
             parameter.Add(new SqlParameter("@Start_date", model.StartDate));
             parameter.Add(new SqlParameter("@Renew_Date", model.RenewDate));
             parameter.Add(new SqlParameter("@State", model.State));
+            parameter.Add(new SqlParameter("@stateId", model.StateId));
 
             var result = await Task.Run(() => _context.Database
-           .ExecuteSqlRawAsync(@"exec CustomerRegistration @Company_Name, @Work_Location,@Mobile_number,@Alternate_number,@Email,@GST_Number,@Billing_Address,@Product_Details,@Start_date,@Renew_Date,@State", parameter.ToArray()));
+           .ExecuteSqlRawAsync(@"exec CustomerRegistration @Company_Name, @Work_Location,@Mobile_number,@Alternate_number,@Email,@GST_Number,@Billing_Address,@Product_Details,@Start_date,@Renew_Date,@State,@stateId", parameter.ToArray()));
 
             return result;
         }
-        public async Task<List<CustomerRegistration>> CustomerList()
+        public async Task<List<Customer>> CustomerList()
         {
-            var result = await _context.CustomerRegistrations.FromSqlRaw<CustomerRegistration>("Customerlist").ToListAsync();
-            return result;
+            List<Customer> cs = new List<Customer>();
+            try
+            {
+                SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
+                SqlCommand cmd = new SqlCommand("Customerlist", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                con.Open();
+                SqlDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    var cse = new Customer()
+                    {
+                        Id = Convert.ToInt32(rdr["id"]),
+                        CompanyName = rdr["Company_Name"] == DBNull.Value ? null : Convert.ToString(rdr["Company_Name"]),
+                        WorkLocation = rdr["Work_Location"] == DBNull.Value ? null : new string[] { Convert.ToString(rdr["Work_Location"]) },
+                        MobileNumber = rdr["Mobile_number"] == DBNull.Value ? "0" : Convert.ToString(rdr["Mobile_number"]),
+                        AlternateNumber = rdr["Alternate_number"] == DBNull.Value ? "0" : Convert.ToString(rdr["Alternate_number"]),
+                        Email = rdr["Email"] == DBNull.Value ? "0" : Convert.ToString(rdr["Email"]),
+                        GstNumber = rdr["GST_Number"] == DBNull.Value ? "0" : Convert.ToString(rdr["GST_Number"]),
+                        BillingAddress = rdr["Billing_Address"] == DBNull.Value ? "0" : Convert.ToString(rdr["Billing_Address"]),
+                        ProductDetails = rdr["Product_Details"] == DBNull.Value ? "0" : Convert.ToString(rdr["Product_Details"]),
+                        StartDate = rdr["Start_date"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(rdr["Start_date"]),
+                        RenewDate = rdr["Renew_Date"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(rdr["Renew_Date"]),
+                        State = rdr["State"] == DBNull.Value ? null : Convert.ToString(rdr["State"]),
+                        StateName = rdr["statename"] == DBNull.Value ? null : Convert.ToString(rdr["statename"]),
+
+                    };
+
+                    cs.Add(cse);
+                }
+                return cs;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                cs = null;
+            }
+            //List<Customer> cs = new List<Customer>();
+            //var result = await _context.CustomerRegistrations.FromSqlRaw<Customer>("Customerlist").ToListAsync();
+            //return result;
         }
         public async Task<int> EmpRegistration(EmpMultiform model, string Mode, string Emp_Reg_ID)
         {
@@ -702,20 +744,21 @@ namespace CRM.Repository
             }
 
         }
-        public WorkLocation GetWorkLocationById(int id)
+        public WorkLocation1 GetWorkLocationById(int id)
         {
-            return _context.WorkLocations.Find(id);
+            return _context.WorkLocations1.Find(id);
         }
-        public async Task<int> updateWorkLocation(WorkLocation model)
+        public async Task<int> updateWorkLocation(WorkLocation1 model)
         {
             var parameter = new List<SqlParameter>();
             parameter.Add(new SqlParameter("@id", model.Id));
-            parameter.Add(new SqlParameter("@AddressLine", model.AddressLine1));
+            parameter.Add(new SqlParameter("@CityID", model.CityId));
+            parameter.Add(new SqlParameter("@stateId", model.StateId));
             parameter.Add(new SqlParameter("@Commissoninpercentage", model.Commissoninpercentage));
 
 
             var result = await Task.Run(() => _context.Database
-           .ExecuteSqlRawAsync(@"exec sp_updateWorkLocation @id,@AddressLine,@Commissoninpercentage", parameter.ToArray()));
+           .ExecuteSqlRawAsync(@"exec sp_updateWorkLocation @id,@CityID,@stateId,@Commissoninpercentage", parameter.ToArray()));
 
             return result;
         }
@@ -778,6 +821,7 @@ namespace CRM.Repository
                         StartDate = (DateTime)(rdr["Start_date"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(rdr["Start_date"])),
                         RenewDate = (DateTime)(rdr["Renew_Date"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(rdr["Renew_Date"])),
                         State = rdr["State"] == DBNull.Value ? null : Convert.ToString(rdr["State"]),
+                        StateId = rdr["stateId"] == DBNull.Value ? (int?)null : Convert.ToInt32(rdr["stateId"]),
                     };
                 }
                 return cs;
@@ -824,7 +868,8 @@ namespace CRM.Repository
             parameter.Add(new SqlParameter("@Start_date", model.StartDate));
             parameter.Add(new SqlParameter("@Renew_Date", model.RenewDate));
             parameter.Add(new SqlParameter("@State", model.State));
-            var result = await _context.Database.ExecuteSqlRawAsync(@"exec sp_updateCustomer_Reg @id,@Company_Name, @Work_Location,@Mobile_number,@Alternate_number,@Email,@GST_Number,@Billing_Address,@Product_Details,@Start_date,@Renew_Date,@State", parameter.ToArray());
+            parameter.Add(new SqlParameter("@stateId", model.State));
+            var result = await _context.Database.ExecuteSqlRawAsync(@"exec sp_updateCustomer_Reg @id,@Company_Name, @Work_Location,@Mobile_number,@Alternate_number,@Email,@GST_Number,@Billing_Address,@Product_Details,@Start_date,@Renew_Date,@State,@stateId", parameter.ToArray());
             return result;
         }
 
@@ -1060,8 +1105,6 @@ namespace CRM.Repository
             List<City> lstCity = new List<City>();
             try
             {
-         
-
                 lstCity = _context.Cities.Where(a => a.StateId == stateId).ToList();
             }
             catch (Exception ex)

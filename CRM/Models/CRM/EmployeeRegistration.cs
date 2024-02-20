@@ -18,5 +18,6 @@ namespace CRM.Models.Crm
         public bool? IsDeleted { get; set; }
         public int? CustomerId { get; set; }
         public string? EmployeeId { get; set; }
+        public int? RoleId { get; set; }
     }
 }

@@ -2,6 +2,9 @@
 using CRM.Models.Crm;
 using CRM.Models.DTO;
 using CRM.Repository;
+using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.InkML;
+using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -40,53 +43,53 @@ namespace CRM.Controllers
         }
         [Route("Home/Customer")]
         [HttpGet]
-        public IActionResult Customer(int id=0)
+        public IActionResult Customer(int id = 0)
         {
-
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                if(id !=0)
+                string AddedBy = HttpContext.Session.GetString("UserName");
+
+                if (id != 0)
                 {
+                    ViewBag.UserName = AddedBy;
                     var data = _ICrmrpo.GetCustomerById(id);
-                    if(data != null)
-                    {
-                        ViewBag.ProductDetails = _context.ProductMasters.Select(p => new SelectListItem
-                        {
-                            Value = p.Id.ToString(),
-                            Text = p.ProductName,
-                        }).ToList();
-                        ViewBag.WorkLocations = _context.WorkLocations.Select(p => new SelectListItem
-                        {
-                            Value = p.Id.ToString(),
-                            Text = p.AddressLine1
-                        }).ToList();
+                    if (data != null)
+                    {                        
+                        ViewBag.ProductDetails = _context.ProductMasters
+                            .Select(p => new SelectListItem
+                            {
+                                Value = p.Id.ToString(),
+                                Text = p.ProductName,
+                            })
+                            .ToList();
+                        ViewBag.SelectedStateId = data.StateId;
+                        ViewBag.SelectedCityId = data.WorkLocation;
                         ViewBag.state = data.State;
                         ViewBag.startDate = ((DateTime)data.StartDate).ToString("yyyy-MM-dd");
                         ViewBag.renewDate = ((DateTime)data.RenewDate).ToString("yyyy-MM-dd");
                         return View(data);
                     }
                 }
-                //var emp = new Customer();
-                string AddedBy = HttpContext.Session.GetString("UserName");
                 ViewBag.UserName = AddedBy;
-                ViewBag.ProductDetails = _context.ProductMasters.Select(p => new SelectListItem
-              {
-                  Value = p.Id.ToString(),
-                  Text = p.ProductName,                 
-              }).ToList();
-                ViewBag.WorkLocations = _context.WorkLocations.Select(p => new SelectListItem
-              {
-                  Value = p.Id.ToString(),
-                  Text = p.AddressLine1
-              }).ToList();      
-                return View();               
+                ViewBag.SelectedStateId = null;
+                ViewBag.SelectedCityId = null;
+                ViewBag.ProductDetails = _context.ProductMasters
+                    .Select(p => new SelectListItem
+                    {
+                        Value = p.Id.ToString(),
+                        Text = p.ProductName,
+                    })
+                    .ToList();
+                return View();
             }
-
             else
             {
                 return RedirectToAction("Login", "Admin");
             }
         }
+
+
+
         [HttpPost]
         public async Task<IActionResult> Customer(Customer model )
         {
@@ -419,16 +422,19 @@ namespace CRM.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> WorkLocation(WorkLocation model)
+        public async Task<IActionResult> WorkLocation(WorkLocation1 model)
         {
             if (model != null)
             {
-                WorkLocation master = new WorkLocation
+                WorkLocation1 master = new WorkLocation1
                 {
-                    AddressLine1 = model.AddressLine1,
+                    StateId = model.StateId,
+                    CityId = model.CityId,
+                    Createdate = DateTime.Now.Date,
+                    Isactive = true,
                     Commissoninpercentage=model.Commissoninpercentage,
                 };
-                _context.WorkLocations.Add(master);
+                _context.WorkLocations1.Add(master);
                 _context.SaveChanges();
                 return RedirectToAction("WorkLocationlist");
             }
@@ -445,10 +451,22 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                var response = _context.WorkLocations.ToList();
+                var result = from wl in _context.WorkLocations1
+                             join ct in _context.Cities on wl.CityId equals ct.Id into cityGroup
+                             from city in cityGroup.DefaultIfEmpty()
+                             join st in _context.States on wl.StateId equals st.Id into stateGroup
+                             from state in stateGroup.DefaultIfEmpty()
+                             select new WorkLocationDTO
+                             {
+                                 Id = wl.Id,
+                                 State = state.SName,
+                                 City = city.City1,
+                                 Commissoninpercentage =Convert.ToInt32(wl.Commissoninpercentage)
+                             };
+
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 ViewBag.UserName = AddedBy;
-                return View(response);
+                return View(result);
 
             }
             else
@@ -570,10 +588,11 @@ namespace CRM.Controllers
 
         public JsonResult EditWorkLocation(int id)
         {
-            var loc = new WorkLocation();
+            var loc = new WorkLocation1();
             var data = _ICrmrpo.GetWorkLocationById(id);
             loc.Id = data.Id;
-            loc.AddressLine1 = data.AddressLine1;
+            loc.CityId = data.CityId;
+            loc.StateId = data.StateId;
             loc.Commissoninpercentage = data.Commissoninpercentage;
            
             var result = new
@@ -583,7 +602,7 @@ namespace CRM.Controllers
             return new JsonResult(result);
         }
         [HttpPost]
-        public async Task<IActionResult> EditWorkLocation(WorkLocation model)
+        public async Task<IActionResult> EditWorkLocation(WorkLocation1 model)
         {
             try
             {
@@ -807,7 +826,8 @@ namespace CRM.Controllers
                 throw new Exception(ex.Message);
             }
             return cityDetail;
-        }
+        }   
+
     }
 
 }

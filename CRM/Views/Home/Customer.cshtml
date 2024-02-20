@@ -5,6 +5,8 @@
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
 <head>
+<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-css/1.4.6/select2-bootstrap.min.css">
@@ -143,11 +145,30 @@
                                             <input asp-for="CompanyName" id="CompanyName" placeholder="Enter CompanyName" class="form-control" required="" oninvalid="this.setCustomValidity('Please Enter CompanyName')" oninput="this.setCustomValidity('')" />
                                             <span asp-validation-for="CompanyName" class="text-danger"></span>
                                         </div>
-                                        <div class="form-group  col-sm ">
-                                            <label for="validationCustom0">Work Location</label>
-                                            @Html.DropDownListFor(model => model.WorkLocation, new MultiSelectList(ViewBag.WorkLocations, "Value", "Text"), "-- Select WorkLocation --", new { @class = "form-control js-select2",@multiple="multiple",name="WorkLocation",id="WorkLocation",onchange = "validateWorkLocation(this)",oninvalid="this.setCustomValidity('Please select WorkLocation')" ,oninput="this.setCustomValidity('')",@autocomplete="off" })
+                                        <div class="form-group col-sm">
+                                            <label class="control-label">State Name</label>
+                                            <div>
+                                                <select class="form-control" name="StateId" id="ddlState"></select>
+                                                @*<select class="form-control" name="StateId" id="ddlState">
+                                                    <option value="">-- Select State --</option>
+                                                    @foreach (var state in ViewBag.States as IEnumerable<SelectListItem>)
+                                                    {
+                                                        <option value="@state.Value">@state.Text</option>
+                                                    }
+                                                </select>*@
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group col-sm">
+                                            <label for="validationCustom0">City Name</label>
+                                                <div>
+                                                    <select class="form-control js-select2" multiple="multiple" name="WorkLocation" id="ddlCity" onchange="validateWorkLocation(this)" oninvalid="this.setCustomValidity('Please select WorkLocation')" oninput="this.setCustomValidity('')" autocomplete="off">
+                                                        <option value="">-- Select City Name --</option>
+                                                    </select>
+                                                </div>
                                             <span asp-validation-for="WorkLocation" class="text-danger"></span>
                                         </div>
+
                                     </div>
                                     <div class="row">
                                         <div class="form-group col-sm">
@@ -260,14 +281,16 @@
     <input hidden type="text" id="sGST" value="" />
     <input hidden type="text" id="hsnSacCode" value="" />
     <input hidden type="text" id="price" value="" />
+    <input hidden type="text" id="stateid" />
+    <input type="hidden" id="cityId" />
 </div>
 <!-- Add this in the head section of your HTML -->
+
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.2.1/js/bootstrap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/js/select2.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
-@section scripts {
-}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/js/select2.min.js" defer></script>
+
 
 <script>
         $(document).ready(function () {
@@ -276,16 +299,24 @@
                 if('@ViewBag.state' != null)
                 {
                     $('#State').val('@ViewBag.state');
-                    //onProductChange();
                      $('#State').trigger('change');
                 }
             }
             setTimeout(mess,1000); 
         });
  </script>
+<script>
+    $(document).ready(function () {
+        var selectedStateId = @Html.Raw(Json.Serialize(ViewBag.States));
+        var ddlState = $("#ddlState");
 
+        ddlState.val(selectedStateId);
 
-
+        if (selectedStateId) {
+            ddlState.trigger('change');
+        }
+    });
+</script>
 <script>
         $(document).ready(function () {
             $('#State').change(function () {
@@ -325,11 +356,13 @@
                     $('#IGST').val('');
                 $('#State').val('');
                     if (response) {
+                        if(response.data!=null){
                         $('#cGST').val(response.data.cgst);
                         $('#iGST').val(response.data.igst);
                         $('#sGST').val(response.data.scgst);
                         $('#hsnSacCode').val(response.data.hsnSacCode);
                         $('#price').val(response.data.price);
+                        }
                     }
                     else {
                         alert('Data not found');
@@ -373,7 +406,7 @@
             var selectedValues = Array.from(selectElement.selectedOptions, option => option.value);
 
             if (selectedValues.length === 0) {
-                selectElement.setCustomValidity('Please select WorkLocation');
+                selectElement.setCustomValidity('-- Select City Name --');
             } else {
                 selectElement.setCustomValidity('');
             }
@@ -382,53 +415,91 @@
 <script>
         function validateState(selectElement) {
             if (selectElement.value === "") {
-                selectElement.setCustomValidity('Please select State');
+                selectElement.setCustomValidity('-- Please select State --');
             } else {
                 selectElement.setCustomValidity('');
             }
         }
-    </script>
-    <script type="text/javascript">
-        $(".js-select2").select2({
-            closeOnSelect: false,
-            placeholder: "--Select WorkLocation--",
-            allowClear: true,
-            tags: true,
-        }).on('change', function (e) {
-            var selectedValues = $(this).text();
-            $('#WorkLocation').text('Selected Values: ' + selectedValues.join(', '));
-        });
-    </script>
-    <script>
-        var workLocations = @Html.Raw(Json.Serialize(Model != null && Model.WorkLocation != null ? Model.WorkLocation : null));
-    var worklocName = '@Html.Raw(Json.Serialize(ViewBag.WorkLocations))'
+</script>
+<script>
+    var workLocations = @Html.Raw(Json.Serialize(Model != null && Model.WorkLocation != null ? Model.WorkLocation : null));
+    var worklocName = '@Html.Raw(Json.Serialize(ViewBag.SelectedCityId))';
     var jsList = JSON.parse(worklocName);
     var selectedTextName = '';
-    for (var i = 0; i < workLocations.length; i++) {
-        for (var j = 0; j < jsList.length; j++) {
-            if (workLocations[i] == jsList[j].value)
-            {
-                    if (selectedTextName == '') 
-                    {
-                    //$('#WorkLocation').next('.select2-container').find('.select2-selection__rendered').text(selectedTextName);
-                        selectedTextName += jsList[i].text;
+
+    if (workLocations && Array.isArray(workLocations)) {
+        for (var i = 0; i < workLocations.length; i++) {
+            for (var j = 0; j < jsList.length; j++) {
+                if (workLocations[i] == jsList[j].value) {
+                    if (selectedTextName === '') {
+                        selectedTextName += jsList[j].text;
                     } else {
-                        selectedTextName = selectedTextName + ', ' + jsList[i].text;
+                        selectedTextName = selectedTextName + ', ' + jsList[j].text;
                     }
-               
                 }
             }
         }
-    
-        $(document).ready(function () {
-            $('.js-select2').val(workLocations);
-            $('.js-select2').trigger('change');
-            var selectedText = workLocations ? workLocations.join(', ') : '';
-            $('#WorkLocation').next('.select2-container').find('.select2-selection__rendered').attr('title', selectedText);
-        $('#WorkLocation').next('.select2-container').find('.select2-selection__rendered').text(selectedTextName);
+    }
+     
+    $(document).ready(function () {
+        var ddlWorkLocation = $('#ddlCity');
+        ddlWorkLocation.select2({
+            closeOnSelect: false,
+            placeholder: "-- Select City --",
+            allowClear: true,
+            tags: true
         });
-    </script>
-  
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        var ddlState = $('#ddlState');
+        ddlState.append($("<option></option>").val('').html('-- Please Select State --'));
+        var selectedStateId = parseInt('@ViewBag.SelectedStateId');
+        $('#stateid').val(selectedStateId);       
+        $.ajax({
+            url: '/Home/BindStateDetails',
+            type: 'GET',
+            dataType: 'json',
+            success: function (states) {
+                $.each(states, function (i, state) {
+                    ddlState.append($("<option></option>").val(state.id).html(state.sName));
+                });
+                ddlState.val($('#stateid').val());
+            },
+            error: function () {
+                alert('Error loading states!');
+            }
+        });
+        $("#ddlState").change(function () {
+            var selectedStateId = parseInt($(this).val());
+
+            if (!isNaN(selectedStateId)) {
+                $.ajax({
+                    url: '/Home/BindCityDetails',
+                    type: 'GET',
+                    dataType: 'json',
+                    data: { stateId: selectedStateId },
+                    success: function (cities) {
+                        ddlCity.empty();
+                        ddlCity.append($("<option></option>").val('').html('Select City Name'));
+
+                        $.each(cities, function (i, city) {
+                            ddlCity.append($("<option></option>").val(city.id).html(city.city1));
+                        });
+                    },
+                    error: function () {
+                        alert('Error loading cities!');
+                    }
+                });
+            }
+        });
+    });
+</script>
+
+
+
+
 
 
 
