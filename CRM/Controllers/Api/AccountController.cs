@@ -30,7 +30,7 @@ namespace CRM.Controllers.Api
                 bool check = await _apiAccount.Login(model);
                 if (check)
                 {
-                    var loginProfile = _context.EmployeeRegistrations.Select(x => new LoginProfile
+                    var loginProfile = _context.EmployeeRegistrations.Where(x =>x.EmployeeId == model.Employee_ID).Select(x => new LoginProfile
                     {
                         Employee_Name = x.MiddleName == null ? x.FirstName + " " + x.LastName : x.FirstName + " " + x.MiddleName + " " + x.LastName,
                         Employee_ID = x.EmployeeId
