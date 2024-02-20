@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CRM.Models.Crm.WorkLocation>
+﻿@model IEnumerable<CRM.Models.DTO.WorkLocationDTO>
 
 @{
     ViewData["Title"] = "WorkLocationlist";
@@ -52,10 +52,13 @@
                                             <tr style="background-color: #00baf2;">
                                                 <th nowrap>Sl. No.</th>
                                                 <th>
-                                                    Address
+                                                    State Name
                                                 </th>
                                                 <th>
-                                                    Commissonin percentage
+                                                    City Name
+                                                </th>
+                                                <th>
+                                                    Commissonin Percentage
                                                 </th>
                                                 <th>Action</th>
                                             </tr>
@@ -63,24 +66,27 @@
                                         <tbody>
                                             @{
                                                 var count = 0;
-                                                @foreach (var item in Model)
+                                                        @foreach (var item in Model)
                                             {
                                                     count++;
-                                                        <tr class="table-row">
-                                                        <td>@count</td>
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => item.AddressLine1)
-                                                        </td>
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.Commissoninpercentage)
-                                                            </td>
-                                                        <td>
-                                                            <div>
-                                                                    <a href="#" class="fa fa-edit m-2 font-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="EditWorkLocation(@item.Id)"></a>
+                                                                <tr class="table-row">
+                                                                <td>@count</td>
+                                                                <td>
+                                                                    @Html.DisplayFor(modelItem => item.State)
+                                                                </td>
+                                                                <td>
+                                                                    @Html.DisplayFor(modelItem => item.City)
+                                                                </td>
+                                                                <td>
+                                                                   @Html.DisplayFor(modelItem => item.Commissoninpercentage)
+                                                                </td>
+                                                                <td>
+                                                                 <div>
+                                                                   <a href="#" class="fa fa-edit m-2 font-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="EditWorkLocation(@item.Id)"></a>
                                                                     <a href="@Url.Action("DeleteWorkLocation","Home",new { id=item.Id})" class="fa fa-trash font-danger"></a>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
                                             }
                                             }
                                         </tbody>
@@ -115,12 +121,21 @@
                             <input name="Id" type="text" id="Id" style="display:none">
 
                             <div class="row">
-                                <div class="form-group col-sm">
-                                    <label for="validationCustom0">Address</label>
-                                    <input class="form-control" id="AddressLine" name="AddressLine1" type="text" required="">
-
+                                <div class="form-group col-sm-6">
+                                    <label class="control-label">State Name</label>
+                                    <div>
+                                        <select class="form-control" name="StateId" id="ddlState"></select>
+                                    </div>
                                 </div>
-                                <div class="form-group col-sm">
+                                <div class="form-group col-sm-6">
+                                    <label class="control-label">City Name</label>
+                                    <div>
+                                        <select class="form-control" name="CityId" id="ddlCity"></select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-sm-6">
                                     <label for="validationCustom0">Commissonin percentage</label>
                                     <input class="form-control" id="Commissonin" name="Commissoninpercentage" type="text" required="">
 
@@ -138,6 +153,7 @@
         </div>
     </div>
 </div>
+<input type="hidden" id="cityId"/>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
     function EditWorkLocation(id) {
@@ -150,13 +166,85 @@
             success: function (response) {
                 debugger;
                 $('#Id').val(response.loc.id);
-                $('#AddressLine').val(response.loc.addressLine1);
+                $('#ddlState').val(response.loc.stateId);
+                $('#cityId').val(response.loc.cityId);
                 $('#Commissonin').val(response.loc.commissoninpercentage);
                 $('#staticBackdrop').modal('show');
+
+                var StateId = parseInt(response.loc.stateId);
+                if (!isNaN(StateId)) {
+                    var ddlCity = $('#ddlCity');
+                    ddlCity.empty().append($("<option></option>").val('').html('Please wait ...'));
+
+                    $.ajax({
+                        url: '/Home/BindCityDetails',
+                        type: 'GET',
+                        dataType: 'json',
+                        data: { stateId: StateId },
+                        success: function (d) {
+                            ddlCity.empty();
+                            ddlCity.append($("<option></option>").val('').html('Select City Name'));
+                            $.each(d, function (i, cities) {
+                                ddlCity.append($("<option></option>").val(cities.id).html(cities.city1));
+                            });
+                            
+                            $('#ddlCity').val($('#cityId').val());
+                        },
+                        error: function () {
+                            alert('Error loading city data');
+                        }
+                    });
+                }
             },
             error: function () {
                 alert('Data not found');
             }
         });
     }
+</script>
+<script>
+    $(document).ready(function () {
+        var ddlState = $('#ddlState');
+        ddlState.append($("<option></option>").val('').html('Please Select State'));
+        $.ajax({
+            url: '/Home/BindStateDetails',
+            type: 'GET',
+            dataType: 'json',
+            success: function (d) {
+                $.each(d, function (i, states) {
+                    ddlState.append($("<option></option>").val(states.id).html(states.sName));
+                });
+            },
+            error: function () {
+                alert('Error!');
+            }
+        });
+        //City Bind By satate id
+        $("#ddlState").change(function () {
+            var StateId = parseInt($(this).val());
+            if (!isNaN(StateId)) {
+                var ddlCity = $('#ddlCity');
+                ddlCity.append($("<option></option>").val('').html('Please wait ...'));
+
+                debugger;
+                $.ajax({
+                    url: '/Home/BindCityDetails',
+                    type: 'GET',
+                    dataType: 'json',
+                    data: { stateId: StateId },
+                    success: function (d) {
+                        ddlCity.empty(); // Clear the plese wait
+                        ddlCity.append($("<option></option>").val('').html('Select City Name'));
+                        $.each(d, function (i, cities) {
+                            ddlCity.append($("<option></option>").val(cities.id).html(cities.city1));
+                        });
+                      
+                    },
+                    error: function () {
+                        alert('Error!');
+                    }
+                });
+            }
+        });
+    })
 </script>

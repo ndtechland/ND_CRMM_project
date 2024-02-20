@@ -14,7 +14,7 @@ namespace CRM.Repository
         public Task<int> Product(ProductMaster model);
         public Task<List<ProductMaster>> ProductList();
         public Task<int> Customer(Customer model);
-        public Task<List<CustomerRegistration>> CustomerList();
+        public Task<List<Customer>> CustomerList();
         public Task<int> EmpRegistration(EmpMultiform model, string Mode, string Emp_Reg_ID);
         public Task<List<StateMaster>> GetAllState();
         public Task<int> Banner(BannerMaster model);
@@ -46,8 +46,8 @@ namespace CRM.Repository
         
          public Task<List<ECS>> ESCExcel(string customerId,string WorkLocation);
 
-        public WorkLocation GetWorkLocationById(int id);
-        public Task<int> updateWorkLocation(WorkLocation model);
+        public WorkLocation1 GetWorkLocationById(int id);
+        public Task<int> updateWorkLocation(WorkLocation1 model);
         public DesignationMaster GetDesignationById(int id);
         public Task<int> updateDesignation(DesignationMaster model);
         public DepartmentMaster GetDepartmentById(int id);

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CRM.Models.Crm.CustomerRegistration>
+﻿@model IEnumerable<CRM.Models.DTO.Customer>
 
 @{
     ViewData["Title"] = "CustomerList";
@@ -81,6 +81,9 @@
                                                 <th nowrap>
                                                     State
                                                 </th>
+                                                <th nowrap>
+                                                    State Name
+                                                </th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -125,6 +128,9 @@
                                                             <td>
                                                                 @Html.DisplayFor(modelItem => item.State)
                                                             </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.StateName)
+                                                        </td>
                                                         <td>
                                                             <div>
                                                                 <a href="@Url.Action("Customer","Home",new { id=item.Id})" class="fa fa-edit m-2 font-success"></a>
