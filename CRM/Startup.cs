@@ -7,6 +7,9 @@ using CRM.Models.DTO;
 using BaselineTypeDiscovery;
 using Rotativa.AspNetCore;
 using System.Security.Policy;
+using CRM.Utilities;
+using CRM.IUtilities;
+using Microsoft.TeamFoundation.TestManagement.WebApi;
 
 namespace CRM
 {
@@ -33,6 +36,7 @@ namespace CRM
             services.AddControllersWithViews();
             services.AddScoped<ICrmrpo, Crmrpo>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IApiAccount, ApiAccount>();
             services.Configure<URL>(Configuration.GetSection("URL"));
 
 

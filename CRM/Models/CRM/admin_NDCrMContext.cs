@@ -396,7 +396,9 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Id).HasColumnName("ID");
 
-                entity.Property(e => e.EmployeeId).HasColumnName("Employee_ID");
+                entity.Property(e => e.EmployeeId)
+                    .HasMaxLength(200)
+                    .HasColumnName("Employee_ID");
 
                 entity.Property(e => e.Password).HasMaxLength(120);
             });
@@ -505,7 +507,9 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Description).HasColumnType("text");
 
-                entity.Property(e => e.EmployeeRegistrationId).HasColumnName("Employee_Registration_ID");
+                entity.Property(e => e.EmployeeRegistrationId)
+                    .HasMaxLength(200)
+                    .HasColumnName("Employee_Registration_ID");
 
                 entity.Property(e => e.EmployeeRole1)
                     .HasMaxLength(120)

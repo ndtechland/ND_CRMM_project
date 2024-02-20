@@ -81,6 +81,52 @@ namespace CRM.Repository
         }
 
 
+        public async Task SendEmailCred(EmpMultiform model, string password)
+        {
+            try
+            {
+                try
+                {
+                    var emailMessage = new MimeMessage();
+                    emailMessage.From.Add(new MailboxAddress("GA", "aastrolense@gmail.com"));
+                    emailMessage.To.Add(new MailboxAddress("Recipient Name", model.WorkEmail));
+                    emailMessage.Cc.Add(new MailboxAddress("Recipient Name", "vishnundtechland@gmail.com"));
+                    emailMessage.Bcc.Add(new MailboxAddress("Recipient Name", "ndcaretrust@gmail.com"));
+                    emailMessage.Subject = "Login Credencial";
+
+                    var textPart = new TextPart("plain")
+                    {
+                        Text = " Hi - '"+model.FirstName + "' '"+model.LastName +"' Here is your login Credential Email:- '"+model.EmployeeId+"' Password:- '"+ password + "'"  
+                    };
+
+                    
+
+                    var multipart = new Multipart("mixed");
+                    multipart.Add(textPart);
+
+                    emailMessage.Body = multipart;
+
+                    using (var client = new SmtpClient())
+                    {
+
+                        await client.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
+                        await client.AuthenticateAsync("aastrolense@gmail.com", "efpbsimjkzxeoxnv");
+                        await client.SendAsync(emailMessage);
+                        await client.DisconnectAsync(true);
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 
 }

@@ -26,11 +26,13 @@ namespace CRM.Repository
     {
         public IConfiguration Configuration { get; }
         private admin_NDCrMContext _context;
+        private readonly IEmailService _IEmailService;
         //public virtual DbSet<EmployeeImportExcel> EmpMultiforms { get; set; } = null!;
-        public Crmrpo(admin_NDCrMContext context, IConfiguration configuration)
+        public Crmrpo(admin_NDCrMContext context, IConfiguration configuration, IEmailService IEmailService)
         {
             _context = context;
             Configuration = configuration;
+            _IEmailService = IEmailService;
         }
 
         public DataTable Login(AdminLogin model)
@@ -218,6 +220,31 @@ namespace CRM.Repository
                 da.SelectCommand = cmd;
                 DataTable dt = new DataTable();
                 da.Fill(dt);
+
+
+                if(Mode == "INS")
+                {
+                    EmployeeRole employeeRole = new()
+                    {
+                        EmployeeRegistrationId = model.EmployeeId,
+                        EmployeeRole1 = "2",
+                        Description = "Employee"
+
+                    };
+                    _context.EmployeeRoles.Add(employeeRole);
+                    _context.SaveChanges();
+
+                    EmployeeLogin employeeLogin = new()
+                    {
+                        EmployeeId = model.EmployeeId,
+                        Password = "" + model.FirstName + "" + model.DateOfBirth.Date.Year + ""
+                    };
+                    _context.EmployeeLogins.Add(employeeLogin);
+                    _context.SaveChanges();
+                    string password = "" + model.FirstName + "" + model.DateOfBirth.Date.Year + "";
+                    _IEmailService.SendEmailCred(model, password);
+                }
+
                 return 1;
             }
             catch (SqlException sqlEx)
