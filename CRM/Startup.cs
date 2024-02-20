@@ -66,7 +66,7 @@ namespace CRM
             app.UseStaticFiles();
             app.UseSession();
             app.UseRouting();
-           
+            app.UseCors("CorsPolicy");
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
