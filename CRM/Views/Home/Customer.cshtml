@@ -497,7 +497,51 @@
         });
     });
 </script>
+<script>
+    $(document).ready(function () {
+        var ddlState = $('#ddlState');
+        ddlState.append($("<option></option>").val('').html('Please Select State'));
+        $.ajax({
+            url: '/Home/BindStateDetails',
+            type: 'GET',
+            dataType: 'json',
+            success: function (d) {
+                $.each(d, function (i, states) {
+                    ddlState.append($("<option></option>").val(states.id).html(states.sName));
+                });
+            },
+            error: function () {
+                alert('Error!');
+            }
+        });
+        $("#ddlState").change(function () {
+            var StateId = parseInt($(this).val());
+            if (!isNaN(StateId)) {
+                var ddlCity = $('#ddlCity');
+                ddlCity.append($("<option></option>").val('').html('Please wait ...'));
 
+                debugger;
+                $.ajax({
+                    url: '/Home/BindCityDetails',
+                    type: 'GET',
+                    dataType: 'json',
+                    data: { stateId: StateId },
+                    success: function (d) {
+                        ddlCity.empty(); 
+                        ddlCity.append($("<option></option>").val('').html('Select City Name'));
+                        $.each(d, function (i, cities) {
+                            ddlCity.append($("<option></option>").val(cities.id).html(cities.city1));
+                        });
+
+                    },
+                    error: function () {
+                        alert('Error!');
+                    }
+                });
+            }
+        });
+    })
+</script>
 
 
 
