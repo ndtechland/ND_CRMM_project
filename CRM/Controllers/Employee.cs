@@ -71,13 +71,13 @@ namespace CRM.Controllers
             if (HttpContext.Session.GetString("UserName") != null)
             {
                 ViewBag.UserName = HttpContext.Session.GetString("UserName");
-                //ViewBag.WorkLocation = _context.WorkLocations
-                //.Select(w => new SelectListItem
-                //{
-                //    Value = w.Id.ToString(),
-                //    Text = w.AddressLine1
-                //})
-                // .ToList();
+                ViewBag.WorkLocation = _context.WorkLocations
+                .Select(w => new SelectListItem
+                {
+                    Value = w.Id.ToString(),
+                    Text = w.AddressLine1
+                })
+                 .ToList();
                 ViewBag.Department = _context.DepartmentMasters.Select(w => new SelectListItem
                 {
                     Value = w.Id.ToString(),
