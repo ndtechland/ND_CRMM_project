@@ -55,6 +55,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<TaxDeductor> TaxDeductors { get; set; } = null!;
         public virtual DbSet<TransactionDetail> TransactionDetails { get; set; } = null!;
         public virtual DbSet<WorkLocation> WorkLocations { get; set; } = null!;
+        public virtual DbSet<WorkLocation1> WorkLocations1 { get; set; } = null!;
         public virtual DbSet<EmployeeImportExcel> EmpMultiforms { get; set; } = null!;
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -234,6 +235,8 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.State).HasMaxLength(255);
 
+                entity.Property(e => e.StateId).HasColumnName("stateId");
+
                 entity.Property(e => e.WorkLocation)
                     .HasMaxLength(255)
                     .HasColumnName("Work_Location");
@@ -393,7 +396,9 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Id).HasColumnName("ID");
 
-                entity.Property(e => e.EmployeeId).HasColumnName("Employee_ID");
+                entity.Property(e => e.EmployeeId)
+                    .HasMaxLength(200)
+                    .HasColumnName("Employee_ID");
 
                 entity.Property(e => e.Password).HasMaxLength(120);
             });
@@ -483,6 +488,8 @@ namespace CRM.Models.Crm
                     .HasMaxLength(120)
                     .HasColumnName("Middle_Name");
 
+                entity.Property(e => e.RoleId).HasColumnName("RoleID");
+
                 entity.Property(e => e.WorkEmail)
                     .HasMaxLength(120)
                     .HasColumnName("Work_Email");
@@ -500,7 +507,9 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Description).HasColumnType("text");
 
-                entity.Property(e => e.EmployeeRegistrationId).HasColumnName("Employee_Registration_ID");
+                entity.Property(e => e.EmployeeRegistrationId)
+                    .HasMaxLength(200)
+                    .HasColumnName("Employee_Registration_ID");
 
                 entity.Property(e => e.EmployeeRole1)
                     .HasMaxLength(120)
@@ -986,6 +995,25 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.Commissoninpercentage)
                     .HasColumnType("decimal(18, 2)")
                     .HasColumnName("commissoninpercentage");
+            });
+
+            modelBuilder.Entity<WorkLocation1>(entity =>
+            {
+                entity.ToTable("WorkLocation");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.CityId).HasColumnName("CityID");
+
+                entity.Property(e => e.Commissoninpercentage)
+                    .HasColumnType("decimal(18, 0)")
+                    .HasColumnName("commissoninpercentage");
+
+                entity.Property(e => e.Createdate)
+                    .HasColumnType("datetime")
+                    .HasColumnName("createdate");
+
+                entity.Property(e => e.StateId).HasColumnName("stateId");
             });
 
             OnModelCreatingPartial(modelBuilder);
