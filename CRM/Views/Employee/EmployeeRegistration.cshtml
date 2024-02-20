@@ -169,30 +169,25 @@
                                                             </select>
                                                         </div>
                                                     </div>
-
+                                                    <div class="col-md-3">
+                                                        <label>State Name</label>
+                                                        <div class="form-group">
+                                                              <select class="form-control" name="StateId" id="ddlStates"></select>
+                                                        </div>
+                                                    </div>
                                                     <div class="col-md-3">
                                                         <label>Work Location</label>
                                                         <div class="form-group">
-
-                                                            <select class="form-control" name="WorkLocationID"  id="ddlWorkLocationID">
-                                                                <option value="0">-Select WorkLocation--</option>
-
-
+                                                            <select class="form-control" name="WorkLocationID" id="ddlCity">
+                                                                <option value="0">-- Select WorkLocation --</option>
                                                             </select>
+                                                           @* <select class="form-control" name="WorkLocationID"  id="ddlWorkLocationID">
+                                                                <option value="0">--Select WorkLocation--</option>
+
+
+                                                            </select>*@
                                                         </div>
                                                     </div>
-
-                                                    <div class="col-md-3">
-                                                        <label>Designation</label>
-                                                        <div class="form-group">
-
-                                                            <select name="DesignationID" class="form-control " id="ddDesignationID">
-                                                                <option value="0">--select Designation--</option>
-
-                                                            </select>
-                                                        </div>
-                                                    </div>
-
                                                     <div class="col-md-3">
                                                         <label>Department</label>
                                                         <div class="form-group">
@@ -203,7 +198,16 @@
                                                             </select>
                                                         </div>
                                                     </div>
+                                                    <div class="col-md-3">
+                                                        <label>Designation</label>
+                                                        <div class="form-group">
 
+                                                            <select name="DesignationID" class="form-control " id="ddDesignationID">
+                                                                <option value="0">--select Designation--</option>
+
+                                                            </select>
+                                                        </div>
+                                                    </div>
                                                 </div>
 
                                                 <div class="pull-right">
@@ -681,7 +685,7 @@
 
                 errormessage += 'Please Select Company,'
             }
-            if ($("#ddlWorkLocationID").val().trim() == '0') {
+            if ($("#ddlCity").val().trim() == '0') {
 
                 errormessage += 'Please Select Work Location,'
             }
@@ -956,17 +960,17 @@
     }
 
 
-    function bindworkLocation(WorkLocationId) {
-        var itemsList = @Json.Serialize(ViewBag.WorkLocation);
-        debugger
-        var dropdown = $("#ddlWorkLocationID");
-        $.each(itemsList, function (index, item) {
-            dropdown.append($('<option></option>').val(item.value).text(item.text));
-        });
-        if (WorkLocationId != "") {
-            $("#ddlWorkLocationID").val(WorkLocationId)
-        }
-    }
+    //function bindworkLocation(WorkLocationId) {
+    //    var itemsList = @Json.Serialize(ViewBag.WorkLocation);
+    //    debugger
+    //    var dropdown = $("#ddlWorkLocationID");
+    //    $.each(itemsList, function (index, item) {
+    //        dropdown.append($('<option></option>').val(item.value).text(item.text));
+    //    });
+    //    if (WorkLocationId != "") {
+    //        $("#ddlWorkLocationID").val(WorkLocationId)
+    //    }
+    //}
 
     function bindDesigation(DesignationID) {
         var itemsListforDesigation = @Json.Serialize(ViewBag.Designation);
@@ -1130,7 +1134,7 @@
     });
 </script>
 
-
+@*
 <script>
     function Locations() {
         var customerId = $("#ddCustomerID").val();
@@ -1162,7 +1166,7 @@
             $("#ddlWorkLocationID").append('<option value="' + response.text + '">' + response.value + '</option>');
         });
     }
-</script>
+</script>*@
 
 
 <script type="text/javascript">
@@ -1382,5 +1386,49 @@
         }
 </script>
 
+<script>
+    $(document).ready(function () {
+        var ddlStates = $('#ddlStates');
+        ddlStates.append($("<option></option>").val('').html('-- Please Select State --'));
+        $.ajax({
+            url: '/Home/BindStateDetails',
+            type: 'GET',
+            dataType: 'json',
+            success: function (d) {
+                $.each(d, function (i, states) {
+                    ddlStates.append($("<option></option>").val(states.id).html(states.sName));
+                });
+            },
+            error: function () {
+                alert('Error!');
+            }
+        });
+        $("#ddlStates").change(function () {
+            var StateId = parseInt($(this).val());
+            if (!isNaN(StateId)) {
+                var ddlCity = $('#ddlCity');
+                ddlCity.append($("<option></option>").val('').html('Please wait ...'));
 
+                debugger;
+                $.ajax({
+                    url: '/Home/BindCityDetails',
+                    type: 'GET',
+                    dataType: 'json',
+                    data: { stateId: StateId },
+                    success: function (d) {
+                        ddlCity.empty(); 
+                        ddlCity.append($("<option></option>").val('').html('-- Select WorkLocation --'));
+                        $.each(d, function (i, cities) {
+                            ddlCity.append($("<option></option>").val(cities.id).html(cities.city1));
+                        });
+                      
+                    },
+                    error: function () {
+                        alert('Error!');
+                    }
+                });
+            }
+        });
+    })
+</script>
 
