@@ -4,18 +4,22 @@ using CRM.Models.DTO;
 using CRM.Repository;
 using CRM.Utilities;
 using DocumentFormat.OpenXml.Bibliography;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.TeamFoundation.TestManagement.WebApi;
+
 
 namespace CRM.Controllers.Api
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class EmployeeApi : ControllerBase
+    public class EmployeeApiController : ControllerBase
     {
         private readonly IEmployee _apiemp;
         private readonly admin_NDCrMContext _context;
-        public EmployeeApi(IEmployee apiemp, admin_NDCrMContext context)
+        public EmployeeApiController(IEmployee apiemp, admin_NDCrMContext context)
         {
             this._apiemp = apiemp;
             this._context = context;
@@ -24,39 +28,35 @@ namespace CRM.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> GetEmployeeById(string Employeeid)
         {
+            var response = new Response<EmployeeBasicInfo>();
             try
             {
-                var response = new Response<EmployeeRegistration>();
-                bool isEmployeeExists = await _apiemp.GetEmployeeById(Employeeid);
-                if (isEmployeeExists)
+                if (User.Identity.IsAuthenticated)
                 {
-                    var empDetails = _context.EmployeeRegistrations
-                        .Where(x => x.EmployeeId == Employeeid)
-                        .FirstOrDefault();
 
-                    if (empDetails != null)
-                    {
-                        response.Succeeded = true;
-                        response.StatusCode = StatusCodes.Status200OK;
-                        response.Status = "Success";
-                        response.Message = "Employee Details Here.";
-                        response.Data = empDetails;
-                        return Ok(response);
-                    }
-                    else
-                    {
-                        response.StatusCode = StatusCodes.Status401Unauthorized;
-                        response.Message = "Data not found.";
-                        return Ok(response);
-                    }
+                    EmployeeBasicInfo isEmployeeExists = await _apiemp.GetEmployeeById(Employeeid);
+                        if (isEmployeeExists != null)
+                        {
+                            response.Succeeded = true;
+                            response.StatusCode = StatusCodes.Status200OK;
+                            response.Status = "Success";
+                            response.Message = "Employee Details Here.";
+                            response.Data = isEmployeeExists;
+                            return Ok(response);
+                        }
+                        else
+                        {
+                            response.StatusCode = StatusCodes.Status401Unauthorized;
+                            response.Message = "Data not found.";
+                            return Ok(response);
+                        }                                  
                 }
                 else
                 {
                     response.StatusCode = StatusCodes.Status401Unauthorized;
-                    response.Message = "Employee not found.";
+                    response.Message = "Token is expired.";
                     return Ok(response);
                 }
-
 
 
             }

@@ -1,6 +1,8 @@
 ﻿using CRM.Controllers;
+using CRM.Models.APIDTO;
 using CRM.Models.Crm;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Ocsp;
 
 namespace CRM.Repository
 {
@@ -11,38 +13,31 @@ namespace CRM.Repository
         {
             this._context = context;
         }
-        public async Task<bool> GetEmployeeById(string Employeeid)
+        public async Task<EmployeeBasicInfo> GetEmployeeById(string Employeeid)
         {
             try
             {
                 if (Employeeid != null)
                 {
-                    var empid = _context.EmployeeRegistrations.Where(x => x.EmployeeId == Employeeid).Select(x => new EmployeeRegistration
-                      {
+                    var empid = _context.EmployeeRegistrations.Where(x => x.EmployeeId == Employeeid).Select(x => new EmployeeBasicInfo
+                    {
                           FirstName = x.FirstName,
                           MiddleName = x.MiddleName,
                           LastName = x.LastName,
                           DateOfJoining = x.DateOfJoining,
                           WorkEmail = x.WorkEmail,
-                          GenderId = x.GenderId,
-                           WorkLocationId = x.WorkLocationId,
-                          DesignationId = x.DesignationId,
-                          DepartmentId = x.DepartmentId,
-                          CustomerId = x.CustomerId,
+                          GenderName = _context.GenderMasters.Where(g =>g.Id == x.GenderId).Select(g => g.GenderName).First(),
+                          WorkLocationName = _context.Cities.Where(g => g.Id == Convert.ToInt16(x.WorkLocationId)).Select(g => g.City1).First(),
+                          DesignationName = _context.DesignationMasters.Where(g => g.Id == Convert.ToInt16(x.DesignationId)).Select(g => g.DesignationName).First(),
+                          DepartmentName = _context.DepartmentMasters.Where(g => g.Id == Convert.ToInt16(x.DepartmentId)).Select(g => g.DepartmentName).First().Trim(),
+                        CustomerName = _context.CustomerRegistrations.Where(g => g.Id == x.CustomerId).Select(g => g.CompanyName).First(),
                           EmployeeId = x.EmployeeId,
-                           RoleId = x.RoleId,
+                           //RoleId = x.RoleId,
                           IsDeleted = x.IsDeleted,
                     }).FirstOrDefault();
-                    if (empid != null)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    return empid;
                 }
-                return false;
+                return null;
             }
             catch (Exception ex)
             {
