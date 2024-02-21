@@ -19,7 +19,7 @@ namespace CRM.Models.DTO
         public int DepartmentID { get; set; }
         public string? Emp_Reg_ID { get; set; }
         public string? EmployeeId { get; set; }
-
+        public int stateId { get; set; }
         // Salary Details
         [NotMapped]
         public decimal AnnualCTC { get; set; }
@@ -67,6 +67,6 @@ namespace CRM.Models.DTO
         public decimal? Tdspercentage { get; set; }
         public decimal? Amount { get; set; }
 
-
+        public int? RoleId { get; set; }
     }
 }
