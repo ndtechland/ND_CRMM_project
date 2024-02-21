@@ -175,6 +175,7 @@ namespace CRM.Repository
                 cmd.Parameters.AddWithValue("@WorkLocationID", model.WorkLocationID);
                 cmd.Parameters.AddWithValue("@DesignationID", model.DesignationID);
                 cmd.Parameters.AddWithValue("@DepartmentID", model.DepartmentID);
+                cmd.Parameters.AddWithValue("@stateId", model.stateId);
 
                 //-- Salary Details
                 cmd.Parameters.AddWithValue("@AnnualCTC", model.AnnualCTC);

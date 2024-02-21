@@ -52,9 +52,6 @@ namespace CRM.Controllers
         private readonly IConfiguration _configuration;
         private readonly IEmailService _IEmailService;
 
-
-
-
         public Employee(ICrmrpo _ICrmrpo, admin_NDCrMContext _context, IConfiguration configuration, IEmailService _IEmailService)
         {
             this._context = _context;
@@ -71,11 +68,25 @@ namespace CRM.Controllers
             if (HttpContext.Session.GetString("UserName") != null)
             {
                 ViewBag.UserName = HttpContext.Session.GetString("UserName");
-                ViewBag.WorkLocation = _context.WorkLocations
+                ViewBag.WorkLocation = _context.Cities
                 .Select(w => new SelectListItem
                 {
                     Value = w.Id.ToString(),
-                    Text = w.AddressLine1
+                    Text = w.City1
+                })
+                 .ToList();
+                ViewBag.Cities = _context.Cities
+               .Select(w => new SelectListItem
+               {
+                   Value = w.Id.ToString(),
+                   Text = w.City1
+               })
+                .ToList();
+                ViewBag.stes = _context.States
+                .Select(w => new SelectListItem
+                {
+                    Value = w.Id.ToString(),
+                    Text = w.SName
                 })
                  .ToList();
                 ViewBag.Department = _context.DepartmentMasters.Select(w => new SelectListItem
@@ -91,11 +102,12 @@ namespace CRM.Controllers
                     Text = w.DesignationName
                 }).ToList();
                 //States dropdown
-                ViewBag.States = _context.StateMasters.Select(w => new SelectListItem
+                ViewBag.States = _context.States.Select(w => new SelectListItem
                 {
                     Value = w.Id.ToString(),
-                    Text = w.StateName
-                }).ToList();
+                    Text = w.SName
+                })
+                 .ToList();
                 //CustomerName dropdown
                 ViewBag.CustomerName = _context.CustomerRegistrations.Select(x => new SelectListItem
                 {
@@ -149,6 +161,7 @@ namespace CRM.Controllers
                 ViewBag.gross = "";
                 ViewBag.Amount = "";
                 ViewBag.Tdspercentage = "";
+                ViewBag.statesy = "";
                 ViewBag.btnText = "SAVE";
 
                 if (id != null)
@@ -205,6 +218,7 @@ namespace CRM.Controllers
                             ViewBag.gross = row["gross"].ToString();
                             ViewBag.Amount = row["Amount"].ToString();
                             ViewBag.Tdspercentage = row["tdspercentage"].ToString();
+                            ViewBag.statesy = row["stateId"].ToString();
                             ViewBag.Emp_Reg_Code = id;
                             ViewBag.btnText = "UPDATE";
 
@@ -1385,9 +1399,11 @@ namespace CRM.Controllers
             if (CustomerId > 0)
             {
                 var data = _ICrmrpo.tdsDetails(CustomerId);
-                employeerTd.Tdspercentage = data.Tdspercentage;
-                employeerTd.Amount = data.Amount;
-
+                if(data !=null)
+                {
+                    employeerTd.Tdspercentage = data.Tdspercentage;
+                    employeerTd.Amount = data.Amount;
+                }
                 var result = new
                 {
                     employeerTd = employeerTd,
