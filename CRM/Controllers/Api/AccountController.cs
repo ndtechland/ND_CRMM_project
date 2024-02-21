@@ -1,4 +1,5 @@
-﻿using CRM.Models.APIDTO;
+﻿using CRM.IUtilities;
+using CRM.Models.APIDTO;
 using CRM.Models.Crm;
 using CRM.Repository;
 using CRM.Utilities;
@@ -14,9 +15,11 @@ namespace CRM.Controllers.Api
     public class AccountController : ControllerBase
     {
         private readonly IApiAccount _apiAccount;
+        private readonly IJwtToken _jwtToken;
         private readonly admin_NDCrMContext _context;   
-        public AccountController(IApiAccount apiAccount, admin_NDCrMContext context)
+        public AccountController(IJwtToken jwtToken,IApiAccount apiAccount, admin_NDCrMContext context)
         {
+            this._jwtToken = jwtToken;
             this._apiAccount = apiAccount;
             this._context = context;
         }
@@ -36,6 +39,7 @@ namespace CRM.Controllers.Api
                         Employee_ID = x.EmployeeId
 
                     }).FirstOrDefault();
+                    var token = _jwtToken.token(model);
                     if (loginProfile != null)
                     {
                         response.Succeeded = true;
@@ -43,7 +47,7 @@ namespace CRM.Controllers.Api
                         response.Status = "Success";
                         response.Message = "Login Successfully Here.";
                         response.Data = loginProfile;
-                        return Ok(response);
+                        return Ok(new { response, token });
                     }
                     else
                     {

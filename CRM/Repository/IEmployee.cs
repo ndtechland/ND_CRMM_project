@@ -1,8 +1,10 @@
-﻿namespace CRM.Repository
+﻿using CRM.Models.APIDTO;
+
+namespace CRM.Repository
 {
     public interface IEmployee
     {
-        public Task<bool> GetEmployeeById(string Employeeid);
+        public Task<EmployeeBasicInfo> GetEmployeeById(string Employeeid);
 
     }
 }
