@@ -37,6 +37,7 @@ namespace CRM
             services.AddScoped<ICrmrpo, Crmrpo>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IApiAccount, ApiAccount>();
+            services.AddScoped<IEmployee, Employee>();
             services.Configure<URL>(Configuration.GetSection("URL"));
 
             services.AddCors(options => {

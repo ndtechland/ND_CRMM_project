@@ -943,13 +943,12 @@
 </script>
 <script>
 
-
     function bindcustomer(CustomerId) {
         var itemsList = @Json.Serialize(ViewBag.CustomerName);
         debugger
-        var dropdown = $("#ddCustomerID");
+        var dropdown1 = $("#ddCustomerID");
         $.each(itemsList, function (index, item) {
-            dropdown.append($('<option></option>').val(item.value).text(item.text));
+            dropdown1.append($('<option></option>').val(item.value).text(item.text));
         });
         if (CustomerId != "") {
             $("#ddCustomerID").val(CustomerId)
@@ -1179,25 +1178,27 @@
     var departmentid = '@ViewBag.Department_ID';
     var stateid = '@ViewBag.State_ID';
 
-    if (customerid != "") {
-        bindcustomer(customerid);
-    }
+    //if (customerid != "") {
+    //    bindcustomer(customerid);
+   // $('#ddCustomerID').val($('#customerid').val());
 
-    if (workid != "") {
-        bindworkLocation(workid);
-    }
+    //}
 
-    if (departmentid != "") {
-        bindDepartment(departmentid);
-    }
+    //if (workid != "") {
+    //    bindworkLocation(workid);
+    //}
 
-    if (designationid != "") {
-        bindDesigation(designationid);
-    }
+    //if (departmentid != "") {
+    //    bindDepartment(departmentid);
+    //}
 
-    if (stateid != "") {
-        bindStates(stateid);
-    }
+    //if (designationid != "") {
+    //    bindDesigation(designationid);
+    //}
+
+    //if (stateid != "") {
+    //    bindStates(stateid);
+    //}
 
 
     var deductiontime = '@ViewBag.Deduction_Cycle';
