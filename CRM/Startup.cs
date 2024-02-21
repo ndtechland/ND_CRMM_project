@@ -10,6 +10,9 @@ using System.Security.Policy;
 using CRM.Utilities;
 using CRM.IUtilities;
 using Microsoft.TeamFoundation.TestManagement.WebApi;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace CRM
 {
@@ -31,7 +34,26 @@ namespace CRM
             });
 
             services.AddDbContext<admin_NDCrMContext>(options => options.UseSqlServer(Configuration.GetConnectionString("db1")));
-           
+
+
+            var Key = "this is my test key";
+            services.AddSingleton<IJwtToken>(new JwtToken(Key));
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Key)),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
 
             services.AddControllersWithViews();
             services.AddScoped<ICrmrpo, Crmrpo>();
