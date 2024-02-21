@@ -19,5 +19,6 @@ namespace CRM.Models.Crm
         public int? CustomerId { get; set; }
         public string? EmployeeId { get; set; }
         public int? RoleId { get; set; }
+        public long? StateId { get; set; }
     }
 }

@@ -490,6 +490,8 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.RoleId).HasColumnName("RoleID");
 
+                entity.Property(e => e.StateId).HasColumnName("stateId");
+
                 entity.Property(e => e.WorkEmail)
                     .HasMaxLength(120)
                     .HasColumnName("Work_Email");
