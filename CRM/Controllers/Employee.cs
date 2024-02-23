@@ -41,6 +41,7 @@ using Humanizer;
 using Microsoft.AspNetCore.Http;
 using OfficeOpenXml;
 using Microsoft.TeamFoundation.SourceControl.WebApi.Legacy;
+using OfficeOpenXml.ConditionalFormatting.Contracts;
 
 namespace CRM.Controllers
 {
@@ -167,6 +168,7 @@ namespace CRM.Controllers
                 if (id != null)
                 {
                     DataTable dtEmployeeRecord = _ICrmrpo.GetEmployDetailById(id);
+
                     if (dtEmployeeRecord != null && dtEmployeeRecord.Rows.Count > 0)
                     {
                         DataRow row = dtEmployeeRecord.Rows[0] as DataRow; // Explicit cast to DataRow
@@ -235,7 +237,6 @@ namespace CRM.Controllers
                 return RedirectToAction("Login", "Admin");
             }
         }
-
         [HttpPost]
         public async Task<IActionResult> EmployeeRegistration(EmpMultiform model)
         {
@@ -253,20 +254,25 @@ namespace CRM.Controllers
                 {
                     Empid = GenerateEmployeeId();
                     model.EmployeeId = Empid;
+                    var existingEmployee = _context.EmployeeRegistrations.FirstOrDefault(x => x.WorkEmail == model.WorkEmail);
+                    if (existingEmployee != null)
+                    {
+                        ViewBag.Message = "WorkEmail already exists";
+                        return View();
+                    }
                 }
-
+                
                 var response = await _ICrmrpo.EmpRegistration(model, Mode, Empid);
-
-               
                 ModelState.Clear();
+                ViewBag.Message = "Registration successful"; 
                 return View();
             }
-            catch (Exception Ex)
+            catch (Exception ex)
             {
-                throw new Exception("Error:" + Ex.Message);
+                ViewBag.Message = "Error: " + ex.Message;
+                return View();
             }
         }
-
         [Route("Employee/Employeelistg")]
         [Route("Employee/Employeelists")]
         [Route("Employee/Employeelist")]

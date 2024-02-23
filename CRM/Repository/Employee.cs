@@ -46,12 +46,12 @@ namespace CRM.Repository
                 throw new Exception("Error : " + ex.Message);
             }
         }
-        public async Task<EmployeePersonalDetail> PersonalDetail(EmpPersonalDetail model)
+        public async Task<EmployeePersonalDetail> PersonalDetail(EmpPersonalDetail model,string userid)
         {
             try
             {
                 var emppersonal = await _context.EmployeePersonalDetails
-                    .Where(x => x.EmpRegId == model.EmpRegId)
+                    .Where(x => x.EmpRegId == userid)
                     .FirstOrDefaultAsync();
 
                 if (emppersonal != null)
@@ -71,7 +71,7 @@ namespace CRM.Repository
                     return emppersonal;
                 }
                 var emp = await _context.EmployeeRegistrations
-                    .Where(x => x.EmployeeId == model.EmpRegId)
+                    .Where(x => x.EmployeeId == userid)
                     .FirstOrDefaultAsync();
 
                 if (emp != null)
@@ -89,7 +89,7 @@ namespace CRM.Repository
                         City = model.City,
                         StateId = model.StateId,
                         Pincode = model.Pincode,
-                        EmpRegId = emp.EmployeeId,
+                        EmpRegId = userid,
                     };
 
                     _context.EmployeePersonalDetails.Add(empP);
@@ -106,12 +106,12 @@ namespace CRM.Repository
             }
         }
 
-        public async Task<EmployeeBankDetail> Bankdetail(bankdetail model)
+        public async Task<EmployeeBankDetail> Bankdetail(bankdetail model, string userid)
         {
             try
             {
                 var empbank = await _context.EmployeeBankDetails
-                    .Where(x => x.EmpId == model.EmpId)
+                    .Where(x => x.EmpId == userid)
                     .FirstOrDefaultAsync();
 
                 if (empbank != null)
@@ -122,7 +122,6 @@ namespace CRM.Repository
                     empbank.ReEnterAccountNumber = model.ReEnterAccountNumber;
                     empbank.Ifsc = model.Ifsc;
                     empbank.AccountTypeId = model.AccountTypeId;
-                    empbank.EmpId = model.EmpId;
                     empbank.EpfNumber = model.EpfNumber;
                     empbank.DeductionCycle = model.DeductionCycle;
                     empbank.EmployeeContributionRate = model.EmployeeContributionRate;
@@ -131,7 +130,7 @@ namespace CRM.Repository
                     return empbank;
                 }
                 var emp = await _context.EmployeeRegistrations
-                    .Where(x => x.EmployeeId == model.EmpId)
+                    .Where(x => x.EmployeeId == userid)
                     .FirstOrDefaultAsync();
 
                 if (emp != null)
@@ -143,7 +142,7 @@ namespace CRM.Repository
                         AccountNumber = model.AccountNumber,
                         ReEnterAccountNumber = model.ReEnterAccountNumber,
                         Ifsc = model.Ifsc,
-                        EmpId = emp.EmployeeId,
+                        EmpId = userid,
                         AccountTypeId = model.AccountTypeId,
                         EpfNumber = model.EpfNumber,
                         DeductionCycle = model.DeductionCycle,

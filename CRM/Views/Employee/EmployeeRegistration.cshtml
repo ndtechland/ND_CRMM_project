@@ -4,8 +4,22 @@
     ViewData["Title"] = "Employee";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
-<link rel="stylesheet" type="text/css" href="../assets/css/EmpRegis.css">
-<!-- Normalize CSS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var message = "@ViewBag.Message";
+
+        if (message) {
+            swal({ text: message })
+            setTimeout(function () {
+                swal.close();
+            }, 5000);
+        }       
+    });
+</script>
+@*<link rel="stylesheet" type="text/css" href="../assets/css/EmpRegis.css">
+*@<!-- Normalize CSS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
 <!-- Bootstrap 4 CSS -->
 <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta.2/css/bootstrap.css'>
@@ -171,7 +185,9 @@
                                                     <div class="col-md-3">
                                                         <label>State Name</label>
                                                         <div class="form-group">
-                                                              <select class="form-control" name="StateId" id="ddlStates"></select>
+                                                              <select class="form-control" name="StateId" id="ddlStates">
+                                                                <option value="0">-- Select State --</option>
+                                                              </select>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-3">
@@ -401,6 +417,7 @@
                                                     </div>
                                                                                                        
                                                     </div>
+                                                    <br />
                                                     <div class="row">
                                                     
                                                     <div class="col">
@@ -658,9 +675,9 @@
             if ($("#FirstName").val().trim() == '') {
                 errormessage += 'Please Enter First Name,'
             }
-            //if ($("#MiddleName").val().trim() == '') {
-            //    errormessage += 'Please Enter Middle Name,'
-            //}
+            if ($("#MiddleName").val().trim() == '') {
+                errormessage += 'Please Enter Middle Name,'
+            }
             if ($("#LastName").val().trim() == '') {
 
                 errormessage += 'Please Enter Last Name,'
@@ -668,13 +685,15 @@
             if ($("#WorkEmail").val().trim() == '') {
 
                 errormessage += 'Please Enter Work Email,'
-            }
+            }else{
             var email = $("#WorkEmail").val();
             var emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
             if (!emailRegex.test(email)) {
-                errormessage += 'Invalid Work Email Id,';
+                errormessage += 'Invalid Work Email,';
 
             }
+            }
+            
 
 
             var dateOfJoining = $("#DateOfJoining").val();
@@ -709,10 +728,14 @@
 
                 errormessage += 'Please Select Department,'
             }
+             if ($("#ddlStates").val().trim() == '0') {
+
+                errormessage += 'Please Select State,'
+            }
             if (errormessage !== '') {
-        $(".next-step").off("click");
-        openErrorPopUp(errormessage);
-        return false;
+               $(".next-step").off("click");
+              openErrorPopUp(errormessage);
+             return false;
     } 
     else {
         document.getElementById('btnFirstTab').addEventListener('click', function () {
@@ -779,7 +802,7 @@
             }
             if ($("#City").val().trim() == '') {
 
-                errormessage += 'Please Enter City,'
+                errormessage += 'Please Select City,'
             }
             if ($("#ddlState").val().trim() == '0') {
 
@@ -960,7 +983,6 @@
     function bindcustomer(customerid) {
     var itemsList = @Html.Raw(Json.Serialize(ViewBag.CustomerName));
     var dropdown1 = $("#ddCustomerID");
-    
     $.each(itemsList, function (index, item) {
         dropdown1.append($('<option></option>').val(item.value).text(item.text));
     });
@@ -972,8 +994,6 @@
         var itemsList = @Json.Serialize(ViewBag.stes);
         debugger
         var dropdown = $("#ddlStates");
-        dropdown.empty();
-        dropdown.append($('<option></option>').val('').text('-- Select State --'));
         $.each(itemsList, function (index, item) {
             dropdown.append($('<option></option>').val(item.value).text(item.text));
         });
@@ -986,8 +1006,6 @@
         var itemsList = @Json.Serialize(ViewBag.WorkLocation);
         debugger
         var dropdown = $("#ddlCity");
-        dropdown.empty();
-        dropdown.append($('<option></option>').val('').text('-- Select WorkLocation --'));
         $.each(itemsList, function (index, item) {
             dropdown.append($('<option></option>').val(item.value).text(item.text));
         });
@@ -999,8 +1017,6 @@
         var itemsList = @Json.Serialize(ViewBag.Cities);
         debugger
         var dropdown = $("#City");
-        dropdown.empty();
-        dropdown.append($('<option></option>').val('').text('-- Select City --'));
         $.each(itemsList, function (index, item) {
             dropdown.append($('<option></option>').val(item.value).text(item.text));
         });
@@ -1012,8 +1028,6 @@
         var itemsListforDesigation = @Json.Serialize(ViewBag.Designation);
         debugger
         var dropdownforDesigation = $("#ddDesignationID");
-        dropdownforDesigation.empty();
-        dropdownforDesigation.append($('<option></option>').val('').text('-- select Designation --'));
         $.each(itemsListforDesigation, function (index, item) {
             dropdownforDesigation.append($('<option></option>').val(item.value).text(item.text));
         });
@@ -1026,9 +1040,7 @@
     function bindDepartment(DepartmentID) {
         var itemsListforDepartment = @Json.Serialize(ViewBag.Department);
         debugger
-        var dropdownforDepartment = $("#ddDepartmentID");
-        dropdownforDepartment.empty();
-        dropdownforDepartment.append($('<option></option>').val('').text('-- select Department --'));
+        var dropdownforDepartment = $("#ddDepartmentID");       
         $.each(itemsListforDepartment, function (index, item) {
             dropdownforDepartment.append($('<option></option>').val(item.value).text(item.text));
         });
@@ -1041,7 +1053,6 @@
         var itemsListforStates = @Json.Serialize(ViewBag.States);
         debugger
         var dropdownforState = $("#ddlState");
-        dropdownforState.empty();
         $.each(itemsListforStates, function (index, item) {
             dropdownforState.append($('<option></option>').val(item.value).text(item.text));
         });
@@ -1052,16 +1063,15 @@
 
 </script>
 
-@*<script type="text/javascript">
+<script type="text/javascript">
     $(document).ready(function () {
-        bindworkLocation("");
         bindDepartment("");
         bindDesigation("");
         bindStates("");
         bindcustomer("");
-
+         bindCity("");
     })
-</script>*@
+</script>
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
@@ -1436,7 +1446,7 @@
 <script>
     $(document).ready(function () {
         var ddlState = $('#ddlStates');
-        ddlState.append($("<option></option>").val('').html('-- Select State --'));
+        //ddlState.append($("<option></option>").val('').html('-- Select State --'));
         $.ajax({
             url: '/Home/BindStateDetails',
             type: 'GET',
@@ -1481,7 +1491,7 @@
 <script>
     $(document).ready(function () {
         var ddlState = $('#ddlState');
-        ddlState.append($("<option></option>").val('').html('-- Select State --'));
+        //ddlState.append($("<option></option>").val('').html('-- Select State --'));
         $.ajax({
             url: '/Home/BindStateDetails',
             type: 'GET',
