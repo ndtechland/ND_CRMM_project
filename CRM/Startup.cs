@@ -75,6 +75,8 @@ namespace CRM
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseMiddleware<Unauthorized>();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -93,7 +95,6 @@ namespace CRM
 
             app.UseAuthentication();
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
