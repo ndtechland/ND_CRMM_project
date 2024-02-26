@@ -56,7 +56,12 @@ namespace CRM.Controllers.Api
                         return Ok(response);
                     }
                 }
-                return Ok();
+                else
+                {
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Message = "Employee ID and Password doesn't exist.";
+                    return BadRequest(response);
+                } 
             }
             catch (Exception ex)
             {
