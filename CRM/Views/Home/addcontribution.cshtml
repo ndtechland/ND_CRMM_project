@@ -59,7 +59,28 @@
                                     <input name="Services[0].ContributionName" class="form-control" placeholder="Enter Contribution Name" onkeydown="validateNumericInput(event)" type="text" id="exampleInputName1" required />
                                     <span asp-validation-for="ContributionName" class="text-danger"></span>
                                 </div>*@
+
+
+                            <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js">
+                            </script>
                             
+                                <div class="col-md-4">
+                                    <div class="inc">
+                                        <div class="controls">
+                                            <input type="text" class="form-control" name="textbox" placeholder="textbox" />
+                                            <input type="text" class="form-control" name="text" placeholder="text" />
+                                            <button style="margin-left: 50px" class="btn btn-info" type="submit" id="txt_append" name="append">
+                                                Add Textbox
+                                            </button>
+                                            <br>
+                                            <br>
+                                        </div>
+                                    </div>
+                                 </div>
+
+                        </form>
+                         
+
                             <div class="row" id="serviceContainer">
                                         <div class="col-md-4">
                                     <label for="exampleInputName1">Contribution Name</label>
@@ -95,7 +116,7 @@
                             <div class="form-button" style="display:flex; justify-content:center;">
                                 <input type="submit" value="Submit" class="btn btn-primary" />
                             </div>
-                        </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -179,6 +200,36 @@
 
             serviceIndex++;
         });
+    });
+</script>
+
+<script>
+    jQuery(document).ready(function () {
+        $("#txt_append").click(function (e) {
+            e.preventDefault();
+            $(".inc").append('<div class="controls">\
+                    <input class="form-control" type="text" name="textbox" placeholder="textbox">\
+                    <input class="form-control" type="text" name="text" placeholder="text">\
+                    <a href="#" class="remove_this btn btn-danger">remove</a>\
+                    <br>\
+                    <br>\
+                </div>');
+            return false;
+        });
+
+        jQuery(document).on('click', '.remove_this', function () {
+            jQuery(this).parent().remove();
+            return false;
+        });
+        $("input[type=submit]").click(function (e) {
+            e.preventDefault();
+            $(this).next("[name=textbox]")
+                .val(
+                    $.map($(".inc :text"), function (el) {
+                        return el.value
+                    }).join(",\n")
+                )
+        })
     });
 </script>
 

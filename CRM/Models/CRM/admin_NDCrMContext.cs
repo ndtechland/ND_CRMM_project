@@ -58,6 +58,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<WorkLocation> WorkLocations { get; set; } = null!;
         public virtual DbSet<WorkLocation1> WorkLocations1 { get; set; } = null!;
         public virtual DbSet<EmployeeImportExcel> EmpMultiforms { get; set; } = null!;
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)

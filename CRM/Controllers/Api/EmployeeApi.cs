@@ -183,6 +183,7 @@ namespace CRM.Controllers.Api
                     response.Message = "Token is expired.";
                     return BadRequest(response);
                 }
+                return Ok(response);
             }
             catch (Exception ex)
             {
