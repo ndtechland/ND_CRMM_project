@@ -76,27 +76,27 @@ namespace CRM.Controllers.Api
                 {
                     var userid = User.Claims.FirstOrDefault().Value;                   
                     EmployeePersonalDetail apiModel = await _apiemp.PersonalDetail(model, userid);
-                    var data = _context.EmployeePersonalDetails.FirstOrDefault(x => x.PersonalEmailAddress == model.PersonalEmailAddress && x.AddressLine1 == model.AddressLine1 && x.AddressLine2 == model.AddressLine2 && x.Pan == model.Pan && x.MobileNumber == model.MobileNumber);
-                    if (data.PersonalEmailAddress != null)
-                    {
-                        response.Message = "Personal Email already exists.";
-                    }
-                    if (data.AddressLine1 != null)
-                    {
-                        response.Message = "AddressLine1 already exists.";
-                    }
-                    if (data.AddressLine2 != null)
-                    {
-                        response.Message = "AddressLine2 already exists.";
-                    }
-                    if (data.Pan != null)
-                    {
-                        response.Message = "Pan already exists.";
-                    }
-                    if (data.MobileNumber != null)
-                    {
-                        response.Message = "MobileNumber already exists.";
-                    }
+                    //var data = _context.EmployeePersonalDetails.FirstOrDefault(x => x.PersonalEmailAddress == model.PersonalEmailAddress && x.AddressLine1 == model.AddressLine1 && x.AddressLine2 == model.AddressLine2 && x.Pan == model.Pan && x.MobileNumber == model.MobileNumber);
+                    //if (data.PersonalEmailAddress != null)
+                    //{
+                    //    response.Message = "Personal Email already exists.";
+                    //}
+                    //if (data.AddressLine1 != null)
+                    //{
+                    //    response.Message = "AddressLine1 already exists.";
+                    //}
+                    //if (data.AddressLine2 != null)
+                    //{
+                    //    response.Message = "AddressLine2 already exists.";
+                    //}
+                    //if (data.Pan != null)
+                    //{
+                    //    response.Message = "Pan already exists.";
+                    //}
+                    //if (data.MobileNumber != null)
+                    //{
+                    //    response.Message = "MobileNumber already exists.";
+                    //}
                     if (apiModel != null)
                     {
                         response.Succeeded = true;
