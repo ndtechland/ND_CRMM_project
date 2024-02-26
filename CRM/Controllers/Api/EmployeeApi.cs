@@ -176,6 +176,10 @@ namespace CRM.Controllers.Api
                 {
                     string userid = User.Claims.FirstOrDefault().Value;
                     EmployeePersonalDetail isEmployeeExists = await _apiemp.GetPresnolInfo(userid);
+                    if(isEmployeeExists != null)
+                    {
+                        
+                    }
                 }
                 else
                 {

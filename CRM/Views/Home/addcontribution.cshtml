@@ -61,45 +61,28 @@
                                 </div>*@
 
 
-                            <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js">
-                            </script>
                             
-                                <div class="col-md-4">
+                            
+                                <div class="form-group">
                                     <div class="inc">
-                                        <div class="controls">
+                                       <div class="row">
+                                         <div class="col-md-4">
                                             <input type="text" class="form-control" name="textbox" placeholder="textbox" />
+                                         </div>
+                                         <div class="col-md-4">
                                             <input type="text" class="form-control" name="text" placeholder="text" />
-                                            <button style="margin-left: 50px" class="btn btn-info" type="submit" id="txt_append" name="append">
+                                         </div>
+                                    <div class="col-md-4">
+                                        <button style="margin-left: 50px" class="btn btn-info" type="button" id="txt_append" name="append">
                                                 Add Textbox
                                             </button>
+                                        </div>
                                             <br>
                                             <br>
                                         </div>
-                                    </div>
-                                 </div>
-
-                        </form>
-                         
-
-                            <div class="row" id="serviceContainer">
-                                        <div class="col-md-4">
-                                    <label for="exampleInputName1">Contribution Name</label>
-                                    <input type="text" name="Services[0].Service" class="form-control" value="" id="exampleInputName1" required>
-                                        </div>
-                                     
-                              
-                                    <div class="col-md-4">
-                                    <label for="exampleInputLevel1">Contribution Level</label>
-                                    <input type="text" name="Services[0].Level" class="form-control" value="" id="exampleInputLevel1" required>
-                                    </div>
-                                 
-                                
-                                    <div class="col-md-4">
-                                    <button type="button" id="addContributionBtn" class="btn btn-info" style="margin-top: 10px;">
-                                        <i class="fa fa-plus"></i> Add Contribution
-                                    </button>
                                     </div>
                                 </div>
+                                
                             <div class="row">
                                 <div class="form-group col-sm">
                                     <label for="validationCustom0">Customer</label>
@@ -116,7 +99,8 @@
                             <div class="form-button" style="display:flex; justify-content:center;">
                                 <input type="submit" value="Submit" class="btn btn-primary" />
                             </div>
-                        </div>
+
+                     </form>
                     </div>
                 </div>
             </div>
@@ -160,78 +144,46 @@
 
 </script>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 
-<script>
-    $(document).ready(function () {
-        var serviceIndex = 1;
-
-        $("#addContributionBtn").click(function () {
-            var newServiceContainer = $("<div>").addClass("form-group col-md-3");
-
-            var contributionNameInput = $("<input>")
-                .attr("type", "text")
-                .attr("name", "Services[" + serviceIndex + "].Service")
-                .attr("class", "form-control")
-                .attr("placeholder", "Contribution Name")
-                .attr("required", true);
-
-            var contributionLevelInput = $("<input>")
-                .attr("type", "text")
-                .attr("name", "Services[" + serviceIndex + "].Level")
-                .attr("class", "form-control")
-                .attr("placeholder", "Contribution Level")
-                .attr("required", true);
-
-            var removeButton = $("<i>")
-                .addClass("fas fa-trash-alt text-danger")
-                .click(function () {
-                    $(this).parent().remove();
-                });
-
-            contributionNameInput.css("margin-bottom", "5px");
-            contributionLevelInput.css("margin-bottom", "5px");
-
-            newServiceContainer.append(contributionNameInput);
-            newServiceContainer.append(contributionLevelInput);
-            newServiceContainer.append(removeButton);
-
-            $("#serviceContainer").append(newServiceContainer);
-
-            serviceIndex++;
-        });
-    });
-</script>
 
 <script>
     jQuery(document).ready(function () {
         $("#txt_append").click(function (e) {
             e.preventDefault();
-            $(".inc").append('<div class="controls">\
-                    <input class="form-control" type="text" name="textbox" placeholder="textbox">\
-                    <input class="form-control" type="text" name="text" placeholder="text">\
+            $(".inc").append('<div class="row">\
+                <div class="col-md-4">\
+                <input type="text" class="form-control" name="textbox" placeholder="textbox" />\
+                </div>\
+                <div class="col-md-4">\
+                <input type="text" class="form-control" name="text" placeholder="text" />\
+                </div>\
+                <div class="col-md-4">\
                     <a href="#" class="remove_this btn btn-danger">remove</a>\
-                    <br>\
-                    <br>\
-                </div>');
+                </div>\
+                <br>\
+                <br>\
+            </div>');
             return false;
         });
 
-        jQuery(document).on('click', '.remove_this', function () {
-            jQuery(this).parent().remove();
+        jQuery(document).on('click', '.remove_this', function (e) {
+            e.preventDefault();
+            $(this).closest('.row').remove(); // Remove the closest '.row' element
             return false;
         });
-        $("input[type=submit]").click(function (e) {
+
+        $("#txt_append").click(function (e) {
             e.preventDefault();
             $(this).next("[name=textbox]")
                 .val(
                     $.map($(".inc :text"), function (el) {
-                        return el.value
+                        return el.value;
                     }).join(",\n")
-                )
-        })
+                );
+        });
     });
-</script>
 
+</script>
 
 
