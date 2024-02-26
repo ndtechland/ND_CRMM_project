@@ -443,7 +443,7 @@
                                                     </div>
                                                     <div class="col">
                                                         <label>Professional tax</label>
-                                                        <input class="form-control " value='@ViewBag.Professionaltax' name="Professionaltax" placeholder="Enter Professional tax" id="Professionaltax" type="text" required="">
+                                                        <input class="form-control " value='@ViewBag.Professionaltax' name="Professionaltax" placeholder="Enter Professional tax" id="Professionaltax" type="text" required="" readonly>
                                                     </div>
                                                     <div class="col">
                                                         <label>ESIC</label>
@@ -858,9 +858,9 @@
     var ifsc = $("#IFSC").val();
     var ifscRegex = /^[A-Z]{4}[0][A-Z0-9]{6}$/;
 
-    if (!ifscRegex.test(ifsc)) {
-        errormessage += 'IFSC Code is  not valid,'
-    }
+    // if (!ifscRegex.test(ifsc)) {
+    //     errormessage += 'IFSC Code is  not valid,'
+    // }
 
 
     //var EPF = $("#EPF_Number").val();
@@ -1090,6 +1090,12 @@
         var grossInput = $('#txtgross');
         var AmountInput = $('#txtAmount');
         var TdspercentageInput = $('#txtTdspercentage');
+        specialallowanceInput.on('input', function () {
+            var inputEvent = new Event('input');
+            document.getElementById('txtgross').dispatchEvent(inputEvent);
+
+        });
+
         monthlySalaryInput.on('input', function () {
             var monthlySalary = parseInt($(this).val());
             if (!isNaN(monthlySalary)) {
@@ -1101,7 +1107,12 @@
                 var houseRent = basicSalary / 2;
                 var EPFCalculation = monthlySalary * 12 / 100;
                 var MonthlyGross = monthlySalary - EPFCalculation;
-                var Gross = basicSalary + houseRent + parseInt(specialallowance);
+                if (specialallowance == undefined || specialallowance == "") {
+                    var Gross = basicSalary + houseRent + 0;
+                } else {
+                    var Gross = basicSalary + houseRent + parseInt(specialallowance);
+                }
+                
                 var ESIC;
 
                 if (Gross < 21000) {
