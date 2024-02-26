@@ -184,5 +184,31 @@ namespace CRM.Repository
                 throw new Exception("Error :" + ex.Message);
             }
         }
+        public async Task<List<City>> getcity(int stateid)
+        {
+            try
+            {
+                var cities = await _context.Cities.Where(x => x.StateId == stateid).ToListAsync();
+
+                return cities;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error: " + ex.Message);
+            }
+        }
+        public async Task<List<State>> Getstate()
+        {
+            try
+            {
+                var state = await _context.States.ToListAsync();
+
+                return state;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error: " + ex.Message);
+            }
+        }
     }
 }

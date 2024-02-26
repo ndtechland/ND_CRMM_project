@@ -10,6 +10,8 @@ namespace CRM.Repository
         public Task<EmployeePersonalDetail> PersonalDetail(EmpPersonalDetail model,string userid);
         public Task<EmployeeBankDetail> Bankdetail(bankdetail model,string userid);
         public Task<EmployeePersonalDetail> GetPresnolInfo(string Employeeid);
+        public Task<List<City>> getcity(int stateid);
+        public Task<List<State>> Getstate();
 
     }
 }
