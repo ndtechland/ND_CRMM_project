@@ -55,7 +55,7 @@ namespace CRM.Controllers.Api
                 {
                     response.StatusCode = StatusCodes.Status401Unauthorized;
                     response.Message = "Token is expired.";
-                    return Ok(response);
+                    return BadRequest(response);
                 }
 
 
@@ -162,6 +162,32 @@ namespace CRM.Controllers.Api
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
+            }
+        }
+
+        [Route("GetPresnolInfo")]
+        [HttpGet]
+        public async Task<IActionResult> GetPresnolInfo()
+        {
+            var response = new Response<EmployeePersonalDetail>();
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    string userid = User.Claims.FirstOrDefault().Value;
+                    EmployeePersonalDetail isEmployeeExists = await _apiemp.GetPresnolInfo(userid);
+                }
+                else
+                {
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Message = "Token is expired.";
+                    return BadRequest(response);
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("Error :" + ex.Message);
             }
         }
 

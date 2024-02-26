@@ -18,7 +18,7 @@ namespace CRM.Repository
         {
             try
             {
-                if (Employeeid != null)
+                if (string.IsNullOrEmpty(Employeeid))
                 {
                     var empid = _context.EmployeeRegistrations.Where(x => x.EmployeeId == Employeeid).Select(x => new EmployeeBasicInfo
                     {
@@ -164,6 +164,25 @@ namespace CRM.Repository
             }
         }
 
+        public async Task<EmployeePersonalDetail> GetPresnolInfo(string Employeeid)
+        {
+            try
+            {
+                if(string.IsNullOrEmpty(Employeeid))
+                {
+                    var result = await _context.EmployeePersonalDetails.Where(x =>x.EmpRegId == Employeeid).Select( x => new EmployeePersonalDetail
+                    {
+                       
+                    }).FirstOrDefaultAsync();
 
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("Error :" + ex.Message);
+            }
+        }
     }
 }
