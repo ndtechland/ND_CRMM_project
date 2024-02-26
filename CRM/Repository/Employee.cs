@@ -202,7 +202,6 @@ namespace CRM.Repository
             try
             {
                 var state = await _context.States.ToListAsync();
-
                 return state;
             }
             catch (Exception ex)

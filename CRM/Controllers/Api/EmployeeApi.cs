@@ -197,19 +197,10 @@ namespace CRM.Controllers.Api
             var response = new Response<List<City>>();
             try
             {
-                if (User.Identity.IsAuthenticated)
-                {
                     List<City> cities = await _apiemp.getcity(stateid); 
                     response.Data = cities;
                     response.Message = "Cities retrieved successfully.";
                     return Ok(response);
-                }
-                else
-                {
-                    response.StatusCode = StatusCodes.Status401Unauthorized;
-                    response.Message = "Token is expired.";
-                    return Unauthorized(response);
-                }
             }
             catch (Exception ex)
             {
@@ -225,20 +216,11 @@ namespace CRM.Controllers.Api
             var response = new Response<List<State>>();
             try
             {
-                if (User.Identity.IsAuthenticated)
-                {
                     List<State> st = await _apiemp.Getstate();
                     response.Data = st;
                     response.Message = "State retrieved successfully.";
                     return Ok(response);
-                }
-                else
-                {
-                    response.StatusCode = StatusCodes.Status401Unauthorized;
-                    response.Message = "Token is expired.";
-                    return Unauthorized(response);
-                }
-            }
+            }  
             catch (Exception ex)
             {
                 response.StatusCode = StatusCodes.Status500InternalServerError;
