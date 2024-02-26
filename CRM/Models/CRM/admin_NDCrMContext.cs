@@ -17,6 +17,7 @@ namespace CRM.Models.Crm
         }
 
         public virtual DbSet<AccountTypeMaster> AccountTypeMasters { get; set; } = null!;
+        public virtual DbSet<Additonalcontribution> Additonalcontributions { get; set; } = null!;
         public virtual DbSet<AdminLogin> AdminLogins { get; set; } = null!;
         public virtual DbSet<BannerMaster> BannerMasters { get; set; } = null!;
         public virtual DbSet<BillingDetail> BillingDetails { get; set; } = null!;
@@ -79,6 +80,25 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.AccountType)
                     .HasMaxLength(50)
                     .HasColumnName("Account_Type");
+            });
+
+            modelBuilder.Entity<Additonalcontribution>(entity =>
+            {
+                entity.ToTable("additonalcontribution");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.ContributionName)
+                    .HasMaxLength(255)
+                    .HasColumnName("contribution_name");
+
+                entity.Property(e => e.CreatedDate)
+                    .HasColumnType("datetime")
+                    .HasColumnName("created_date");
+
+                entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
+
+                entity.Property(e => e.WorkLocationId).HasColumnName("Work_Location_ID");
             });
 
             modelBuilder.Entity<AdminLogin>(entity =>

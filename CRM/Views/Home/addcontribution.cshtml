@@ -1,0 +1,186 @@
+﻿@model CRM.Models.Crm.Additonalcontribution
+
+@{
+    ViewData["Title"] = "addcontribution";
+    Layout = "~/Views/Shared/_adminLayout.cshtml";
+}
+@if (ViewBag.Message != null)
+{
+    <script>alert('@ViewBag.Message');</script>
+}
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-css/1.4.6/select2-bootstrap.min.css">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/css/select2.min.css" rel="stylesheet" />
+
+
+</head>
+
+<div class="page-wrapper">
+    <div class="page-body-wrapper">
+        <div class="page-sidebar">
+        </div>
+
+        <div class="page-body">
+
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="page-header-left">
+                                <h2>
+                                    Additonal Contribution
+                                </h2>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <ol class="breadcrumb pull-right">
+                                <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
+                                <li class="breadcrumb-item">Settings</li>
+                                <li class="breadcrumb-item active">Additonal Contribution</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Container-fluid Ends-->
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <form asp-action="addcontribution" autocomplete="off">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            
+                               @* <div class="form-group col-sm">
+                                    <label class="control-label">Contribution Name</label>
+                                    <input name="Services[0].ContributionName" class="form-control" placeholder="Enter Contribution Name" onkeydown="validateNumericInput(event)" type="text" id="exampleInputName1" required />
+                                    <span asp-validation-for="ContributionName" class="text-danger"></span>
+                                </div>*@
+                            
+                            <div class="row" id="serviceContainer">
+                                        <div class="col-md-4">
+                                    <label for="exampleInputName1">Contribution Name</label>
+                                    <input type="text" name="Services[0].Service" class="form-control" value="" id="exampleInputName1" required>
+                                        </div>
+                                     
+                              
+                                    <div class="col-md-4">
+                                    <label for="exampleInputLevel1">Contribution Level</label>
+                                    <input type="text" name="Services[0].Level" class="form-control" value="" id="exampleInputLevel1" required>
+                                    </div>
+                                 
+                                
+                                    <div class="col-md-4">
+                                    <button type="button" id="addContributionBtn" class="btn btn-info" style="margin-top: 10px;">
+                                        <i class="fa fa-plus"></i> Add Contribution
+                                    </button>
+                                    </div>
+                                </div>
+                            <div class="row">
+                                <div class="form-group col-sm">
+                                    <label for="validationCustom0">Customer</label>
+                                    @Html.DropDownList("CustomerId", (IEnumerable<SelectListItem>)ViewBag.CustomerName, "-- Select Customer --", new { @class = "form-control", onchange = "Locations()" })
+                                    <span asp-validation-for="CustomerId" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-sm">
+                                    <label for="validationCustom0">Work Location</label>
+                                    @Html.DropDownList("WorkLocationId", Enumerable.Empty<SelectListItem>(), "-- Select Work Location --", new { @class = "form-control" })
+                                    <span asp-validation-for="WorkLocationId" class="text-danger"></span>
+                                </div>
+                            </div>
+                            
+                            <div class="form-button" style="display:flex; justify-content:center;">
+                                <input type="submit" value="Submit" class="btn btn-primary" />
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    function Locations() {
+        var customerId = $("#CustomerId").val();
+        if (customerId !== "") {
+            $.ajax({
+                url: '/Home/GetLocationsByCustomer?customerId=' + customerId,
+                type: "post",
+                success: function (response) {
+                    populateLocations(response);
+                },
+                error: function (error) {
+                    console.error("Error loading locations: " + error);
+                }
+            });
+        } else {
+            $("#WorkLocationId").empty();
+            $("#WorkLocationId").append('<option value="">--Select Work Location--</option>');
+        }
+    }
+
+    function populateLocations(locations) {
+        $("#WorkLocationId").empty();
+        $("#WorkLocationId").append('<option value="">-- Select Work Location --</option>');
+        $.each(locations, function (index, location) {
+            $("#WorkLocationId").append('<option value="' + location.value + '">' + location.text + '</option>');
+        });
+    }
+
+
+</script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        var serviceIndex = 1;
+
+        $("#addContributionBtn").click(function () {
+            var newServiceContainer = $("<div>").addClass("form-group col-md-3");
+
+            var contributionNameInput = $("<input>")
+                .attr("type", "text")
+                .attr("name", "Services[" + serviceIndex + "].Service")
+                .attr("class", "form-control")
+                .attr("placeholder", "Contribution Name")
+                .attr("required", true);
+
+            var contributionLevelInput = $("<input>")
+                .attr("type", "text")
+                .attr("name", "Services[" + serviceIndex + "].Level")
+                .attr("class", "form-control")
+                .attr("placeholder", "Contribution Level")
+                .attr("required", true);
+
+            var removeButton = $("<i>")
+                .addClass("fas fa-trash-alt text-danger")
+                .click(function () {
+                    $(this).parent().remove();
+                });
+
+            contributionNameInput.css("margin-bottom", "5px");
+            contributionLevelInput.css("margin-bottom", "5px");
+
+            newServiceContainer.append(contributionNameInput);
+            newServiceContainer.append(contributionLevelInput);
+            newServiceContainer.append(removeButton);
+
+            $("#serviceContainer").append(newServiceContainer);
+
+            serviceIndex++;
+        });
+    });
+</script>
+
+
+

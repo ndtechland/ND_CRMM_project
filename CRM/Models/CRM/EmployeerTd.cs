@@ -7,7 +7,7 @@ namespace CRM.Models.Crm
     {
         public int Id { get; set; }
         public decimal? Amount { get; set; }
-        public int? CustomerId { get; set; }
+        public long? CustomerId { get; set; }
         public string WorkLocationId { get; set; } = null!;
         public bool Isactive { get; set; }
         public DateTime? CreateDate { get; set; }
