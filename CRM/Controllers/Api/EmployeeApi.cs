@@ -192,6 +192,7 @@ namespace CRM.Controllers.Api
             }
         }
         [HttpGet("getcity")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetCity(int stateid)
         {
             var response = new Response<List<City>>();
@@ -211,6 +212,7 @@ namespace CRM.Controllers.Api
         }
 
         [HttpGet("Getstate")]
+        [AllowAnonymous]
         public async Task<IActionResult> Getstate()
         {
             var response = new Response<List<State>>();
