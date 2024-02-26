@@ -615,18 +615,18 @@ namespace CRM.Controllers
             {
                 var locations = _context.CustomerRegistrations.FirstOrDefault(x => x.Id == Convert.ToInt32(customerId));
                 string[] strlocation = locations.WorkLocation?.Split(new string[] { "," }, StringSplitOptions.None);
-                List<WorkLocation> locationlist = new List<WorkLocation>();
+                List<City> locationlist = new List<City>();
 
                 foreach (var loc in strlocation)
                 {
-                    locationlist.Add(_context.WorkLocations.FirstOrDefault(x => x.Id == Convert.ToInt32(loc)));
+                    locationlist.Add(_context.Cities.FirstOrDefault(x => x.Id == Convert.ToInt32(loc)));
                 }
 
 
                 var locationsJson = locationlist.Select(x => new SelectListItem
                 {
                     Text = x.Id.ToString(),
-                    Value = x.AddressLine1
+                    Value = x.City1
                 }).ToList();
 
                 return Json(locationsJson);

@@ -1,0 +1,143 @@
+﻿@model CRM.Models.Crm.EmployeerTd
+
+@{
+    ViewData["Title"] = "employeerTDS";
+    Layout = "~/Views/Shared/_adminLayout.cshtml";
+}
+@if (ViewBag.Message != null)
+{
+    <script>alert('@ViewBag.Message');</script>
+}
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-css/1.4.6/select2-bootstrap.min.css">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/css/select2.min.css" rel="stylesheet" />
+
+
+</head>
+
+<div class="page-wrapper">
+    <div class="page-body-wrapper">
+        <div class="page-sidebar">
+        </div>
+
+        <div class="page-body">
+
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="page-header-left">
+                                <h2>
+                                    Employer TDS
+                                </h2>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <ol class="breadcrumb pull-right">
+                                <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
+                                <li class="breadcrumb-item">Settings</li>
+                                <li class="breadcrumb-item active">Employer TDS</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Container-fluid Ends-->
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <form asp-action="employeerTDS" autocomplete="off" method="post">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <div class="row">
+                                <div class="form-group col-sm">
+                                    <label class="control-label">TDS Amount</label>
+                                    <input asp-for="Amount" class="form-control" placeholder="Enter Amount " onkeydown="validateNumericInput(event)" required />
+                                    <span asp-validation-for="Amount" class="text-danger"></span>
+                                </div> 
+                                <div class="form-group col-sm">
+                                    <label class="control-label">TDS Percentage</label>
+                                    <div class="input-group">
+                                        <input asp-for="Tdspercentage" class="form-control" onkeydown="validateNumericInput(event)" required />
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">%</span>
+                                        </div>
+                                    </div>
+                                    <span asp-validation-for="Tdspercentage" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group col-sm">
+                                    <label for="validationCustom0">Customer</label>
+                                    @Html.DropDownList("CustomerId", (IEnumerable<SelectListItem>)ViewBag.CustomerName, "-- Select Customer --", new { @class = "form-control", onchange = "Locations()" })
+                                    <span asp-validation-for="CustomerId" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-sm">
+                                    <label for="validationCustom0">Work Location</label>
+                                    @Html.DropDownList("WorkLocationId", Enumerable.Empty<SelectListItem>(), "-- Select Work Location --", new { @class = "form-control" })
+                                    <span asp-validation-for="WorkLocationId" class="text-danger"></span>
+                                </div>
+                            </div>
+                             <div class="form-button" style="display:flex; justify-content:center;">
+                                <input type="submit" value="Submit" class="btn btn-primary" />
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    function Locations() {
+        var customerId = $("#CustomerId").val();
+        if (customerId !== "") {
+            $.ajax({
+                url: '/Home/GetLocationsByCustomer?customerId=' + customerId,
+                type: "post",
+                success: function (response) {
+                    populateLocations(response);
+                },
+                error: function (error) {
+                    console.error("Error loading locations: " + error);
+                }
+            });
+        } else {
+            $("#WorkLocationId").empty();
+            $("#WorkLocationId").append('<option value="">--Select Work Location--</option>');
+        }
+    }
+
+    function populateLocations(locations) {
+        $("#WorkLocationId").empty();
+        $("#WorkLocationId").append('<option value="">-- Select Work Location --</option>'); 
+        $.each(locations, function (index, location) {
+            $("#WorkLocationId").append('<option value="' + location.value + '">' + location.text + '</option>');
+        });
+    }
+
+
+</script>
+
+<script>
+    function validateNumericInput(event) {
+        if ([46, 8, 9, 27, 13].indexOf(event.keyCode) !== -1 ||
+            (event.keyCode == 65 && event.ctrlKey === true) ||
+            (event.keyCode >= 35 && event.keyCode <= 39)) {
+            return;
+        }
+        if ((event.shiftKey || (event.keyCode < 48 || event.keyCode > 57)) && (event.keyCode < 96 || event.keyCode > 105)) {
+            event.preventDefault();
+        }
+
+    }
+</script>

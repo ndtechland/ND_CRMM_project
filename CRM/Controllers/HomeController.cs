@@ -776,7 +776,7 @@ namespace CRM.Controllers
                     {
                         c.Id,
                         WorkLocations = c.WorkLocation?.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                                                    .Select(loc => _context.WorkLocations.FirstOrDefault(w => w.Id == Convert.ToInt32(loc)))
+                                                    .Select(loc => _context.Cities.FirstOrDefault(w => w.Id == Convert.ToInt32(loc)))
                                                     .Where(w => w != null)
                     })
                     .FirstOrDefault(x => x.Id == Convert.ToInt32(customerId));
@@ -786,7 +786,7 @@ namespace CRM.Controllers
                     var locationList = locations.WorkLocations.Select(x => new SelectListItem
                     {
                         Value = x.Id.ToString(),
-                        Text = x.AddressLine1
+                        Text = x.City1
                     }).ToList();
 
                     return Json(locationList);
@@ -826,8 +826,61 @@ namespace CRM.Controllers
                 throw new Exception(ex.Message);
             }
             return cityDetail;
-        }   
-
+        }
+        [Route("Home/addcontribution")]
+        [HttpGet]
+        public IActionResult addcontribution()
+        {
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName = AddedBy;
+                ViewBag.CustomerName = _context.CustomerRegistrations
+                    .Select(x => new SelectListItem
+                    {
+                        Value = x.Id.ToString(),
+                        Text = x.CompanyName
+                    }).ToList();
+                ViewBag.Message = TempData["ErrorMessage"];
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> addcontribution(Additonalcontribution model)
+        {
+            try
+            {
+                if (model != null)
+                {
+                    Additonalcontribution ac = new Additonalcontribution
+                    {
+                        ContributionName = model.ContributionName,
+                        CustomerId = model.CustomerId,
+                        WorkLocationId = model.WorkLocationId,
+                        CreatedDate = DateTime.Now.Date,
+                        Isactive = true,
+                    };
+                    _context.Additonalcontributions.Add(ac);
+                    _context.SaveChanges();
+                    TempData["ErrorMessage"] = "Additonalcontribution  Add";
+                    return RedirectToAction("addcontribution");
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "data not save";
+                    ModelState.Clear();
+                    return View();
+                }
+            }
+            catch (Exception Ex)
+            {
+                throw new Exception("Error:" + Ex.Message);
+            }
+        }
     }
 
 }
