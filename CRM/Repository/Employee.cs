@@ -3,9 +3,10 @@ using CRM.Models.APIDTO;
 using CRM.Models.Crm;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Services.Account;
 using MimeKit.Encodings;
 using Org.BouncyCastle.Ocsp;
-
+using System;
 namespace CRM.Repository
 {
     public class Employee : IEmployee
@@ -23,17 +24,20 @@ namespace CRM.Repository
                 {
                     var empid = _context.EmployeeRegistrations.Where(x => x.EmployeeId == userid && x.IsDeleted == false).Select(x => new EmployeeBasicInfo
                     {
-                          FullName = x.FirstName + " " + x.MiddleName + " " + x.LastName,
-                          DateOfJoining = x.DateOfJoining,
-                          WorkEmail = x.WorkEmail,
-                          GenderName = _context.GenderMasters.Where(g =>g.Id == x.GenderId).Select(g => g.GenderName).First(),
-                          WorkLocationName = _context.Cities.Where(g => g.Id == Convert.ToInt16(x.WorkLocationId)).Select(g => g.City1).First(),
-                          DesignationName = _context.DesignationMasters.Where(g => g.Id == Convert.ToInt16(x.DesignationId)).Select(g => g.DesignationName).First(),
-                          DepartmentName = _context.DepartmentMasters.Where(g => g.Id == Convert.ToInt16(x.DepartmentId)).Select(g => g.DepartmentName).First().Trim(),
-                          CustomerName = _context.CustomerRegistrations.Where(g => g.Id == x.CustomerId).Select(g => g.CompanyName).First(),
-                          EmployeeId = x.EmployeeId,
-                           //RoleId = x.RoleId,
-                          IsDeleted = x.IsDeleted,
+                       FirstName = x.FirstName,
+                        MiddleName = x.MiddleName,
+                        LastName = x.LastName,
+                        FullName = x.FirstName + " " + x.MiddleName + " " + x.LastName,
+                        DateOfJoining = x.DateOfJoining,
+                       WorkEmail = x.WorkEmail,
+                        GenderName = _context.GenderMasters.Where(g => g.Id == x.GenderId).Select(g => g.GenderName).First(),
+                        WorkLocationName = _context.Cities.Where(g => g.Id == Convert.ToInt16(x.WorkLocationId)).Select(g => g.City1).First(),
+                        DesignationName = _context.DesignationMasters.Where(g => g.Id == Convert.ToInt16(x.DesignationId)).Select(g => g.DesignationName).First(),
+                        DepartmentName = _context.DepartmentMasters.Where(g => g.Id == Convert.ToInt16(x.DepartmentId)).Select(g => g.DepartmentName).First().Trim(),
+                        CustomerName = _context.CustomerRegistrations.Where(g => g.Id == x.CustomerId).Select(g => g.CompanyName).First(),
+                        EmployeeId = x.EmployeeId,
+                        //RoleId = x.RoleId,
+                        IsDeleted = x.IsDeleted,
                     }).FirstOrDefault();
                     return empid;
                 }
@@ -126,7 +130,7 @@ namespace CRM.Repository
                     empbank.AccountNumber = model.AccountNumber;
                     empbank.ReEnterAccountNumber = model.ReEnterAccountNumber;
                     empbank.Ifsc = model.Ifsc;
-                    empbank.AccountTypeId = model.AccountTypeId;
+                    empbank.AccountTypeId = Convert.ToInt32(model.AccountTypeId);
                     empbank.EpfNumber = model.EpfNumber;
                     empbank.DeductionCycle = model.DeductionCycle;
                     empbank.EmployeeContributionRate = model.EmployeeContributionRate;
@@ -148,7 +152,7 @@ namespace CRM.Repository
                         ReEnterAccountNumber = model.ReEnterAccountNumber,
                         Ifsc = model.Ifsc,
                         EmpId = userid,
-                        AccountTypeId = model.AccountTypeId,
+                        AccountTypeId = Convert.ToInt32(model.AccountTypeId),
                         EpfNumber = model.EpfNumber,
                         DeductionCycle = model.DeductionCycle,
                         EmployeeContributionRate = model.EmployeeContributionRate,
@@ -237,7 +241,7 @@ namespace CRM.Repository
                         AccountNumber = x.AccountNumber,
                         ReEnterAccountNumber = x.ReEnterAccountNumber,
                         Ifsc = x.Ifsc,
-                        AccountTypeId = x.AccountTypeId,
+                        AccountTypeId = _context.AccountTypeMasters.Where(g => g.Id == x.AccountTypeId).Select(g => g.AccountType).First().Trim(),
                         EpfNumber = x.EpfNumber,
                         DeductionCycle = x.DeductionCycle,
                         EmployeeContributionRate = x.EmployeeContributionRate,

@@ -30,7 +30,7 @@ namespace CRM
         {
             services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromMinutes(20); // Set session timeout
+                options.IdleTimeout = TimeSpan.FromHours(1); // Set session timeout
             });
 
             services.AddDbContext<admin_NDCrMContext>(options => options.UseSqlServer(Configuration.GetConnectionString("db1")));
@@ -89,12 +89,12 @@ namespace CRM
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseSession();
+           
             app.UseRouting();
             app.UseCors("CorsPolicy");
-
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseSession();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
