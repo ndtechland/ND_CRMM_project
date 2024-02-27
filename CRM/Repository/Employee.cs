@@ -1,6 +1,7 @@
 ﻿using CRM.Controllers;
 using CRM.Models.APIDTO;
 using CRM.Models.Crm;
+using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.EntityFrameworkCore;
 using MimeKit.Encodings;
 using Org.BouncyCastle.Ocsp;
@@ -14,13 +15,13 @@ namespace CRM.Repository
         {
             this._context = context;
         }
-        public async Task<EmployeeBasicInfo> GetEmployeeById(string Employeeid)
+        public async Task<EmployeeBasicInfo> GetEmployeeById(string userid)
         {
             try
             {
-                if (string.IsNullOrEmpty(Employeeid))
+                if (userid != null)
                 {
-                    var empid = _context.EmployeeRegistrations.Where(x => x.EmployeeId == Employeeid).Select(x => new EmployeeBasicInfo
+                    var empid = _context.EmployeeRegistrations.Where(x => x.EmployeeId == userid && x.IsDeleted == false).Select(x => new EmployeeBasicInfo
                     {
                           FirstName = x.FirstName,
                           MiddleName = x.MiddleName,
@@ -31,7 +32,7 @@ namespace CRM.Repository
                           WorkLocationName = _context.Cities.Where(g => g.Id == Convert.ToInt16(x.WorkLocationId)).Select(g => g.City1).First(),
                           DesignationName = _context.DesignationMasters.Where(g => g.Id == Convert.ToInt16(x.DesignationId)).Select(g => g.DesignationName).First(),
                           DepartmentName = _context.DepartmentMasters.Where(g => g.Id == Convert.ToInt16(x.DepartmentId)).Select(g => g.DepartmentName).First().Trim(),
-                        CustomerName = _context.CustomerRegistrations.Where(g => g.Id == x.CustomerId).Select(g => g.CompanyName).First(),
+                          CustomerName = _context.CustomerRegistrations.Where(g => g.Id == x.CustomerId).Select(g => g.CompanyName).First(),
                           EmployeeId = x.EmployeeId,
                            //RoleId = x.RoleId,
                           IsDeleted = x.IsDeleted,
@@ -164,17 +165,27 @@ namespace CRM.Repository
             }
         }
 
-        public async Task<EmployeePersonalDetail> GetPresnolInfo(string Employeeid)
+        public async Task<EmpPersonalDetail> GetPresnolInfo(string userid)
         {
             try
             {
-                if(string.IsNullOrEmpty(Employeeid))
+                if(userid != null)
                 {
-                    var result = await _context.EmployeePersonalDetails.Where(x =>x.EmpRegId == Employeeid).Select( x => new EmployeePersonalDetail
+                    var result = await _context.EmployeePersonalDetails.Where(x =>x.EmpRegId == userid && x.IsDeleted == false).Select( x => new EmpPersonalDetail
                     {
-                       
+                       PersonalEmailAddress =x.PersonalEmailAddress,
+                        MobileNumber =x.MobileNumber,
+                        DateOfBirth =x.DateOfBirth,
+                        Age =x.Age,
+                        FatherName =x.FatherName,
+                        Pan =x.Pan,
+                        AddressLine1 =x.AddressLine1,
+                        AddressLine2 =x.AddressLine2,
+                        City =x.City,
+                        StateId =x.StateId,
+                        Pincode =x.Pincode,
                     }).FirstOrDefaultAsync();
-
+                    return result;
                 }
                 return null;
             }
