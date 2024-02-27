@@ -181,7 +181,7 @@ namespace CRM.Controllers.Api
                         response.Succeeded = true;
                         response.StatusCode = StatusCodes.Status200OK;
                         response.Status = "Success";
-                        response.Message = "Employee Presnol Details Here.";
+                        response.Message = "Employee Personal Details Here.";
                         response.Data = isEmployeeExists;
                         return Ok(response);
                     }
@@ -243,6 +243,47 @@ namespace CRM.Controllers.Api
                 response.StatusCode = StatusCodes.Status500InternalServerError;
                 response.Message = "Error: " + ex.Message;
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
+        }
+        [Route("GetBankdetail")]
+        [HttpGet]
+        public async Task<IActionResult> GetBankdetail()
+        {
+            var response = new Response<bankdetail>();
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    string userid = User.Claims.FirstOrDefault().Value;
+                    bankdetail isEmployeeExists = await _apiemp.GetBankdetail(userid);
+                    if (isEmployeeExists != null)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = "Employee Bank Details Here.";
+                        response.Data = isEmployeeExists;
+                        return Ok(response);
+                    }
+                    else
+                    {
+                        response.StatusCode = StatusCodes.Status401Unauthorized;
+                        response.Message = "Data not found.";
+                        return Ok(response);
+                    }
+                }
+                else
+                {
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Message = "Token is expired.";
+                    return BadRequest(response);
+                }
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("Error :" + ex.Message);
             }
         }
     }

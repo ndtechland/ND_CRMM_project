@@ -14,5 +14,8 @@
         public string? City { get; set; }
         public string StateId { get; set; } = null!;
         public string? Pincode { get; set; }
+        public string? Aadharcard { get; set; }
+        public string? Aadharimg { get; set; }
+        public string? Panimg { get; set; }
     }
 }
