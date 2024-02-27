@@ -23,9 +23,7 @@ namespace CRM.Repository
                 {
                     var empid = _context.EmployeeRegistrations.Where(x => x.EmployeeId == userid && x.IsDeleted == false).Select(x => new EmployeeBasicInfo
                     {
-                          FirstName = x.FirstName,
-                          MiddleName = x.MiddleName,
-                          LastName = x.LastName,
+                          FullName = x.FirstName + " " + x.MiddleName + " " + x.LastName,
                           DateOfJoining = x.DateOfJoining,
                           WorkEmail = x.WorkEmail,
                           GenderName = _context.GenderMasters.Where(g =>g.Id == x.GenderId).Select(g => g.GenderName).First(),
@@ -68,6 +66,9 @@ namespace CRM.Repository
                     emppersonal.City = model.City;
                     emppersonal.StateId = model.StateId;
                     emppersonal.Pincode = model.Pincode;
+                    emppersonal.Aadharcard = model.Aadharcard;
+                    emppersonal.Aadharimg = model.Aadharimg;
+                    emppersonal.Panimg = model.Panimg;
                     await _context.SaveChangesAsync();
                     return emppersonal;
                 }
@@ -91,6 +92,9 @@ namespace CRM.Repository
                         StateId = model.StateId,
                         Pincode = model.Pincode,
                         EmpRegId = userid,
+                        Aadharcard = model.Aadharcard,
+                        Aadharimg=model.Aadharimg,
+                        Panimg = model.Panimg,
                     };
 
                     _context.EmployeePersonalDetails.Add(empP);
@@ -218,6 +222,35 @@ namespace CRM.Repository
             catch (Exception ex)
             {
                 throw new Exception("Error: " + ex.Message);
+            }
+        }
+        public async Task<bankdetail> GetBankdetail(string userid)
+        {
+            try
+            {
+                if (userid != null)
+                {
+                    var result = await _context.EmployeeBankDetails.Where(x => x.EmpId == userid && x.IsDeleted == false).Select(x => new bankdetail
+                    {
+                        AccountHolderName = x.AccountHolderName,
+                        BankName = x.BankName,
+                        AccountNumber = x.AccountNumber,
+                        ReEnterAccountNumber = x.ReEnterAccountNumber,
+                        Ifsc = x.Ifsc,
+                        AccountTypeId = x.AccountTypeId,
+                        EpfNumber = x.EpfNumber,
+                        DeductionCycle = x.DeductionCycle,
+                        EmployeeContributionRate = x.EmployeeContributionRate,
+                        Nominee = x.Nominee,
+                    }).FirstOrDefaultAsync();
+                    return result;
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("Error :" + ex.Message);
             }
         }
     }

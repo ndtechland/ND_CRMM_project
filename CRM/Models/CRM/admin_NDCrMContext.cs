@@ -58,7 +58,6 @@ namespace CRM.Models.Crm
         public virtual DbSet<WorkLocation> WorkLocations { get; set; } = null!;
         public virtual DbSet<WorkLocation1> WorkLocations1 { get; set; } = null!;
         public virtual DbSet<EmployeeImportExcel> EmpMultiforms { get; set; } = null!;
-
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -430,6 +429,12 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Id).HasColumnName("ID");
 
+                entity.Property(e => e.Aadharcard)
+                    .HasMaxLength(50)
+                    .HasColumnName("aadharcard");
+
+                entity.Property(e => e.Aadharimg).HasColumnName("aadharimg");
+
                 entity.Property(e => e.AddressLine1)
                     .HasMaxLength(255)
                     .HasColumnName("Address_Line_1");
@@ -457,6 +462,8 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.Pan)
                     .HasMaxLength(50)
                     .HasColumnName("PAN");
+
+                entity.Property(e => e.Panimg).HasColumnName("panimg");
 
                 entity.Property(e => e.PersonalEmailAddress)
                     .HasMaxLength(120)

@@ -12,6 +12,6 @@ namespace CRM.Repository
         public Task<EmpPersonalDetail> GetPresnolInfo(string userid);
         public Task<List<City>> getcity(int stateid);
         public Task<List<State>> Getstate();
-
+        public Task<bankdetail> GetBankdetail(string userid);
     }
 }

@@ -20,5 +20,8 @@ namespace CRM.Models.Crm
         public bool? IsDeleted { get; set; }
         public int? EmpId { get; set; }
         public string? EmpRegId { get; set; }
+        public string? Aadharcard { get; set; }
+        public string? Aadharimg { get; set; }
+        public string? Panimg { get; set; }
     }
 }
