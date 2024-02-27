@@ -26,15 +26,15 @@ namespace CRM.Controllers.Api
         }
         [Route("GetEmployeeById")]
         [HttpGet]
-        public async Task<IActionResult> GetEmployeeById(string Employeeid)
+        public async Task<IActionResult> GetEmployeeById()
         {
             var response = new Response<EmployeeBasicInfo>();
             try
             {
                 if (User.Identity.IsAuthenticated)
                 {
-
-                    EmployeeBasicInfo isEmployeeExists = await _apiemp.GetEmployeeById(Employeeid);
+                    var userid = User.Claims.FirstOrDefault().Value;
+                      EmployeeBasicInfo isEmployeeExists = await _apiemp.GetEmployeeById(userid);
                         if (isEmployeeExists != null)
                         {
                             response.Succeeded = true;
@@ -169,13 +169,28 @@ namespace CRM.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> GetPresnolInfo()
         {
-            var response = new Response<EmployeePersonalDetail>();
+            var response = new Response<EmpPersonalDetail>();
             try
             {
                 if (User.Identity.IsAuthenticated)
                 {
                     string userid = User.Claims.FirstOrDefault().Value;
-                    EmployeePersonalDetail isEmployeeExists = await _apiemp.GetPresnolInfo(userid);
+                    EmpPersonalDetail isEmployeeExists = await _apiemp.GetPresnolInfo(userid);
+                    if (isEmployeeExists != null)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = "Employee Presnol Details Here.";
+                        response.Data = isEmployeeExists;
+                        return Ok(response);
+                    }
+                    else
+                    {
+                        response.StatusCode = StatusCodes.Status401Unauthorized;
+                        response.Message = "Data not found.";
+                        return Ok(response);
+                    }
                 }
                 else
                 {
