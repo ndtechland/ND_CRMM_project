@@ -429,11 +429,13 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Id).HasColumnName("ID");
 
+                entity.Property(e => e.AadharOne).HasColumnName("Aadhar_One");
+
+                entity.Property(e => e.AadharTwo).HasColumnName("Aadhar_Two");
+
                 entity.Property(e => e.Aadharcard)
                     .HasMaxLength(50)
                     .HasColumnName("aadharcard");
-
-                entity.Property(e => e.Aadharimg).HasColumnName("aadharimg");
 
                 entity.Property(e => e.AddressLine1)
                     .HasMaxLength(255)

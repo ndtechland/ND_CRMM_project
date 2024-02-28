@@ -14,8 +14,12 @@
         public string? City { get; set; }
         public string StateId { get; set; } = null!;
         public string? Pincode { get; set; }
-        public string? Aadharcard { get; set; }
-        public string? Aadharimg { get; set; }
+        public string? AadharNo { get; set; }
+        public string? AadharOne { get; set; }
         public string? Panimg { get; set; }
+        public List<IFormFile> Aadharbase64 { get; set; }
+        //public string[] Aadharbase64 { get; set; }
+        public IFormFile Panbase64 { get; set; }
+        public string? AadharTwo { get; set; }
     }
 }

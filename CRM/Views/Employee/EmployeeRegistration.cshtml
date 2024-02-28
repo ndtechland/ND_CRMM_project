@@ -1063,7 +1063,7 @@
 
 </script>
 
-<script type="text/javascript">
+@*<script type="text/javascript">
     $(document).ready(function () {
         bindDepartment("");
         bindDesigation("");
@@ -1071,7 +1071,7 @@
         bindcustomer("");
          bindCity("");
     })
-</script>
+</script>*@
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
@@ -1250,26 +1250,44 @@
     if (customerid != "") {
         bindcustomer(customerid);
     }
+    else{
+         bindcustomer("");
+    }
     if (workid != "") {
         bindworkLocation(workid);
     }
-
+    else{
+         bindworkLocation("");
+    }
     if (departmentid != "") {
         bindDepartment(departmentid);
     }
-
+    else{
+        bindDepartment("");
+    }
     if (designationid != "") {
         bindDesigation(designationid);
     }
-
+    else{
+        bindDesigation("");
+    }
     if (stateid != "") {
         bindStates(stateid);
+    }
+    else{
+        bindStates("");
     }
     if (statesid != "") {
         bindsStates(statesid);
     }
+    else{
+        bindsStates("");
+    }
     if (city != "") {
         bindCity(city);
+    }
+    else{
+        bindCity("");
     }
     
     var deductiontime = '@ViewBag.Deduction_Cycle';
