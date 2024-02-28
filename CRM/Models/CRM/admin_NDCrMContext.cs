@@ -498,6 +498,8 @@ namespace CRM.Models.Crm
                     .HasMaxLength(120)
                     .HasColumnName("Designation_ID");
 
+                entity.Property(e => e.EmpProfile).HasColumnName("Emp_profile");
+
                 entity.Property(e => e.EmployeeId)
                     .HasMaxLength(100)
                     .HasColumnName("Employee_ID");

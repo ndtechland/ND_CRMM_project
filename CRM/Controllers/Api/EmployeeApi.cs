@@ -286,5 +286,85 @@ namespace CRM.Controllers.Api
                 throw new Exception("Error :" + ex.Message);
             }
         }
+        [Route("Updateprofilepicture")]
+        [HttpPost]
+        public async Task<IActionResult> Updateprofilepicture([FromForm] profilepicture model)
+        {
+            var response = new Response<EmployeeRegistration>();
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userid = User.Claims.FirstOrDefault().Value;
+                    EmployeeRegistration apiModel = await _apiemp.Updateprofilepicture(model, userid);
+                    if (apiModel != null)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = "Profile Update successfully.";
+                        response.Data = apiModel;
+                        return Ok(response);
+                    }
+                    else
+                    {
+                        response.StatusCode = StatusCodes.Status401Unauthorized;
+                        response.Message = "Data not found.";
+                        return Ok(response);
+                    }
+                }
+                else
+                {
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Message = "Token is expired.";
+                    return Ok(response);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        [Route("Getprofilepicture")]
+        [HttpGet]
+        public async Task<IActionResult> Getprofilepicture()
+        {
+            var response = new Response<profilepicture>();
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    string userid = User.Claims.FirstOrDefault().Value;
+                    profilepicture isEmployeeExists = await _apiemp.Getprofilepicture(userid);
+                    if (isEmployeeExists != null)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = "Employee Profile Here.";
+                        response.Data = isEmployeeExists;
+                        return Ok(response);
+                    }
+                    else
+                    {
+                        response.StatusCode = StatusCodes.Status401Unauthorized;
+                        response.Message = "Data not found.";
+                        return Ok(response);
+                    }
+                }
+                else
+                {
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Message = "Token is expired.";
+                    return BadRequest(response);
+                }
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("Error :" + ex.Message);
+            }
+        }
     }
 }

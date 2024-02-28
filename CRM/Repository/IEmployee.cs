@@ -13,5 +13,7 @@ namespace CRM.Repository
         public Task<List<City>> getcity(int stateid);
         public Task<List<State>> Getstate();
         public Task<bankdetail> GetBankdetail(string userid);
+        public Task<EmployeeRegistration> Updateprofilepicture(profilepicture model, string userid);
+        public Task<profilepicture> Getprofilepicture(string userid);
     }
 }
