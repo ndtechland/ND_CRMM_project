@@ -232,21 +232,25 @@ namespace CRM.Repository
         {
             try
             {
-                if(userid != null)
+                if (userid != null)
                 {
-                    var result = await _context.EmployeePersonalDetails.Where(x =>x.EmpRegId == userid && x.IsDeleted == false).Select( x => new EmpPersonalDetail
+                    var result = await _context.EmployeePersonalDetails.Where(x => x.EmpRegId == userid && x.IsDeleted == false).Select(x => new EmpPersonalDetail
                     {
-                       PersonalEmailAddress =x.PersonalEmailAddress,
-                        MobileNumber =x.MobileNumber,
-                        DateOfBirth =x.DateOfBirth,
-                        Age =x.Age,
-                        FatherName =x.FatherName,
-                        Pan =x.Pan,
-                        AddressLine1 =x.AddressLine1,
-                        AddressLine2 =x.AddressLine2,
-                        City =x.City,
-                        StateId =x.StateId,
-                        Pincode =x.Pincode,
+                        PersonalEmailAddress = x.PersonalEmailAddress,
+                        MobileNumber = x.MobileNumber,
+                        DateOfBirth = x.DateOfBirth,
+                        Age = x.Age,
+                        FatherName = x.FatherName,
+                        Pan = x.Pan,
+                        AddressLine1 = x.AddressLine1,
+                        AddressLine2 = x.AddressLine2,
+                        City = x.City,
+                        StateId = x.StateId,
+                        Pincode = x.Pincode,
+                        AadharNo = x.Aadharcard,
+                        AadharOne = "/img1/" + x.AadharOne,
+                        AadharTwo = "/img1/" + x.AadharTwo,
+                        Panimg = "/img1/" + x.Panimg,
                     }).FirstOrDefaultAsync();
                     return result;
                 }
