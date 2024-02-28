@@ -18,7 +18,6 @@
         public string? AadharOne { get; set; }
         public string? Panimg { get; set; }
         public List<IFormFile> Aadharbase64 { get; set; }
-        //public string[] Aadharbase64 { get; set; }
         public IFormFile Panbase64 { get; set; }
         public string? AadharTwo { get; set; }
     }

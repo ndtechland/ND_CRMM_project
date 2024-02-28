@@ -87,7 +87,7 @@ namespace CRM.Repository
                     {
                         for (int i = 0; i < model.Aadharbase64.Count; i++)
                         {
-                            string aadharImagePath = SaveBase64Image($"aadhar{i + 1}", model.Aadharbase64[i], allowedExtensions);
+                            string aadharImagePath = SaveBase64Image("img1", $"aadhar{i + 1}",  model.Aadharbase64[i], allowedExtensions);
 
                             if (i == 0)
                             {
@@ -102,7 +102,7 @@ namespace CRM.Repository
 
                     if (model.Panbase64 != null)
                     {
-                        string panImagePath = SaveBase64Image("pan", model.Panbase64, allowedExtensions);
+                        string panImagePath = SaveBase64Image("img1","pan" , model.Panbase64, allowedExtensions);
                         emppersonal.Panimg = panImagePath;
                     }
 
@@ -136,7 +136,7 @@ namespace CRM.Repository
                         {
                             for (int i = 0; i < model.Aadharbase64.Count; i++)
                             {
-                                string aadharImagePath = SaveBase64Image($"aadhar{i + 1}", model.Aadharbase64[i], allowedExtensions);
+                                string aadharImagePath = SaveBase64Image("img1", $"aadhar{i + 1}",  model.Aadharbase64[i], allowedExtensions);
 
                                 if (i == 0)
                                 {
@@ -150,7 +150,7 @@ namespace CRM.Repository
                         }
                         if (model.Panbase64 != null)
                         {
-                            string panImagePath = SaveBase64Image("pan", model.Panbase64, allowedExtensions);
+                            string panImagePath = SaveBase64Image("img1", "pan",  model.Panbase64, allowedExtensions);
                             empP.Panimg = panImagePath;
                         }
                     }
@@ -316,7 +316,7 @@ namespace CRM.Repository
                 throw new Exception("Error :" + ex.Message);
             }
         }
-        private string SaveBase64Image(string imageName, IFormFile file, string[] allowedExtensions)
+        private string SaveBase64Image(string folderName, string imageName, IFormFile file, string[] allowedExtensions)
         {
             try
             {
@@ -327,14 +327,17 @@ namespace CRM.Repository
                     {
                         return null;
                     }
+
                     string fileName = $"{imageName}_{DateTime.Now.Ticks}{extension}";
-                    string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "img1");
-                    string filePath = Path.Combine(uploadsFolder, fileName);
+                    string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, folderName);
+                    var filePath = Path.Combine(uploadsFolder, fileName);
                     Directory.CreateDirectory(uploadsFolder);
+
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
                         file.CopyTo(stream);
                     }
+
                     return fileName;
                 }
 
@@ -344,6 +347,56 @@ namespace CRM.Repository
             {
                 Console.WriteLine($"Error saving image: {ex.Message}");
                 return null;
+            }
+        }
+        public async Task<EmployeeRegistration> Updateprofilepicture(profilepicture model, string userid)
+        {
+            try
+            {
+                string[] allowedExtensions = { ".jpg", ".jpeg", ".png" };
+                var emp = await _context.EmployeeRegistrations
+                    .Where(x => x.EmployeeId == userid)
+                    .FirstOrDefaultAsync();
+
+                if (emp != null)
+                {   
+
+                    if (model.Empprofilebase64 != null)
+                    {
+                        string EmpprofileImagePath = SaveBase64Image("EmpProfile", "Emp", model.Empprofilebase64, allowedExtensions);
+                        emp.EmpProfile = EmpprofileImagePath;
+                    }
+
+
+                    await _context.SaveChangesAsync();
+                    return emp;
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in PersonalDetail: {ex.Message}");
+                return null;
+            }
+        }
+        public async Task<profilepicture> Getprofilepicture(string userid)
+        {
+            try
+            {
+                if (userid != null)
+                {
+                    var result = await _context.EmployeeRegistrations.Where(x => x.EmployeeId == userid && x.IsDeleted == false).Select(x => new profilepicture
+                    {
+                        EmpProfile = "/EmpProfile/" + x.EmpProfile,
+                    }).FirstOrDefaultAsync();
+                    return result;
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("Error :" + ex.Message);
             }
         }
     }
