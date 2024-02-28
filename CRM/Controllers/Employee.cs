@@ -1329,15 +1329,15 @@ namespace CRM.Controllers
         {
             var data = _context.EmployeeRegistrations.OrderByDescending(x => x.Id).FirstOrDefault();
             string EmpID = string.Empty;
-
+            int numericValue = 1001;
             if (data != null && !string.IsNullOrEmpty(data.EmployeeId))
             {
                 string[] parts = data.EmployeeId.Split('-');
 
-                if (parts.Length > 1 && int.TryParse(parts[2], out int numericValue))
+                if (parts.Length > 1 && int.TryParse(parts[2], out numericValue))
                 {
                     numericValue++;
-                    EmpID = $"ND-{DateTime.Now.Month}/{DateTime.Now.Year}-{numericValue}";
+                    EmpID = $"GAD{numericValue}";
 
                 }
             }

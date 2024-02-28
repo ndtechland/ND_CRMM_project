@@ -34,7 +34,7 @@ namespace CRM
             });
 
             services.AddDbContext<admin_NDCrMContext>(options => options.UseSqlServer(Configuration.GetConnectionString("db1")));
-
+            services.AddControllersWithViews();
 
             var Key = "this is my test key";
             services.AddSingleton<IJwtToken>(new JwtToken(Key));

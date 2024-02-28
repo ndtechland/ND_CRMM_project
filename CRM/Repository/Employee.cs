@@ -1,20 +1,30 @@
 ﻿using CRM.Controllers;
 using CRM.Models.APIDTO;
 using CRM.Models.Crm;
+using CRM.Utilities;
 using DocumentFormat.OpenXml.Wordprocessing;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.Services.Account;
 using MimeKit.Encodings;
+using Org.BouncyCastle.Asn1.Ocsp;
 using Org.BouncyCastle.Ocsp;
+using Syncfusion.Pdf.Graphics;
 using System;
 namespace CRM.Repository
 {
     public class Employee : IEmployee
     {
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly admin_NDCrMContext _context;
-        public Employee(admin_NDCrMContext context)
+        private readonly IWebHostEnvironment _webHostEnvironment;
+
+        public Employee(admin_NDCrMContext context, IWebHostEnvironment hostingEnvironment)
         {
             this._context = context;
+            _webHostEnvironment = hostingEnvironment;
         }
         public async Task<EmployeeBasicInfo> GetEmployeeById(string userid)
         {
@@ -49,10 +59,11 @@ namespace CRM.Repository
                 throw new Exception("Error : " + ex.Message);
             }
         }
-        public async Task<EmployeePersonalDetail> PersonalDetail(EmpPersonalDetail model,string userid)
+        public async Task<EmployeePersonalDetail> PersonalDetail(EmpPersonalDetail model, string userid)
         {
             try
             {
+                string[] allowedExtensions = { ".jpg", ".jpeg", ".png" };
                 var emppersonal = await _context.EmployeePersonalDetails
                     .Where(x => x.EmpRegId == userid)
                     .FirstOrDefaultAsync();
@@ -70,51 +81,95 @@ namespace CRM.Repository
                     emppersonal.City = model.City;
                     emppersonal.StateId = model.StateId;
                     emppersonal.Pincode = model.Pincode;
-                    emppersonal.Aadharcard = model.Aadharcard;
-                    emppersonal.Aadharimg = model.Aadharimg;
-                    emppersonal.Panimg = model.Panimg;
+                    emppersonal.Aadharcard = model.AadharNo;
+
+                    if (model.Aadharbase64 != null && model.Aadharbase64.Count > 0)
+                    {
+                        for (int i = 0; i < model.Aadharbase64.Count; i++)
+                        {
+                            string aadharImagePath = SaveBase64Image($"aadhar{i + 1}", model.Aadharbase64[i], allowedExtensions);
+
+                            if (i == 0)
+                            {
+                                emppersonal.AadharOne = aadharImagePath;
+                            }
+                            else if (i == 1)
+                            {
+                                emppersonal.AadharTwo = aadharImagePath;
+                            }
+                        }
+                    }
+
+                    if (model.Panbase64 != null)
+                    {
+                        string panImagePath = SaveBase64Image("pan", model.Panbase64, allowedExtensions);
+                        emppersonal.Panimg = panImagePath;
+                    }
+
+
                     await _context.SaveChangesAsync();
                     return emppersonal;
                 }
+
                 var emp = await _context.EmployeeRegistrations
-                    .Where(x => x.EmployeeId == userid)
-                    .FirstOrDefaultAsync();
+                   .Where(x => x.EmployeeId == userid)
+                   .FirstOrDefaultAsync();
 
                 if (emp != null)
-                {
-                    EmployeePersonalDetail empP = new EmployeePersonalDetail
+                {                   
+                    EmployeePersonalDetail empP = new EmployeePersonalDetail();
                     {
-                        PersonalEmailAddress = model.PersonalEmailAddress,
-                        MobileNumber = model.MobileNumber,
-                        DateOfBirth = model.DateOfBirth,
-                        Age = model.Age,
-                        FatherName = model.FatherName,
-                        Pan = model.Pan,
-                        AddressLine1 = model.AddressLine1,
-                        AddressLine2 = model.AddressLine2,
-                        City = model.City,
-                        StateId = model.StateId,
-                        Pincode = model.Pincode,
-                        EmpRegId = userid,
-                        Aadharcard = model.Aadharcard,
-                        Aadharimg=model.Aadharimg,
-                        Panimg = model.Panimg,
-                    };
+                        empP.PersonalEmailAddress = model.PersonalEmailAddress;
+                        empP.MobileNumber = model.MobileNumber;
+                        empP.DateOfBirth = model.DateOfBirth;
+                        empP.Age = model.Age;
+                        empP.FatherName = model.FatherName;
+                        empP.Pan = model.Pan;
+                        empP.AddressLine1 = model.AddressLine1;
+                        empP.AddressLine2 = model.AddressLine2;
+                        empP.City = model.City;
+                        empP.StateId = model.StateId;
+                        empP.Pincode = model.Pincode;
+                        empP.EmpRegId = userid;
+                        empP.Aadharcard = model.AadharNo;
+                        if (model.Aadharbase64 != null && model.Aadharbase64.Count > 0)
+                        {
+                            for (int i = 0; i < model.Aadharbase64.Count; i++)
+                            {
+                                string aadharImagePath = SaveBase64Image($"aadhar{i + 1}", model.Aadharbase64[i], allowedExtensions);
+
+                                if (i == 0)
+                                {
+                                    empP.AadharOne = aadharImagePath;
+                                }
+                                else if (i == 1)
+                                {
+                                    empP.AadharTwo = aadharImagePath;
+                                }
+                            }
+                        }
+                        if (model.Panbase64 != null)
+                        {
+                            string panImagePath = SaveBase64Image("pan", model.Panbase64, allowedExtensions);
+                            empP.Panimg = panImagePath;
+                        }
+                    }
 
                     _context.EmployeePersonalDetails.Add(empP);
                     await _context.SaveChangesAsync();
 
-                    return empP; 
+                    return empP;
                 }
 
                 return null;
             }
             catch (Exception ex)
             {
-                throw new Exception("Error: " + ex.Message);
+                Console.WriteLine($"Error in PersonalDetail: {ex.Message}");
+                return null;
             }
         }
-
+    
         public async Task<EmployeeBankDetail> Bankdetail(bankdetail model, string userid)
         {
             try
@@ -257,5 +312,36 @@ namespace CRM.Repository
                 throw new Exception("Error :" + ex.Message);
             }
         }
+        private string SaveBase64Image(string imageName, IFormFile file, string[] allowedExtensions)
+        {
+            try
+            {
+                if (file != null && file.Length > 0)
+                {
+                    string extension = Path.GetExtension(file.FileName);
+                    if (!allowedExtensions.Contains(extension.ToLower()))
+                    {
+                        return null;
+                    }
+                    string fileName = $"{imageName}_{DateTime.Now.Ticks}{extension}";
+                    string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "img1");
+                    string filePath = Path.Combine(uploadsFolder, fileName);
+                    Directory.CreateDirectory(uploadsFolder);
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        file.CopyTo(stream);
+                    }
+                    return fileName;
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error saving image: {ex.Message}");
+                return null;
+            }
+        }
     }
 }
+    

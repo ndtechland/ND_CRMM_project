@@ -21,7 +21,8 @@ namespace CRM.Models.Crm
         public int? EmpId { get; set; }
         public string? EmpRegId { get; set; }
         public string? Aadharcard { get; set; }
-        public string? Aadharimg { get; set; }
+        public string? AadharOne { get; set; }
         public string? Panimg { get; set; }
+        public string? AadharTwo { get; set; }
     }
 }

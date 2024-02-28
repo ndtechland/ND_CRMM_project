@@ -67,7 +67,7 @@ namespace CRM.Controllers.Api
         }
         [Route("PersonalDetail")]
         [HttpPost]
-        public async Task<IActionResult> PersonalDetail(EmpPersonalDetail model)
+        public async Task<IActionResult> PersonalDetail([FromForm] EmpPersonalDetail model)
         {
             var response = new Response<EmployeePersonalDetail>();
             try
