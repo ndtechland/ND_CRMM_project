@@ -118,14 +118,6 @@ namespace CRM.Controllers.Api
                             return Ok(response);
                         }
                     }
-                    //if (model.Aadharbase64.Count != 2)
-                    //{
-                    //    validationMessages.Add("Aadharbase64 should have exactly 2 items.");
-                    //    response.StatusCode = StatusCodes.Status400BadRequest;
-                    //    response.Status = "validation";
-                    //    response.Errors = validationMessages;
-                    //    return Ok(response);
-                    //}
                     EmployeePersonalDetail apiModel = await _apiemp.PersonalDetail(model, userid);
 
                     if (apiModel != null)
