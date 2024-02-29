@@ -1,4 +1,5 @@
 ﻿using CRM.Controllers;
+using CRM.IUtilities;
 using CRM.Models.APIDTO;
 using CRM.Models.Crm;
 using CRM.Utilities;
@@ -13,6 +14,8 @@ using Org.BouncyCastle.Asn1.Ocsp;
 using Org.BouncyCastle.Ocsp;
 using Syncfusion.Pdf.Graphics;
 using System;
+using System.Globalization;
+
 namespace CRM.Repository
 {
     public class Employee : IEmployee
@@ -20,7 +23,6 @@ namespace CRM.Repository
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly admin_NDCrMContext _context;
         private readonly IWebHostEnvironment _webHostEnvironment;
-
         public Employee(admin_NDCrMContext context, IWebHostEnvironment hostingEnvironment)
         {
             this._context = context;
@@ -34,12 +36,12 @@ namespace CRM.Repository
                 {
                     var empid = _context.EmployeeRegistrations.Where(x => x.EmployeeId == userid && x.IsDeleted == false).Select(x => new EmployeeBasicInfo
                     {
-                       FirstName = x.FirstName,
+                        FirstName = x.FirstName,
                         MiddleName = x.MiddleName,
                         LastName = x.LastName,
                         FullName = x.FirstName + " " + x.MiddleName + " " + x.LastName,
-                        DateOfJoining = x.DateOfJoining,
-                       WorkEmail = x.WorkEmail,
+                        DateOfJoining = String.Format("{0:dd-MM-yyyy}", x.DateOfJoining),
+                        WorkEmail = x.WorkEmail,
                         GenderName = _context.GenderMasters.Where(g => g.Id == x.GenderId).Select(g => g.GenderName).First(),
                         WorkLocationName = _context.Cities.Where(g => g.Id == Convert.ToInt16(x.WorkLocationId)).Select(g => g.City1).First(),
                         DesignationName = _context.DesignationMasters.Where(g => g.Id == Convert.ToInt16(x.DesignationId)).Select(g => g.DesignationName).First(),
@@ -63,12 +65,12 @@ namespace CRM.Repository
         {
             try
             {
+                FileOperation fileOperation = new FileOperation(_webHostEnvironment);
                 string[] allowedExtensions = { ".jpg", ".jpeg", ".png" };
                 var emppersonal = await _context.EmployeePersonalDetails
                     .Where(x => x.EmpRegId == userid)
                     .FirstOrDefaultAsync();
-
-                if (emppersonal != null)
+                if (emppersonal != null )
                 {
                     emppersonal.PersonalEmailAddress = model.PersonalEmailAddress;
                     emppersonal.MobileNumber = model.MobileNumber;
@@ -82,12 +84,13 @@ namespace CRM.Repository
                     emppersonal.StateId = model.StateId;
                     emppersonal.Pincode = model.Pincode;
                     emppersonal.Aadharcard = model.AadharNo;
-
-                    if (model.Aadharbase64 != null && model.Aadharbase64.Count > 0)
+                    string panImagePath = fileOperation.SaveBase64Image("img1", model.Panbase64, allowedExtensions);
+                    emppersonal.Panimg = panImagePath;
+                    if (model.Aadharbase64 != null)
                     {
                         for (int i = 0; i < model.Aadharbase64.Count; i++)
                         {
-                            string aadharImagePath = SaveBase64Image("img1", $"aadhar{i + 1}",  model.Aadharbase64[i], allowedExtensions);
+                            string aadharImagePath = fileOperation.SaveBase64Image("img1",  model.Aadharbase64[i], allowedExtensions);
 
                             if (i == 0)
                             {
@@ -99,68 +102,61 @@ namespace CRM.Repository
                             }
                         }
                     }
-
-                    if (model.Panbase64 != null)
-                    {
-                        string panImagePath = SaveBase64Image("img1","pan" , model.Panbase64, allowedExtensions);
-                        emppersonal.Panimg = panImagePath;
-                    }
-
-
                     await _context.SaveChangesAsync();
                     return emppersonal;
                 }
-
-                var emp = await _context.EmployeeRegistrations
+                else
+                {
+                    var emp = await _context.EmployeeRegistrations
                    .Where(x => x.EmployeeId == userid)
                    .FirstOrDefaultAsync();
-
-                if (emp != null)
-                {                   
-                    EmployeePersonalDetail empP = new EmployeePersonalDetail();
+                    if (emp != null)
                     {
-                        empP.PersonalEmailAddress = model.PersonalEmailAddress;
-                        empP.MobileNumber = model.MobileNumber;
-                        empP.DateOfBirth = model.DateOfBirth;
-                        empP.Age = model.Age;
-                        empP.FatherName = model.FatherName;
-                        empP.Pan = model.Pan;
-                        empP.AddressLine1 = model.AddressLine1;
-                        empP.AddressLine2 = model.AddressLine2;
-                        empP.City = model.City;
-                        empP.StateId = model.StateId;
-                        empP.Pincode = model.Pincode;
-                        empP.EmpRegId = userid;
-                        empP.Aadharcard = model.AadharNo;
-                        if (model.Aadharbase64 != null && model.Aadharbase64.Count > 0)
+                        EmployeePersonalDetail empP = new EmployeePersonalDetail();
                         {
-                            for (int i = 0; i < model.Aadharbase64.Count; i++)
+                            empP.PersonalEmailAddress = model.PersonalEmailAddress;
+                            empP.MobileNumber = model.MobileNumber;
+                            empP.DateOfBirth = model.DateOfBirth;
+                            empP.Age = model.Age;
+                            empP.FatherName = model.FatherName;
+                            empP.Pan = model.Pan;
+                            empP.AddressLine1 = model.AddressLine1;
+                            empP.AddressLine2 = model.AddressLine2;
+                            empP.City = model.City;
+                            empP.StateId = model.StateId;
+                            empP.Pincode = model.Pincode;
+                            empP.EmpRegId = userid;
+                            empP.Aadharcard = model.AadharNo;
+                            if (model.Aadharbase64 != null && model.Aadharbase64.Count > 0)
                             {
-                                string aadharImagePath = SaveBase64Image("img1", $"aadhar{i + 1}",  model.Aadharbase64[i], allowedExtensions);
+                                for (int i = 0; i < model.Aadharbase64.Count; i++)
+                                {
+                                    string aadharImagePath = fileOperation.SaveBase64Image("img1", model.Aadharbase64[i], allowedExtensions);
 
-                                if (i == 0)
-                                {
-                                    empP.AadharOne = aadharImagePath;
-                                }
-                                else if (i == 1)
-                                {
-                                    empP.AadharTwo = aadharImagePath;
+                                    if (i == 0)
+                                    {
+                                        empP.AadharOne = aadharImagePath;
+                                    }
+                                    else if (i == 1)
+                                    {
+                                        empP.AadharTwo = aadharImagePath;
+                                    }
                                 }
                             }
+                            if (model.Panbase64 != null)
+                            {
+                                string panImagePath = fileOperation.SaveBase64Image("img1", model.Panbase64, allowedExtensions);
+                                empP.Panimg = panImagePath;
+                            }
                         }
-                        if (model.Panbase64 != null)
-                        {
-                            string panImagePath = SaveBase64Image("img1", "pan",  model.Panbase64, allowedExtensions);
-                            empP.Panimg = panImagePath;
-                        }
+
+                        _context.EmployeePersonalDetails.Add(empP);
+                        await _context.SaveChangesAsync();
+
+                        return empP;
                     }
-
-                    _context.EmployeePersonalDetails.Add(empP);
-                    await _context.SaveChangesAsync();
-
-                    return empP;
                 }
-
+                
                 return null;
             }
             catch (Exception ex)
@@ -315,44 +311,12 @@ namespace CRM.Repository
 
                 throw new Exception("Error :" + ex.Message);
             }
-        }
-        private string SaveBase64Image(string folderName, string imageName, IFormFile file, string[] allowedExtensions)
-        {
-            try
-            {
-                if (file != null && file.Length > 0)
-                {
-                    string extension = Path.GetExtension(file.FileName);
-                    if (!allowedExtensions.Contains(extension.ToLower()))
-                    {
-                        return null;
-                    }
-
-                    string fileName = $"{imageName}_{DateTime.Now.Ticks}{extension}";
-                    string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, folderName);
-                    var filePath = Path.Combine(uploadsFolder, fileName);
-                    Directory.CreateDirectory(uploadsFolder);
-
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        file.CopyTo(stream);
-                    }
-
-                    return fileName;
-                }
-
-                return null;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error saving image: {ex.Message}");
-                return null;
-            }
-        }
+        }     
         public async Task<EmployeeRegistration> Updateprofilepicture(profilepicture model, string userid)
         {
             try
             {
+                FileOperation fileOperation = new FileOperation(_webHostEnvironment);
                 string[] allowedExtensions = { ".jpg", ".jpeg", ".png" };
                 var emp = await _context.EmployeeRegistrations
                     .Where(x => x.EmployeeId == userid)
@@ -363,7 +327,7 @@ namespace CRM.Repository
 
                     if (model.Empprofilebase64 != null)
                     {
-                        string EmpprofileImagePath = SaveBase64Image("EmpProfile", "Emp", model.Empprofilebase64, allowedExtensions);
+                        string EmpprofileImagePath = fileOperation.SaveBase64Image("EmpProfile", model.Empprofilebase64, allowedExtensions);
                         emp.EmpProfile = EmpprofileImagePath;
                     }
 

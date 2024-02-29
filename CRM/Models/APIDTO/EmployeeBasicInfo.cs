@@ -8,7 +8,7 @@
         public string FirstName { get; set; } = null!;
         public string? MiddleName { get; set; }
         public string? LastName { get; set; }
-        public DateTime? DateOfJoining { get; set; }
+        public string DateOfJoining { get; set; }
         public string WorkEmail { get; set; } = null!;
         public string GenderName { get; set; } = null!;
         public string WorkLocationName { get; set; } = null!;
