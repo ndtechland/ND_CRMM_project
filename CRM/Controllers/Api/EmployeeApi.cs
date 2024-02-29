@@ -74,29 +74,47 @@ namespace CRM.Controllers.Api
             {
                 if (User.Identity.IsAuthenticated)
                 {
-                    var userid = User.Claims.FirstOrDefault().Value;                   
+                    var userid = User.Claims.FirstOrDefault().Value;
+                    var existingData = _context.EmployeePersonalDetails.FirstOrDefault(x =>
+                        x.PersonalEmailAddress == model.PersonalEmailAddress ||
+                        x.AddressLine1 == model.AddressLine1 ||
+                        x.AddressLine2 == model.AddressLine2 ||
+                        x.Pan == model.Pan ||
+                        x.MobileNumber == model.MobileNumber);
+
+                    var validationMessages = new List<string>();
+
+                    if (existingData != null)
+                    {
+                        if (existingData.PersonalEmailAddress == model.PersonalEmailAddress)
+                            validationMessages.Add("Personal Email already exists.");
+
+                        if (existingData.AddressLine1 == model.AddressLine1)
+                            validationMessages.Add("AddressLine1 already exists.");
+
+                        if (existingData.AddressLine2 == model.AddressLine2)
+                            validationMessages.Add("AddressLine2 already exists.");
+
+                        if (existingData.Pan == model.Pan)
+                            validationMessages.Add("Pan already exists.");
+
+                        if (existingData.MobileNumber == model.MobileNumber)
+                            validationMessages.Add("MobileNumber already exists.");                        
+                        response.StatusCode = StatusCodes.Status400BadRequest;
+                        response.Status = "validation";
+                        response.Errors = validationMessages;
+                        return Ok(response);
+                    }
+                    if (model.Aadharbase64.Count != 2)
+                    {
+                        validationMessages.Add("Aadharbase64 should have exactly 2 items.");
+                        response.StatusCode = StatusCodes.Status400BadRequest;
+                        response.Status = "validation";
+                        response.Errors = validationMessages;
+                        return Ok(response);
+                    }
                     EmployeePersonalDetail apiModel = await _apiemp.PersonalDetail(model, userid);
-                    //var data = _context.EmployeePersonalDetails.FirstOrDefault(x => x.PersonalEmailAddress == model.PersonalEmailAddress && x.AddressLine1 == model.AddressLine1 && x.AddressLine2 == model.AddressLine2 && x.Pan == model.Pan && x.MobileNumber == model.MobileNumber);
-                    //if (data.PersonalEmailAddress != null)
-                    //{
-                    //    response.Message = "Personal Email already exists.";
-                    //}
-                    //if (data.AddressLine1 != null)
-                    //{
-                    //    response.Message = "AddressLine1 already exists.";
-                    //}
-                    //if (data.AddressLine2 != null)
-                    //{
-                    //    response.Message = "AddressLine2 already exists.";
-                    //}
-                    //if (data.Pan != null)
-                    //{
-                    //    response.Message = "Pan already exists.";
-                    //}
-                    //if (data.MobileNumber != null)
-                    //{
-                    //    response.Message = "MobileNumber already exists.";
-                    //}
+
                     if (apiModel != null)
                     {
                         response.Succeeded = true;
@@ -122,9 +140,12 @@ namespace CRM.Controllers.Api
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                response.StatusCode = StatusCodes.Status500InternalServerError;
+                response.Message = $"An error occurred: {ex.Message}";
+                return Ok(response);
             }
         }
+
         [Route("BankDetail")]
         [HttpPost]
         public async Task<IActionResult> BankDetail(bankdetail model)
