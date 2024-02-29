@@ -87,32 +87,45 @@ namespace CRM.Controllers.Api
                     if (existingData != null)
                     {
                         if (existingData.PersonalEmailAddress == model.PersonalEmailAddress)
+                        {
                             validationMessages.Add("Personal Email already exists.");
-
+                        }
                         if (existingData.AddressLine1 == model.AddressLine1)
+                        {
                             validationMessages.Add("AddressLine1 already exists.");
-
-                        if (existingData.AddressLine2 == model.AddressLine2)
+                        }
+                         if (existingData.AddressLine2 == model.AddressLine2)
+                        {
                             validationMessages.Add("AddressLine2 already exists.");
-
+                        }
                         if (existingData.Pan == model.Pan)
+                        {
                             validationMessages.Add("Pan already exists.");
-
+                        }
                         if (existingData.MobileNumber == model.MobileNumber)
-                            validationMessages.Add("MobileNumber already exists.");                        
-                        response.StatusCode = StatusCodes.Status400BadRequest;
-                        response.Status = "validation";
-                        response.Errors = validationMessages;
-                        return Ok(response);
+                        {
+                            validationMessages.Add("MobileNumber already exists.");
+                        }
+                        if (model.Aadharbase64.Count != 2)
+                        {
+                            validationMessages.Add("Aadharbase64 should have exactly 2 items.");                       
+                        }
+                        if (validationMessages.Count > 0)
+                        {
+                            response.StatusCode = StatusCodes.Status400BadRequest;
+                            response.Status = "validation";
+                            response.Errors = validationMessages;
+                            return Ok(response);
+                        }
                     }
-                    if (model.Aadharbase64.Count != 2)
-                    {
-                        validationMessages.Add("Aadharbase64 should have exactly 2 items.");
-                        response.StatusCode = StatusCodes.Status400BadRequest;
-                        response.Status = "validation";
-                        response.Errors = validationMessages;
-                        return Ok(response);
-                    }
+                    //if (model.Aadharbase64.Count != 2)
+                    //{
+                    //    validationMessages.Add("Aadharbase64 should have exactly 2 items.");
+                    //    response.StatusCode = StatusCodes.Status400BadRequest;
+                    //    response.Status = "validation";
+                    //    response.Errors = validationMessages;
+                    //    return Ok(response);
+                    //}
                     EmployeePersonalDetail apiModel = await _apiemp.PersonalDetail(model, userid);
 
                     if (apiModel != null)
