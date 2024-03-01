@@ -70,33 +70,33 @@
                             <tbody>
                                 <tr>
                                     <th scope="row">Basic</th>
-                                    <td>@Model.Basic</td>
+                                    <td>@(Model.Basic ?? 0)</td>
                                     <td scope="row">PF</td>
-                                    <td>@Model.Epf</td>
+                                    <td>@(Model.Epf ?? 0)</td>
                                 </tr>
                                 <tr>
                                     <th scope="row">DA</th>
                                     <td>550.00</td>
                                     <td>ESI</td>
-                                    <td>@Model.Esic</td>
+                                    <td>@(Model.Esic ?? 0)</td>
                                 </tr>
                                 <tr>
                                     <th scope="row">HRA</th>
-                                    <td>@Model.HouseRentAllowance</td>
+                                    <td>@(Model.HouseRentAllowance ?? 0)</td>
                                     <td>TDS</td>
-                                    <td>@Model.Amount</td>
+                                    <td>@(Model.Amount ?? 0)</td>
                                 </tr>
                                 <tr>
                                     <th scope="row">WA</th>
                                     <td>120.00 </td>
                                     <td>LOP</td>
-                                    <td>@Model.Lop</td>
+                                    <td>@(Model.Lop ?? 0)</td>
                                 </tr>
                                 <tr>
                                     <th scope="row">SPL. Deduction</th>
-                                    <td>@Model.SpecialAllowance</td>
+                                    <td>@(Model.SpecialAllowance ?? 0)</td>
                                     <td>PT</td>
-                                    <td>@Model.Professionaltax</td>
+                                    <td>@(Model.Professionaltax ?? 0)</td>
                                 </tr>
                                 <tr>
                                     <th>MA</th>
@@ -106,7 +106,7 @@
                                 </tr>
                                 <tr>
                                     <th>TA</th>
-                                    <td>@Model.TravellingAllowance</td>
+                                  <td>@(Model.TravellingAllowance ?? 0)</td>
                                     <td></td>
                                     <td></td>
                                 </tr>

@@ -42,6 +42,7 @@ using Microsoft.AspNetCore.Http;
 using OfficeOpenXml;
 using Microsoft.TeamFoundation.SourceControl.WebApi.Legacy;
 using OfficeOpenXml.ConditionalFormatting.Contracts;
+using DocumentFormat.OpenXml.InkML;
 
 namespace CRM.Controllers
 {
@@ -694,19 +695,25 @@ namespace CRM.Controllers
                 string AddedBy = HttpContext.Session.Id;
                 ViewBag.UserName = AddedBy;
                 var result = (from emp in _context.EmployeeRegistrations
-                              join empsalary in _context.EmployeeSalaryDetails on emp.Id equals empsalary.EmpId
-                              join empbank in _context.EmployeeBankDetails on emp.Id equals empbank.EmployeeRegistrationId
-                              join empatt in _context.Empattendances on emp.EmployeeId equals empatt.EmployeeId
-                              join worklocation in _context.WorkLocations on emp.WorkLocationId equals worklocation.Id.ToString()
-                              join designation in _context.DesignationMasters on emp.DesignationId equals designation.Id.ToString()
-                              join tds in _context.EmployeerTds on emp.CustomerId equals tds.CustomerId
+                              join empsalary in _context.EmployeeSalaryDetails on emp.EmployeeId equals empsalary.EmployeeId into empsalaryGroup
+                              from empsalary in empsalaryGroup.DefaultIfEmpty()
+                              join empbank in _context.EmployeeBankDetails on emp.EmployeeId equals empbank.EmpId into empbankGroup
+                              from empbank in empbankGroup.DefaultIfEmpty()
+                              join empatt in _context.Empattendances on emp.EmployeeId equals empatt.EmployeeId into empattGroup
+                              from empatt in empattGroup.DefaultIfEmpty()
+                              join worklocation in _context.Cities on emp.WorkLocationId equals worklocation.Id.ToString() into worklocationGroup
+                              from worklocation in worklocationGroup.DefaultIfEmpty()
+                              join designation in _context.DesignationMasters on emp.DesignationId equals designation.Id.ToString() into designationGroup
+                              from designation in designationGroup.DefaultIfEmpty()
+                              join tds in _context.EmployeerTds on emp.CustomerId equals tds.CustomerId into tdsGroup
+                              from tds in tdsGroup.DefaultIfEmpty()
                               where emp.Id == id
                               select new SalarySlipDetails
                               {
                                   Id = emp.Id,
                                   Employee_ID = emp.EmployeeId,
                                   First_Name = emp.FirstName,
-                                  Address_Line_1 = worklocation.AddressLine1,
+                                  Address_Line_1 = worklocation.City1,
                                   Epf = empsalary.Epf,
                                   Designation_Name = designation.DesignationName,
                                   Bank_Name = empbank.BankName,
@@ -717,12 +724,13 @@ namespace CRM.Controllers
                                   Year = empatt.Year,
                                   HouseRentAllowance = empsalary.HouseRentAllowance,
                                   Lop = empatt.Lop,
-                                  Professionaltax=empsalary.Professionaltax,
-                                  TravellingAllowance=empatt.TravellingAllowance,
-                                  SpecialAllowance=empsalary.SpecialAllowance,
-                                  Esic=empsalary.Esic,
-                                  Amount=tds.Amount,
+                                  Professionaltax = empsalary.Professionaltax,
+                                  TravellingAllowance = empatt.TravellingAllowance,
+                                  SpecialAllowance = empsalary.SpecialAllowance,
+                                  Esic = empsalary.Esic,
+                                  Amount = tds.Amount,
                               }).FirstOrDefault();
+              
 
                 if (result != null)
                 {
