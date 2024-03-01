@@ -68,7 +68,7 @@
                                     <div class="inc">
                                         <div class="controls">
                                             <input type="text" class="form-control" name="textbox" placeholder="textbox" />
-                                            <input type="text" class="form-control" name="text" placeholder="text" />
+                                        <input type="text" class="form-control" name="text" placeholder="textbox" />
                                             <button style="margin-left: 50px" class="btn btn-info" type="submit" id="txt_append" name="append">
                                                 Add Textbox
                                             </button>
@@ -77,29 +77,25 @@
                                         </div>
                                     </div>
                                  </div>
-
-                        </form>
-                         
-
-                            <div class="row" id="serviceContainer">
-                                        <div class="col-md-4">
+                            @*<div class="row" id="serviceContainer">
+                                <div class="col-md-4">
                                     <label for="exampleInputName1">Contribution Name</label>
                                     <input type="text" name="Services[0].Service" class="form-control" value="" id="exampleInputName1" required>
-                                        </div>
-                                     
-                              
-                                    <div class="col-md-4">
+                                </div>
+
+
+                                <div class="col-md-4">
                                     <label for="exampleInputLevel1">Contribution Level</label>
                                     <input type="text" name="Services[0].Level" class="form-control" value="" id="exampleInputLevel1" required>
-                                    </div>
-                                 
-                                
-                                    <div class="col-md-4">
+                                </div>
+
+
+                                <div class="col-md-4">
                                     <button type="button" id="addContributionBtn" class="btn btn-info" style="margin-top: 10px;">
                                         <i class="fa fa-plus"></i> Add Contribution
                                     </button>
-                                    </div>
                                 </div>
+                            </div>*@
                             <div class="row">
                                 <div class="form-group col-sm">
                                     <label for="validationCustom0">Customer</label>
@@ -112,10 +108,14 @@
                                     <span asp-validation-for="WorkLocationId" class="text-danger"></span>
                                 </div>
                             </div>
-                            
+
                             <div class="form-button" style="display:flex; justify-content:center;">
                                 <input type="submit" value="Submit" class="btn btn-primary" />
                             </div>
+                        </form>
+                         
+
+                           
                         </div>
                     </div>
                 </div>
@@ -126,7 +126,6 @@
 
     </div>
 
-</div>
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
@@ -162,7 +161,7 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<script>
+@*<script>
     $(document).ready(function () {
         var serviceIndex = 1;
 
@@ -201,7 +200,7 @@
             serviceIndex++;
         });
     });
-</script>
+</script>*@
 
 <script>
     jQuery(document).ready(function () {
@@ -209,7 +208,7 @@
             e.preventDefault();
             $(".inc").append('<div class="controls">\
                     <input class="form-control" type="text" name="textbox" placeholder="textbox">\
-                    <input class="form-control" type="text" name="text" placeholder="text">\
+                        <input class="form-control" type="text" name="text" placeholder="textbox">\
                     <a href="#" class="remove_this btn btn-danger">remove</a>\
                     <br>\
                     <br>\
