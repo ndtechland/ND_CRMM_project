@@ -301,6 +301,7 @@
   <ItemGroup>
     <Folder Include="wwwroot\img1\" />
     <Folder Include="wwwroot\EmpProfile\" />
+    <Folder Include="wwwroot\ChequeImage\" />
     <Folder Include="wwwroot\Pdffile\" />
   </ItemGroup>
 

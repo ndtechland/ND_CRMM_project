@@ -19,5 +19,6 @@ namespace CRM.Models.Crm
         public string? DeductionCycle { get; set; }
         public string? EmployeeContributionRate { get; set; }
         public string? Nominee { get; set; }
+        public string? Chequeimage { get; set; }
     }
 }

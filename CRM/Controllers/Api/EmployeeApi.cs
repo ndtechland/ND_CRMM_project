@@ -153,7 +153,7 @@ namespace CRM.Controllers.Api
 
         [Route("BankDetail")]
         [HttpPost]
-        public async Task<IActionResult> BankDetail(bankdetail model)
+        public async Task<IActionResult> BankDetail([FromForm] bankdetail model)
         {
             var response = new Response<EmployeeBankDetail>();
             try

@@ -67,9 +67,7 @@ namespace CRM.Repository
             {
                 FileOperation fileOperation = new FileOperation(_webHostEnvironment);
                 string[] allowedExtensions = { ".jpg", ".jpeg", ".png" };
-                var emppersonal = await _context.EmployeePersonalDetails
-                    .Where(x => x.EmpRegId == userid)
-                    .FirstOrDefaultAsync();
+                var emppersonal = await _context.EmployeePersonalDetails.Where(x => x.EmpRegId == userid && x.IsDeleted == false).FirstOrDefaultAsync();
                 if (emppersonal != null )
                 {
                     emppersonal.PersonalEmailAddress = model.PersonalEmailAddress;
@@ -107,9 +105,7 @@ namespace CRM.Repository
                 }
                 else
                 {
-                    var emp = await _context.EmployeeRegistrations
-                   .Where(x => x.EmployeeId == userid)
-                   .FirstOrDefaultAsync();
+                    var emp = await _context.EmployeeRegistrations.Where(x => x.EmployeeId == userid && x.IsDeleted == false).FirstOrDefaultAsync();
                     if (emp != null)
                     {
                         EmployeePersonalDetail empP = new EmployeePersonalDetail();
@@ -165,15 +161,14 @@ namespace CRM.Repository
                 return null;
             }
         }
-    
+
         public async Task<EmployeeBankDetail> Bankdetail(bankdetail model, string userid)
         {
             try
             {
-                var empbank = await _context.EmployeeBankDetails
-                    .Where(x => x.EmpId == userid)
-                    .FirstOrDefaultAsync();
-
+                FileOperation fileOperation = new FileOperation(_webHostEnvironment);
+                string[] allowedExtensions = { ".jpg", ".jpeg", ".png" };
+                var empbank = await _context.EmployeeBankDetails.Where(x => x.EmpId == userid && x.IsDeleted == false).FirstOrDefaultAsync();
                 if (empbank != null)
                 {
                     empbank.AccountHolderName = model.AccountHolderName;
@@ -186,36 +181,41 @@ namespace CRM.Repository
                     empbank.DeductionCycle = model.DeductionCycle;
                     empbank.EmployeeContributionRate = model.EmployeeContributionRate;
                     empbank.Nominee = model.Nominee;
+                    string ChequeImagePath = fileOperation.SaveBase64Image("ChequeImage", model.Chequebase64, allowedExtensions);
+                    empbank.Chequeimage = ChequeImagePath;
+                    empbank.IsDeleted = false;
                     await _context.SaveChangesAsync();
                     return empbank;
                 }
-                var emp = await _context.EmployeeRegistrations
-                    .Where(x => x.EmployeeId == userid)
-                    .FirstOrDefaultAsync();
-
-                if (emp != null)
+                else
                 {
-                    EmployeeBankDetail empB = new EmployeeBankDetail
+                    var emp = await _context.EmployeeRegistrations.Where(x => x.EmployeeId == userid && x.IsDeleted == false).FirstOrDefaultAsync();
+                    if (emp != null)
                     {
-                        AccountHolderName = model.AccountHolderName,
-                        BankName = model.BankName,
-                        AccountNumber = model.AccountNumber,
-                        ReEnterAccountNumber = model.ReEnterAccountNumber,
-                        Ifsc = model.Ifsc,
-                        EmpId = userid,
-                        AccountTypeId = Convert.ToInt32(model.AccountTypeId),
-                        EpfNumber = model.EpfNumber,
-                        DeductionCycle = model.DeductionCycle,
-                        EmployeeContributionRate = model.EmployeeContributionRate,
-                        Nominee = model.Nominee,                       
-                    };
+                        EmployeeBankDetail empB = new EmployeeBankDetail
+                        {
+                            AccountHolderName = model.AccountHolderName,
+                            BankName = model.BankName,
+                            AccountNumber = model.AccountNumber,
+                            ReEnterAccountNumber = model.ReEnterAccountNumber,
+                            Ifsc = model.Ifsc,
+                            EmpId = userid,
+                            AccountTypeId = Convert.ToInt32(model.AccountTypeId),
+                            EpfNumber = model.EpfNumber,
+                            DeductionCycle = model.DeductionCycle,
+                            EmployeeContributionRate = model.EmployeeContributionRate,
+                            Nominee = model.Nominee,
+                            IsDeleted = false,
+                        };
+                        string ChequeImagePath = fileOperation.SaveBase64Image("ChequeImage", model.Chequebase64, allowedExtensions);
+                        empB.Chequeimage = ChequeImagePath;
+                        _context.EmployeeBankDetails.Add(empB);
+                        await _context.SaveChangesAsync();
 
-                    _context.EmployeeBankDetails.Add(empB);
-                    await _context.SaveChangesAsync();
-
-                    return empB;
+                        return empB;
+                    }
                 }
-
+                   
                 return null;
             }
             catch (Exception ex)
@@ -301,6 +301,7 @@ namespace CRM.Repository
                         DeductionCycle = x.DeductionCycle,
                         EmployeeContributionRate = x.EmployeeContributionRate,
                         Nominee = x.Nominee,
+                        Chequeimage = "/ChequeImage/" + x.Chequeimage,
                     }).FirstOrDefaultAsync();
                     return result;
                 }
@@ -318,9 +319,7 @@ namespace CRM.Repository
             {
                 FileOperation fileOperation = new FileOperation(_webHostEnvironment);
                 string[] allowedExtensions = { ".jpg", ".jpeg", ".png" };
-                var emp = await _context.EmployeeRegistrations
-                    .Where(x => x.EmployeeId == userid)
-                    .FirstOrDefaultAsync();
+                var emp = await _context.EmployeeRegistrations.Where(x => x.EmployeeId == userid && x.IsDeleted == false).FirstOrDefaultAsync();
 
                 if (emp != null)
                 {   
