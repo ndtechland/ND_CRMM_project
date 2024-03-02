@@ -353,7 +353,7 @@ namespace CRM.Models.Crm
                     .HasColumnName("Account_Holder_Name");
 
                 entity.Property(e => e.AccountNumber)
-                    .HasMaxLength(100)
+                    .HasMaxLength(50)
                     .HasColumnName("Account_Number");
 
                 entity.Property(e => e.AccountTypeId).HasColumnName("Account_Type_ID");
@@ -361,6 +361,8 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.BankName)
                     .HasMaxLength(255)
                     .HasColumnName("Bank_Name");
+
+                entity.Property(e => e.Chequeimage).HasColumnName("chequeimage");
 
                 entity.Property(e => e.DeductionCycle)
                     .HasMaxLength(120)
@@ -389,7 +391,7 @@ namespace CRM.Models.Crm
                     .HasColumnName("nominee");
 
                 entity.Property(e => e.ReEnterAccountNumber)
-                    .HasMaxLength(100)
+                    .HasMaxLength(50)
                     .HasColumnName("Re_Enter_Account_Number");
             });
 

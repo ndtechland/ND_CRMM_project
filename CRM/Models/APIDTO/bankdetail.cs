@@ -8,10 +8,13 @@
         public string? AccountNumber { get; set; }
         public string? ReEnterAccountNumber { get; set; }
         public string? Ifsc { get; set; }
-        public string AccountTypeId { get; set; }
+        public string? AccountTypeId { get; set; }
         public string? EpfNumber { get; set; }
         public string? DeductionCycle { get; set; }
         public string? EmployeeContributionRate { get; set; }
         public string? Nominee { get; set; }
+        public string? Chequeimage { get; set; }
+        public IFormFile Chequebase64 { get; set; }
+
     }
 }
