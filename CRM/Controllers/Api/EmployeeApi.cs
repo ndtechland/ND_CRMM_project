@@ -392,5 +392,46 @@ namespace CRM.Controllers.Api
                 throw new Exception("Error :" + ex.Message);
             }
         }
+        [Route("Getsalarydetails")]
+        [HttpGet]
+        public async Task<IActionResult> Getsalarydetails()
+        {
+            var response = new Response<salarydetails>();
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    string userid = User.Claims.FirstOrDefault().Value;
+                    salarydetails isEmployeeExists = await _apiemp.Getsalarydetails(userid);
+                    if (isEmployeeExists != null)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = "Employee Salary deatils Here.";
+                        response.Data = isEmployeeExists;
+                        return Ok(response);
+                    }
+                    else
+                    {
+                        response.StatusCode = StatusCodes.Status401Unauthorized;
+                        response.Message = "Data not found.";
+                        return Ok(response);
+                    }
+                }
+                else
+                {
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Message = "Token is expired.";
+                    return BadRequest(response);
+                }
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("Error :" + ex.Message);
+            }
+        }
     }
 }
