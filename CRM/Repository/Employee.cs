@@ -3,6 +3,7 @@ using CRM.IUtilities;
 using CRM.Models.APIDTO;
 using CRM.Models.Crm;
 using CRM.Utilities;
+using DocumentFormat.OpenXml.Math;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -351,6 +352,35 @@ namespace CRM.Repository
                     var result = await _context.EmployeeRegistrations.Where(x => x.EmployeeId == userid && x.IsDeleted == false).Select(x => new profilepicture
                     {
                         EmpProfile = "/EmpProfile/" + x.EmpProfile,
+                    }).FirstOrDefaultAsync();
+                    return result;
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("Error :" + ex.Message);
+            }
+        }
+        public async Task<salarydetails> Getsalarydetails(string userid)
+        {
+            try
+            {
+                if (userid != null)
+                {
+                    var result = await _context.EmployeeSalaryDetails.Where(x => x.EmployeeId == userid && x.IsDeleted == false).Select(x => new salarydetails
+                    {
+                      Basic = x.Basic,
+                      HouseRentAllowance= x.HouseRentAllowance,
+                        TravellingAllowance=x.TravellingAllowance,
+                        Esic =x.Esic,
+                        Epf=x.Epf,
+                        MonthlyGrossPay =x.MonthlyGrossPay,
+                        MonthlyCtc =x.MonthlyCtc,
+                        Professionaltax = x.Professionaltax,
+                        SpecialAllowance =x.SpecialAllowance,
+                        Gross = x.Gross,
                     }).FirstOrDefaultAsync();
                     return result;
                 }
