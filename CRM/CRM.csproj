@@ -299,7 +299,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\assets\video\" />
     <Folder Include="wwwroot\img1\" />
     <Folder Include="wwwroot\EmpProfile\" />
     <Folder Include="wwwroot\ChequeImage\" />
