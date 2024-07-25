@@ -2,6 +2,7 @@
 using CRM.IUtilities;
 using CRM.Models.APIDTO;
 using CRM.Models.Crm;
+using CRM.Models.DTO;
 using CRM.Utilities;
 using DocumentFormat.OpenXml.Math;
 using DocumentFormat.OpenXml.Wordprocessing;

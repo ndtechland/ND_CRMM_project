@@ -1,5 +1,6 @@
 ﻿using CRM.Models.APIDTO;
 using CRM.Models.Crm;
+using CRM.Models.DTO;
 using NuGet.Common;
 
 namespace CRM.Repository
