@@ -70,7 +70,7 @@ namespace CRM.Repository
                 FileOperation fileOperation = new FileOperation(_webHostEnvironment);
                 string[] allowedExtensions = { ".jpg", ".jpeg", ".png" };
                 var emppersonal = await _context.EmployeePersonalDetails.Where(x => x.EmpRegId == userid && x.IsDeleted == false).FirstOrDefaultAsync();
-                if (emppersonal != null )
+                if (emppersonal != null)
                 {
                     emppersonal.PersonalEmailAddress = model.PersonalEmailAddress;
                     emppersonal.MobileNumber = model.MobileNumber;
@@ -90,7 +90,7 @@ namespace CRM.Repository
                     {
                         for (int i = 0; i < model.Aadharbase64.Count; i++)
                         {
-                            string aadharImagePath = fileOperation.SaveBase64Image("img1",  model.Aadharbase64[i], allowedExtensions);
+                            string aadharImagePath = fileOperation.SaveBase64Image("img1", model.Aadharbase64[i], allowedExtensions);
 
                             if (i == 0)
                             {
@@ -154,7 +154,7 @@ namespace CRM.Repository
                         return empP;
                     }
                 }
-                
+
                 return null;
             }
             catch (Exception ex)
@@ -217,7 +217,7 @@ namespace CRM.Repository
                         return empB;
                     }
                 }
-                   
+
                 return null;
             }
             catch (Exception ex)
@@ -314,7 +314,7 @@ namespace CRM.Repository
 
                 throw new Exception("Error :" + ex.Message);
             }
-        }     
+        }
         public async Task<EmployeeRegistration> Updateprofilepicture(profilepicture model, string userid)
         {
             try
@@ -324,7 +324,7 @@ namespace CRM.Repository
                 var emp = await _context.EmployeeRegistrations.Where(x => x.EmployeeId == userid && x.IsDeleted == false).FirstOrDefaultAsync();
 
                 if (emp != null)
-                {   
+                {
 
                     if (model.Empprofilebase64 != null)
                     {
@@ -372,15 +372,15 @@ namespace CRM.Repository
                 {
                     var result = await _context.EmployeeSalaryDetails.Where(x => x.EmployeeId == userid && x.IsDeleted == false).Select(x => new salarydetails
                     {
-                      Basic = x.Basic,
-                      HouseRentAllowance= x.HouseRentAllowance,
-                        TravellingAllowance=x.TravellingAllowance,
-                        Esic =x.Esic,
-                        Epf=x.Epf,
-                        MonthlyGrossPay =x.MonthlyGrossPay,
-                        MonthlyCtc =x.MonthlyCtc,
+                        Basic = x.Basic,
+                        HouseRentAllowance = x.HouseRentAllowance,
+                        TravellingAllowance = x.TravellingAllowance,
+                        Esic = x.Esic,
+                        Epf = x.Epf,
+                        MonthlyGrossPay = x.MonthlyGrossPay,
+                        MonthlyCtc = x.MonthlyCtc,
                         Professionaltax = x.Professionaltax,
-                        SpecialAllowance =x.SpecialAllowance,
+                        SpecialAllowance = x.SpecialAllowance,
                         Gross = x.Gross,
                     }).FirstOrDefaultAsync();
                     return result;
@@ -395,4 +395,3 @@ namespace CRM.Repository
         }
     }
 }
-    
