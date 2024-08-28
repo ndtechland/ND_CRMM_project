@@ -1,4 +1,5 @@
-﻿using CRM.Models.Crm;
+﻿using CRM.Models.APIDTO;
+using CRM.Models.Crm;
 using CRM.Models.CRM;
 using CRM.Repository;
 using Microsoft.AspNetCore.Authorization;
@@ -20,18 +21,20 @@ namespace CRM.Controllers
 {
     public class AdminController : Controller
     {
+        private readonly IApiAccount _apiAccount;
         private readonly admin_NDCrMContext _context;
         private readonly ICrmrpo _ICrmrpo;
         private readonly Repository.IEmailService _emailService;
-        public AdminController(ICrmrpo _ICrmrpo, admin_NDCrMContext _context, Repository.IEmailService _emailService)
+        public AdminController(ICrmrpo _ICrmrpo, admin_NDCrMContext _context, Repository.IEmailService _emailService, IApiAccount apiAccount)
         {
             this._context = _context;
             this._ICrmrpo = _ICrmrpo;
             this._emailService = _emailService;
+            this._apiAccount = apiAccount;
         }
-      
 
-        
+
+
 
         [HttpGet]
         public IActionResult Login()
@@ -39,12 +42,12 @@ namespace CRM.Controllers
              
             return View();
         }
-      
+
         [HttpPost]
         public async Task<IActionResult> Login(AdminLogin model)
         {
             try
-            {                
+            {
                 DataTable dtresponse = _ICrmrpo.Login(model);
                 if (dtresponse != null && dtresponse.Rows.Count > 0)
                 {
@@ -63,7 +66,7 @@ namespace CRM.Controllers
             catch (Exception Ex)
             {
                 throw new Exception("Error:" + Ex.Message);
-            }  
+            }
         }
         public async Task<IActionResult> Product()
         {

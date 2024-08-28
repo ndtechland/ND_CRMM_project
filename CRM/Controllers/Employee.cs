@@ -1345,7 +1345,7 @@ namespace CRM.Controllers
                 if (parts.Length > 1 && int.TryParse(parts[2], out numericValue))
                 {
                     numericValue++;
-                    EmpID = $"GAD{numericValue}";
+                    EmpID = $"NDT{numericValue}";
 
                 }
             }
