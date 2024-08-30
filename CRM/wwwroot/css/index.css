@@ -1,0 +1,93 @@
+﻿#map {
+    height: 400px;
+    width: 100%;
+}
+
+/* Style for accuracy information */
+#accuracy-info {
+    margin-top: 10px;
+    font-size: 16px;
+    font-weight: bold;
+}
+body {
+    background-color: #f8f9fa;
+}
+
+.navbar {
+    margin-bottom: 20px;
+}
+
+#map {
+    height: 400px;
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+}
+
+#distance-info, #accuracy-info {
+    margin-bottom: 20px;
+}
+
+.progress {
+    height: 20px;
+}
+
+.card {
+    margin-top: 20px;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+    .card-header h5 {
+        margin-bottom: 0;
+    }
+
+.mdi {
+    margin-right: 5px;
+}
+.con {
+    padding: 10px !important
+}
+
+.clock-iframe {
+    position: relative;
+    width: 458px; /* Adjust width as needed */
+    height: 260px; /* Adjust height as needed */
+    border: 2px solid #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    z-index: 10;
+}
+/*timing*/
+.progress-container {
+    position: relative;
+    width: 100%;
+    height: 30px;
+    background-color: #e0e0e0;
+}
+
+.progress-bar2 {
+    position: absolute;
+    height: 100%;
+    background-color: #76c7c0;
+    width: 0;
+}
+
+.extra-time-bar {
+    position: absolute;
+    height: 100%;
+    background-color: #ff6f61;
+    width: 0;
+    display: none;
+}
+
+.time-text {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    line-height: 30px;
+}
