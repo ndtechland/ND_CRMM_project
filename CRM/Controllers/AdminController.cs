@@ -2,8 +2,10 @@
 using CRM.Models.Crm;
 using CRM.Models.CRM;
 using CRM.Repository;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis.Scripting;
@@ -14,6 +16,7 @@ using NETCore.MailKit.Core;
 using NuGet.Protocol.Plugins;
 using System.Data;
 using System.Net;
+using System.Security.Claims;
 using System.Security.Principal;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
@@ -43,18 +46,63 @@ namespace CRM.Controllers
             return View();
         }
 
+        //[HttpPost]
+        //public async Task<IActionResult> Login(AdminLogin model)
+        //{
+        //    try
+        //    {
+        //        int userId = await _ICrmrpo.LoginAsync(model);
+
+        //        if (userId != -1)
+        //        {
+        //            var identity = new ClaimsIdentity(IdentityConstants.ApplicationScheme);
+        //                identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, Convert.ToString(userId)));
+        //                identity.AddClaim(new Claim(ClaimTypes.Name, model.UserName));
+        //                ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(identity);
+        //                var authProperties = new AuthenticationProperties
+        //                {
+        //                    IsPersistent = false
+        //                };
+        //                await HttpContext.SignInAsync("Identity.Application", claimsPrincipal, authProperties);
+        //            return RedirectToAction("Dashboard", "Home");
+        //        }
+        //        else
+        //        {
+        //            ViewBag.Message = "Invalid User Name or Password!";
+        //            ModelState.Clear(); 
+        //            return View();
+        //        }
+        //    }
+        //    catch (Exception Ex)
+        //    {
+        //        ViewBag.Message = "An error occurred while processing your request.";
+        //        return View();
+        //    }
+        //}
         [HttpPost]
         public async Task<IActionResult> Login(AdminLogin model)
         {
             try
             {
-                DataTable dtresponse = _ICrmrpo.Login(model);
-                if (dtresponse != null && dtresponse.Rows.Count > 0)
-                {
-                    HttpContext.Session.SetString("UserName", dtresponse.Rows[0]["UserName"].ToString());
-                    ViewBag.UserName = dtresponse.Rows[0]["UserName"].ToString();
-                    return RedirectToAction("Dashboard", "Home");
+                var result = (from al in _context.AdminLogins
+                              join cr in _context.CustomerRegistrations
+                              on al.UserName equals cr.UserName into crGroup
+                              from cr in crGroup.DefaultIfEmpty()
+                              where al.UserName == model.UserName && al.Password == model.Password
+                              select new
+                              {
+                                  al.Id,
+                                  al.UserName,
+                                  al.Role,
+                                  CustomerId =(int?)cr.Id
+                              }).FirstOrDefault();
 
+                if (result != null)
+                {
+                    HttpContext.Session.SetString("UserName", result.UserName);
+                    HttpContext.Session.SetString("UserId", result.CustomerId.ToString());
+                    ViewBag.UserName = result.UserName;
+                    return RedirectToAction("Dashboard", "Home");
                 }
                 else
                 {
@@ -65,9 +113,10 @@ namespace CRM.Controllers
             }
             catch (Exception Ex)
             {
-                throw new Exception("Error:" + Ex.Message);
+                throw new Exception("Error: " + Ex.Message);
             }
         }
+
         [HttpGet]
         public IActionResult EmployeeLogin()
         {

@@ -36,20 +36,45 @@ namespace CRM.Repository
             Configuration = configuration;
             _IEmailService = IEmailService;
         }
+        //public DataTable Login(AdminLogin model)
+        //{
+        //    SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
+        //    SqlCommand cmd = new SqlCommand("usp_adminlogin", con);
+        //    cmd.CommandType = CommandType.StoredProcedure;
+        //    cmd.Parameters.Add(new SqlParameter("@UserName", model.UserName));
+        //    cmd.Parameters.Add(new SqlParameter("@password", model.Password));
+        //    SqlDataAdapter da = new SqlDataAdapter();
+        //    da.SelectCommand = cmd;
+        //    DataTable dt = new DataTable();
+        //    da.Fill(dt);
+        //    return dt;
 
-        public DataTable Login(AdminLogin model)
+        //}
+        public async Task<int> LoginAsync(AdminLogin model)
         {
-            SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
-            SqlCommand cmd = new SqlCommand("usp_adminlogin", con);
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.Add(new SqlParameter("@UserName", model.UserName));
-            cmd.Parameters.Add(new SqlParameter("@password", model.Password));
-            SqlDataAdapter da = new SqlDataAdapter();
-            da.SelectCommand = cmd;
-            DataTable dt = new DataTable();
-            da.Fill(dt);
-            return dt;
+            using (SqlConnection con = new SqlConnection(_context.Database.GetConnectionString()))
+            {
+                using (SqlCommand cmd = new SqlCommand("usp_adminlogin", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add(new SqlParameter("@UserName", model.UserName));
+                    cmd.Parameters.Add(new SqlParameter("@Password", model.Password));
 
+                    await con.OpenAsync();
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return Convert.ToInt32(reader["ID"]);
+                        }
+                        else
+                        {
+                            return -1; // or handle accordingly
+                        }
+                    }
+                }
+            }
         }
 
         public DataTable ForgetPassword(AdminLogin model)
@@ -247,7 +272,7 @@ namespace CRM.Repository
                 da.Fill(dt);
 
 
-                if(Mode == "INS")
+                if (Mode == "INS")
                 {
                     EmployeeRole employeeRole = new()
                     {
@@ -1096,8 +1121,8 @@ namespace CRM.Repository
 
         public byte[] ImportToExcelAttendance(List<salarydetail> data)
         {
-            
-           // List<EmployeeImportExcel> employeeList = _context.EmpMultiforms.FromSqlRaw<EmployeeImportExcel>("USP_GetEmployeeDetails").ToListAsync().Result;
+
+            // List<EmployeeImportExcel> employeeList = _context.EmpMultiforms.FromSqlRaw<EmployeeImportExcel>("USP_GetEmployeeDetails").ToListAsync().Result;
 
             using (var workbook = new XLWorkbook())
             {
@@ -1260,6 +1285,46 @@ namespace CRM.Repository
             }
             return res.ToString();
         }
+
+        public async Task<CustomerRegistration> GetCustomerProfile(string? id)
+        {
+            try
+            {
+                var customerdetails = await _context.CustomerRegistrations.Where(x => x.Id == Convert.ToInt32(id)).FirstOrDefaultAsync();
+                return customerdetails;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<int> UpdateCustomerProfile(CustomerRegistration model)
+        {
+            var customer = await _context.CustomerRegistrations.FirstOrDefaultAsync(x => x.Id == model.Id);
+            var adminusername = await _context.AdminLogins.Where(x => x.UserName == model.UserName).FirstOrDefaultAsync();
+            if (customer == null)
+            {
+                return 0;
+            }
+            customer.CompanyName = model.CompanyName;
+            customer.Email = model.Email;
+            customer.GstNumber = model.GstNumber;
+            customer.MobileNumber = model.MobileNumber;       
+            customer.AlternateNumber = model.AlternateNumber;
+            customer.BillingAddress = model.BillingAddress;
+            customer.UserName = model.UserName;
+            _context.CustomerRegistrations.Update(customer);
+            await _context.SaveChangesAsync();
+            if(adminusername != null)
+            {
+                adminusername.UserName = model.UserName;
+                _context.AdminLogins.Update(adminusername);
+                await _context.SaveChangesAsync();
+
+            }
+            return 1;
+        }
+
     }
 
 }

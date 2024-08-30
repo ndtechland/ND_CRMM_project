@@ -10,7 +10,8 @@ namespace CRM.Repository
 {
     public interface ICrmrpo
     {
-        public DataTable Login(AdminLogin model);
+        //public DataTable Login(AdminLogin model);
+        Task<int> LoginAsync(AdminLogin model);
         public Task<int> Product(ProductMaster model);
         public Task<List<ProductMaster>> ProductList();
         public Task<int> Customer(Customer model);
@@ -66,5 +67,8 @@ namespace CRM.Repository
         public List<State> BindState();
         public List<City> BindCity(int stateId);
         public Task<List<monthlysalaryExcel>> monthlysalaryReport(string customerId, int Month, int year, string WorkLocation);
+        public Task<CustomerRegistration> GetCustomerProfile(string? id);
+        public Task<int> UpdateCustomerProfile(CustomerRegistration model);
+
     }
 }

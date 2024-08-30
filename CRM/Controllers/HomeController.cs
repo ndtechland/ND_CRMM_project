@@ -4,8 +4,10 @@ using CRM.Models.DTO;
 using CRM.Repository;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.InkML;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -882,16 +884,45 @@ namespace CRM.Controllers
 
         [Route("Home/CustomerProfile")]
         [HttpGet]
-        public IActionResult CustomerProfile()
+        public async Task<IActionResult> CustomerProfile()
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-             
-                return View();
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                string id = Convert.ToString(HttpContext.Session.GetString("UserId")); ;
+                ViewBag.UserName = AddedBy;
+                ViewBag.id = id;
+                var data = await _ICrmrpo.GetCustomerProfile(id);
+                return View(data);
             }
             else
             {
                 return RedirectToAction("Login", "Admin");
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> CustomerProfile(CustomerRegistration model)
+        {
+            try
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                int id = Convert.ToInt32(HttpContext.Session.GetString("UserId")); ;
+                ViewBag.UserName = AddedBy;
+                if (id != null)
+                {
+                    var data = await _ICrmrpo.UpdateCustomerProfile(model);
+                    return RedirectToAction("CustomerProfile", "Home");
+                    TempData["msg"] = "Update Successfully.";
+                }
+                else
+                {
+                    ModelState.Clear();
+                    return View();
+                }
+            }
+            catch (Exception Ex)
+            {
+                throw new Exception("Error:" + Ex.Message);
             }
         }
     }

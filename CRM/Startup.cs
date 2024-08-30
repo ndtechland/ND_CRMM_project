@@ -13,6 +13,7 @@ using Microsoft.TeamFoundation.TestManagement.WebApi;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace CRM
 {
@@ -55,6 +56,19 @@ namespace CRM
                 };
             });
 
+            // Configure authentication
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = "Identity.Application";
+                options.DefaultChallengeScheme = "Identity.Application";
+            })
+            .AddCookie("Identity.Application", options =>
+            {
+                options.LoginPath = "/Admin/Login";
+                options.LogoutPath = "/Admin/Logout";
+                options.AccessDeniedPath = "/Account/AccessDenied";
+            });
+
             services.AddControllersWithViews();
             services.AddScoped<ICrmrpo, Crmrpo>();
             services.AddScoped<IEmailService, EmailService>();
@@ -92,7 +106,7 @@ namespace CRM
            
             app.UseRouting();
             app.UseCors("CorsPolicy");
-            app.UseAuthentication();
+            app.UseAuthentication(); // Ensure this is added
             app.UseAuthorization();
             app.UseSession();
             app.UseEndpoints(endpoints =>
