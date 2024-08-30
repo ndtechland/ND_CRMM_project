@@ -47,6 +47,8 @@
 <body>
 
     <!-- page-wrapper Start-->
+    @if (@ViewBag.UserName == "admin")
+     {
     <div class="page-wrapper">
         @RenderBody()
         <!-- Page Header Start-->
@@ -54,7 +56,7 @@
             <div class="main-header-left">
                 <div class="logo-wrapper">
                     <a href="/Home/Dashboard">
-                        <img class="blur-up lazyloaded" src="../assets/images/layout-2/logo/logo.png" alt="" style="width: 100px;height: 70px;">
+                        <img class="blur-up lazyloaded" src="../assets/images/layout-2/logo/logo.png" alt="" style="width: 203px;height: 70px;">
                     </a>
                 </div>
             </div>
@@ -103,8 +105,7 @@
             <!-- Page Sidebar Start-->
             <div class="page-sidebar">
                 <div class="sidebar custom-scrollbar">
-
-                    <ul class="sidebar-menu">
+                 <ul class="sidebar-menu">
                         <li><a class="sidebar-header" href="/Home/Dashboard"><i data-feather="home"></i><span>Dashboard</span></a></li>
                         <li>
                             <a class="sidebar-header" href="javascript:void(0)"><i data-feather="box"></i> <span>CRM</span><i class="fa fa-angle-right pull-right"></i></a>
@@ -147,13 +148,6 @@
                             </ul>
                         </li>
                         <li>
-                            <a class="sidebar-header" href="javascript:void(0)"><i data-feather="box"></i> <span>Attendance</span><i class="fa fa-angle-right pull-right"></i></a>
-                            <ul class="sidebar-submenu">
-                                <li><a href="/Attendance/Index"><i class="fa fa-circle"></i>Employee Location</a></li>
-@*                                <li><a href="/Home/QuationList"><i class="fa fa-circle"></i>List of Quotation </a></li>
- *@                            </ul>
-                        </li>
-                        <li>
                             <a class="sidebar-header" href="javascript:void(0)"><i data-feather="box"></i> <span>HR Payrole</span><i class="fa fa-angle-right pull-right"></i></a>
                             <ul class="sidebar-submenu">
                                 <li>
@@ -164,7 +158,7 @@
                                         <li><a href="/Employee/Employeelistg"><i class="fa fa-circle"></i>Employee List </a></li>
                                         <li><a href="/Employee/salarydetail"><i class="fa fa-circle"></i>Generate Salary  </a></li>
                                         <li><a href="/Employee/GenerateSalary"><i class="fa fa-circle"></i>Generate Invoice </a></li>
-
+                                        <li><a href="/Attendance/Index"><i class="fa fa-circle"></i>Employee Location</a></li>
                                     </ul>
                                 </li>
 
@@ -231,7 +225,7 @@
                         @*<li>
                         <a class="sidebar-header" href="/Home/login"><i data-feather="log-in"></i><span>Login</span></a>
                         </li>*@
-                    </ul>
+                        </ul>
                 </div>
             </div>
             <!-- Page Sidebar Ends-->
@@ -380,8 +374,319 @@
             <!-- footer end-->
         </div>
 
-    </div>
+        </div>
+    }
+    else
+    {
+        <div class="page-wrapper">
+            @RenderBody()
+            <!-- Page Header Start-->
+            <div class="page-main-header">
+                <div class="main-header-left">
+                    <div class="logo-wrapper">
+                        <a href="/Home/Dashboard">
+                            <img class="blur-up lazyloaded" src="../assets/images/layout-2/logo/logo.png" alt="" style="width: 203px;height: 70px;">
+                        </a>
+                    </div>
+                </div>
+                <div class="main-header-right ">
+                    <div class="mobile-sidebar">
+                        <div class="media-body text-end switch-sm">
+                            <label class="switch">
+                                <input id="sidebar-toggle" type="checkbox" checked="checked"><span class="switch-state"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="nav-right col">
+                        <ul class="nav-menus">
+                            <li>
+                                <form class="form-inline search-form" autocomplete="off">
+                                    <div class="form-group">
+                                        <input class="form-control-plaintext" type="search" placeholder="Search.." id="Sidebarvalue-search"><span class="d-sm-none mobile-search"><i data-feather="search"></i></span>
+                                    </div>
 
+                                </form>
+                            </li>
+                            <li><h5>Hi @ViewBag.UserName !</h5></li>
+                            <li><a class="text-dark" href="#!" onclick="javascript:toggleFullScreen()"><i data-feather="maximize"></i></a></li>
+                            @*<li><a href="javascript:void(0)"><i class="right_side_toggle" data-feather="message-square"></i><span class="dot"></span></a></li>*@
+                            <li class="onhover-dropdown">
+                                <div class="media align-items-center">
+                                    <i class="fa fa-user fa-2x"></i>
+                                    @*<div class="dotted-animation"><span class="animate-circle"></span><span class="main-circle"></span></div>*@
+                                </div>
+                                <ul class="profile-dropdown onhover-show-div p-20 profile-dropdown-hover">
+                                    <li><a href="javascript:void(0)">Profile<span class="pull-right"><i data-feather="user"></i></span></a></li>
+                                    <li><a href="javascript:void(0)">Settings<span class="pull-right"><i data-feather="settings"></i></span></a></li>
+                                    <li><a href="/Home/Logout">Logout<span class="pull-right"><i class="fa fa-sign-out"></i></span></a></li>
+
+                                </ul>
+                            </li>
+                        </ul>
+                        <div class="d-lg-none mobile-toggle pull-right"><i data-feather="more-horizontal"></i></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Page Header Ends -->
+            <!-- Page Body Start-->
+            <div class="page-body-wrapper">
+
+                <!-- Page Sidebar Start-->
+                <div class="page-sidebar">
+                    <div class="sidebar custom-scrollbar">
+                        <ul class="sidebar-menu">
+                            <li><a class="sidebar-header" href="/Home/Dashboard"><i data-feather="home"></i><span>Dashboard</span></a></li>
+                            <li>
+                                <a class="sidebar-header" href="javascript:void(0)"><i data-feather="box"></i> <span>CRM</span><i class="fa fa-angle-right pull-right"></i></a>
+                                <ul class="sidebar-submenu">
+                                    <li>
+                                        <a class="sidebar-header" href="invoice.html"><i class="fa fa-circle"></i><span>Received Payment</span></a>
+                                    </li>
+                                    <li>
+                                        <a class="sidebar-header" href="invoice.html"><i class="fa fa-circle"></i><span>Pending Payment</span></a>
+                                    </li>
+                                    <li>
+                                        <a class="sidebar-header" href="invoice.html"><i class="fa fa-circle"></i><span>Pending Renewal</span></a>
+                                    </li>
+
+                                </ul>
+                            </li>
+                            <li>
+                                <a class="sidebar-header" href="javascript:void(0)"><i data-feather="box"></i> <span>Quotation</span><i class="fa fa-angle-right pull-right"></i></a>
+                                <ul class="sidebar-submenu">
+                                    <li><a href="/Home/Quation"><i class="fa fa-circle"></i>Generate Quotation</a></li>
+                                    <li><a href="/Home/QuationList"><i class="fa fa-circle"></i>List of Quotation </a></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a class="sidebar-header" href="javascript:void(0)"><i data-feather="box"></i> <span>HR Payrole</span><i class="fa fa-angle-right pull-right"></i></a>
+                                <ul class="sidebar-submenu">
+                                    <li>
+                                        <a class="sidebar-header"><i class="fa fa-circle"></i> <span>Employee</span><i class="fa fa-angle-right pull-right"></i></a>
+                                        <ul class="sidebar-submenu">
+
+                                            <li><a href="/Employee/EmployeeRegistration"><i class="fa fa-circle"></i>Employee Registration</a></li>
+                                            <li><a href="/Employee/Employeelistg"><i class="fa fa-circle"></i>Employee List </a></li>
+                                            <li><a href="/Employee/salarydetail"><i class="fa fa-circle"></i>Generate Salary  </a></li>
+                                            <li><a href="/Employee/GenerateSalary"><i class="fa fa-circle"></i>Generate Invoice </a></li>
+                                            <li><a href="/Attendance/Index"><i class="fa fa-circle"></i>Employee Location</a></li>
+                                        </ul>
+                                    </li>
+
+                                    <li>
+                                        <a class="sidebar-header" href="javascript:void(0)"><i class="fa fa-circle"></i><span>Form 16</span><i class="fa fa-angle-right pull-right"></i></a>
+                                        <ul class="sidebar-submenu">
+                                            @*<li><a href=""><i class="fa fa-circle"></i>Employee's</a></li>
+                                        <li><a href=""><i class="fa fa-circle"></i>Generate Salary </a></li>*@
+
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <a class="sidebar-header" href="javascript:void(0)"><i class="fa fa-circle"></i> <span>Report</span><i class="fa fa-angle-right pull-right"></i></a>
+                                        <ul class="sidebar-submenu">
+                                            <li><a href="/Employee/Employeelists"><i class="fa fa-circle"></i>Employees CTC detail</a></li>
+                                            @* <li><a href=""><i class="fa fa-circle"></i>Reimbursmennt summary </a></li> *@
+                                            <li><a href="/Employee/GenerateSalaryReport"><i class="fa fa-circle"></i>Monthly pay summary </a></li>
+                                            <li><a href="/Employee/EPFReport"><i class="fa fa-circle"></i>EPF summary </a></li>
+                                            <li><a href="/Employee/ESIReport"><i class="fa fa-circle"></i>ESI summary </a></li>
+                                            @*<li><a href=""><i class="fa fa-circle"></i>LOP summary </a></li>
+                                        <li><a href=""><i class="fa fa-circle"></i>PF summary </a></li>
+                                        <li><a href=""><i class="fa fa-circle"></i>Employee Salary Statement </a></li>
+                                        <li><a href=""><i class="fa fa-circle"></i>Tax Deduction summary </a></li>
+                                        <li><a href=""><i class="fa fa-circle"></i>Variable Pay Report </a></li>
+                                        <li><a href=""><i class="fa fa-circle"></i>Leave encashment summary </a></li>
+                                        <li><a href=""><i class="fa fa-circle"></i>Attendance summary </a></li>
+                                        <li><a href=""><i class="fa fa-circle"></i>Salary Revision summary </a></li>*@
+
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <a class="sidebar-header" href="javascript:void(0)"><i class="fa fa-circle"></i> <span>Letters</span><i class="fa fa-angle-right pull-right"></i></a>
+                                        <ul class="sidebar-submenu">
+                                            <li><a href="##"><i class="fa fa-circle"></i>Offer letter</a></li>
+                                            <li><a href="##"><i class="fa fa-circle"></i>Appoinment letter </a></li>
+                                            <li><a href="##"><i class="fa fa-circle"></i>Relieving letter </a></li>
+                                            <li><a href="##"><i class="fa fa-circle"></i>Exp letter </a></li>
+
+                                        </ul>
+                                    </li>
+                                </ul>
+
+                            </li>
+
+                            @*                        <li><a class="sidebar-header" href="/Home/Banner"><i data-feather="camera"></i><span>Banner</span></a></li>
+                        *@
+
+                            <li>
+                                <a class="sidebar-header" href="javascript:void(0)"><i class="me-2" data-feather="settings"></i> <span>Settings</span><i class="fa fa-angle-right pull-right"></i></a>
+                                <ul class="sidebar-submenu">
+                                    <li><a href=""><i class="fa fa-circle"></i>organization Profile</a></li>
+                                    <li><a href="/Home/WorkLocationlist"><i class="fa fa-circle"></i>Work location </a></li>
+                                    <li><a href="/Home/Departmentlist"><i class="fa fa-circle"></i>Department </a></li>
+                                    <li><a href="/Home/Designationlist"><i class="fa fa-circle"></i>Designation </a></li>
+                                    <li><a href="##"><i class="fa fa-circle"></i>Salary component </a></li>
+                                    <li><a href="/Employee/Employer"><i class="fa fa-circle"></i>Employer </a></li>
+                                    <li><a href="/Employee/Employee_list"><i class="fa fa-circle"></i>Employer List</a></li>
+                                    <li><a href="/Home/employeerTDS"><i class="fa fa-circle"></i>Employer TDS </a></li>
+                                    <li><a href="/Home/addcontribution"><i class="fa fa-circle"></i>Additonal Contribution </a></li>
+
+                                </ul>
+                            </li>
+
+                            @*<li>
+                        <a class="sidebar-header" href="/Home/login"><i data-feather="log-in"></i><span>Login</span></a>
+                        </li>*@
+                        </ul>
+                    </div>
+                </div>
+                <!-- Page Sidebar Ends-->
+                <!-- Right sidebar Start-->
+                <div class="right-sidebar custom-scrollbar" id="right_side_bar">
+                    <div>
+                        <div class="container p-0">
+                            <div class="modal-header p-l-20 p-r-20">
+                                <div class="col-sm-8 p-0">
+                                    <h6 class="modal-title font-weight-bold">FRIEND LIST</h6>
+                                </div>
+                                <div class="col-sm-4 text-end p-0"><i class="me-2" data-feather="settings"></i></div>
+                            </div>
+                        </div>
+                        <div class="friend-list-search mt-0">
+                            <input type="text" placeholder="search friend"><i class="fa fa-search"></i>
+                        </div>
+                        <div class="p-l-30 p-r-30">
+                            <div class="chat-box">
+                                <div class="people-list friend-list">
+                                    <ul class="list">
+                                        <li class="clearfix">
+                                            <img class="rounded-circle user-image" src="../assets/images/dashboard/user.png" alt="">
+                                            <div class="status-circle online"></div>
+                                            <div class="about">
+                                                <div class="name">Vincent Porter</div>
+                                                <div class="status"> Online</div>
+                                            </div>
+                                        </li>
+                                        <li class="clearfix">
+                                            <img class="rounded-circle user-image" src="../assets/images/dashboard/user1.jpg" alt="">
+                                            <div class="status-circle away"></div>
+                                            <div class="about">
+                                                <div class="name">Ain Chavez</div>
+                                                <div class="status"> 28 minutes ago</div>
+                                            </div>
+                                        </li>
+                                        <li class="clearfix">
+                                            <img class="rounded-circle user-image" src="../assets/images/dashboard/user2.jpg" alt="">
+                                            <div class="status-circle online"></div>
+                                            <div class="about">
+                                                <div class="name">Kori Thomas</div>
+                                                <div class="status"> Online</div>
+                                            </div>
+                                        </li>
+                                        <li class="clearfix">
+                                            <img class="rounded-circle user-image" src="../assets/images/dashboard/user3.jpg" alt="">
+                                            <div class="status-circle online"></div>
+                                            <div class="about">
+                                                <div class="name">Erica Hughes</div>
+                                                <div class="status"> Online</div>
+                                            </div>
+                                        </li>
+                                        <li class="clearfix">
+                                            <img class="rounded-circle user-image" src="../assets/images/dashboard/man.png" alt="">
+                                            <div class="status-circle offline"></div>
+                                            <div class="about">
+                                                <div class="name">Ginger Johnston</div>
+                                                <div class="status"> 2 minutes ago</div>
+                                            </div>
+                                        </li>
+                                        <li class="clearfix">
+                                            <img class="rounded-circle user-image" src="../assets/images/dashboard/user5.jpg" alt="">
+                                            <div class="status-circle away"></div>
+                                            <div class="about">
+                                                <div class="name">Prasanth Anand</div>
+                                                <div class="status"> 2 hour ago</div>
+                                            </div>
+                                        </li>
+                                        <li class="clearfix">
+                                            <img class="rounded-circle user-image" src="../assets/images/dashboard/designer.jpg" alt="">
+                                            <div class="status-circle online"></div>
+                                            <div class="about">
+                                                <div class="name">Hileri Jecno</div>
+                                                <div class="status"> Online</div>
+                                            </div>
+                                        </li>
+                                        <li class="clearfix">
+                                            <img class="rounded-circle user-image" src="../assets/images/dashboard/user3.jpg" alt="">
+                                            <div class="status-circle online"></div>
+                                            <div class="about">
+                                                <div class="name">Erica Hughes</div>
+                                                <div class="status"> Online</div>
+                                            </div>
+                                        </li>
+                                        <li class="clearfix">
+                                            <img class="rounded-circle user-image" src="../assets/images/dashboard/man.png" alt="">
+                                            <div class="status-circle offline"></div>
+                                            <div class="about">
+                                                <div class="name">Ginger Johnston</div>
+                                                <div class="status"> 2 minutes ago</div>
+                                            </div>
+                                        </li>
+                                        <li class="clearfix">
+                                            <img class="rounded-circle user-image" src="../assets/images/dashboard/user5.jpg" alt="">
+                                            <div class="status-circle away"></div>
+                                            <div class="about">
+                                                <div class="name">Prasanth Anand</div>
+                                                <div class="status"> 2 hour ago</div>
+                                            </div>
+                                        </li>
+                                        <li class="clearfix">
+                                            <img class="rounded-circle user-image" src="../assets/images/dashboard/user3.jpg" alt="">
+                                            <div class="status-circle online"></div>
+                                            <div class="about">
+                                                <div class="name">Erica Hughes</div>
+                                                <div class="status"> Online</div>
+                                            </div>
+                                        </li>
+                                        <li class="clearfix">
+                                            <img class="rounded-circle user-image" src="../assets/images/dashboard/man.png" alt="">
+                                            <div class="status-circle offline"></div>
+                                            <div class="about">
+                                                <div class="name">Ginger Johnston</div>
+                                                <div class="status"> 2 minutes ago</div>
+                                            </div>
+                                        </li>
+                                        <li class="clearfix">
+                                            <img class="rounded-circle user-image" src="../assets/images/dashboard/user5.jpg" alt="">
+                                            <div class="status-circle away"></div>
+                                            <div class="about">
+                                                <div class="name">Prasanth Anand</div>
+                                                <div class="status"> 2 hour ago</div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Right sidebar Ends-->
+                <!-- footer start-->
+                <footer class="footer">
+                    <div class="container-fluid">
+                        <div class="row">
+                            @*<div class="col-md-6 footer-copyright">
+                        <p class="mb-0">Copyright 2019 © Bigdeal All rights reserved.</p>
+                        </div>
+                        <div class="col-md-6">
+                        <p class="pull-right mb-0">Hand crafted & made with<i class="fa fa-heart"></i></p>
+                        </div>*@
+                        </div>
+                    </div>
+                </footer>
+                <!-- footer end-->
+            </div>
+
+        </div>
+    }
     <div id="myModal" class="modal fade" role="dialog" style="z-index: 100000">
 
         <div class="modal-dialog">

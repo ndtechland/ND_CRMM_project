@@ -54,7 +54,7 @@ namespace CRM.Controllers
                     ViewBag.UserName = AddedBy;
                     var data = _ICrmrpo.GetCustomerById(id);
                     if (data != null)
-                    {                        
+                    {
                         ViewBag.ProductDetails = _context.ProductMasters
                             .Select(p => new SelectListItem
                             {
@@ -88,15 +88,13 @@ namespace CRM.Controllers
             }
         }
 
-
-
         [HttpPost]
-        public async Task<IActionResult> Customer(Customer model )
+        public async Task<IActionResult> Customer(Customer model)
         {
             try
             {
                 var response = await _ICrmrpo.Customer(model);
-                if(model.Id != null)
+                if (model.Id != null)
                 {
                     var data = await _ICrmrpo.updateCustomerReg(model);
                     return RedirectToAction("CustomerList", "Home");
@@ -396,7 +394,7 @@ namespace CRM.Controllers
                 var data = _context.DepartmentMasters.Find(id);
                 if (data != null)
                 {
-                    _context.DepartmentMasters.Remove(data); 
+                    _context.DepartmentMasters.Remove(data);
                     _context.SaveChanges();
                 }
                 return RedirectToAction("Departmentlist");
@@ -432,7 +430,7 @@ namespace CRM.Controllers
                     CityId = model.CityId,
                     Createdate = DateTime.Now.Date,
                     Isactive = true,
-                    Commissoninpercentage=model.Commissoninpercentage,
+                    Commissoninpercentage = model.Commissoninpercentage,
                 };
                 _context.WorkLocations1.Add(master);
                 _context.SaveChanges();
@@ -461,7 +459,7 @@ namespace CRM.Controllers
                                  Id = wl.Id,
                                  State = state.SName,
                                  City = city.City1,
-                                 Commissoninpercentage =Convert.ToInt32(wl.Commissoninpercentage)
+                                 Commissoninpercentage = Convert.ToInt32(wl.Commissoninpercentage)
                              };
 
                 string AddedBy = HttpContext.Session.GetString("UserName");
@@ -569,16 +567,16 @@ namespace CRM.Controllers
         public JsonResult product(int? id)
         {
             var data = (from pm in _context.ProductMasters
-                          join gm in _context.GstMasters on pm.Gst equals gm.Id.ToString()
-                          where pm.Id == id
-                          select new Customer
-                          {
-                              Scgst = gm.Scgst,
-                              Cgst = gm.Cgst,
-                              Igst = gm.Igst,
-                              Price=pm.Price,
-                              HsnSacCode=pm.HsnSacCode,
-                          }).FirstOrDefault();
+                        join gm in _context.GstMasters on pm.Gst equals gm.Id.ToString()
+                        where pm.Id == id
+                        select new Customer
+                        {
+                            Scgst = gm.Scgst,
+                            Cgst = gm.Cgst,
+                            Igst = gm.Igst,
+                            Price = pm.Price,
+                            HsnSacCode = pm.HsnSacCode,
+                        }).FirstOrDefault();
             var result = new
             {
                 Data = data,
@@ -594,7 +592,7 @@ namespace CRM.Controllers
             loc.CityId = data.CityId;
             loc.StateId = data.StateId;
             loc.Commissoninpercentage = data.Commissoninpercentage;
-           
+
             var result = new
             {
                 loc = loc,
@@ -742,11 +740,11 @@ namespace CRM.Controllers
                     EmployeerTd master = new EmployeerTd
                     {
                         Amount = model.Amount,
-                        CustomerId=model.CustomerId,
-                        WorkLocationId=model.WorkLocationId,
-                        CreateDate=DateTime.Now.Date,
-                        Isactive=true,
-                        Tdspercentage=model.Tdspercentage,
+                        CustomerId = model.CustomerId,
+                        WorkLocationId = model.WorkLocationId,
+                        CreateDate = DateTime.Now.Date,
+                        Isactive = true,
+                        Tdspercentage = model.Tdspercentage,
                     };
                     _context.EmployeerTds.Add(master);
                     _context.SaveChanges();
@@ -771,7 +769,7 @@ namespace CRM.Controllers
             if (!string.IsNullOrEmpty(customerId))
             {
                 var locations = _context.CustomerRegistrations
-                    .AsEnumerable() 
+                    .AsEnumerable()
                     .Select(c => new
                     {
                         c.Id,
@@ -879,6 +877,21 @@ namespace CRM.Controllers
             catch (Exception Ex)
             {
                 throw new Exception("Error:" + Ex.Message);
+            }
+        }
+
+        [Route("Home/CustomerProfile")]
+        [HttpGet]
+        public IActionResult CustomerProfile()
+        {
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+             
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
             }
         }
     }

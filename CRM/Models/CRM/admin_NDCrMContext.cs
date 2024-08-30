@@ -63,7 +63,7 @@ namespace CRM.Models.Crm
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("server=103.83.81.251;database=admin_NDCrM;User ID=admin_NDCrM;Password=NDCrM@12345#;Trusted_Connection=False;TrustServerCertificate=True");
+                optionsBuilder.UseSqlServer("Server=103.154.184.118;Database=admin_NDCrM;User ID=admin_NDCrM;Password=NDCrM@12345#;Trusted_Connection=False;TrustServerCertificate=True");
             }
         }
 
@@ -241,6 +241,8 @@ namespace CRM.Models.Crm
                     .HasMaxLength(255)
                     .HasColumnName("Mobile_number");
 
+                entity.Property(e => e.Password).HasMaxLength(120);
+
                 entity.Property(e => e.ProductDetails)
                     .HasMaxLength(255)
                     .HasColumnName("Product_Details");
@@ -256,6 +258,8 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.State).HasMaxLength(255);
 
                 entity.Property(e => e.StateId).HasColumnName("stateId");
+
+                entity.Property(e => e.UserName).HasMaxLength(120);
 
                 entity.Property(e => e.WorkLocation)
                     .HasMaxLength(255)

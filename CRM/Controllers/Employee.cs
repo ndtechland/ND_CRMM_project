@@ -1331,26 +1331,46 @@ namespace CRM.Controllers
 
 
         }
-
-
         private string GenerateEmployeeId()
         {
-            var data = _context.EmployeeRegistrations.OrderByDescending(x => x.Id).FirstOrDefault();
+            var data = _context.EmployeeRegistrations
+                              .OrderByDescending(x => x.Id)
+                              .FirstOrDefault();
             string EmpID = string.Empty;
             int numericValue = 1001;
+
             if (data != null && !string.IsNullOrEmpty(data.EmployeeId))
             {
                 string[] parts = data.EmployeeId.Split('-');
-
-                if (parts.Length > 1 && int.TryParse(parts[2], out numericValue))
+                if (parts.Length > 1 && int.TryParse(parts.Last(), out numericValue))
                 {
-                    numericValue++;
-                    EmpID = $"NDT{numericValue}";
-
+                    numericValue++; 
                 }
             }
+            EmpID = $"NDT-{numericValue:D4}";
+
             return EmpID;
         }
+
+
+        //private string GenerateEmployeeId()
+        //{
+        //    var data = _context.EmployeeRegistrations.OrderByDescending(x => x.Id).FirstOrDefault();
+        //    string EmpID = string.Empty;
+        //    int numericValue = 1001;
+        //    if (data != null && !string.IsNullOrEmpty(data.EmployeeId))
+        //    {
+        //        string[] parts = data.EmployeeId.Split('-');
+
+        //        if (parts.Length > 1 && int.TryParse(parts[2], out numericValue))
+        //        {
+        //            numericValue++;
+        //            EmpID = $"NDT{numericValue}";
+
+        //        }
+        //    }
+        //    return EmpID;
+        //}
 
         public async Task<IActionResult> DeleteEmployer(int id)
         {
