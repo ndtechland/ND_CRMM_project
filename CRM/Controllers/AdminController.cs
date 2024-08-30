@@ -68,6 +68,12 @@ namespace CRM.Controllers
                 throw new Exception("Error:" + Ex.Message);
             }
         }
+        [HttpGet]
+        public IActionResult EmployeeLogin()
+        {
+
+            return View();
+        }
         public async Task<IActionResult> Product()
         {
             if (HttpContext.Session.GetString("UserName") != null)

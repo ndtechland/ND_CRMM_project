@@ -25,5 +25,7 @@ namespace CRM.Models.DTO
         public string? State { get; set; }
         public int? StateId { get; set; }
         public string StateName { get; set; } = null!;
+        public string UserName { get; set; } = null!;
+        public string Password { get; set; } = null!;
     }
 }

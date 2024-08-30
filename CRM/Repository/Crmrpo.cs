@@ -18,6 +18,8 @@ using Syncfusion.Drawing;
 using ClosedXML.Excel;
 using Humanizer;
 using Org.BouncyCastle.Asn1.X509;
+using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
+using System.Text;
 
 
 namespace CRM.Repository
@@ -103,11 +105,33 @@ namespace CRM.Repository
             parameter.Add(new SqlParameter("@State", model.State));
             parameter.Add(new SqlParameter("@stateId", model.StateId));
 
-            var result = await Task.Run(() => _context.Database
-           .ExecuteSqlRawAsync(@"exec CustomerRegistration @Company_Name, @Work_Location,@Mobile_number,@Alternate_number,@Email,@GST_Number,@Billing_Address,@Product_Details,@Start_date,@Renew_Date,@State,@stateId", parameter.ToArray()));
+            // Generate dynamic username
+            string dynamicUserName = GenerateDynamicUsername(model.CompanyName);
 
+            // Generate dynamic password
+            string dynamicPassword = GenerateDynamicPassword();
+
+            parameter.Add(new SqlParameter("@UserName", dynamicUserName));
+            parameter.Add(new SqlParameter("@Password", dynamicPassword));
+
+            var result = await Task.Run(() => _context.Database
+                .ExecuteSqlRawAsync(@"exec CustomerRegistration @Company_Name, @Work_Location, @Mobile_number, @Alternate_number, @Email, @GST_Number, @Billing_Address, @Product_Details, @Start_date, @Renew_Date, @State, @stateId, @UserName, @Password", parameter.ToArray()));
+
+            if (result != 0)
+            {
+                AdminLogin AdminRole = new()
+                {
+                    UserName = dynamicUserName,
+                    Password = dynamicPassword,
+                    Role = "Vendor",
+                    Emailid = model.Email,
+                };
+                _context.AdminLogins.Add(AdminRole);
+                _context.SaveChanges();
+            }
             return result;
         }
+
         public async Task<List<Customer>> CustomerList()
         {
             List<Customer> cs = new List<Customer>();
@@ -1140,7 +1164,7 @@ namespace CRM.Repository
                 ex.ToString();
             }
             return lstCity;
-       }     
+        }
         public async Task<List<monthlysalaryExcel>> monthlysalaryReport(string customerId, int Month, int year, string WorkLocation)
         {
             List<monthlysalaryExcel> emp = new List<monthlysalaryExcel>();
@@ -1201,7 +1225,7 @@ namespace CRM.Repository
                         Deduction_Cycle = rdr["Deduction_Cycle"] == DBNull.Value ? null : Convert.ToString(rdr["Deduction_Cycle"]),
                         Employee_Contribution_Rate = rdr["Employee_Contribution_Rate"] == DBNull.Value ? null : Convert.ToString(rdr["Employee_Contribution_Rate"]),
                         nominee = rdr["nominee"] == DBNull.Value ? null : Convert.ToString(rdr["nominee"]),
-                        
+
                         //netpayment = rdr["netpayment"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["netpayment"]),
                     };
 
@@ -1214,6 +1238,27 @@ namespace CRM.Repository
             {
                 throw ex;
             }
+        }
+        private string GenerateDynamicUsername(string companyName)
+        {
+            Random rnd = new Random();
+            string letters = new string(Enumerable.Range(0, 4)
+                .Select(_ => (char)rnd.Next('a', 'z' + 1))
+                .ToArray());
+            string numbers = rnd.Next(10, 100).ToString() + rnd.Next(1000, 10000).ToString();
+            return $"{letters}_{numbers}";
+        }
+
+        private string GenerateDynamicPassword()
+        {
+            const string validChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()";
+            StringBuilder res = new();
+            Random rnd = new();
+            for (int i = 0; i < 12; i++)
+            {
+                res.Append(validChars[rnd.Next(validChars.Length)]);
+            }
+            return res.ToString();
         }
     }
 

@@ -18,5 +18,7 @@ namespace CRM.Models.Crm
         public DateTime RenewDate { get; set; }
         public string? State { get; set; }
         public int? StateId { get; set; }
+        public string? UserName { get; set; }
+        public string? Password { get; set; }
     }
 }
