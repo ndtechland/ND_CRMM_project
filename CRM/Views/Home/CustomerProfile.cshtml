@@ -3,6 +3,11 @@
     ViewData["Title"] = "CustomerProfile";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
+@if (ViewBag.Message != null)
+{
+    <script>alert('@ViewBag.Message');</script>
+}
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
 <style>
     body {
@@ -100,20 +105,10 @@
                 </div>
             </div>
             <div class="container-fluid">
-                <div class="row">
-                    <div class="col-xl-4">
-                        <div class="card mb-4 mb-xl-0">
-                            <div class="card-header">Profile Picture</div>
-                            <div class="card-body text-center">
-                                <img class="img-account-profile rounded-circle mb-2" src="http://bootdey.com/img/Content/avatar/avatar1.png" alt="">
-                                <div class="small font-italic text-muted mb-4">JPG or PNG no larger than 5 MB</div>
-                                <button class="btn btn-primary" type="button">Upload new image</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-8">
+                <div class="row justify-content-center">
+                    <div class="col-xl-6">
                         <div class="card mb-4">
-                            <div class="card-header">Profile Details</div>
+                            <div class="card-header text-center" style="color:black">Profile Details</div>
                             <div class="card-body">
                                 <form asp-action="CustomerProfile" method="post" autocomplete="off">
                                     <div class="row gx-3 mb-3">
@@ -166,8 +161,8 @@
                                             <span asp-validation-for="UserName" class="text-danger"></span>
                                         </div>
                                     </div>
-                                    <div class="form-group" style="display:flex; justify-content:center;">
-                                        <input type="submit" value="Save" class="btn btn-primary" />
+                                    <div class="form-group d-flex justify-content-center">
+                                        <input type="submit" value="Update" class="btn btn-primary" />
                                     </div>
                                 </form>
                             </div>
@@ -175,6 +170,7 @@
                     </div>
                 </div>
             </div>
+
         </div>
 
     </div>

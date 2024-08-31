@@ -1298,10 +1298,10 @@ namespace CRM.Repository
                 throw ex;
             }
         }
-        public async Task<int> UpdateCustomerProfile(CustomerRegistration model)
+        public async Task<int> UpdateCustomerProfile(CustomerRegistration model, string AddedBy)
         {
             var customer = await _context.CustomerRegistrations.FirstOrDefaultAsync(x => x.Id == model.Id);
-            var adminusername = await _context.AdminLogins.Where(x => x.UserName == model.UserName).FirstOrDefaultAsync();
+            var adminusername = await _context.AdminLogins.FirstOrDefaultAsync(x => x.UserName == AddedBy);
             if (customer == null)
             {
                 return 0;
@@ -1323,6 +1323,34 @@ namespace CRM.Repository
 
             }
             return 1;
+        }
+        public async Task<int> UpdateChangepassword(ChangePassworddto model, string AddedBy ,int id)
+        {
+            var customer = await _context.CustomerRegistrations.FirstOrDefaultAsync(x => x.Id == id);
+            var adminusername = await _context.AdminLogins.FirstOrDefaultAsync(x => x.UserName == AddedBy);
+            if (customer == null)
+            {
+                return 0;
+            }
+            customer.Password = model.NewPassword;
+            _context.CustomerRegistrations.Update(customer);
+            await _context.SaveChangesAsync();
+            if (adminusername != null)
+            {
+                adminusername.Password = model.NewPassword;
+                _context.AdminLogins.Update(adminusername);
+                await _context.SaveChangesAsync();
+
+            }
+            return 1;
+        }
+        public async Task<List<EmployeeImportExcel>> CustomerEmployeeList(int id)
+        {
+            List<EmployeeImportExcel> employeeList = await _context.EmpMultiforms
+                .FromSqlRaw("USP_GetCustomerEmployeeDetails @id", new SqlParameter("@id", id))
+                .ToListAsync();
+
+            return employeeList;
         }
 
     }
