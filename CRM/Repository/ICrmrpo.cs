@@ -1,6 +1,7 @@
 ﻿using CRM.Models.Crm;
 using CRM.Models.CRM;
 using CRM.Models.DTO;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Org.BouncyCastle.Asn1.Esf;
@@ -68,7 +69,8 @@ namespace CRM.Repository
         public List<City> BindCity(int stateId);
         public Task<List<monthlysalaryExcel>> monthlysalaryReport(string customerId, int Month, int year, string WorkLocation);
         public Task<CustomerRegistration> GetCustomerProfile(string? id);
-        public Task<int> UpdateCustomerProfile(CustomerRegistration model);
-
+        public Task<int> UpdateCustomerProfile(CustomerRegistration model, string AddedBy);
+        public Task<int> UpdateChangepassword(ChangePassworddto model, string AddedBy, int id);
+        public Task<List<EmployeeImportExcel>> CustomerEmployeeList(int id);
     }
 }

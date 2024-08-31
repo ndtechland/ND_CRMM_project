@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Services.Users;
 using System.Diagnostics;
 using System.Net;
 //using System.Web.Http;
@@ -893,6 +894,7 @@ namespace CRM.Controllers
                 ViewBag.UserName = AddedBy;
                 ViewBag.id = id;
                 var data = await _ICrmrpo.GetCustomerProfile(id);
+                ViewBag.Message = TempData["ErrorMessage"];
                 return View(data);
             }
             else
@@ -910,9 +912,64 @@ namespace CRM.Controllers
                 ViewBag.UserName = AddedBy;
                 if (id != null)
                 {
-                    var data = await _ICrmrpo.UpdateCustomerProfile(model);
-                    return RedirectToAction("CustomerProfile", "Home");
-                    TempData["msg"] = "Update Successfully.";
+                    var data = await _ICrmrpo.UpdateCustomerProfile(model, AddedBy);
+                    TempData["ErrorMessage"] = "Update Successfully.";
+                    return RedirectToAction("CustomerProfile");
+                }
+                else
+                {
+                    ModelState.Clear();
+                    return View();
+                }
+            }
+            catch (Exception Ex)
+            {
+                throw new Exception("Error:" + Ex.Message);
+            }
+        }
+        [Route("Home/Changepassword")]
+        [HttpGet]
+        public async Task<IActionResult> Changepassword()
+        {
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                string id = Convert.ToString(HttpContext.Session.GetString("UserId")); ;
+                ViewBag.UserName = AddedBy;
+                ViewBag.id = id;
+                //ViewBag.Message = TempData["ErrorMessage"];
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Changepassword(ChangePassworddto model)
+        {
+            try
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                int id = Convert.ToInt32(HttpContext.Session.GetString("UserId")); ;
+                ViewBag.UserName = AddedBy;
+                var user = await _context.AdminLogins.Where(x => x.UserName == AddedBy).FirstOrDefaultAsync();
+                if (user.Password != model.CurrentPassword)
+                {
+                    TempData["Message"] = "Current password does not match.";
+                    return RedirectToAction("Changepassword");
+                }
+                if (model.NewPassword == model.CurrentPassword)
+                {
+                    TempData["Message"] = "New password cannot be the same as the current password.";
+                    return RedirectToAction("Changepassword");
+                }
+                if (id != null)
+                {
+                    var data = await _ICrmrpo.UpdateChangepassword(model, AddedBy, id);
+                    TempData["Message"] = "Update Successfully.";
+                    return RedirectToAction("Logout", "Home");
                 }
                 else
                 {

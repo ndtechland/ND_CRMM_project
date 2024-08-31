@@ -284,11 +284,19 @@ namespace CRM.Controllers
                 List<EmployeeImportExcel> response = new List<EmployeeImportExcel>();
                 if (HttpContext.Session.GetString("UserName") != null)
                 {
-
+                    string userIdString = HttpContext.Session.GetString("UserId");
+                    if (!string.IsNullOrEmpty(userIdString) && int.TryParse(userIdString, out int id))
+                    {
+                        response = await _ICrmrpo.CustomerEmployeeList(id);
+                        ViewBag.UserName = HttpContext.Session.GetString("UserName");
+                        return View(response);
+                    }
                     response = await _ICrmrpo.EmployeeList();
                     ViewBag.UserName = HttpContext.Session.GetString("UserName");
                     return View(response);
+                    
                 }
+
                 else
                 {
                     return RedirectToAction("Login", "Admin");
