@@ -70,6 +70,9 @@ namespace CRM.Controllers
             if (HttpContext.Session.GetString("UserName") != null)
             {
                 ViewBag.UserName = HttpContext.Session.GetString("UserName");
+                ViewBag.userId = HttpContext.Session.GetString("UserId");
+                ViewBag.Admin = HttpContext.Session.GetString("AdminId");
+
                 ViewBag.WorkLocation = _context.Cities
                 .Select(w => new SelectListItem
                 {
@@ -243,6 +246,7 @@ namespace CRM.Controllers
         {
             try
             {
+                string userId = HttpContext.Session.GetString("UserId");
                 string Mode = "INS";
                 string Empid = "";
 
@@ -262,10 +266,13 @@ namespace CRM.Controllers
                         return View();
                     }
                 }
-                
-                var response = await _ICrmrpo.EmpRegistration(model, Mode, Empid);
-                ModelState.Clear();
-                ViewBag.Message = "Registration successful"; 
+                if (userId != null)
+                {
+                    var response = await _ICrmrpo.EmpRegistration(model, Mode, Empid,userId);
+                    ModelState.Clear();
+                    ViewBag.Message = "Registration successful";
+                    return View();
+                }
                 return View();
             }
             catch (Exception ex)

@@ -1,5 +1,4 @@
 ﻿@model CRM.Models.Crm.EmployeeRegistration
-
 @{
     ViewData["Title"] = "Employee";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
@@ -15,619 +14,783 @@
             setTimeout(function () {
                 swal.close();
             }, 5000);
-        }       
+        }
     });
 </script>
-@*<link rel="stylesheet" type="text/css" href="../assets/css/EmpRegis.css">
-*@<!-- Normalize CSS -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
-<!-- Bootstrap 4 CSS -->
-<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta.2/css/bootstrap.css'>
-<!-- Telephone Input CSS -->
-<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/12.1.2/css/intlTelInput.css'>
-<!-- Icons CSS -->
-<link rel='stylesheet' href='https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css'>
-<!-- Nice Select CSS -->
-<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/css/nice-select.min.css'>
-<!-- Style CSS -->
-<link rel="stylesheet" href="css/style.css">
 <style>
-    .step-container {
-        position: relative;
+    h1 {
         text-align: center;
-        transform: translateY(-43%);
     }
 
-    .step-circle {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        background-color: #00baf2;
-        border: 2px solid #007bff;
-        line-height: 30px;
-        font-weight: bold;
+    h2 {
+        margin: 0;
+    }
+
+    #multi-step-form-container {
+        margin-top: 4rem;
+        width: 100%;
+        padding-right: 100px;
+        padding-left: 120px;
+        margin-right: auto;
+        margin-left: auto;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .mx-auto {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .pl-0 {
+        padding-left: 0;
+    }
+
+    .button {
+        padding: 0.7rem 1.5rem;
+        border: 1px solid #4361ee;
+        background-color: #4361ee;
+        color: #fff;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .submit-btn {
+        border: 1px solid #0e9594;
+        background-color: #0e9594;
+    }
+
+    .mt-3 {
+        margin-top: 2rem;
+    }
+
+    .d-none {
+        display: none;
+    }
+
+    .form-step {
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 20px;
+        padding: 3rem;
+    }
+
+    .font-normal {
+        font-weight: normal;
+    }
+
+    ul.form-stepper {
+        counter-reset: section;
+        margin-bottom: 3rem;
+    }
+
+        ul.form-stepper .form-stepper-circle {
+            position: relative;
+        }
+
+            ul.form-stepper .form-stepper-circle span {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translateY(-50%) translateX(-50%);
+            }
+
+    .form-stepper-horizontal {
+        position: relative;
+        display: -webkit-box;
+        display: -ms-flexbox;
         display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 10px;
-        cursor: pointer; /* Added cursor pointer */
+        -webkit-box-pack: justify;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
     }
 
-    .step-line {
-        position: absolute;
-        top: 16px;
-        left: 50px;
-        width: calc(100% - 100px);
-        height: 2px;
-        background-color:#313131;
-        z-index: -1;
+    ul.form-stepper > li:not(:last-of-type) {
+        margin-bottom: 0.625rem;
+        -webkit-transition: margin-bottom 0.4s;
+        -o-transition: margin-bottom 0.4s;
+        transition: margin-bottom 0.4s;
     }
 
-    #multi-step-form {
-        overflow-x: hidden;
+    .form-stepper-horizontal > li:not(:last-of-type) {
+        margin-bottom: 0 !important;
+    }
+
+    .form-stepper-horizontal li {
+        position: relative;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-flex: 1;
+        -ms-flex: 1;
+        flex: 1;
+        -webkit-box-align: start;
+        -ms-flex-align: start;
+        align-items: start;
+        -webkit-transition: 0.5s;
+        transition: 0.5s;
+    }
+
+        .form-stepper-horizontal li:not(:last-child):after {
+            position: relative;
+            -webkit-box-flex: 1;
+            -ms-flex: 1;
+            flex: 1;
+            height: 1px;
+            content: "";
+            top: 32%;
+        }
+
+        .form-stepper-horizontal li:after {
+            background-color: #dee2e6;
+        }
+
+        .form-stepper-horizontal li.form-stepper-completed:after {
+            background-color: #4da3ff;
+        }
+
+        .form-stepper-horizontal li:last-child {
+            flex: unset;
+        }
+
+    ul.form-stepper li a .form-stepper-circle {
+        display: inline-block;
+        width: 40px;
+        height: 40px;
+        margin-right: 0;
+        line-height: 1.7rem;
+        text-align: center;
+        background: rgba(0, 0, 0, 0.38);
+        border-radius: 50%;
+    }
+
+    .form-stepper .form-stepper-active .form-stepper-circle {
+        background-color: #00baf2 !important;
+        color: #fff;
+    }
+
+    .form-stepper .form-stepper-active .label {
+        color: #4361ee !important;
+    }
+
+    .form-stepper .form-stepper-active .form-stepper-circle:hover {
+        background-color: #00baf2 !important;
+        color: #fff !important;
+    }
+
+    .form-stepper .form-stepper-unfinished .form-stepper-circle {
+        background-color: #00baf2 !important;
+        color: #fff !important;
+    }
+
+    .form-stepper .form-stepper-completed .form-stepper-circle {
+        background-color: #00baf2 !important;
+        color: #fff !important;
+    }
+
+    .form-stepper .form-stepper-completed .label {
+        color: #0e9594 !important;
+    }
+
+    .form-stepper .form-stepper-completed .form-stepper-circle:hover {
+        background-color: #0e9594 !important;
+        color: #fff !important;
+    }
+
+    .form-stepper .form-stepper-active span.text-muted {
+        color: #fff !important;
+    }
+
+    .form-stepper .form-stepper-completed span.text-muted {
+        color: #fff !important;
+    }
+
+    .form-stepper .label {
+        font-size: 1rem;
+        margin-top: 0.5rem;
+    }
+
+    .form-stepper a {
+        cursor: default;
     }
 </style>
+<style>
+    .col-lg-4 {
+        margin-bottom: 20px; /* Adjust spacing between columns as needed */
+    }
+
+    label {
+        font-weight: bold;
+    }
+
+    .input-group {
+        position: relative;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: stretch;
+        width: 100%;
+    }
+
+    .input-group-text {
+        display: flex;
+        align-items: center;
+        padding: 0.375rem 0.75rem;
+        margin-bottom: 0;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #495057;
+        text-align: center;
+        white-space: nowrap;
+        background-color: #e9ecef;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+    }
+
+    .input-group > .form-control {
+        position: relative;
+        flex: 1 1 auto;
+        width: 1%;
+        margin-bottom: 0;
+    }
+
+    .form-control {
+        display: block;
+        width: 100%;
+        padding: 0.375rem 0.75rem;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #495057;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+
+        .form-control:focus {
+            border-color: #80bdff;
+            outline: 0;
+            box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+        }
+
+</style>
+<link href="~/css/style.css" rel="stylesheet" />
 <div class="page-wrapper">
     <div class="page-body-wrapper">
         <div class="page-sidebar">
         </div>
 
         <div class="page-body">
-            <!-- Container-flui starts-->
-            <div class="containder-fluid">
-                <div class="page-header">
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="page-header-left">
+            <!-- Container-fluid starts-->
+            <div id="multi-step-form-container">
+                <div class="containder-fluid">
+                    <div class="page-header">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="page-header-left">
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <ol class="breadcrumb pull-right">
-                                <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
-                                <li class="breadcrumb-item">HR Payrole</li>
-                                <li class="breadcrumb-item active">Employee</li>
-                                <li class="breadcrumb-item active">EmployeeRegistration</li>
-                            </ol>
+                            <div class="col-lg-6">
+                                <ol class="breadcrumb pull-right">
+                                    <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
+                                    <li class="breadcrumb-item">HR Payrole</li>
+                                    <li class="breadcrumb-item active">Employee</li>
+                                    <li class="breadcrumb-item active">EmployeeRegistration</li>
+                                </ol>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <!-- Container-fluid Ends-->
-            <!-- Container-fluid starts-->
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div class="card tab2-card">
-                            <div class="card-header">
-                                <h3>
-                                    Employee Registration
-                                </h3>
+                <div style="text-align:center;">
+                    <h3>
+                        Employee Registration
+                    </h3>
+                </div>
+                <!-- Form Steps / Progress Bar -->
+                <ul class="form-stepper form-stepper-horizontal text-center mx-auto pl-0">
+                    <!-- Step 1 -->
+                    <li class="form-stepper-active text-center form-stepper-list" step="1">
+                        <a class="mx-2">
+                            <span class="form-stepper-circle">
+                                <span>1</span>
+                            </span>
+                            <div class="label">Basic info</div>
+                        </a>
+                    </li>
+                    <!-- Step 2 -->
+                    <li class="form-stepper-unfinished text-center form-stepper-list" step="2">
+                        <a class="mx-2">
+                            <span class="form-stepper-circle text-muted">
+                                <span>2</span>
+                            </span>
+                            <div class="label text-muted">Persnal info.</div>
+                        </a>
+                    </li>
+                    <!-- Step 3 -->
+                    <li class="form-stepper-unfinished text-center form-stepper-list" step="3">
+                        <a class="mx-2">
+                            <span class="form-stepper-circle text-muted">
+                                <span>3</span>
+                            </span>
+                            <div class="label text-muted">Payment info</div>
+                        </a>
+                    </li>
+                    <!-- Step 4 -->
+                    <li class="form-stepper-unfinished text-center form-stepper-list" step="4">
+                        <a class="mx-2">
+                            <span class="form-stepper-circle text-muted">
+                                <span>4</span>
+                            </span>
+                            <div class="label text-muted">Salary Details</div>
+                        </a>
+                    </li>
+                </ul>
+                <!-- Step Wise Form Content -->
+                <form action="/Employee/EmployeeRegistration" enctype="multipart/form-data" method="POST" autocomplete="off">
+                    <!-- Step 1 Content -->
+                    <section id="step-1" class="form-step">
+                        <h2 class="text-danger">Basic info</h2>
+                        <!-- Step 1 input fields -->
+                        <div class="mt-3">
+                            <div class="row">
+                                <div class="col">
+                                    <label>Frist Name</label>
+                                    <input class="form-control" value='@ViewBag.First_Name' name="FirstName" placeholder="Enter First Name" id="FirstName" type="text" required>
+                                </div>
+
+                                <div class="col">
+                                    <label>Middle Name</label>
+                                    <input class="form-control" value='@ViewBag.Middle_Name' name="MiddleName" placeholder="Enter Middle Name" id="MiddleName" type="text" required>
+                                </div>
+                                <div class="col">
+                                    <label>Last Name</label>
+                                    <input class="form-control " value='@ViewBag.Last_Name' name="LastName" placeholder="Enter Last Name" id="LastName" type="text" required>
+                                </div>
+
                             </div>
-                            <div class="card-body">
+                            <div class="row">
 
-                                <div class="tab-content">
-                                    <div class="progress px-1" style="height: 3px;">
-                                        <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                <div class="col-md-6">
+                                    <label>Work Email</label>
+                                    <div class="form-group">
+                                        <input type="hidden" name="Emp_Reg_ID" value='@ViewBag.Emp_Reg_Code' />
+                                        <input class="form-control " value='@ViewBag.Work_Email' name="WorkEmail" placeholder="Enter Work Email" id="WorkEmail" type="email" required>
+
                                     </div>
-                                    <div class="step-container d-flex justify-content-between">
-                                        <div class="step-circle" onclick="displayStep(1)">1</div>
-                                        <div class="step-circle" onclick="displayStep(2)">2</div>
-                                        <div class="step-circle" onclick="displayStep(3)">3</div>
-                                        <div class="step-circle" onclick="displayStep(4)">4</div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label>Date Of Joining</label>
+                                    <div class="form-group">
+
+                                        <input class="form-control " value='@ViewBag.Date_Of_Joining' name="DateOfJoining" id="DateOfJoining" type="date" required>
+
                                     </div>
-                                    <div class="tab-pane fade active show" id="account" role="tabpanel" aria-labelledby="account-tab">
-                                        <form class="needs-validation user-add" id="multi-step-form" method="post" asp-action="EmployeeRegistration" autocomplete="off">
-                                            <div class="step step-1">
-                                                <h4 class="text-danger">Basic info </h4>
+                                </div>
 
-                                                <div class="row">
-                                                    <div class="col">
-                                                        <label>Frist Name</label>
-                                                        <input class="form-control" value='@ViewBag.First_Name' name="FirstName" placeholder="Enter First Name" id="FirstName" type="text" required>
-                                                    </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label>Gender</label>
+                                    <div class="form-group">
 
-                                                    <div class="col">
-                                                        <label>Middle Name</label>
-                                                        <input class="form-control" value='@ViewBag.Middle_Name' name="MiddleName" placeholder="Enter Middle Name" id="MiddleName" type="text" required>
-                                                    </div>
-                                                    <div class="col">
-                                                        <label>Last Name</label>
-                                                        <input class="form-control " value='@ViewBag.Last_Name' name="LastName" placeholder="Enter Last Name" id="LastName" type="text" required>
-                                                    </div>
+                                        <select name="GenderID" id="ddlGender" class="form-control ">
+                                            <option value="0">-- select Gender --</option>
+                                            <option value="1">Female</option>
+                                            <option value="2">Male</option>
+                                            <option value="3">Other</option>
 
-                                                </div>
-
-                                                <div class="row">
-
-                                                    <div class="col-md-6">
-                                                        <label>Work Email</label>
-                                                        <div class="form-group">
-                                                            <input type="hidden" name="Emp_Reg_ID" value='@ViewBag.Emp_Reg_Code' />
-                                                            <input class="form-control " value='@ViewBag.Work_Email' name="WorkEmail" placeholder="Enter Work Email" id="WorkEmail" type="email" required>
-
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="col-md-6">
-                                                        <label>Date Of Joining</label>
-                                                        <div class="form-group">
-
-                                                            <input class="form-control " value='@ViewBag.Date_Of_Joining' name="DateOfJoining"  id="DateOfJoining" type="date" required>
-
-                                                        </div>
-                                                    </div>
-
-                                                </div>
-
-                                                <div class="row">
-                                                    <div class="col-md-3">
-                                                        <label>Gender</label>
-                                                        <div class="form-group">
-
-                                                            <select name="GenderID" id="ddlGender" class="form-control ">
-                                                                <option value="0">-- select Gender --</option>
-                                                                <option value="1">Female</option>
-                                                                <option value="2">Male</option>
-                                                                <option value="3">Other</option>
-
-                                                            </select>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="col-md-3">
-                                                        <label>Company Name</label>
-                                                        <div class="form-group">
-                                                            <select class="form-control" name="CustomerID" id="ddCustomerID" @*onchange="Locations()"*@>
-                                                                <option value="0">-- Select Company --</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <label>State Name</label>
-                                                        <div class="form-group">
-                                                              <select class="form-control" name="StateId" id="ddlStates">
-                                                                <option value="0">-- Select State --</option>
-                                                              </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <label>Work Location</label>
-                                                        <div class="form-group">
-                                                            
-                                                            <select class="form-control" name="WorkLocationID"  id="ddlCity">
-                                                                <option value="0">-- Select WorkLocation --</option>
-
-
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    @*<div class="col-md-3">
-                                                        <label>Work Location</label>
-                                                        <div class="form-group">
-
-                                                            <select class="form-control" name="WorkLocationID" id="ddlWorkLocationID">
-                                                                <option value="0">-- Select WorkLocation --</option>
-
-
-                                                            </select>
-                                                        </div>
-                                                    </div>*@
-                                                    <div class="col-md-3">
-                                                        <label>Department</label>
-                                                        <div class="form-group">
-
-                                                            <select name="DepartmentID" class="form-control " id="ddDepartmentID">
-                                                                <option value="0">-- select Department --</option>
-
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <label>Designation</label>
-                                                        <div class="form-group">
-
-                                                            <select name="DesignationID" class="form-control " id="ddDesignationID">
-                                                                <option value="0">-- select Designation --</option>
-
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="pull-right">
-                                                    <button type="button" id="btnFirstTab" onclick="displayStep(2)" class="btn btn-primary next-step">Next</button>
-                                                </div>
-                                            </div>
-
-                                            <div class="step step-2">
-                                                <h4 class="text-danger">Persnal info.</h4>
-                                                <div class="row">
-                                                    <div class="col">
-                                                        <label>Personal Email Address</label>
-                                                        <input class="form-control " value='@ViewBag.Personal_Email_Address' placeholder="Enter Personal Email Address" name="PersonalEmailAddress" id="PersonalEmailAddress" type="email" required="">
-                                                    </div>
-
-                                                    <div class="col">
-                                                        <label>Mobile Number</label>
-                                                        <div class="input-group">
-                                                            <span class="input-group-text" id="basic-addon1">+91</span>
-                                                            <input class="form-control " value='@ViewBag.Mobile_Number' name="MobileNumber"  placeholder="Enter Mobile Number" id="MobileNumber" type="text" maxlength="10" minlength="10" required="">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col">
-                                                        <label>Date Of Birth</label>
-                                                        <input class="form-control " value='@ViewBag.Date_Of_Birth' name="DateOfBirth" id="dobInput" type="date" required="">
-                                                    </div>
-
-                                                </div>
-
-                                                <div class="row">
-                                                    <div class="col">
-                                                        <label>Age</label>
-                                                        <input class="form-control " value='@ViewBag.Age' id="ageInput" type="text" required="" readonly>
-                                                    </div>
-
-                                                    <div class="col">
-                                                        <label>Father Name</label>
-                                                        <input class="form-control " value='@ViewBag.Father_Name' name="FatherName" id="FatherName" placeholder="Enter Father Name" type="text" required="">
-                                                    </div>
-                                                    <div class="col">
-                                                        <label>Pan</label>
-                                                        <input class="form-control " value='@ViewBag.PAN' name="PAN" id="PAN" placeholder="Enter PAN"  type="text" required="">
-                                                    </div>
-
-                                                </div>
-
-                                                <div class="row">
-                                                    <div class="col">
-                                                        <label>Address 1</label>
-                                                        <input class="form-control " value='@ViewBag.Address_Line_1' name="AddressLine1" placeholder="Enter Address Line1" id="AddressLine1" type="text" required="">
-                                                    </div>
-
-                                                    <div class="col">
-                                                        <label>Address 2</label>
-                                                        <input class="form-control " value='@ViewBag.Address_Line_2' name="AddressLine2" placeholder="Enter Address Line2" id="AddressLine2" type="text" required="">
-                                                    </div>
-                                                   <div class="col">
-                                                        <label>State</label>
-                                                        <select class="form-control " id="ddlState" name="StateID">
-                                                            <option value="0">-select State--</option>
-
-                                                        </select>
-                                                    </div>
-
-                                                </div>
-                                                <div class="row">
-                                                     <div class="col">
-                                                        <label>City</label>
-                                                        <select class="form-control" name="City"  id="City">
-                                                                <option value="0">-- Select City Name --</option>
-                                                         </select>
-                                                        
-@*                                                        <input class="form-control " value='@ViewBag.City' name="City" id="City"  placeholder="Enter City" type="text" required="">
-*@                                                    </div>                                                    
-                                                    <div class="col">
-                                                        <label>Pincode</label>
-                                                        <input class="form-control " value='@ViewBag.Pincode' name="Pincode" maxlength="6" id="Pincode"  placeholder="Enter Pincode" type="text" required onkeydown="validateNumericInput(event)">
-                                                    </div>
-
-                                                </div>
-                                                <br />
-
-                                                <div class="pull-right" style="margin-top:5px;">
-
-                                                    <button type="button" class="btn btn-primary prev-step">Previous</button>
-                                                    <button type="button" id="btnSecondTab" onclick="displayStep(3)" class="btn btn-primary next-step">Next</button>
-                                                </div>
-                                            </div>
-                                            <div class="step step-3">
-                                                <h4 class="text-danger">Payment info</h4>
-                                                <div class="row">
-                                                    <div class="col">
-                                                        <label>Account Holder Name</label>
-                                                        <input class="form-control " value='@ViewBag.Account_Holder_Name' name="AccountHolderName" placeholder="Enter Account Holder Name" id="AccountHolderName" type="text" required="">
-                                                    </div>
-                                                    <div class="col">
-                                                        <label>Bank Name</label>
-                                                        <input class="form-control " value='@ViewBag.Bank_Name' name="BankName" id="BankName" placeholder="Enter BankName" type="text" required="">
-                                                    </div>
-                                                    <div class="col">
-                                                        <label>Account Number</label>
-                                                        <input class="form-control " value='@ViewBag.Account_Number' name="AccountNumber" placeholder="Enter Account Number" id="AccountNumber" type="number" required="">
-                                                    </div>
-                                                </div>
-
-                                                <div class="row">
-                                                    <div class="col">
-                                                        <label>Re-enter Account Number</label>
-                                                        <input class="form-control " value='@ViewBag.Re_Enter_Account_Number' name="ReEnterAccountNumber" placeholder="Enter Re-EnterAccountNumber" id="ReEnterAccountNumber" type="number" required="">
-                                                    </div>
-                                                    <div class="col">
-                                                        <label>IFSC</label>
-                                                        <input class="form-control " value='@ViewBag.IFSC' name="IFSC" id="IFSC" placeholder="Enter IFSC" type="text" required="">
-                                                    </div>
-
-                                                    <div class="col">
-                                                        <label>EPF Number</label>
-                                                        <input class="form-control " value='@ViewBag.EPF_Number' name="EPF_Number" placeholder="Enter EPF Number" id="EPF_Number" type="text" required="">
-                                                    </div>
-                                                </div>
-                                                
-
-                                                <div class="row">
-                                                    <div class="col">
-                                                        <label>Employee Contribution Rate</label>
-                                                        <input class="form-control " value='@ViewBag.Employee_Contribution_Rate' name="Employee_Contribution_Rate" placeholder="Enter Employee Contribution Rate" id="Employee_Contribution_Rate" type="text" required="">
-                                                    </div>
-
-                                                    <div class="col">
-                                                        <label for="validationCustom0">Deduction Cycle</label>
-                                                        <select id="ddlDeductionTime" name="Deduction_Cycle" class="form-control ">
-                                                            <option value="0">-- select --</option>
-                                                            <option value="M">Monthly</option>
-                                                            <option value="Y">Yearly</option>
-                                                        </select>
-                                                    </div>
-                                                 
-                                                    <div class="col">
-                                                        <label>Nominees Name</label>
-                                                        <input class="form-control " value='@ViewBag.nominee' name="nominee" id="nominee" placeholder="Enter nominee name" type="text" required="">
-                                                    </div>
-
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col" style="padding:20px;">
-                                                        <label>Account Type</label>
-                                                        <br />
-                                                        <div class="d-flex gap-2">
-                                                            <input type="radio" id="rdAcountCurrent" name="AccountTypeID" value="1">current
-                                                            <input type="radio" id="rdAcountSaving" name="AccountTypeID" value="2">savings
-                                                        </div>
-                                                        <div>
-                                                        </div>
-                                                    </div>
-
-                                                </div>
-                                                <br />
-                                                <div class="pull-right">
-                                                    <button type="button" class="btn btn-primary prev-step">Previous</button>
-                                                    <button type="button" id="btnThirdTab" onclick="displayStep(4)" class="btn btn-primary next-step">Next</button>
-                                                </div>
-                                            </div>
-
-                                            <div class="step step-4">
-                                                <h4 class="text-danger">Salary Details</h4>
-                                                <div class="row">
-                                                    @*<div class="col">
-                                                        <label>Annual CTC</label>*@
-                                                         <input class="form-control" value='@ViewBag.AnnualCTC' name="AnnualCTC" placeholder="Enter AnnualCTC" id="txtAnnualCTC" type="hidden" required style="display: none;">
-                                                    @*</div>*@
-                                                        <input class="form-control" value='@ViewBag.AnnualCTC' name="AnnualCTC" placeholder="Enter AnnualCTC" id="txtAnnualCTC" type="hidden" required style="display: none;">
-                                                    <div class="col">
-                                                        <label>Monthly CTC</label>
-                                                        <input class="form-control " value='@ViewBag.MonthlyCTC' name="MonthlyCTC" placeholder="Enter Monthly CTC" id="txtMonthlyCTC" type="text" required="">
-                                                    </div>
-                                                    <div class="col">
-                                                        <label>Special Allowance</label>
-                                                        <input class="form-control " value='@ViewBag.specialallowance' name="SpecialAllowance" id="SpecialAllowance" placeholder="Enter Special Allowance" type="text" required="">
-                                                    </div>
-                                                    <div class="col">
-                                                        <label>Basic</label>
-                                                        <input class="form-control " value='@ViewBag.Basic'  name="Basic" placeholder="00.0" id="txtBasicSalary" type="text" required="" readonly>
-                                                    </div>
-                                                                                                       
-                                                    </div>
-                                                    <br />
-                                                    <div class="row">
-                                                    
-                                                    <div class="col">
-                                                        <label>HouseRent Allowance</label>
-                                                        <input class="form-control " value='@ViewBag.HouseRentAllowance' name="HouseRentAllowance" placeholder="00.0" id="txtHouseRentAllowance" type="text" required="" readonly>
-                                                    </div>
-                                                    <div class="col">
-                                                        <label>Gross</label>
-                                                        <input class="form-control " value='@ViewBag.gross' name="gross" id="txtgross" type="text" required="" readonly>
-                                                    </div> 
-                                                    <div class="col">
-                                                        <label>Monthly GrossPay</label>
-                                                        <input class="form-control " value='@ViewBag.MonthlyGrossPay' name="MonthlyGrossPay" placeholder="00.0" id="txtMonthlyGrossPay" type="text" required="" readonly>
-                                                    </div>
-                                                    <input class="form-control " value='@ViewBag.servicecharge' name="servicecharge" id="Servicecharge"  type="hidden" required style="display: none;">                                                                                                                                              
-                                                </div>
-                                                    <br />
-                                                     <h4 class="text-danger">Employee Contribution</h4>
-                                                     <div class="row">
-                                                    <div class="col">
-                                                        <label>EPF</label>
-                                                        <input class="form-control " value='@ViewBag.EPF' name="EPF" placeholder="00.0" id="txtEPF" type="text" required="" readonly>
-                                                    </div>
-                                                    <div class="col">
-                                                        <label>Professional tax</label>
-                                                        <input class="form-control " value='@ViewBag.Professionaltax' name="Professionaltax" placeholder="Enter Professional tax" id="Professionaltax" type="text" required="" readonly>
-                                                    </div>
-                                                    <div class="col">
-                                                        <label>ESIC</label>
-                                                        <input class="form-control " value='@ViewBag.ESIC' name="ESIC" id="ESIC" type="text" required="" readonly>
-                                                    </div>
-                                                    <div class="col">
-                                                        <label>TDS (<span id="displayTdsPercentage">@ViewBag.Tdspercentage</span>%)</label>
-                                                        <input class="form-control" value='@ViewBag.Amount' name="Amount" placeholder="00.0" id="txtAmount" type="text" required="" readonly>
-                                                        <input class="form-control" name="TdsPercentage" value='@ViewBag.Tdspercentage' placeholder="00.0" id="txtTdspercentage" type="hidden" required="" style="display: none;">
-                                                    </div>
-                                                </div>
-                                                <br />
-                                                <h4 class="text-danger">Employer Contribution</h4>
-                                                <div class="row">  
-                                                    <div class="col">
-                                                        <label>EPF (<span id="displayEPFMaster">@ViewBag.epfNumber</span>%)</label>
-                                                        <input class="form-control " name="EPF" placeholder="00.0" id="txtEPFMaster" type="text" required="" readonly>
-                                                        <input class="form-control" name="Epf_Number" value='@ViewBag.epfNumber' placeholder="00.0" id="txtepfNumber" type="hidden" required="" style="display: none;">
-                                                    </div>
-                                                    <div class="col">
-                                                        <label>ESIC (<span id="displayESICMaster">@ViewBag.epfNumber</span>%)</label>
-                                                        <input class="form-control "  name="ESIC_Number" id="ESICMaster" type="text" required="" readonly>
-                                                    </div>
-                                                </div>
-                                                <br />
-
-                                                <div class="pull-right mt-5" style="padding:20px;">
-                                                    <button type="button" class="btn btn-primary prev-step">Previous</button>
-                                                    <input type="submit" onclick="return fnValidate()"  id="btnsave" class="btn btn-primary" value='@ViewBag.btnText' />
-                                                </div>
-                                            </div>
-
-                                        </form>
+                                        </select>
                                     </div>
+                                </div>
 
+                              @*   <div class="col-md-3">
+                                    <label>Company Name</label>
+                                    <div class="form-group">
+                                        <select class="form-control" name="CustomerID" id="ddCustomerID">
+                                            <option value="0">-- Select Company --</option>
+                                        </select>
+                                    </div>
+                                </div> *@
+                                <input type="hidden" name="CustomerID" id="ddCustomerID" value="@ViewBag.userId">
+                                <input type="hidden" name="CustomerID" id="ddCustomerID" value="@ViewBag.Admin">
+                                <div class="col-md-3">
+                                    <label>State Name</label>
+                                    <div class="form-group">
+                                        <select class="form-control" name="StateId" id="ddlStates">
+                                            <option value="0">-- Select State --</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label>Work Location</label>
+                                    <div class="form-group">
+
+                                        <select class="form-control" name="WorkLocationID" id="ddlCity">
+                                            <option value="0">-- Select WorkLocation --</option>
+
+
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label>Department</label>
+                                    <div class="form-group">
+
+                                        <select name="DepartmentID" class="form-control " id="ddDepartmentID">
+                                            <option value="0">-- select Department --</option>
+
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label>Designation</label>
+                                    <div class="form-group">
+
+                                        <select name="DesignationID" class="form-control " id="ddDesignationID">
+                                            <option value="0">-- select Designation --</option>
+
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
+                        <div class="mt-3">
+                            <button class="button btn-navigate-form-step" type="button" step_number="2">Next</button>
+                        </div>
+                    </section>
+                    <!-- Step 2 Content, default hidden on page load. -->
+                    <section id="step-2" class="form-step d-none">
+                        <h2 class="text-danger">Persnal info.</h2>
+                        <!-- Step 2 input fields -->
+                        <div class="mt-3">
+                            <div class="row">
+                                <div class="col">
+                                    <label>Personal Email Address</label>
+                                    <input class="form-control " value='@ViewBag.Personal_Email_Address' placeholder="Enter Personal Email Address" name="PersonalEmailAddress" id="PersonalEmailAddress" type="email" required="">
+                                </div>
+
+                                <div class="col">
+                                    <label>Mobile Number</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text" id="basic-addon1">+91</span>
+                                        <input class="form-control " value='@ViewBag.Mobile_Number' name="MobileNumber" placeholder="Enter Mobile Number" id="MobileNumber" type="text" maxlength="10" minlength="10" required="">
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <label>Date Of Birth</label>
+                                    <input class="form-control " value='@ViewBag.Date_Of_Birth' name="DateOfBirth" id="dobInput" type="date" required="">
+                                </div>
+
+                            </div>
+
+                            <div class="row">
+                                <div class="col">
+                                    <label>Age</label>
+                                    <input class="form-control " value='@ViewBag.Age' id="ageInput" type="text" required="" readonly>
+                                </div>
+
+                                <div class="col">
+                                    <label>Father Name</label>
+                                    <input class="form-control " value='@ViewBag.Father_Name' name="FatherName" id="FatherName" placeholder="Enter Father Name" type="text" required="">
+                                </div>
+                                <div class="col">
+                                    <label>Pan</label>
+                                    <input class="form-control " value='@ViewBag.PAN' name="PAN" id="PAN" placeholder="Enter PAN" type="text" required="">
+                                </div>
+
+                            </div>
+
+                            <div class="row">
+                                <div class="col">
+                                    <label>Address 1</label>
+                                    <input class="form-control " value='@ViewBag.Address_Line_1' name="AddressLine1" placeholder="Enter Address Line1" id="AddressLine1" type="text" required="">
+                                </div>
+
+                                <div class="col">
+                                    <label>Address 2</label>
+                                    <input class="form-control " value='@ViewBag.Address_Line_2' name="AddressLine2" placeholder="Enter Address Line2" id="AddressLine2" type="text" required="">
+                                </div>
+                                <div class="col">
+                                    <label>State</label>
+                                    <select class="form-control " id="ddlState" name="StateID">
+                                        <option value="0">-select State--</option>
+
+                                    </select>
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <label>City</label>
+                                    <select class="form-control" name="City" id="City">
+                                        <option value="0">-- Select City Name --</option>
+                                    </select>
+
+                                    @*                                                        <input class="form-control " value='@ViewBag.City' name="City" id="City"  placeholder="Enter City" type="text" required="">
+                                    *@
+                                </div>
+                                <div class="col">
+                                    <label>Pincode</label>
+                                    <input class="form-control " value='@ViewBag.Pincode' name="Pincode" maxlength="6" id="Pincode" placeholder="Enter Pincode" type="text" required onkeydown="validateNumericInput(event)">
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <button class="button btn-navigate-form-step" type="button" step_number="1">Prev</button>
+                            <button class="button btn-navigate-form-step" type="button" step_number="3">Next</button>
+                        </div>
+                    </section>
+                    <!-- Step 3 Content, default hidden on page load. -->
+                    <section id="step-3" class="form-step d-none">
+                        <h2 class="text-danger">Payment info</h2>
+                        <!-- Step 3 input fields -->
+                        <div class="mt-3">
+                            <div class="row">
+                                <div class="col">
+                                    <label>Account Holder Name</label>
+                                    <input class="form-control " value='@ViewBag.Account_Holder_Name' name="AccountHolderName" placeholder="Enter Account Holder Name" id="AccountHolderName" type="text" required="">
+                                </div>
+                                <div class="col">
+                                    <label>Bank Name</label>
+                                    <input class="form-control " value='@ViewBag.Bank_Name' name="BankName" id="BankName" placeholder="Enter BankName" type="text" required="">
+                                </div>
+                                <div class="col">
+                                    <label>Account Number</label>
+                                    <input class="form-control " value='@ViewBag.Account_Number' name="AccountNumber" placeholder="Enter Account Number" id="AccountNumber" type="number" required="">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col">
+                                    <label>Re-enter Account Number</label>
+                                    <input class="form-control " value='@ViewBag.Re_Enter_Account_Number' name="ReEnterAccountNumber" placeholder="Enter Re-EnterAccountNumber" id="ReEnterAccountNumber" type="number" required="">
+                                </div>
+                                <div class="col">
+                                    <label>IFSC</label>
+                                    <input class="form-control " value='@ViewBag.IFSC' name="IFSC" id="IFSC" placeholder="Enter IFSC" type="text" required="">
+                                </div>
+
+                                <div class="col">
+                                    <label>EPF Number</label>
+                                    <input class="form-control " value='@ViewBag.EPF_Number' name="EPF_Number" placeholder="Enter EPF Number" id="EPF_Number" type="text" required="">
+                                </div>
+                            </div>
+
+
+                            <div class="row">
+                                <div class="col">
+                                    <label>Employee Contribution Rate</label>
+                                    <input class="form-control " value='@ViewBag.Employee_Contribution_Rate' name="Employee_Contribution_Rate" placeholder="Enter Employee Contribution Rate" id="Employee_Contribution_Rate" type="text" required="">
+                                </div>
+
+                                <div class="col">
+                                    <label for="validationCustom0">Deduction Cycle</label>
+                                    <select id="ddlDeductionTime" name="Deduction_Cycle" class="form-control ">
+                                        <option value="0">-- select --</option>
+                                        <option value="M">Monthly</option>
+                                        <option value="Y">Yearly</option>
+                                    </select>
+                                </div>
+
+                                <div class="col">
+                                    <label>Nominees Name</label>
+                                    <input class="form-control " value='@ViewBag.nominee' name="nominee" id="nominee" placeholder="Enter nominee name" type="text" required="">
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="col" style="padding:20px;">
+                                    <label>Account Type</label>
+                                    <br />
+                                    <div class="d-flex gap-2">
+                                        <input type="radio" id="rdAcountCurrent" name="AccountTypeID" value="1">current
+                                        <input type="radio" id="rdAcountSaving" name="AccountTypeID" value="2">savings
+                                    </div>
+                                    <div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <button class="button btn-navigate-form-step" type="button" step_number="2">Prev</button>
+                            <button class="button btn-navigate-form-step" type="button" step_number="4">Next</button>
+                        </div>
+                    </section>
+                    <section id="step-4" class="form-step d-none">
+                        <h2 class="text-danger">Salary Details</h2>
+                        <div class="mt-3">
+                            <div class="row">
+                                @*<div class="col">
+                                <label>Annual CTC</label>*@
+                                <input class="form-control" value='@ViewBag.AnnualCTC' name="AnnualCTC" placeholder="Enter AnnualCTC" id="txtAnnualCTC" type="hidden" required style="display: none;">
+                                @*</div>*@
+                                <input class="form-control" value='@ViewBag.AnnualCTC' name="AnnualCTC" placeholder="Enter AnnualCTC" id="txtAnnualCTC" type="hidden" required style="display: none;">
+                                <div class="col">
+                                    <label>Monthly CTC</label>
+                                    <input class="form-control " value='@ViewBag.MonthlyCTC' name="MonthlyCTC" placeholder="Enter Monthly CTC" id="txtMonthlyCTC" type="text" required="">
+                                </div>
+                                <div class="col">
+                                    <label>Special Allowance</label>
+                                    <input class="form-control " value='@ViewBag.specialallowance' name="SpecialAllowance" id="SpecialAllowance" placeholder="Enter Special Allowance" type="text" required="">
+                                </div>
+                                <div class="col">
+                                    <label>Basic</label>
+                                    <input class="form-control " value='@ViewBag.Basic' name="Basic" placeholder="00.0" id="txtBasicSalary" type="text" required="" readonly>
+                                </div>
+
+                            </div>
+                            <br />
+                            <div class="row">
+
+                                <div class="col">
+                                    <label>HouseRent Allowance</label>
+                                    <input class="form-control " value='@ViewBag.HouseRentAllowance' name="HouseRentAllowance" placeholder="00.0" id="txtHouseRentAllowance" type="text" required="" readonly>
+                                </div>
+                                <div class="col">
+                                    <label>Gross</label>
+                                    <input class="form-control " value='@ViewBag.gross' name="gross" id="txtgross" type="text" required="" readonly>
+                                </div>
+                                <div class="col">
+                                    <label>Monthly GrossPay</label>
+                                    <input class="form-control " value='@ViewBag.MonthlyGrossPay' name="MonthlyGrossPay" placeholder="00.0" id="txtMonthlyGrossPay" type="text" required="" readonly>
+                                </div>
+                                <input class="form-control " value='@ViewBag.servicecharge' name="servicecharge" id="Servicecharge" type="hidden" required style="display: none;">
+                            </div>
+                            <br />
+                            <h4 class="text-danger">Employee Contribution</h4>
+                            <div class="row">
+                                <div class="col">
+                                    <label>EPF</label>
+                                    <input class="form-control " value='@ViewBag.EPF' name="EPF" placeholder="00.0" id="txtEPF" type="text" required="" readonly>
+                                </div>
+                                <div class="col">
+                                    <label>Professional tax</label>
+                                    <input class="form-control " value='@ViewBag.Professionaltax' name="Professionaltax" placeholder="Enter Professional tax" id="Professionaltax" type="text" required="" readonly>
+                                </div>
+                                <div class="col">
+                                    <label>ESIC</label>
+                                    <input class="form-control " value='@ViewBag.ESIC' name="ESIC" id="ESIC" type="text" required="" readonly>
+                                </div>
+                                <div class="col">
+                                    <label>TDS (<span id="displayTdsPercentage">@ViewBag.Tdspercentage</span>%)</label>
+                                    <input class="form-control" value='@ViewBag.Amount' name="Amount" placeholder="00.0" id="txtAmount" type="text" required="" readonly>
+                                    <input class="form-control" name="TdsPercentage" value='@ViewBag.Tdspercentage' placeholder="00.0" id="txtTdspercentage" type="hidden" required="" style="display: none;">
+                                </div>
+                            </div>
+                            <br />
+                            <h4 class="text-danger">Employer Contribution</h4>
+                            <div class="row">
+                                <div class="col">
+                                    <label>EPF (<span id="displayEPFMaster">@ViewBag.epfNumber</span>%)</label>
+                                    <input class="form-control " name="EPF" placeholder="00.0" id="txtEPFMaster" type="text" required="" readonly>
+                                    <input class="form-control" name="Epf_Number" value='@ViewBag.epfNumber' placeholder="00.0" id="txtepfNumber" type="hidden" required="" style="display: none;">
+                                </div>
+                                <div class="col">
+                                    <label>ESIC (<span id="displayESICMaster">@ViewBag.epfNumber</span>%)</label>
+                                    <input class="form-control " name="ESIC_Number" id="ESICMaster" type="text" required="" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <button class="button btn-navigate-form-step" type="button" step_number="3">Prev</button>
+                            <button class="button submit-btn" onclick="return fnValidate()" type="submit">@ViewBag.btnText</button>
+                        </div>
+                    </section>
+                </form>
             </div>
 
         </div>
     </div>
 </div>
+<script>
 
-<!-- jQuery -->
-<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
-<!-- Bootstrap JS -->
-<script src='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta/js/bootstrap.min.js'></script>
-<!-- jQuery Easing JS -->
-<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js'></script>
-<!-- Telephone Input JS -->
-<script src='https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/12.1.2/js/intlTelInput.js'></script>
-<!-- Popper JS -->
-<script src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js'></script>
-<!-- jQuery Nice Select JS -->
-<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/js/jquery.nice-select.min.js'></script>
-<!-- Initialization -->
+    /**
+     * Define a function to navigate betweens form steps.
+     * It accepts one parameter. That is - step number.
+     */
+    const navigateToFormStep = (stepNumber) => {
+        /**
+         * Hide all form steps.
+         */
+        document.querySelectorAll(".form-step").forEach((formStepElement) => {
+            formStepElement.classList.add("d-none");
+        });
+        /**
+         * Mark all form steps as unfinished.
+         */
+        document.querySelectorAll(".form-stepper-list").forEach((formStepHeader) => {
+            formStepHeader.classList.add("form-stepper-unfinished");
+            formStepHeader.classList.remove("form-stepper-active", "form-stepper-completed");
+        });
+        /**
+         * Show the current form step (as passed to the function).
+         */
+        document.querySelector("#step-" + stepNumber).classList.remove("d-none");
+        /**
+         * Select the form step circle (progress bar).
+         */
+        const formStepCircle = document.querySelector('li[step="' + stepNumber + '"]');
+        /**
+         * Mark the current form step as active.
+         */
+        formStepCircle.classList.remove("form-stepper-unfinished", "form-stepper-completed");
+        formStepCircle.classList.add("form-stepper-active");
+        /**
+         * Loop through each form step circles.
+         * This loop will continue up to the current step number.
+         * Example: If the current step is 3,
+         * then the loop will perform operations for step 1 and 2.
+         */
+        for (let index = 0; index < stepNumber; index++) {
+            /**
+             * Select the form step circle (progress bar).
+             */
+            const formStepCircle = document.querySelector('li[step="' + index + '"]');
+            /**
+             * Check if the element exist. If yes, then proceed.
+             */
+            if (formStepCircle) {
+                /**
+                 * Mark the form step as completed.
+                 */
+                formStepCircle.classList.remove("form-stepper-unfinished", "form-stepper-active");
+                formStepCircle.classList.add("form-stepper-completed");
+            }
+        }
+    };
+    /**
+     * Select all form navigation buttons, and loop through them.
+     */
+    document.querySelectorAll(".btn-navigate-form-step").forEach((formNavigationBtn) => {
+        /**
+         * Add a click event listener to the button.
+         */
+        formNavigationBtn.addEventListener("click", () => {
+            /**
+             * Get the value of the step.
+             */
+            const stepNumber = parseInt(formNavigationBtn.getAttribute("step_number"));
+            /**
+             * Call the function to navigate to the target form step.
+             */
+            navigateToFormStep(stepNumber);
+        });
+    });
+</script>
+
+
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script>
-    (function ($) {
-        "use strict";
 
-        //* Form js
-        function verificationForm() {
-            //jQuery time
-            var current_fs, next_fs, previous_fs; //fieldsets
-            var left, opacity, scale; //fieldset properties which we will animate
-            var animating; //flag to prevent quick multi-click glitches
 
-            $(".next").click(function () {
-                if (animating) return false;
-                animating = true;
-
-                current_fs = $(this).parent();
-                next_fs = $(this).parent().next();
-
-                //activate next step on progressbar using the index of next_fs
-                $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
-
-                //show the next fieldset
-                next_fs.show();
-                //hide the current fieldset with style
-                current_fs.animate({
-                    opacity: 0
-                }, {
-                    step: function (now, mx) {
-                        //as the opacity of current_fs reduces to 0 - stored in "now"
-                        //1. scale current_fs down to 80%
-                        scale = 1 - (1 - now) * 0.2;
-                        //2. bring next_fs from the right(50%)
-                        left = (now * 50) + "%";
-                        //3. increase opacity of next_fs to 1 as it moves in
-                        opacity = 1 - now;
-                        current_fs.css({
-                            'transform': 'scale(' + scale + ')',
-                            'position': 'absolute'
-                        });
-                        next_fs.css({
-                            'left': left,
-                            'opacity': opacity
-                        });
-                    },
-                    duration: 800,
-                    complete: function () {
-                        current_fs.hide();
-                        animating = false;
-                    },
-                    //this comes from the custom easing plugin
-                    easing: 'easeInOutBack'
-                });
-            });
-
-            $(".previous").click(function () {
-                if (animating) return false;
-                animating = true;
-
-                current_fs = $(this).parent();
-                previous_fs = $(this).parent().prev();
-
-                //de-activate current step on progressbar
-                $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("active");
-
-                //show the previous fieldset
-                previous_fs.show();
-                //hide the current fieldset with style
-                current_fs.animate({
-                    opacity: 0
-                }, {
-                    step: function (now, mx) {
-                        //as the opacity of current_fs reduces to 0 - stored in "now"
-                        //1. scale previous_fs from 80% to 100%
-                        scale = 0.8 + (1 - now) * 0.2;
-                        //2. take current_fs to the right(50%) - from 0%
-                        left = ((1 - now) * 50) + "%";
-                        //3. increase opacity of previous_fs to 1 as it moves in
-                        opacity = 1 - now;
-                        current_fs.css({
-                            'left': left
-                        });
-                        previous_fs.css({
-                            'transform': 'scale(' + scale + ')',
-                            'opacity': opacity
-                        });
-                    },
-                    duration: 800,
-                    complete: function () {
-                        current_fs.hide();
-                        animating = false;
-                    },
-                    //this comes from the custom easing plugin
-                    easing: 'easeInOutBack'
-                });
-            });
-
-            $(".submit").click(function () {
-                return false;
-            })
-        };
-
-        //* Add Phone no select
-        function phoneNoselect() {
-            if ($('#msform').length) {
-                $("#phone").intlTelInput();
-                $("#phone").intlTelInput("setNumber", "+880");
-            };
-        };
-        //* Select js
-        function nice_Select() {
-            if ($('.product_select').length) {
-                $('select').niceSelect();
-            };
-        };
-        /*Function Calls*/
-        verificationForm();
-        phoneNoselect();
-        nice_Select();
-    })(jQuery);
-</script>
-
-<script>
+@* <script>
     var currentStep = 1;
     var updateProgressBar;
     var errormessage = '';
@@ -654,24 +817,24 @@
         }
         if ($("#SpecialAllowance").val().trim() == '') {
 
-                errormessage += 'Please Enter Special Allowance,'
-            }
+            errormessage += 'Please Enter Special Allowance,'
+        }
         if ($("#Professionaltax").val().trim() == '') {
 
             errormessage += 'Please Enter  Professionaltax,'
         }
 
-       if (errormessage !== '') {
-                $(".next-step").off("click");
-                openErrorPopUp(errormessage);
-                return false;
-       }
+        if (errormessage !== '') {
+            $(".next-step").off("click");
+            openErrorPopUp(errormessage);
+            return false;
+        }
     }
 
 
     function validateStep(stepNumber) {
         errormessage = '';
-     if (stepNumber === 1) {
+        if (stepNumber === 1) {
             if ($("#FirstName").val().trim() == '') {
                 errormessage += 'Please Enter First Name,'
             }
@@ -685,15 +848,15 @@
             if ($("#WorkEmail").val().trim() == '') {
 
                 errormessage += 'Please Enter Work Email,'
-            }else{
-            var email = $("#WorkEmail").val();
-            var emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
-            if (!emailRegex.test(email)) {
-                errormessage += 'Invalid Work Email,';
+            } else {
+                var email = $("#WorkEmail").val();
+                var emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+                if (!emailRegex.test(email)) {
+                    errormessage += 'Invalid Work Email,';
 
+                }
             }
-            }
-            
+
 
 
             var dateOfJoining = $("#DateOfJoining").val();
@@ -712,10 +875,10 @@
 
                 errormessage += 'Please Select Gender,'
             }
-            if ($("#ddCustomerID").val().trim() == '0') {
+            // if ($("#ddCustomerID").val().trim() == '0') {
 
-                errormessage += 'Please Select Company,'
-            }
+            //     errormessage += 'Please Select Company,'
+            // }
             if ($("#ddlCity").val().trim() == '0') {
 
                 errormessage += 'Please Select Work Location,'
@@ -728,23 +891,23 @@
 
                 errormessage += 'Please Select Department,'
             }
-             if ($("#ddlStates").val().trim() == '0') {
+            if ($("#ddlStates").val().trim() == '0') {
 
                 errormessage += 'Please Select State,'
             }
             if (errormessage !== '') {
-               $(".next-step").off("click");
-              openErrorPopUp(errormessage);
-             return false;
-    } 
-    else {
-        document.getElementById('btnFirstTab').addEventListener('click', function () {
-            displayStep(2);
-        });
-        return true;
-    }
-    }
-     if (stepNumber === 2) {
+                $(".next-step").off("click");
+                openErrorPopUp(errormessage);
+                return false;
+            }
+            else {
+                document.getElementById('btnFirstTab').addEventListener('click', function () {
+                    displayStep(2);
+                });
+                return true;
+            }
+        }
+        if (stepNumber === 2) {
             if ($("#PersonalEmailAddress").val().trim() == '') {
                 errormessage += 'Please Enter Personal Email Address,'
             }
@@ -771,7 +934,7 @@
             if (!dateRegex.test(inputValue)) {
                 errormessage += 'Please enter a valid date of birth in the format dd/mm/yyyy,'
 
-            }           
+            }
             if ($("#FatherName").val().trim() == '') {
 
                 errormessage += 'Please Enter Father Name,'
@@ -823,72 +986,72 @@
                 });
                 return true;
             }
-        }    
-      if (stepNumber === 3) {
-        if ($("#AccountHolderName").val().trim() == '') {
-        errormessage += 'Please Enter Account Holder Name,'
         }
-        if ($("#nominee").val().trim() == '') {
-            errormessage += 'Please Enter Nominee Name,'
-        }
+        if (stepNumber === 3) {
+            if ($("#AccountHolderName").val().trim() == '') {
+                errormessage += 'Please Enter Account Holder Name,'
+            }
+            if ($("#nominee").val().trim() == '') {
+                errormessage += 'Please Enter Nominee Name,'
+            }
 
-    if ($("#BankName").val().trim() == '') {
+            if ($("#BankName").val().trim() == '') {
 
-        errormessage += 'Please Enter BankName,'
-    }
+                errormessage += 'Please Enter BankName,'
+            }
 
-    var accountNumber = $("#AccountNumber").val();
+            var accountNumber = $("#AccountNumber").val();
 
-    var accountNumberRegex = /^\d+$/;
+            var accountNumberRegex = /^\d+$/;
 
-    if (!accountNumberRegex.test(accountNumber)) {
-        errormessage += 'Account Number is not valid,'
-    }
+            if (!accountNumberRegex.test(accountNumber)) {
+                errormessage += 'Account Number is not valid,'
+            }
 
-    var reEnterAccountNumber = $("#ReEnterAccountNumber").val();
+            var reEnterAccountNumber = $("#ReEnterAccountNumber").val();
 
-    var ReEnterAccountNumberRegex = /^\d+$/;
+            var ReEnterAccountNumberRegex = /^\d+$/;
 
-    if (!ReEnterAccountNumberRegex.test(reEnterAccountNumber)) {
-        errormessage += 'Re-EnterAccountNumber Number is not valid,'
-    }
+            if (!ReEnterAccountNumberRegex.test(reEnterAccountNumber)) {
+                errormessage += 'Re-EnterAccountNumber Number is not valid,'
+            }
             if (accountNumber !== reEnterAccountNumber) {
                 errormessage += 'Account Number and Re-Enter Account Number should not match,';
             }
-    var ifsc = $("#IFSC").val();
-    var ifscRegex = /^[A-Z]{4}[0][A-Z0-9]{6}$/;
+            var ifsc = $("#IFSC").val();
+            var ifscRegex = /^[A-Z]{4}[0][A-Z0-9]{6}$/;
 
-    // if (!ifscRegex.test(ifsc)) {
-    //     errormessage += 'IFSC Code is  not valid,'
-    // }
-
-
-    //var EPF = $("#EPF_Number").val();
-    //var epfRegex = /^[A-Z]{3}\/[A-Z]{3}\/\d{6}\/\d{2}$/;
-
-    //if (!epfRegex.test(EPF)) {
-    //    errormessage += 'EPF Number is not valid,'
-    //}
-
-    if ($("#Employee_Contribution_Rate").val().trim() == '') {
-
-        errormessage += 'Please Enter Employee Contribution Rate,'
-    }
+            // if (!ifscRegex.test(ifsc)) {
+            //     errormessage += 'IFSC Code is  not valid,'
+            // }
 
 
+            //var EPF = $("#EPF_Number").val();
+            //var epfRegex = /^[A-Z]{3}\/[A-Z]{3}\/\d{6}\/\d{2}$/;
 
-    if ($("#ddlDeductionTime").val().trim() == '0') {
+            //if (!epfRegex.test(EPF)) {
+            //    errormessage += 'EPF Number is not valid,'
+            //}
 
-        errormessage += 'Please Select Deduction Cycle,'
-    }
+            if ($("#Employee_Contribution_Rate").val().trim() == '') {
+
+                errormessage += 'Please Enter Employee Contribution Rate,'
+            }
 
 
-    var selectedAccountType = $("input[name='AccountTypeID']:checked").val();
 
-    if (!selectedAccountType) {
-        errormessage += 'Please choose Account'
+            if ($("#ddlDeductionTime").val().trim() == '0') {
 
-    }
+                errormessage += 'Please Select Deduction Cycle,'
+            }
+
+
+            var selectedAccountType = $("input[name='AccountTypeID']:checked").val();
+
+            if (!selectedAccountType) {
+                errormessage += 'Please choose Account'
+
+            }
             if (errormessage !== '') {
                 $(".next-step").off("click");
                 openErrorPopUp(errormessage);
@@ -900,8 +1063,8 @@
                 });
                 return true;
             }
-        }    
-}
+        }
+    }
 
 
     function openErrorPopUp(errorMessage) {
@@ -929,20 +1092,20 @@
         errorPopUp('error');
     }
     function errorPopUp(Type) {
-    if (Type == 'success') {
-        $('#closemodal').removeClass('btn-danger');
-        $('#closemodal').addClass('btn-success');
-        $('#myModal').modal('show');
-        setTimeout(function () {
-            $("#myModal").modal('hide');
-        }, 10000);
+        if (Type == 'success') {
+            $('#closemodal').removeClass('btn-danger');
+            $('#closemodal').addClass('btn-success');
+            $('#myModal').modal('show');
+            setTimeout(function () {
+                $("#myModal").modal('hide');
+            }, 10000);
+        }
+        else if (Type == 'error') {
+            $('#closemodal').removeClass('btn-success');
+            $('#closemodal').addClass('btn-danger');
+            $('#myModal').modal('show');
+        }
     }
-    else if (Type == 'error') {
-        $('#closemodal').removeClass('btn-success');
-        $('#closemodal').addClass('btn-danger');
-        $('#myModal').modal('show');
-    }
-}
     $(document).ready(function () {
         $('#multi-step-form').find('.step').slice(1).hide();
 
@@ -951,7 +1114,7 @@
             if (currentStep < 4) {
                 $(".step-" + currentStep).addClass("animate__animated animate__fadeOutLeft");
                 currentStep++;
-                  setTimeout(function () {
+                setTimeout(function () {
                     $(".step").removeClass("animate__animated animate__fadeOutLeft").hide();
                     $(".step-" + currentStep).show().addClass("animate__animated animate__fadeInRight");
                     updateProgressBar();
@@ -978,19 +1141,19 @@
     });
 
 
-</script>
+</script> *@
 <script>
-    function bindcustomer(customerid) {
-    var itemsList = @Html.Raw(Json.Serialize(ViewBag.CustomerName));
-    var dropdown1 = $("#ddCustomerID");
-    $.each(itemsList, function (index, item) {
-        dropdown1.append($('<option></option>').val(item.value).text(item.text));
-    });
-    if (customerid !== "") {
-        $("#ddCustomerID").val(customerid);
-    }
-}
-   function bindsStates(StatesId) {
+    // function bindcustomer(customerid) {
+    //     var itemsList = @Html.Raw(Json.Serialize(ViewBag.CustomerName));
+    //     var dropdown1 = $("#ddCustomerID");
+    //     $.each(itemsList, function (index, item) {
+    //         dropdown1.append($('<option></option>').val(item.value).text(item.text));
+    //     });
+    //     if (customerid !== "") {
+    //         $("#ddCustomerID").val(customerid);
+    //     }
+    // }
+    function bindsStates(StatesId) {
         var itemsList = @Json.Serialize(ViewBag.stes);
         debugger
         var dropdown = $("#ddlStates");
@@ -1013,7 +1176,7 @@
             $("#ddlCity").val(WorkLocationId)
         }
     }
-     function bindCity(CityId) {
+    function bindCity(CityId) {
         var itemsList = @Json.Serialize(ViewBag.Cities);
         debugger
         var dropdown = $("#City");
@@ -1040,7 +1203,7 @@
     function bindDepartment(DepartmentID) {
         var itemsListforDepartment = @Json.Serialize(ViewBag.Department);
         debugger
-        var dropdownforDepartment = $("#ddDepartmentID");       
+        var dropdownforDepartment = $("#ddDepartmentID");
         $.each(itemsListforDepartment, function (index, item) {
             dropdownforDepartment.append($('<option></option>').val(item.value).text(item.text));
         });
@@ -1062,17 +1225,6 @@
     }
 
 </script>
-
-@*<script type="text/javascript">
-    $(document).ready(function () {
-        bindDepartment("");
-        bindDesigation("");
-        bindStates("");
-        bindcustomer("");
-         bindCity("");
-    })
-</script>*@
-
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
 <script>
@@ -1100,7 +1252,7 @@
             var monthlySalary = parseInt($(this).val());
             if (!isNaN(monthlySalary)) {
                 var specialallowance = specialallowanceInput.val();
-                 var amount = AmountInput.val();
+                var amount = AmountInput.val();
                 var tdspercentage = TdspercentageInput.val();
                 var annualSalary = monthlySalary * 12;
                 var basicSalary = monthlySalary / 2;
@@ -1112,11 +1264,11 @@
                 } else {
                     var Gross = basicSalary + houseRent + parseInt(specialallowance);
                 }
-                
+
                 var ESIC;
 
                 if (Gross < 21000) {
-                     ESIC = 0; 
+                    ESIC = 0;
                 } else {
                     ESIC = monthlySalary * 0.75 / 100;
                 }
@@ -1176,7 +1328,7 @@
 
             }
         });
-       
+
         $("#dobInput").on("input", function () {
             debugger
             var birthdate = $(this).val();
@@ -1197,41 +1349,6 @@
     });
 </script>
 
-
-@*<script>
-    function Locations() {
-        var customerId = $("#ddCustomerID").val();
-        if (customerId !== "") {
-            $.ajax({
-                url: '/Employee/GetLocationsByCustomer?customerId=' + customerId,
-                type: "post",
-                //data: customerId,
-                success: function (response) {
-                    populateLocations(response);
-                },
-                error: function (error) {
-                    console.error("Error loading locations: " + error);
-                }
-            });
-        } else {
-            // Clear the Locations dropdown if no customer is selected
-            $("#ddlWorkLocationID").empty();
-            $("#ddlWorkLocationID").append('<option value="">-- Select WorkLocation --</option>');
-        }
-    }
-
-    function populateLocations(response) {
-        $("#ddlWorkLocationID").empty();
-        $("#ddlWorkLocationID").append('<option value="">-- Select WorkLocation --</option>');
-
-
-        $.each(response, function (i, response) {
-            $("#ddlWorkLocationID").append('<option value="' + response.text + '">' + response.value + '</option>');
-        });
-    }
-</script>*@
-
-
 <script type="text/javascript">
 
     var Gender_id = '@ViewBag.Gender_ID';
@@ -1239,7 +1356,7 @@
         $("#ddlGender").val(Gender_id);
     }
 
-    var customerid = '@ViewBag.CustomerID';
+    // var customerid = '@ViewBag.CustomerID';
     var workid = '@ViewBag.Work_Location_ID';
     var designationid = '@ViewBag.Designation_ID';
     var departmentid = '@ViewBag.Department_ID';
@@ -1247,49 +1364,49 @@
     var statesid = '@ViewBag.statesy';
     var city = '@ViewBag.City';
 
-    if (customerid != "") {
-        bindcustomer(customerid);
-    }
-    else{
-         bindcustomer("");
-    }
+    // if (customerid != "") {
+    //     bindcustomer(customerid);
+    // }
+    // else {
+    //     bindcustomer("");
+    // }
     if (workid != "") {
         bindworkLocation(workid);
     }
-    else{
-         bindworkLocation("");
+    else {
+        bindworkLocation("");
     }
     if (departmentid != "") {
         bindDepartment(departmentid);
     }
-    else{
+    else {
         bindDepartment("");
     }
     if (designationid != "") {
         bindDesigation(designationid);
     }
-    else{
+    else {
         bindDesigation("");
     }
     if (stateid != "") {
         bindStates(stateid);
     }
-    else{
+    else {
         bindStates("");
     }
     if (statesid != "") {
         bindsStates(statesid);
     }
-    else{
+    else {
         bindsStates("");
     }
     if (city != "") {
         bindCity(city);
     }
-    else{
+    else {
         bindCity("");
     }
-    
+
     var deductiontime = '@ViewBag.Deduction_Cycle';
     if (deductiontime != "") {
         $("#ddlDeductionTime").val(deductiontime);
@@ -1324,7 +1441,7 @@
 
 
 </script>
- 
+
 <script>
     $(document).ready(function () {
         $('#MobileNumber').on('keydown', function (e) {
@@ -1393,12 +1510,12 @@
                 contentType: 'application/json; charset=utf-8',
                 success: function (response) {
                     debugger;
-                    if(response.employeerTd.amount <= grossValue){
-                      var amounttds =  response.employeerTd.amount * response.employeerTd.tdspercentage/ 100;
-                         $('#txtAmount').val(amounttds);
+                    if (response.employeerTd.amount <= grossValue) {
+                        var amounttds = response.employeerTd.amount * response.employeerTd.tdspercentage / 100;
+                        $('#txtAmount').val(amounttds);
                     }
-                    
-                    $('#txtTdspercentage').val(response.employeerTd.tdspercentage) ;
+
+                    $('#txtTdspercentage').val(response.employeerTd.tdspercentage);
                     $('#displayTdsPercentage').text(response.employeerTd.tdspercentage);
                     $('#txtTdspercentage').show();
                 },
@@ -1409,9 +1526,9 @@
 </script>
 
 <script>
-    $(document).ready(function(){
-          var grossValue = parseFloat($('#txtgross').val());
-      
+    $(document).ready(function () {
+        var grossValue = parseFloat($('#txtgross').val());
+
         $.ajax({
             url: '/Employee/Epfesilist',
             type: 'GET',
@@ -1421,7 +1538,7 @@
                 for (var i = 0; i < response.data.length; i++) {
                     if (response.data[i].deductionCycle == "ESIC") {
                         $('#ESICMaster').val(response.data[i].epfNumber);
-                        if (response.data[i].employerContributionRate <= grossValue)  {
+                        if (response.data[i].employerContributionRate <= grossValue) {
                             var esicMasterValue = grossValue * response.data[i].epfNumber / 100;
                             $('#ESICMaster').val(esicMasterValue);
                             $('#displayESICMaster').text(response.data[i].epfNumber);
@@ -1431,7 +1548,7 @@
                             $('#displayESICMaster').text(response.data[i].epfNumber);
                             $('#txtepfNumber').show();
                         }
-      
+
                     }
                     else if (response.data[i].deductionCycle == "EPF") {
                         $('#txtEPFMaster').val(response.data[i].epfNumber);
@@ -1440,37 +1557,35 @@
                         $('#txtEPFMaster').val(epfValue);
                         $('#displayEPFMaster').text(response.data[i].epfNumber);
                         $('#txtepfNumber').show();
-                         
+
                     }
                 }
             },
         });
 
-        
+
     });
 </script>
 <script>
-     $('#txtgross').on('input', function() {
-           calesic();
+    $('#txtgross').on('input', function () {
+        calesic();
         calepf();
     });
-        function calesic()
-        {
-             var grossValue = parseFloat($('#txtgross').val());
-             if (grossValue > 21000) {                        
-              var esicMasterValue = grossValue * parseFloat($('#displayESICMaster').text()) / 100;
-              $('#ESICMaster').val(esicMasterValue);
-                    } else {
-              $('#ESICMaster').val(0);
-              }
-        }   
-        
-        function calepf()
-        {
+    function calesic() {
+        var grossValue = parseFloat($('#txtgross').val());
+        if (grossValue > 21000) {
+            var esicMasterValue = grossValue * parseFloat($('#displayESICMaster').text()) / 100;
+            $('#ESICMaster').val(esicMasterValue);
+        } else {
+            $('#ESICMaster').val(0);
+        }
+    }
+
+    function calepf() {
         var groValue = parseFloat($('#txtgross').val());
         var epfValue = response.data[i].employerContributionRate * response.data[i].epfNumber / 100;
-         $('#txtEPFMaster').val(epfValue);               
-        }
+        $('#txtEPFMaster').val(epfValue);
+    }
 </script>
 <script>
     $(document).ready(function () {
@@ -1507,7 +1622,7 @@
                         $.each(d, function (i, cities) {
                             ddlCity.append($("<option></option>").val(cities.id).html(cities.city1));
                         });
-                      
+
                     },
                     error: function () {
                         alert('Error!');
@@ -1552,7 +1667,7 @@
                         $.each(d, function (i, cities) {
                             ddlCity.append($("<option></option>").val(cities.id).html(cities.city1));
                         });
-                      
+
                     },
                     error: function () {
                         alert('Error!');
@@ -1562,3 +1677,5 @@
         });
     })
 </script>
+
+

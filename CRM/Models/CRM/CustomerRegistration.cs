@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CRM.Models.Crm
 {
@@ -18,7 +19,8 @@ namespace CRM.Models.Crm
         public DateTime RenewDate { get; set; }
         public string? State { get; set; }
         public int? StateId { get; set; }
-        public string? UserName { get; set; }
-        public string? Password { get; set; }
+        [NotMapped]
+        public string UserName { get; set; } = null!;
+
     }
 }
