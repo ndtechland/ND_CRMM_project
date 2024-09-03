@@ -44,6 +44,8 @@ namespace CRM.Controllers
 
 
         }
+
+
         [Route("Home/Customer")]
         [HttpGet]
         public IActionResult Customer(int id = 0)
@@ -58,7 +60,7 @@ namespace CRM.Controllers
                     var data = _ICrmrpo.GetCustomerById(id);
                     if (data != null)
                     {
-                        ViewBag.ProductDetails = _context.ProductMasters
+                        ViewBag.ProductDetails = _context.ProductMasters.Where(x => x.IsDeleted == false)
                             .Select(p => new SelectListItem
                             {
                                 Value = p.Id.ToString(),
@@ -76,7 +78,7 @@ namespace CRM.Controllers
                 ViewBag.UserName = AddedBy;
                 ViewBag.SelectedStateId = null;
                 ViewBag.SelectedCityId = null;
-                ViewBag.ProductDetails = _context.ProductMasters
+                ViewBag.ProductDetails = _context.ProductMasters.Where(x => x.IsDeleted == false)
                     .Select(p => new SelectListItem
                     {
                         Value = p.Id.ToString(),
@@ -220,7 +222,7 @@ namespace CRM.Controllers
 
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 ViewBag.UserName = AddedBy;
-                ViewBag.ProductDetails = _context.ProductMasters
+                ViewBag.ProductDetails = _context.ProductMasters.Where(x => x.IsDeleted == false)
              .Select(p => new SelectListItem
              {
                  Value = p.Id.ToString(),
@@ -301,7 +303,7 @@ namespace CRM.Controllers
         public JsonResult EditQuation(int id)
         {
             var emp = _ICrmrpo.GetempQuationById(id);
-            var Productdata = _context.ProductMasters.ToList();
+            var Productdata = _context.ProductMasters.Where(x => x.IsDeleted == false).ToList();
             var result = new
             {
                 Emp = emp,
@@ -567,11 +569,12 @@ namespace CRM.Controllers
         }
 
         [HttpGet]
-        public JsonResult product(int? id)
+        public JsonResult Product(int? id)
         {
             var data = (from pm in _context.ProductMasters
-                        join gm in _context.GstMasters on pm.Gst equals gm.Id.ToString()
-                        where pm.Id == id
+                        join gm in _context.GstMasters on Convert.ToInt32(pm.Gst) equals gm.Id
+                        //join cs in _context.CustomerRegistrations on pm.Id equals Convert.ToInt32(cs.ProductDetails)
+                        where pm.Id == id && pm.IsDeleted == false
                         select new Customer
                         {
                             Scgst = gm.Scgst,
@@ -579,11 +582,14 @@ namespace CRM.Controllers
                             Igst = gm.Igst,
                             Price = pm.Price,
                             HsnSacCode = pm.HsnSacCode,
+                            //State = cs.State,
                         }).FirstOrDefault();
+
             var result = new
             {
                 Data = data,
             };
+
             return new JsonResult(result);
         }
 
@@ -934,10 +940,11 @@ namespace CRM.Controllers
             if (HttpContext.Session.GetString("UserName") != null)
             {
                 string AddedBy = HttpContext.Session.GetString("UserName");
-                string id = Convert.ToString(HttpContext.Session.GetString("UserId")); ;
+                string id = Convert.ToString(HttpContext.Session.GetString("UserId"));
+                int adid = Convert.ToInt32(HttpContext.Session.GetString("AdminId")); 
                 ViewBag.UserName = AddedBy;
                 ViewBag.id = id;
-                //ViewBag.Message = TempData["ErrorMessage"];
+                ViewBag.adid = adid;
                 return View();
             }
             else
@@ -945,41 +952,58 @@ namespace CRM.Controllers
                 return RedirectToAction("Login", "Admin");
             }
         }
-
         [HttpPost]
         public async Task<IActionResult> Changepassword(ChangePassworddto model)
         {
             try
             {
                 string AddedBy = HttpContext.Session.GetString("UserName");
-                int id = Convert.ToInt32(HttpContext.Session.GetString("UserId")); ;
+                string userId = HttpContext.Session.GetString("UserId");
+                if (string.IsNullOrEmpty(AddedBy) || (string.IsNullOrEmpty(userId)))
+                {
+                    TempData["Message"] = "Session expired. Please login again.";
+                    return RedirectToAction("Login", "Admin");
+                }
+
                 ViewBag.UserName = AddedBy;
+
                 var user = await _context.AdminLogins.Where(x => x.UserName == AddedBy).FirstOrDefaultAsync();
+                if (user == null)
+                {
+                    TempData["Message"] = "User not found.";
+                    return RedirectToAction("Changepassword");
+                }
+
                 if (user.Password != model.CurrentPassword)
                 {
                     TempData["Message"] = "Current password does not match.";
                     return RedirectToAction("Changepassword");
                 }
+
                 if (model.NewPassword == model.CurrentPassword)
                 {
                     TempData["Message"] = "New password cannot be the same as the current password.";
                     return RedirectToAction("Changepassword");
                 }
-                if (id != null)
+
+                if (!string.IsNullOrEmpty(userId))
                 {
+                    int id = Convert.ToInt32(userId);
                     var data = await _ICrmrpo.UpdateChangepassword(model, AddedBy, id);
-                    TempData["Message"] = "Update Successfully.";
-                    return RedirectToAction("Logout", "Home");
+                    TempData["Message"] = "Password updated successfully.";
                 }
                 else
                 {
-                    ModelState.Clear();
-                    return View();
+                    TempData["Message"] = "Invalid session data.";
+                    return RedirectToAction("Changepassword");
                 }
+
+                return RedirectToAction("Logout", "Home");
             }
             catch (Exception Ex)
             {
-                throw new Exception("Error:" + Ex.Message);
+                TempData["Error"] = "An error occurred while changing the password. Please try again later.";
+                return RedirectToAction("Changepassword");
             }
         }
     }

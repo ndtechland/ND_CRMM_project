@@ -116,45 +116,54 @@ namespace CRM.Repository
         }
         public async Task<int> Customer(Customer model)
         {
-            var parameter = new List<SqlParameter>();
-            parameter.Add(new SqlParameter("@Company_Name", model.CompanyName));
-            parameter.Add(new SqlParameter("@Work_Location", string.Join(",", model.WorkLocation)));
-            parameter.Add(new SqlParameter("@Mobile_number", model.MobileNumber));
-            parameter.Add(new SqlParameter("@Alternate_number", model.AlternateNumber));
-            parameter.Add(new SqlParameter("@Email", model.Email));
-            parameter.Add(new SqlParameter("@GST_Number", model.GstNumber));
-            parameter.Add(new SqlParameter("@Billing_Address", model.BillingAddress));
-            parameter.Add(new SqlParameter("@Product_Details", model.ProductDetails));
-            parameter.Add(new SqlParameter("@Start_date", model.StartDate));
-            parameter.Add(new SqlParameter("@Renew_Date", model.RenewDate));
-            parameter.Add(new SqlParameter("@State", model.State));
-            parameter.Add(new SqlParameter("@stateId", model.StateId));
-
-            // Generate dynamic username
+            var parameters = new List<SqlParameter>
+    {
+        new SqlParameter("@Company_Name", model.CompanyName),
+        new SqlParameter("@Work_Location", string.Join(",", model.WorkLocation)),
+        new SqlParameter("@Mobile_number", model.MobileNumber),
+        new SqlParameter("@Alternate_number", model.AlternateNumber),
+        new SqlParameter("@Email", model.Email),
+        new SqlParameter("@GST_Number", model.GstNumber),
+        new SqlParameter("@Billing_Address", model.BillingAddress),
+        new SqlParameter("@Product_Details", model.ProductDetails),
+        new SqlParameter("@Start_date", model.StartDate),
+        new SqlParameter("@Renew_Date", model.RenewDate),
+        new SqlParameter("@State", model.State),
+        new SqlParameter("@stateId", model.StateId),
+        
+        // Add output parameter
+        new SqlParameter
+        {
+            ParameterName = "@CustomerId",
+            SqlDbType = SqlDbType.Int,
+            Direction = ParameterDirection.Output
+        }
+    };
             string dynamicUserName = GenerateDynamicUsername(model.CompanyName);
-
-            // Generate dynamic password
             string dynamicPassword = GenerateDynamicPassword();
 
-            parameter.Add(new SqlParameter("@UserName", dynamicUserName));
-            parameter.Add(new SqlParameter("@Password", dynamicPassword));
+            // Execute stored procedure
+            await _context.Database.ExecuteSqlRawAsync("exec CustomerRegistration @Company_Name, @Work_Location, @Mobile_number, @Alternate_number, @Email, @GST_Number, @Billing_Address, @Product_Details, @Start_date, @Renew_Date, @State, @stateId, @CustomerId OUTPUT", parameters.ToArray());
 
-            var result = await Task.Run(() => _context.Database
-                .ExecuteSqlRawAsync(@"exec CustomerRegistration @Company_Name, @Work_Location, @Mobile_number, @Alternate_number, @Email, @GST_Number, @Billing_Address, @Product_Details, @Start_date, @Renew_Date, @State, @stateId, @UserName, @Password", parameter.ToArray()));
+            // Get the new CustomerId
+            int newCustomerId = (int)parameters.First(p => p.ParameterName == "@CustomerId").Value;
 
-            if (result != 0)
+            if (newCustomerId > 0)
             {
-                AdminLogin AdminRole = new()
+                var adminRole = new AdminLogin
                 {
                     UserName = dynamicUserName,
                     Password = dynamicPassword,
                     Role = "Vendor",
                     Emailid = model.Email,
+                    Customerid = newCustomerId
                 };
-                _context.AdminLogins.Add(AdminRole);
-                _context.SaveChanges();
+
+                _context.AdminLogins.Add(adminRole);
+                await _context.SaveChangesAsync(); // Ensure this is awaited
             }
-            return result;
+
+            return newCustomerId;
         }
 
         public async Task<List<Customer>> CustomerList()
@@ -203,7 +212,7 @@ namespace CRM.Repository
             //var result = await _context.CustomerRegistrations.FromSqlRaw<Customer>("Customerlist").ToListAsync();
             //return result;
         }
-        public async Task<int> EmpRegistration(EmpMultiform model, string Mode, string Emp_Reg_ID)
+        public async Task<int> userEmpRegistration(EmpMultiform model, string Mode, string Emp_Reg_ID, string userId)
         {
             try
             {
@@ -214,7 +223,7 @@ namespace CRM.Repository
                 cmd.Parameters.AddWithValue("@mode", Mode);
                 cmd.Parameters.AddWithValue("@Emp_RegID", Emp_Reg_ID);
                 cmd.Parameters.AddWithValue("@Employee_ID", model.EmployeeId);
-                cmd.Parameters.AddWithValue("@Customer_Id", model.CustomerID);
+                cmd.Parameters.AddWithValue("@Customer_Id", userId);
                 cmd.Parameters.AddWithValue("@FirstName", model.FirstName);
                 cmd.Parameters.AddWithValue("@MiddleName", model.MiddleName);
                 cmd.Parameters.AddWithValue("@LastName", model.LastName);
@@ -1290,8 +1299,21 @@ namespace CRM.Repository
         {
             try
             {
-                var customerdetails = await _context.CustomerRegistrations.Where(x => x.Id == Convert.ToInt32(id)).FirstOrDefaultAsync();
-                return customerdetails;
+                var query = await (from admin in _context.AdminLogins
+                                   join customer in _context.CustomerRegistrations
+                                   on admin.Customerid equals customer.Id
+                                   where admin.Id == Convert.ToInt32(id)
+                                   select new CustomerRegistration
+                                   {
+                                       CompanyName = customer.CompanyName,
+                                       WorkLocation = customer.WorkLocation,
+                                       MobileNumber = customer.MobileNumber,
+                                       Email = customer.Email,
+                                       GstNumber = customer.GstNumber,
+                                       AlternateNumber = customer.AlternateNumber,
+                                       BillingAddress = customer.BillingAddress,
+                                   }).FirstOrDefaultAsync();
+                return query;
             }
             catch (Exception ex)
             {
@@ -1309,13 +1331,12 @@ namespace CRM.Repository
             customer.CompanyName = model.CompanyName;
             customer.Email = model.Email;
             customer.GstNumber = model.GstNumber;
-            customer.MobileNumber = model.MobileNumber;       
+            customer.MobileNumber = model.MobileNumber;
             customer.AlternateNumber = model.AlternateNumber;
             customer.BillingAddress = model.BillingAddress;
-            customer.UserName = model.UserName;
             _context.CustomerRegistrations.Update(customer);
             await _context.SaveChangesAsync();
-            if(adminusername != null)
+            if (adminusername != null)
             {
                 adminusername.UserName = model.UserName;
                 _context.AdminLogins.Update(adminusername);
@@ -1324,17 +1345,14 @@ namespace CRM.Repository
             }
             return 1;
         }
-        public async Task<int> UpdateChangepassword(ChangePassworddto model, string AddedBy ,int id)
+        public async Task<int> UpdateChangepassword(ChangePassworddto model, string AddedBy, int id)
         {
-            var customer = await _context.CustomerRegistrations.FirstOrDefaultAsync(x => x.Id == id);
-            var adminusername = await _context.AdminLogins.FirstOrDefaultAsync(x => x.UserName == AddedBy);
-            if (customer == null)
+            var adminusername = await _context.AdminLogins.FirstOrDefaultAsync(x => x.UserName == AddedBy && x.Id == id);
+            if (adminusername == null)
             {
                 return 0;
             }
-            customer.Password = model.NewPassword;
-            _context.CustomerRegistrations.Update(customer);
-            await _context.SaveChangesAsync();
+
             if (adminusername != null)
             {
                 adminusername.Password = model.NewPassword;
@@ -1352,7 +1370,119 @@ namespace CRM.Repository
 
             return employeeList;
         }
+        public async Task<int> EmpRegistration(EmpMultiform model, string Mode, string Emp_Reg_ID, string adminId)
+        {
+            try
+            {
+                ///
+                model.EmployeeId = Emp_Reg_ID;
+                SqlConnection con = new SqlConnection(Configuration.GetConnectionString("db1"));
+                SqlCommand cmd = new SqlCommand("EmployeeRegistrationtest", con);
+                cmd.Parameters.AddWithValue("@mode", Mode);
+                cmd.Parameters.AddWithValue("@Emp_RegID", Emp_Reg_ID);
+                cmd.Parameters.AddWithValue("@Employee_ID", model.EmployeeId);
+                cmd.Parameters.AddWithValue("@Customer_Id", adminId);
+                cmd.Parameters.AddWithValue("@FirstName", model.FirstName);
+                cmd.Parameters.AddWithValue("@MiddleName", model.MiddleName);
+                cmd.Parameters.AddWithValue("@LastName", model.LastName);
+                cmd.Parameters.AddWithValue("@DateOfJoining", model.DateOfJoining);
+                cmd.Parameters.AddWithValue("@WorkEmail", model.WorkEmail);
+                cmd.Parameters.AddWithValue("@GenderID", model.GenderID);
+                cmd.Parameters.AddWithValue("@WorkLocationID", model.WorkLocationID);
+                cmd.Parameters.AddWithValue("@DesignationID", model.DesignationID);
+                cmd.Parameters.AddWithValue("@DepartmentID", model.DepartmentID);
+                cmd.Parameters.AddWithValue("@stateId", model.stateId);
 
+                //-- Salary Details
+                cmd.Parameters.AddWithValue("@AnnualCTC", model.AnnualCTC);
+                cmd.Parameters.AddWithValue("@Basic", model.Basic);
+                cmd.Parameters.AddWithValue("@HouseRentAllowance", model.HouseRentAllowance);
+                //cmd.Parameters.AddWithValue("@TravellingAllowance", model.TravellingAllowance);
+                cmd.Parameters.AddWithValue("@ESIC", model.ESIC);
+                cmd.Parameters.AddWithValue("@EPF", model.EPF);
+                cmd.Parameters.AddWithValue("@MonthlyGrossPay", model.MonthlyGrossPay);
+                cmd.Parameters.AddWithValue("@MonthlyCTC", model.MonthlyCTC);
+                cmd.Parameters.AddWithValue("@Professionaltax", model.Professionaltax);
+                cmd.Parameters.AddWithValue("@servicecharge", model.Servicecharge);
+                cmd.Parameters.AddWithValue("@SpecialAllowance", model.SpecialAllowance);
+                cmd.Parameters.AddWithValue("@gross", model.Gross);
+                cmd.Parameters.AddWithValue("@amount", model.Amount);
+                cmd.Parameters.AddWithValue("@tdspercentage", model.Tdspercentage);
+                // Personal detail
+                cmd.Parameters.AddWithValue("@Personal_Email_Address", model.PersonalEmailAddress);
+                cmd.Parameters.AddWithValue("@Mobile_Number", model.MobileNumber);
+                cmd.Parameters.AddWithValue("@Date_Of_Birth", model.DateOfBirth);
+                cmd.Parameters.AddWithValue("@Father_Name", model.FatherName);
+                cmd.Parameters.AddWithValue("@PAN", model.PAN);
+                cmd.Parameters.AddWithValue("@Address_Line_1", model.AddressLine1);
+                cmd.Parameters.AddWithValue("@Address_Line_2", model.AddressLine2);
+                cmd.Parameters.AddWithValue("@City", model.City);
+                cmd.Parameters.AddWithValue("@State_ID", model.StateID);
+                cmd.Parameters.AddWithValue("@Pincode", model.Pincode);
+
+                // Bank detail
+                cmd.Parameters.AddWithValue("@Account_Holder_Name", model.AccountHolderName);
+                cmd.Parameters.AddWithValue("@Bank_Name", model.BankName);
+                cmd.Parameters.AddWithValue("@Account_Number", model.AccountNumber);
+                cmd.Parameters.AddWithValue("@Re_Enter_Account_Number", model.ReEnterAccountNumber);
+                cmd.Parameters.AddWithValue("@IFSC", model.IFSC);
+                cmd.Parameters.AddWithValue("@EPF_Number", model.EPF_Number);
+                cmd.Parameters.AddWithValue("@Deduction_Cycle", model.Deduction_Cycle);
+                cmd.Parameters.AddWithValue("@Employee_Contribution_Rate", model.Employee_Contribution_Rate);
+                cmd.Parameters.AddWithValue("@Account_Type_ID", model.AccountTypeID);
+                cmd.Parameters.AddWithValue("@nominee", model.nominee);
+
+                cmd.CommandType = CommandType.StoredProcedure;
+                SqlDataAdapter da = new SqlDataAdapter();
+                da.SelectCommand = cmd;
+                DataTable dt = new DataTable();
+                da.Fill(dt);
+
+
+                if (Mode == "INS")
+                {
+                    EmployeeRole employeeRole = new()
+                    {
+                        EmployeeRegistrationId = model.EmployeeId,
+                        EmployeeRole1 = "2",
+                        Description = "Employee"
+
+                    };
+                    _context.EmployeeRoles.Add(employeeRole);
+                    _context.SaveChanges();
+
+                    EmployeeLogin employeeLogin = new()
+                    {
+                        EmployeeId = model.EmployeeId,
+                        Password = "" + model.FirstName + "" + model.DateOfBirth.Date.Year + ""
+                    };
+                    _context.EmployeeLogins.Add(employeeLogin);
+                    _context.SaveChanges();
+                    string password = "" + model.FirstName + "" + model.DateOfBirth.Date.Year + "";
+                    _IEmailService.SendEmailCred(model, password);
+                }
+
+                return 1;
+            }
+            catch (SqlException sqlEx)
+            {
+                foreach (SqlError error in sqlEx.Errors)
+                {
+                    Console.WriteLine("Error Number: {0}", error.Number);
+                    Console.WriteLine("Error Message: {0}", error.Message);
+                    Console.WriteLine("Procedure: {0}", error.Procedure);
+                    Console.WriteLine("Line Number: {0}", error.LineNumber);
+                    Console.WriteLine("Source: {0}", error.Source);
+                    Console.WriteLine("Server: {0}", error.Server);
+                }
+
+                throw new Exception("SQL Error: " + sqlEx.Message);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error: " + ex.Message);
+            }
+        }
     }
 
 }

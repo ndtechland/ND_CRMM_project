@@ -5,7 +5,7 @@
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
 <head>
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
@@ -37,7 +37,7 @@
                 content: "\f00c";
                 color: #fff;
                 background-color: #0096ff;
-                border: 0;                
+                border: 0;
                 padding-left: 3px;
             }
 
@@ -93,7 +93,6 @@
         .select-icon .select2-search--dropdown {
             display: none;
         }
-        
     </style>
 
 </head>
@@ -138,7 +137,7 @@
                             <div class="card-body">
                                 <form asp-action="Customer" method="post" autocomplete="off">
                                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                                    @Html.TextBoxFor(Model => Model.Id,new{@class="from-control" ,type="hidden"})
+                                    @Html.TextBoxFor(Model => Model.Id, new { @class = "from-control", type = "hidden" })
                                     <div class="row">
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Company Name</label>
@@ -151,22 +150,22 @@
                                                 <select class="form-control" name="StateId" id="ddlState">
                                                 </select>
                                                 @*<select class="form-control" name="StateId" id="ddlState">
-                                                    <option value="">-- Select State --</option>
-                                                    @foreach (var state in ViewBag.States as IEnumerable<SelectListItem>)
-                                                    {
-                                                        <option value="@state.Value">@state.Text</option>
-                                                    }
+                                                <option value="">-- Select State --</option>
+                                                @foreach (var state in ViewBag.States as IEnumerable<SelectListItem>)
+                                                {
+                                                <option value="@state.Value">@state.Text</option>
+                                                }
                                                 </select>*@
                                             </div>
                                         </div>
 
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">City Name</label>
-                                                <div>
-                                                    <select class="form-control js-select2" multiple="multiple" name="WorkLocation" id="ddlCity" onchange="validateWorkLocation(this)" oninvalid="this.setCustomValidity('Please select WorkLocation')" oninput="this.setCustomValidity('')" autocomplete="off">
-                                                        <option value="">-- Select City Name --</option>
-                                                    </select>
-                                                </div>
+                                            <div>
+                                                <select class="form-control js-select2" multiple="multiple" name="WorkLocation" id="ddlCity" onchange="validateWorkLocation(this)" oninvalid="this.setCustomValidity('Please select WorkLocation')" oninput="this.setCustomValidity('')" autocomplete="off">
+                                                    <option value="">-- Select City Name --</option>
+                                                </select>
+                                            </div>
                                             <span asp-validation-for="WorkLocation" class="text-danger"></span>
                                         </div>
 
@@ -176,11 +175,11 @@
                                             <label for="validationCustom0">Mobile Number</label>
                                             <div class="input-group">
                                                 <span class="input-group-text" id="basic-addon1">+91</span>
-                                                <input type="tel" asp-for="MobileNumber" id="MobileNumber" placeholder="Enter MobileNumber" class="form-control" minlength="10" maxlength="10" onkeydown="validateNumericInput(event)" required="" oninvalid="this.setCustomValidity('Please Enter MobileNumber')" oninput="this.setCustomValidity('')" autocomplete="off"/>
+                                                <input type="tel" asp-for="MobileNumber" id="MobileNumber" placeholder="Enter MobileNumber" class="form-control" minlength="10" maxlength="10" onkeydown="validateNumericInput(event)" required="" oninvalid="this.setCustomValidity('Please Enter MobileNumber')" oninput="this.setCustomValidity('')" autocomplete="off" />
                                             </div>
                                             <span asp-validation-for="MobileNumber" class="text-danger"></span>
                                         </div>
-                                          <div class="form-group col-sm">
+                                        <div class="form-group col-sm">
                                             <label for="validationCustom0">Alternate Number</label>
                                             <div class="input-group">
                                                 <span class="input-group-text" id="basic-addon1">+91</span>
@@ -210,7 +209,7 @@
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Product Details</label>
 
-                                            @Html.DropDownListFor(model => model.ProductDetails, new SelectList(ViewBag.ProductDetails, "Value", "Text"), "-- Select Product --", new { @class = "form-control", onchange="onProductChange()",required="required", oninvalid="this.setCustomValidity('Please select ProductDetails')",oninput="this.setCustomValidity('')"})
+                                            @Html.DropDownListFor(model => model.ProductDetails, new SelectList(ViewBag.ProductDetails, "Value", "Text"), "-- Select Product --", new { @class = "form-control", onchange = "onProductChange()", required = "required", oninvalid = "this.setCustomValidity('Please select ProductDetails')", oninput = "this.setCustomValidity('')" })
 
                                             <span asp-validation-for="ProductDetails" class="text-danger"></span>
                                         </div>
@@ -223,7 +222,7 @@
                                         </div>
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Renew Date</label>
-                                            <input name="RenewDate" type="date" class="form-control" required="" oninvalid="this.setCustomValidity('Please select RenewDate')" oninput="this.setCustomValidity('')" value="@ViewBag.renewDate"/>
+                                            <input name="RenewDate" type="date" class="form-control" required="" oninvalid="this.setCustomValidity('Please select RenewDate')" oninput="this.setCustomValidity('')" value="@ViewBag.renewDate" />
                                             <span asp-validation-for="RenewDate" class="text-danger"></span>
                                         </div>
                                     </div>
@@ -253,11 +252,11 @@
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">IGST</label>
                                             <input type="Igst" asp-for="Igst" id="IGST" placeholder="00.0" class="form-control" readonly />
-                                       </div>
+                                        </div>
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">SGST</label>
                                             <input type="Scgst" asp-for="Scgst" id="SGST" placeholder="00.0" class="form-control" readonly />
-                                       </div>
+                                        </div>
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">CGST</label>
                                             <input type="Cgst" asp-for="Cgst" id="CGST" placeholder="00.0" class="form-control" readonly />
@@ -294,87 +293,143 @@
 
 
 <script>
-        $(document).ready(function () {
-            onProductChange();
-            function mess() {
-                if('@ViewBag.state' != null)
-                {
-                    $('#State').val('@ViewBag.state');
-                     //$('#State').trigger('change');
-                }
-            }
-            setTimeout(mess,1000); 
-        });
- </script>
-<script>
     $(document).ready(function () {
-        var selectedStateId = @Html.Raw(Json.Serialize(ViewBag.States));
-        var ddlState = $("#ddlState");
+        onProductChange();
 
-        ddlState.val(selectedStateId);
-
-        if (selectedStateId) {
-            ddlState.trigger('change');
+        function mess() {
+            if ('@ViewBag.state' != null) {
+                $('#State').val('@ViewBag.state');
+                //$('#State').trigger('change');
+            }
         }
+        setTimeout(mess, 1000);
     });
 </script>
 <script>
-        $(document).ready(function () {
-            $('#State').change(function () {
-                var selectedState = $(this).val();
-                if (selectedState === 'UP') {
-                    $('#CGST').val($('#cGST').val());
-                    $('#SGST').val($('#sGST').val());
-                    $('#HsnSacCode').val($('#hsnSacCode').val());
-                    $('#Price').val($('#price').val());
-                    $('#IGST').val(''); 
-                   
-                } else {
-                    $('#IGST').val($('#iGST').val());
-                    $('#CGST').val('');
-                    $('#SGST').val('');
-                    $('#HsnSacCode').val($('#hsnSacCode').val());
-                    $('#Price').val($('#price').val());
-                }               
-            });
+    $(document).ready(function () {
+        var selectedStateId = @Html.Raw(Json.Serialize(ViewBag.SelectedStateId));
+
+        var ddlState = $("#ddlState");
+
+        ddlState.val(selectedStateId);
+        function ddstatetrigger() {
+            if (selectedStateId) {
+                ddlState.trigger('change');
+                var workLocations = @Html.Raw(Json.Serialize(Model != null && Model.WorkLocation != null ? Model.WorkLocation : null));
+                var worklocName = '@Html.Raw(Json.Serialize(ViewBag.SelectedCityId))';
+                var jsList = JSON.parse(worklocName);
+                var selectedTextName = '';
+
+                if (workLocations && Array.isArray(workLocations)) {
+                    for (var i = 0; i < workLocations.length; i++) {
+                        for (var j = 0; j < jsList.length; j++) {
+                            if (workLocations[i] == jsList[j].value) {
+                                if (selectedTextName === '') {
+                                    selectedTextName += jsList[j].text;
+                                } else {
+                                    selectedTextName = selectedTextName + ', ' + jsList[j].text;
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+        //  ddlState.trigger('change');
+        // Call ddstatetrigger after 3 seconds
+        setTimeout(ddstatetrigger, 3000);
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('#State').change(function () {
+            var selectedState = $(this).val();
+            if (selectedState === 'UP') {
+                $('#CGST').val($('#cGST').val());
+                $('#SGST').val($('#sGST').val());
+                $('#HsnSacCode').val($('#hsnSacCode').val());
+                $('#Price').val($('#price').val());
+                $('#IGST').val('');
+
+            } else {
+                $('#IGST').val($('#iGST').val());
+                $('#CGST').val('');
+                $('#SGST').val('');
+                $('#HsnSacCode').val($('#hsnSacCode').val());
+                $('#Price').val($('#price').val());
+            }
         });
-    </script>
+    });
+</script>
 
-<script>    
-        function onProductChange() {
-            var id = $("#ProductDetails").val();
-            $.ajax({
-                url: '/Home/product?id=' + id,
-                type: 'GET',
-                dataType: 'json',
-                contentType: 'application/json; charset=utf-8',
-                success: function (response) {
-
+<script>
+    function onProductChange() {
+        var id = $("#ProductDetails").val();
+        $.ajax({
+            url: '/Home/product?id=' + id,
+            type: 'GET',
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            success: function (response) {
+             if(response.data != null) {
+                if ((response.data.state) === 'UP' ) {
+                    $('#CGST').val(response.data.cgst);
+                    $('#SGST').val(response.data.scgst);
+                    $('#HsnSacCode').val(response.data.hsnSacCode);
+                    $('#Price').val(response.data.price);
+                    $('#IGST').val(response.data.igst);
+                }
+                else {
+                   
+                    $('#HsnSacCode').val(response.data.hsnSacCode);
+                    $('#Price').val(response.data.price);
+                }
+                }
+                 else{
                     $('#CGST').val('');
                     $('#SGST').val('');
                     $('#HsnSacCode').val('');
                     $('#Price').val('');
                     $('#IGST').val('');
-                $('#State').val('');
-                    if (response) {
-                        if(response.data!=null){
+                    $('#State').val('');
+                 }
+
+                if (response) {
+                    if (response.data != null) {
                         $('#cGST').val(response.data.cgst);
                         $('#iGST').val(response.data.igst);
                         $('#sGST').val(response.data.scgst);
                         $('#hsnSacCode').val(response.data.hsnSacCode);
                         $('#price').val(response.data.price);
-                        }
                     }
-                    else {
-                        alert('Data not found');
+
+                    if ($('#State').val() === 'UP') {
+                        $('#CGST').val($('#cGST').val());
+                        $('#SGST').val($('#sGST').val());
+                        $('#HsnSacCode').val($('#hsnSacCode').val());
+                        $('#Price').val($('#price').val());
+                        $('#IGST').val('');
+
+                    } else if ($('#State').val() === 'Other') {
+                        $('#IGST').val($('#iGST').val());
+                        $('#CGST').val('');
+                        $('#SGST').val('');
+                        $('#HsnSacCode').val($('#hsnSacCode').val());
+                        $('#Price').val($('#price').val());
                     }
-                    
-                },
-                error: function () {
-                    alert('Error fetching data');
+
                 }
-            });
-        }
+                else {
+                    alert('Data not found');
+                }
+
+            },
+            error: function () {
+                alert('Error fetching data');
+            }
+        });
+    }
     function validateNumericInput(event) {
         if ([46, 8, 9, 27, 13].indexOf(event.keyCode) !== -1 ||
             (event.keyCode == 65 && event.ctrlKey === true) ||
@@ -384,64 +439,45 @@
         if ((event.shiftKey || (event.keyCode < 48 || event.keyCode > 57)) && (event.keyCode < 96 || event.keyCode > 105)) {
             event.preventDefault();
         }
-           
-    }      
-        function ValidateGST() {
-            var Obj = document.getElementById("GstNumber");
-            if (Obj.value != "") {
-                ObjVal = Obj.value;
-                var gstPat = /^([0-9]{2}[a-zA-Z]{4}([a-zA-Z]{1}|[0-9]{1})[0-9]{4}[a-zA-Z]{1}([a-zA-Z]|[0-9]){3}){0,15}$/;
-                if (ObjVal.search(gstPat) == -1) {
-                    swal("Invalid GstNumber. It should be in this 11AAAAA1111Z1A1 format'");
-                    Obj.value = '';
-                    return false;
-                }
-                else {
-                }
-            }
-        }
-</script>
 
-<script>
-        function validateWorkLocation(selectElement) {
-            var selectedValues = Array.from(selectElement.selectedOptions, option => option.value);
-
-            if (selectedValues.length === 0) {
-                selectElement.setCustomValidity('-- Select City Name --');
-            } else {
-                selectElement.setCustomValidity('');
+    }
+    function ValidateGST() {
+        var Obj = document.getElementById("GstNumber");
+        if (Obj.value != "") {
+            ObjVal = Obj.value;
+            var gstPat = /^([0-9]{2}[a-zA-Z]{4}([a-zA-Z]{1}|[0-9]{1})[0-9]{4}[a-zA-Z]{1}([a-zA-Z]|[0-9]){3}){0,15}$/;
+            if (ObjVal.search(gstPat) == -1) {
+                swal("Invalid GstNumber. It should be in this 11AAAAA1111Z1A1 format'");
+                Obj.value = '';
+                return false;
             }
-        }
-    </script>
-<script>
-        function validateState(selectElement) {
-            if (selectElement.value === "") {
-                selectElement.setCustomValidity('-- Please select State --');
-            } else {
-                selectElement.setCustomValidity('');
-            }
-        }
-</script>
-<script>
-    var workLocations = @Html.Raw(Json.Serialize(Model != null && Model.WorkLocation != null ? Model.WorkLocation : null));
-    var worklocName = '@Html.Raw(Json.Serialize(ViewBag.SelectedCityId))';
-    var jsList = JSON.parse(worklocName);
-    var selectedTextName = '';
-
-    if (workLocations && Array.isArray(workLocations)) {
-        for (var i = 0; i < workLocations.length; i++) {
-            for (var j = 0; j < jsList.length; j++) {
-                if (workLocations[i] == jsList[j].value) {
-                    if (selectedTextName === '') {
-                        selectedTextName += jsList[j].text;
-                    } else {
-                        selectedTextName = selectedTextName + ', ' + jsList[j].text;
-                    }
-                }
+            else {
             }
         }
     }
-     
+</script>
+
+<script>
+    function validateWorkLocation(selectElement) {
+        var selectedValues = Array.from(selectElement.selectedOptions, option => option.value);
+
+        if (selectedValues.length === 0) {
+            selectElement.setCustomValidity('-- Select City Name --');
+        } else {
+            selectElement.setCustomValidity('');
+        }
+    }
+</script>
+<script>
+    function validateState(selectElement) {
+        if (selectElement.value === "") {
+            selectElement.setCustomValidity('-- Please select State --');
+        } else {
+            selectElement.setCustomValidity('');
+        }
+    }
+</script>
+<script>
     $(document).ready(function () {
         var ddlWorkLocation = $('#ddlCity');
         ddlWorkLocation.select2({
@@ -455,9 +491,7 @@
 <script>
     $(document).ready(function () {
         var ddlState = $('#ddlState');
-        //ddlState.append($("<option></option>").val('').html('-- Please Select State --'));
-        var selectedStateId = parseInt('@ViewBag.SelectedStateId');
-        $('#stateid').val(selectedStateId);       
+        var ddlCity = $('#ddlCity');
         $.ajax({
             url: '/Home/BindStateDetails',
             type: 'GET',
@@ -466,16 +500,20 @@
                 $.each(states, function (i, state) {
                     ddlState.append($("<option></option>").val(state.id).html(state.sName));
                 });
-                ddlState.val($('#stateid').val());
+
+                var selectedStateId = '@ViewBag.SelectedStateId';
+                if (selectedStateId) {
+                    ddlState.val(selectedStateId);
+                    ddlState.trigger('change');
+                }
             },
             error: function () {
                 alert('Error loading states!');
             }
         });
         $("#ddlState").change(function () {
-            var selectedStateId = parseInt($(this).val());
-
-            if (!isNaN(selectedStateId)) {
+            var selectedStateId = $(this).val();
+            if (selectedStateId) {
                 $.ajax({
                     url: '/Home/BindCityDetails',
                     type: 'GET',
@@ -483,11 +521,13 @@
                     data: { stateId: selectedStateId },
                     success: function (cities) {
                         ddlCity.empty();
-                        ddlCity.append($("<option></option>").val('').html('Select City Name'));
-
                         $.each(cities, function (i, city) {
                             ddlCity.append($("<option></option>").val(city.id).html(city.city1));
                         });
+                        var selectedCities = @Html.Raw(Json.Serialize(Model != null && Model.WorkLocation != null ? Model.WorkLocation : new string[] { }));
+                        if (selectedCities && Array.isArray(selectedCities)) {
+                            ddlCity.val(selectedCities);
+                        }
                     },
                     error: function () {
                         alert('Error loading cities!');
@@ -495,7 +535,12 @@
                 });
             }
         });
+        var initialStateId = '@ViewBag.SelectedStateId';
+        if (initialStateId) {
+            ddlState.val(initialStateId).trigger('change');
+        }
     });
+
 </script>
 <script>
     $(document).ready(function () {
@@ -520,19 +565,22 @@
                 var ddlCity = $('#ddlCity');
                 ddlCity.append($("<option></option>").val('').html('Please wait ...'));
 
-                debugger;
+               
                 $.ajax({
                     url: '/Home/BindCityDetails',
                     type: 'GET',
                     dataType: 'json',
                     data: { stateId: StateId },
                     success: function (d) {
-                        ddlCity.empty(); 
+                        ddlCity.empty();
                         ddlCity.append($("<option></option>").val('').html('Select City Name'));
                         $.each(d, function (i, cities) {
                             ddlCity.append($("<option></option>").val(cities.id).html(cities.city1));
                         });
-
+                        var selectedCities = @Html.Raw(Json.Serialize(Model != null && Model.WorkLocation != null ? Model.WorkLocation : new string[] { }));
+                        if (selectedCities && Array.isArray(selectedCities)) {
+                            ddlCity.val(selectedCities);
+                        }
                     },
                     error: function () {
                         alert('Error!');
