@@ -234,8 +234,8 @@
                                         </div>
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">State</label>
-                                            <select asp-for="State" id="State" class="form-control" required="required" onchange="validateState(this)" oninvalid="this.setCustomValidity('Please select State')" oninput="this.setCustomValidity('')">
-                                                <option value="">--Select State--</option>
+                                            <select asp-for="State" id="State" class="form-control" required="required" onchange="validateState(this)" oninvalid="this.setCustomValidity('Select State')" oninput="this.setCustomValidity('')">
+                                                <option value="">-- Select State --</option>
                                                 <option value="UP">UP</option>
                                                 <option value="Other">Other</option>
                                             </select>
@@ -471,7 +471,7 @@
 <script>
     function validateState(selectElement) {
         if (selectElement.value === "") {
-            selectElement.setCustomValidity('-- Please select State --');
+            selectElement.setCustomValidity('--Select State --');
         } else {
             selectElement.setCustomValidity('');
         }
@@ -545,7 +545,7 @@
 <script>
     $(document).ready(function () {
         var ddlState = $('#ddlState');
-        ddlState.append($("<option></option>").val('').html('Please Select State'));
+        ddlState.append($("<option></option>").val('').html('-- Select State --'));
         $.ajax({
             url: '/Home/BindStateDetails',
             type: 'GET',

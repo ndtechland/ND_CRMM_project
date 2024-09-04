@@ -167,7 +167,7 @@ button#showLeftPush {
 .nav > li > a:hover, .nav > li > a:focus {
     text-decoration: none;
     background-color: transparent;
-    color: #F2B33F;
+    color: #00baf2;
 }
 
 .sidebar .arrow {
@@ -210,7 +210,7 @@ span.nav-badge {
 span.nav-badge-btm {
     font-size: 12px;
     color: #FFF;
-    background: #F2B33F;
+    background: #00baf2;
     position: absolute;
     top: 18%;
     right: 15%;
@@ -484,11 +484,11 @@ ul.dropdown-menu li {
     }
 
 .sidebar .nav-second-level li a.active, .sidebar ul li a.active {
-    color: #F2B33F;
+    color: #00baf2;
 }
 
 li.active a i, .act a i {
-    color: #F2B33F;
+    color: #00baf2;
 }
 
 .custom-nav > li.act > a, .custom-nav > li.act > a:hover, .custom-nav > li.act > a:focus {
@@ -2562,7 +2562,7 @@ h4.modal-title {
 
     .profile-top img {
         vertical-align: middle;
-        border: 4px solid #F2B33F;
+        border: 4px solid #00baf2;
         border-radius: 63%;
     }
 
@@ -2943,7 +2943,7 @@ i.fa.fa-facebook.profile-icon {
 }
 
 .widget_1_box .bg-success {
-    background-color: #F2B33F;
+    background-color: #00baf2;
 }
 
 .widget_1_box .bg-danger {

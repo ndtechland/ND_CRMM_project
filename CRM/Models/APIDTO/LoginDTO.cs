@@ -7,6 +7,7 @@
     }
     public class LoginProfile
     {
+        public int? userid { get; set; }
         public string? Employee_Name { get; set; }
         public string? Employee_ID { get; set; }
     }

@@ -212,7 +212,7 @@ namespace CRM.Repository
             //var result = await _context.CustomerRegistrations.FromSqlRaw<Customer>("Customerlist").ToListAsync();
             //return result;
         }
-        public async Task<int> userEmpRegistration(EmpMultiform model, string Mode, string Emp_Reg_ID, string userId)
+        public async Task<int> EmpRegistration(EmpMultiform model, string Mode, string Emp_Reg_ID, string userId)
         {
             try
             {
@@ -1369,119 +1369,6 @@ namespace CRM.Repository
                 .ToListAsync();
 
             return employeeList;
-        }
-        public async Task<int> EmpRegistration(EmpMultiform model, string Mode, string Emp_Reg_ID, string adminId)
-        {
-            try
-            {
-                ///
-                model.EmployeeId = Emp_Reg_ID;
-                SqlConnection con = new SqlConnection(Configuration.GetConnectionString("db1"));
-                SqlCommand cmd = new SqlCommand("EmployeeRegistrationtest", con);
-                cmd.Parameters.AddWithValue("@mode", Mode);
-                cmd.Parameters.AddWithValue("@Emp_RegID", Emp_Reg_ID);
-                cmd.Parameters.AddWithValue("@Employee_ID", model.EmployeeId);
-                cmd.Parameters.AddWithValue("@Customer_Id", adminId);
-                cmd.Parameters.AddWithValue("@FirstName", model.FirstName);
-                cmd.Parameters.AddWithValue("@MiddleName", model.MiddleName);
-                cmd.Parameters.AddWithValue("@LastName", model.LastName);
-                cmd.Parameters.AddWithValue("@DateOfJoining", model.DateOfJoining);
-                cmd.Parameters.AddWithValue("@WorkEmail", model.WorkEmail);
-                cmd.Parameters.AddWithValue("@GenderID", model.GenderID);
-                cmd.Parameters.AddWithValue("@WorkLocationID", model.WorkLocationID);
-                cmd.Parameters.AddWithValue("@DesignationID", model.DesignationID);
-                cmd.Parameters.AddWithValue("@DepartmentID", model.DepartmentID);
-                cmd.Parameters.AddWithValue("@stateId", model.stateId);
-
-                //-- Salary Details
-                cmd.Parameters.AddWithValue("@AnnualCTC", model.AnnualCTC);
-                cmd.Parameters.AddWithValue("@Basic", model.Basic);
-                cmd.Parameters.AddWithValue("@HouseRentAllowance", model.HouseRentAllowance);
-                //cmd.Parameters.AddWithValue("@TravellingAllowance", model.TravellingAllowance);
-                cmd.Parameters.AddWithValue("@ESIC", model.ESIC);
-                cmd.Parameters.AddWithValue("@EPF", model.EPF);
-                cmd.Parameters.AddWithValue("@MonthlyGrossPay", model.MonthlyGrossPay);
-                cmd.Parameters.AddWithValue("@MonthlyCTC", model.MonthlyCTC);
-                cmd.Parameters.AddWithValue("@Professionaltax", model.Professionaltax);
-                cmd.Parameters.AddWithValue("@servicecharge", model.Servicecharge);
-                cmd.Parameters.AddWithValue("@SpecialAllowance", model.SpecialAllowance);
-                cmd.Parameters.AddWithValue("@gross", model.Gross);
-                cmd.Parameters.AddWithValue("@amount", model.Amount);
-                cmd.Parameters.AddWithValue("@tdspercentage", model.Tdspercentage);
-                // Personal detail
-                cmd.Parameters.AddWithValue("@Personal_Email_Address", model.PersonalEmailAddress);
-                cmd.Parameters.AddWithValue("@Mobile_Number", model.MobileNumber);
-                cmd.Parameters.AddWithValue("@Date_Of_Birth", model.DateOfBirth);
-                cmd.Parameters.AddWithValue("@Father_Name", model.FatherName);
-                cmd.Parameters.AddWithValue("@PAN", model.PAN);
-                cmd.Parameters.AddWithValue("@Address_Line_1", model.AddressLine1);
-                cmd.Parameters.AddWithValue("@Address_Line_2", model.AddressLine2);
-                cmd.Parameters.AddWithValue("@City", model.City);
-                cmd.Parameters.AddWithValue("@State_ID", model.StateID);
-                cmd.Parameters.AddWithValue("@Pincode", model.Pincode);
-
-                // Bank detail
-                cmd.Parameters.AddWithValue("@Account_Holder_Name", model.AccountHolderName);
-                cmd.Parameters.AddWithValue("@Bank_Name", model.BankName);
-                cmd.Parameters.AddWithValue("@Account_Number", model.AccountNumber);
-                cmd.Parameters.AddWithValue("@Re_Enter_Account_Number", model.ReEnterAccountNumber);
-                cmd.Parameters.AddWithValue("@IFSC", model.IFSC);
-                cmd.Parameters.AddWithValue("@EPF_Number", model.EPF_Number);
-                cmd.Parameters.AddWithValue("@Deduction_Cycle", model.Deduction_Cycle);
-                cmd.Parameters.AddWithValue("@Employee_Contribution_Rate", model.Employee_Contribution_Rate);
-                cmd.Parameters.AddWithValue("@Account_Type_ID", model.AccountTypeID);
-                cmd.Parameters.AddWithValue("@nominee", model.nominee);
-
-                cmd.CommandType = CommandType.StoredProcedure;
-                SqlDataAdapter da = new SqlDataAdapter();
-                da.SelectCommand = cmd;
-                DataTable dt = new DataTable();
-                da.Fill(dt);
-
-
-                if (Mode == "INS")
-                {
-                    EmployeeRole employeeRole = new()
-                    {
-                        EmployeeRegistrationId = model.EmployeeId,
-                        EmployeeRole1 = "2",
-                        Description = "Employee"
-
-                    };
-                    _context.EmployeeRoles.Add(employeeRole);
-                    _context.SaveChanges();
-
-                    EmployeeLogin employeeLogin = new()
-                    {
-                        EmployeeId = model.EmployeeId,
-                        Password = "" + model.FirstName + "" + model.DateOfBirth.Date.Year + ""
-                    };
-                    _context.EmployeeLogins.Add(employeeLogin);
-                    _context.SaveChanges();
-                    string password = "" + model.FirstName + "" + model.DateOfBirth.Date.Year + "";
-                    _IEmailService.SendEmailCred(model, password);
-                }
-
-                return 1;
-            }
-            catch (SqlException sqlEx)
-            {
-                foreach (SqlError error in sqlEx.Errors)
-                {
-                    Console.WriteLine("Error Number: {0}", error.Number);
-                    Console.WriteLine("Error Message: {0}", error.Message);
-                    Console.WriteLine("Procedure: {0}", error.Procedure);
-                    Console.WriteLine("Line Number: {0}", error.LineNumber);
-                    Console.WriteLine("Source: {0}", error.Source);
-                    Console.WriteLine("Server: {0}", error.Server);
-                }
-
-                throw new Exception("SQL Error: " + sqlEx.Message);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Error: " + ex.Message);
-            }
         }
     }
 
