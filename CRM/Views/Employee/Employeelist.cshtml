@@ -6,6 +6,16 @@
 }
 <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css'>
 <link rel='stylesheet' href='https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css'>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js'></script>
+<script src='https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js'></script>
+<script src='https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js'></script>
+<script src='https://cdn.datatables.net/buttons/1.2.2/js/buttons.colVis.min.js'></script>
+<script src='https://cdn.datatables.net/buttons/1.2.2/js/buttons.html5.min.js'></script>
+<script src='https://cdn.datatables.net/buttons/1.2.2/js/buttons.print.min.js'></script>
+<script src='https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js'></script>
+<script src='https://cdn.datatables.net/buttons/1.2.2/js/buttons.bootstrap.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js'></script>
+<script src='https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js'></script>
 <style>
     .dataTables_wrapper table.dataTable th {
         background-color: #00baf2 !important;
@@ -16,13 +26,7 @@
     <div class="page-body-wrapper">
         <div class="page-sidebar">
         </div>
-        <!-- Page Sidebar Ends-->
-        <!-- Right sidebar Start-->
-        <!-- Right sidebar Ends-->
-
         <div class="page-body">
-
-            <!-- Container-fluid starts-->
             <div class="container-fluid">
                 <div class="page-header">
                     <div class="row">
@@ -411,191 +415,6 @@
 
 </div>
 
-<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="staticBackdropLabel">Edit Employee</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-12">
-                        <form asp-action="EditEmployee" method="post" autocomplete="off">
-                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                            <input name="Id" type="text" id="Id" style="display:none">
-                            <div class="row">
-                                <div class="form-group col-sm">
-                                    <label for="validationCustom0">First Name</label>
-                                    <input class="form-control" id="FirstName" name="FirstName" type="text" required="">
-                                </div>
-                                <div class="form-group col-sm">
-                                    <label for="validationCustom0">Middle Name</label>
-                                    <input class="form-control" id="MiddleName" name="MiddleName" type="text" required="">
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="form-group col-sm">
-                                    <label for="validationCustom0">Last Name</label>
-                                    <input class="form-control" id="LastName" name="LastName" type="text" required="">
-                                </div>
-                                <div class="form-group col-sm">
-                                    <label for="validationCustom0">Work Email</label>
-                                    <input class="form-control" id="WorkEmail" name="WorkEmail" type="text" required="">
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="form-group col-sm">
-                                    <label for="validationCustom0">Gender</label>
-                                    <select id="GenderId" name="GenderId" class="form-control searchableselect"></select>
-                                </div>
-                                <div class="form-group col-sm">
-                                    <label for="validationCustom0">Work Location</label>
-                                    <select id="WorkLocationId" name="WorkLocationId" class="form-control searchableselect"></select>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="form-group col-sm">
-                                    <label for="validationCustom0">Designation</label>
-                                    <select id="DesignationId" name="DesignationId" class="form-control searchableselect"></select>
-                                </div>
-                                <div class="form-group col-sm">
-                                    <label for="validationCustom0">Department</label>
-                                    <select id="DepartmentId" name="DepartmentId" class="form-control searchableselect"></select>
-                                </div>
-                                <div class="form-group col-sm">
-                                    <label for="validationCustom0">Salary</label>
-                                    <input class="form-control" id="MonthlyCTC" name="MonthlyCTC" type="text" required="">
-                                </div>
-                            </div>
-                            <button class="btn btn-warning" id="btnUpdate">Update</button>
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script>
-    function ExportExcelfn() {
-
-        window.location.href = 'ImportToExcelEmployeeList'
-    }
-    function EditEmployee(id) {
-        debugger;
-        $.ajax({
-            url: '/Employee/EditEmployee?id=' + id,
-            type: 'GET',
-            dataType: 'json',
-            contentType: 'application/json; charset=utf-8',
-            success: function (response) {
-                debugger;
-                $('#Id').val(response.data.id);
-                $('#FirstName').val(response.data.firstName);
-                $('#MiddleName').val(response.data.middleName);
-                $('#LastName').val(response.data.lastName);
-                $('#WorkEmail').val(response.data.workEmail);
-                $('#MonthlyCTC').val(response.monthlyCTC.monthlyCtc);
-                //bind gender
-                $('#GenderId').empty();
-                var row = "<option value=''>-- Select Gender --</option>";
-                $.each(response.gender, function (ind, item) {
-                    var isSelected = item.id === response.data.genderId;
-                    row += "<option value='" + item.id + "' " + (isSelected ? "selected" : "") + ">" + item.genderName + "</option>";
-                });
-                $('#GenderId').html(row);
-                $('#GenderId').val(response.data.genderId);
-                //worklocation
-                $('#WorkLocationId').empty();
-                var row = "<option value=''>-- Select WorkLocation --</option>";
-                $.each(response.worklocation, function (ind, item) {
-                    var isSelected = item.id === response.data.workLocationId;
-                    row += "<option value='" + item.id + "' " + (isSelected ? "selected" : "") + ">" + item.addressLine1 + "</option>";
-                });
-                $('#WorkLocationId').html(row);
-                $('#WorkLocationId').val(response.data.workLocationId);
-                //Designation
-                $('#DesignationId').empty();
-                var row = "<option value=''>-- Select Designation --</option>";
-                $.each(response.designation, function (ind, item) {
-                    var isSelected = item.id === response.data.designationId;
-                    row += "<option value='" + item.id + "' " + (isSelected ? "selected" : "") + ">" + item.designationName + "</option>";
-                });
-                $('#DesignationId').html(row);
-                $('#DesignationId').val(response.data.designationId);
-                //Department
-                $('#DepartmentId').empty();
-                var row = "<option value=''>-- Select Designation --</option>";
-                $.each(response.department, function (ind, item) {
-                    var isSelected = item.id === response.data.departmentId;
-                    row += "<option value='" + item.id + "' " + (isSelected ? "selected" : "") + ">" + item.departmentName + "</option>";
-                });
-                $('#DepartmentId').html(row);
-                $('#DepartmentId').val(response.data.departmentId);
-
-                $('#staticBackdrop').modal('show');
-            },
-            error: function () {
-                alert('Data not found');
-            }
-        });
-    }
-</script>
-@* <script>
-    var currentPage = 1;
-    var rowsPerPage = 10;
-    $(document).ready(function () {
-        function paginateTable() {
-            var table = $('#datatable');
-            var rows = table.find('tbody tr');
-
-
-            var totalPages = Math.ceil(rows.length / rowsPerPage);
-
-
-            var pagination = $('#pagination');
-            pagination.empty();
-
-            for (var i = 1; i <= totalPages; i++) {
-                var link = $('<li class="page-item"><a class="page-link" href="#">' + i + '</a></li>');
-
-
-                if (i === currentPage) {
-                    link.addClass('active');
-                }
-
-                pagination.append(link);
-            }
-
-
-            var startIndex = (currentPage - 1) * rowsPerPage;
-            var endIndex = startIndex + rowsPerPage;
-
-            rows.hide().slice(startIndex, endIndex).show();
-        }
-
-
-        paginateTable();
-
-        $(document).on('click', '#pagination li a', function (event) {
-            event.preventDefault();
-
-            var clickedPage = parseInt($(this).text());
-
-
-            currentPage = clickedPage;
-            paginateTable();
-
-
-            $('html, body').animate({ scrollTop: $('#table-container').offset().top }, 'slow');
-        });
-    });
-
-</script> *@
 <script>
     function confirmDelete(url) {
         var result = confirm("Are you sure you want to delete?");
@@ -606,23 +425,10 @@
 </script>
 
 
-<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js'></script>
-<script src='https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js'></script>
-<script src='https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js'></script>
-<script src='https://cdn.datatables.net/buttons/1.2.2/js/buttons.colVis.min.js'></script>
-<script src='https://cdn.datatables.net/buttons/1.2.2/js/buttons.html5.min.js'></script>
-<script src='https://cdn.datatables.net/buttons/1.2.2/js/buttons.print.min.js'></script>
-<script src='https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js'></script>
-<script src='https://cdn.datatables.net/buttons/1.2.2/js/buttons.bootstrap.min.js'></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js'></script>
-<script src='https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js'></script>
 
 <script>
     $(document).ready(function () {
-        //Only needed for the filename of export files.
-        //Normally set in the title tag of your page.
         document.title = 'Simple DataTable';
-        // DataTable initialisation
         $('#datatable').DataTable(
             {
                 "dom": '<"dt-buttons"Bf><"clear">lirtp',

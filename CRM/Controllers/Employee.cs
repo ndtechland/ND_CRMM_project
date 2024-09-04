@@ -294,28 +294,30 @@ namespace CRM.Controllers
                     string userIdString = HttpContext.Session.GetString("UserId");
                     if (!string.IsNullOrEmpty(userIdString) && int.TryParse(userIdString, out int id))
                     {
-                        response = await _ICrmrpo.CustomerEmployeeList(id);
+                        if (id == 1)
+                        {
+                            response = await _ICrmrpo.EmployeeList();
+                        }
+                        else
+                        {
+                            response = await _ICrmrpo.CustomerEmployeeList(id);
+                        }
+
                         ViewBag.UserName = HttpContext.Session.GetString("UserName");
                         return View(response);
                     }
                     response = await _ICrmrpo.EmployeeList();
                     ViewBag.UserName = HttpContext.Session.GetString("UserName");
                     return View(response);
-                    
                 }
-
-                else
-                {
-                    return RedirectToAction("Login", "Admin");
-                }
+                return RedirectToAction("Login", "Admin");
             }
-            catch (Exception Ex)
+            catch (Exception ex)
             {
-
-                throw new Exception("Error:" + Ex.Message);
+                throw new Exception("Error: " + ex.Message);
             }
-
         }
+
 
         public static int CalculatAge(DateTime DOB)
         {
