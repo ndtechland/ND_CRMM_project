@@ -24,7 +24,7 @@ namespace CRM.Controllers.Api
             this._apiemp = apiemp;
             this._context = context;
         }
-        [Route("GetEmployeeById")]
+       [Route("GetEmployeeByIdhhhh")]
         [HttpGet]
         public async Task<IActionResult> GetEmployeeById()
         {

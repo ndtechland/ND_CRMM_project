@@ -35,6 +35,7 @@ namespace CRM.Controllers.Api
                 {
                     var loginProfile = _context.EmployeeRegistrations.Where(x =>x.EmployeeId == model.Employee_ID).Select(x => new LoginProfile
                     {
+                        userid = x.Id,
                         Employee_Name = x.MiddleName == null ? x.FirstName + " " + x.LastName : x.FirstName + " " + x.MiddleName + " " + x.LastName,
                         Employee_ID = x.EmployeeId
 

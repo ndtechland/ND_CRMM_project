@@ -4,8 +4,8 @@
     ViewData["Title"] = "Employeelist";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
-<link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css'>
-<link rel='stylesheet' href='https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css'>
+@* <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css'>
+ *@<link rel='stylesheet' href='https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css'>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js'></script>
 <script src='https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js'></script>
 <script src='https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js'></script>
@@ -56,9 +56,11 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-body">
-                                <div class="table-responsive">
+                                <img src="~/image/execimage.png" style="height:50px; margin-left:96%;width:53px;cursor:pointer" title="Export To Excel" onclick="ExportExcelfn()" />
+
+                                <div class="table-responsive" style="margin-top: 16px;">
+
                                     <table id="datatable" class="table table-responsive">
-                                            <img src="~/image/execimage.png" style="height:50px; margin-left:1095px;width:53px;cursor:pointer" title="Export To Excel" onclick="ExportExcelfn()" />
                                         <thead>
                                             <tr style="background-color: #00baf2;">
                                                 <th nowrap>

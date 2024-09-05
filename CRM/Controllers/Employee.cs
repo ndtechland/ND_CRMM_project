@@ -271,7 +271,7 @@ namespace CRM.Controllers
                     var response = await _ICrmrpo.EmpRegistration(model, Mode, Empid,userId);
                     ModelState.Clear();
                     ViewBag.Message = "Registration successful";
-                    return View();
+                    return RedirectToAction("Employeelist");
                 }
                 return View();
             }
