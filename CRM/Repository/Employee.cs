@@ -38,20 +38,28 @@ namespace CRM.Repository
                 {
                     var empid = _context.EmployeeRegistrations.Where(x => x.EmployeeId == userid && x.IsDeleted == false).Select(x => new EmployeeBasicInfo
                     {
-                        FirstName = x.FirstName,
-                        MiddleName = x.MiddleName,
-                        LastName = x.LastName,
-                        FullName = x.FirstName + " " + x.MiddleName + " " + x.LastName,
-                        DateOfJoining = String.Format("{0:dd-MM-yyyy}", x.DateOfJoining),
+                        FullName = x.FirstName ,
                         WorkEmail = x.WorkEmail,
-                        GenderName = _context.GenderMasters.Where(g => g.Id == x.GenderId).Select(g => g.GenderName).First(),
-                        WorkLocationName = _context.Cities.Where(g => g.Id == Convert.ToInt16(x.WorkLocationId)).Select(g => g.City1).First(),
-                        DesignationName = _context.DesignationMasters.Where(g => g.Id == Convert.ToInt16(x.DesignationId)).Select(g => g.DesignationName).First(),
+                        MobileNumber = _context.EmployeePersonalDetails.Where(g => g.EmpId == x.Id).Select(g => g.MobileNumber).First(),
+                        DateOfBirth = _context.EmployeePersonalDetails.Where(g => g.EmpId == x.Id).Select(g => g.DateOfBirth.Value.ToString("dd-MM-yyyy")).First(),
+                        StateId = x.StateId,
+                        City = _context.EmployeePersonalDetails.Where(g => g.EmpId == x.Id).Select(g => g.City).First(),
+                        Address1 = _context.EmployeePersonalDetails.Where(g => g.EmpId == x.Id).Select(g => g.AddressLine1).First(),
+                        Address2 = _context.EmployeePersonalDetails.Where(g => g.EmpId == x.Id).Select(g => g.AddressLine2).First(),
+                        Pincode = _context.EmployeePersonalDetails.Where(g => g.EmpId == x.Id).Select(g => g.Pincode).First(),
+                        PersonalEmailAddress = _context.EmployeePersonalDetails.Where(g => g.EmpId == x.Id).Select(g => g.PersonalEmailAddress).First(),
+                        DateOfJoining = String.Format("{0:dd-MM-yyyy}", x.DateOfJoining),
                         DepartmentName = _context.DepartmentMasters.Where(g => g.Id == Convert.ToInt16(x.DepartmentId)).Select(g => g.DepartmentName).First().Trim(),
-                        CustomerName = _context.CustomerRegistrations.Where(g => g.Id == x.CustomerId).Select(g => g.CompanyName).First(),
+                        DesignationName = _context.DesignationMasters.Where(g => g.Id == Convert.ToInt16(x.DepartmentId)).Select(g => g.DesignationName).First().Trim(),
+                        CompanyName = _context.CustomerRegistrations.Where(g => g.Id == x.CustomerId).Select(g => g.CompanyName).First(),
+                        CompanyLocationName = _context.Cities.Where(g => g.Id == Convert.ToInt16(x.WorkLocationId)).Select(g => g.City1).First(),
                         EmployeeId = x.EmployeeId,
-                        //RoleId = x.RoleId,
-                        IsDeleted = x.IsDeleted,
+                        AadharNo = _context.EmployeePersonalDetails.Where(g => g.EmpId == x.Id).Select(g => g.Aadharcard).First(),
+                        PanNo = _context.EmployeePersonalDetails.Where(g => g.EmpId == x.Id).Select(g => g.Pan).First(),
+                        EmpProfile = "/EmpProfile/" + x.EmpProfile,
+                        AadharOne = _context.EmployeePersonalDetails.Where(g => g.EmpId == x.Id).Select(g => "/img1/" + g.AadharOne).First(),
+                        AadharTwo = _context.EmployeePersonalDetails.Where(g => g.EmpId == x.Id).Select(g => "/img1/" + g.AadharTwo).First(),
+                        Panimg = _context.EmployeePersonalDetails.Where(g => g.EmpId == x.Id).Select(g => "/img1/" + g.Panimg).First(),
                     }).FirstOrDefault();
                     return empid;
                 }
@@ -180,7 +188,7 @@ namespace CRM.Repository
                     empbank.Ifsc = model.Ifsc;
                     empbank.AccountTypeId = Convert.ToInt32(model.AccountTypeId);
                     empbank.EpfNumber = model.EpfNumber;
-                    empbank.DeductionCycle = model.DeductionCycle;
+                    //empbank.DeductionCycle = model.DeductionCycle;
                     empbank.EmployeeContributionRate = model.EmployeeContributionRate;
                     empbank.Nominee = model.Nominee;
                     string ChequeImagePath = fileOperation.SaveBase64Image("ChequeImage", model.Chequebase64, allowedExtensions);
@@ -204,7 +212,7 @@ namespace CRM.Repository
                             EmpId = userid,
                             AccountTypeId = Convert.ToInt32(model.AccountTypeId),
                             EpfNumber = model.EpfNumber,
-                            DeductionCycle = model.DeductionCycle,
+                           // DeductionCycle = model.DeductionCycle,
                             EmployeeContributionRate = model.EmployeeContributionRate,
                             Nominee = model.Nominee,
                             IsDeleted = false,
@@ -223,41 +231,6 @@ namespace CRM.Repository
             catch (Exception ex)
             {
                 throw new Exception("Error: " + ex.Message);
-            }
-        }
-
-        public async Task<EmpPersonalDetail> GetPresnolInfo(string userid)
-        {
-            try
-            {
-                if (userid != null)
-                {
-                    var result = await _context.EmployeePersonalDetails.Where(x => x.EmpRegId == userid && x.IsDeleted == false).Select(x => new EmpPersonalDetail
-                    {
-                        PersonalEmailAddress = x.PersonalEmailAddress,
-                        MobileNumber = x.MobileNumber,
-                        DateOfBirth = x.DateOfBirth,
-                        Age = x.Age,
-                        FatherName = x.FatherName,
-                        Pan = x.Pan,
-                        AddressLine1 = x.AddressLine1,
-                        AddressLine2 = x.AddressLine2,
-                        City = x.City,
-                        StateId = x.StateId,
-                        Pincode = x.Pincode,
-                        AadharNo = x.Aadharcard,
-                        AadharOne = "/img1/" + x.AadharOne,
-                        AadharTwo = "/img1/" + x.AadharTwo,
-                        Panimg = "/img1/" + x.Panimg,
-                    }).FirstOrDefaultAsync();
-                    return result;
-                }
-                return null;
-            }
-            catch (Exception ex)
-            {
-
-                throw new Exception("Error :" + ex.Message);
             }
         }
         public async Task<List<City>> getcity(int stateid)
@@ -298,9 +271,8 @@ namespace CRM.Repository
                         AccountNumber = x.AccountNumber,
                         ReEnterAccountNumber = x.ReEnterAccountNumber,
                         Ifsc = x.Ifsc,
-                        AccountTypeId = _context.AccountTypeMasters.Where(g => g.Id == x.AccountTypeId).Select(g => g.AccountType).First().Trim(),
+                        AccountTypeId = x.AccountTypeId,
                         EpfNumber = x.EpfNumber,
-                        DeductionCycle = x.DeductionCycle,
                         EmployeeContributionRate = x.EmployeeContributionRate,
                         Nominee = x.Nominee,
                         Chequeimage = "/ChequeImage/" + x.Chequeimage,
@@ -326,9 +298,9 @@ namespace CRM.Repository
                 if (emp != null)
                 {
 
-                    if (model.Empprofilebase64 != null)
+                    if (model.Empprofile != null)
                     {
-                        string EmpprofileImagePath = fileOperation.SaveBase64Image("EmpProfile", model.Empprofilebase64, allowedExtensions);
+                        string EmpprofileImagePath = fileOperation.SaveBase64Image("EmpProfile", model.Empprofile, allowedExtensions);
                         emp.EmpProfile = EmpprofileImagePath;
                     }
 
@@ -352,7 +324,7 @@ namespace CRM.Repository
                 {
                     var result = await _context.EmployeeRegistrations.Where(x => x.EmployeeId == userid && x.IsDeleted == false).Select(x => new profilepicture
                     {
-                        EmpProfile = "/EmpProfile/" + x.EmpProfile,
+                        EmpProfiles = "/EmpProfile/" + x.EmpProfile,
                     }).FirstOrDefaultAsync();
                     return result;
                 }

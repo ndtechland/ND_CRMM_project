@@ -24,9 +24,9 @@ namespace CRM.Controllers.Api
             this._apiemp = apiemp;
             this._context = context;
         }
-       [Route("GetEmployeeByIdhhhh")]
+       [Route("GetEmployeeBasicInfo")]
         [HttpGet]
-        public async Task<IActionResult> GetEmployeeById()
+        public async Task<IActionResult> GetEmployeeBasicInfo()
         {
             var response = new Response<EmployeeBasicInfo>();
             try
@@ -75,49 +75,7 @@ namespace CRM.Controllers.Api
                 if (User.Identity.IsAuthenticated)
                 {
                     var userid = User.Claims.FirstOrDefault().Value;
-                    var existingData = _context.EmployeePersonalDetails.FirstOrDefault(x =>
-                        x.PersonalEmailAddress == model.PersonalEmailAddress ||
-                        x.AddressLine1 == model.AddressLine1 ||
-                        x.AddressLine2 == model.AddressLine2 ||
-                        x.Pan == model.Pan ||
-                        x.MobileNumber == model.MobileNumber);
 
-                    var validationMessages = new List<string>();
-
-                    if (existingData != null)
-                    {
-                        if (existingData.PersonalEmailAddress == model.PersonalEmailAddress)
-                        {
-                            validationMessages.Add("Personal Email already exists.");
-                        }
-                        if (existingData.AddressLine1 == model.AddressLine1)
-                        {
-                            validationMessages.Add("AddressLine1 already exists.");
-                        }
-                         if (existingData.AddressLine2 == model.AddressLine2)
-                        {
-                            validationMessages.Add("AddressLine2 already exists.");
-                        }
-                        if (existingData.Pan == model.Pan)
-                        {
-                            validationMessages.Add("Pan already exists.");
-                        }
-                        if (existingData.MobileNumber == model.MobileNumber)
-                        {
-                            validationMessages.Add("MobileNumber already exists.");
-                        }
-                        if (model.Aadharbase64.Count != 2)
-                        {
-                            validationMessages.Add("Aadharbase64 should have exactly 2 items.");                       
-                        }
-                        if (validationMessages.Count > 0)
-                        {
-                            response.StatusCode = StatusCodes.Status400BadRequest;
-                            response.Status = "validation";
-                            response.Errors = validationMessages;
-                            return Ok(response);
-                        }
-                    }
                     EmployeePersonalDetail apiModel = await _apiemp.PersonalDetail(model, userid);
 
                     if (apiModel != null)
@@ -191,47 +149,6 @@ namespace CRM.Controllers.Api
             }
         }
 
-        [Route("GetPresnolInfo")]
-        [HttpGet]
-        public async Task<IActionResult> GetPresnolInfo()
-        {
-            var response = new Response<EmpPersonalDetail>();
-            try
-            {
-                if (User.Identity.IsAuthenticated)
-                {
-                    string userid = User.Claims.FirstOrDefault().Value;
-                    EmpPersonalDetail isEmployeeExists = await _apiemp.GetPresnolInfo(userid);
-                    if (isEmployeeExists != null)
-                    {
-                        response.Succeeded = true;
-                        response.StatusCode = StatusCodes.Status200OK;
-                        response.Status = "Success";
-                        response.Message = "Employee Personal Details Here.";
-                        response.Data = isEmployeeExists;
-                        return Ok(response);
-                    }
-                    else
-                    {
-                        response.StatusCode = StatusCodes.Status401Unauthorized;
-                        response.Message = "Data not found.";
-                        return Ok(response);
-                    }
-                }
-                else
-                {
-                    response.StatusCode = StatusCodes.Status401Unauthorized;
-                    response.Message = "Token is expired.";
-                    return BadRequest(response);
-                }
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-
-                throw new Exception("Error :" + ex.Message);
-            }
-        }
         [HttpGet("getcity")]
         [AllowAnonymous]
         public async Task<IActionResult> GetCity(int stateid)
@@ -316,20 +233,55 @@ namespace CRM.Controllers.Api
         [HttpPost]
         public async Task<IActionResult> Updateprofilepicture([FromForm] profilepicture model)
         {
-            var response = new Response<EmployeeRegistration>();
+            var response = new Response<profilepicture>();
             try
             {
                 if (User.Identity.IsAuthenticated)
                 {
+                    if (model.Empprofile != null && model.Empprofile.Length > 0)
+                    {
+                        string[] allowedExtensions = { ".jpg", ".jpeg", ".png" };
+                        string EmpprofileImagePath = model.Empprofile.FileName;
+                        string exten = EmpprofileImagePath.Split('.')[1];
+                        string extention = "." + exten;
+                        if (!allowedExtensions.Contains(extention))
+                        {
+                            response.Succeeded = false;
+                            response.StatusCode = StatusCodes.Status404NotFound;
+                            response.Status = "not allowed";
+                            response.Message = "Only .jpg, .jpeg, .png files are allowed";
+                            return BadRequest(response);
+                        }
+                        if (model.Empprofile.Length > 2 * 1024 * 1024)
+                        {
+                            response.Succeeded = false;
+                            response.StatusCode = StatusCodes.Status404NotFound;
+                            response.Status = "not allowed";
+                            response.Message = "Image should not be more than 2 MB";
+                            return BadRequest(response);
+                        }
+                    }
+                    else
+                    {
+                        response.Succeeded = false;
+                        response.StatusCode = StatusCodes.Status400BadRequest;
+                        response.Status = "not allowed";
+                        response.Message = "Empprofile is required";
+                        return BadRequest(response);
+                    }
                     var userid = User.Claims.FirstOrDefault().Value;
-                    EmployeeRegistration apiModel = await _apiemp.Updateprofilepicture(model, userid);
+                    var apiModel = await _apiemp.Updateprofilepicture(model, userid);
+                    profilepicture pp = new()
+                    {
+                        EmpProfiles = "/EmpProfile/" + apiModel.EmpProfile,
+                    };
                     if (apiModel != null)
                     {
                         response.Succeeded = true;
                         response.StatusCode = StatusCodes.Status200OK;
                         response.Status = "Success";
                         response.Message = "Profile Update successfully.";
-                        response.Data = apiModel;
+                        response.Data = pp;
                         return Ok(response);
                     }
                     else

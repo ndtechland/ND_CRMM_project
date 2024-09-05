@@ -19,6 +19,8 @@ namespace CRM.Models.Crm
         public virtual DbSet<AccountTypeMaster> AccountTypeMasters { get; set; } = null!;
         public virtual DbSet<Additonalcontribution> Additonalcontributions { get; set; } = null!;
         public virtual DbSet<AdminLogin> AdminLogins { get; set; } = null!;
+        public virtual DbSet<ApprovedPresnolInfo> ApprovedPresnolInfos { get; set; } = null!;
+        public virtual DbSet<Approvedbankdetail> Approvedbankdetails { get; set; } = null!;
         public virtual DbSet<BannerMaster> BannerMasters { get; set; } = null!;
         public virtual DbSet<BillingDetail> BillingDetails { get; set; } = null!;
         public virtual DbSet<BillingHistory> BillingHistories { get; set; } = null!;
@@ -55,9 +57,9 @@ namespace CRM.Models.Crm
         public virtual DbSet<TErrorLog> TErrorLogs { get; set; } = null!;
         public virtual DbSet<TaxDeductor> TaxDeductors { get; set; } = null!;
         public virtual DbSet<TransactionDetail> TransactionDetails { get; set; } = null!;
+        public virtual DbSet<VendorRegistration> VendorRegistrations { get; set; } = null!;
         public virtual DbSet<WorkLocation> WorkLocations { get; set; } = null!;
         public virtual DbSet<WorkLocation1> WorkLocations1 { get; set; } = null!;
-        public virtual DbSet<EmployeeImportExcel> EmpMultiforms { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -118,6 +120,104 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.Role).HasMaxLength(120);
 
                 entity.Property(e => e.UserName).HasMaxLength(120);
+            });
+
+            modelBuilder.Entity<ApprovedPresnolInfo>(entity =>
+            {
+                entity.ToTable("ApprovedPresnolInfo");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.AadharNo)
+                    .HasMaxLength(50)
+                    .HasColumnName("aadharNo");
+
+                entity.Property(e => e.AadharOne).HasColumnName("Aadhar_One");
+
+                entity.Property(e => e.AadharTwo).HasColumnName("Aadhar_Two");
+
+                entity.Property(e => e.AddressLine1)
+                    .HasMaxLength(255)
+                    .HasColumnName("Address_Line_1");
+
+                entity.Property(e => e.AddressLine2)
+                    .HasMaxLength(255)
+                    .HasColumnName("Address_Line_2");
+
+                entity.Property(e => e.City).HasMaxLength(255);
+
+                entity.Property(e => e.DateOfBirth)
+                    .HasColumnType("datetime")
+                    .HasColumnName("Date_Of_Birth");
+
+                entity.Property(e => e.EmployeeId)
+                    .HasMaxLength(100)
+                    .HasColumnName("EmployeeId ");
+
+                entity.Property(e => e.MobileNumber)
+                    .HasMaxLength(50)
+                    .HasColumnName("Mobile_Number");
+
+                entity.Property(e => e.Pan)
+                    .HasMaxLength(50)
+                    .HasColumnName("PAN");
+
+                entity.Property(e => e.Panimg).HasColumnName("panimg");
+
+                entity.Property(e => e.PersonalEmailAddress)
+                    .HasMaxLength(120)
+                    .HasColumnName("Personal_Email_Address");
+
+                entity.Property(e => e.Pincode).HasMaxLength(50);
+
+                entity.Property(e => e.StateId)
+                    .HasMaxLength(120)
+                    .HasColumnName("State_ID");
+
+                entity.Property(e => e.UpdateDate).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<Approvedbankdetail>(entity =>
+            {
+                entity.ToTable("Approvedbankdetail");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.AccountHolderName)
+                    .HasMaxLength(255)
+                    .HasColumnName("Account_Holder_Name");
+
+                entity.Property(e => e.AccountNumber)
+                    .HasMaxLength(50)
+                    .HasColumnName("Account_Number");
+
+                entity.Property(e => e.AccountTypeId).HasColumnName("Account_Type_ID");
+
+                entity.Property(e => e.BankName)
+                    .HasMaxLength(255)
+                    .HasColumnName("Bank_Name");
+
+                entity.Property(e => e.Chequeimage).HasColumnName("chequeimage");
+
+                entity.Property(e => e.EmployeeId).HasMaxLength(100);
+
+                entity.Property(e => e.EpfNumber)
+                    .HasMaxLength(120)
+                    .HasColumnName("EPF_Number");
+
+                entity.Property(e => e.Ifsc)
+                    .HasMaxLength(11)
+                    .HasColumnName("IFSC");
+
+                entity.Property(e => e.Nominee)
+                    .HasMaxLength(255)
+                    .HasColumnName("nominee");
+
+                entity.Property(e => e.ReEnterAccountNumber)
+                    .HasMaxLength(50)
+                    .HasColumnName("Re_Enter_Account_Number");
+
+                entity.Property(e => e.UpdateDate).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<BannerMaster>(entity =>
@@ -1017,6 +1117,55 @@ namespace CRM.Models.Crm
                     .HasForeignKey(d => d.PayMethod)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Transaction_Details_Pay_Method_ID");
+            });
+
+            modelBuilder.Entity<VendorRegistration>(entity =>
+            {
+                entity.ToTable("Vendor_Registration");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.AlternateNumber)
+                    .HasMaxLength(255)
+                    .HasColumnName("Alternate_number");
+
+                entity.Property(e => e.BillingAddress)
+                    .HasMaxLength(255)
+                    .HasColumnName("Billing_Address");
+
+                entity.Property(e => e.CompanyName)
+                    .HasMaxLength(255)
+                    .HasColumnName("Company_Name");
+
+                entity.Property(e => e.Email).HasMaxLength(255);
+
+                entity.Property(e => e.GstNumber)
+                    .HasMaxLength(255)
+                    .HasColumnName("GST_Number");
+
+                entity.Property(e => e.MobileNumber)
+                    .HasMaxLength(255)
+                    .HasColumnName("Mobile_number");
+
+                entity.Property(e => e.ProductDetails)
+                    .HasMaxLength(255)
+                    .HasColumnName("Product_Details");
+
+                entity.Property(e => e.RenewDate)
+                    .HasColumnType("date")
+                    .HasColumnName("Renew_Date");
+
+                entity.Property(e => e.StartDate)
+                    .HasColumnType("date")
+                    .HasColumnName("Start_date");
+
+                entity.Property(e => e.State).HasMaxLength(255);
+
+                entity.Property(e => e.StateId).HasColumnName("stateId");
+
+                entity.Property(e => e.WorkLocation)
+                    .HasMaxLength(255)
+                    .HasColumnName("Work_Location");
             });
 
             modelBuilder.Entity<WorkLocation>(entity =>

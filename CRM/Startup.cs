@@ -29,6 +29,7 @@ namespace CRM
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Session configuration
             services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromHours(1); // Set session timeout
@@ -36,61 +37,65 @@ namespace CRM
                 options.Cookie.IsEssential = true;
             });
 
-            services.AddDbContext<admin_NDCrMContext>(options => options.UseSqlServer(Configuration.GetConnectionString("db1")));
+            // Database context
+            services.AddDbContext<admin_NDCrMContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("db1")));
+
             services.AddControllersWithViews();
 
-            var Key = "this is my test key";
+            // JWT Token configuration
+            var Key = "8Zz5tw0Ionm3XPZZfN0NOml3z9FMfmpgXwovR9fp6ryDIoGRM8EPHAB6iHsc0fb";
             services.AddSingleton<IJwtToken>(new JwtToken(Key));
-            services.AddAuthentication(x =>
+
+            // Authentication (JWT + Cookie)
+            services.AddAuthentication(options =>
             {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(x =>
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
             {
-                x.RequireHttpsMetadata = false;
-                x.SaveToken = true;
-                x.TokenValidationParameters = new TokenValidationParameters
+                options.RequireHttpsMetadata = false;
+                options.SaveToken = true;
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Key)),
                     ValidateIssuer = false,
                     ValidateAudience = false
                 };
-            });
-
-            // Configure authentication
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = "Identity.Application";
-                options.DefaultChallengeScheme = "Identity.Application";
             })
-            .AddCookie("Identity.Application", options =>
+            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
             {
                 options.LoginPath = "/Admin/Login";
                 options.LogoutPath = "/Admin/Logout";
                 options.AccessDeniedPath = "/Account/AccessDenied";
             });
 
-            services.AddControllersWithViews();
+            // Add services
             services.AddScoped<ICrmrpo, Crmrpo>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IApiAccount, ApiAccount>();
             services.AddScoped<IEmployee, Employee>();
             services.Configure<URL>(Configuration.GetSection("URL"));
 
-            services.AddCors(options => {
-                options.AddPolicy("CorsPolicy", builder => {
+            // CORS policy
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy", builder =>
+                {
                     builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
                 });
-            });     // Other service configurations
+            });
 
-
+            // Controllers with views
+            services.AddControllersWithViews();
         }
-
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            // Use custom unauthorized middleware
             app.UseMiddleware<Unauthorized>();
 
             if (env.IsDevelopment())
@@ -100,17 +105,22 @@ namespace CRM
             else
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSession();
+
+            // Routing and CORS
             app.UseRouting();
             app.UseCors("CorsPolicy");
-            app.UseAuthentication(); // Ensure this is added
+
+            // Authentication and Authorization middleware
+            app.UseAuthentication();
             app.UseAuthorization();
-           
+
+            // Endpoint routing
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
