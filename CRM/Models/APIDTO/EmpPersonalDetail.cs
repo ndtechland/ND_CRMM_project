@@ -4,26 +4,27 @@ namespace CRM.Models.APIDTO
 {
     public class EmpPersonalDetail
     {
-        public int Id { get; set; }
-        public string? PersonalEmailAddress { get; set; }
+        public string FullName { get; set; } = null!;
+        public string WorkEmail { get; set; } = null!;
         public string? MobileNumber { get; set; }
         public DateTime? DateOfBirth { get; set; }
-        public int? Age { get; set; }
-        public string FatherName { get; set; } = null!;
-        public string? Pan { get; set; }
-        public string? AddressLine1 { get; set; }
-        public string? AddressLine2 { get; set; }
-        public string? City { get; set; }
-        public string StateId { get; set; } = null!;
+        public long? Stateid { get; set; }
+        public int? Cityid { get; set; }
+        public string? Address1 { get; set; }
+        public string? Address2 { get; set; }
         public string? Pincode { get; set; }
+        public string? PersonalEmailAddress { get; set; }
+        public string? DateOfJoining { get; set; }
+        public string DepartmentName { get; set; } = null!;
+        public string DesignationName { get; set; } = null!;
+        public string? CompanyName { get; set; }
+        public string CompanyLocationName { get; set; } = null!;
         public string? AadharNo { get; set; }
-        public string? AadharOne { get; set; }
-        public string? Panimg { get; set; }
-        public string? AadharTwo { get; set; }
+        public string? PanNo { get; set; }
 
         [NotMapped]
         public IFormFile Empprofile { get; set; }
-        public List<IFormFile> Aadharbase64 { get; set; }
-        public IFormFile Panbase64 { get; set; }
+        public List<IFormFile> AadharImage { get; set; }
+        public IFormFile PanbaseImage { get; set; }
     }
 }

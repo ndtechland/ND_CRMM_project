@@ -130,8 +130,7 @@ namespace CRM.Repository
         new SqlParameter("@Renew_Date", model.RenewDate),
         new SqlParameter("@State", model.State),
         new SqlParameter("@stateId", model.StateId),
-        
-        // Add output parameter
+
         new SqlParameter
         {
             ParameterName = "@CustomerId",
@@ -139,30 +138,8 @@ namespace CRM.Repository
             Direction = ParameterDirection.Output
         }
     };
-            string dynamicUserName = GenerateDynamicUsername(model.CompanyName);
-            string dynamicPassword = GenerateDynamicPassword();
-
-            // Execute stored procedure
             await _context.Database.ExecuteSqlRawAsync("exec CustomerRegistration @Company_Name, @Work_Location, @Mobile_number, @Alternate_number, @Email, @GST_Number, @Billing_Address, @Product_Details, @Start_date, @Renew_Date, @State, @stateId, @CustomerId OUTPUT", parameters.ToArray());
-
-            // Get the new CustomerId
             int newCustomerId = (int)parameters.First(p => p.ParameterName == "@CustomerId").Value;
-
-            if (newCustomerId > 0)
-            {
-                var adminRole = new AdminLogin
-                {
-                    UserName = dynamicUserName,
-                    Password = dynamicPassword,
-                    Role = "Vendor",
-                    Emailid = model.Email,
-                    Customerid = newCustomerId
-                };
-
-                _context.AdminLogins.Add(adminRole);
-                await _context.SaveChangesAsync(); // Ensure this is awaited
-            }
-
             return newCustomerId;
         }
 
@@ -1312,6 +1289,7 @@ namespace CRM.Repository
                                        GstNumber = customer.GstNumber,
                                        AlternateNumber = customer.AlternateNumber,
                                        BillingAddress = customer.BillingAddress,
+                                       UserName = admin.UserName
                                    }).FirstOrDefaultAsync();
                 return query;
             }
@@ -1369,6 +1347,222 @@ namespace CRM.Repository
                 .ToListAsync();
 
             return employeeList;
+        }
+        public VendorDto GetVendorById(int id)
+        {
+            VendorDto cs = new VendorDto();
+            try
+            {
+                DateTime startDate;
+                SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
+                SqlCommand cmd = new SqlCommand("sp_GetVendorById", con);
+                cmd.Parameters.Add(new SqlParameter("@id", SqlDbType.Int) { Value = Convert.ToInt32(id) });
+                cmd.CommandType = CommandType.StoredProcedure;
+                con.Open();
+                SqlDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    cs = new VendorDto()
+                    {
+                        Id = Convert.ToInt32(rdr["id"]),
+                        CompanyName = rdr["Company_Name"] == DBNull.Value ? null : Convert.ToString(rdr["Company_Name"]),
+                        WorkLocation = rdr["Work_Location"] == DBNull.Value ? new string[0] : ((string)rdr["Work_Location"]).Split(','),
+                        MobileNumber = rdr["Mobile_number"] == DBNull.Value ? null : Convert.ToString(rdr["Mobile_number"]),
+                        AlternateNumber = (rdr["Alternate_number"] == DBNull.Value ? null : Convert.ToString(rdr["Alternate_number"])),
+                        Email = rdr["Email"] == DBNull.Value ? null : Convert.ToString(rdr["Email"]),
+                        GstNumber = rdr["GST_Number"] == DBNull.Value ? null : Convert.ToString(rdr["GST_Number"]),
+                        BillingAddress = rdr["Billing_Address"] == DBNull.Value ? null : Convert.ToString(rdr["Billing_Address"]),
+                        ProductDetails = rdr["ProductDetails"] == DBNull.Value ? null : Convert.ToString(rdr["ProductDetails"]),
+                        StartDate = (DateTime)(rdr["Start_date"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(rdr["Start_date"])),
+                        RenewDate = (DateTime)(rdr["Renew_Date"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(rdr["Renew_Date"])),
+                        State = rdr["State"] == DBNull.Value ? null : Convert.ToString(rdr["State"]),
+                        StateId = rdr["stateId"] == DBNull.Value ? (int?)null : Convert.ToInt32(rdr["stateId"]),
+                        Location = rdr["Billing_Address"] == DBNull.Value ? null : Convert.ToString(rdr["Location"]),
+
+                    };
+                }
+                return cs;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<int> Vendorreg(VendorDto model)
+        {
+            var parameters = new List<SqlParameter>
+    {
+        new SqlParameter("@Company_Name", model.CompanyName),
+        new SqlParameter("@Work_Location", string.Join(",", model.WorkLocation)),
+        new SqlParameter("@Mobile_number", model.MobileNumber),
+        new SqlParameter("@Alternate_number", model.AlternateNumber),
+        new SqlParameter("@Email", model.Email),
+        new SqlParameter("@GST_Number", model.GstNumber),
+        new SqlParameter("@Billing_Address", model.BillingAddress),
+        new SqlParameter("@Product_Details", model.ProductDetails),
+        new SqlParameter("@Start_date", model.StartDate),
+        new SqlParameter("@Renew_Date", model.RenewDate),
+        new SqlParameter("@State", model.State),
+        new SqlParameter("@stateId", model.StateId),
+        new SqlParameter("@Location", model.Location),
+        
+        // Add output parameter
+        new SqlParameter
+        {
+            ParameterName = "@CustomerId",
+            SqlDbType = SqlDbType.Int,
+            Direction = ParameterDirection.Output
+        }
+    };
+            string dynamicUserName = GenerateDynamicUsername(model.CompanyName);
+            string dynamicPassword = GenerateDynamicPassword();
+
+            // Execute stored procedure
+            await _context.Database.ExecuteSqlRawAsync("exec VendorRegistration @Company_Name, @Work_Location, @Mobile_number, @Alternate_number, @Email, @GST_Number, @Billing_Address, @Product_Details, @Start_date, @Renew_Date, @State, @stateId,@Location, @CustomerId OUTPUT", parameters.ToArray());
+
+            // Get the new CustomerId
+            int newCustomerId = (int)parameters.First(p => p.ParameterName == "@CustomerId").Value;
+
+            if (newCustomerId > 0)
+            {
+                var adminRole = new AdminLogin
+                {
+                    UserName = dynamicUserName,
+                    Password = dynamicPassword,
+                    Role = "Vendor",
+                    Emailid = model.Email,
+                    Customerid = newCustomerId
+                };
+
+                _context.AdminLogins.Add(adminRole);
+                await _context.SaveChangesAsync(); // Ensure this is awaited
+            }
+
+            return newCustomerId;
+        }
+        public async Task<int> updateVendorreg(VendorDto model)
+        {
+            var parameters = new List<SqlParameter>
+    {
+        new SqlParameter("@id", model.Id),
+        new SqlParameter("@Company_Name", model.CompanyName),
+        new SqlParameter("@Work_Location", string.Join(",", model.WorkLocation)),
+        new SqlParameter("@Mobile_number", model.MobileNumber),
+        new SqlParameter("@Alternate_number", model.AlternateNumber),
+        new SqlParameter("@Email", model.Email),
+        new SqlParameter("@GST_Number", model.GstNumber),
+        new SqlParameter("@Billing_Address", model.BillingAddress),
+        new SqlParameter("@Product_Details", model.ProductDetails),
+        new SqlParameter("@Start_date", model.StartDate),
+        new SqlParameter("@Renew_Date", model.RenewDate),
+        new SqlParameter("@State", model.State),
+        new SqlParameter("@stateId", model.StateId),
+        new SqlParameter("@Location", model.Location)
+    };
+
+            var result = await _context.Database.ExecuteSqlRawAsync(@"exec sp_updateVendor_Reg @id, @Company_Name, @Work_Location, @Mobile_number, @Alternate_number, @Email, @GST_Number, @Billing_Address, @Product_Details, @Start_date, @Renew_Date, @State, @stateId, @Location", parameters.ToArray());
+            return result;
+        }
+
+        public async Task<List<VendorDto>> VendorList()
+        {
+            List<VendorDto> cs = new List<VendorDto>();
+            try
+            {
+                SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
+                SqlCommand cmd = new SqlCommand("Vendorlist", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                con.Open();
+                SqlDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    var cse = new VendorDto()
+                    {
+                        Id = Convert.ToInt32(rdr["id"]),
+                        CompanyName = rdr["Company_Name"] == DBNull.Value ? null : Convert.ToString(rdr["Company_Name"]),
+                        WorkLocation = rdr["Work_Location"] == DBNull.Value ? null : new string[] { Convert.ToString(rdr["Work_Location"]) },
+                        MobileNumber = rdr["Mobile_number"] == DBNull.Value ? "0" : Convert.ToString(rdr["Mobile_number"]),
+                        AlternateNumber = rdr["Alternate_number"] == DBNull.Value ? "0" : Convert.ToString(rdr["Alternate_number"]),
+                        Email = rdr["Email"] == DBNull.Value ? "0" : Convert.ToString(rdr["Email"]),
+                        GstNumber = rdr["GST_Number"] == DBNull.Value ? "0" : Convert.ToString(rdr["GST_Number"]),
+                        BillingAddress = rdr["Billing_Address"] == DBNull.Value ? "0" : Convert.ToString(rdr["Billing_Address"]),
+                        ProductDetails = rdr["Product_Details"] == DBNull.Value ? "0" : Convert.ToString(rdr["Product_Details"]),
+                        StartDate = rdr["Start_date"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(rdr["Start_date"]),
+                        RenewDate = rdr["Renew_Date"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(rdr["Renew_Date"]),
+                        State = rdr["State"] == DBNull.Value ? null : Convert.ToString(rdr["State"]),
+                        StateName = rdr["statename"] == DBNull.Value ? null : Convert.ToString(rdr["statename"]),
+                        Location = rdr["Billing_Address"] == DBNull.Value ? null : Convert.ToString(rdr["Location"]),
+
+                    };
+
+                    cs.Add(cse);
+                }
+                return cs;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                cs = null;
+            }
+            //List<Customer> cs = new List<Customer>();
+            //var result = await _context.CustomerRegistrations.FromSqlRaw<Customer>("Customerlist").ToListAsync();
+            //return result;
+        }
+        public async Task<VendorRegistration> GetVendorProfile(string? id)
+        {
+            try
+            {
+                var query = await (from admin in _context.AdminLogins
+                                   join customer in _context.VendorRegistrations
+                                   on admin.Customerid equals customer.Id
+                                   where admin.Id == Convert.ToInt32(id)
+                                   select new VendorRegistration
+                                   {
+                                       CompanyName = customer.CompanyName,
+                                       WorkLocation = customer.WorkLocation,
+                                       MobileNumber = customer.MobileNumber,
+                                       Email = customer.Email,
+                                       GstNumber = customer.GstNumber,
+                                       AlternateNumber = customer.AlternateNumber,
+                                       BillingAddress = customer.BillingAddress,
+                                       Location = customer.Location,
+                                       UserName = admin.UserName
+                                   }).FirstOrDefaultAsync();
+                return query;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<int> UpdateVendorProfile(VendorRegistration model, string AddedBy)
+        {
+            var customer = await _context.VendorRegistrations.FirstOrDefaultAsync(x => x.Id == model.Id);
+            var adminusername = await _context.AdminLogins.FirstOrDefaultAsync(x => x.UserName == AddedBy);
+            if (customer == null)
+            {
+                return 0;
+            }
+            customer.CompanyName = model.CompanyName;
+            customer.Email = model.Email;
+            customer.GstNumber = model.GstNumber;
+            customer.MobileNumber = model.MobileNumber;
+            customer.AlternateNumber = model.AlternateNumber;
+            customer.BillingAddress = model.BillingAddress;
+            customer.Location = model.Location;
+            _context.VendorRegistrations.Update(customer);
+            await _context.SaveChangesAsync();
+            if (adminusername != null)
+            {
+                adminusername.UserName = model.UserName;
+                _context.AdminLogins.Update(adminusername);
+                await _context.SaveChangesAsync();
+
+            }
+            return 1;
         }
     }
 

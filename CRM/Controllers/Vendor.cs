@@ -27,7 +27,7 @@ namespace CRM.Controllers
                 if (id != 0)
                 {
                     ViewBag.UserName = AddedBy;
-                    var data = _ICrmrpo.GetCustomerById(id);
+                    var data = _ICrmrpo.GetVendorById(id);
                     if (data != null)
                     {
                         ViewBag.ProductDetails = _context.ProductMasters.Where(x => x.IsDeleted == false)
@@ -64,21 +64,113 @@ namespace CRM.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> VendorRegistration(Customer model)
+        public async Task<IActionResult> VendorRegistration(VendorDto model)
         {
             try
             {
-                var response = await _ICrmrpo.Customer(model);
-                if (model.Id != null)
+                if (model.Id > 0)
                 {
-                    var data = await _ICrmrpo.updateCustomerReg(model);
-                    return RedirectToAction("CustomerList", "Home");
-                    TempData["msg"] = "Update Successfully.";
+                    var data = await _ICrmrpo.updateVendorreg(model);
+                    if (data > 0)
+                    {
+                        TempData["msg"] = "Update Successfully.";
+                        return RedirectToAction("VendorList", "Vendor");
+                    }
+                    else
+                    {
+                        TempData["msg"] = "Update Failed.";
+                        return View(model);
+                    }
                 }
-                if (response != null)
+                else
                 {
-                    return RedirectToAction("CustomerList", "Home");
-                    TempData["msg"] = "Registration Successfully.";
+                    var response = await _ICrmrpo.Vendorreg(model);
+                    if (response > 0)
+                    {
+                        TempData["msg"] = "Registration Successfully.";
+                        return RedirectToAction("VendorList", "Vendor");
+                    }
+                    else
+                    {
+                        TempData["msg"] = "Registration Failed.";
+                        ModelState.Clear();
+                        return View(model);
+                    }
+                }
+            }
+            catch (Exception Ex)
+            {
+                throw new Exception("Error:" + Ex.Message);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> VendorList()
+        {
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                var response = await _ICrmrpo.VendorList();
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName = AddedBy;
+                return View(response);
+
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
+
+        }
+        public async Task<IActionResult> DeleteVendor(int id)
+        {
+            try
+            {
+                var data = _context.VendorRegistrations.Find(id);
+                if (data != null)
+                {
+                    _context.VendorRegistrations.Remove(data);
+                    _context.SaveChanges();
+                }
+                return RedirectToAction("VendorList");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception();
+            }
+        }
+
+        [Route("Vendor/VendorProfile")]
+        [HttpGet]
+        public async Task<IActionResult> VendorProfile()
+        {
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                string id = Convert.ToString(HttpContext.Session.GetString("UserId")); ;
+                ViewBag.UserName = AddedBy;
+                ViewBag.id = id;
+                var data = await _ICrmrpo.GetVendorProfile(id);
+                ViewBag.Message = TempData["ErrorMessage"];
+                return View(data);
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> VendorProfile(VendorRegistration model)
+        {
+            try
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                int id = Convert.ToInt32(HttpContext.Session.GetString("UserId")); ;
+                ViewBag.UserName = AddedBy;
+                if (id != null)
+                {
+                    var data = await _ICrmrpo.UpdateVendorProfile(model, AddedBy);
+                    TempData["ErrorMessage"] = "Update Successfully.";
+                    return RedirectToAction("VendorProfile");
                 }
                 else
                 {

@@ -2,7 +2,7 @@
 
 namespace CRM.Models.DTO
 {
-    public class Customer
+    public class VendorDto
     {
         public int Id { get; set; }
         public string? CompanyName { get; set; }
@@ -20,10 +20,12 @@ namespace CRM.Models.DTO
         public string? Cgst { get; set; }
         public string? Igst { get; set; }
         public string? Gst { get; set; }
-        public string? HsnSacCode { get; set; } 
+        public string? HsnSacCode { get; set; }
         public double Price { get; set; }
         public string? State { get; set; }
         public int? StateId { get; set; }
         public string StateName { get; set; } = null!;
+        public string? Location { get; set; }
+
     }
 }
