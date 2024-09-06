@@ -6,19 +6,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace CRM.Controllers
 {
-    public class VendorController : Controller
+    public class Vendor : Controller
     {
         private readonly admin_NDCrMContext _context;
         private readonly ICrmrpo _ICrmrpo;
 
-        public VendorController(ICrmrpo _ICrmrpo, admin_NDCrMContext _context)
+        public Vendor(ICrmrpo _ICrmrpo, admin_NDCrMContext _context)
         {
             this._context = _context;
             this._ICrmrpo = _ICrmrpo;
         }
-        [Route("Home/Customer")]
+        [Route("Vendor/VendorRegistration")]
         [HttpGet]
-        public IActionResult VendorCustomer(int id = 0)
+        public IActionResult VendorRegistration(int id = 0)
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
@@ -64,7 +64,7 @@ namespace CRM.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> VendorCustomer(Customer model)
+        public async Task<IActionResult> VendorRegistration(Customer model)
         {
             try
             {

@@ -1,4 +1,6 @@
-﻿namespace CRM.Models.APIDTO
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace CRM.Models.APIDTO
 {
     public class EmpPersonalDetail
     {
@@ -17,8 +19,11 @@
         public string? AadharNo { get; set; }
         public string? AadharOne { get; set; }
         public string? Panimg { get; set; }
+        public string? AadharTwo { get; set; }
+
+        [NotMapped]
+        public IFormFile Empprofile { get; set; }
         public List<IFormFile> Aadharbase64 { get; set; }
         public IFormFile Panbase64 { get; set; }
-        public string? AadharTwo { get; set; }
     }
 }

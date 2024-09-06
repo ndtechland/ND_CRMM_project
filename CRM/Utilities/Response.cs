@@ -23,8 +23,8 @@ namespace CRM.Utilities
         public int StatusCode { get; set; }
         public string Status { get; set; }
         public string Message { get; set; }
-        public string Error { get; set; }
-        public List<string> Errors { get; set; }
+        //public string Error { get; set; }
+        //public List<string> Errors { get; set; }
         public T Data { get; set; }
 
 
