@@ -42,8 +42,10 @@ namespace CRM.Repository
                         WorkEmail = x.WorkEmail,
                         MobileNumber = _context.EmployeePersonalDetails.Where(g => g.EmpId == x.Id).Select(g => g.MobileNumber).First(),
                         DateOfBirth = _context.EmployeePersonalDetails.Where(g => g.EmpId == x.Id).Select(g => g.DateOfBirth.Value.ToString("dd-MM-yyyy")).First(),
-                        StateId = x.StateId,
-                        City = _context.EmployeePersonalDetails.Where(g => g.EmpId == x.Id).Select(g => g.City).First(),
+                        Stateid = x.StateId,
+                        Cityid = _context.EmployeePersonalDetails.Where(g => g.EmpId == x.Id).Select(g => Convert.ToInt16(g.City)).First(),
+                        StateName = _context.States.Where(g => g.Id == x.StateId).Select(g => g.SName).First(),
+                        CityName = _context.Cities.Where(g => g.Id == Convert.ToInt16(x.WorkLocationId)).Select(g => g.City1).First(),
                         Address1 = _context.EmployeePersonalDetails.Where(g => g.EmpId == x.Id).Select(g => g.AddressLine1).First(),
                         Address2 = _context.EmployeePersonalDetails.Where(g => g.EmpId == x.Id).Select(g => g.AddressLine2).First(),
                         Pincode = _context.EmployeePersonalDetails.Where(g => g.EmpId == x.Id).Select(g => g.Pincode).First(),
@@ -71,114 +73,26 @@ namespace CRM.Repository
                 throw new Exception("Error : " + ex.Message);
             }
         }
-        public async Task<EmployeePersonalDetail> PersonalDetail(EmpPersonalDetail model, string userid)
+        public async Task<Approvedbankdetail> Bankdetail(bankdetail model, string userid)
         {
             try
             {
+                string ChequeImagePath = "";
                 FileOperation fileOperation = new FileOperation(_webHostEnvironment);
                 string[] allowedExtensions = { ".jpg", ".jpeg", ".png" };
-                var emppersonal = await _context.EmployeePersonalDetails.Where(x => x.EmpRegId == userid && x.IsDeleted == false).FirstOrDefaultAsync();
-                if (emppersonal != null)
+                if (model.Chequebase64 != null)
                 {
-                    emppersonal.PersonalEmailAddress = model.PersonalEmailAddress;
-                    emppersonal.MobileNumber = model.MobileNumber;
-                    emppersonal.DateOfBirth = model.DateOfBirth;
-                    emppersonal.Age = model.Age;
-                    emppersonal.FatherName = model.FatherName;
-                    emppersonal.Pan = model.Pan;
-                    emppersonal.AddressLine1 = model.AddressLine1;
-                    emppersonal.AddressLine2 = model.AddressLine2;
-                    emppersonal.City = model.City;
-                    emppersonal.StateId = model.StateId;
-                    emppersonal.Pincode = model.Pincode;
-                    emppersonal.Aadharcard = model.AadharNo;
-                    string panImagePath = fileOperation.SaveBase64Image("img1", model.Panbase64, allowedExtensions);
-                    emppersonal.Panimg = panImagePath;
-                    if (model.Aadharbase64 != null)
+                    if (model.Chequebase64.Length > 10 * 1024 * 1024)
                     {
-                        for (int i = 0; i < model.Aadharbase64.Count; i++)
-                        {
-                            string aadharImagePath = fileOperation.SaveBase64Image("img1", model.Aadharbase64[i], allowedExtensions);
-
-                            if (i == 0)
-                            {
-                                emppersonal.AadharOne = aadharImagePath;
-                            }
-                            else if (i == 1)
-                            {
-                                emppersonal.AadharTwo = aadharImagePath;
-                            }
-                        }
+                        throw new Exception("Pan file size exceeds the 10 MB limit.");
                     }
-                    await _context.SaveChangesAsync();
-                    return emppersonal;
-                }
-                else
-                {
-                    var emp = await _context.EmployeeRegistrations.Where(x => x.EmployeeId == userid && x.IsDeleted == false).FirstOrDefaultAsync();
-                    if (emp != null)
+                    ChequeImagePath = fileOperation.SaveBase64Image("ChequeImage", model.Chequebase64, allowedExtensions);
+                    if (ChequeImagePath == "not allowed")
                     {
-                        EmployeePersonalDetail empP = new EmployeePersonalDetail();
-                        {
-                            empP.PersonalEmailAddress = model.PersonalEmailAddress;
-                            empP.MobileNumber = model.MobileNumber;
-                            empP.DateOfBirth = model.DateOfBirth;
-                            empP.Age = model.Age;
-                            empP.FatherName = model.FatherName;
-                            empP.Pan = model.Pan;
-                            empP.AddressLine1 = model.AddressLine1;
-                            empP.AddressLine2 = model.AddressLine2;
-                            empP.City = model.City;
-                            empP.StateId = model.StateId;
-                            empP.Pincode = model.Pincode;
-                            empP.EmpRegId = userid;
-                            empP.Aadharcard = model.AadharNo;
-                            if (model.Aadharbase64 != null && model.Aadharbase64.Count > 0)
-                            {
-                                for (int i = 0; i < model.Aadharbase64.Count; i++)
-                                {
-                                    string aadharImagePath = fileOperation.SaveBase64Image("img1", model.Aadharbase64[i], allowedExtensions);
-
-                                    if (i == 0)
-                                    {
-                                        empP.AadharOne = aadharImagePath;
-                                    }
-                                    else if (i == 1)
-                                    {
-                                        empP.AadharTwo = aadharImagePath;
-                                    }
-                                }
-                            }
-                            if (model.Panbase64 != null)
-                            {
-                                string panImagePath = fileOperation.SaveBase64Image("img1", model.Panbase64, allowedExtensions);
-                                empP.Panimg = panImagePath;
-                            }
-                        }
-
-                        _context.EmployeePersonalDetails.Add(empP);
-                        await _context.SaveChangesAsync();
-
-                        return empP;
+                        throw new Exception("File upload not allowed.");
                     }
                 }
-
-                return null;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error in PersonalDetail: {ex.Message}");
-                return null;
-            }
-        }
-
-        public async Task<EmployeeBankDetail> Bankdetail(bankdetail model, string userid)
-        {
-            try
-            {
-                FileOperation fileOperation = new FileOperation(_webHostEnvironment);
-                string[] allowedExtensions = { ".jpg", ".jpeg", ".png" };
-                var empbank = await _context.EmployeeBankDetails.Where(x => x.EmpId == userid && x.IsDeleted == false).FirstOrDefaultAsync();
+                var empbank = await _context.Approvedbankdetails.Where(x => x.EmployeeId == userid).FirstOrDefaultAsync();
                 if (empbank != null)
                 {
                     empbank.AccountHolderName = model.AccountHolderName;
@@ -188,44 +102,39 @@ namespace CRM.Repository
                     empbank.Ifsc = model.Ifsc;
                     empbank.AccountTypeId = Convert.ToInt32(model.AccountTypeId);
                     empbank.EpfNumber = model.EpfNumber;
-                    //empbank.DeductionCycle = model.DeductionCycle;
-                    empbank.EmployeeContributionRate = model.EmployeeContributionRate;
                     empbank.Nominee = model.Nominee;
-                    string ChequeImagePath = fileOperation.SaveBase64Image("ChequeImage", model.Chequebase64, allowedExtensions);
-                    empbank.Chequeimage = ChequeImagePath;
-                    empbank.IsDeleted = false;
+                    if (!string.IsNullOrEmpty(ChequeImagePath))
+                    {
+                        empbank.Chequeimage = ChequeImagePath;
+                    }
+                    empbank.UpdateDate = DateTime.Now.Date;
+                    empbank.IsApproved = false;
                     await _context.SaveChangesAsync();
                     return empbank;
                 }
                 else
                 {
-                    var emp = await _context.EmployeeRegistrations.Where(x => x.EmployeeId == userid && x.IsDeleted == false).FirstOrDefaultAsync();
-                    if (emp != null)
+                    Approvedbankdetail empB = new Approvedbankdetail
                     {
-                        EmployeeBankDetail empB = new EmployeeBankDetail
-                        {
-                            AccountHolderName = model.AccountHolderName,
-                            BankName = model.BankName,
-                            AccountNumber = model.AccountNumber,
-                            ReEnterAccountNumber = model.ReEnterAccountNumber,
-                            Ifsc = model.Ifsc,
-                            EmpId = userid,
-                            AccountTypeId = Convert.ToInt32(model.AccountTypeId),
-                            EpfNumber = model.EpfNumber,
-                           // DeductionCycle = model.DeductionCycle,
-                            EmployeeContributionRate = model.EmployeeContributionRate,
-                            Nominee = model.Nominee,
-                            IsDeleted = false,
-                        };
-                        string ChequeImagePath = fileOperation.SaveBase64Image("ChequeImage", model.Chequebase64, allowedExtensions);
-                        empB.Chequeimage = ChequeImagePath;
-                        _context.EmployeeBankDetails.Add(empB);
-                        await _context.SaveChangesAsync();
+                        AccountHolderName = model.AccountHolderName,
+                        BankName = model.BankName,
+                        AccountNumber = model.AccountNumber,
+                        ReEnterAccountNumber = model.ReEnterAccountNumber,
+                        Ifsc = model.Ifsc,
+                        EmployeeId = userid,
+                        AccountTypeId = Convert.ToInt32(model.AccountTypeId),
+                        EpfNumber = model.EpfNumber,
+                        Nominee = model.Nominee,
+                        UpdateDate = DateTime.Now.Date,
+                        IsApproved = false,
+                    };
+                    ChequeImagePath = fileOperation.SaveBase64Image("ChequeImage", model.Chequebase64, allowedExtensions);
+                    empB.Chequeimage = ChequeImagePath;
+                    _context.Approvedbankdetails.Add(empB);
+                    await _context.SaveChangesAsync();
 
-                        return empB;
-                    }
+                    return empB;
                 }
-
                 return null;
             }
             catch (Exception ex)
@@ -273,58 +182,8 @@ namespace CRM.Repository
                         Ifsc = x.Ifsc,
                         AccountTypeId = x.AccountTypeId,
                         EpfNumber = x.EpfNumber,
-                        EmployeeContributionRate = x.EmployeeContributionRate,
                         Nominee = x.Nominee,
                         Chequeimage = "/ChequeImage/" + x.Chequeimage,
-                    }).FirstOrDefaultAsync();
-                    return result;
-                }
-                return null;
-            }
-            catch (Exception ex)
-            {
-
-                throw new Exception("Error :" + ex.Message);
-            }
-        }
-        public async Task<EmployeeRegistration> Updateprofilepicture(profilepicture model, string userid)
-        {
-            try
-            {
-                FileOperation fileOperation = new FileOperation(_webHostEnvironment);
-                string[] allowedExtensions = { ".jpg", ".jpeg", ".png" };
-                var emp = await _context.EmployeeRegistrations.Where(x => x.EmployeeId == userid && x.IsDeleted == false).FirstOrDefaultAsync();
-
-                if (emp != null)
-                {
-
-                    if (model.Empprofile != null)
-                    {
-                        string EmpprofileImagePath = fileOperation.SaveBase64Image("EmpProfile", model.Empprofile, allowedExtensions);
-                        emp.EmpProfile = EmpprofileImagePath;
-                    }
-
-
-                    await _context.SaveChangesAsync();
-                    return emp;
-                }
-                return null;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error in PersonalDetail: {ex.Message}");
-                return null;
-            }
-        }
-        public async Task<profilepicture> Getprofilepicture(string userid)
-        {
-            try
-            {
-                if (userid != null)
-                {
-                    var result = await _context.EmployeeRegistrations.Where(x => x.EmployeeId == userid && x.IsDeleted == false).Select(x => new profilepicture
-                    {
-                        EmpProfiles = "/EmpProfile/" + x.EmpProfile,
                     }).FirstOrDefaultAsync();
                     return result;
                 }
@@ -365,5 +224,141 @@ namespace CRM.Repository
                 throw new Exception("Error :" + ex.Message);
             }
         }
+        public async Task<ApprovedPresnolInfo> PersonalDetail(EmpPersonalDetail model, string userid)
+        {
+            try
+            {
+                string panImagePath = "";
+                string aadharImagePath = "";
+                FileOperation fileOperation = new FileOperation(_webHostEnvironment);
+                string[] allowedExtensions = { ".jpg", ".jpeg", ".png" };
+                if (model.PanbaseImage != null)
+                {
+                    if (model.PanbaseImage.Length > 10 * 1024 * 1024)
+                    {
+                        throw new Exception("Pan file size exceeds the 10 MB limit.");
+                    }
+                    panImagePath = fileOperation.SaveBase64Image("img1", model.PanbaseImage, allowedExtensions);
+                    if (panImagePath == "not allowed")
+                    {
+                        throw new Exception("File upload not allowed.");
+                    }
+                }
+                var emp = await _context.EmployeeRegistrations.Where(x => x.EmployeeId == userid && x.IsDeleted == false).FirstOrDefaultAsync();
+                var apppersonal = await _context.ApprovedPresnolInfos.Where(x => x.EmployeeId == userid).FirstOrDefaultAsync();
+
+                if (apppersonal != null)
+                {
+                    apppersonal.PersonalEmailAddress = model.PersonalEmailAddress;
+                    apppersonal.MobileNumber = model.MobileNumber;
+                    apppersonal.DateOfBirth = (DateTime)model.DateOfBirth;
+                    apppersonal.Pan = model.PanNo;
+                    apppersonal.AddressLine1 = model.Address1;
+                    apppersonal.AddressLine2 = model.Address2;
+                    apppersonal.City =Convert.ToString(model.Cityid);
+                    apppersonal.StateId =Convert.ToString(model.Stateid);
+                    apppersonal.Pincode = model.Pincode;
+                    apppersonal.AadharNo = model.AadharNo;
+                    apppersonal.UpdateDate = DateTime.Now.Date;
+                    apppersonal.IsApproved = false;
+                    emp.FirstName = model.FullName;
+                    if (!string.IsNullOrEmpty(panImagePath))
+                    {
+                        apppersonal.Panimg = fileOperation.SaveBase64Image("img1", model.PanbaseImage, allowedExtensions);
+                    }
+                    if (model.AadharImage != null && model.AadharImage.Count > 0)
+                    {
+                        for (int i = 0; i < model.AadharImage.Count; i++)
+                        {
+                            if (model.AadharImage[i] != null)
+                            {
+                                aadharImagePath = fileOperation.SaveBase64Image("img1", model.AadharImage[i], allowedExtensions);
+                                if (aadharImagePath == "not allowed")
+                                {
+                                    throw new Exception("File upload not allowed.");
+                                }
+                                if (i == 0)
+                                {
+                                    apppersonal.AadharOne = aadharImagePath; ;
+                                }
+                                else if (i == 1)
+                                {
+                                    apppersonal.AadharTwo = aadharImagePath;
+                                }
+                            }
+                        }
+                    }
+                    if (model.Empprofile != null)
+                    {
+                        string EmpprofileImagePath = fileOperation.SaveBase64Image("EmpProfile", model.Empprofile, allowedExtensions);
+                        emp.EmpProfile = EmpprofileImagePath;
+                    }
+
+                    await _context.SaveChangesAsync();
+                    return apppersonal;
+                }
+                else
+                {
+                    emp.FirstName = model.FullName;
+                    if (model.Empprofile != null)
+                    {
+                        string EmpprofileImagePath = fileOperation.SaveBase64Image("EmpProfile", model.Empprofile, allowedExtensions);
+                        emp.EmpProfile = EmpprofileImagePath;
+                    }
+                    ApprovedPresnolInfo empP = new ApprovedPresnolInfo();
+                    {
+                        empP.EmployeeId = userid;
+                        empP.PersonalEmailAddress = model.PersonalEmailAddress;
+                        empP.MobileNumber = model.MobileNumber;
+                        empP.DateOfBirth = (DateTime)model.DateOfBirth;
+                        empP.AddressLine1 = model.Address1;
+                        empP.AddressLine2 = model.Address2;
+                        empP.City = Convert.ToString(model.Cityid);
+                        empP.StateId = Convert.ToString(model.Stateid);
+                        empP.Pincode = model.Pincode;
+                        empP.Pan = model.PanNo;
+                        empP.AadharNo = model.AadharNo;
+                        empP.UpdateDate = DateTime.Now.Date;
+                        empP.IsApproved = false;
+                        if (model.AadharImage != null && model.AadharImage.Count > 0)
+                        {
+                            for (int i = 0; i < model.AadharImage.Count; i++)
+                            {
+                                aadharImagePath = fileOperation.SaveBase64Image("img1", model.AadharImage[i], allowedExtensions);
+
+                                if (i == 0)
+                                {
+                                    empP.AadharOne = aadharImagePath;
+                                }
+                                else if (i == 1)
+                                {
+                                    empP.AadharTwo =  aadharImagePath;
+                                }
+                            }
+                        }
+                        if (model.PanbaseImage != null)
+                        {
+                            panImagePath = fileOperation.SaveBase64Image("img1", model.PanbaseImage, allowedExtensions);
+                            empP.Panimg = panImagePath;
+                        }
+                    }
+
+                    _context.ApprovedPresnolInfos.Add(empP);
+                    await _context.SaveChangesAsync();
+
+                    return empP;
+                }
+
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in PersonalDetail: {ex.Message}");
+                return null;
+            }
+        }
+
+
     }
 }

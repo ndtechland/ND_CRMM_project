@@ -14,6 +14,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
+using CRM.Controllers;
+using Employee = CRM.Repository.Employee;
 
 namespace CRM
 {
@@ -40,7 +43,10 @@ namespace CRM
             // Database context
             services.AddDbContext<admin_NDCrMContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("db1")));
-
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            });
             services.AddControllersWithViews();
 
             // JWT Token configuration

@@ -17,6 +17,7 @@ namespace CRM.Controllers.Api
     [ApiController]
     public class EmployeeApiController : ControllerBase
     {
+
         private readonly IEmployee _apiemp;
         private readonly admin_NDCrMContext _context;
         public EmployeeApiController(IEmployee apiemp, admin_NDCrMContext context)
@@ -65,25 +66,25 @@ namespace CRM.Controllers.Api
                 throw new Exception(ex.Message);
             }
         }
-        [Route("PersonalDetail")]
+        [Route("EmployeePersonalDetail")]
         [HttpPost]
-        public async Task<IActionResult> PersonalDetail([FromForm] EmpPersonalDetail model)
+        public async Task<IActionResult> EmployeePersonalDetail([FromForm] EmpPersonalDetail model)
         {
-            var response = new Response<EmployeePersonalDetail>();
+            var response = new Response<ApprovedPresnolInfo>();
             try
             {
                 if (User.Identity.IsAuthenticated)
                 {
                     var userid = User.Claims.FirstOrDefault().Value;
 
-                    EmployeePersonalDetail apiModel = await _apiemp.PersonalDetail(model, userid);
+                    ApprovedPresnolInfo apiModel = await _apiemp.PersonalDetail(model, userid);
 
                     if (apiModel != null)
                     {
                         response.Succeeded = true;
                         response.StatusCode = StatusCodes.Status200OK;
                         response.Status = "Success";
-                        response.Message = "Data saved successfully.";
+                        response.Message = "Personal Detail Update successfully.";
                         response.Data = apiModel;
                         return Ok(response);
                     }
@@ -108,24 +109,64 @@ namespace CRM.Controllers.Api
                 return Ok(response);
             }
         }
-
-        [Route("BankDetail")]
-        [HttpPost]
-        public async Task<IActionResult> BankDetail([FromForm] bankdetail model)
+        [Route("GetBankdetail")]
+        [HttpGet]
+        public async Task<IActionResult> GetBankdetail()
         {
-            var response = new Response<EmployeeBankDetail>();
+            var response = new Response<bankdetail>();
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    string userid = User.Claims.FirstOrDefault().Value;
+                    bankdetail isEmployeeExists = await _apiemp.GetBankdetail(userid);
+                    if (isEmployeeExists != null)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = "Employee Bank Details Here.";
+                        response.Data = isEmployeeExists;
+                        return Ok(response);
+                    }
+                    else
+                    {
+                        response.StatusCode = StatusCodes.Status401Unauthorized;
+                        response.Message = "Data not found.";
+                        return Ok(response);
+                    }
+                }
+                else
+                {
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Message = "Token is expired.";
+                    return BadRequest(response);
+                }
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("Error :" + ex.Message);
+            }
+        }
+        [Route("EmployeeBankDetail")]
+        [HttpPost]
+        public async Task<IActionResult> EmployeeBankDetail([FromForm] bankdetail model)
+        {
+            var response = new Response<Approvedbankdetail>();
             try
             {
                 if (User.Identity.IsAuthenticated)
                 {
                     var userid = User.Claims.FirstOrDefault().Value;
-                    EmployeeBankDetail apiModel = await _apiemp.Bankdetail(model, userid);
+                    Approvedbankdetail apiModel = await _apiemp.Bankdetail(model, userid);
                     if (apiModel != null)
                     {
                         response.Succeeded = true;
                         response.StatusCode = StatusCodes.Status200OK;
                         response.Status = "Success";
-                        response.Message = "Data saved successfully.";
+                        response.Message = "Bank Detail Update successfully.";
                         response.Data = apiModel;
                         return Ok(response);
                     }
@@ -188,162 +229,7 @@ namespace CRM.Controllers.Api
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
-        [Route("GetBankdetail")]
-        [HttpGet]
-        public async Task<IActionResult> GetBankdetail()
-        {
-            var response = new Response<bankdetail>();
-            try
-            {
-                if (User.Identity.IsAuthenticated)
-                {
-                    string userid = User.Claims.FirstOrDefault().Value;
-                    bankdetail isEmployeeExists = await _apiemp.GetBankdetail(userid);
-                    if (isEmployeeExists != null)
-                    {
-                        response.Succeeded = true;
-                        response.StatusCode = StatusCodes.Status200OK;
-                        response.Status = "Success";
-                        response.Message = "Employee Bank Details Here.";
-                        response.Data = isEmployeeExists;
-                        return Ok(response);
-                    }
-                    else
-                    {
-                        response.StatusCode = StatusCodes.Status401Unauthorized;
-                        response.Message = "Data not found.";
-                        return Ok(response);
-                    }
-                }
-                else
-                {
-                    response.StatusCode = StatusCodes.Status401Unauthorized;
-                    response.Message = "Token is expired.";
-                    return BadRequest(response);
-                }
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-
-                throw new Exception("Error :" + ex.Message);
-            }
-        }
-        [Route("Updateprofilepicture")]
-        [HttpPost]
-        public async Task<IActionResult> Updateprofilepicture([FromForm] profilepicture model)
-        {
-            var response = new Response<profilepicture>();
-            try
-            {
-                if (User.Identity.IsAuthenticated)
-                {
-                    if (model.Empprofile != null && model.Empprofile.Length > 0)
-                    {
-                        string[] allowedExtensions = { ".jpg", ".jpeg", ".png" };
-                        string EmpprofileImagePath = model.Empprofile.FileName;
-                        string exten = EmpprofileImagePath.Split('.')[1];
-                        string extention = "." + exten;
-                        if (!allowedExtensions.Contains(extention))
-                        {
-                            response.Succeeded = false;
-                            response.StatusCode = StatusCodes.Status404NotFound;
-                            response.Status = "not allowed";
-                            response.Message = "Only .jpg, .jpeg, .png files are allowed";
-                            return BadRequest(response);
-                        }
-                        if (model.Empprofile.Length > 2 * 1024 * 1024)
-                        {
-                            response.Succeeded = false;
-                            response.StatusCode = StatusCodes.Status404NotFound;
-                            response.Status = "not allowed";
-                            response.Message = "Image should not be more than 2 MB";
-                            return BadRequest(response);
-                        }
-                    }
-                    else
-                    {
-                        response.Succeeded = false;
-                        response.StatusCode = StatusCodes.Status400BadRequest;
-                        response.Status = "not allowed";
-                        response.Message = "Empprofile is required";
-                        return BadRequest(response);
-                    }
-                    var userid = User.Claims.FirstOrDefault().Value;
-                    var apiModel = await _apiemp.Updateprofilepicture(model, userid);
-                    profilepicture pp = new()
-                    {
-                        EmpProfiles = "/EmpProfile/" + apiModel.EmpProfile,
-                    };
-                    if (apiModel != null)
-                    {
-                        response.Succeeded = true;
-                        response.StatusCode = StatusCodes.Status200OK;
-                        response.Status = "Success";
-                        response.Message = "Profile Update successfully.";
-                        response.Data = pp;
-                        return Ok(response);
-                    }
-                    else
-                    {
-                        response.StatusCode = StatusCodes.Status401Unauthorized;
-                        response.Message = "Data not found.";
-                        return Ok(response);
-                    }
-                }
-                else
-                {
-                    response.StatusCode = StatusCodes.Status401Unauthorized;
-                    response.Message = "Token is expired.";
-                    return Ok(response);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-        }
-        [Route("Getprofilepicture")]
-        [HttpGet]
-        public async Task<IActionResult> Getprofilepicture()
-        {
-            var response = new Response<profilepicture>();
-            try
-            {
-                if (User.Identity.IsAuthenticated)
-                {
-                    string userid = User.Claims.FirstOrDefault().Value;
-                    profilepicture isEmployeeExists = await _apiemp.Getprofilepicture(userid);
-                    if (isEmployeeExists != null)
-                    {
-                        response.Succeeded = true;
-                        response.StatusCode = StatusCodes.Status200OK;
-                        response.Status = "Success";
-                        response.Message = "Employee Profile Here.";
-                        response.Data = isEmployeeExists;
-                        return Ok(response);
-                    }
-                    else
-                    {
-                        response.StatusCode = StatusCodes.Status401Unauthorized;
-                        response.Message = "Data not found.";
-                        return Ok(response);
-                    }
-                }
-                else
-                {
-                    response.StatusCode = StatusCodes.Status401Unauthorized;
-                    response.Message = "Token is expired.";
-                    return BadRequest(response);
-                }
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-
-                throw new Exception("Error :" + ex.Message);
-            }
-        }
+       
         [Route("Getsalarydetails")]
         [HttpGet]
         public async Task<IActionResult> Getsalarydetails()

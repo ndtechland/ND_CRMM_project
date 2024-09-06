@@ -60,6 +60,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<VendorRegistration> VendorRegistrations { get; set; } = null!;
         public virtual DbSet<WorkLocation> WorkLocations { get; set; } = null!;
         public virtual DbSet<WorkLocation1> WorkLocations1 { get; set; } = null!;
+        public virtual DbSet<EmployeeImportExcel> EmpMultiforms { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -1142,6 +1143,8 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.GstNumber)
                     .HasMaxLength(255)
                     .HasColumnName("GST_Number");
+
+                entity.Property(e => e.Location).HasMaxLength(200);
 
                 entity.Property(e => e.MobileNumber)
                     .HasMaxLength(255)
