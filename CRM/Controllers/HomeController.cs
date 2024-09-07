@@ -45,99 +45,6 @@ namespace CRM.Controllers
 
         }
 
-
-        [Route("Home/Customer")]
-        [HttpGet]
-        public IActionResult Customer(int id = 0)
-        {
-            if (HttpContext.Session.GetString("UserName") != null)
-            {
-                string AddedBy = HttpContext.Session.GetString("UserName");
-
-                if (id != 0)
-                {
-                    ViewBag.UserName = AddedBy;
-                    var data = _ICrmrpo.GetCustomerById(id);
-                    if (data != null)
-                    {
-                        ViewBag.ProductDetails = _context.ProductMasters.Where(x => x.IsDeleted == false)
-                            .Select(p => new SelectListItem
-                            {
-                                Value = p.Id.ToString(),
-                                Text = p.ProductName,
-                            })
-                            .ToList();
-                        ViewBag.SelectedStateId = data.StateId;
-                        ViewBag.SelectedCityId = data.WorkLocation;
-                        ViewBag.state = data.State;
-                        ViewBag.startDate = ((DateTime)data.StartDate).ToString("yyyy-MM-dd");
-                        ViewBag.renewDate = ((DateTime)data.RenewDate).ToString("yyyy-MM-dd");
-                        return View(data);
-                    }
-                }
-                ViewBag.UserName = AddedBy;
-                ViewBag.SelectedStateId = null;
-                ViewBag.SelectedCityId = null;
-                ViewBag.ProductDetails = _context.ProductMasters.Where(x => x.IsDeleted == false)
-                    .Select(p => new SelectListItem
-                    {
-                        Value = p.Id.ToString(),
-                        Text = p.ProductName,
-                    })
-                    .ToList();
-                return View();
-            }
-            else
-            {
-                return RedirectToAction("Login", "Admin");
-            }
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Customer(Customer model)
-        {
-            try
-            {
-                var response = await _ICrmrpo.Customer(model);
-                if (model.Id != null)
-                {
-                    var data = await _ICrmrpo.updateCustomerReg(model);
-                    return RedirectToAction("CustomerList", "Home");
-                    TempData["msg"] = "Update Successfully.";
-                }
-                if (response != null)
-                {
-                    return RedirectToAction("CustomerList", "Home");
-                    TempData["msg"] = "Registration Successfully.";
-                }
-                else
-                {
-                    ModelState.Clear();
-                    return View();
-                }
-            }
-            catch (Exception Ex)
-            {
-                throw new Exception("Error:" + Ex.Message);
-            }
-        }
-        [HttpGet]
-        public async Task<IActionResult> CustomerList()
-        {
-            if (HttpContext.Session.GetString("UserName") != null)
-            {
-                var response = await _ICrmrpo.CustomerList();
-                string AddedBy = HttpContext.Session.GetString("UserName");
-                ViewBag.UserName = AddedBy;
-                return View(response);
-
-            }
-            else
-            {
-                return RedirectToAction("Login", "Admin");
-            }
-
-        }
         [HttpGet]
         public IActionResult Banner()
         {
@@ -180,21 +87,6 @@ namespace CRM.Controllers
             ViewBag.Message = "File uploaded successfully.";
             return View("Banner");
         }
-
-        public IActionResult Logout()
-        {
-
-            string addedBy = HttpContext.Session.GetString("UserName");
-            HttpContext.Session.Remove("UserName");
-
-            if (!string.IsNullOrEmpty(addedBy))
-            {
-                ViewBag.UserName = addedBy;
-            }
-            return RedirectToAction("Login", "Admin");
-
-        }
-
 
         //======Invoice Section========//
         [HttpGet]
@@ -702,23 +594,7 @@ namespace CRM.Controllers
                 throw new Exception("Error:" + Ex.Message);
             }
         }
-        public async Task<IActionResult> DeleteCustomer(int id)
-        {
-            try
-            {
-                var data = _context.CustomerRegistrations.Find(id);
-                if (data != null)
-                {
-                    _context.CustomerRegistrations.Remove(data);
-                    _context.SaveChanges();
-                }
-                return RedirectToAction("CustomerList");
-            }
-            catch (Exception ex)
-            {
-                throw new Exception();
-            }
-        }
+    
         public IActionResult employeerTDS()
         {
             if (HttpContext.Session.GetString("UserName") != null)
@@ -889,123 +765,8 @@ namespace CRM.Controllers
             }
         }
 
-        [Route("Home/CustomerProfile")]
-        [HttpGet]
-        public async Task<IActionResult> CustomerProfile()
-        {
-            if (HttpContext.Session.GetString("UserName") != null)
-            {
-                string AddedBy = HttpContext.Session.GetString("UserName");
-                string id = Convert.ToString(HttpContext.Session.GetString("UserId")); ;
-                ViewBag.UserName = AddedBy;
-                ViewBag.id = id;
-                var data = await _ICrmrpo.GetCustomerProfile(id);
-                ViewBag.Message = TempData["ErrorMessage"];
-                return View(data);
-            }
-            else
-            {
-                return RedirectToAction("Login", "Admin");
-            }
-        }
-        [HttpPost]
-        public async Task<IActionResult> CustomerProfile(CustomerRegistration model)
-        {
-            try
-            {
-                string AddedBy = HttpContext.Session.GetString("UserName");
-                int id = Convert.ToInt32(HttpContext.Session.GetString("UserId")); ;
-                ViewBag.UserName = AddedBy;
-                if (id != null)
-                {
-                    var data = await _ICrmrpo.UpdateCustomerProfile(model, AddedBy);
-                    TempData["ErrorMessage"] = "Update Successfully.";
-                    return RedirectToAction("CustomerProfile");
-                }
-                else
-                {
-                    ModelState.Clear();
-                    return View();
-                }
-            }
-            catch (Exception Ex)
-            {
-                throw new Exception("Error:" + Ex.Message);
-            }
-        }
-        [Route("Home/Changepassword")]
-        [HttpGet]
-        public async Task<IActionResult> Changepassword()
-        {
-            if (HttpContext.Session.GetString("UserName") != null)
-            {
-                string AddedBy = HttpContext.Session.GetString("UserName");
-                string id = Convert.ToString(HttpContext.Session.GetString("UserId"));
-                int adid = Convert.ToInt32(HttpContext.Session.GetString("AdminId")); 
-                ViewBag.UserName = AddedBy;
-                ViewBag.id = id;
-                ViewBag.adid = adid;
-                return View();
-            }
-            else
-            {
-                return RedirectToAction("Login", "Admin");
-            }
-        }
-        [HttpPost]
-        public async Task<IActionResult> Changepassword(ChangePassworddto model)
-        {
-            try
-            {
-                string AddedBy = HttpContext.Session.GetString("UserName");
-                string userId = HttpContext.Session.GetString("UserId");
-                if (string.IsNullOrEmpty(AddedBy) || (string.IsNullOrEmpty(userId)))
-                {
-                    TempData["Message"] = "Session expired. Please login again.";
-                    return RedirectToAction("Login", "Admin");
-                }
-
-                ViewBag.UserName = AddedBy;
-
-                var user = await _context.AdminLogins.Where(x => x.UserName == AddedBy).FirstOrDefaultAsync();
-                if (user == null)
-                {
-                    TempData["Message"] = "User not found.";
-                    return RedirectToAction("Changepassword");
-                }
-
-                if (user.Password != model.CurrentPassword)
-                {
-                    TempData["Message"] = "Current password does not match.";
-                    return RedirectToAction("Changepassword");
-                }
-
-                if (model.NewPassword == model.CurrentPassword)
-                {
-                    TempData["Message"] = "New password cannot be the same as the current password.";
-                    return RedirectToAction("Changepassword");
-                }
-
-                if (!string.IsNullOrEmpty(userId))
-                {
-                    int id = Convert.ToInt32(userId);
-                    var data = await _ICrmrpo.UpdateChangepassword(model, AddedBy, id);
-                    TempData["Message"] = "Password updated successfully.";
-                }
-                else
-                {
-                    TempData["Message"] = "Invalid session data.";
-                    return RedirectToAction("Changepassword");
-                }
-
-                return RedirectToAction("Logout", "Home");
-            }
-            catch (Exception Ex)
-            {
-                TempData["Error"] = "An error occurred while changing the password. Please try again later.";
-                return RedirectToAction("Changepassword");
-            }
-        }
+    
+      
     }
 
 }

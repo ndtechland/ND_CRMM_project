@@ -1,6 +1,7 @@
 ﻿using CRM.Models.APIDTO;
 using CRM.Models.Crm;
 using CRM.Models.CRM;
+using CRM.Models.DTO;
 using CRM.Repository;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -51,8 +52,8 @@ namespace CRM.Controllers
             try
             {
                 var result = (from al in _context.AdminLogins
-                              join cr in _context.CustomerRegistrations
-                              on al.Customerid equals cr.Id into crGroup
+                              join cr in _context.VendorRegistrations
+                              on al.Vendorid equals cr.Id into crGroup
                               from cr in crGroup.DefaultIfEmpty()
                               where al.UserName == model.UserName && al.Password == model.Password
                               select new
@@ -60,7 +61,7 @@ namespace CRM.Controllers
                                   al.Id,
                                   al.UserName,
                                   al.Role,
-                                  CustomerId = (int?)cr.Id
+                                 Vendorid = (int?)cr.Id
                               }).FirstOrDefault();
 
                 if(result != null)
@@ -93,135 +94,6 @@ namespace CRM.Controllers
             }
         }
 
-        [HttpGet]
-        public IActionResult EmployeeLogin()
-        {
-
-            return View();
-        }
-        public async Task<IActionResult> Product()
-        {
-            if (HttpContext.Session.GetString("UserName") != null)
-            {
-                string AddedBy = HttpContext.Session.GetString("UserName");
-                ViewBag.UserName = AddedBy;
-                ViewBag.Gst = _context.GstMasters
-              .Select(w => new SelectListItem
-              {
-                  Value = w.Id.ToString(),
-                  Text = w.GstPercentagen
-              });
-                ViewBag.Category = _context.Categories
-              .Select(w => new SelectListItem
-              {
-                  Value = w.Id.ToString(),
-                  Text = w.CategoryName
-              });
-            }
-            else
-            {
-                return RedirectToAction("Login", "Admin");
-            }
-            return View();
-        }
-        [HttpPost]
-        public async Task<IActionResult> Product(ProductMaster model)
-        {
-            try
-            {
-                var response = await _ICrmrpo.Product(model);
-                if (response != null)
-                {
-                    return RedirectToAction("ProductList", "Admin");
-                }
-                else
-                {
-                    ModelState.Clear();
-                    return View();
-                }
-            }
-            catch (Exception Ex)
-            {
-                throw new Exception("Error:" + Ex.Message);
-            }
-        }
-        public async Task<IActionResult> ProductList()
-        {
-            if (HttpContext.Session.GetString("UserName") != null)
-            {
-                var response = await _ICrmrpo.ProductList();
-                string AddedBy = HttpContext.Session.GetString("UserName");
-                ViewBag.UserName = AddedBy;
-                return View(response);
-            }
-            else
-            {
-                return RedirectToAction("Login", "Admin");
-            }
-        }
-        public async Task<IActionResult> DeleteProduct(int id)
-        {
-            try
-            {
-                var data = _context.ProductMasters.Find(id);
-                if (data != null)
-                {
-                    data.IsDeleted = true;
-                    _context.SaveChanges();
-
-                }
-                return RedirectToAction("ProductList", "Admin");
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-
-        }
-
-        public JsonResult EditProduct(int id)
-        {
-            var product = new ProductMaster();
-            var data = _ICrmrpo.GetproductById(id);
-            var gstdata = _context.GstMasters.ToList();
-            var categorydata = _context.Categories.ToList();
-            product.Id = data.Id;
-            product.ProductName = data.ProductName;
-            product.Category = data.Category;
-            product.HsnSacCode = data.HsnSacCode;
-            product.Price = data.Price;
-            product.Gst = data.Gst;
-            var result = new
-            {
-                Product = product,
-                GstData = gstdata,
-                Category = categorydata,
-
-            };
-            return new JsonResult(result);
-        }
-        [HttpPost]
-        public async Task<IActionResult> EditProduct(ProductMaster model)
-        {
-            try
-            {
-                var product = await _ICrmrpo.updateproduct(model);
-                if (product != null)
-                {
-                    return RedirectToAction("ProductList", "Admin");
-                    TempData["msg"] = "product update Successfully.";
-                }
-                else
-                {
-                    ModelState.Clear();
-                    return View();
-                }
-            }
-            catch (Exception Ex)
-            {
-                throw new Exception("Error:" + Ex.Message);
-            }
-        }
 
         [AllowAnonymous, HttpGet]
         public IActionResult forgotPassoword()
@@ -258,6 +130,84 @@ namespace CRM.Controllers
             {
                 throw ex;
             }
+
+        }
+        [Route("Admin/Changepassword")]
+        [HttpGet]
+        public async Task<IActionResult> Changepassword()
+        {
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                string id = Convert.ToString(HttpContext.Session.GetString("UserId"));
+                int adid = Convert.ToInt32(HttpContext.Session.GetString("AdminId"));
+                ViewBag.UserName = AddedBy;
+                ViewBag.id = id;
+                ViewBag.adid = adid;
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> Changepassword(ChangePassworddto model)
+        {
+            try
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                string userId = HttpContext.Session.GetString("UserId");
+
+                if (string.IsNullOrEmpty(AddedBy) || string.IsNullOrEmpty(userId))
+                {
+                    TempData["Message"] = "Session expired. Please login again.";
+                    return RedirectToAction("Login", "Admin");
+                }
+
+                var user = await _context.AdminLogins.Where(x => x.UserName == AddedBy).FirstOrDefaultAsync();
+                if (user == null)
+                {
+                    TempData["Message"] = "User not found.";
+                    return RedirectToAction("Changepassword");
+                }
+
+                if (user.Password != model.CurrentPassword)
+                {
+                    TempData["Message"] = "Current password does not match.";
+                    return RedirectToAction("Changepassword");
+                }
+
+                if (model.NewPassword == model.CurrentPassword)
+                {
+                    TempData["Message"] = "New password cannot be the same as the current password.";
+                    return RedirectToAction("Changepassword");
+                }
+
+                int id = Convert.ToInt32(userId);
+                var data = await _ICrmrpo.UpdateChangepassword(model, AddedBy, id);
+                TempData["Message"] = "Password updated successfully.";
+
+                return RedirectToAction("Changepassword");
+            }
+            catch (Exception Ex)
+            {
+                TempData["Message"] = "An error occurred while changing the password. Please try again later.";
+                return RedirectToAction("Changepassword");
+            }
+        }
+
+        public IActionResult Logout()
+        {
+
+            string addedBy = HttpContext.Session.GetString("UserName");
+            HttpContext.Session.Remove("UserName");
+
+            if (!string.IsNullOrEmpty(addedBy))
+            {
+                ViewBag.UserName = addedBy;
+            }
+            return RedirectToAction("Login", "Admin");
 
         }
     }

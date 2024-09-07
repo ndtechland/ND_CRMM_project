@@ -722,7 +722,7 @@ namespace CRM.Controllers
                               from worklocation in worklocationGroup.DefaultIfEmpty()
                               join designation in _context.DesignationMasters on emp.DesignationId equals designation.Id.ToString() into designationGroup
                               from designation in designationGroup.DefaultIfEmpty()
-                              join tds in _context.EmployeerTds on emp.CustomerId equals tds.CustomerId into tdsGroup
+                              join tds in _context.EmployeerTds on emp.Vendorid equals tds.CustomerId into tdsGroup
                               from tds in tdsGroup.DefaultIfEmpty()
                               where emp.Id == id
                               select new SalarySlipDetails

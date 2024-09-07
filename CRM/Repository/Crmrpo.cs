@@ -143,52 +143,51 @@ namespace CRM.Repository
             return newCustomerId;
         }
 
-        public async Task<List<Customer>> CustomerList()
+        public async Task<List<Customer>> CustomerList(string userIdString)
         {
             List<Customer> cs = new List<Customer>();
             try
             {
-                SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
-                SqlCommand cmd = new SqlCommand("Customerlist", con);
-                cmd.CommandType = CommandType.StoredProcedure;
-                con.Open();
-                SqlDataReader rdr = cmd.ExecuteReader();
-                while (rdr.Read())
+                using (SqlConnection con = new SqlConnection(_context.Database.GetConnectionString()))
                 {
-                    var cse = new Customer()
+                    SqlCommand cmd = new SqlCommand("Customerlist", con);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@id", Convert.ToInt32(userIdString));
+
+                    con.Open();
+                    SqlDataReader rdr = await cmd.ExecuteReaderAsync(); 
+
+                    while (await rdr.ReadAsync()) 
                     {
-                        Id = Convert.ToInt32(rdr["id"]),
-                        CompanyName = rdr["Company_Name"] == DBNull.Value ? null : Convert.ToString(rdr["Company_Name"]),
-                        WorkLocation = rdr["Work_Location"] == DBNull.Value ? null : new string[] { Convert.ToString(rdr["Work_Location"]) },
-                        MobileNumber = rdr["Mobile_number"] == DBNull.Value ? "0" : Convert.ToString(rdr["Mobile_number"]),
-                        AlternateNumber = rdr["Alternate_number"] == DBNull.Value ? "0" : Convert.ToString(rdr["Alternate_number"]),
-                        Email = rdr["Email"] == DBNull.Value ? "0" : Convert.ToString(rdr["Email"]),
-                        GstNumber = rdr["GST_Number"] == DBNull.Value ? "0" : Convert.ToString(rdr["GST_Number"]),
-                        BillingAddress = rdr["Billing_Address"] == DBNull.Value ? "0" : Convert.ToString(rdr["Billing_Address"]),
-                        ProductDetails = rdr["Product_Details"] == DBNull.Value ? "0" : Convert.ToString(rdr["Product_Details"]),
-                        StartDate = rdr["Start_date"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(rdr["Start_date"]),
-                        RenewDate = rdr["Renew_Date"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(rdr["Renew_Date"]),
-                        State = rdr["State"] == DBNull.Value ? null : Convert.ToString(rdr["State"]),
-                        StateName = rdr["statename"] == DBNull.Value ? null : Convert.ToString(rdr["statename"]),
+                        var cse = new Customer()
+                        {
+                            Id = Convert.ToInt32(rdr["ID"]),
+                            CompanyName = rdr["Company_Name"] == DBNull.Value ? null : Convert.ToString(rdr["Company_Name"]),
+                            WorkLocation = rdr["Work_Location"] == DBNull.Value ? null : rdr["Work_Location"].ToString().Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries),
+                            MobileNumber = rdr["Mobile_number"] == DBNull.Value ? "0" : Convert.ToString(rdr["Mobile_number"]),
+                            AlternateNumber = rdr["Alternate_number"] == DBNull.Value ? "0" : Convert.ToString(rdr["Alternate_number"]),
+                            Email = rdr["Email"] == DBNull.Value ? "0" : Convert.ToString(rdr["Email"]),
+                            GstNumber = rdr["GST_Number"] == DBNull.Value ? "0" : Convert.ToString(rdr["GST_Number"]),
+                            BillingAddress = rdr["Billing_Address"] == DBNull.Value ? "0" : Convert.ToString(rdr["Billing_Address"]),
+                            ProductDetails = rdr["Product_Details"] == DBNull.Value ? "0" : Convert.ToString(rdr["Product_Details"]),
+                            StartDate = rdr["Start_date"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(rdr["Start_date"]),
+                            RenewDate = rdr["Renew_Date"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(rdr["Renew_Date"]),
+                            State = rdr["State"] == DBNull.Value ? null : Convert.ToString(rdr["State"]),
+                            StateName = rdr["statename"] == DBNull.Value ? null : Convert.ToString(rdr["statename"]),
+                        };
 
-                    };
-
-                    cs.Add(cse);
+                        cs.Add(cse);
+                    }
                 }
-                return cs;
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("Error fetching customer list", ex);
             }
-            finally
-            {
-                cs = null;
-            }
-            //List<Customer> cs = new List<Customer>();
-            //var result = await _context.CustomerRegistrations.FromSqlRaw<Customer>("Customerlist").ToListAsync();
-            //return result;
+
+            return cs;
         }
+
         public async Task<int> EmpRegistration(EmpMultiform model, string Mode, string Emp_Reg_ID, string userId)
         {
             try
@@ -1278,7 +1277,7 @@ namespace CRM.Repository
             {
                 var query = await (from admin in _context.AdminLogins
                                    join customer in _context.CustomerRegistrations
-                                   on admin.Customerid equals customer.Id
+                                   on admin.Vendorid equals customer.Id
                                    where admin.Id == Convert.ToInt32(id)
                                    select new CustomerRegistration
                                    {
@@ -1431,7 +1430,7 @@ namespace CRM.Repository
                     Password = dynamicPassword,
                     Role = "Vendor",
                     Emailid = model.Email,
-                    Customerid = newCustomerId
+                    Vendorid = newCustomerId
                 };
 
                 _context.AdminLogins.Add(adminRole);
@@ -1517,10 +1516,11 @@ namespace CRM.Repository
             {
                 var query = await (from admin in _context.AdminLogins
                                    join customer in _context.VendorRegistrations
-                                   on admin.Customerid equals customer.Id
+                                   on admin.Vendorid equals customer.Id
                                    where admin.Id == Convert.ToInt32(id)
                                    select new VendorRegistration
                                    {
+                                       Id = (int)admin.Vendorid,
                                        CompanyName = customer.CompanyName,
                                        WorkLocation = customer.WorkLocation,
                                        MobileNumber = customer.MobileNumber,
@@ -1538,10 +1538,11 @@ namespace CRM.Repository
                 throw ex;
             }
         }
-        public async Task<int> UpdateVendorProfile(VendorRegistration model, string AddedBy)
+        public async Task<int> UpdateVendorProfile(VendorRegistration model, int id)
         {
-            var customer = await _context.VendorRegistrations.FirstOrDefaultAsync(x => x.Id == model.Id);
-            var adminusername = await _context.AdminLogins.FirstOrDefaultAsync(x => x.UserName == AddedBy);
+            var adminusername = await _context.AdminLogins.FirstOrDefaultAsync(x => x.Id == id);
+            var customer = await _context.VendorRegistrations.FirstOrDefaultAsync(x => x.Id == adminusername.Vendorid);
+
             if (customer == null)
             {
                 return 0;

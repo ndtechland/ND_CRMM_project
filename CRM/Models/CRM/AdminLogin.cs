@@ -10,6 +10,6 @@ namespace CRM.Models.Crm
         public string Password { get; set; } = null!;
         public string Role { get; set; } = null!;
         public string? Emailid { get; set; }
-        public int? Customerid { get; set; }
+        public int? Vendorid { get; set; }
     }
 }
