@@ -5,7 +5,8 @@
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
 @* <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css'>
- *@<link rel='stylesheet' href='https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css'>
+ *@
+<link rel='stylesheet' href='https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css'>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js'></script>
 <script src='https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js'></script>
 <script src='https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js'></script>
@@ -67,7 +68,7 @@
                                                     Sl. No.
 
                                                 </th>
-                                                
+
                                                 <th nowrap>
                                                     First Name
                                                 </th>
@@ -238,164 +239,164 @@
                                         <tbody>
                                             @{
                                                 var count = 0;
-                                                    @foreach (var item in Model)
+                                                @foreach (var item in Model)
                                                 {
                                                     count++;
-                                                        <tr class="table-row">
-                                                            <td>@count</td>
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.FirstName)
-                                                            </td>
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.MiddleName)
-                                                            </td>
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.LastName)
-                                                            </td>
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.Emp_Reg_ID)
-                                                            </td>
-                                                            <td>
-                                                               @item.DateOfJoining.ToString("dd/MM/yyyy")
-                                                            </td>
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.WorkEmail)
-                                                            </td>
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.Gender)
-                                                            </td>
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.WorkLocation)
-                                                            </td>
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.DesignationName)
-                                                            </td>
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.DepartmentName)
-                                                            </td>
+                                                    <tr class="table-row">
+                                                        <td>@count</td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.FirstName)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.MiddleName)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.LastName)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.Emp_Reg_ID)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @item.DateOfJoining.ToString("dd/MM/yyyy")
+                                                        </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.WorkEmail)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.Gender)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.WorkLocation)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.DesignationName)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.DepartmentName)
+                                                        </td>
 
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.AnnualCTC)
-                                                            </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.AnnualCTC)
+                                                        </td>
 
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.Basic)
-                                                            </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.Basic)
+                                                        </td>
 
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.HouseRentAllowance)
-                                                            </td>
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.TravellingAllowance)
-                                                            </td>
-                                                        <td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.HouseRentAllowance)
+                                                        </td >
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.TravellingAllowance)
+                                                        </td>
+                                                        <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.SpecialAllowance)
                                                         </td>
-                                                        <td>
+                                                        <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.Servicecharge)
                                                         </td>
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.ESIC)
-                                                            </td>
-                                                        <td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.ESIC)
+                                                        </td>
+                                                        <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.gross)
                                                         </td>
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.EPF)
-                                                            </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.EPF)
+                                                        </td>
 
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.MonthlyGrossPay)
-                                                            </td>
-
-
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.PersonalEmailAddress)
-                                                            </td>
-
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.Mobile)
-                                                            </td>
-                                                            <td>
-                                                             @item.DateOfBirth.ToString("dd/MM/yyyy")
-                                                            </td>
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.Age)
-                                                            </td>
-
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.FatherName)
-                                                            </td>
-
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.PAN)
-                                                            </td>
-
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.AddressLine1)
-                                                            </td>
-
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.AddressLine2)
-                                                            </td>
-
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.City)
-                                                            </td>
-
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.State)
-                                                            </td>
-
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.Pincode)
-                                                            </td>
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.AccountHolderName)
-                                                            </td>
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.BankName)
-                                                            </td>
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.AccountNumber)
-                                                            </td>
-
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.ReEnterAccountNumber)
-                                                            </td>
-
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.IFSC)
-                                                            </td>
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.AccountType)
-                                                            </td>
-
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.EPF_Number)
-                                                            </td>
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.Deduction_Cycle)
-                                                            </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.MonthlyGrossPay)
+                                                        </td>
 
 
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.Employee_Contribution_Rate)
-                                                            </td>
-                                                            
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.nominee)
-                                                            </td>
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.CustomerName)
-                                                            </td>
-                                                            <td>
-                                                                <div>
-                                                                    <a href="EmployeeRegistration?id=@item.Emp_Reg_ID" class="fa fa-edit m-2 font-success"></a>
-                                                                    <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteEmployee","Employee", new { Emp_Reg_ID = item.Emp_Reg_ID })')" class="fa fa-trash font-danger"></a>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.PersonalEmailAddress)
+                                                        </td>
+
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.Mobile)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @item.DateOfBirth.ToString("dd/MM/yyyy")
+                                                        </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.Age)
+                                                        </td>
+
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.FatherName)
+                                                        </td>
+
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.PAN)
+                                                        </td>
+
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.AddressLine1)
+                                                        </td>
+
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.AddressLine2)
+                                                        </td>
+
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.City)
+                                                        </td>
+
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.State)
+                                                        </td>
+
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.Pincode)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.AccountHolderName)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.BankName)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.AccountNumber)
+                                                        </td>
+
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.ReEnterAccountNumber)
+                                                        </td>
+
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.IFSC)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.AccountType)
+                                                        </td>
+
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.EPF_Number)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.Deduction_Cycle)
+                                                        </td>
+
+
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.Employee_Contribution_Rate)
+                                                        </td>
+
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.nominee)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.CustomerName)
+                                                        </td>
+                                                        <td nowrap>
+                                                            <div>
+                                                                <a href="EmployeeRegistration?id=@item.Emp_Reg_ID" class="fa fa-edit m-2 font-success"></a>
+                                                                <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteEmployee","Employee", new { Emp_Reg_ID = item.Emp_Reg_ID })')" class="fa fa-trash font-danger"></a>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
                                                 }
                                             }
                                         </tbody>

@@ -16,7 +16,7 @@ namespace CRM.Repository
         public Task<int> Product(ProductMaster model);
         public Task<List<ProductMaster>> ProductList();
         public Task<int> Customer(Customer model);
-        public Task<List<Customer>> CustomerList();
+        public Task<List<Customer>> CustomerList(string userIdString);
         public Task<int> EmpRegistration(EmpMultiform model, string Mode, string Emp_Reg_ID,string userId);
         public Task<List<StateMaster>> GetAllState();
         public Task<int> Banner(BannerMaster model);
@@ -77,7 +77,7 @@ namespace CRM.Repository
         public Task<int> updateVendorreg(VendorDto model);
         public Task<List<VendorDto>> VendorList();
         public Task<VendorRegistration> GetVendorProfile(string? id);
-        public Task<int> UpdateVendorProfile(VendorRegistration model, string AddedBy);
+        public Task<int> UpdateVendorProfile(VendorRegistration model, int id);
 
     }
 }
