@@ -155,9 +155,7 @@ namespace CRM.Models.Crm
                     .HasMaxLength(100)
                     .HasColumnName("EmployeeId ");
 
-                entity.Property(e => e.MobileNumber)
-                    .HasMaxLength(50)
-                    .HasColumnName("Mobile_Number");
+                entity.Property(e => e.MobileNumber).HasColumnName("Mobile_Number");
 
                 entity.Property(e => e.Pan)
                     .HasMaxLength(50)

@@ -35,7 +35,7 @@ namespace CRM.Repository
         public Task<int> Iupdate(Quation model);
         public DataTable ForgetPassword(AdminLogin model);
 
-        public Task<List<salarydetail>> salarydetail(string customerId, string WorkLocation);
+        public Task<List<salarydetail>> salarydetail(int Userid);
 
         public Task<List<GenerateSalary>> GenerateSalary(string customerId, int Month, int year, string WorkLocation);
         public Task<int> Employer(EmployeerModelEPF model);
@@ -78,6 +78,10 @@ namespace CRM.Repository
         public Task<List<VendorDto>> VendorList();
         public Task<VendorRegistration> GetVendorProfile(string? id);
         public Task<int> UpdateVendorProfile(VendorRegistration model, int id);
+        public Task<List<EmployeeApprovedPresnolInfo>> ApprovedPresnolInfoList(int Userid);
+        public Task<bool> AddApprovedPresnolInfo(EmployeePresnolInfoList model);
+        public Task<List<ApprovedbankdetailList>> ApprovedbankdetailList(int Userid);
+        public Task<bool> AddApprovedbankdetail(ApprovedbankdetailList model);
 
     }
 }

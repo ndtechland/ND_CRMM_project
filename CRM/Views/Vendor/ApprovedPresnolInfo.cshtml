@@ -1,0 +1,526 @@
+﻿@model CRM.Models.DTO.EmployeePresnolInfoList
+@{
+    ViewData["Title"] = "ApprovedPresnolInfo";
+    Layout = "~/Views/Shared/_adminLayout.cshtml";
+}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+@if (ViewBag.BtnText == "UPDATE")
+{ 
+    <div class="page-wrapper">
+        <div class="page-body-wrapper">
+            <div class="page-sidebar">
+            </div>
+
+            <div class="page-body">
+
+                <!-- Container-fluid starts-->
+                <div class="container-fluid">
+                    <div class="page-header">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="page-header-left">
+                                    <h4>@ViewBag.heading</h4>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <ol class="breadcrumb pull-right">
+                                    <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
+                                    <li class="breadcrumb-item">Approval List</li>
+                                    <li class="breadcrumb-item active">Employee Presnol Information</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Container-fluid Ends-->
+                <!-- Container-fluid starts-->
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <form method="post" enctype="multipart/form-data" action="/Employee/ApprovedPresnolInfo" autocomplete="off" onsubmit="return validateForm()">
+                                        <div class="row">
+                                            <div class="col-lg-4">
+                                                <label>Personal Email Address</label>
+                                                <input type="hidden" value='@ViewBag.id' name="Id" />
+                                                <input class="form-control " value='@ViewBag.Personal_Email_Address' placeholder="Enter Personal Email Address" name="PersonalEmailAddress" id="PersonalEmailAddress" type="email" required="">
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <label for="MobileNumber">Mobile Number</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text" id="basic-addon1">+91</span>
+                                                    <input class="form-control" value="@ViewBag.Mobile_Number" name="MobileNumber" placeholder="Enter Mobile Number" id="MobileNumber" type="text" maxlength="10" minlength="10" required onkeydown="validateNumericInput(event)">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <label>Date Of Birth</label>
+                                                <input class="form-control " value='@ViewBag.Date_Of_Birth' name="DateOfBirth" id="dobInput" type="date" required="">
+                                            </div>
+
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-4">
+                                                <label>Address 1</label>
+                                                <input class="form-control " value='@ViewBag.Address_Line_1' name="AddressLine1" placeholder="Enter Address Line1" id="AddressLine1" type="text" required="">
+                                            </div>
+
+                                            <div class="col-lg-4">
+                                                <label>Address 2</label>
+                                                <input class="form-control " value='@ViewBag.Address_Line_2' name="AddressLine2" placeholder="Enter Address Line2" id="AddressLine2" type="text" required="">
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <label>State</label>
+                                                <select class="form-control" id="ddlState" name="Stateid">
+                                                    <option value="0">-- Select State --</option>
+                                                    @foreach (var item in ViewBag.states)
+                                                    {
+                                                        <option value="@item.Value">@item.Text</option>
+                                                    }
+                                                </select>
+                                            </div>
+
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-4">
+                                                <label>City</label>
+                                                <select class="form-control" name="cityid" id="City">
+                                                    <option value="0">-- Select City Name --</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <label>Pincode</label>
+                                                <input class="form-control " value='@ViewBag.Pincode' name="Pincode" maxlength="6" id="Pincode" placeholder="Enter Pincode" type="text" required onkeydown="validateNumericInput(event)">
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <label>Aadhar No</label>
+                                                <input class="form-control " value='@ViewBag.AadharNo' name="AadharNo" maxlength="12" id="AadharNo" placeholder="Enter AadharNo" type="text" required onkeydown="validateNumericInput(event)">
+                                            </div>
+
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-4">
+                                                <label>Pan</label>
+                                                <input class="form-control " value='@ViewBag.PAN' name="PAN" id="PAN" placeholder="Enter PAN" type="text" required="" onkeydown="validateNumericInput(event)">
+                                            </div>
+
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-4">
+                                                <label>Aadhar Image</label>
+                                                @if (Model != null && Model.AadharOne != null)
+                                                {
+                                                    var combinedAadhar = $"{Model.AadharOne} {Model.AadharTwo}";
+                                                    <input type="file" id="hdnFilePath" name="combinedAadhar" />
+                                                }
+
+                                                else
+                                                {
+                                                    <input type="file" accept=".jpg, .jpeg, .png, .gif, .mp4, .avi, .mkv" id="Aadharbase64" name="Aadharbase64" multiple>
+
+                                                }
+                                                @if (Model != null)
+                                                {
+                                                    <img src='@ViewBag.Aadharone' id="ancImageDetails" style="height:100px;width:100px" />
+                                                    <img src='@ViewBag.Aadhartwo' id="ancImageDetails" style="height:100px;width:100px" />
+                                                }
+                                                else
+                                                {
+                                                    <img src='@ViewBag.Aadharone' id="ancImageDetails" style="height:100px;width:100px" hidden />
+                                                    <img src='@ViewBag.Aadhartwo' id="ancImageDetails" style="height:100px;width:100px" hidden />
+                                                }
+
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <label>Pan Image</label>
+
+                                                @if (Model != null && Model.Panimg != null)
+                                                {
+                                                    <input type="file" id="hdnFilePath" name="Panimg" />
+
+                                                }
+                                                else
+                                                {
+                                                    <input type="file" accept=".jpg, .jpeg, .png, .gif, .mp4, .avi, .mkv" id="Panbase64" name="Panbase64">
+
+                                                }
+                                                @if (Model != null)
+                                                {
+                                                    <img src='@ViewBag.Panimg' id="ancImageDetails" style="height:100px;width:100px" />
+                                                }
+                                                else
+                                                {
+                                                    <img src='@ViewBag.Panimg' id="ancImageDetails" style="height:100px;width:100px" hidden />
+                                                }
+                                            </div>
+
+                                        </div>
+                                        <div class="form-group" style="display:flex; justify-content:center;">
+                                            <input type="submit" value="@ViewBag.btnText" class="btn btn-primary" />
+                                        </div>
+
+                                    </form>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
+<div class="page-wrapper">
+    <div class="page-body-wrapper">
+        <div class="page-sidebar">
+        </div>
+        <!-- Page Sidebar Ends-->
+        <!-- Right sidebar Start-->
+        <!-- Right sidebar Ends-->
+
+        <div class="page-body">
+
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="page-header-left">
+                                <h4>Personal Information List</h4>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <ol class="breadcrumb pull-right">
+                                <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
+                                <li class="breadcrumb-item">Approval List</li>
+                                <li class="breadcrumb-item active">Employee Presnol Information</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Container-fluid Ends-->
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="row">
+
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class=" table-responsive">
+                                    <table id="datatable" class="table table-responsive">
+                                        <thead>
+                                            <tr style="background-color: #00baf2; color: #fff" ;>
+                                                <th nowrap>Sr.No</th>
+                                                <th nowrap>
+                                                    Personal Email Address
+                                                </th>
+                                                <th nowrap>
+                                                    EmployeeId
+                                                </th>
+                                                <th nowrap>
+                                                    Mobile Number
+                                                </th>
+                                                <th nowrap>
+                                                    Date Of Birth
+                                                </th>
+                                                <th nowrap>
+                                                    PAN
+                                                </th>
+                                                <th nowrap>
+                                                    Address Line1
+                                                </th>
+
+                                                <th nowrap>
+                                                    Address Line2
+                                                </th>
+                                                <th nowrap>
+                                                    State
+                                                </th>
+                                                <th nowrap>
+                                                    City
+                                                </th>
+                                                <th nowrap>
+                                                    Pincode
+                                                </th>
+                                                <th nowrap>
+                                                    Aadhar No
+                                                </th>
+                                                <th nowrap>
+                                                    Aadhar1 Image
+                                                </th>
+                                                <th nowrap>
+                                                    Aadhar2 Image
+                                                </th>
+                                                <th nowrap>
+                                                    Pan Image
+                                                </th>
+                                                <th nowrap>
+                                                    Update Date
+                                                </th>
+                                                <th nowrap>Status</th>
+                                                <th nowrap>Edit</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{
+                                                var count = 0;
+                                                @if (Model != null && Model.ApprovedPresnolInfos.Count() > 0)
+                                                {
+                                                    @foreach (var item in Model.ApprovedPresnolInfos)
+                                                    {
+                                                        count++;
+                                                        var isPdf = !string.IsNullOrEmpty(item.AadharOne) && item.AadharOne.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase);
+                                                        var isPdf0 = !string.IsNullOrEmpty(item.AadharTwo) && item.AadharTwo.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase);
+                                                        var isPdf1 = !string.IsNullOrEmpty(item.Panimg) && item.Panimg.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase);
+                                                        <tr>
+
+                                                            <th scope="row">@count</th>
+                                                            <td style="white-space: nowrap">@item.PersonalEmailAddress</td>
+                                                            <td style="white-space: nowrap">@item.EmployeeId</td>
+                                                            <td style="white-space: nowrap">@item.MobileNumber</td>
+                                                            <td style="white-space: nowrap">@item.DateOfBirth?.ToString("dd/MM/yyyy")</td>
+                                                            <td style="white-space: nowrap">@item.PAN</td>
+                                                            <td style="white-space: nowrap">@item.AddressLine1</td>
+                                                            <td style="white-space: nowrap">@item.AddressLine2</td>
+                                                            <td style="white-space: nowrap">@item.Stateid</td>
+                                                            <td style="white-space: nowrap">@item.cityid</td>
+                                                            <td style="white-space: nowrap">@item.Pincode</td>
+                                                            <td style="white-space: nowrap">@item.AadharNo</td>
+                                                            <td>
+                                                                @if (isPdf)
+                                                                {
+                                                                    <a target="_blank" href="~/img1/@item.AadharOne" title="Click here to Open Document (Document will be open in new Tab)">
+                                                                        <img src="~/assets/images/layout-2/logo/pdf-icon-4.png" style="height:100px;width:100px" />
+                                                                    </a>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <img src='~/img1/@item.AadharOne' style="height:100px;width:100px" />
+                                                                }
+
+
+                                                            </td>
+                                                            <td>
+                                                                @if (isPdf0)
+                                                                {
+                                                                    <a target="_blank" href="~/img1/@item.AadharTwo" title="Click here to Open Document (Document will be open in new Tab)">
+                                                                        <img src="~/assets/images/layout-2/logo/pdf-icon-4.png" style="height:100px;width:100px" />
+                                                                    </a>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <img src='~/img1/@item.AadharTwo' style="height:100px;width:100px" />
+                                                                }
+                                                            </td>
+                                                            <td>
+                                                                @if (isPdf1)
+                                                                {
+                                                                    <a target="_blank" href="~/img1/@item.Panimg" title="Click here to Open Document (Document will be open in new Tab)">
+                                                                        <img src="~/assets/images/layout-2/logo/pdf-icon-4.png" style="height:100px;width:100px" />
+                                                                    </a>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <img src='~/img1/@item.Panimg' style="height:100px;width:100px" />
+                                                                }
+                                                            </td>
+                                                            <td style="white-space: nowrap">@item.UpdateDate?.ToString("dd/MM/yyyy")</td>
+                                                            <td style="white-space: nowrap">
+                                                                <button type="button" class="btn @(item.IsApproved != null && item.IsApproved == true ? "btn-success" : "btn-danger")"
+                                                                        onclick="updateApprovalStatus(@item.id, @(item.IsApproved != null && item.IsApproved == true ? "false" : "true"))">
+                                                                    @(item.IsApproved != null && item.IsApproved == true ? "Disapproved" : "Approved")
+                                                                </button>
+                                                            </td>
+
+
+                                                            <td>
+                                                                <div>
+                                                                    <a href='@Url.Action("ApprovedPresnolInfo","Vendor",new { id=item.id})' class="fa fa-edit m-2 font-success"></a>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            }
+                                        </tbody>
+
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="pagination-container">
+                <ul id="pagination" class="pagination"></ul>
+            </div>
+        </div>
+
+
+    </div>
+
+</div>
+<div id="pagination-container">
+    <ul id="pagination" class="pagination"></ul>
+</div>
+<script>
+    var currentPage = 1;
+    var rowsPerPage = 10;
+    $(document).ready(function () {
+        function paginateTable() {
+            var table = $('#datatable');
+            var rows = table.find('tbody tr');
+
+
+            var totalPages = Math.ceil(rows.length / rowsPerPage);
+
+
+            var pagination = $('#pagination');
+            pagination.empty();
+
+            for (var i = 1; i <= totalPages; i++) {
+                var link = $('<li class="page-item"><a class="page-link" href="#">' + i + '</a></li>');
+
+
+                if (i === currentPage) {
+                    link.addClass('active');
+                }
+
+                pagination.append(link);
+            }
+
+
+            var startIndex = (currentPage - 1) * rowsPerPage;
+            var endIndex = startIndex + rowsPerPage;
+
+            rows.hide().slice(startIndex, endIndex).show();
+        }
+
+
+        paginateTable();
+
+        $(document).on('click', '#pagination li a', function (event) {
+            event.preventDefault();
+
+            var clickedPage = parseInt($(this).text());
+
+
+            currentPage = clickedPage;
+            paginateTable();
+
+
+            $('html, body').animate({ scrollTop: $('#table-container').offset().top }, 'slow');
+        });
+    });
+
+</script>
+<script>
+    $(document).ready(function () {
+        var stateId = '@ViewBag.Stateid';
+        var cityId = '@ViewBag.City';
+
+        if (stateId !== '0') {
+            $.ajax({
+                url: '@Url.Action("BindCityDetails", "Home")',
+                type: 'GET',
+                data: { stateid: stateId },
+                success: function (data) {
+                    $('#City').empty();
+                    $('#City').append($('<option></option>').val(0).text('-- Select City --'));
+                    $.each(data, function (index, item) {
+                        $('#City').append($('<option></option>').val(item.value).text(item.text));
+                    });
+                    if (cityId !== '0') {
+                        $('#City').val(cityId);
+                    }
+                }
+            });
+        }
+
+        $('#ddlState').val(stateId);
+
+        $('#ddlState').change(function () {
+            stateId = $(this).val();
+            if (stateId !== '0') {
+                $.ajax({
+                    url: '@Url.Action("BindCityDetails", "Home")',
+                    type: 'GET',
+                    data: { stateid: stateId },
+                    success: function (data) {
+                        $('#City').empty();
+                        $('#City').append($('<option></option>').val(0).text('-- Select City --'));
+                        $.each(data, function (index, item) {
+                            $('#City').append($('<option></option>').val(item.value).text(item.text));
+                        });
+                    }
+                });
+            } else {
+                $('#City').empty();
+                $('#City').append($('<option></option>').val(0).text('-- Select City --'));
+            }
+        });
+    });
+</script>
+<script>
+    function validateNumericInput(event) {
+        if ([46, 8, 9, 27, 13].indexOf(event.keyCode) !== -1 ||
+            (event.keyCode == 65 && event.ctrlKey === true) ||
+            (event.keyCode >= 35 && event.keyCode <= 39)) {
+            return;
+        }
+        if ((event.shiftKey || (event.keyCode < 48 || event.keyCode > 57)) && (event.keyCode < 96 || event.keyCode > 105)) {
+            event.preventDefault();
+        }
+
+    }
+
+    $("#dobInput").on("input", function () {
+        debugger
+        var birthdate = $(this).val();
+        if (birthdate !== "") {
+            var today = new Date();
+            var birthDate = new Date(birthdate);
+
+            var age = today.getFullYear() - birthDate.getFullYear();
+            var monthDiff = today.getMonth() - birthDate.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            $("#ageInput").val(age);
+        } else {
+            $("#ageInput").val('');
+        }
+    });
+</script>
+
+<script>
+    function updateApprovalStatus(itemId, isApproved) {
+        var confirmationMessage = isApproved ? "Are you sure you want to approve this item?" : "Are you sure you want to disapprove this item?";
+        if (confirm(confirmationMessage)) {
+            $.ajax({
+                url: '@Url.Action("UpdateApprovalStatus", "Vendor")',
+                type: 'POST',
+                data: {
+                    itemId: itemId,
+                    isApproved: isApproved
+                },
+                success: function (response) {
+                    if (response.success) {
+                        alert("Status updated successfully.");
+                        window.location.href = '/Vendor/ApprovedPresnolInfo';
+                    } else {
+                        alert("Error: " + response.message);
+                    }
+                },
+                error: function () {
+                    alert("An error occurred while updating the status.");
+                }
+            });
+        } else {
+            alert("Action cancelled by user.");
+        }
+    }
+</script>
