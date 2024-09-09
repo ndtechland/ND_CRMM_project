@@ -475,28 +475,35 @@ namespace CRM.Repository
         }
 
 
-        public async Task<List<salarydetail>> salarydetail(string customerId, string WorkLocation)
+        public async Task<List<salarydetail>> salarydetail(int Userid)
         {
             List<salarydetail> emp = new List<salarydetail>();
             try
             {
+                // Initialize the SQL connection
                 SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
                 SqlCommand cmd = new SqlCommand("sp_SalaryDetail", con);
-                cmd.Parameters.Add(new SqlParameter("@CustomerID", SqlDbType.Int) { Value = Convert.ToInt32(customerId) });
-                cmd.Parameters.Add(new SqlParameter("@WorkLocation", SqlDbType.Int) { Value = Convert.ToInt32(WorkLocation) });
+
+                // Add parameters for stored procedure
+                //cmd.Parameters.Add(new SqlParameter("@CustomerID", SqlDbType.Int) { Value = Convert.ToInt32(customerId) });
+                //cmd.Parameters.Add(new SqlParameter("@WorkLocation", SqlDbType.Int) { Value = Convert.ToInt32(WorkLocation) });
+                cmd.Parameters.Add(new SqlParameter("@id", SqlDbType.Int) { Value = Userid }); 
+
                 cmd.CommandType = CommandType.StoredProcedure;
                 con.Open();
-                SqlDataReader rdr = cmd.ExecuteReader();
-                while (rdr.Read())
+
+                // Execute the stored procedure and read the result
+                SqlDataReader rdr = await cmd.ExecuteReaderAsync();
+                while (await rdr.ReadAsync())
                 {
                     var emps = new salarydetail()
                     {
-                        Id = Convert.ToInt32(rdr["id"]),
+                        Id = Convert.ToInt32(rdr["ID"]),
                         FirstName = rdr["FirstName"] == DBNull.Value ? null : Convert.ToString(rdr["FirstName"]),
                         EmployeeId = rdr["EmployeeId"] == DBNull.Value ? null : Convert.ToString(rdr["EmployeeId"]),
-                        MonthlyCtc = rdr["MonthlyCtc"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["MonthlyCtc"]),
-                        CustomerID = (long)(rdr["CustomerID"] == DBNull.Value ? 0m : Convert.ToDecimal(rdr["CustomerID"])),
-                        FatherName = rdr["FirstName"] == DBNull.Value ? null : Convert.ToString(rdr["FatherName"]),
+                        MonthlyCtc = rdr["MonthlyCTC"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["MonthlyCTC"]),
+                        CustomerID = rdr["Vendorid"] == DBNull.Value ? 0 : Convert.ToInt64(rdr["Vendorid"]),  
+                        FatherName = rdr["FatherName"] == DBNull.Value ? null : Convert.ToString(rdr["FatherName"]),
                         Incentive = rdr["Incentive"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["Incentive"]),
                     };
 
@@ -507,10 +514,6 @@ namespace CRM.Repository
             catch (Exception ex)
             {
                 throw ex;
-            }
-            finally
-            {
-                emp = null;
             }
         }
 
@@ -1564,6 +1567,149 @@ namespace CRM.Repository
 
             }
             return 1;
+        }
+        public async Task<List<EmployeeApprovedPresnolInfo>> ApprovedPresnolInfoList(int Userid)
+        {
+            try
+            {
+                List<EmployeeApprovedPresnolInfo> PresnolInfo = new List<EmployeeApprovedPresnolInfo>();
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                PresnolInfo = _context.ApprovedPresnolInfos.Where(x => x.IsApproved == false && x.Vendorid== adminlogin.Vendorid ).Select(x => new EmployeeApprovedPresnolInfo
+                {
+                    id = x.Id,
+                    PersonalEmailAddress = x.PersonalEmailAddress,
+                    MobileNumber = x.MobileNumber ?? 0,
+                    DateOfBirth = x.DateOfBirth,
+                    PAN = x.Pan,
+                    AddressLine1 = x.AddressLine1,
+                    AddressLine2 = x.AddressLine2,
+                    Stateid = _context.States.Where(g => g.Id == Convert.ToInt32(x.StateId)).Select(g => g.SName).First(),
+                    cityid = _context.Cities.Where(g => g.Id == Convert.ToInt32(x.City)).Select(g => g.City1).First(),
+                    Pincode = x.Pincode,
+                    AadharNo = x.AadharNo,
+                    AadharOne = x.AadharOne,
+                    AadharTwo = x.AadharTwo,
+                    Panimg = x.Panimg,
+                    EmployeeId = x.EmployeeId,
+                    IsApproved = x.IsApproved,
+                    UpdateDate = x.UpdateDate,
+                }).ToList();
+                return PresnolInfo;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public async Task<bool> AddApprovedPresnolInfo(EmployeePresnolInfoList model)
+        {
+            try
+            {
+                if (model.id > 0)
+                {
+                    var existingEntity = await _context.ApprovedPresnolInfos.FindAsync(model.id);
+                    if (existingEntity != null)
+                    {
+                        existingEntity.PersonalEmailAddress = model.PersonalEmailAddress;
+                        existingEntity.MobileNumber = model.MobileNumber;
+                        existingEntity.DateOfBirth = model.DateOfBirth;
+                        existingEntity.Pan = model.PAN;
+                        existingEntity.AddressLine1 = model.AddressLine1;
+                        existingEntity.AddressLine2 = model.AddressLine2;
+                        existingEntity.StateId =Convert.ToString(model.Stateid);
+                        existingEntity.City =Convert.ToString(model.cityid);
+                        existingEntity.Pincode = model.Pincode;
+                        existingEntity.AadharNo = model.AadharNo;
+                        if (model.AadharOne != null)
+                        {
+                            existingEntity.AadharOne = model.AadharOne;
+                        }
+                        if (model.Panimg != null)
+                        {
+                            existingEntity.Panimg = model.Panimg;
+                        }
+
+                        if (model.AadharTwo! != null)
+                        {
+                            existingEntity.AadharTwo = model.AadharTwo;
+                        }
+                        existingEntity.UpdateDate = DateTime.Now;
+                        existingEntity.IsApproved = false;
+                        await _context.SaveChangesAsync();
+                        return true;
+                    }
+                    return false;
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while adding the contact: " + ex.Message, ex);
+            }
+        }
+        public async Task<List<ApprovedbankdetailList>> ApprovedbankdetailList(int Userid)
+        {
+            try
+            {
+                List<ApprovedbankdetailList> PresnolInfo = new List<ApprovedbankdetailList>();
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                PresnolInfo = _context.Approvedbankdetails.Where(x => x.IsApproved == false && x.Vendorid == adminlogin.Vendorid).Select(x => new ApprovedbankdetailList
+                {
+                    id = x.Id,
+                    AccountHolderName = x.AccountHolderName,
+                    BankName = x.BankName,
+                    AccountNumber = x.AccountNumber,
+                    ReEnterAccountNumber = x.ReEnterAccountNumber,
+                    Ifsc = x.Ifsc,
+                    AccountTypeId = x.AccountTypeId == 1 ? "Current": x.AccountTypeId == 2 ? "Savings": "unknown",
+                    EpfNumber = x.EpfNumber,
+                    Nominee = x.Nominee,
+                    Chequeimage = x.Chequeimage,
+                    EmployeeId = x.EmployeeId,
+                    IsApproved = x.IsApproved,
+                    UpdateDate = x.UpdateDate,
+                }).ToList();
+                return PresnolInfo;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public async Task<bool> AddApprovedbankdetail(ApprovedbankdetailList model)
+        {
+            try
+            {
+                if (model.id > 0)
+                {
+                    var existingEntity = await _context.Approvedbankdetails.FindAsync(model.id);
+                    if (existingEntity != null)
+                    {
+                        existingEntity.AccountHolderName = model.AccountHolderName;
+                        existingEntity.BankName = model.BankName;
+                        existingEntity.AccountNumber = model.AccountNumber;
+                        existingEntity.ReEnterAccountNumber = model.ReEnterAccountNumber;
+                        existingEntity.Ifsc = model.Ifsc;
+                        existingEntity.AccountTypeId =Convert.ToInt32(model.AccountTypeId);
+                        existingEntity.EpfNumber = model.EpfNumber;
+                        existingEntity.Nominee = model.Nominee;
+                        if (model.Chequeimage != null)
+                        {
+                            existingEntity.Chequeimage = model.Chequeimage;
+                        }
+                        existingEntity.IsApproved = false;
+                        existingEntity.UpdateDate = DateTime.Now;
+                        await _context.SaveChangesAsync();
+                        return true;
+                    }
+                    return false;
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while adding the contact: " + ex.Message, ex);
+            }
         }
     }
 

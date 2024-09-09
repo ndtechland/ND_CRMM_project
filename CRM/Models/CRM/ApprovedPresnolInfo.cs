@@ -7,7 +7,7 @@ namespace CRM.Models.Crm
     {
         public int Id { get; set; }
         public string? PersonalEmailAddress { get; set; }
-        public string? MobileNumber { get; set; }
+        public long? MobileNumber { get; set; }
         public DateTime? DateOfBirth { get; set; }
         public string? Pan { get; set; }
         public string? AddressLine1 { get; set; }
@@ -22,5 +22,6 @@ namespace CRM.Models.Crm
         public string? AadharTwo { get; set; }
         public bool? IsApproved { get; set; }
         public DateTime? UpdateDate { get; set; }
+        public int? Vendorid { get; set; }
     }
 }

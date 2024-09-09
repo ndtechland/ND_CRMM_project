@@ -72,7 +72,7 @@
                         <div class="card">
                             <div class="card-body">
 
-                                <form asp-action="salarydetail" autocomplete="off" method="get">
+                         @*        <form asp-action="salarydetail" autocomplete="off" method="get">
 
                                     <div class="row">
                                         <div class="form-group col-md-3">
@@ -99,7 +99,7 @@
 
                                     </div>
 
-                                </form>
+                                </form> *@
                                 <div class=" table-responsive">
                                     @if (Model != null && Model.Any())
                                     {
@@ -113,7 +113,7 @@
                                             <button type="submit" class="btn btn-primary" id="myButton" style="color: black; border: 2px solid black;" onclick="gensal();">
                                                 <i class="fa fa-plus"></i> Generate Salary
                                             </button>
-                                            
+
                                         </div>
                                         <div>
                                             <label for="file-upload" class="file-upload-label">
@@ -122,7 +122,7 @@
                                             </label>
                                             <button type="submit" value="Submit" class="btn btn-primary" onclick="showLoading()">Upload</button>
                                         </div>
-                                        
+
 
                                         <br />
                                         <table id="datatable" class="table table-responsive">
@@ -144,7 +144,7 @@
                                                     <th nowrap>
                                                         Monthly CTC
                                                     </th>
-                                                    
+
                                                     <th nowrap>Attendance</th>
                                                     <th nowrap>Action</th>
                                                 </tr>
@@ -153,46 +153,46 @@
                                                 @{
                                                     var count = 0;
 
-                                                                        @foreach (var item in Model)
+                                                    @foreach (var item in Model)
                                                     {
                                                         count++;
-                                                                            <tr class="table-row">
-                                                                                <td>@count</td>
-                                                                                <td style="display:none">
-                                                                                    @item.Id
-                                                                                </td>
-                                                                                  <td style="display:none">
-                                                                                    @item.CustomerID
-                                                                                </td>
-                                                                                <td>
-                                                                                    @Html.DisplayFor(modelItem => item.FirstName)
-                                                                                </td>
-                                                                                <td>
-                                                                                    @Html.DisplayFor(modelItem => item.FatherName)
-                                                                                </td>
-                                                                                <td>
-                                                                                    @Html.DisplayFor(modelItem => item.EmployeeId)
-                                                                                </td>
-                                                                            <td style="display:none" id="hiddenIncentive">
-                                                                                @item.Incentive
-                                                                            </td>
-                                                                        <td style="display:none" id="hiddenTravellingAllowance">
-                                                                            @item.TravellingAllowance
-                                                                        </td>
-                                                                                <td>
-                                                                                    @Html.DisplayFor(modelItem => item.MonthlyCtc)
-                                                                                </td>
-                                                                                <td>
-                                                                                    <input type="text" id="Attendance" name="Attendance" class="form-control attnd" minlength="1" maxlength="2" style="height: 40px; width: 94px;" onkeyup="fnc(this)" />
-                                                                                </td>
-                                                                                <td>
-                                                                                    <a href="#" class="fa fa-edit m-2 font-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="EditSalaryDetails('@item.EmployeeId')">
-                                                                                        Edit Salary
-                                                                                    </a>
-                                                                                </td>
+                                                        <tr class="table-row">
+                                                            <td>@count</td>
+                                                            <td style="display:none">
+                                                                @item.Id
+                                                            </td>
+                                                            <td style="display:none">
+                                                                @item.CustomerID
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(modelItem => item.FirstName)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(modelItem => item.FatherName)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(modelItem => item.EmployeeId)
+                                                            </td>
+                                                            <td style="display:none" id="hiddenIncentive">
+                                                                @item.Incentive
+                                                            </td>
+                                                            <td style="display:none" id="hiddenTravellingAllowance">
+                                                                @item.TravellingAllowance
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(modelItem => item.MonthlyCtc)
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" id="Attendance" name="Attendance" class="form-control attnd" minlength="1" maxlength="2" style="height: 40px; width: 94px;" onkeyup="fnc(this)" />
+                                                            </td>
+                                                            <td>
+                                                                <a href="#" class="fa fa-edit m-2 font-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="EditSalaryDetails('@item.EmployeeId')">
+                                                                    Edit Salary
+                                                                </a>
+                                                            </td>
 
 
-                                                                            </tr>
+                                                        </tr>
                                                     }
                                                 }
                                             </tbody>
@@ -211,7 +211,7 @@
                                         </div>
                                         <div class="col-md-4">
 
-                                            <input type="text" id="TotalAmount" value="@ViewBag.TotalAmmount" class="form-group" style="border: none;margin-left: -10px;" readonly />
+                                            <input type="text" id="TotalAmount" value="@ViewBag.TotalAmmount" class="form-group" style="border: none;margin-left: -58px;" readonly />
 
                                         </div>
                                     </div>
@@ -330,7 +330,7 @@
     }
 </script>
 
-<script>
+@* <script>
     $(document).ready(function () {
         $("#CustomerID").val($("#custid").val());
         $("#LocationID").val($("#locid").val());
@@ -383,7 +383,7 @@
             return false;
         }
     }
-</script>
+</script> *@
 
 <script type="text/javascript">
 
@@ -454,11 +454,11 @@
                                 </div>
                                 <div class="col">
                                     <label>Travelling Allowance</label>
-                                    <input class="form-control "  name="TravellingAllowance" id="TravellingAllowance" type="text" required="">
-                                </div>                               
+                                    <input class="form-control " name="TravellingAllowance" id="TravellingAllowance" type="text" required="">
+                                </div>
                             </div>
                             <div class="row">
-                              <div class="col">
+                                <div class="col">
                                     <label>ESIC</label>
                                     <input class="form-control " name="ESIC" id="ESIC" type="text" required="" readonly>
                                 </div>
@@ -470,25 +470,25 @@
                             <div class="row">
                                 <div class="col">
                                     <label>Basic</label>
-                                    <input class="form-control "  name="Basic" placeholder="00.0" id="txtBasicSalary" type="text" required="" readonly>
+                                    <input class="form-control " name="Basic" placeholder="00.0" id="txtBasicSalary" type="text" required="" readonly>
                                 </div>
                                 <div class="col">
                                     <label>HouseRent Allowance</label>
-                                    <input class="form-control "  name="HouseRentAllowance" placeholder="00.0" id="txtHouseRentAllowance" type="text" required="" readonly>
-                                </div>                               
+                                    <input class="form-control " name="HouseRentAllowance" placeholder="00.0" id="txtHouseRentAllowance" type="text" required="" readonly>
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col">
                                     <label>EPF</label>
-                                    <input class="form-control "  name="EPF" placeholder="00.0" id="txtEPF" type="text" required="" readonly>
+                                    <input class="form-control " name="EPF" placeholder="00.0" id="txtEPF" type="text" required="" readonly>
                                 </div>
                                 <div class="col">
                                     <label>Monthly CTC</label>
-                                    <input class="form-control "  name="MonthlyCTC" placeholder="00.0" id="txtMonthlyCTC" type="text" required="" readonly>
+                                    <input class="form-control " name="MonthlyCTC" placeholder="00.0" id="txtMonthlyCTC" type="text" required="" readonly>
                                 </div>
                             </div>
                             <div class="row">
-                               
+
                                 <div class="col">
                                     <label>Monthly GrossPay</label>
                                     <input class="form-control " name="MonthlyGrossPay" placeholder="00.0" id="txtMonthlyGrossPay" type="text" required="" readonly>
@@ -500,10 +500,10 @@
 
                             </div>
                             <div style="margin-top: 15px">
-                                 <button class="btn btn-warning" id="btnUpdate">Update</button>
-                                 <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                                <button class="btn btn-warning" id="btnUpdate">Update</button>
+                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                             </div>
-                           
+
 
                         </form>
                     </div>
@@ -564,7 +564,7 @@
                 EPFInput.val(EPFCalculation.toFixed(2));
                 MonthlyGrossPayInput.val(MonthlyGross.toFixed(2));
                 ESICInput.val(ESIC.toFixed(2));
-                ProfessionaltaxInput.val(professionaltax.toFixed(2));                
+                ProfessionaltaxInput.val(professionaltax.toFixed(2));
             } else {
                 // If the entered value is not a valid number, clear the monthly salary input
                 monthlySalaryInput.val('');
@@ -659,8 +659,7 @@
             contentType: false,
             processData: false,
             success: function (data) {
-                if (data!=null||data.length!=0)
-                {
+                if (data != null || data.length != 0) {
                     data.forEach(function (item) {
                         // Find the corresponding row in the table based on the employee ID
                         var $row = $("td:contains('" + item.employeeId + "')").closest('tr');
@@ -668,13 +667,13 @@
                         // Check if the row is found
                         if ($row.length) {
                             // Set the attendance value in the corresponding field in the table
-                         //   $row.find("td:eq(6)").text(item.attendance); // Assuming the attendance field is the 6th column (index 5)
+                            //   $row.find("td:eq(6)").text(item.attendance); // Assuming the attendance field is the 6th column (index 5)
                             if (parseInt(item.attendance) < 30) {
                                 $row.find(".attnd").val(item.attendance);
-                            } else  {
+                            } else {
                                 $row.find(".attnd").val(30);
                             }
-                                
+
                         }
                     });
                 }

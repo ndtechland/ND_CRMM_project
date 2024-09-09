@@ -459,43 +459,43 @@ namespace CRM.Controllers
         }
         [HttpGet]
         [Route("Employee/salarydetail")]
-        public async Task<IActionResult> salarydetail(string customerId, string WorkLocation)
+        public async Task<IActionResult> salarydetail()
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
                 string AddedBy = HttpContext.Session.GetString("UserName");
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 ViewBag.UserName = AddedBy;
                 TempData["UserName"] = AddedBy;
-                TempData["custid"] = customerId;
-                TempData["locid"] = WorkLocation;
+                //TempData["custid"] = customerId;
+                //TempData["locid"] = WorkLocation;
                 //
-                if (AddedBy != null)
-                { HttpContext.Session.SetString("UserName", AddedBy); }
-                else
+                // Manage session variables
+                if (!string.IsNullOrEmpty(AddedBy))
                 {
-                    AddedBy = HttpContext.Session.GetString("UserName");
-
-                }
-                if (customerId != null)
-                {
-                    HttpContext.Session.SetString("custid", customerId);
-                }
-                else
-                {
-                    customerId = HttpContext.Session.GetString("custid");
+                    HttpContext.Session.SetString("UserName", AddedBy);
                 }
 
-                if (WorkLocation != null)
-                {
-                    HttpContext.Session.SetString("locid", WorkLocation);
-                }
-                else
-                {
-                    WorkLocation = HttpContext.Session.GetString("locid");
-                }
+                //if (!string.IsNullOrEmpty(customerId))
+                //{
+                //    HttpContext.Session.SetString("custid", customerId);
+                //}
+                //else
+                //{
+                //    customerId = HttpContext.Session.GetString("custid");
+                //}
+
+                //if (!string.IsNullOrEmpty(WorkLocation))
+                //{
+                //    HttpContext.Session.SetString("locid", WorkLocation);
+                //}
+                //else
+                //{
+                //    WorkLocation = HttpContext.Session.GetString("locid");
+                //}
                 //
 
-                var response = await _ICrmrpo.salarydetail(customerId, WorkLocation);
+                var response = await _ICrmrpo.salarydetail(Userid);
                 decimal total = 0.00M;
                 foreach (var item in response)
                 {
@@ -1478,20 +1478,20 @@ namespace CRM.Controllers
             return new JsonResult(result);
         }
 
-        public IActionResult ImportToExcelAttendance(string customerId, string WorkLocation)
-        {
-            try
-            {
-                var data = _ICrmrpo.salarydetail(customerId, WorkLocation).Result;
-                var response = _ICrmrpo.ImportToExcelAttendance(data);
-                return File(response, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Employee_Attandence_List.xlsx");
-            }
-            catch (Exception Ex)
-            {
-                throw Ex;
-            }
+        //public IActionResult ImportToExcelAttendance(string customerId, string WorkLocation)
+        //{
+        //    try
+        //    {
+        //        var data = _ICrmrpo.salarydetail(customerId, WorkLocation).Result;
+        //        var response = _ICrmrpo.ImportToExcelAttendance(data);
+        //        return File(response, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Employee_Attandence_List.xlsx");
+        //    }
+        //    catch (Exception Ex)
+        //    {
+        //        throw Ex;
+        //    }
 
-        }
+        //}
 
         [HttpPost]
         public ActionResult ImportProductionExcel(IFormFile upload)

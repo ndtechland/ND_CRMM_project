@@ -35,74 +35,74 @@
             </div>
             <!-- Container-fluid Ends-->
             <!-- Container-fluid starts-->
-     <div class="container-fluid">
-          <div class="row">
-    <div class="col-sm-12">
-         <div class="card">
-             <div class="card-body">
-               <form asp-action="Quation" autocomplete="off">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                            <div class="row">
-                                <div class="form-group col-sm">
-                                   <label class="control-label">Company Name</label>
-                                            <input asp-for="CompanyName" class="form-control" placeholder="Enter Company Name" required=""  oninvalid="this.setCustomValidity('Please Enter Company Name')" oninput="this.setCustomValidity('')" />
-                                    <span asp-validation-for="CompanyName" class="text-danger"></span>
-                                </div>
-                                <div class="form-group col-sm">
-                                  <label class="control-label">Customer Name</label>
-                                            <input asp-for="CustomerName" class="form-control" placeholder="Enter Customer Name" required=""  oninput="this.setCustomValidity('')" />
-                                    <span asp-validation-for="CustomerName" class="text-danger"></span>
-                                </div>
-                            </div>
-             <div class="row">
-            <div class="form-group col-sm">
-                <label asp-for="Email" class="control-label"></label>
-                                            <input type="email" asp-for="Email" class="form-control" placeholder="Enter Email" required=""  oninvalid="this.setCustomValidity('Please Enter Email')" oninput="this.setCustomValidity('')" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="form-group col-sm">
-                <label class="control-label">Sales Person Name</label>
-                                            <input asp-for="SalesPersonName" class="form-control" placeholder="Enter Sales Person Name" required=""  oninvalid="this.setCustomValidity('Please Enter Sales Person Name')" oninput="this.setCustomValidity('')" />
-                <span asp-validation-for="SalesPersonName" class="text-danger"></span>
-            </div>
-            </div>
-             <div class="row">
-                <div class="form-group col-sm">
-                   <label for="validationCustom0">Product Name</label>
-                    @Html.DropDownListFor(model => model.ProductId, new SelectList(ViewBag.ProductDetails, "Value", "Text"), "-- Select Product --", new { @class = "form-control",onchange = "validateProduct(this)",oninvalid="this.setCustomValidity('Please select Product')" ,oninput="this.setCustomValidity('')",required="required" })
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <form asp-action="Quation" autocomplete="off">
+                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                    <div class="row">
+                                        <div class="form-group col-sm">
+                                            <label class="control-label">Company Name</label>
+                                            <input asp-for="CompanyName" class="form-control" placeholder="Enter Company Name" required="" oninvalid="this.setCustomValidity('Please Enter Company Name')" oninput="this.setCustomValidity('')" />
+                                            <span asp-validation-for="CompanyName" class="text-danger"></span>
+                                        </div>
+                                        <div class="form-group col-sm">
+                                            <label class="control-label">Customer Name</label>
+                                            <input asp-for="CustomerName" class="form-control" placeholder="Enter Customer Name" required="" oninput="this.setCustomValidity('')" />
+                                            <span asp-validation-for="CustomerName" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-sm">
+                                            <label asp-for="Email" class="control-label"></label>
+                                            <input type="email" asp-for="Email" class="form-control" placeholder="Enter Email" required="" oninvalid="this.setCustomValidity('Please Enter Email')" oninput="this.setCustomValidity('')" />
+                                            <span asp-validation-for="Email" class="text-danger"></span>
+                                        </div>
+                                        <div class="form-group col-sm">
+                                            <label class="control-label">Sales Person Name</label>
+                                            <input asp-for="SalesPersonName" class="form-control" placeholder="Enter Sales Person Name" required="" oninvalid="this.setCustomValidity('Please Enter Sales Person Name')" oninput="this.setCustomValidity('')" />
+                                            <span asp-validation-for="SalesPersonName" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-sm">
+                                            <label for="validationCustom0">Product Name</label>
+                                            @Html.DropDownListFor(model => model.ProductId, new SelectList(ViewBag.ProductDetails, "Value", "Text"), "-- Select Product --", new { @class = "form-control", onchange = "validateProduct(this)", oninvalid = "this.setCustomValidity('Please select Product')", oninput = "this.setCustomValidity('')", required = "required" })
 
-                     <span asp-validation-for="ProductId" class="text-danger"></span>
-                    </div>
-            <div class="form-group col-sm">
-                <label asp-for="Subject" class="control-label"></label>
+                                            <span asp-validation-for="ProductId" class="text-danger"></span>
+                                        </div>
+                                        <div class="form-group col-sm">
+                                            <label asp-for="Subject" class="control-label"></label>
                                             <input asp-for="Subject" class="form-control" placeholder="Enter Subject" required="" onkeydown="validateNumericInput(event)" oninvalid="this.setCustomValidity('Please Enter Subject')" oninput="this.setCustomValidity('')" />
-                <span asp-validation-for="Subject" class="text-danger"></span>
-            </div>
-            </div>
-            <div class="row">
-            <div class="form-group col-sm">
-                <label asp-for="Amount" class="control-label"></label>
+                                            <span asp-validation-for="Subject" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-sm">
+                                            <label asp-for="Amount" class="control-label"></label>
                                             <input name="Amount" type="text" class="form-control" placeholder="Enter Amount" required="" onkeydown="validateNumericInput(event)" oninvalid="this.setCustomValidity('Please Enter Amount')" oninput="this.setCustomValidity('')" />
-                <span asp-validation-for="Amount" class="text-danger"></span>
-            </div>
-            <div class="form-group col-sm">
-                <label asp-for="Mobile" class="control-label"></label>
-                <input asp-for="Mobile" class="form-control" minlength="10" maxlength="10" placeholder="Enter Mobile" onkeydown="validateNumericInput(event)" oninvalid="this.setCustomValidity('Please Enter Mobile')" oninput="this.setCustomValidity('')" required />
-                <span asp-validation-for="Mobile" class="text-danger"></span>
-            </div>
+                                            <span asp-validation-for="Amount" class="text-danger"></span>
+                                        </div>
+                                        <div class="form-group col-sm">
+                                            <label asp-for="Mobile" class="control-label"></label>
+                                            <input asp-for="Mobile" class="form-control" minlength="10" maxlength="10" placeholder="Enter Mobile" onkeydown="validateNumericInput(event)" oninvalid="this.setCustomValidity('Please Enter Mobile')" oninput="this.setCustomValidity('')" required />
+                                            <span asp-validation-for="Mobile" class="text-danger"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group" style="display:flex; justify-content:center;">
+                                        <input type="submit" value="Submit" class="btn btn-primary" />
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-                 <div class="form-group" style="display:flex; justify-content:center;">
-                <input type="submit" value="Submit" class="btn btn-primary" />
-            </div>
-        </form>
         </div>
-        </div>
-    </div>
-  </div>
-    </div>
-
-      </div>
     </div>
 </div>
 

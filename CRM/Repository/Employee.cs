@@ -92,9 +92,11 @@ namespace CRM.Repository
                         throw new Exception("File upload not allowed.");
                     }
                 }
+                var emp = await _context.EmployeeRegistrations.Where(x => x.EmployeeId == userid && x.IsDeleted == false).FirstOrDefaultAsync();
                 var empbank = await _context.Approvedbankdetails.Where(x => x.EmployeeId == userid).FirstOrDefaultAsync();
                 if (empbank != null)
                 {
+                    empbank.Vendorid = emp.Vendorid;
                     empbank.AccountHolderName = model.AccountHolderName;
                     empbank.BankName = model.BankName;
                     empbank.AccountNumber = model.AccountNumber;
@@ -116,6 +118,7 @@ namespace CRM.Repository
                 {
                     Approvedbankdetail empB = new Approvedbankdetail
                     {
+                        Vendorid = emp.Vendorid,
                         AccountHolderName = model.AccountHolderName,
                         BankName = model.BankName,
                         AccountNumber = model.AccountNumber,
@@ -249,6 +252,7 @@ namespace CRM.Repository
 
                 if (apppersonal != null)
                 {
+                    apppersonal.Vendorid = emp.Vendorid;
                     apppersonal.PersonalEmailAddress = model.PersonalEmailAddress;
                     apppersonal.MobileNumber = model.MobileNumber;
                     apppersonal.DateOfBirth = (DateTime)model.DateOfBirth;
@@ -307,6 +311,7 @@ namespace CRM.Repository
                     }
                     ApprovedPresnolInfo empP = new ApprovedPresnolInfo();
                     {
+                        empP.Vendorid = emp.Vendorid;
                         empP.EmployeeId = userid;
                         empP.PersonalEmailAddress = model.PersonalEmailAddress;
                         empP.MobileNumber = model.MobileNumber;
