@@ -19,8 +19,8 @@ namespace CRM.Models.Crm
         public DateTime RenewDate { get; set; }
         public string? State { get; set; }
         public int? StateId { get; set; }
+        public int? Vendorid { get; set; }
         [NotMapped]
         public string UserName { get; set; } = null!;
-
     }
 }

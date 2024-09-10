@@ -15,6 +15,7 @@ namespace CRM.Models.Crm
             : base(options)
         {
         }
+        public virtual DbSet<EmployeeImportExcel> EmpMultiforms { get; set; } = null!;
 
         public virtual DbSet<AccountTypeMaster> AccountTypeMasters { get; set; } = null!;
         public virtual DbSet<Additonalcontribution> Additonalcontributions { get; set; } = null!;
@@ -60,7 +61,6 @@ namespace CRM.Models.Crm
         public virtual DbSet<VendorRegistration> VendorRegistrations { get; set; } = null!;
         public virtual DbSet<WorkLocation> WorkLocations { get; set; } = null!;
         public virtual DbSet<WorkLocation1> WorkLocations1 { get; set; } = null!;
-        public virtual DbSet<EmployeeImportExcel> EmpMultiforms { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -436,6 +436,8 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.Incentive).HasColumnType("decimal(18, 0)");
 
                 entity.Property(e => e.Lop).HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.SalarySlip).HasMaxLength(250);
 
                 entity.Property(e => e.TravellingAllowance).HasColumnType("decimal(18, 0)");
 

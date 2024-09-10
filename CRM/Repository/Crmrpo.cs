@@ -188,18 +188,19 @@ namespace CRM.Repository
             return cs;
         }
 
-        public async Task<int> EmpRegistration(EmpMultiform model, string Mode, string Emp_Reg_ID, string userId)
+        public async Task<int> EmpRegistration(EmpMultiform model, string Mode, string Emp_Reg_ID, int userId)
         {
             try
             {
                 ///
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == userId).FirstOrDefaultAsync();
                 model.EmployeeId = Emp_Reg_ID;
                 SqlConnection con = new SqlConnection(Configuration.GetConnectionString("db1"));
                 SqlCommand cmd = new SqlCommand("EmployeeRegistrationtest", con);
                 cmd.Parameters.AddWithValue("@mode", Mode);
                 cmd.Parameters.AddWithValue("@Emp_RegID", Emp_Reg_ID);
                 cmd.Parameters.AddWithValue("@Employee_ID", model.EmployeeId);
-                cmd.Parameters.AddWithValue("@Customer_Id", userId);
+                cmd.Parameters.AddWithValue("@Customer_Id", adminlogin.Vendorid);
                 cmd.Parameters.AddWithValue("@FirstName", model.FirstName);
                 cmd.Parameters.AddWithValue("@MiddleName", model.MiddleName);
                 cmd.Parameters.AddWithValue("@LastName", model.LastName);
@@ -517,16 +518,17 @@ namespace CRM.Repository
             }
         }
 
-        public async Task<List<GenerateSalary>> GenerateSalary(string customerId, int Month, int year, string WorkLocation)
+        public async Task<List<GenerateSalary>> GenerateSalary(int Month, int year, int Userid)
         {
             try
             {
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+
                 SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
                 SqlCommand cmd = new SqlCommand("GetGenerateSalary", con);
-                cmd.Parameters.Add(new SqlParameter("@CustomerID", SqlDbType.Int) { Value = Convert.ToInt32(customerId) });
+                cmd.Parameters.Add(new SqlParameter("@id", SqlDbType.Int) { Value = Convert.ToInt32(adminlogin.Vendorid) });
                 cmd.Parameters.Add(new SqlParameter("@Month", SqlDbType.Int) { Value = Convert.ToInt32(Month) });
                 cmd.Parameters.Add(new SqlParameter("@year", SqlDbType.Int) { Value = Convert.ToInt32(year) });
-                cmd.Parameters.Add(new SqlParameter("@WorkLocation", SqlDbType.Int) { Value = Convert.ToInt32(WorkLocation) });
                 cmd.CommandType = CommandType.StoredProcedure;
                 con.Open();
                 SqlDataReader rdr = cmd.ExecuteReader();
@@ -646,11 +648,12 @@ namespace CRM.Repository
             }
         }
 
-        public DataTable GetEmployDetailById(string EmpId)
+        public DataTable GetEmployDetailById(string EmpId, int Userid)
         {
 
             SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
             SqlCommand cmd = new SqlCommand("USP_GetEmployeeDetailById", con);
+            cmd.Parameters.AddWithValue("@id", Userid);
             cmd.Parameters.AddWithValue("@EmpId", EmpId);
             cmd.CommandType = CommandType.StoredProcedure;
             con.Open();

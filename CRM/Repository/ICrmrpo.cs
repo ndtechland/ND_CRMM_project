@@ -17,7 +17,7 @@ namespace CRM.Repository
         public Task<List<ProductMaster>> ProductList();
         public Task<int> Customer(Customer model);
         public Task<List<Customer>> CustomerList(string userIdString);
-        public Task<int> EmpRegistration(EmpMultiform model, string Mode, string Emp_Reg_ID,string userId);
+        public Task<int> EmpRegistration(EmpMultiform model, string Mode, string Emp_Reg_ID,int userId);
         public Task<List<StateMaster>> GetAllState();
         public Task<int> Banner(BannerMaster model);
         // EmployeeList
@@ -37,12 +37,12 @@ namespace CRM.Repository
 
         public Task<List<salarydetail>> salarydetail(int Userid);
 
-        public Task<List<GenerateSalary>> GenerateSalary(string customerId, int Month, int year, string WorkLocation);
+        public Task<List<GenerateSalary>> GenerateSalary(int Month, int year, int Userid);
         public Task<int> Employer(EmployeerModelEPF model);
         public Task<List<EmployeerEpf>> EmployerList(string Deduction_Cycle);
         public Task<List<Invoice>> GenerateInvoice(string customerId, int Month, int year, string WorkLocation);
       
-        public DataTable GetEmployDetailById(string EmpId);
+        public DataTable GetEmployDetailById(string EmpId, int Userid);
         //for excel
          public byte[] EmployeeListForExcel();
         

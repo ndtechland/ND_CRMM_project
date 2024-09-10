@@ -5,10 +5,10 @@
     ViewData["Title"] = "salarydetail";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
-@if (ViewBag.Message != null)
-{
-    <script>alert('@ViewBag.Message');</script>
-}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <style>
     .button {
@@ -72,32 +72,32 @@
                         <div class="card">
                             <div class="card-body">
 
-                         @*        <form asp-action="salarydetail" autocomplete="off" method="get">
+                                @*        <form asp-action="salarydetail" autocomplete="off" method="get">
 
-                                    <div class="row">
-                                        <div class="form-group col-md-3">
-                                            <label for="validationCustom0">Company Name</label>
-                                            <select class="form-control" id="CustomerID" name="CustomerID" onchange="Locations()">
-                                                <option value="">-- Select Company --</option>
+                                <div class="row">
+                                <div class="form-group col-md-3">
+                                <label for="validationCustom0">Company Name</label>
+                                <select class="form-control" id="CustomerID" name="CustomerID" onchange="Locations()">
+                                <option value="">-- Select Company --</option>
 
-                                                @foreach (var item in ViewBag.CustomerName)
-                                                {
-                                                    <option value="@item.Value">@item.Text</option>
-                                                }
-                                            </select>
-                                        </div>
-                                        <div class="form-group col-md-3">
-                                            <label for="validationCustom0">Work Location</label>
-                                            <select class="form-control" id="LocationID" name="WorkLocation">
-                                                <option value="">--Select WorkLocation--</option>
+                                @foreach (var item in ViewBag.CustomerName)
+                                {
+                                <option value="@item.Value">@item.Text</option>
+                                }
+                                </select>
+                                </div>
+                                <div class="form-group col-md-3">
+                                <label for="validationCustom0">Work Location</label>
+                                <select class="form-control" id="LocationID" name="WorkLocation">
+                                <option value="">--Select WorkLocation--</option>
 
-                                            </select>
-                                        </div>
-                                        <div class="form-button col-md-3" style="display:flex; justify-content:center;">
-                                            <input type="submit" value="Search" class="btn btn-primary button" id="sbtn" onclick="return validateForm();" />
-                                        </div>
+                                </select>
+                                </div>
+                                <div class="form-button col-md-3" style="display:flex; justify-content:center;">
+                                <input type="submit" value="Search" class="btn btn-primary button" id="sbtn" onclick="return validateForm();" />
+                                </div>
 
-                                    </div>
+                                </div>
 
                                 </form> *@
                                 <div class=" table-responsive">
@@ -264,20 +264,22 @@
                 customer.TravellingAllowance = $(this).find('td:eq(7)').text().trim();
                 customer.Attendance = $(this).find('input[name="Attendance"]').val();
                 if (customer.Attendance === "") {
-                    alert("Please fill in all Attendance fields.");
+                    Swal.fire({
+                        title: 'Error',
+                        text: "Please fill in all Attendance fields.",
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
                     check = false;
                     return false;
                 }
                 modeldata.push(customer);
             });
 
-            ///
             if (check == true) {
                 $.ajax({
-
                     url: '/Employee/Empattendance',
                     data: { customers: modeldata },
-                    //data: { 'id': id, 'Attendance': atten },
                     dataType: 'json',
                     type: 'post',
                     async: 'false',
@@ -285,28 +287,44 @@
                     success: function (data) {
                         if (data.data == true) {
                             $(".attnd").val("");
-                            alert("Your salary already genrated for this month");
+                            Swal.fire({
+                                title: 'Info',
+                                text: "Your salary has already been generated for this month.",
+                                icon: 'info',
+                                confirmButtonText: 'OK'
+                            });
                             return false;
                         }
 
                         if ((tbody.children().length) == @Model.Count()) {
                             $(".attnd").val("");
-                            //location.reload();
-                            alert("Salary generated successfully.");
+                            Swal.fire({
+                                title: 'Success',
+                                text: "Salary generated successfully.",
+                                icon: 'success',
+                                confirmButtonText: 'OK'
+                            });
                         }
-                        debugger;
                     },
 
                     error: function (err) {
-
+                        Swal.fire({
+                            title: 'Error',
+                            text: "An error occurred while generating the salary.",
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
                     }
                 });
             }
-        }
-        else {
-
+        } else {
+            Swal.fire({
+                title: 'Warning',
+                text: "No data available for salary generation.",
+                icon: 'warning',
+                confirmButtonText: 'OK'
+            });
             return false;
-
         }
     }
     $(function () {
@@ -324,7 +342,12 @@
         if (parseInt(value) < 0 || isNaN(value)) {
             inputElement.value = '';
         } else if (parseInt(value) > 25) {
-            alert("Number is greater than 25");
+            Swal.fire({
+                title: 'Error',
+                text: "Number is greater than 25",
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
             inputElement.value = '';
         }
     }

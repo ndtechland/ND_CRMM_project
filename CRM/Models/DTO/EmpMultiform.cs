@@ -7,7 +7,7 @@ namespace CRM.Models.DTO
     {
         // Personal Information
         public int id { get; set; }        
-        public int? CustomerID { get; set; }
+        public int? Vendorid { get; set; }
         public string? FirstName { get; set; }
         public string? MiddleName { get; set; }
         public string? LastName { get; set; }
