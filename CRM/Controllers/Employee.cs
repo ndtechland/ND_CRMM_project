@@ -63,16 +63,16 @@ namespace CRM.Controllers
 
 
         }
-
-        public IActionResult EmployeeRegistration(string id)
+        [HttpGet,Route("Employee/EmployeeRegistration")]
+        public async Task<IActionResult> EmployeeRegistration(string id)
         {
 
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                ViewBag.UserName = HttpContext.Session.GetString("UserName");
-                ViewBag.userId = HttpContext.Session.GetString("UserId");
-                ViewBag.Admin = HttpContext.Session.GetString("AdminId");
-
+                ViewBag.UserName = HttpContext.Session.GetString("UserName");              
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                ViewBag.userId = adminlogin.Vendorid;
                 ViewBag.WorkLocation = _context.Cities
                 .Select(w => new SelectListItem
                 {
@@ -171,7 +171,7 @@ namespace CRM.Controllers
 
                 if (id != null)
                 {
-                    DataTable dtEmployeeRecord = _ICrmrpo.GetEmployDetailById(id);
+                    DataTable dtEmployeeRecord = _ICrmrpo.GetEmployDetailById(id, Userid);
 
                     if (dtEmployeeRecord != null && dtEmployeeRecord.Rows.Count > 0)
                     {
@@ -188,7 +188,7 @@ namespace CRM.Controllers
                             ViewBag.Work_Location_ID = row["Work_Location_ID"].ToString();
                             ViewBag.Designation_ID = row["Designation_ID"].ToString();
                             ViewBag.Department_ID = row["Department_ID"].ToString();
-                            ViewBag.CustomerID = row["CustomerID"].ToString();
+                            ViewBag.CustomerID = row["Vendorid"].ToString();
                             ViewBag.Basic = row["Basic"].ToString();
                             ViewBag.AnnualCTC = row["AnnualCTC"].ToString();
                             ViewBag.HouseRentAllowance = row["HouseRentAllowance"].ToString();
@@ -246,10 +246,9 @@ namespace CRM.Controllers
         {
             try
             {
-                string userId = HttpContext.Session.GetString("UserId");
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 string Mode = "INS";
                 string Empid = "";
-
                 if (!string.IsNullOrEmpty(model.Emp_Reg_ID))
                 {
                     Mode = "UPD";
@@ -262,28 +261,36 @@ namespace CRM.Controllers
                     var existingEmployee = _context.EmployeeRegistrations.FirstOrDefault(x => x.WorkEmail == model.WorkEmail);
                     if (existingEmployee != null)
                     {
-                        ViewBag.Message = "WorkEmail already exists";
+                        TempData["Message"] = "WorkEmail already exists";
                         return View();
                     }
                 }
-                if (userId != null)
+                if (Userid != null)
                 {
-                    var response = await _ICrmrpo.EmpRegistration(model, Mode, Empid,userId);
-                    ModelState.Clear();
-                    ViewBag.Message = "Registration successful";
-                    return RedirectToAction("Employeelist");
+                    if (Mode == "INS")
+                    {
+                        TempData["Message"] = "Employee Registration successful";
+                        var response = await _ICrmrpo.EmpRegistration(model, Mode, Empid, Userid);
+                        ModelState.Clear();
+                        return RedirectToAction("EmployeeRegistration");
+                    }
+                    if (Mode == "UPD")
+                    {
+                        TempData["Message"] = "Employee Data Update successful";
+                        var response = await _ICrmrpo.EmpRegistration(model, Mode, Empid, Userid);
+                        ModelState.Clear();
+                        return RedirectToAction("EmployeeRegistration");
+                    }
                 }
                 return View();
             }
             catch (Exception ex)
             {
-                ViewBag.Message = "Error: " + ex.Message;
+                TempData["Message"] = "Error: " + ex.Message;
                 return View();
             }
         }
-        [Route("Employee/Employeelistg")]
-        [Route("Employee/Employeelists")]
-        [Route("Employee/Employeelist")]
+        [HttpGet,Route("Employee/Employeelist")]
         public async Task<IActionResult> Employeelist()
         {
             try
@@ -465,6 +472,7 @@ namespace CRM.Controllers
             {
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 ViewBag.UserName = AddedBy;
                 TempData["UserName"] = AddedBy;
                 //TempData["custid"] = customerId;
@@ -502,12 +510,11 @@ namespace CRM.Controllers
                     total += (decimal)item.MonthlyCtc;
                 }
                 ViewBag.TotalAmmount = total;
-                ViewBag.CustomerName = _context.CustomerRegistrations.Select(x => new SelectListItem
+                ViewBag.CustomerName = _context.CustomerRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).Select(x => new SelectListItem
                 {
                     Value = x.Id.ToString(),
                     Text = x.CompanyName
                 }).ToList();
-                ViewBag.Message = TempData["ErrorMessage"];
                 return View(response);
             }
             else
@@ -603,19 +610,20 @@ namespace CRM.Controllers
             }
             return Json(new { success = true, message = "Data saved successfully.", Data = isActive });
         }
-
-        public IActionResult GenerateSalary()
+        [HttpGet,Route("Employee/GenerateSalary")]
+        public async Task<IActionResult> GenerateSalary()
         {
             try
             {
                 string AddedBy = HttpContext.Session.GetString("UserName");
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 ViewBag.UserName = AddedBy;
-                ViewBag.CustomerName = _context.CustomerRegistrations.Select(x => new SelectListItem
+                ViewBag.CustomerName = _context.CustomerRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).Select(x => new SelectListItem
                 {
                     Value = x.Id.ToString(),
                     Text = x.CompanyName
                 }).ToList();
-                ViewBag.ErrorMessage = TempData["ErrorMessage"];
                 return View();
 
             }
@@ -654,37 +662,40 @@ namespace CRM.Controllers
 
         }
         [HttpPost]
-
-        public async Task<IActionResult> GenerateSalary(string customerId, int Month, int year, string WorkLocation)
-
+        public async Task<IActionResult> GenerateSalary(int Month, int year)
         {
             try
             {
                 ViewBag.UserName = HttpContext.Session.GetString("UserName");
-                ViewBag.custid = customerId;
-                ViewBag.locid = WorkLocation;
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+
                 ViewBag.monthid = Month;
                 ViewBag.yearid = year;
-                if (customerId != null && Month != null && year != null && WorkLocation != null)
+
+                if (Month != 0 && year != 0)
                 {
-                    ViewBag.CustomerName = _context.CustomerRegistrations.Select(x => new SelectListItem
-                    {
-                        Value = x.Id.ToString(),
-                        Text = x.CompanyName
-                    }).ToList();
+                    // Fetch customer information
+                    ViewBag.CustomerName = _context.CustomerRegistrations
+                        .Where(x => x.Vendorid == adminlogin.Vendorid)
+                        .Select(x => new SelectListItem
+                        {
+                            Value = x.Id.ToString(),
+                            Text = x.CompanyName
+                        }).ToList();
+
+                    // Call to generate salary
                     GenerateSalary salary = new GenerateSalary();
+                    salary.GeneratedSalaries = await _ICrmrpo.GenerateSalary(Month, year, Userid);
 
-
-
-                    salary.GeneratedSalaries = await _ICrmrpo.GenerateSalary(customerId, Month, year, WorkLocation);
+                    // Check if data is found
                     if (salary.GeneratedSalaries.Count > 0)
-
                     {
                         return View(salary);
                     }
                     else
                     {
-                        ViewBag.ErrorMessage = "No data found";
+                        TempData["Message"] = "No data found for the selected month and year.";
                         return View();
                     }
                 }
@@ -695,13 +706,10 @@ namespace CRM.Controllers
             }
             catch (Exception ex)
             {
-
-                throw new Exception("Error : " + ex.Message);
+                TempData["Message"] = "An error occurred: " + ex.Message;
+                return RedirectToAction("GenerateSalary");
             }
-
-
         }
-
         [Route("Employee/SalarySlipInPDF")]
         public IActionResult SalarySlipInPDF(int? id)
         {
@@ -764,7 +772,6 @@ namespace CRM.Controllers
                 throw new Exception("Error: " + ex.Message);
             }
         }
-
 
         public IActionResult Employer()
         {
@@ -834,96 +841,98 @@ namespace CRM.Controllers
 
         public IActionResult DocPDF(int id)
         {
-            string schema = Request.Scheme;
-            string host = Request.Host.Value;
-            // instantiate a html to pdf converter object
-            HtmlToPdf converter = new HtmlToPdf();
-
-            WebClient client = new WebClient();
-            // Create a PDF from a HTML string using C#
-            string SlipURL = $"{schema}://{host}/Employee/SalarySlipInPDF?id={id}";
-            // create a new pdf document converting an url
-            PdfDocument doc = converter.ConvertUrl(SlipURL);
-
-            byte[] pdf = doc.Save();
-
-            // close pdf document
-            doc.Close();
-
-            // return resulted pdf document
-            FileResult fileResult = new FileContentResult(pdf, "application/pdf");
-            fileResult.FileDownloadName = "SalarySlip.pdf";
-
-            var result = (from emp in _context.EmployeeRegistrations
-
-                          where emp.Id == id
-                          select new SalarySlipDetails
-                          {
-                              Id = emp.Id,
-                              Employee_ID = emp.EmployeeId,
-                              First_Name = emp.FirstName,
-                              Email_Id = emp.WorkEmail
-
-                          }).FirstOrDefault();
-            string Email_Subject = "Salary Slip for " + result.Employee_ID + "";
-            string Email_body = "Hello " + result.First_Name + " (" + result.Employee_ID + ") please find your attached salary slip....";
-
-            if (result != null)
+            try
             {
-                _IEmailService.SendEmailAsync(result.Email_Id, Email_Subject, Email_body, pdf, "SalarySlip.pdf", "application/pdf");
-                return fileResult;
+                string schema = Request.Scheme;
+                string host = Request.Host.Value;
+                string SlipURL = $"{schema}://{host}/Employee/SalarySlipInPDF?id={id}";
 
+                HtmlToPdf converter = new HtmlToPdf();
+                PdfDocument doc = converter.ConvertUrl(SlipURL);
+                byte[] pdf = doc.Save();
+                doc.Close();
+
+                var result = (from emp in _context.EmployeeRegistrations
+                              where emp.Id == id
+                              select new SalarySlipDetails
+                              {
+                                  Id = emp.Id,
+                                  Employee_ID = emp.EmployeeId,
+                                  First_Name = emp.FirstName,
+                                  Email_Id = emp.WorkEmail
+                              }).FirstOrDefault();
+
+                if (result != null)
+                {
+                    string fileName = $"{result.Employee_ID}_SalarySlip.pdf";
+                    string emailSubject = $"Salary Slip for {result.Employee_ID}";
+                    string emailBody = $"Hello {result.First_Name} ({result.Employee_ID}), please find your attached salary slip.";
+                    _IEmailService.SendEmailAsync(result.Email_Id, emailSubject, emailBody, pdf, fileName, "application/pdf");
+
+                    return Json(new { success = true, message = "Salary Slip downloaded successfully.", fileName = fileName, pdf = Convert.ToBase64String(pdf) });
+                }
+
+                return Json(new { success = false, message = "Error: Employee not found." });
             }
-            else
+            catch (Exception ex)
             {
-                return View();
+                return Json(new { success = false, message = $"Error: {ex.Message}" });
             }
-
         }
 
         public void SendPDF(int id)
         {
-            string schema = Request.Scheme;
-            string host = Request.Host.Value;
-
-            // instantiate a html to pdf converter object
-            HtmlToPdf converter = new HtmlToPdf();
-
-            WebClient client = new WebClient();
-            // Create a PDF from a HTML string using C#
-            string SlipURL = $"{schema}://{host}/Employee/SalarySlipInPDF?id={id}";
-            // create a new pdf document converting an url
-            PdfDocument doc = converter.ConvertUrl(SlipURL);
-
-            // save pdf document
-            //doc.Save("Sample.pdf");
-
-            byte[] pdf = doc.Save();
-
-            // close pdf document
-            doc.Close();
-
-            // return resulted pdf document
-            FileResult fileResult = new FileContentResult(pdf, "application/pdf");
-            fileResult.FileDownloadName = "SalarySlip.pdf";
-
-            var result = (from emp in _context.EmployeeRegistrations
-
-                          where emp.Id == id
-                          select new SalarySlipDetails
-                          {
-                              Id = emp.Id,
-                              Employee_ID = emp.EmployeeId,
-                              First_Name = emp.FirstName,
-                              Email_Id = emp.WorkEmail
-
-                          }).FirstOrDefault();
-            string Email_Subject = "Salary Slip for " + result.Employee_ID + "";
-            string Email_body = "Hello " + result.First_Name + " (" + result.Employee_ID + ") please find your attached salary slip....";
-
-            _IEmailService.SendEmailAsync(result.Email_Id, Email_Subject, Email_body, pdf, "SalarySlip.pdf", "application/pdf");
-
+            try
+            {
+                string schema = Request.Scheme;
+                string host = Request.Host.Value;
+                HtmlToPdf converter = new HtmlToPdf();
+                string SlipURL = $"{schema}://{host}/Employee/SalarySlipInPDF?id={id}";
+                PdfDocument doc = converter.ConvertUrl(SlipURL);
+                byte[] pdf = doc.Save();
+                string wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "EMPpdfs");
+                if (!Directory.Exists(wwwRootPath))
+                {
+                    Directory.CreateDirectory(wwwRootPath);
+                }
+                string uniqueFileName = $"SalarySlip_{id}_{DateTime.Now:yyyyMMddHHmmss}.pdf";
+                string filePath = Path.Combine(wwwRootPath, uniqueFileName);
+                doc.Save(filePath);
+                doc.Close();
+                var result = (from emp in _context.EmployeeRegistrations
+                              where emp.Id == id
+                              select new SalarySlipDetails
+                              {
+                                  Id = emp.Id,
+                                  Employee_ID = emp.EmployeeId,
+                                  First_Name = emp.FirstName,
+                                  Email_Id = emp.WorkEmail
+                              }).FirstOrDefault();
+                if (result == null)
+                {
+                    throw new Exception("Employee not found.");
+                }
+                var empAttendance = _context.Empattendances.FirstOrDefault(e => e.EmployeeId == result.Employee_ID && e.Month == DateTime.Now.Month && e.Year == DateTime.Now.Year);
+                if (empAttendance != null)
+                {
+                    empAttendance.SalarySlip = uniqueFileName;
+                    _context.SaveChanges();
+                }
+                else
+                {
+                    throw new Exception("Attendance record not found for the employee.");
+                }
+                string Email_Subject = $"Salary Slip for {result.Employee_ID}";
+                string Email_body = $"Hello {result.First_Name} ({result.Employee_ID}), please find your attached salary slip.";
+                _IEmailService.SendEmailAsync(result.Email_Id, Email_Subject, Email_body, pdf, "SalarySlip.pdf", "application/pdf");
+                Console.WriteLine($"Salary slip for Employee ID {result.Employee_ID} has been saved and the Empattendance table has been updated.");
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
+
         public static string getMonthName(int monthValue)
         {
             string monthName;
@@ -1368,27 +1377,6 @@ namespace CRM.Controllers
 
             return EmpID;
         }
-
-
-        //private string GenerateEmployeeId()
-        //{
-        //    var data = _context.EmployeeRegistrations.OrderByDescending(x => x.Id).FirstOrDefault();
-        //    string EmpID = string.Empty;
-        //    int numericValue = 1001;
-        //    if (data != null && !string.IsNullOrEmpty(data.EmployeeId))
-        //    {
-        //        string[] parts = data.EmployeeId.Split('-');
-
-        //        if (parts.Length > 1 && int.TryParse(parts[2], out numericValue))
-        //        {
-        //            numericValue++;
-        //            EmpID = $"NDT{numericValue}";
-
-        //        }
-        //    }
-        //    return EmpID;
-        //}
-
         public async Task<IActionResult> DeleteEmployer(int id)
         {
             try

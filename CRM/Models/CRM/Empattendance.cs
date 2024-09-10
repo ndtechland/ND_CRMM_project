@@ -15,5 +15,6 @@ namespace CRM.Models.Crm
         public decimal? GenerateSalary { get; set; }
         public decimal? Incentive { get; set; }
         public decimal? TravellingAllowance { get; set; }
+        public string? SalarySlip { get; set; }
     }
 }

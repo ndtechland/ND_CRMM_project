@@ -9,6 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\Pdffile\**" />
+    <Content Remove="wwwroot\Pdffile\**" />
+    <EmbeddedResource Remove="wwwroot\Pdffile\**" />
+    <None Remove="wwwroot\Pdffile\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Remove="C:\Users\HP\.nuget\packages\select.htmltopdf.netcore.blink\23.2.0\contentFiles\any\any\Chromium-113.0.5672.127\113.0.5672.0.manifest" />
     <Content Remove="C:\Users\HP\.nuget\packages\select.htmltopdf.netcore.blink\23.2.0\contentFiles\any\any\Chromium-113.0.5672.127\chrome.dll" />
     <Content Remove="C:\Users\HP\.nuget\packages\select.htmltopdf.netcore.blink\23.2.0\contentFiles\any\any\Chromium-113.0.5672.127\chrome.exe" />
@@ -467,10 +474,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="wwwroot\EMPpdfs\" />
     <Folder Include="wwwroot\img1\" />
     <Folder Include="wwwroot\EmpProfile\" />
     <Folder Include="wwwroot\ChequeImage\" />
-    <Folder Include="wwwroot\Pdffile\" />
   </ItemGroup>
 
   <ItemGroup>

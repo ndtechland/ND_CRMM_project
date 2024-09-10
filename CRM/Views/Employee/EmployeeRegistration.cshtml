@@ -3,17 +3,28 @@
     ViewData["Title"] = "Employee";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        var message = "@ViewBag.Message";
+        var message = "@TempData["Message"]";
 
         if (message) {
-            swal({ text: message })
-            setTimeout(function () {
-                swal.close();
-            }, 5000);
+            Swal.fire({
+                title: 'Notification',
+                text: message,
+                icon: 'info',
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    setTimeout(function () {
+                        window.location.href = '@Url.Action("Employeelist", "Employee")';
+                    }, 1000);
+                }
+            });
         }
     });
 </script>
@@ -407,16 +418,17 @@
                                     </div>
                                 </div>
 
-                              @*   <div class="col-md-3">
-                                    <label>Company Name</label>
-                                    <div class="form-group">
-                                        <select class="form-control" name="CustomerID" id="ddCustomerID">
-                                            <option value="0">-- Select Company --</option>
-                                        </select>
-                                    </div>
+                                @*   <div class="col-md-3">
+                                <label>Company Name</label>
+                                <div class="form-group">
+                                <select class="form-control" name="CustomerID" id="ddCustomerID">
+                                <option value="0">-- Select Company --</option>
+                                </select>
+                                </div>
                                 </div> *@
-                                <input type="hidden" name="CustomerID" id="ddCustomerID" value="@ViewBag.userId">
-                                <input type="hidden" name="CustomerID" id="ddCustomerID" value="@ViewBag.Admin">
+                                <input type="hidden" name="Vendorid" id="ddCustomerID" value="@ViewBag.userId">
+                                @*                                 <input type="hidden" name="CustomerID" id="ddCustomerID" value="@ViewBag.Admin">
+                                *@
                                 <div class="col-md-3">
                                     <label>State Name</label>
                                     <div class="form-group">

@@ -3,10 +3,9 @@
     ViewData["Title"] = "GenerateSalary";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
-@if (ViewBag.ErrorMessage != null)
-{
-    <script>alert('@ViewBag.ErrorMessage');</script>
-}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <div class="page-wrapper">
     <div class="page-body-wrapper">
         <div class="page-sidebar">
@@ -41,18 +40,18 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-body">
-                                <div style="text-align: right;">
+                               @*  <div style="text-align: right;">
                                     <button type="button" class="btn btn-primary" id="downloadButton" style="color: black; border: 2px solid black;" onclick="MonthlyExcelfn()">
                                         Monthly Report
                                     </button>
                                     <button type="submit" class="btn btn-primary" style="color: black; border: 2px solid black;" onclick="return generateInvoice()">
                                         <i class="fa fa-plus"></i> Generate Invoice
                                     </button>
-                                </div>
+                                </div> *@
                                 <div></div>
                                 <form asp-action="GenerateSalary" autocomplete="off" method="post">
                                     <div class="row">
-                                        <div class="form-group col-md-3">
+                                     @*    <div class="form-group col-md-3">
                                             <label for="validationCustom0">Company Name</label>
                                             <select class="form-control" id="CustomerID" name="CustomerID" onchange="Locations()">
                                                 <option value="">-- Select Company --</option>
@@ -63,43 +62,43 @@
                                                 }
                                             </select>
                                         </div>
-                                <div class="form-group col-sm">
-                                    <label for="validationCustom0">Work Location</label>
+                                        <div class="form-group col-sm">
+                                            <label for="validationCustom0">Work Location</label>
                                             <select class="form-control col-md-" id="LocationID" name="WorkLocation">
                                                 <option value="">--Select WorkLocation--</option>
-                                              
-                                            </select>                                 
-                                </div>
-                                    <div class="form-group col-sm">
-                                        <label for="validationCustom0">Month</label>
-                                        <select id="Month" class="form-control" name="Month">
+
+                                            </select>
+                                        </div> *@
+                                        <div class="form-group col-sm">
+                                            <label for="validationCustom0">Month</label>
+                                            <select id="Month" class="form-control" name="Month">
 
                                                 <option value="">-- Select Month --</option>
-                                            <option value="1">January</option>
-                                            <option value="2">February</option>
-                                            <option value="3">March</option>
-                                            <option value="4">April</option>
-                                            <option value="5">May</option>
-                                            <option value="6">Jun</option>
-                                            <option value="7">July</option>
-                                            <option value="8">August</option>
-                                            <option value="9">Septemper</option>
-                                            <option value="10">Octobar</option>
-                                            <option value="11">November</option>
-                                            <option value="12">December</option>
-                                        </select>
-                                    </div>
+                                                <option value="1">January</option>
+                                                <option value="2">February</option>
+                                                <option value="3">March</option>
+                                                <option value="4">April</option>
+                                                <option value="5">May</option>
+                                                <option value="6">Jun</option>
+                                                <option value="7">July</option>
+                                                <option value="8">August</option>
+                                                <option value="9">Septemper</option>
+                                                <option value="10">Octobar</option>
+                                                <option value="11">November</option>
+                                                <option value="12">December</option>
+                                            </select>
+                                        </div>
 
-                                    <div class="form-group col-sm">
-                                        <label for="validationCustom0">Year</label>
+                                        <div class="form-group col-sm">
+                                            <label for="validationCustom0">Year</label>
                                             <select id="Year" class="form-control col-md-" name="Year">
                                                 <option value="">-- Select Year --</option>
-                                            <option value="2023">2023</option>
-                                            <option value="2024">2024</option>
-                                        </select>
+                                                <option value="2023">2023</option>
+                                                <option value="2024">2024</option>
+                                            </select>
+                                        </div>
                                     </div>
-                                    </div>
-                                
+
 
                                     <div class="form-button" style="display:flex; justify-content:center;">
                                         <input type="submit" value="Search" class="btn btn-primary" onclick="return validateForm()" />
@@ -112,14 +111,14 @@
                                             <div class="card">
                                                 <div class="card-body">
                                                     <div class=" table-responsive">
-                                                        @if (Model != null && Model.GeneratedSalaries.Count >0)
+                                                        @if (Model != null && Model.GeneratedSalaries.Count > 0)
                                                         {
                                                             <table id="datatable" class="table table-responsive">
                                                                 <thead>
                                                                     <tr style="background-color: #00baf2;">
                                                                         <th hidden>
-                                                                        ID
-                                                                       </th>
+                                                                            ID
+                                                                        </th>
                                                                         <th nowrap>Sl. No.</th>
                                                                         <th>
                                                                             Employee Id
@@ -128,7 +127,7 @@
                                                                             Employee Name
                                                                         </th>
                                                                         <th>
-                                                                           Monthly Ctc
+                                                                            Monthly Ctc
                                                                         </th>
                                                                         <th>
                                                                             Monthly GrossPay
@@ -144,25 +143,34 @@
                                                                         foreach (var item in Model.GeneratedSalaries)
                                                                         {
                                                                             count++;
-                                                                                                                             <tr>
-                                                                                                                            <td>@count</td>
-                                                                                                                            <td style="display:none">
-                                                                                                                             @item.Id
-                                                                                                                          </td>
-                                                                                                                           <td>@item.EmployeeId</td>
-                                                                                                                         <td>@item.EmployeeName</td>
-                                                                                                                         <td>@item.MonthlyCtc</td>
-                                                                                                                        <td>@item.MonthlyGrossPay</td>
-                                                                                                                        <td>
-                                                                                                                         <div>
-                                                                                                                        <a href="@Url.Action("DocPDF","Employee",new { id=item.Id})" class="fa fa-file-pdf-o font-danger"></a>
+                                                                            <tr>
+                                                                                <td>@count</td>
+                                                                                <td style="display:none">
+                                                                                    @item.Id
+                                                                                </td>
+                                                                                <td>@item.EmployeeId</td>
+                                                                                <td>@item.EmployeeName</td>
+                                                                                <td>@item.MonthlyCtc</td>
+                                                                                <td>@item.MonthlyGrossPay</td>
+                                                                              @*  <td>
+                                                                                    <div>
+                                                                                        <a href="@Url.Action("DocPDF","Employee",new { id=item.Id})" class="fa fa-file-pdf-o font-danger"></a>
 
-                                                                                                                          </div>
-                                                                                                                         </td>
-                                                                                                                         </tr>
+                                                                                    </div>
+                                                                                </td>*@
+                                                                                <td>
+                                                                                    <div>
+                                                                                        <a href="javascript:void(0)" onclick="downloadPDF(@item.Id)">
+                                                                                            <img src="@Url.Content("~/assets/images/layout-2/logo/pdf-icon-4.png")" alt="PDF Icon" style=" height: 80px; width: 80px;" />
+                                                                                        </a>
+                                                                                    </div>
+                                                                                </td>
+
+
+                                                                            </tr>
                                                                         }
-                                                                }                                                                   
-                                                          
+                                                                    }
+
                                                                 </tbody>
                                                             </table>
                                                         }
@@ -183,12 +191,58 @@
             </div>
         </div>
     </div>
- </div>
+</div>
 <input hidden type="text" id="custid" value="@ViewBag.custid" />
 <input hidden type="text" id="locid" value="@ViewBag.locid" />
 <input hidden type="text" id="monthid" value="@ViewBag.monthid" />
 <input hidden type="text" id="yearid" value="@ViewBag.yearid" />
- <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<script type="text/javascript">
+    function downloadPDF(id) {
+        var url = '@Url.Action("DocPDF", "Employee")' + '?id=' + id;
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Create a Blob from the PDF data
+                    var blob = new Blob([new Uint8Array(atob(data.pdf).split("").map(function (c) { return c.charCodeAt(0) }))], { type: 'application/pdf' });
+                    var link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = data.fileName;
+                    link.click();
+
+                    Swal.fire({
+                        title: 'Success',
+                        text: data.message,
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: data.message,
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'An error occurred while downloading the PDF.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            });
+    }
+</script>
+
+
+
+
+
 <script>
     var currentPage = 1;
     var rowsPerPage = 5;
@@ -241,66 +295,91 @@
 
 </script>
 <script>
-    
+
     $(document).ready(function () {
-       
-        $("#CustomerID").val($("#custid").val());
+
+        // $("#CustomerID").val($("#custid").val());
         $("#Month").val($("#monthid").val());
         $("#Year").val($("#yearid").val());
-        $("#LocationID").val($("#locid").val());
-        
+        // $("#LocationID").val($("#locid").val());
+
         Locations();
     });
 
-    function Locations() {
-        var customerId = $("#CustomerID").val();
-        if (customerId !== "") {
-            $.ajax({
-                url: '/Employee/GetLocationsByCustomer?customerId=' + customerId,
-                type: "post",
-                success: function (response) {                   
-                    populateLocations(response);
-                },
-                error: function (error) {
-                    console.error("Error loading locations: " + error);
-                }
-            });
-        } else {
-            $("#LocationID").empty();
-            $("#LocationID").append('<option value="">--Select WorkLocation--</option>');
+    // function Locations() {
+    //     var customerId = $("#CustomerID").val();
+    //     if (customerId !== "") {
+    //         $.ajax({
+    //             url: '/Employee/GetLocationsByCustomer?customerId=' + customerId,
+    //             type: "post",
+    //             success: function (response) {
+    //                 populateLocations(response);
+    //             },
+    //             error: function (error) {
+    //                 console.error("Error loading locations: " + error);
+    //             }
+    //         });
+    //     } else {
+    //         $("#LocationID").empty();
+    //         $("#LocationID").append('<option value="">--Select WorkLocation--</option>');
+    //     }
+    // }
+
+    // function populateLocations(response) {
+    //     $("#LocationID").empty();
+    //     $("#LocationID").append('<option value="">--Select WorkLocation--</option>');
+
+    //     $.each(response, function (i, response) {
+    //         $("#LocationID").append('<option value="' + response.text + '">' + response.value + '</option>');
+    //     });
+
+
+    //     var locId = $("#locid").val();
+    //     if (locId !== "") {
+    //         $("#LocationID").val(locId);
+    //     }
+    // }
+</script>
+<script>
+    function validateForm() {
+        // var CustomerID = document.getElementById('CustomerID').value;
+        var Month = document.getElementById('Month').value;
+        var Year = document.getElementById('Year').value;
+        // var WorkLocation = document.getElementById('LocationID').value;
+
+        // if (CustomerID === '') {
+        //     alert("Please select Company.");
+        //     return false;
+        // }
+        // if (WorkLocation === '') {
+        //     alert("Please select WorkLocation.");
+        //     return false;
+        // }
+        if (Month === '') {
+            alert("Please select Month.");
+            return false;
         }
-    }
-
-    function populateLocations(response) {
-        $("#LocationID").empty();
-        $("#LocationID").append('<option value="">--Select WorkLocation--</option>');
-
-        $.each(response, function (i, response) {
-            $("#LocationID").append('<option value="' + response.text + '">' + response.value + '</option>');
-        });
-
-       
-        var locId = $("#locid").val();
-        if (locId !== "") {
-            $("#LocationID").val(locId);         
+        if (Year === '') {
+            alert("Please select Year.");
+            return false;
         }
+
     }
 </script>
 <script>
-function validateForm() {
-        var CustomerID = document.getElementById('CustomerID').value;
-        var Month = document.getElementById('Month').value;
-        var Year = document.getElementById('Year').value;
-        var WorkLocation = document.getElementById('LocationID').value;
-
-        if (CustomerID === '') {
-            alert("Please select Company.");
-            return false;
-        }
-        if (WorkLocation === '') {
-            alert("Please select WorkLocation.");
-            return false;
-        }
+    function generateInvoice() {
+        // var CustomerID = $("#CustomerID").val();
+        var Month = $("#Month").val();
+        var Year = $("#Year").val();
+        // var WorkLocation = $("#LocationID").val();
+        // if (CustomerID === '') {
+        //     alert("Please select Company.");
+        //     return false;
+        // }
+        // if (WorkLocation === '') {
+        //     alert("Please select WorkLocation.");
+        //     return false;
+        // }
         if (Month === '') {
             alert("Please select Month.");
             return false;
@@ -309,52 +388,26 @@ function validateForm() {
             alert("Please select Year.");
             return false;
         }
-      
-  }        
-</script>
-<script>    
-    function generateInvoice(){
-    var CustomerID = $("#CustomerID").val();
-    var Month = $("#Month").val();
-    var Year = $("#Year").val();
-    var WorkLocation = $("#LocationID").val();
-        if (CustomerID === '') {
-            alert("Please select Company.");
-            return false;
-        }
-        if (WorkLocation === '') {
-            alert("Please select WorkLocation.");
-            return false;
-        }
-        if (Month === '') {
-            alert("Please select Month.");
-            return false;
-        }
-        if (Year === '') {
-            alert("Please select Year.");
-            return false;
-        }       
-        if (CustomerID != null || Month != null || Year != null || WorkLocation !=null)
-        {
+        if (CustomerID != null || Month != null || Year != null || WorkLocation != null) {
             window.location.href = '/Employee/Invoice?customerId=' + CustomerID + '&Month=' + Month + '&year=' + Year + '&WorkLocation=' + WorkLocation;
-        }        
-       
-    }       
+        }
+
+    }
 </script>
 <script>
     function MonthlyExcelfn() {
-        var customerId = document.getElementById("CustomerID").value;
-        var workLocation = document.getElementById("LocationID").value;
+        // var customerId = document.getElementById("CustomerID").value;
+        // var workLocation = document.getElementById("LocationID").value;
         var Month = document.getElementById('Month').value;
         var Year = document.getElementById('Year').value;
-        if (customerId === '') {
-            alert("Please select Company.");
-            return false;
-        }
-        if (workLocation === '') {
-            alert("Please select WorkLocation.");
-            return false;
-        }
+        // if (customerId === '') {
+        //     alert("Please select Company.");
+        //     return false;
+        // }
+        // if (workLocation === '') {
+        //     alert("Please select WorkLocation.");
+        //     return false;
+        // }
         if (Month === '') {
             alert("Please select Month.");
             return false;
@@ -364,6 +417,6 @@ function validateForm() {
             return false;
         }
         window.location.href = '/Employee/MonthlysalaryReport?customerId=' + customerId + '&WorkLocation=' + workLocation + '&Month=' + Month + '&Year=' + Year;
-    } 
+    }
 </script>
 

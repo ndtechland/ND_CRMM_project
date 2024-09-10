@@ -142,65 +142,6 @@
                                     <li><a href="/Home/QuationList"><i class="fa fa-circle"></i>List of Quotation </a></li>
                                 </ul>
                             </li>
-                            @* <li>
-                                <a class="sidebar-header" href="javascript:void(0)"><i data-feather="box"></i> <span>HR Payrole</span><i class="fa fa-angle-right pull-right"></i></a>
-                                <ul class="sidebar-submenu">
-                                    <li>
-                                        <a class="sidebar-header"><i class="fa fa-circle"></i> <span>Employee</span><i class="fa fa-angle-right pull-right"></i></a>
-                                        <ul class="sidebar-submenu">
-
-                                            <li><a href="/Employee/EmployeeRegistration"><i class="fa fa-circle"></i>Employee Registration</a></li>
-                                            <li><a href="/Employee/Employeelistg"><i class="fa fa-circle"></i>Employee List </a></li>
-                                            <li><a href="/Employee/salarydetail"><i class="fa fa-circle"></i>Generate Salary  </a></li>
-                                            <li><a href="/Employee/GenerateSalary"><i class="fa fa-circle"></i>Generate Invoice </a></li>
-                                            <li><a href="/Attendance/Index"><i class="fa fa-circle"></i>Employee Location</a></li>
-                                        </ul>
-                                    </li>
-
-                                 <li>
-                                        <a class="sidebar-header" href="javascript:void(0)"><i class="fa fa-circle"></i><span>Form 16</span><i class="fa fa-angle-right pull-right"></i></a>
-                                        <ul class="sidebar-submenu">
-                                            <li><a href=""><i class="fa fa-circle"></i>Employee's</a></li>
-                                        <li><a href=""><i class="fa fa-circle"></i>Generate Salary </a></li>
-
-                                        </ul>
-                                    </li>
-                                    <li>
-                                        <a class="sidebar-header" href="javascript:void(0)"><i class="fa fa-circle"></i> <span>Report</span><i class="fa fa-angle-right pull-right"></i></a>
-                                        <ul class="sidebar-submenu">
-                                            <li><a href="/Employee/Employeelists"><i class="fa fa-circle"></i>Employees CTC detail</a></li>
-                                            <li><a href="/Employee/GenerateSalaryReport"><i class="fa fa-circle"></i>Monthly pay summary </a></li>
-                                            <li><a href="/Employee/EPFReport"><i class="fa fa-circle"></i>EPF summary </a></li>
-                                            <li><a href="/Employee/ESIReport"><i class="fa fa-circle"></i>ESI summary </a></li>
-                                        </ul>
-                                    </li>
-                                    <li>
-                                        <a class="sidebar-header" href="javascript:void(0)"><i class="fa fa-circle"></i> <span>Letters</span><i class="fa fa-angle-right pull-right"></i></a>
-                                        <ul class="sidebar-submenu">
-                                            <li><a href="##"><i class="fa fa-circle"></i>Offer letter</a></li>
-                                            <li><a href="##"><i class="fa fa-circle"></i>Appoinment letter </a></li>
-                                            <li><a href="##"><i class="fa fa-circle"></i>Relieving letter </a></li>
-                                            <li><a href="##"><i class="fa fa-circle"></i>Exp letter </a></li>
-
-                                        </ul>
-                                    </li> 
-                                </ul>
-
-                        </li> 
-                            <li>
-                                <a class="sidebar-header" href="javascript:void(0)"><i class="me-2" data-feather="settings"></i> <span>Settings</span><i class="fa fa-angle-right pull-right"></i></a>
-                                <ul class="sidebar-submenu">
-                                    <li><a href=""><i class="fa fa-circle"></i>organization Profile</a></li>
-                                    <li><a href="/Home/WorkLocationlist"><i class="fa fa-circle"></i>Work location </a></li>
-                                    <li><a href="/Home/Departmentlist"><i class="fa fa-circle"></i>Department </a></li>
-                                    <li><a href="/Home/Designationlist"><i class="fa fa-circle"></i>Designation </a></li>
-                                    <li><a href="##"><i class="fa fa-circle"></i>Salary component </a></li>
-                                    <li><a href="/Employee/Employer"><i class="fa fa-circle"></i>Employer </a></li>
-                                    <li><a href="/Employee/Employee_list"><i class="fa fa-circle"></i>Employer List</a></li>
-                                    <li><a href="/Home/employeerTDS"><i class="fa fa-circle"></i>Employer TDS </a></li>
-                                     <li><a href="/Home/addcontribution"><i class="fa fa-circle"></i>Additonal Contribution </a></li>
-                                </ul>
-                        </li> *@
                         </ul>
                     </div>
                 </div>
@@ -218,7 +159,7 @@
 
         </div>
     }
-    else
+    else 
     {
         <div class="page-wrapper">
             @RenderBody()
@@ -285,7 +226,7 @@
                                     <li>
                                         <a class="sidebar-header" href="javascript:void(0)"><i class="fa fa-circle"></i><span>Approval List</span><i class="fa fa-angle-right pull-right"></i></a>
                                         <ul class="sidebar-submenu">
-                                            <li><a href="/Vendor/ApprovedPresnolInfo"><i class="fa fa-circle"></i>Employee Personal Information</a></li>
+                                            <li><a href="/Vendor/ApprovedPresnolInfo"><i class="fa fa-circle"></i>Employee Personal Info</a></li>
                                             <li><a href="/Vendor/Approvedbankdetails"><i class="fa fa-circle"></i>Employee Bank Details</a></li>
                                         </ul>
                                     </li>
@@ -299,11 +240,11 @@
                                         <ul class="sidebar-submenu">
 
                                             <li><a href="/Employee/EmployeeRegistration"><i class="fa fa-circle"></i>Employee Registration</a></li>
-                                            <li><a href="/Employee/Employeelistg"><i class="fa fa-circle"></i>Employee List </a></li>
+                                            <li><a href="/Employee/Employeelist"><i class="fa fa-circle"></i>Employee List </a></li>
                                             <li><a href="/Employee/salarydetail"><i class="fa fa-circle"></i>Generate Salary  </a></li>
-                                            <li><a href="/Employee/GenerateSalary"><i class="fa fa-circle"></i>Generate Invoice </a></li>
-                                            <li><a href="/Attendance/Index"><i class="fa fa-circle"></i>Employee Location</a></li>
-                                        </ul>
+                                            <li><a href="/Employee/GenerateSalary"><i class="fa fa-circle"></i>Generate SalarySlip </a></li>
+@*                                             <li><a href="/Attendance/Index"><i class="fa fa-circle"></i>Employee Location</a></li>
+ *@                                        </ul>
                                     </li>
 
                                     <li>
@@ -318,7 +259,6 @@
                                         <a class="sidebar-header" href="javascript:void(0)"><i class="fa fa-circle"></i> <span>Report</span><i class="fa fa-angle-right pull-right"></i></a>
                                         <ul class="sidebar-submenu">
                                             <li><a href="/Employee/Employeelists"><i class="fa fa-circle"></i>Employees CTC detail</a></li>
-                                            @* <li><a href=""><i class="fa fa-circle"></i>Reimbursmennt summary </a></li> *@
                                             <li><a href="/Employee/GenerateSalaryReport"><i class="fa fa-circle"></i>Monthly pay summary </a></li>
                                             <li><a href="/Employee/EPFReport"><i class="fa fa-circle"></i>EPF summary </a></li>
                                             <li><a href="/Employee/ESIReport"><i class="fa fa-circle"></i>ESI summary </a></li>
@@ -336,7 +276,13 @@
                                     <li>
                                         <a class="sidebar-header" href="javascript:void(0)"><i class="fa fa-circle"></i> <span>Letters</span><i class="fa fa-angle-right pull-right"></i></a>
                                         <ul class="sidebar-submenu">
-                                            <li><a href="##"><i class="fa fa-circle"></i>Offer letter</a></li>
+                                            <li>
+                                                <a class="sidebar-header" href="javascript:void(0)"><i class="fa fa-circle"></i><span>Offer letter</span><i class="fa fa-angle-right pull-right"></i></a>
+                                                <ul class="sidebar-submenu">
+                                                    <li><a href="##"><i class="fa fa-circle"></i>Offer letter</a></li>
+
+                                                </ul>
+                                            </li>
                                             <li><a href="##"><i class="fa fa-circle"></i>Appoinment letter </a></li>
                                             <li><a href="##"><i class="fa fa-circle"></i>Relieving letter </a></li>
                                             <li><a href="##"><i class="fa fa-circle"></i>Exp letter </a></li>

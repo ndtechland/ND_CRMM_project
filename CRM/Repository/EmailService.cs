@@ -39,7 +39,7 @@ namespace CRM.Repository
             try
             {
                 var emailMessage = new MimeMessage();
-                emailMessage.From.Add(new MailboxAddress("GA", "aastrolense@gmail.com"));
+                emailMessage.From.Add(new MailboxAddress("ND Coneect", "aastrolense@gmail.com"));
                 emailMessage.To.Add(new MailboxAddress("Recipient Name", toEmail));
                 //emailMessage.Cc.Add(new MailboxAddress("Recipient Name", "ndcaretrust@gmail.com"));
                 //emailMessage.Bcc.Add(new MailboxAddress("Recipient Name", "ndinfotechteam@gmail.com"));
