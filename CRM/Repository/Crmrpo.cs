@@ -1598,6 +1598,7 @@ namespace CRM.Repository
                 PresnolInfo = _context.ApprovedPresnolInfos.Where(x => x.IsApproved == false && x.Vendorid== adminlogin.Vendorid ).Select(x => new EmployeeApprovedPresnolInfo
                 {
                     id = x.Id,
+                    FullName = x.FullName,
                     PersonalEmailAddress = x.PersonalEmailAddress,
                     MobileNumber = x.MobileNumber ?? 0,
                     DateOfBirth = x.DateOfBirth,
@@ -1614,6 +1615,7 @@ namespace CRM.Repository
                     EmployeeId = x.EmployeeId,
                     IsApproved = x.IsApproved,
                     UpdateDate = x.UpdateDate,
+                    EmpProfile = x.EmpProfile,
                 }).ToList();
                 return PresnolInfo;
             }
@@ -1631,6 +1633,7 @@ namespace CRM.Repository
                     var existingEntity = await _context.ApprovedPresnolInfos.FindAsync(model.id);
                     if (existingEntity != null)
                     {
+                        existingEntity.FullName = model.FullName;
                         existingEntity.PersonalEmailAddress = model.PersonalEmailAddress;
                         existingEntity.MobileNumber = model.MobileNumber;
                         existingEntity.DateOfBirth = model.DateOfBirth;
@@ -1653,6 +1656,10 @@ namespace CRM.Repository
                         if (model.AadharTwo! != null)
                         {
                             existingEntity.AadharTwo = model.AadharTwo;
+                        }
+                        if (model.Empprofile! != null)
+                        {
+                            existingEntity.EmpProfile = model.EmpProfiles;
                         }
                         existingEntity.UpdateDate = DateTime.Now;
                         existingEntity.IsApproved = false;

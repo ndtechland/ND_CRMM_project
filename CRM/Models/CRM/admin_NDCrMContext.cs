@@ -15,7 +15,6 @@ namespace CRM.Models.Crm
             : base(options)
         {
         }
-        public virtual DbSet<EmployeeImportExcel> EmpMultiforms { get; set; } = null!;
 
         public virtual DbSet<AccountTypeMaster> AccountTypeMasters { get; set; } = null!;
         public virtual DbSet<Additonalcontribution> Additonalcontributions { get; set; } = null!;
@@ -61,6 +60,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<VendorRegistration> VendorRegistrations { get; set; } = null!;
         public virtual DbSet<WorkLocation> WorkLocations { get; set; } = null!;
         public virtual DbSet<WorkLocation1> WorkLocations1 { get; set; } = null!;
+        public virtual DbSet<EmployeeImportExcel> EmpMultiforms { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -151,9 +151,13 @@ namespace CRM.Models.Crm
                     .HasColumnType("datetime")
                     .HasColumnName("Date_Of_Birth");
 
+                entity.Property(e => e.EmpProfile).HasMaxLength(250);
+
                 entity.Property(e => e.EmployeeId)
                     .HasMaxLength(100)
                     .HasColumnName("EmployeeId ");
+
+                entity.Property(e => e.FullName).HasMaxLength(250);
 
                 entity.Property(e => e.MobileNumber).HasColumnName("Mobile_Number");
 

@@ -73,7 +73,12 @@ namespace CRM.Models.Crm
         public decimal? SpecialAllowance { get; set; }
         public decimal? Servicecharge { get; set; }
         public decimal? gross { get; set; }
-
+        public string? EmpProfile { get; set; }
+        public string? Aadharcard { get; set; }
+        public string? AadharOne { get; set; }
+        public string? Panimg { get; set; }
+        public string? AadharTwo { get; set; }
+        public string? Chequeimage { get; set; }
 
     }
 }

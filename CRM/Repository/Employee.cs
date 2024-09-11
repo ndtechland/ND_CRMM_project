@@ -265,7 +265,7 @@ namespace CRM.Repository
                     apppersonal.AadharNo = model.AadharNo;
                     apppersonal.UpdateDate = DateTime.Now.Date;
                     apppersonal.IsApproved = false;
-                    emp.FirstName = model.FullName;
+                    apppersonal.FullName = model.FullName;
                     if (!string.IsNullOrEmpty(panImagePath))
                     {
                         apppersonal.Panimg = fileOperation.SaveBase64Image("img1", model.PanbaseImage, allowedExtensions);
@@ -295,7 +295,7 @@ namespace CRM.Repository
                     if (model.Empprofile != null)
                     {
                         string EmpprofileImagePath = fileOperation.SaveBase64Image("EmpProfile", model.Empprofile, allowedExtensions);
-                        emp.EmpProfile = EmpprofileImagePath;
+                        apppersonal.EmpProfile = EmpprofileImagePath;
                     }
 
                     await _context.SaveChangesAsync();
@@ -303,14 +303,9 @@ namespace CRM.Repository
                 }
                 else
                 {
-                    emp.FirstName = model.FullName;
-                    if (model.Empprofile != null)
-                    {
-                        string EmpprofileImagePath = fileOperation.SaveBase64Image("EmpProfile", model.Empprofile, allowedExtensions);
-                        emp.EmpProfile = EmpprofileImagePath;
-                    }
                     ApprovedPresnolInfo empP = new ApprovedPresnolInfo();
                     {
+                        empP.FullName = model.FullName;
                         empP.Vendorid = emp.Vendorid;
                         empP.EmployeeId = userid;
                         empP.PersonalEmailAddress = model.PersonalEmailAddress;
@@ -345,6 +340,11 @@ namespace CRM.Repository
                         {
                             panImagePath = fileOperation.SaveBase64Image("img1", model.PanbaseImage, allowedExtensions);
                             empP.Panimg = panImagePath;
+                        }
+                        if (model.Empprofile != null)
+                        {
+                            string EmpprofileImagePath = fileOperation.SaveBase64Image("EmpProfile", model.Empprofile, allowedExtensions);
+                            empP.EmpProfile = EmpprofileImagePath;
                         }
                     }
 
