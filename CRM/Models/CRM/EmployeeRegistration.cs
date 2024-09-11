@@ -21,5 +21,7 @@ namespace CRM.Models.Crm
         public int? RoleId { get; set; }
         public long? StateId { get; set; }
         public string? EmpProfile { get; set; }
+        public string? Appoinmentletter { get; set; }
+        public int? Offerletterid { get; set; }
     }
 }

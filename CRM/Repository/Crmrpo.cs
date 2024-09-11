@@ -20,6 +20,8 @@ using Humanizer;
 using Org.BouncyCastle.Asn1.X509;
 using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 using System.Text;
+using CRM.IUtilities;
+using Microsoft.AspNetCore.Hosting;
 
 
 namespace CRM.Repository
@@ -29,12 +31,15 @@ namespace CRM.Repository
         public IConfiguration Configuration { get; }
         private admin_NDCrMContext _context;
         private readonly IEmailService _IEmailService;
+        private readonly IWebHostEnvironment _webHostEnvironment;
+
         //public virtual DbSet<EmployeeImportExcel> EmpMultiforms { get; set; } = null!;
-        public Crmrpo(admin_NDCrMContext context, IConfiguration configuration, IEmailService IEmailService)
+        public Crmrpo(admin_NDCrMContext context, IConfiguration configuration, IEmailService IEmailService, IWebHostEnvironment hostingEnvironment, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
             Configuration = configuration;
             _IEmailService = IEmailService;
+            _webHostEnvironment = webHostEnvironment;
         }
         //public DataTable Login(AdminLogin model)
         //{
@@ -1497,6 +1502,7 @@ namespace CRM.Repository
                         State = rdr["State"] == DBNull.Value ? null : Convert.ToString(rdr["State"]),
                         StateName = rdr["statename"] == DBNull.Value ? null : Convert.ToString(rdr["statename"]),
                         Location = rdr["Billing_Address"] == DBNull.Value ? null : Convert.ToString(rdr["Location"]),
+                        CompanyImage = rdr["Company_Image"] == DBNull.Value ? null : Convert.ToString(rdr["Company_Image"]),
 
                     };
 
@@ -1512,11 +1518,8 @@ namespace CRM.Repository
             {
                 cs = null;
             }
-            //List<Customer> cs = new List<Customer>();
-            //var result = await _context.CustomerRegistrations.FromSqlRaw<Customer>("Customerlist").ToListAsync();
-            //return result;
         }
-        public async Task<VendorRegistration> GetVendorProfile(string? id)
+        public async Task<VendorRegistrationDto> GetVendorProfile(string? id)
         {
             try
             {
@@ -1524,7 +1527,7 @@ namespace CRM.Repository
                                    join customer in _context.VendorRegistrations
                                    on admin.Vendorid equals customer.Id
                                    where admin.Id == Convert.ToInt32(id)
-                                   select new VendorRegistration
+                                   select new VendorRegistrationDto
                                    {
                                        Id = (int)admin.Vendorid,
                                        CompanyName = customer.CompanyName,
@@ -1535,7 +1538,8 @@ namespace CRM.Repository
                                        AlternateNumber = customer.AlternateNumber,
                                        BillingAddress = customer.BillingAddress,
                                        Location = customer.Location,
-                                       UserName = admin.UserName
+                                       UserName = admin.UserName,
+                                       CompanyImage = customer.CompanyImage
                                    }).FirstOrDefaultAsync();
                 return query;
             }
@@ -1544,14 +1548,27 @@ namespace CRM.Repository
                 throw ex;
             }
         }
-        public async Task<int> UpdateVendorProfile(VendorRegistration model, int id)
+        public async Task<int> UpdateVendorProfile(VendorRegistrationDto model, int id)
         {
+            FileOperation fileOperation = new FileOperation(_webHostEnvironment);
+            string[] allowedExtensions = { ".jpg", ".jpeg", ".png" };
+
             var adminusername = await _context.AdminLogins.FirstOrDefaultAsync(x => x.Id == id);
             var customer = await _context.VendorRegistrations.FirstOrDefaultAsync(x => x.Id == adminusername.Vendorid);
 
             if (customer == null)
             {
                 return 0;
+            }
+            if (model.ImageFile != null)
+            {
+                var fileExtension = Path.GetExtension(model.ImageFile.FileName).ToLower();
+                if (!allowedExtensions.Contains(fileExtension))
+                {
+                    throw new InvalidOperationException("Only .jpg, .jpeg, and .png files are allowed.");
+                }
+                string ImagePath = fileOperation.SaveBase64Image("CompanyImage", model.ImageFile, allowedExtensions);
+                customer.CompanyImage = ImagePath;
             }
             customer.CompanyName = model.CompanyName;
             customer.Email = model.Email;
@@ -1567,10 +1584,11 @@ namespace CRM.Repository
                 adminusername.UserName = model.UserName;
                 _context.AdminLogins.Update(adminusername);
                 await _context.SaveChangesAsync();
-
             }
+
             return 1;
         }
+
         public async Task<List<EmployeeApprovedPresnolInfo>> ApprovedPresnolInfoList(int Userid)
         {
             try

@@ -1,4 +1,4 @@
-﻿@model CRM.Models.Crm.VendorRegistration
+﻿@model CRM.Models.DTO.VendorRegistrationDto
 @{
     ViewData["Title"] = "CustomerProfile";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
@@ -6,6 +6,41 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<script type="text/javascript">
+    function DeleteCompanyImageFile(FilePath, id) {
+        var selectedValue = FilePath;
+        if (confirm('Are you sure you want to delete this file?')) {
+            $.get('/Vendor/DeletCompanyImageFile', { FilePath: selectedValue, id: id }, function (data) {
+                if (data == true) {
+                    $("#ImageFile").removeAttr("disabled");
+                    $("#ImageDetails").hide();
+                    $("#filedelete").hide();
+                    $("#hdnFilePath").val("");
+                }
+            });
+        }
+    }
+
+    $(document).ready(function () {
+        $("#filedelete").click(function () {
+            $("#ImageDetails").hide();
+            $("#filedelete").hide();
+        });
+    });
+</script>
+<script type="text/javascript">
+    function confirmDelete(url) {
+        var result = confirm("Are you sure you want to delete..");
+        if (result) {
+
+            window.location.href = url;
+        } else {
+
+            alert("Deletion cancelled.");
+        }
+    }
+</script>
 
 
 <script>
@@ -133,7 +168,7 @@
                         <div class="card mb-4">
                             <div class="card-header text-center" style="color:black">Profile Details</div>
                             <div class="card-body">
-                                <form asp-action="VendorProfile" method="post" autocomplete="off">
+                                <form asp-action="VendorProfile" method="post" autocomplete="off" enctype="multipart/form-data">
                                     <div class="row gx-3 mb-3">
                                         <input asp-for="Id" type="hidden" value="@ViewBag.id" />
                                         <div class="col-md-6">
@@ -189,6 +224,33 @@
                                             <span asp-validation-for="Email" class="text-danger"></span>
                                         </div>
                                     </div>
+                                    @if (ViewBag.FilePathDetail != "")
+                                    {
+                                        <div class="row gx-3 mb-3">
+                                            <div class="col-md-6">
+                                                <label for="exampleInputFile">Company Image</label>
+                                                <input type="hidden" value='@ViewBag.vendorid' name="Id" />
+                                                <input type="file" accept=".jpg, .jpeg, .png, .gif, .mp4, .avi, .mkv" id="ImageFile" name="ImageFile">
+                                                <br />
+                                                <br />
+                                                <img src='../CompanyImage/@ViewBag.FilePathDetail' id="ImageDetails" style="height:100px;width:100px" />
+                                                <i class="fas fa-trash-alt" id="filedelete" onclick="DeleteCompanyImageFile('@Html.Raw(ViewBag.FilePathDetail)', @ViewBag.vendorid)" style="color:red"></i>
+                                                <input type="hidden" value='@ViewBag.FilePathDetail' id="hdnFilePath" name="FilePath" />
+                                            </div>
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        <div class="row gx-3 mb-3">
+                                            <div class="col-md-6">
+                                                <label for="exampleInputFile">Company Image</label>
+                                                <input type="hidden" value='@ViewBag.vendorid' name="Id" />
+                                                <input type="file" accept=".jpg, .jpeg, .png, .gif, .mp4, .avi, .mkv" id="ImageFile" name="ImageFile">
+                                                <input type="hidden" value='@ViewBag.FilePathDetail' name="FilePath" />
+                                            </div>
+                                        </div>                                
+                                    }
                                     <div class="form-group d-flex justify-content-center">
                                         <input type="submit" value="Update" class="btn btn-primary" />
                                     </div>

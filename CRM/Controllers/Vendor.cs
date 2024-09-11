@@ -20,8 +20,7 @@ namespace CRM.Controllers
             this._ICrmrpo = _ICrmrpo;
             _webHostEnvironment = hostingEnvironment;
         }
-        [Route("Vendor/VendorRegistration")]
-        [HttpGet]
+        [HttpGet, Route("Vendor/VendorRegistration")]
         public IActionResult VendorRegistration(int id = 0)
         {
             if (HttpContext.Session.GetString("UserName") != null)
@@ -143,8 +142,7 @@ namespace CRM.Controllers
             }
         }
 
-        [Route("Vendor/VendorProfile")]
-        [HttpGet]
+        [HttpGet,Route("Vendor/VendorProfile")]
         public async Task<IActionResult> VendorProfile()
         {
             if (HttpContext.Session.GetString("UserName") != null)
@@ -153,6 +151,8 @@ namespace CRM.Controllers
                 string id = Convert.ToString(HttpContext.Session.GetString("UserId")); 
                 ViewBag.UserName = AddedBy;
                 var data = await _ICrmrpo.GetVendorProfile(id);
+                ViewBag.vendorid = data.Id;
+                ViewBag.FilePathDetail = data.CompanyImage;
                 ViewBag.id = id;
                 return View(data);
             }
@@ -162,7 +162,7 @@ namespace CRM.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> VendorProfile(VendorRegistration model)
+        public async Task<IActionResult> VendorProfile(VendorRegistrationDto model)
         {
             try
             {
@@ -181,11 +181,17 @@ namespace CRM.Controllers
                     return View();
                 }
             }
+            catch (InvalidOperationException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return View(model);  
+            }
             catch (Exception Ex)
             {
-                throw new Exception("Error:" + Ex.Message);
+                throw new Exception("Error: " + Ex.Message);
             }
         }
+
         [HttpGet,Route("Vendor/ApprovedPresnolInfo")]
         public async Task<IActionResult> ApprovedPresnolInfo(int? id)
         {
@@ -498,6 +504,33 @@ namespace CRM.Controllers
                 Console.WriteLine(ex.Message);
                 return Json(new { success = false, message = ex.Message });
             }
+        }
+        [HttpGet]
+        public IActionResult DeletCompanyImageFile(string FilePath, int id)
+        {
+            bool success = false;
+
+            if (FilePath != "")
+            {
+                string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "CompanyImage");
+                string folderfilepathPath = folderPath + "//" + FilePath;
+                if (Directory.Exists(folderPath))
+                {
+                    if (System.IO.File.Exists(folderfilepathPath))
+                    {
+                        System.IO.File.Delete(folderfilepathPath);
+                        success = true;
+                    }
+                    var img = _context.VendorRegistrations.FirstOrDefault(s => s.CompanyImage == FilePath && s.Id == id);
+                    if (img != null)
+                    {
+                        img.CompanyImage = null;
+                        _context.SaveChangesAsync();
+                    }
+
+                }
+            }
+            return Json(success);
         }
     }
 }
