@@ -212,6 +212,8 @@ namespace CRM.Controllers
                     int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                     ViewBag.UserName = addedBy;
                     ViewBag.id = 0;
+                    ViewBag.FullName = "";
+                    ViewBag.EmpProfile = "";
                     ViewBag.Personal_Email_Address = "";
                     ViewBag.Mobile_Number = "";
                     ViewBag.Date_Of_Birth = "";
@@ -236,6 +238,7 @@ namespace CRM.Controllers
                         if (ApprovedPresnolInfo != null)
                         {
                             ViewBag.id = ApprovedPresnolInfo.Id;
+                            ViewBag.FullName = ApprovedPresnolInfo.FullName;
                             ViewBag.Personal_Email_Address = ApprovedPresnolInfo.PersonalEmailAddress;
                             ViewBag.Mobile_Number = ApprovedPresnolInfo.MobileNumber;
                             ViewBag.Date_Of_Birth = ApprovedPresnolInfo.DateOfBirth?.ToString("yyyy-MM-dd");
@@ -249,6 +252,7 @@ namespace CRM.Controllers
                             ViewBag.Aadharone = ApprovedPresnolInfo.AadharOne;
                             ViewBag.Aadhartwo = ApprovedPresnolInfo.AadharTwo;
                             ViewBag.Panimg = ApprovedPresnolInfo.Panimg;
+                            ViewBag.EmpProfile = ApprovedPresnolInfo.EmpProfile;
                             ViewBag.Heading = "Update PersonalInfo";
                             ViewBag.BtnText = "UPDATE";
                         }
@@ -289,6 +293,14 @@ namespace CRM.Controllers
                         if (panImageName != "not allowed")
                         {
                             model.Panimg = panImageName;
+                        }
+                    }
+                    if (model.Empprofile != null)
+                    {
+                        var EmpprofileImagePath = fileOperation.SaveBase64Image("EmpProfile", model.Empprofile, allowedExtensions);
+                        if (EmpprofileImagePath != "not allowed")
+                        {
+                            model.EmpProfiles = EmpprofileImagePath;
                         }
                     }
                     if (model.Aadharbase64 != null && model.Aadharbase64.Count == 2)
@@ -338,9 +350,11 @@ namespace CRM.Controllers
                 {
                     item.IsApproved = isApproved;
                     await _context.SaveChangesAsync();
+                    var empRe = await _context.EmployeeRegistrations.FirstOrDefaultAsync(x => x.EmployeeId == item.EmployeeId);
                     var emp = await _context.EmployeePersonalDetails.FirstOrDefaultAsync(x => x.EmpRegId == item.EmployeeId);
                     if (emp != null)
                     {
+                        empRe.FirstName = item.FullName;
                         emp.PersonalEmailAddress = item.PersonalEmailAddress;
                         emp.MobileNumber =Convert.ToString(item.MobileNumber);
                         emp.DateOfBirth = (DateTime)item.DateOfBirth;
@@ -354,6 +368,7 @@ namespace CRM.Controllers
                         emp.AadharOne = item.AadharOne;
                         emp.Panimg = item.Panimg;
                         emp.AadharTwo = item.AadharTwo;
+                        empRe.EmpProfile = item.EmpProfile;
                         await _context.SaveChangesAsync();
                         return Json(new { success = true, message = "Approved Successfully" });
                     }

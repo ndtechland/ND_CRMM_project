@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CRM.Models.Crm
 {
@@ -20,7 +19,9 @@ namespace CRM.Models.Crm
         public string? State { get; set; }
         public int? StateId { get; set; }
         public int? Vendorid { get; set; }
-        [NotMapped]
-        public string UserName { get; set; } = null!;
+        public string? UserName { get; set; }
+
+       
+
     }
 }

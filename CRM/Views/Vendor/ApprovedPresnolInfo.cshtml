@@ -5,7 +5,7 @@
 }
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 @if (ViewBag.BtnText == "UPDATE")
-{ 
+{
     <div class="page-wrapper">
         <div class="page-body-wrapper">
             <div class="page-sidebar">
@@ -39,126 +39,124 @@
                         <div class="col-sm-12">
                             <div class="card">
                                 <div class="card-body">
-                                    <form method="post" enctype="multipart/form-data" action="/Employee/ApprovedPresnolInfo" autocomplete="off" onsubmit="return validateForm()">
-                                        <div class="row">
-                                            <div class="col-lg-4">
-                                                <label>Personal Email Address</label>
-                                                <input type="hidden" value='@ViewBag.id' name="Id" />
-                                                <input class="form-control " value='@ViewBag.Personal_Email_Address' placeholder="Enter Personal Email Address" name="PersonalEmailAddress" id="PersonalEmailAddress" type="email" required="">
-                                            </div>
-                                            <div class="col-lg-4">
-                                                <label for="MobileNumber">Mobile Number</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text" id="basic-addon1">+91</span>
-                                                    <input class="form-control" value="@ViewBag.Mobile_Number" name="MobileNumber" placeholder="Enter Mobile Number" id="MobileNumber" type="text" maxlength="10" minlength="10" required onkeydown="validateNumericInput(event)">
+                                    <form method="post" enctype="multipart/form-data" action="/Vendor/ApprovedPresnolInfo" autocomplete="off" onsubmit="return validateForm()">
+                                        <div class="container">
+                                            <div class="row mb-3">
+                                                <div class="col-lg-4">
+                                                    <label for="FullName">Full Name</label>
+                                                    <input class="form-control" value='@ViewBag.FullName' name="FullName" id="FullName" placeholder="Enter Full Name" type="text" required>
+                                                </div>
+                                                <div class="col-lg-4">
+                                                    <label for="PersonalEmailAddress">Personal Email Address</label>
+                                                    <input type="hidden" value='@ViewBag.id' name="Id" />
+                                                    <input class="form-control" value='@ViewBag.Personal_Email_Address' placeholder="Enter Personal Email Address" name="PersonalEmailAddress" id="PersonalEmailAddress" type="email" required>
+                                                </div>
+                                                <div class="col-lg-4">
+                                                    <label for="MobileNumber">Mobile Number</label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text">+91</span>
+                                                        <input class="form-control" value="@ViewBag.Mobile_Number" name="MobileNumber" placeholder="Enter Mobile Number" id="MobileNumber" type="text" maxlength="10" minlength="10" required onkeydown="validateNumericInput(event)">
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div class="col-lg-4">
-                                                <label>Date Of Birth</label>
-                                                <input class="form-control " value='@ViewBag.Date_Of_Birth' name="DateOfBirth" id="dobInput" type="date" required="">
+                                            <div class="row mb-3">
+                                                <div class="col-lg-4">
+                                                    <label for="AddressLine1">Address 1</label>
+                                                    <input class="form-control" value='@ViewBag.Address_Line_1' name="AddressLine1" placeholder="Enter Address Line 1" id="AddressLine1" type="text" required>
+                                                </div>
+                                                <div class="col-lg-4">
+                                                    <label for="AddressLine2">Address 2</label>
+                                                    <input class="form-control" value='@ViewBag.Address_Line_2' name="AddressLine2" placeholder="Enter Address Line 2" id="AddressLine2" type="text" required>
+                                                </div>
+                                                <div class="col-lg-4">
+                                                    <label for="ddlState">State</label>
+                                                    <select class="form-control" id="ddlState" name="Stateid">
+                                                        <option value="0">-- Select State --</option>
+                                                        @foreach (var item in ViewBag.states)
+                                                        {
+                                                            <option value="@item.Value">@item.Text</option>
+                                                        }
+                                                    </select>
+                                                </div>
                                             </div>
-
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-lg-4">
-                                                <label>Address 1</label>
-                                                <input class="form-control " value='@ViewBag.Address_Line_1' name="AddressLine1" placeholder="Enter Address Line1" id="AddressLine1" type="text" required="">
+                                            <div class="row mb-3">
+                                                <div class="col-lg-4">
+                                                    <label for="City">City</label>
+                                                    <select class="form-control" name="cityid" id="City">
+                                                        <option value="0">-- Select City --</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-lg-4">
+                                                    <label for="Pincode">Pincode</label>
+                                                    <input class="form-control" value='@ViewBag.Pincode' name="Pincode" maxlength="6" id="Pincode" placeholder="Enter Pincode" type="text" required onkeydown="validateNumericInput(event)">
+                                                </div>
+                                                <div class="col-lg-4">
+                                                    <label for="AadharNo">Aadhar No</label>
+                                                    <input class="form-control" value='@ViewBag.AadharNo' name="AadharNo" maxlength="12" id="AadharNo" placeholder="Enter Aadhar No" type="text" required onkeydown="validateNumericInput(event)">
+                                                </div>
                                             </div>
-
-                                            <div class="col-lg-4">
-                                                <label>Address 2</label>
-                                                <input class="form-control " value='@ViewBag.Address_Line_2' name="AddressLine2" placeholder="Enter Address Line2" id="AddressLine2" type="text" required="">
+                                            <div class="row mb-3">
+                                                <div class="col-lg-4">
+                                                    <label for="PAN">PAN</label>
+                                                    <input class="form-control" value='@ViewBag.PAN' name="PAN" id="PAN" placeholder="Enter PAN" type="text" required onkeydown="validateNumericInput(event)">
+                                                </div>
+                                                <div class="col-lg-4">
+                                                    <label for="dobInput">Date Of Birth</label>
+                                                    <input class="form-control" value='@ViewBag.Date_Of_Birth' name="DateOfBirth" id="dobInput" type="date" required>
+                                                </div>
                                             </div>
-                                            <div class="col-lg-4">
-                                                <label>State</label>
-                                                <select class="form-control" id="ddlState" name="Stateid">
-                                                    <option value="0">-- Select State --</option>
-                                                    @foreach (var item in ViewBag.states)
+                                            <div class="row mb-3">
+                                                <div class="col-lg-4">
+                                                    <label for="Aadharbase64">Aadhar Image</label>
+                                                    @if (Model != null && Model.AadharOne != null)
                                                     {
-                                                        <option value="@item.Value">@item.Text</option>
+                                                        <input type="file" id="hdnFilePath" name="combinedAadhar" />
                                                     }
-                                                </select>
+                                                    else
+                                                    {
+                                                        <input type="file" accept=".jpg, .jpeg, .png, .gif, .mp4, .avi, .mkv" id="Aadharbase64" name="Aadharbase64" multiple>
+                                                    }
+                                                    @if (Model != null)
+                                                    {
+                                                        <img src='~/img1/@ViewBag.Aadharone' class="img-thumbnail" alt="Aadhar Image 1" />
+                                                        <img src='~/img1/@ViewBag.Aadhartwo' class="img-thumbnail" alt="Aadhar Image 2" />
+                                                    }
+                                                </div>
+                                                <div class="col-lg-4">
+                                                    <label for="Panbase64">Pan Image</label>
+                                                    @if (Model != null && Model.Panimg != null)
+                                                    {
+                                                        <input type="file" id="hdnFilePath" name="Panimg" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <input type="file" accept=".jpg, .jpeg, .png, .gif, .mp4, .avi, .mkv" id="Panbase64" name="Panbase64">
+                                                    }
+                                                    @if (Model != null)
+                                                    {
+                                                        <img src='~/img1/@ViewBag.Panimg' class="img-thumbnail" alt="Pan Image" />
+                                                    }
+                                                </div>
+                                                <div class="col-lg-4">
+                                                    <label for="Empprofile">Profile Image</label>
+                                                    @if (Model != null && Model.Panimg != null)
+                                                    {
+                                                        <input type="file" id="hdnFilePath" name="EmpProfiles" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <input type="file" accept=".jpg, .jpeg, .png, .gif, .mp4, .avi, .mkv" id="Empprofile" name="Empprofile">
+                                                    }
+                                                    @if (Model != null)
+                                                    {
+                                                        <img src='~/EmpProfile/@ViewBag.EmpProfile' class="img-thumbnail" alt="Profile Image" />
+                                                    }
+                                                </div>
                                             </div>
-
+                                            <div class="form-group text-center">
+                                                <input type="submit" value="@ViewBag.btnText" class="btn btn-primary" />
+                                            </div>
                                         </div>
-                                        <div class="row">
-                                            <div class="col-lg-4">
-                                                <label>City</label>
-                                                <select class="form-control" name="cityid" id="City">
-                                                    <option value="0">-- Select City Name --</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-lg-4">
-                                                <label>Pincode</label>
-                                                <input class="form-control " value='@ViewBag.Pincode' name="Pincode" maxlength="6" id="Pincode" placeholder="Enter Pincode" type="text" required onkeydown="validateNumericInput(event)">
-                                            </div>
-                                            <div class="col-lg-4">
-                                                <label>Aadhar No</label>
-                                                <input class="form-control " value='@ViewBag.AadharNo' name="AadharNo" maxlength="12" id="AadharNo" placeholder="Enter AadharNo" type="text" required onkeydown="validateNumericInput(event)">
-                                            </div>
-
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-lg-4">
-                                                <label>Pan</label>
-                                                <input class="form-control " value='@ViewBag.PAN' name="PAN" id="PAN" placeholder="Enter PAN" type="text" required="" onkeydown="validateNumericInput(event)">
-                                            </div>
-
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-lg-4">
-                                                <label>Aadhar Image</label>
-                                                @if (Model != null && Model.AadharOne != null)
-                                                {
-                                                    var combinedAadhar = $"{Model.AadharOne} {Model.AadharTwo}";
-                                                    <input type="file" id="hdnFilePath" name="combinedAadhar" />
-                                                }
-
-                                                else
-                                                {
-                                                    <input type="file" accept=".jpg, .jpeg, .png, .gif, .mp4, .avi, .mkv" id="Aadharbase64" name="Aadharbase64" multiple>
-
-                                                }
-                                                @if (Model != null)
-                                                {
-                                                    <img src='@ViewBag.Aadharone' id="ancImageDetails" style="height:100px;width:100px" />
-                                                    <img src='@ViewBag.Aadhartwo' id="ancImageDetails" style="height:100px;width:100px" />
-                                                }
-                                                else
-                                                {
-                                                    <img src='@ViewBag.Aadharone' id="ancImageDetails" style="height:100px;width:100px" hidden />
-                                                    <img src='@ViewBag.Aadhartwo' id="ancImageDetails" style="height:100px;width:100px" hidden />
-                                                }
-
-                                            </div>
-                                            <div class="col-lg-4">
-                                                <label>Pan Image</label>
-
-                                                @if (Model != null && Model.Panimg != null)
-                                                {
-                                                    <input type="file" id="hdnFilePath" name="Panimg" />
-
-                                                }
-                                                else
-                                                {
-                                                    <input type="file" accept=".jpg, .jpeg, .png, .gif, .mp4, .avi, .mkv" id="Panbase64" name="Panbase64">
-
-                                                }
-                                                @if (Model != null)
-                                                {
-                                                    <img src='@ViewBag.Panimg' id="ancImageDetails" style="height:100px;width:100px" />
-                                                }
-                                                else
-                                                {
-                                                    <img src='@ViewBag.Panimg' id="ancImageDetails" style="height:100px;width:100px" hidden />
-                                                }
-                                            </div>
-
-                                        </div>
-                                        <div class="form-group" style="display:flex; justify-content:center;">
-                                            <input type="submit" value="@ViewBag.btnText" class="btn btn-primary" />
-                                        </div>
-
                                     </form>
 
                                 </div>
@@ -171,201 +169,225 @@
         </div>
     </div>
 }
-<div class="page-wrapper">
-    <div class="page-body-wrapper">
-        <div class="page-sidebar">
-        </div>
-        <!-- Page Sidebar Ends-->
-        <!-- Right sidebar Start-->
-        <!-- Right sidebar Ends-->
+else
+{
+    <div class="page-wrapper">
+        <div class="page-body-wrapper">
+            <div class="page-sidebar">
+            </div>
+            <!-- Page Sidebar Ends-->
+            <!-- Right sidebar Start-->
+            <!-- Right sidebar Ends-->
 
-        <div class="page-body">
+            <div class="page-body">
 
-            <!-- Container-fluid starts-->
-            <div class="container-fluid">
-                <div class="page-header">
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="page-header-left">
-                                <h4>Personal Information List</h4>
+                <!-- Container-fluid starts-->
+                <div class="container-fluid">
+                    <div class="page-header">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="page-header-left">
+                                    <h4>Personal Information List</h4>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <ol class="breadcrumb pull-right">
-                                <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
-                                <li class="breadcrumb-item">Approval List</li>
-                                <li class="breadcrumb-item active">Employee Presnol Information</li>
-                            </ol>
+                            <div class="col-lg-6">
+                                <ol class="breadcrumb pull-right">
+                                    <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
+                                    <li class="breadcrumb-item">Approval List</li>
+                                    <li class="breadcrumb-item active">Employee Presnol Information</li>
+                                </ol>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <!-- Container-fluid Ends-->
-            <!-- Container-fluid starts-->
-            <div class="container-fluid">
-                <div class="row">
+                <!-- Container-fluid Ends-->
+                <!-- Container-fluid starts-->
+                <div class="container-fluid">
+                    <div class="row">
 
-                    <div class="col-sm-12">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class=" table-responsive">
-                                    <table id="datatable" class="table table-responsive">
-                                        <thead>
-                                            <tr style="background-color: #00baf2; color: #fff" ;>
-                                                <th nowrap>Sr.No</th>
-                                                <th nowrap>
-                                                    Personal Email Address
-                                                </th>
-                                                <th nowrap>
-                                                    EmployeeId
-                                                </th>
-                                                <th nowrap>
-                                                    Mobile Number
-                                                </th>
-                                                <th nowrap>
-                                                    Date Of Birth
-                                                </th>
-                                                <th nowrap>
-                                                    PAN
-                                                </th>
-                                                <th nowrap>
-                                                    Address Line1
-                                                </th>
+                        <div class="col-sm-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class=" table-responsive">
+                                        <table id="datatable" class="table table-responsive">
+                                            <thead>
+                                                <tr style="background-color: #00baf2; color: #fff" ;>
+                                                    <th nowrap>Sr.No</th>
+                                                    <th nowrap>
+                                                        Full Name
+                                                    </th>
+                                                    <th nowrap>
+                                                        Personal Email Address
+                                                    </th>
+                                                    <th nowrap>
+                                                        EmployeeId
+                                                    </th>
+                                                    <th nowrap>
+                                                        Mobile Number
+                                                    </th>
+                                                    <th nowrap>
+                                                        Date Of Birth
+                                                    </th>
+                                                    <th nowrap>
+                                                        PAN
+                                                    </th>
+                                                    <th nowrap>
+                                                        Address Line1
+                                                    </th>
 
-                                                <th nowrap>
-                                                    Address Line2
-                                                </th>
-                                                <th nowrap>
-                                                    State
-                                                </th>
-                                                <th nowrap>
-                                                    City
-                                                </th>
-                                                <th nowrap>
-                                                    Pincode
-                                                </th>
-                                                <th nowrap>
-                                                    Aadhar No
-                                                </th>
-                                                <th nowrap>
-                                                    Aadhar1 Image
-                                                </th>
-                                                <th nowrap>
-                                                    Aadhar2 Image
-                                                </th>
-                                                <th nowrap>
-                                                    Pan Image
-                                                </th>
-                                                <th nowrap>
-                                                    Update Date
-                                                </th>
-                                                <th nowrap>Status</th>
-                                                <th nowrap>Edit</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @{
-                                                var count = 0;
-                                                @if (Model != null && Model.ApprovedPresnolInfos.Count() > 0)
-                                                {
-                                                    @foreach (var item in Model.ApprovedPresnolInfos)
+                                                    <th nowrap>
+                                                        Address Line2
+                                                    </th>
+                                                    <th nowrap>
+                                                        State
+                                                    </th>
+                                                    <th nowrap>
+                                                        City
+                                                    </th>
+                                                    <th nowrap>
+                                                        Pincode
+                                                    </th>
+                                                    <th nowrap>
+                                                        Aadhar No
+                                                    </th>
+                                                    <th nowrap>
+                                                        Aadhar1 Image
+                                                    </th>
+                                                    <th nowrap>
+                                                        Aadhar2 Image
+                                                    </th>
+                                                    <th nowrap>
+                                                        Pan Image
+                                                    </th>
+                                                    <th nowrap>
+                                                        Profile Image
+                                                    </th>
+                                                    <th nowrap>
+                                                        Update Date
+                                                    </th>
+                                                    <th nowrap>Status</th>
+                                                    <th nowrap>Edit</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @{
+                                                    var count = 0;
+                                                    @if (Model != null && Model.ApprovedPresnolInfos.Count() > 0)
                                                     {
-                                                        count++;
-                                                        var isPdf = !string.IsNullOrEmpty(item.AadharOne) && item.AadharOne.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase);
-                                                        var isPdf0 = !string.IsNullOrEmpty(item.AadharTwo) && item.AadharTwo.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase);
-                                                        var isPdf1 = !string.IsNullOrEmpty(item.Panimg) && item.Panimg.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase);
-                                                        <tr>
+                                                        @foreach (var item in Model.ApprovedPresnolInfos)
+                                                        {
+                                                            count++;
+                                                            var isPdf = !string.IsNullOrEmpty(item.AadharOne) && item.AadharOne.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase);
+                                                            var isPdf0 = !string.IsNullOrEmpty(item.AadharTwo) && item.AadharTwo.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase);
+                                                            var isPdf1 = !string.IsNullOrEmpty(item.Panimg) && item.Panimg.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase);
+                                                            var isPdf2 = !string.IsNullOrEmpty(item.EmpProfile) && item.EmpProfile.EndsWith(".png", StringComparison.OrdinalIgnoreCase);
+                                                            <tr>
 
-                                                            <th scope="row">@count</th>
-                                                            <td style="white-space: nowrap">@item.PersonalEmailAddress</td>
-                                                            <td style="white-space: nowrap">@item.EmployeeId</td>
-                                                            <td style="white-space: nowrap">@item.MobileNumber</td>
-                                                            <td style="white-space: nowrap">@item.DateOfBirth?.ToString("dd/MM/yyyy")</td>
-                                                            <td style="white-space: nowrap">@item.PAN</td>
-                                                            <td style="white-space: nowrap">@item.AddressLine1</td>
-                                                            <td style="white-space: nowrap">@item.AddressLine2</td>
-                                                            <td style="white-space: nowrap">@item.Stateid</td>
-                                                            <td style="white-space: nowrap">@item.cityid</td>
-                                                            <td style="white-space: nowrap">@item.Pincode</td>
-                                                            <td style="white-space: nowrap">@item.AadharNo</td>
-                                                            <td>
-                                                                @if (isPdf)
-                                                                {
-                                                                    <a target="_blank" href="~/img1/@item.AadharOne" title="Click here to Open Document (Document will be open in new Tab)">
-                                                                        <img src="~/assets/images/layout-2/logo/pdf-icon-4.png" style="height:100px;width:100px" />
-                                                                    </a>
-                                                                }
-                                                                else
-                                                                {
-                                                                    <img src='~/img1/@item.AadharOne' style="height:100px;width:100px" />
-                                                                }
-
-
-                                                            </td>
-                                                            <td>
-                                                                @if (isPdf0)
-                                                                {
-                                                                    <a target="_blank" href="~/img1/@item.AadharTwo" title="Click here to Open Document (Document will be open in new Tab)">
-                                                                        <img src="~/assets/images/layout-2/logo/pdf-icon-4.png" style="height:100px;width:100px" />
-                                                                    </a>
-                                                                }
-                                                                else
-                                                                {
-                                                                    <img src='~/img1/@item.AadharTwo' style="height:100px;width:100px" />
-                                                                }
-                                                            </td>
-                                                            <td>
-                                                                @if (isPdf1)
-                                                                {
-                                                                    <a target="_blank" href="~/img1/@item.Panimg" title="Click here to Open Document (Document will be open in new Tab)">
-                                                                        <img src="~/assets/images/layout-2/logo/pdf-icon-4.png" style="height:100px;width:100px" />
-                                                                    </a>
-                                                                }
-                                                                else
-                                                                {
-                                                                    <img src='~/img1/@item.Panimg' style="height:100px;width:100px" />
-                                                                }
-                                                            </td>
-                                                            <td style="white-space: nowrap">@item.UpdateDate?.ToString("dd/MM/yyyy")</td>
-                                                            <td style="white-space: nowrap">
-                                                                <button type="button" class="btn @(item.IsApproved != null && item.IsApproved == true ? "btn-success" : "btn-danger")"
-                                                                        onclick="updateApprovalStatus(@item.id, @(item.IsApproved != null && item.IsApproved == true ? "false" : "true"))">
-                                                                    @(item.IsApproved != null && item.IsApproved == true ? "Disapproved" : "Approved")
-                                                                </button>
-                                                            </td>
+                                                                <th scope="row">@count</th>
+                                                                <td style="white-space: nowrap">@item.FullName</td>
+                                                                <td style="white-space: nowrap">@item.PersonalEmailAddress</td>
+                                                                <td style="white-space: nowrap">@item.EmployeeId</td>
+                                                                <td style="white-space: nowrap">@item.MobileNumber</td>
+                                                                <td style="white-space: nowrap">@item.DateOfBirth?.ToString("dd/MM/yyyy")</td>
+                                                                <td style="white-space: nowrap">@item.PAN</td>
+                                                                <td style="white-space: nowrap">@item.AddressLine1</td>
+                                                                <td style="white-space: nowrap">@item.AddressLine2</td>
+                                                                <td style="white-space: nowrap">@item.Stateid</td>
+                                                                <td style="white-space: nowrap">@item.cityid</td>
+                                                                <td style="white-space: nowrap">@item.Pincode</td>
+                                                                <td style="white-space: nowrap">@item.AadharNo</td>
+                                                                <td>
+                                                                    @if (isPdf)
+                                                                    {
+                                                                        <a target="_blank" href="~/img1/@item.AadharOne" title="Click here to Open Document (Document will be open in new Tab)">
+                                                                            <img src="~/assets/images/layout-2/logo/pdf-icon-4.png" style="height:100px;width:100px" />
+                                                                        </a>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <img src='~/img1/@item.AadharOne' style="height:100px;width:100px" />
+                                                                    }
 
 
-                                                            <td>
-                                                                <div>
-                                                                    <a href='@Url.Action("ApprovedPresnolInfo","Vendor",new { id=item.id})' class="fa fa-edit m-2 font-success"></a>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
+                                                                </td>
+                                                                <td>
+                                                                    @if (isPdf0)
+                                                                    {
+                                                                        <a target="_blank" href="~/img1/@item.AadharTwo" title="Click here to Open Document (Document will be open in new Tab)">
+                                                                            <img src="~/assets/images/layout-2/logo/pdf-icon-4.png" style="height:100px;width:100px" />
+                                                                        </a>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <img src='~/img1/@item.AadharTwo' style="height:100px;width:100px" />
+                                                                    }
+                                                                </td>
+                                                                <td>
+                                                                    @if (isPdf1)
+                                                                    {
+                                                                        <a target="_blank" href="~/img1/@item.Panimg" title="Click here to Open Document (Document will be open in new Tab)">
+                                                                            <img src="~/assets/images/layout-2/logo/pdf-icon-4.png" style="height:100px;width:100px" />
+                                                                        </a>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <img src='~/img1/@item.Panimg' style="height:100px;width:100px" />
+                                                                    }
+                                                                </td>
+                                                                <td>
+                                                                    @if (isPdf2)
+                                                                    {
+                                                                        <a target="_blank" href="~/EmpProfile/@item.EmpProfile" title="Click here to Open Document (Document will be open in new Tab)">
+                                                                            <img src="~/assets/images/layout-2/logo/pdf-icon-4.png" style="height:100px;width:100px" />
+                                                                        </a>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <img src='~/EmpProfile/@item.EmpProfile' style="height:100px;width:100px" />
+                                                                    }
+                                                                </td>
+                                                                <td style="white-space: nowrap">@item.UpdateDate?.ToString("dd/MM/yyyy")</td>
+                                                                <td style="white-space: nowrap">
+                                                                    <button type="button" class="btn @(item.IsApproved != null && item.IsApproved == true ? "btn-success" : "btn-danger")"
+                                                                            onclick="updateApprovalStatus(@item.id, @(item.IsApproved != null && item.IsApproved == true ? "false" : "true"))">
+                                                                        @(item.IsApproved != null && item.IsApproved == true ? "Disapproved" : "Approved")
+                                                                    </button>
+                                                                </td>
+
+
+                                                                <td>
+                                                                    <div>
+                                                                        <a href='@Url.Action("ApprovedPresnolInfo","Vendor",new { id=item.id})' class="fa fa-edit m-2 font-success"></a>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        }
                                                     }
                                                 }
-                                            }
-                                        </tbody>
+                                            </tbody>
 
-                                    </table>
+                                        </table>
+                                    </div>
+
                                 </div>
-
                             </div>
                         </div>
                     </div>
                 </div>
+                <div id="pagination-container">
+                    <ul id="pagination" class="pagination"></ul>
+                </div>
             </div>
-            <div id="pagination-container">
-                <ul id="pagination" class="pagination"></ul>
-            </div>
+
+
         </div>
 
-
     </div>
+    <div id="pagination-container">
+        <ul id="pagination" class="pagination"></ul>
+    </div>
+}
 
-</div>
-<div id="pagination-container">
-    <ul id="pagination" class="pagination"></ul>
-</div>
 <script>
     var currentPage = 1;
     var rowsPerPage = 10;
@@ -431,7 +453,7 @@
                     $('#City').empty();
                     $('#City').append($('<option></option>').val(0).text('-- Select City --'));
                     $.each(data, function (index, item) {
-                        $('#City').append($('<option></option>').val(item.value).text(item.text));
+                        $('#City').append($('<option></option>').val(item.id).text(item.city1));
                     });
                     if (cityId !== '0') {
                         $('#City').val(cityId);
@@ -453,7 +475,7 @@
                         $('#City').empty();
                         $('#City').append($('<option></option>').val(0).text('-- Select City --'));
                         $.each(data, function (index, item) {
-                            $('#City').append($('<option></option>').val(item.value).text(item.text));
+                            $('#City').append($('<option></option>').val(item.id).text(item.city1));
                         });
                     }
                 });
