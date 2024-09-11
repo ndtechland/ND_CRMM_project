@@ -43,6 +43,7 @@ using OfficeOpenXml;
 using Microsoft.TeamFoundation.SourceControl.WebApi.Legacy;
 using OfficeOpenXml.ConditionalFormatting.Contracts;
 using DocumentFormat.OpenXml.InkML;
+using CRM.IUtilities;
 
 namespace CRM.Controllers
 {
@@ -63,13 +64,13 @@ namespace CRM.Controllers
 
 
         }
-        [HttpGet,Route("Employee/EmployeeRegistration")]
+        [HttpGet, Route("Employee/EmployeeRegistration")]
         public async Task<IActionResult> EmployeeRegistration(string id)
         {
 
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                ViewBag.UserName = HttpContext.Session.GetString("UserName");              
+                ViewBag.UserName = HttpContext.Session.GetString("UserName");
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 ViewBag.userId = adminlogin.Vendorid;
@@ -290,7 +291,7 @@ namespace CRM.Controllers
                 return View();
             }
         }
-        [HttpGet,Route("Employee/Employeelist")]
+        [HttpGet, Route("Employee/Employeelist")]
         public async Task<IActionResult> Employeelist()
         {
             try
@@ -610,7 +611,7 @@ namespace CRM.Controllers
             }
             return Json(new { success = true, message = "Data saved successfully.", Data = isActive });
         }
-        [HttpGet,Route("Employee/GenerateSalary")]
+        [HttpGet, Route("Employee/GenerateSalary")]
         public async Task<IActionResult> GenerateSalary()
         {
             try
@@ -755,7 +756,7 @@ namespace CRM.Controllers
                                   Esic = empsalary.Esic,
                                   Amount = tds.Amount,
                               }).FirstOrDefault();
-              
+
 
                 if (result != null)
                 {
@@ -889,7 +890,6 @@ namespace CRM.Controllers
                 HtmlToPdf converter = new HtmlToPdf();
                 string SlipURL = $"{schema}://{host}/Employee/SalarySlipInPDF?id={id}";
                 PdfDocument doc = converter.ConvertUrl(SlipURL);
-                byte[] pdf = doc.Save();
                 string wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "EMPpdfs");
                 if (!Directory.Exists(wwwRootPath))
                 {
@@ -898,7 +898,9 @@ namespace CRM.Controllers
                 string uniqueFileName = $"SalarySlip_{id}_{DateTime.Now:yyyyMMddHHmmss}.pdf";
                 string filePath = Path.Combine(wwwRootPath, uniqueFileName);
                 doc.Save(filePath);
+                byte[] pdf = doc.Save();
                 doc.Close();
+                string savedFileName = uniqueFileName;
                 var result = (from emp in _context.EmployeeRegistrations
                               where emp.Id == id
                               select new SalarySlipDetails
@@ -908,6 +910,7 @@ namespace CRM.Controllers
                                   First_Name = emp.FirstName,
                                   Email_Id = emp.WorkEmail
                               }).FirstOrDefault();
+
                 if (result == null)
                 {
                     throw new Exception("Employee not found.");
@@ -915,7 +918,7 @@ namespace CRM.Controllers
                 var empAttendance = _context.Empattendances.FirstOrDefault(e => e.EmployeeId == result.Employee_ID && e.Month == DateTime.Now.Month && e.Year == DateTime.Now.Year);
                 if (empAttendance != null)
                 {
-                    empAttendance.SalarySlip = uniqueFileName;
+                    empAttendance.SalarySlip = savedFileName;
                     _context.SaveChanges();
                 }
                 else
@@ -925,6 +928,7 @@ namespace CRM.Controllers
                 string Email_Subject = $"Salary Slip for {result.Employee_ID}";
                 string Email_body = $"Hello {result.First_Name} ({result.Employee_ID}), please find your attached salary slip.";
                 _IEmailService.SendEmailAsync(result.Email_Id, Email_Subject, Email_body, pdf, "SalarySlip.pdf", "application/pdf");
+
                 Console.WriteLine($"Salary slip for Employee ID {result.Employee_ID} has been saved and the Empattendance table has been updated.");
             }
             catch (Exception ex)
@@ -932,6 +936,7 @@ namespace CRM.Controllers
                 throw ex;
             }
         }
+
 
         public static string getMonthName(int monthValue)
         {
@@ -1370,7 +1375,7 @@ namespace CRM.Controllers
                 string[] parts = data.EmployeeId.Split('-');
                 if (parts.Length > 1 && int.TryParse(parts.Last(), out numericValue))
                 {
-                    numericValue++; 
+                    numericValue++;
                 }
             }
             EmpID = $"NDT-{numericValue:D4}";
@@ -1438,7 +1443,7 @@ namespace CRM.Controllers
             if (CustomerId > 0)
             {
                 var data = _ICrmrpo.tdsDetails(CustomerId);
-                if(data !=null)
+                if (data != null)
                 {
                     employeerTd.Tdspercentage = data.Tdspercentage;
                     employeerTd.Amount = data.Amount;
@@ -1592,7 +1597,7 @@ namespace CRM.Controllers
                                 //  throw ex;
                                 continue;
                             }
-                           
+
 
 
                         }
@@ -1611,16 +1616,15 @@ namespace CRM.Controllers
             {
                 ModelState.AddModelError("File", "Please Upload Your file");
             }
-            
+
             return null;
         }
-        [HttpGet]
-        [Route("/Employee/MonthlysalaryReport")]
+        [HttpGet,Route("/Employee/MonthlysalaryReport")]
         public async Task<IActionResult> MonthlysalaryReport(string customerId, int Month, int year, string WorkLocation)
         {
             try
             {
-                var response = await  _ICrmrpo.monthlysalaryReport(customerId, Month, year, WorkLocation);
+                var response = await _ICrmrpo.monthlysalaryReport(customerId, Month, year, WorkLocation);
                 if (response.Count != 0)
                 {
                     using (var workbook = new XLWorkbook())
@@ -1656,11 +1660,11 @@ namespace CRM.Controllers
                         worksheet.Cell(currentRow, 14).Style.Fill.BackgroundColor = XLColor.Yellow;
                         worksheet.Cell(currentRow, 14).Value = "HouseRent Allowance";
                         worksheet.Cell(currentRow, 15).Style.Fill.BackgroundColor = XLColor.Yellow;
-                        worksheet.Cell(currentRow, 15).Value = "Travelling Allowance";                       
+                        worksheet.Cell(currentRow, 15).Value = "Travelling Allowance";
                         worksheet.Cell(currentRow, 16).Style.Fill.BackgroundColor = XLColor.Yellow;
                         worksheet.Cell(currentRow, 16).Value = "ESIC";
                         worksheet.Cell(currentRow, 17).Style.Fill.BackgroundColor = XLColor.Yellow;
-                        worksheet.Cell(currentRow, 17).Value = "EPF";                    
+                        worksheet.Cell(currentRow, 17).Value = "EPF";
                         worksheet.Cell(currentRow, 18).Style.Fill.BackgroundColor = XLColor.Yellow;
                         worksheet.Cell(currentRow, 18).Value = "Monthly Gross Pay";
                         worksheet.Cell(currentRow, 19).Style.Fill.BackgroundColor = XLColor.Yellow;
@@ -1680,7 +1684,7 @@ namespace CRM.Controllers
                         worksheet.Cell(currentRow, 26).Style.Fill.BackgroundColor = XLColor.Yellow;
                         worksheet.Cell(currentRow, 26).Value = "Father Name";
                         worksheet.Cell(currentRow, 27).Style.Fill.BackgroundColor = XLColor.Yellow;
-                        worksheet.Cell(currentRow, 27).Value = "PAN"; 
+                        worksheet.Cell(currentRow, 27).Value = "PAN";
                         worksheet.Cell(currentRow, 28).Style.Fill.BackgroundColor = XLColor.Yellow;
                         worksheet.Cell(currentRow, 28).Value = "Address Line 1";
                         worksheet.Cell(currentRow, 29).Style.Fill.BackgroundColor = XLColor.Yellow;
@@ -1711,7 +1715,7 @@ namespace CRM.Controllers
                         worksheet.Cell(currentRow, 41).Value = "Employee Contribution Rate";
                         worksheet.Cell(currentRow, 42).Style.Fill.BackgroundColor = XLColor.Yellow;
                         worksheet.Cell(currentRow, 42).Value = "Nominee";
-                      
+
 
                         currentRow++;
 
@@ -1786,6 +1790,183 @@ namespace CRM.Controllers
             }
         }
 
+        [HttpGet, Route("/Employee/EmployeeOfferletter")]
+        public IActionResult EmployeeOfferletter(string EmployeeId)
+        {
+            //string AddedBy = HttpContext.Session.Id;
+            //ViewBag.UserName = AddedBy;
+            //var result = (from emp in _context.EmployeeRegistrations
+            //              join empatt in _context.Empattendances on emp.EmployeeId equals empatt.EmployeeId into empattGroup
+            //              from empatt in empattGroup.DefaultIfEmpty()
+            //              join worklocation in _context.Cities on emp.c.ToString() equals worklocation.Id.ToString() into worklocationGroup
+            //              from worklocation in worklocationGroup.DefaultIfEmpty()
+            //              join dpt in _context.Drop_Industries on emp.DepartmentID equals dpt.ID into dptGroup
+            //              from dpt in dptGroup.DefaultIfEmpty()
+            //              join jb in _context.Job_Title on emp.Job_Title equals jb.Id into jbGroup
+            //              from jb in jbGroup.DefaultIfEmpty()
+            //              join Org in _context.Organizations on emp.CompanyId equals Org.Id into OrgGroup
+            //              from Org in OrgGroup.DefaultIfEmpty()
+            //              where emp.EmployeeId == EmployeeId
+            //              select new empOfferletter
+            //              {
+            //                  First_Name = emp.FirstName,
+            //                  Department_Name = dpt.IndustriesName,
+            //                  MonthlyCtc = emp.MonthlyCTC,
+            //                  AnnualCtc = emp.AnnualCTC,
+            //                  Designation_Name = jb.JobTitle,
+            //                  CompanyName = Org.OrganizationName,
+            //                  Joiningdate = emp.DateOfJoining != null ? emp.DateOfJoining.Value.ToString("dd/MM/yyyy") : "",
+            //              }).FirstOrDefault();
+
+            //if (result != null)
+            //{
+            //    return View(result);
+            //}
+            //else
+            //{
+                return View();
+            //}
+        }
+
+        public string OfferletterDocPDF(string EmployeeId)
+        {
+            string schema = Request.Scheme;
+            string host = Request.Host.Value;
+            HtmlToPdf converter = new HtmlToPdf();
+            WebClient client = new WebClient();
+            string SlipURL = $"{schema}://{host}/Employee/EmployeeOfferletter?EmployeeId={EmployeeId}";
+            PdfDocument doc = converter.ConvertUrl(SlipURL);
+
+            byte[] pdf = doc.Save();
+            doc.Close();
+
+            /// Save method code -----------
+
+            // Specify the directory where you want to save the PDF file
+            string directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "OfferLetter");
+
+            // Ensure the directory exists, if not, create it
+            if (!Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+
+            DateTime dt = DateTime.Now;
+
+            string savedFileName = $"{Guid.NewGuid()}{dt:yyyyMMddHHmmssfff}";
+            string extension = ".pdf";
+            // Combine the directory path with the file name
+            string filePath = Path.Combine(directoryPath, $"{savedFileName}{extension}");
+
+            // Write the PDF content to the specified file path
+            using (FileStream fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                fileStream.Write(pdf, 0, pdf.Length);
+            }
+            // Create a file result to return the PDF
+            FileResult fileResult = new PhysicalFileResult(filePath, "application/pdf");
+            fileResult.FileDownloadName = $"{savedFileName}{extension}";
+            ///-----end
+
+            //FileResult fileResult = new FileContentResult(pdf, "application/pdf");
+            //fileResult.FileDownloadName = "Offerletter.pdf";
+            return "OfferLetter/" + fileResult.FileDownloadName;
+
+
+        }
+        [HttpGet, Route("/Employee/Appointmentletter")]
+        public IActionResult Appointmentletter(string EmployeeId)
+        {
+            //string AddedBy = HttpContext.Session.Id;
+            //ViewBag.UserName = AddedBy;
+            //var result = (from emp in _context.EmployeeRegistrations
+            //              join empatt in _context.Employeeattendance on emp.EmployeeId equals empatt.EmployeeId into empattGroup
+            //              from empatt in empattGroup.DefaultIfEmpty()
+            //              join worklocation in _context.city on emp.OfccityId.ToString() equals worklocation.Id.ToString() into worklocationGroup
+            //              from worklocation in worklocationGroup.DefaultIfEmpty()
+            //              join dpt in _context.Drop_Industries on emp.DepartmentID equals dpt.ID into dptGroup
+            //              from dpt in dptGroup.DefaultIfEmpty()
+            //              join jb in _context.Job_Title on emp.Job_Title equals jb.Id into jbGroup
+            //              from jb in jbGroup.DefaultIfEmpty()
+            //              join Org in _context.Organizations on emp.CompanyId equals Org.Id into OrgGroup
+            //              from Org in OrgGroup.DefaultIfEmpty()
+            //              join ct in _context.city on emp.OfccityId equals ct.Id into ctGroup
+            //              from ct in ctGroup.DefaultIfEmpty()
+            //              where emp.EmployeeId == EmployeeId
+            //              select new EmpAppointmentletter
+            //              {
+            //                  Empcode = emp.EmployeeId,
+            //                  First_Name = emp.FirstName,
+            //                  OfccityId = ct.CityName,
+            //                  CurrentDate = DateTime.Now.ToString("dd/MM/yyyy"),
+            //                  pincode = emp.Pincode,
+            //                  Department_Name = dpt.IndustriesName,
+            //                  MonthlyCtc = emp.MonthlyCTC,
+            //                  AnnualCtc = emp.AnnualCTC,
+            //                  Designation_Name = jb.JobTitle,
+            //                  CompanyName = Org.OrganizationName,
+            //                  Joiningdate = emp.DateOfJoining != null ? emp.DateOfJoining.Value.ToString("dd/MM/yyyy") : "",
+            //                  Basic = emp.Basic,
+            //                  HouseRentAllowance = emp.HouseRentAllowance,
+            //                  EmployeeEPF = emp.EmployeeEPF,
+            //                  EmployeeESIC = emp.EmployeeESIC,
+            //              }).FirstOrDefault();
+
+            //if (result != null)
+            //{
+            //    return View(result);
+            //}
+            //else
+            //{
+                return View();
+           // }
+        }
+        public string AppointmentletterDocPDF(string EmployeeId)
+        {
+            string schema = Request.Scheme;
+            string host = Request.Host.Value;
+            HtmlToPdf converter = new HtmlToPdf();
+            WebClient client = new WebClient();
+            string SlipURL = $"{schema}://{host}/Employee/Appointmentletter?EmployeeId={EmployeeId}";
+            PdfDocument doc = converter.ConvertUrl(SlipURL);
+
+            byte[] pdf = doc.Save();
+            doc.Close();
+
+            /// Save method code -----------
+
+            // Specify the directory where you want to save the PDF file
+            string directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "AppointmentLetter");
+
+            // Ensure the directory exists, if not, create it
+            if (!Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+
+            DateTime dt = DateTime.Now;
+
+            string savedFileName = $"{Guid.NewGuid()}{dt:yyyyMMddHHmmssfff}";
+            string extension = ".pdf";
+            // Combine the directory path with the file name
+            string filePath = Path.Combine(directoryPath, $"{savedFileName}{extension}");
+
+            // Write the PDF content to the specified file path
+            using (FileStream fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                fileStream.Write(pdf, 0, pdf.Length);
+            }
+            // Create a file result to return the PDF
+            FileResult fileResult = new PhysicalFileResult(filePath, "application/pdf");
+            fileResult.FileDownloadName = $"{savedFileName}{extension}";
+            ///-----end
+
+
+            //FileResult fileResult = new FileContentResult(pdf, "application/pdf");
+            //fileResult.FileDownloadName = "Appointmentletter.pdf";
+            return "AppointmentLetter/" + fileResult.FileDownloadName;
+
+        }
     }
 }
 

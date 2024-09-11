@@ -76,8 +76,8 @@ namespace CRM.Repository
         public Task<int> Vendorreg(VendorDto model);
         public Task<int> updateVendorreg(VendorDto model);
         public Task<List<VendorDto>> VendorList();
-        public Task<VendorRegistration> GetVendorProfile(string? id);
-        public Task<int> UpdateVendorProfile(VendorRegistration model, int id);
+        public Task<VendorRegistrationDto> GetVendorProfile(string? id);
+        public Task<int> UpdateVendorProfile(VendorRegistrationDto model, int id);
         public Task<List<EmployeeApprovedPresnolInfo>> ApprovedPresnolInfoList(int Userid);
         public Task<bool> AddApprovedPresnolInfo(EmployeePresnolInfoList model);
         public Task<List<ApprovedbankdetailList>> ApprovedbankdetailList(int Userid);

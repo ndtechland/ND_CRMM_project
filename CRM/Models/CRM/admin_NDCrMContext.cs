@@ -588,6 +588,8 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Id).HasColumnName("ID");
 
+                entity.Property(e => e.Appoinmentletter).HasMaxLength(250);
+
                 entity.Property(e => e.DateOfJoining)
                     .HasColumnType("datetime")
                     .HasColumnName("Date_Of_Joining");
@@ -621,6 +623,8 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.MiddleName)
                     .HasMaxLength(120)
                     .HasColumnName("Middle_Name");
+
+                entity.Property(e => e.Offerletterid).HasColumnName("offerletterid");
 
                 entity.Property(e => e.RoleId).HasColumnName("RoleID");
 
@@ -1131,6 +1135,10 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.BillingAddress)
                     .HasMaxLength(255)
                     .HasColumnName("Billing_Address");
+
+                entity.Property(e => e.CompanyImage)
+                    .HasMaxLength(250)
+                    .HasColumnName("Company_Image");
 
                 entity.Property(e => e.CompanyName)
                     .HasMaxLength(255)

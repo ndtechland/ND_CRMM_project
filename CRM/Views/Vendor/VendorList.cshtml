@@ -87,6 +87,9 @@
                                                 <th nowrap>
                                                     Location
                                                 </th>
+                                                <th nowrap>
+                                                    Company Image
+                                                </th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -136,6 +139,9 @@
                                                         </td>
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.Location)
+                                                        </td>
+                                                        <td nowrap>
+                                                            <img src='../CompanyImage/@item.CompanyImage' style="height:100px;width:100px" />
                                                         </td>
                                                         <td>
                                                             <div>

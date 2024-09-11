@@ -20,6 +20,7 @@ namespace CRM.Models.Crm
         public string? State { get; set; }
         public int? StateId { get; set; }
         public string? Location { get; set; }
+        public string? CompanyImage { get; set; }
         [NotMapped]
         public string UserName { get; set; } = null!;
     }
