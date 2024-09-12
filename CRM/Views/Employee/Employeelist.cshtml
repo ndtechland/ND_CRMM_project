@@ -166,9 +166,11 @@
                                                 </th>
 
                                                 <th nowrap>
-                                                    PAN
+                                                    PAN No
                                                 </th>
-
+                                                <th nowrap>
+                                                    Aadharcard No
+                                                </th>
                                                 <th nowrap>
                                                     Address Line1
                                                 </th>
@@ -229,7 +231,22 @@
                                                     Nominee name
                                                 </th>
                                                 <th nowrap>
-                                                    Customer Name
+                                                    Company Name
+                                                </th>
+                                                <th nowrap>
+                                                    Profile Image
+                                                </th>
+                                                <th nowrap>
+                                                    AadharOne
+                                                </th>
+                                                <th nowrap>
+                                                    AadharTwo
+                                                </th>
+                                                <th nowrap>
+                                                    Cheque Image
+                                                </th>
+                                                <th nowrap>
+                                                    Pan Image
                                                 </th>
                                                 <th nowrap>
                                                     Action
@@ -285,7 +302,7 @@
 
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.HouseRentAllowance)
-                                                        </td >
+                                                        </td>
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.TravellingAllowance)
                                                         </td>
@@ -331,7 +348,9 @@
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.PAN)
                                                         </td>
-
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.Aadharcard)
+                                                        </td>
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.AddressLine1)
                                                         </td>
@@ -389,6 +408,21 @@
                                                         </td>
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.CustomerName)
+                                                        </td>
+                                                        <td nowrap>
+                                                            <img src='../EmpProfile/@item.EmpProfile' style="height:100px;width:100px" />
+                                                        </td>
+                                                        <td nowrap>
+                                                            <img src='../img1/@item.AadharOne' style="height:100px;width:100px" />
+                                                        </td>
+                                                        <td nowrap>
+                                                            <img src='../img1/@item.AadharTwo' style="height:100px;width:100px" />
+                                                        </td>
+                                                        <td nowrap>
+                                                            <img src='../ChequeImage/@item.Chequeimage' style="height:100px;width:100px" />
+                                                        </td>
+                                                        <td nowrap>
+                                                            <img src='../img1/@item.Panimg' style="height:100px;width:100px" />
                                                         </td>
                                                         <td nowrap>
                                                             <div>

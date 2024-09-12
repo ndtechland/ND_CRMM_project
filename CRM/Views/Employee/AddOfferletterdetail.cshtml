@@ -1,0 +1,289 @@
+﻿@model CRM.Models.Crm.Offerletter
+@{
+    ViewData["Title"] = "AddOfferletterdetail";
+    Layout = "~/Views/Shared/_adminLayout.cshtml";
+}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var message = "@TempData["Message"]";
+
+        if (message) {
+            Swal.fire({
+                title: 'Notification',
+                text: message,
+                icon: 'info',
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    setTimeout(function () {
+                        window.location.href = '@Url.Action("OfferletterList", "Employee")';
+                    }, 1000);
+                }
+            });
+        }
+    });
+</script>
+<div class="page-wrapper">
+    <div class="page-body-wrapper">
+        <div class="page-sidebar">
+        </div>
+
+        <div class="page-body">
+
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="page-header-left">
+                                <h4>@ViewBag.heading</h4>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <ol class="breadcrumb pull-right">
+                                <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
+                                <li class="breadcrumb-item">Approval List</li>
+                                <li class="breadcrumb-item active">Add Offerletter Detail</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Container-fluid Ends-->
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <form method="post" enctype="multipart/form-data" action="/Employee/AddOfferletterdetail" autocomplete="off" onsubmit="return validateForm()">
+                                    <div class="container">
+                                        <div class="row mb-3">
+                                            <div class="col-lg-4">
+                                                <input type="hidden" name="Id">
+                                                <label for="FullName">Candidate Name</label>
+                                                <input class="form-control" value='@ViewBag.Name' name="Name" id="FullName" placeholder="Enter Full Name" type="text" required>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <label for="CandidatePincode">Pincode</label>
+                                                <input class="form-control" value='@ViewBag.CandidatePincode' name="CandidatePincode" id="CandidatePincode" placeholder="Enter Pincode" type="text" maxlength="6" required>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <label for="CandidateAddress">Address</label>
+                                                <input class="form-control" value='@ViewBag.CandidateAddress' name="CandidateAddress" id="CandidateAddress" placeholder="Enter Address" type="text" required>
+                                            </div>
+                                         
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-lg-4">
+                                                <label for="DepartmentId">Department</label>
+                                                <select name="DepartmentId" class="form-control" id="ddDepartmentID">
+                                                    <option value="0">-- Select Department --</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="col-lg-4">
+                                                <label for="DesignationId">Designation</label>
+                                                <select name="DesignationId" class="form-control" id="ddDesignationID">
+                                                    <option value="0">-- Select Designation --</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="col-lg-4">
+                                                <label for="MonthlyCtc">Monthly CTC</label>
+                                                <input class="form-control" value='@ViewBag.MonthlyCtc' name="MonthlyCtc" id="MonthlyCtc" placeholder="Enter Monthly CTC" type="number" required>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-lg-4">
+                                                <label for="AnnualCtc">Annual CTC</label>
+                                                <input class="form-control" value='@ViewBag.AnnualCtc' name="AnnualCtc" id="AnnualCtc" placeholder="Enter Annual CTC" type="number" required>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <label for="StateId">State</label>
+                                                <select class="form-control" id="ddlState" name="StateId">
+                                                    <option value="0">-- Select State --</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <label for="CityId">City</label>
+                                                <select class="form-control" name="CityId" id="City">
+                                                    <option value="0">-- Select City --</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">                                          
+                                            <div class="col-lg-4">
+                                                <label for="DateOfJoining">Date Of Joining</label>
+                                                <input class="form-control" value='@ViewBag.DateOfJoining' name="DateOfJoining" id="DateOfJoining" type="date" required>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <label for="Validdate">Valid Date</label>
+                                                <input class="form-control" value='@ViewBag.Validdate' name="Validdate" id="Validdate" type="date" required>
+                                            </div>
+                                        </div>
+                                      
+                                        <div class="form-group text-center">
+                                            <input type="submit" value="@ViewBag.btnText" class="btn btn-primary" />
+                                        </div>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    var designationid = '@ViewBag.DesignationId';
+    var departmentid = '@ViewBag.DepartmentId;
+    var stateid = '@ViewBag.StateId';
+    var city = '@ViewBag.CityId';
+    if (departmentid != "") {
+        bindDepartment(departmentid);
+    }
+    else {
+        bindDepartment("");
+    }
+    if (designationid != "") {
+        bindDesigation(designationid);
+    }
+    else {
+        bindDesigation("");
+    }
+    if (stateid != "") {
+        bindStates(stateid);
+    }
+    else {
+        bindStates("");
+    }
+    if (city != "") {
+        bindCity(city);
+    }
+    else {
+        bindCity("");
+    }
+    var DOBJ = '@ViewBag.DateOfJoining';
+    if (DOBJ != "") {
+        var formattedDate = DOBJ ? new Date(DOBJ).toISOString().split('T')[0] : '';
+        $('#DateOfJoining').val(formattedDate);
+    }
+
+
+    var DOBBirth = '@ViewBag.Validdate';
+    if (DOBBirth != "") {
+        var formatDOB = DOBBirth ? new Date(DOBBirth).toISOString().split('T')[0] : '';
+        $('#Validdate').val(formatDOB);
+    }
+</script>
+
+<script>
+    function bindCity(CityId) {
+        var itemsList = @Json.Serialize(ViewBag.Cities);
+        debugger
+        var dropdown = $("#City");
+        $.each(itemsList, function (index, item) {
+            dropdown.append($('<option></option>').val(item.value).text(item.text));
+        });
+        if (CityId != "") {
+            $("#City").val(CityId)
+        }
+    }
+    function bindStates(StateId) {
+        var itemsListforStates = @Json.Serialize(ViewBag.States);
+        debugger
+        var dropdownforState = $("#ddlState");
+        $.each(itemsListforStates, function (index, item) {
+            dropdownforState.append($('<option></option>').val(item.value).text(item.text));
+        });
+        if (StateId != "") {
+            $("#ddlState").val(StateId)
+        }
+    }
+    function bindDesigation(DesignationID) {
+        var itemsListforDesigation = @Html.Raw(Json.Serialize(ViewBag.Designation)); 
+        var dropdownforDesigation = $("#ddDesignationID");
+        dropdownforDesigation.empty(); 
+        dropdownforDesigation.append($('<option></option>').val('0').text('-- Select Designation --'));
+        $.each(itemsListforDesigation, function (index, item) {
+            dropdownforDesigation.append($('<option></option>').val(item.value).text(item.text));
+        });
+
+        if (DesignationID) {
+            $("#ddDesignationID").val(DesignationID); 
+        }
+    }
+
+    function bindDepartment(DepartmentID) {
+        var itemsListforDepartment = @Html.Raw(Json.Serialize(ViewBag.Department)); 
+        var dropdownforDepartment = $("#ddDepartmentID");
+        dropdownforDepartment.empty(); 
+        dropdownforDepartment.append($('<option></option>').val('0').text('-- Select Department --'));
+        $.each(itemsListforDepartment, function (index, item) {
+            dropdownforDepartment.append($('<option></option>').val(item.value).text(item.text));
+        });
+
+        if (DepartmentID) {
+            $("#ddDepartmentID").val(DepartmentID); 
+        }
+    }
+
+    $(document).ready(function () {
+        bindDesigation();  
+        bindDepartment();  
+    });
+
+</script>
+<script>
+    $(document).ready(function () {
+        var ddlState = $('#ddlState');
+        //ddlState.append($("<option></option>").val('').html('-- Select State --'));
+        $.ajax({
+            url: '/Home/BindStateDetails',
+            type: 'GET',
+            dataType: 'json',
+            success: function (d) {
+                $.each(d, function (i, states) {
+                    ddlState.append($("<option></option>").val(states.id).html(states.sName));
+                });
+            },
+            error: function () {
+                alert('Error!');
+            }
+        });
+        $("#ddlState").change(function () {
+            var StateId = parseInt($(this).val());
+            if (!isNaN(StateId)) {
+                var ddlCity = $('#City');
+                ddlCity.append($("<option></option>").val('').html('Please wait ...'));
+
+                debugger;
+                $.ajax({
+                    url: '/Home/BindCityDetails',
+                    type: 'GET',
+                    dataType: 'json',
+                    data: { stateId: StateId },
+                    success: function (d) {
+                        ddlCity.empty(); // Clear the plese wait
+                        ddlCity.append($("<option></option>").val('').html('-- Select City --'));
+                        $.each(d, function (i, cities) {
+                            ddlCity.append($("<option></option>").val(cities.id).html(cities.city1));
+                        });
+
+                    },
+                    error: function () {
+                        alert('Error!');
+                    }
+                });
+            }
+        });
+    })
+</script>

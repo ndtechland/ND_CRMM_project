@@ -11,7 +11,6 @@ namespace CRM.Repository
 {
     public interface ICrmrpo
     {
-        //public DataTable Login(AdminLogin model);
         Task<int> LoginAsync(AdminLogin model);
         public Task<int> Product(ProductMaster model);
         public Task<List<ProductMaster>> ProductList();
@@ -82,6 +81,11 @@ namespace CRM.Repository
         public Task<bool> AddApprovedPresnolInfo(EmployeePresnolInfoList model);
         public Task<List<ApprovedbankdetailList>> ApprovedbankdetailList(int Userid);
         public Task<bool> AddApprovedbankdetail(ApprovedbankdetailList model);
+        public Task<Offerletter> GetOfferletterbyid(int? id);
+        public Task<int> AddOfferletterdetail(Offerletter model, int Userid);
+        public Task<int> updateOfferletterdetail(Offerletter model);
+        public Task<List<empOfferletter>> OfferletterdetailList(int Userid);
+
 
     }
 }

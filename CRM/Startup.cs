@@ -35,7 +35,7 @@ namespace CRM
             // Session configuration
             services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromHours(1); // Set session timeout
+                options.IdleTimeout = TimeSpan.FromDays(1); // Set session timeout
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });

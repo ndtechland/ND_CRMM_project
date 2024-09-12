@@ -15,6 +15,7 @@ namespace CRM.Models.Crm
             : base(options)
         {
         }
+        public virtual DbSet<EmployeeImportExcel> EmpMultiforms { get; set; } = null!;
 
         public virtual DbSet<AccountTypeMaster> AccountTypeMasters { get; set; } = null!;
         public virtual DbSet<Additonalcontribution> Additonalcontributions { get; set; } = null!;
@@ -46,6 +47,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<GstMaster> GstMasters { get; set; } = null!;
         public virtual DbSet<HeadOfficeAddress> HeadOfficeAddresses { get; set; } = null!;
         public virtual DbSet<IndustryMaster> IndustryMasters { get; set; } = null!;
+        public virtual DbSet<Offerletter> Offerletters { get; set; } = null!;
         public virtual DbSet<OrganisationProfile> OrganisationProfiles { get; set; } = null!;
         public virtual DbSet<OrganisationTaxDetail> OrganisationTaxDetails { get; set; } = null!;
         public virtual DbSet<PayMethodMaster> PayMethodMasters { get; set; } = null!;
@@ -60,7 +62,6 @@ namespace CRM.Models.Crm
         public virtual DbSet<VendorRegistration> VendorRegistrations { get; set; } = null!;
         public virtual DbSet<WorkLocation> WorkLocations { get; set; } = null!;
         public virtual DbSet<WorkLocation1> WorkLocations1 { get; set; } = null!;
-        public virtual DbSet<EmployeeImportExcel> EmpMultiforms { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -838,6 +839,47 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.IndustryName)
                     .HasMaxLength(255)
                     .HasColumnName("Industry_Name");
+            });
+
+            modelBuilder.Entity<Offerletter>(entity =>
+            {
+                entity.ToTable("Offerletter");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.AnnualCtc)
+                    .HasColumnType("decimal(18, 0)")
+                    .HasColumnName("AnnualCTC");
+
+                entity.Property(e => e.CandidateAddress).HasMaxLength(200);
+
+                entity.Property(e => e.CandidatePincode).HasMaxLength(200);
+
+                entity.Property(e => e.CityId).HasColumnName("cityId");
+
+                entity.Property(e => e.Currentdate).HasColumnType("datetime");
+
+                entity.Property(e => e.DateOfJoining)
+                    .HasColumnType("datetime")
+                    .HasColumnName("Date_Of_Joining");
+
+                entity.Property(e => e.DepartmentId)
+                    .HasMaxLength(120)
+                    .HasColumnName("DepartmentID");
+
+                entity.Property(e => e.DesignationId)
+                    .HasMaxLength(120)
+                    .HasColumnName("DesignationID");
+
+                entity.Property(e => e.MonthlyCtc)
+                    .HasColumnType("decimal(18, 0)")
+                    .HasColumnName("MonthlyCTC");
+
+                entity.Property(e => e.Name).HasMaxLength(120);
+
+                entity.Property(e => e.StateId).HasColumnName("stateId");
+
+                entity.Property(e => e.Validdate).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<OrganisationProfile>(entity =>
