@@ -1619,7 +1619,7 @@ namespace CRM.Controllers
 
             return null;
         }
-        [HttpGet,Route("/Employee/MonthlysalaryReport")]
+        [HttpGet, Route("/Employee/MonthlysalaryReport")]
         public async Task<IActionResult> MonthlysalaryReport(string customerId, int Month, int year, string WorkLocation)
         {
             try
@@ -1824,7 +1824,7 @@ namespace CRM.Controllers
             //}
             //else
             //{
-                return View();
+            return View();
             //}
         }
 
@@ -1918,8 +1918,8 @@ namespace CRM.Controllers
             //}
             //else
             //{
-                return View();
-           // }
+            return View();
+            // }
         }
         public string AppointmentletterDocPDF(string EmployeeId)
         {
@@ -1966,6 +1966,154 @@ namespace CRM.Controllers
             //fileResult.FileDownloadName = "Appointmentletter.pdf";
             return "AppointmentLetter/" + fileResult.FileDownloadName;
 
+        }
+        [HttpGet, Route("/Employee/AddOfferletterdetail")]
+        public async Task<IActionResult> AddOfferletterdetail(int? id = 0)
+        {
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                ViewBag.UserName = HttpContext.Session.GetString("UserName");
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+
+                ViewBag.Department = await _context.DepartmentMasters.Select(w => new SelectListItem
+                {
+                    Value = w.Id.ToString(),
+                    Text = w.DepartmentName
+                }).ToListAsync();
+
+                ViewBag.Designation = await _context.DesignationMasters.Select(w => new SelectListItem
+                {
+                    Value = w.Id.ToString(),
+                    Text = w.DesignationName
+                }).ToListAsync();
+
+                ViewBag.States = await _context.States.Select(w => new SelectListItem
+                {
+                    Value = w.Id.ToString(),
+                    Text = w.SName
+                }).ToListAsync();
+
+                ViewBag.Cities = await _context.Cities.Select(w => new SelectListItem
+                {
+                    Value = w.Id.ToString(),
+                    Text = w.City1
+                }).ToListAsync();
+
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                ViewBag.userId = adminlogin.Vendorid;
+                ViewBag.Heading = "Add Offerletter Detail";
+                ViewBag.btnText = "SAVE";
+
+                if (id != 0)
+                {
+                    var data = await _ICrmrpo.GetOfferletterbyid(id);
+                    if (data != null)
+                    {
+                        ViewBag.Name = data.Name;
+                        ViewBag.CandidatePincode = data.CandidatePincode;
+                        ViewBag.CandidateAddress = data.CandidateAddress;
+                        ViewBag.DepartmentId = data.DepartmentId;
+                        ViewBag.DesignationId = data.DesignationId;
+                        ViewBag.MonthlyCtc = data.MonthlyCtc;
+                        ViewBag.AnnualCtc = data.AnnualCtc;
+                        ViewBag.StateId = data.StateId;
+                        ViewBag.CityId = data.CityId;
+                        ViewBag.DateOfJoining = data.DateOfJoining;
+                        ViewBag.Validdate = data.Validdate;
+
+                        ViewBag.Heading = "Update Offerletter Detail";
+                        ViewBag.btnText = "UPDATE";
+                    }
+                }
+
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddOfferletterdetail(Offerletter model)
+        {
+            try
+            {
+                ViewBag.UserName = HttpContext.Session.GetString("UserName");
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                if (model.Id > 0)
+                {
+                    var data = await _ICrmrpo.updateOfferletterdetail(model);
+                    if (data > 0)
+                    {
+                        TempData["Message"] = "Update Successfully.";
+                        return RedirectToAction("AddOfferletterdetail", "Employee");
+                    }
+                    else
+                    {
+                        TempData["Message"] = "Update Failed.";
+                        return View(model);
+                    }
+                }
+                else
+                {
+                    var response = await _ICrmrpo.AddOfferletterdetail(model, Userid);
+                    if (response > 0)
+                    {
+                        TempData["Message"] = "Add Successfully.";
+                        return RedirectToAction("AddOfferletterdetail", "Employee");
+                    }
+                    else
+                    {
+                        TempData["Message"] = "Registration Failed.";
+                        ModelState.Clear();
+                        return View(model);
+                    }
+                }
+            }
+            catch (Exception Ex)
+            {
+                throw new Exception("Error:" + Ex.Message);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> OfferletterList()
+        {
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName = AddedBy;
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var response = await _ICrmrpo.OfferletterdetailList(Userid);
+
+                return View(response);
+
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
+
+        }
+        public async Task<IActionResult> DeleteOfferletter(int id)
+        {
+            try
+            {
+                var data = _context.Offerletters.Find(id);
+                if (data != null)
+                {
+                    data.IsDeleted = true;
+                    _context.Offerletters.Remove(data);
+                    _context.SaveChanges();
+                }
+                return RedirectToAction("OfferletterList");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception();
+            }
         }
     }
 }

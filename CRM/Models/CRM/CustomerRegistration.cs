@@ -21,7 +21,6 @@ namespace CRM.Models.Crm
         public int? Vendorid { get; set; }
         public string? UserName { get; set; }
 
-       
 
     }
 }

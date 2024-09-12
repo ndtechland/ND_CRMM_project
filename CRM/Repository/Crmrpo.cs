@@ -22,6 +22,10 @@ using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 using System.Text;
 using CRM.IUtilities;
 using Microsoft.AspNetCore.Hosting;
+using DocumentFormat.OpenXml.Office2010.Excel;
+using System.Linq;
+using DocumentFormat.OpenXml.Wordprocessing;
+using CRM.Models.APIDTO;
 
 
 namespace CRM.Repository
@@ -41,20 +45,6 @@ namespace CRM.Repository
             _IEmailService = IEmailService;
             _webHostEnvironment = webHostEnvironment;
         }
-        //public DataTable Login(AdminLogin model)
-        //{
-        //    SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
-        //    SqlCommand cmd = new SqlCommand("usp_adminlogin", con);
-        //    cmd.CommandType = CommandType.StoredProcedure;
-        //    cmd.Parameters.Add(new SqlParameter("@UserName", model.UserName));
-        //    cmd.Parameters.Add(new SqlParameter("@password", model.Password));
-        //    SqlDataAdapter da = new SqlDataAdapter();
-        //    da.SelectCommand = cmd;
-        //    DataTable dt = new DataTable();
-        //    da.Fill(dt);
-        //    return dt;
-
-        //}
         public async Task<int> LoginAsync(AdminLogin model)
         {
             using (SqlConnection con = new SqlConnection(_context.Database.GetConnectionString()))
@@ -160,9 +150,9 @@ namespace CRM.Repository
                     cmd.Parameters.AddWithValue("@id", Convert.ToInt32(userIdString));
 
                     con.Open();
-                    SqlDataReader rdr = await cmd.ExecuteReaderAsync(); 
+                    SqlDataReader rdr = await cmd.ExecuteReaderAsync();
 
-                    while (await rdr.ReadAsync()) 
+                    while (await rdr.ReadAsync())
                     {
                         var cse = new Customer()
                         {
@@ -493,7 +483,7 @@ namespace CRM.Repository
                 // Add parameters for stored procedure
                 //cmd.Parameters.Add(new SqlParameter("@CustomerID", SqlDbType.Int) { Value = Convert.ToInt32(customerId) });
                 //cmd.Parameters.Add(new SqlParameter("@WorkLocation", SqlDbType.Int) { Value = Convert.ToInt32(WorkLocation) });
-                cmd.Parameters.Add(new SqlParameter("@id", SqlDbType.Int) { Value = Userid }); 
+                cmd.Parameters.Add(new SqlParameter("@id", SqlDbType.Int) { Value = Userid });
 
                 cmd.CommandType = CommandType.StoredProcedure;
                 con.Open();
@@ -508,7 +498,7 @@ namespace CRM.Repository
                         FirstName = rdr["FirstName"] == DBNull.Value ? null : Convert.ToString(rdr["FirstName"]),
                         EmployeeId = rdr["EmployeeId"] == DBNull.Value ? null : Convert.ToString(rdr["EmployeeId"]),
                         MonthlyCtc = rdr["MonthlyCTC"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["MonthlyCTC"]),
-                        CustomerID = rdr["Vendorid"] == DBNull.Value ? 0 : Convert.ToInt64(rdr["Vendorid"]),  
+                        CustomerID = rdr["Vendorid"] == DBNull.Value ? 0 : Convert.ToInt64(rdr["Vendorid"]),
                         FatherName = rdr["FatherName"] == DBNull.Value ? null : Convert.ToString(rdr["FatherName"]),
                         Incentive = rdr["Incentive"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["Incentive"]),
                     };
@@ -1595,7 +1585,7 @@ namespace CRM.Repository
             {
                 List<EmployeeApprovedPresnolInfo> PresnolInfo = new List<EmployeeApprovedPresnolInfo>();
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
-                PresnolInfo = _context.ApprovedPresnolInfos.Where(x => x.IsApproved == false && x.Vendorid== adminlogin.Vendorid ).Select(x => new EmployeeApprovedPresnolInfo
+                PresnolInfo = _context.ApprovedPresnolInfos.Where(x => x.IsApproved == false && x.Vendorid == adminlogin.Vendorid).Select(x => new EmployeeApprovedPresnolInfo
                 {
                     id = x.Id,
                     FullName = x.FullName,
@@ -1640,8 +1630,8 @@ namespace CRM.Repository
                         existingEntity.Pan = model.PAN;
                         existingEntity.AddressLine1 = model.AddressLine1;
                         existingEntity.AddressLine2 = model.AddressLine2;
-                        existingEntity.StateId =Convert.ToString(model.Stateid);
-                        existingEntity.City =Convert.ToString(model.cityid);
+                        existingEntity.StateId = Convert.ToString(model.Stateid);
+                        existingEntity.City = Convert.ToString(model.cityid);
                         existingEntity.Pincode = model.Pincode;
                         existingEntity.AadharNo = model.AadharNo;
                         if (model.AadharOne != null)
@@ -1689,7 +1679,7 @@ namespace CRM.Repository
                     AccountNumber = x.AccountNumber,
                     ReEnterAccountNumber = x.ReEnterAccountNumber,
                     Ifsc = x.Ifsc,
-                    AccountTypeId = x.AccountTypeId == 1 ? "Current": x.AccountTypeId == 2 ? "Savings": "unknown",
+                    AccountTypeId = x.AccountTypeId == 1 ? "Current" : x.AccountTypeId == 2 ? "Savings" : "unknown",
                     EpfNumber = x.EpfNumber,
                     Nominee = x.Nominee,
                     Chequeimage = x.Chequeimage,
@@ -1718,7 +1708,7 @@ namespace CRM.Repository
                         existingEntity.AccountNumber = model.AccountNumber;
                         existingEntity.ReEnterAccountNumber = model.ReEnterAccountNumber;
                         existingEntity.Ifsc = model.Ifsc;
-                        existingEntity.AccountTypeId =Convert.ToInt32(model.AccountTypeId);
+                        existingEntity.AccountTypeId = Convert.ToInt32(model.AccountTypeId);
                         existingEntity.EpfNumber = model.EpfNumber;
                         existingEntity.Nominee = model.Nominee;
                         if (model.Chequeimage != null)
@@ -1739,6 +1729,131 @@ namespace CRM.Repository
                 throw new Exception("An error occurred while adding the contact: " + ex.Message, ex);
             }
         }
+        public async Task<Offerletter> GetOfferletterbyid(int? id)
+        {
+            try
+            {
+                var query = await (from admin in _context.AdminLogins
+                                   join off in _context.Offerletters
+                                   on admin.Vendorid equals off.Id
+                                   select new Offerletter
+                                   {
+                                       Name = off.Name,
+                                       Validdate = off.Validdate,
+                                       DateOfJoining = off.DateOfJoining,
+                                       AnnualCtc = off.AnnualCtc,
+                                       MonthlyCtc = off.MonthlyCtc,
+                                       DesignationId = off.DesignationId,
+                                       DepartmentId = off.DepartmentId,
+                                       StateId = off.StateId,
+                                       CityId = off.CityId,
+                                       CandidateAddress = admin.UserName,
+                                       CandidatePincode = off.CandidatePincode
+                                   }).FirstOrDefaultAsync();
+                return query;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<int> AddOfferletterdetail(Offerletter model, int Userid)
+        {
+            try
+            {
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                Offerletter of = new Offerletter()
+                {
+                    Name = model.Name,
+                    Currentdate = DateTime.Now,
+                    Validdate = model.Validdate,
+                    MonthlyCtc = model.MonthlyCtc,
+                    AnnualCtc = model.AnnualCtc,
+                    DesignationId = model.DesignationId,
+                    DepartmentId = model.DepartmentId,
+                    DateOfJoining = model.DateOfJoining,
+                    Vendorid = adminlogin.Vendorid,
+                    IsDeleted = false,
+                    StateId = model.StateId,
+                    CityId = model.CityId,
+                    CandidateAddress = model.CandidateAddress,
+                    CandidatePincode = model.CandidatePincode,
+                };
+                _context.Offerletters.Add(of);
+                _context.SaveChanges();
+                return 1;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<int> updateOfferletterdetail(Offerletter model)
+        {
+            try
+            {
+                var existingOfferletter = await _context.Offerletters.FindAsync(model.Id);
+
+                if (existingOfferletter != null)
+                {
+                    existingOfferletter.Name = model.Name;
+                    existingOfferletter.Validdate = model.Validdate;
+                    existingOfferletter.MonthlyCtc = model.MonthlyCtc;
+                    existingOfferletter.AnnualCtc = model.AnnualCtc;
+                    existingOfferletter.DesignationId = model.DesignationId;
+                    existingOfferletter.DepartmentId = model.DepartmentId;
+                    existingOfferletter.DateOfJoining = model.DateOfJoining;
+                    existingOfferletter.StateId = model.StateId;
+                    existingOfferletter.CityId = model.CityId;
+                    existingOfferletter.CandidateAddress = model.CandidateAddress;
+                    existingOfferletter.CandidatePincode = model.CandidatePincode;
+
+                    return await _context.SaveChangesAsync();
+                }
+
+                return 1;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<List<empOfferletter>> OfferletterdetailList(int Userid)
+        {
+            try
+            {
+                if (Userid != null)
+                {
+                    var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                    var offerletters = await _context.Offerletters
+                        .Where(x => x.Vendorid == adminlogin.Vendorid && x.IsDeleted == false)
+                        .Select(x => new empOfferletter
+                        {
+                            Id = x.Id,
+                            Name = x.Name,
+                            MonthlyCtc = x.MonthlyCtc,
+                            AnnualCtc = x.AnnualCtc,
+                            CandidateAddress = x.CandidateAddress,
+                            CandidatePincode = x.CandidatePincode,
+                            StateName = _context.States.Where(g => g.Id == x.StateId).Select(g => g.SName).FirstOrDefault(),
+                            CityName = _context.Cities.Where(g => g.Id == x.CityId).Select(g => g.City1).FirstOrDefault(),
+                            DateOfJoining = x.DateOfJoining.GetValueOrDefault(),
+                            DepartmentName = _context.DepartmentMasters.Where(g => g.Id == Convert.ToInt16(x.DepartmentId)).Select(g => g.DepartmentName).FirstOrDefault().Trim(),
+                            DesignationName = _context.DesignationMasters.Where(g => g.Id == Convert.ToInt16(x.DesignationId)).Select(g => g.DesignationName).FirstOrDefault().Trim(),
+                            Validdate = x.Validdate.GetValueOrDefault(),
+                        }).ToListAsync();
+
+                    return offerletters;
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
     }
 
 }
