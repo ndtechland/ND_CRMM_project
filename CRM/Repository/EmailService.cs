@@ -90,8 +90,8 @@ namespace CRM.Repository
                     var emailMessage = new MimeMessage();
                     emailMessage.From.Add(new MailboxAddress("GA", "aastrolense@gmail.com"));
                     emailMessage.To.Add(new MailboxAddress("Recipient Name", model.WorkEmail));
-                    emailMessage.Cc.Add(new MailboxAddress("Recipient Name", "vishnundtechland@gmail.com"));
-                    emailMessage.Bcc.Add(new MailboxAddress("Recipient Name", "ndcaretrust@gmail.com"));
+                    //emailMessage.Cc.Add(new MailboxAddress("Recipient Name", "vishnundtechland@gmail.com"));
+                    //emailMessage.Bcc.Add(new MailboxAddress("Recipient Name", "ndcaretrust@gmail.com"));
                     emailMessage.Subject = "Login Credencial";
 
                     var textPart = new TextPart("plain")

@@ -42,41 +42,55 @@
                                     <form method="post" enctype="multipart/form-data" action="/Vendor/Approvedbankdetails" autocomplete="off" onsubmit="return validateForm()">
                                         <div class="container">
                                             <div class="row mb-3">
-                                                <div class="col-lg-4">
+                                                <div class="col-lg-6">
                                                     <input type="hidden" value='@ViewBag.id' name="id" />
                                                     <label>Account Holder Name</label>
                                                     <input class="form-control " value='@ViewBag.Account_Holder_Name' name="AccountHolderName" placeholder="Enter Account Holder Name" id="AccountHolderName" type="text" required="">
                                                 </div>
-                                                <div class="col-lg-4">
+                                                <div class="col-lg-6">
                                                     <label>Bank Name</label>
                                                     <input class="form-control " value='@ViewBag.Bank_Name' name="BankName" id="BankName" placeholder="Enter BankName" type="text" required="">
                                                 </div>
-                                                <div class="col-lg-4">
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-lg-6">
                                                     <label>Account Number</label>
                                                     <input class="form-control " value='@ViewBag.Account_Number' name="AccountNumber" placeholder="Enter Account Number" id="AccountNumber" type="text" onkeydown="validateNumericInput(event)" required="">
                                                 </div>
-                                            </div>
-                                            <div class="row mb-3">
-                                                <div class="col-lg-4">
+                                                <div class="col-lg-6">
                                                     <label>Re-enter Account Number</label>
                                                     <input class="form-control " value='@ViewBag.Re_Enter_Account_Number' name="ReEnterAccountNumber" placeholder="Enter Re-EnterAccountNumber" id="ReEnterAccountNumber" type="text" onkeydown="validateNumericInput(event)" required="">
                                                 </div>
-                                                <div class="col-lg-4">
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-lg-6">
                                                     <label>IFSC</label>
                                                     <input class="form-control " value='@ViewBag.IFSC' name="Ifsc" id="IFSC" placeholder="Enter IFSC" type="text" required="">
                                                 </div>
-
-                                                <div class="col-lg-4">
+                                                <div class="col-lg-6">
                                                     <label>EPF Number</label>
                                                     <input class="form-control " value='@ViewBag.EPF_Number' name="EpfNumber" placeholder="Enter EPF Number" id="EPF_Number" onkeydown="validateNumericInput(event)" type="text" required="">
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
-                                                <div class="col-lg-4">
+                                                <div class="col-lg-6">
                                                     <label>Nominees Name</label>
                                                     <input class="form-control " value='@ViewBag.nominee' name="Nominee" id="nominee" placeholder="Enter nominee name" type="text" required="">
                                                 </div>
-                                                <div class="col-lg-4">
+                                                <div class="col-lg-6" style="padding:11px;">
+                                                    <label>Account Type</label>
+                                                    <br />
+                                                    <div class="d-flex gap-2">
+                                                        <input type="radio" id="rdAcountCurrent" name="AccountTypeId" value="1">Current
+                                                        <input type="radio" id="rdAcountSaving" name="AccountTypeId" value="2">Savings
+                                                    </div>
+                                                    <div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                
+                                                <div class="col-lg-6">
                                                     <label>Cheque Image</label>
                                                     @if (Model != null && Model.Chequeimage != null)
                                                     {
@@ -90,24 +104,10 @@
                                                     }
                                                     @if (Model != null)
                                                     {
-                                                        <img src='~/ChequeImage/@ViewBag.Chequebase' id="Chequebase" value="@ViewBag.Chequebase" style="height:100px;width:100px" />
+                                                        <img src='~/ChequeImage/@ViewBag.Chequebase' id="Chequebase" value="@ViewBag.Chequebase" class="img-thumbnail" />
                                                     }
-                                                    else
-                                                    {
-                                                        <img src='~/ChequeImage/@ViewBag.Chequebase' id="Chequebase" value="@ViewBag.Chequebase" style="height:100px;width:100px" hidden />
-                                                    }
-                                                </div>
-                                                <div class="col-lg-4" style="padding:11px;">
-                                                    <label>Account Type</label>
-                                                    <br />
-                                                    <div class="d-flex gap-2">
-                                                        <input type="radio" id="rdAcountCurrent" name="AccountTypeId" value="1">Current
-                                                        <input type="radio" id="rdAcountSaving"  name="AccountTypeId" value="2">Savings
-                                                    </div>
-                                                    <div>
-                                                    </div>
-                                                </div>
 
+                                                </div>
                                             </div>
                                             <div class="form-group text-center">
                                                 <input type="submit" value="@ViewBag.btnText" class="btn btn-primary" />

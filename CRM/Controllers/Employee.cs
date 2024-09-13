@@ -1791,88 +1791,116 @@ namespace CRM.Controllers
         }
 
         [HttpGet, Route("/Employee/EmployeeOfferletter")]
-        public IActionResult EmployeeOfferletter(string EmployeeId)
+        public async Task<IActionResult> EmployeeOfferletter(int? id = 0)
         {
-            //string AddedBy = HttpContext.Session.Id;
-            //ViewBag.UserName = AddedBy;
-            //var result = (from emp in _context.EmployeeRegistrations
-            //              join empatt in _context.Empattendances on emp.EmployeeId equals empatt.EmployeeId into empattGroup
-            //              from empatt in empattGroup.DefaultIfEmpty()
-            //              join worklocation in _context.Cities on emp.c.ToString() equals worklocation.Id.ToString() into worklocationGroup
-            //              from worklocation in worklocationGroup.DefaultIfEmpty()
-            //              join dpt in _context.Drop_Industries on emp.DepartmentID equals dpt.ID into dptGroup
-            //              from dpt in dptGroup.DefaultIfEmpty()
-            //              join jb in _context.Job_Title on emp.Job_Title equals jb.Id into jbGroup
-            //              from jb in jbGroup.DefaultIfEmpty()
-            //              join Org in _context.Organizations on emp.CompanyId equals Org.Id into OrgGroup
-            //              from Org in OrgGroup.DefaultIfEmpty()
-            //              where emp.EmployeeId == EmployeeId
-            //              select new empOfferletter
-            //              {
-            //                  First_Name = emp.FirstName,
-            //                  Department_Name = dpt.IndustriesName,
-            //                  MonthlyCtc = emp.MonthlyCTC,
-            //                  AnnualCtc = emp.AnnualCTC,
-            //                  Designation_Name = jb.JobTitle,
-            //                  CompanyName = Org.OrganizationName,
-            //                  Joiningdate = emp.DateOfJoining != null ? emp.DateOfJoining.Value.ToString("dd/MM/yyyy") : "",
-            //              }).FirstOrDefault();
+            string AddedBy = HttpContext.Session.Id;
+            int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+            var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+            var result = await _context.Offerletters
+                          .Where(x => x.Vendorid == adminlogin.Vendorid && x.IsDeleted == false)
+                          .Select(x => new getempOfferletter
+                          {
+                              Id = x.Id,
+                              Name = x.Name,
+                              MonthlyCtc = x.MonthlyCtc,
+                              AnnualCtc = x.AnnualCtc,
+                              CandidateAddress = x.CandidateAddress,
+                              CandidatePincode = x.CandidatePincode,
+                              HrName = x.HrName,
+                              HrJobTitle = x.HrJobTitle,
+                              HrSignature = x.HrSignature,
+                              Currentdate = DateTime.Now.Date.ToString("dd/MM/yyyy"),
+                              StateName = _context.States.Where(g => g.Id == x.StateId).Select(g => g.SName).FirstOrDefault(),
+                              CityName = _context.Cities.Where(g => g.Id == x.CityId).Select(g => g.City1).FirstOrDefault(),
+                              DateOfJoining = x.DateOfJoining != null ? x.DateOfJoining.Value.ToString("dd/MM/yyyy") : null,
+                              DepartmentName = _context.DepartmentMasters.Where(g => g.Id == Convert.ToInt16(x.DepartmentId)).Select(g => g.DepartmentName).FirstOrDefault().Trim(),
+                              DesignationName = _context.DesignationMasters.Where(g => g.Id == Convert.ToInt16(x.DesignationId)).Select(g => g.DesignationName).FirstOrDefault().Trim(),
+                              Validdate = x.Validdate != null ? x.Validdate.Value.ToString("dd/MM/yyyy") : null,
+                              CompanyImage = _context.VendorRegistrations.Where(g => g.Id == x.Vendorid).Select(g => g.CompanyImage).FirstOrDefault(),
+                              CompanyName = _context.VendorRegistrations.Where(g => g.Id == x.Vendorid).Select(g => g.CompanyName).FirstOrDefault(),
+                          }).FirstOrDefaultAsync();
 
-            //if (result != null)
-            //{
-            //    return View(result);
-            //}
-            //else
-            //{
-            return View();
-            //}
+            if (result != null)
+            {
+                return View(result);
+            }
+            else
+            {
+                return View();
+            }
         }
-
-        public string OfferletterDocPDF(string EmployeeId)
+        public IActionResult OfferletterDocPDF(int id)
         {
-            string schema = Request.Scheme;
-            string host = Request.Host.Value;
-            HtmlToPdf converter = new HtmlToPdf();
-            WebClient client = new WebClient();
-            string SlipURL = $"{schema}://{host}/Employee/EmployeeOfferletter?EmployeeId={EmployeeId}";
-            PdfDocument doc = converter.ConvertUrl(SlipURL);
-
-            byte[] pdf = doc.Save();
-            doc.Close();
-
-            /// Save method code -----------
-
-            // Specify the directory where you want to save the PDF file
-            string directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "OfferLetter");
-
-            // Ensure the directory exists, if not, create it
-            if (!Directory.Exists(directoryPath))
+            try
             {
-                Directory.CreateDirectory(directoryPath);
+                string schema = Request.Scheme;
+                string host = Request.Host.Value;
+                HtmlToPdf converter = new HtmlToPdf();
+                string SlipURL = $"{schema}://{host}/Employee/EmployeeOfferletter?id={id}";
+                Console.WriteLine($"Generated URL for PDF: {SlipURL}");
+
+                PdfDocument doc = converter.ConvertUrl(SlipURL);
+                string wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "EMPpdfs");
+
+                if (!Directory.Exists(wwwRootPath))
+                {
+                    Directory.CreateDirectory(wwwRootPath);
+                }
+
+                string uniqueFileName = $"Offerletter_{id}_{DateTime.Now:yyyyMMddHHmmss}.pdf";
+                string filePath = Path.Combine(wwwRootPath, uniqueFileName);
+                Console.WriteLine($"PDF File Path: {filePath}");
+
+                doc.Save(filePath);
+                byte[] pdf = doc.Save();
+                doc.Close();
+
+                if (pdf == null || pdf.Length == 0)
+                {
+                    Console.WriteLine("PDF generation failed or PDF content is empty.");
+                    return BadRequest("PDF generation failed.");
+                }
+
+                var result = (from off in _context.Offerletters
+                              where off.Id == id
+                              select new getempOfferletter
+                              {
+                                  Id = off.Id,
+                                  Name = off.Name,
+                                  CandidateEmail = off.CandidateEmail
+                              }).FirstOrDefault();
+
+                if (result == null)
+                {
+                    return BadRequest("Data not found.");
+                }
+
+                var empoff = _context.Offerletters.FirstOrDefault(e => e.Id == result.Id);
+                if (empoff != null)
+                {
+                    empoff.OfferletterFile = uniqueFileName;
+                    _context.SaveChanges();
+                }
+                else
+                {
+                    Console.WriteLine($"Employee offer letter not found for ID: {result.Id}");
+                    return BadRequest("Data not found for the employee.");
+                }
+
+                string Email_Subject = $"Offerletter for {result.Id}";
+                string Email_body = $"Hello {result.Name} ({result.Id}), please find your attached Offerletter.";
+                Console.WriteLine($"Sending email to: {result.CandidateEmail} with attachment size: {pdf.Length}");
+
+                _IEmailService.SendEmailAsync(result.CandidateEmail, Email_Subject, Email_body, pdf, "Offerletter.pdf", "application/pdf");
+
+                Console.WriteLine($"Offerletter for Employee ID {result.Id} has been saved and emailed.");
+                return Ok("Offerletter generated and emailed successfully.");
             }
-
-            DateTime dt = DateTime.Now;
-
-            string savedFileName = $"{Guid.NewGuid()}{dt:yyyyMMddHHmmssfff}";
-            string extension = ".pdf";
-            // Combine the directory path with the file name
-            string filePath = Path.Combine(directoryPath, $"{savedFileName}{extension}");
-
-            // Write the PDF content to the specified file path
-            using (FileStream fileStream = new FileStream(filePath, FileMode.Create))
+            catch (Exception ex)
             {
-                fileStream.Write(pdf, 0, pdf.Length);
+                Console.WriteLine($"Error: {ex.Message}");
+                return BadRequest($"An error occurred: {ex.Message}");
             }
-            // Create a file result to return the PDF
-            FileResult fileResult = new PhysicalFileResult(filePath, "application/pdf");
-            fileResult.FileDownloadName = $"{savedFileName}{extension}";
-            ///-----end
-
-            //FileResult fileResult = new FileContentResult(pdf, "application/pdf");
-            //fileResult.FileDownloadName = "Offerletter.pdf";
-            return "OfferLetter/" + fileResult.FileDownloadName;
-
-
         }
         [HttpGet, Route("/Employee/Appointmentletter")]
         public IActionResult Appointmentletter(string EmployeeId)
@@ -2003,12 +2031,12 @@ namespace CRM.Controllers
                 ViewBag.userId = adminlogin.Vendorid;
                 ViewBag.Heading = "Add Offerletter Detail";
                 ViewBag.btnText = "SAVE";
-
                 if (id != 0)
                 {
                     var data = await _ICrmrpo.GetOfferletterbyid(id);
                     if (data != null)
                     {
+                        ViewBag.id = data.Id;
                         ViewBag.Name = data.Name;
                         ViewBag.CandidatePincode = data.CandidatePincode;
                         ViewBag.CandidateAddress = data.CandidateAddress;
@@ -2018,8 +2046,12 @@ namespace CRM.Controllers
                         ViewBag.AnnualCtc = data.AnnualCtc;
                         ViewBag.StateId = data.StateId;
                         ViewBag.CityId = data.CityId;
-                        ViewBag.DateOfJoining = data.DateOfJoining;
-                        ViewBag.Validdate = data.Validdate;
+                        ViewBag.DateOfJoining = data.DateOfJoining?.ToString("yyyy-MM-dd");
+                        ViewBag.Validdate = data.Validdate?.ToString("yyyy-MM-dd");
+                        ViewBag.HrJobTitle = data.HrJobTitle;
+                        ViewBag.HrSignature = data.HrSignature;
+                        ViewBag.HrName = data.HrName;
+                        ViewBag.CandidateEmail = data.CandidateEmail;
 
                         ViewBag.Heading = "Update Offerletter Detail";
                         ViewBag.btnText = "UPDATE";
@@ -2035,7 +2067,7 @@ namespace CRM.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddOfferletterdetail(Offerletter model)
+        public async Task<IActionResult> AddOfferletterdetail(Offerletters model)
         {
             try
             {
@@ -2047,7 +2079,7 @@ namespace CRM.Controllers
                     var data = await _ICrmrpo.updateOfferletterdetail(model);
                     if (data > 0)
                     {
-                        TempData["Message"] = "Update Successfully.";
+                        TempData["Message"] = "Data Update Successfully.";
                         return RedirectToAction("AddOfferletterdetail", "Employee");
                     }
                     else
@@ -2061,7 +2093,7 @@ namespace CRM.Controllers
                     var response = await _ICrmrpo.AddOfferletterdetail(model, Userid);
                     if (response > 0)
                     {
-                        TempData["Message"] = "Add Successfully.";
+                        TempData["Message"] = "Data Add Successfully.";
                         return RedirectToAction("AddOfferletterdetail", "Employee");
                     }
                     else
@@ -2114,6 +2146,34 @@ namespace CRM.Controllers
             {
                 throw new Exception();
             }
+        }
+
+        [HttpGet]
+        public IActionResult DeletHrSignature(string FilePath, int id)
+        {
+            bool success = false;
+
+            if (FilePath != "")
+            {
+                string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "CompanyImage");
+                string folderfilepathPath = folderPath + "//" + FilePath;
+                if (Directory.Exists(folderPath))
+                {
+                    if (System.IO.File.Exists(folderfilepathPath))
+                    {
+                        System.IO.File.Delete(folderfilepathPath);
+                        success = true;
+                    }
+                    var img = _context.Offerletters.FirstOrDefault(s => s.HrSignature == FilePath && s.Id == id);
+                    if (img != null)
+                    {
+                        img.HrSignature = null;
+                        _context.SaveChangesAsync();
+                    }
+
+                }
+            }
+            return Json(success);
         }
     }
 }

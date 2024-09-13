@@ -853,6 +853,8 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.CandidateAddress).HasMaxLength(200);
 
+                entity.Property(e => e.CandidateEmail).HasMaxLength(250);
+
                 entity.Property(e => e.CandidatePincode).HasMaxLength(200);
 
                 entity.Property(e => e.CityId).HasColumnName("cityId");
@@ -871,11 +873,19 @@ namespace CRM.Models.Crm
                     .HasMaxLength(120)
                     .HasColumnName("DesignationID");
 
+                entity.Property(e => e.HrJobTitle).HasMaxLength(250);
+
+                entity.Property(e => e.HrName).HasMaxLength(250);
+
+                entity.Property(e => e.HrSignature).HasMaxLength(250);
+
                 entity.Property(e => e.MonthlyCtc)
                     .HasColumnType("decimal(18, 0)")
                     .HasColumnName("MonthlyCTC");
 
                 entity.Property(e => e.Name).HasMaxLength(120);
+
+                entity.Property(e => e.OfferletterFile).HasMaxLength(250);
 
                 entity.Property(e => e.StateId).HasColumnName("stateId");
 

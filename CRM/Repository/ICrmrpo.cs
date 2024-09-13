@@ -82,8 +82,8 @@ namespace CRM.Repository
         public Task<List<ApprovedbankdetailList>> ApprovedbankdetailList(int Userid);
         public Task<bool> AddApprovedbankdetail(ApprovedbankdetailList model);
         public Task<Offerletter> GetOfferletterbyid(int? id);
-        public Task<int> AddOfferletterdetail(Offerletter model, int Userid);
-        public Task<int> updateOfferletterdetail(Offerletter model);
+        public Task<int> AddOfferletterdetail(Offerletters model, int Userid);
+        public Task<int> updateOfferletterdetail(Offerletters model);
         public Task<List<empOfferletter>> OfferletterdetailList(int Userid);
 
 

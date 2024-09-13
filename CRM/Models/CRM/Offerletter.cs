@@ -20,5 +20,10 @@ namespace CRM.Models.Crm
         public long? CityId { get; set; }
         public string? CandidateAddress { get; set; }
         public string? CandidatePincode { get; set; }
+        public string? HrSignature { get; set; }
+        public string? HrJobTitle { get; set; }
+        public string? HrName { get; set; }
+        public string? CandidateEmail { get; set; }
+        public string? OfferletterFile { get; set; }
     }
 }
