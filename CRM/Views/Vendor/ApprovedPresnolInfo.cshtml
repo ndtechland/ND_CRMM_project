@@ -42,33 +42,35 @@
                                     <form method="post" enctype="multipart/form-data" action="/Vendor/ApprovedPresnolInfo" autocomplete="off" onsubmit="return validateForm()">
                                         <div class="container">
                                             <div class="row mb-3">
-                                                <div class="col-lg-4">
+                                                <div class="col-lg-6">
                                                     <label for="FullName">Full Name</label>
                                                     <input class="form-control" value='@ViewBag.FullName' name="FullName" id="FullName" placeholder="Enter Full Name" type="text" required>
                                                 </div>
-                                                <div class="col-lg-4">
+                                                <div class="col-lg-6">
                                                     <label for="PersonalEmailAddress">Personal Email Address</label>
                                                     <input type="hidden" value='@ViewBag.id' name="Id" />
                                                     <input class="form-control" value='@ViewBag.Personal_Email_Address' placeholder="Enter Personal Email Address" name="PersonalEmailAddress" id="PersonalEmailAddress" type="email" required>
                                                 </div>
-                                                <div class="col-lg-4">
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-lg-6">
                                                     <label for="MobileNumber">Mobile Number</label>
                                                     <div class="input-group">
                                                         <span class="input-group-text">+91</span>
                                                         <input class="form-control" value="@ViewBag.Mobile_Number" name="MobileNumber" placeholder="Enter Mobile Number" id="MobileNumber" type="text" maxlength="10" minlength="10" required onkeydown="validateNumericInput(event)">
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="row mb-3">
-                                                <div class="col-lg-4">
+                                                <div class="col-lg-6">
                                                     <label for="AddressLine1">Address 1</label>
                                                     <input class="form-control" value='@ViewBag.Address_Line_1' name="AddressLine1" placeholder="Enter Address Line 1" id="AddressLine1" type="text" required>
                                                 </div>
-                                                <div class="col-lg-4">
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-lg-6">
                                                     <label for="AddressLine2">Address 2</label>
                                                     <input class="form-control" value='@ViewBag.Address_Line_2' name="AddressLine2" placeholder="Enter Address Line 2" id="AddressLine2" type="text" required>
                                                 </div>
-                                                <div class="col-lg-4">
+                                                <div class="col-lg-6">
                                                     <label for="ddlState">State</label>
                                                     <select class="form-control" id="ddlState" name="Stateid">
                                                         <option value="0">-- Select State --</option>
@@ -80,33 +82,33 @@
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
-                                                <div class="col-lg-4">
+                                                <div class="col-lg-6">
                                                     <label for="City">City</label>
                                                     <select class="form-control" name="cityid" id="City">
                                                         <option value="0">-- Select City --</option>
                                                     </select>
                                                 </div>
-                                                <div class="col-lg-4">
+                                                <div class="col-lg-6">
                                                     <label for="Pincode">Pincode</label>
                                                     <input class="form-control" value='@ViewBag.Pincode' name="Pincode" maxlength="6" id="Pincode" placeholder="Enter Pincode" type="text" required onkeydown="validateNumericInput(event)">
                                                 </div>
-                                                <div class="col-lg-4">
+                                                <div class="col-lg-6">
                                                     <label for="AadharNo">Aadhar No</label>
                                                     <input class="form-control" value='@ViewBag.AadharNo' name="AadharNo" maxlength="12" id="AadharNo" placeholder="Enter Aadhar No" type="text" required onkeydown="validateNumericInput(event)">
                                                 </div>
-                                            </div>
+                                            </div>                                             
                                             <div class="row mb-3">
-                                                <div class="col-lg-4">
+                                                <div class="col-lg-6">
                                                     <label for="PAN">PAN</label>
                                                     <input class="form-control" value='@ViewBag.PAN' name="PAN" id="PAN" placeholder="Enter PAN" type="text" required onkeydown="validateNumericInput(event)">
                                                 </div>
-                                                <div class="col-lg-4">
+                                                <div class="col-lg-6">
                                                     <label for="dobInput">Date Of Birth</label>
                                                     <input class="form-control" value='@ViewBag.Date_Of_Birth' name="DateOfBirth" id="dobInput" type="date" required>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
-                                                <div class="col-lg-4">
+                                                <div class="col-lg-6">
                                                     <label for="Aadharbase64">Aadhar Image</label>
                                                     @if (Model != null && Model.AadharOne != null)
                                                     {
@@ -122,7 +124,7 @@
                                                         <img src='~/img1/@ViewBag.Aadhartwo' class="img-thumbnail" alt="Aadhar Image 2" />
                                                     }
                                                 </div>
-                                                <div class="col-lg-4">
+                                                <div class="col-lg-6">
                                                     <label for="Panbase64">Pan Image</label>
                                                     @if (Model != null && Model.Panimg != null)
                                                     {
@@ -137,7 +139,9 @@
                                                         <img src='~/img1/@ViewBag.Panimg' class="img-thumbnail" alt="Pan Image" />
                                                     }
                                                 </div>
-                                                <div class="col-lg-4">
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-lg-6">
                                                     <label for="Empprofile">Profile Image</label>
                                                     @if (Model != null && Model.Panimg != null)
                                                     {

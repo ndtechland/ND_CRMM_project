@@ -1738,6 +1738,7 @@ namespace CRM.Repository
                                    on admin.Vendorid equals off.Id
                                    select new Offerletter
                                    {
+                                       Id = off.Id,
                                        Name = off.Name,
                                        Validdate = off.Validdate,
                                        DateOfJoining = off.DateOfJoining,
@@ -1748,7 +1749,11 @@ namespace CRM.Repository
                                        StateId = off.StateId,
                                        CityId = off.CityId,
                                        CandidateAddress = admin.UserName,
-                                       CandidatePincode = off.CandidatePincode
+                                       CandidatePincode = off.CandidatePincode,
+                                       HrJobTitle = off.HrJobTitle,
+                                       HrSignature = off.HrSignature,
+                                       HrName = off.HrName,
+                                       CandidateEmail = off.CandidateEmail,
                                    }).FirstOrDefaultAsync();
                 return query;
             }
@@ -1757,11 +1762,23 @@ namespace CRM.Repository
                 throw ex;
             }
         }
-        public async Task<int> AddOfferletterdetail(Offerletter model, int Userid)
+        public async Task<int> AddOfferletterdetail(Offerletters model, int Userid)
         {
             try
             {
+                FileOperation fileOperation = new FileOperation(_webHostEnvironment);
+                string[] allowedExtensions = {".png" };
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                if (model.ImageFile != null)
+                {
+                    var fileExtension = Path.GetExtension(model.ImageFile.FileName).ToLower();
+                    if (!allowedExtensions.Contains(fileExtension))
+                    {
+                        throw new InvalidOperationException("Only  .png files are allowed.");
+                    }
+                    string ImagePath = fileOperation.SaveBase64Image("CompanyImage", model.ImageFile, allowedExtensions);
+                    model.HrSignature = ImagePath;
+                }
                 Offerletter of = new Offerletter()
                 {
                     Name = model.Name,
@@ -1778,6 +1795,9 @@ namespace CRM.Repository
                     CityId = model.CityId,
                     CandidateAddress = model.CandidateAddress,
                     CandidatePincode = model.CandidatePincode,
+                    HrJobTitle = model.HrJobTitle,
+                    HrName = model.HrName,
+                    CandidateEmail = model.CandidateEmail
                 };
                 _context.Offerletters.Add(of);
                 _context.SaveChanges();
@@ -1788,12 +1808,23 @@ namespace CRM.Repository
                 throw ex;
             }
         }
-        public async Task<int> updateOfferletterdetail(Offerletter model)
+        public async Task<int> updateOfferletterdetail(Offerletters model)
         {
             try
             {
+                FileOperation fileOperation = new FileOperation(_webHostEnvironment);
+                string[] allowedExtensions = { ".png" };
                 var existingOfferletter = await _context.Offerletters.FindAsync(model.Id);
-
+                if (model.ImageFile != null)
+                {
+                    var fileExtension = Path.GetExtension(model.ImageFile.FileName).ToLower();
+                    if (!allowedExtensions.Contains(fileExtension))
+                    {
+                        throw new InvalidOperationException("Only .jpg, .jpeg, and .png files are allowed.");
+                    }
+                    string ImagePath = fileOperation.SaveBase64Image("CompanyImage", model.ImageFile, allowedExtensions);
+                    existingOfferletter.HrSignature = ImagePath;
+                }
                 if (existingOfferletter != null)
                 {
                     existingOfferletter.Name = model.Name;
@@ -1807,7 +1838,9 @@ namespace CRM.Repository
                     existingOfferletter.CityId = model.CityId;
                     existingOfferletter.CandidateAddress = model.CandidateAddress;
                     existingOfferletter.CandidatePincode = model.CandidatePincode;
-
+                    existingOfferletter.HrJobTitle = model.HrJobTitle;
+                    existingOfferletter.HrName = model.HrName;
+                    existingOfferletter.CandidateEmail = model.CandidateEmail;
                     return await _context.SaveChangesAsync();
                 }
 
@@ -1836,6 +1869,10 @@ namespace CRM.Repository
                             AnnualCtc = x.AnnualCtc,
                             CandidateAddress = x.CandidateAddress,
                             CandidatePincode = x.CandidatePincode,
+                            HrSignature = x.HrSignature,
+                            HrJobTitle = x.HrJobTitle,
+                            HrName = x.HrName,
+                            CandidateEmail = x.CandidateEmail,
                             StateName = _context.States.Where(g => g.Id == x.StateId).Select(g => g.SName).FirstOrDefault(),
                             CityName = _context.Cities.Where(g => g.Id == x.CityId).Select(g => g.City1).FirstOrDefault(),
                             DateOfJoining = x.DateOfJoining.GetValueOrDefault(),

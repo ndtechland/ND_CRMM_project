@@ -73,6 +73,9 @@
                                                     Candidate Address
                                                 </th>
                                                 <th nowrap>
+                                                    Candidate Email
+                                                </th>
+                                                <th nowrap>
                                                     Candidate Pincode
                                                 </th>
                                                 <th nowrap>
@@ -80,7 +83,19 @@
                                                 </th>
                                                 <th nowrap>
                                                     DateOfJoining
-                                                </th>       
+                                                </th>
+                                                <th nowrap>
+                                                    HR JobTitle
+                                                </th>
+                                                  <th nowrap>
+                                                    HR Name
+                                                </th>
+                                                <th nowrap>
+                                                    HR Signature
+                                                </th>
+                                                <th nowrap>
+                                                    Generate Offerletter
+                                                </th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -117,6 +132,9 @@
                                                             @Html.DisplayFor(modelItem => item.CandidateAddress)
                                                         </td>
                                                         <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.CandidateEmail)
+                                                        </td>
+                                                        <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.CandidatePincode)
                                                         </td>
                                                         <td nowrap>
@@ -124,6 +142,22 @@
                                                         </td>
                                                         <td nowrap>
                                                             @item.DateOfJoining.ToString("dd/MM/yyyy")
+                                                        </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.HrJobTitle)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.HrName)
+                                                        </td>
+                                                        <td nowrap>
+                                                            <img src='../CompanyImage/@item.HrSignature' style="height:100px;width:100px" />
+                                                        </td>
+                                                        <td>
+                                                            <div>
+                                                                <a href="javascript:void(0)" onclick="downloadPDF(@item.Id)">
+                                                                    <img src="@Url.Content("~/assets/images/layout-2/logo/pdf-icon-4.png")" alt="PDF Icon" style=" height: 80px; width: 80px;" />
+                                                                </a>
+                                                            </div>
                                                         </td>
                                                         <td>
                                                             <div>
@@ -211,5 +245,47 @@
         if (result) {
             window.location.href = url;
         }
+    }
+</script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<script type="text/javascript">
+    function downloadPDF(id) {
+        var url = '@Url.Action("OfferletterDocPDF", "Employee")' + '?id=' + id;
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Create a Blob from the PDF data
+                    var blob = new Blob([new Uint8Array(atob(data.pdf).split("").map(function (c) { return c.charCodeAt(0) }))], { type: 'application/pdf' });
+                    var link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = data.fileName;
+                    link.click();
+
+                    Swal.fire({
+                        title: 'Success',
+                        text: data.message,
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: data.message,
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'An error occurred while downloading the PDF.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            });
     }
 </script>

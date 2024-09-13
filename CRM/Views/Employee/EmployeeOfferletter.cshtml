@@ -1,4 +1,4 @@
-﻿@* @model CRM.Models.DTO.empOfferletter
+﻿@model CRM.Models.DTO.getempOfferletter
 @{
     Layout = "";
 }
@@ -9,71 +9,77 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <style>
-        p {
-            font-size: 20px;
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 16px;
             line-height: 1.6;
-            margin: 0 0 20px;
+        }
+
+        .container {
+            margin-top: 50px;
+            margin-bottom: 50px;
+            text-align: center; 
+        }
+
+        p {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        b {
+            font-weight: bold;
+        }
+
+        .content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: left; 
+        }
+
+        .signature-section {
+            text-align: center; 
         }
     </style>
 </head>
 <body>
-    <div class="container mt-5 mb-5">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="text-center lh-1 mb-2">
-                    <img src="~/assets/images/logo.png" style="width: 150px;height: 100px;" />
-                </div>
-                <div id="result"></div>
-            </div>
+    <div class="container">
+        <div class="text-center mb-4">
+            <img src='~/CompanyImage/@Model.CompanyImage' style="width: 150px; height: 100px;" />
         </div>
         <div class="content">
-            <div class="row">
-                <p><b>[@Model.CompanyName]</b></p>
-            </div>
-            <div class="row">
-                <p><b>[Date and contact information]</b></p>
-            </div>
-            <div class="row">
-                <p>Subject: Employment Offer Letter</p>
-            </div>
-            <div class="row">
-                <p>Dear<b>[@Model.First_Name]</b>,</p>
-            </div>
-            <div class="row">
-                <p>We at<b>[@Model.CompanyName]</b>are pleased to offer you the position of<b>[@Model.Designation_Name]</b>in our <br /><b>[@Model.Department_Name]</b>.</p>
-            </div>
-            <div class="row">
-                <p>Your starting date will be <b>[@Model.Joiningdate]</b>. The starting salary is <b>[@Model.AnnualCtc]</b> per year paid <br />on a <b>[@Model.MonthlyCtc]</b> basis by direct deposit. This offer of employment is<br /> contingent on you passing a pre-employment background check and signing<br /> standard confidentiality agreements.</p>
+            <p><b>@Model.CompanyName</b></p>
 
-            </div>
-            <div class="row">
-                <p>If you choose to accept this job offer, please sign and return this letter at your earliest <br />convenience by<b> [offer expiry date]</b>. Once your acceptance has been received, we will <br /> send you information about onboarding and other asset details.</p>
+            <p>Date: <b>@Model.Currentdate</b></p>
 
-            </div>
-            <div class="row">
-                <p>Congratulations! We look forward to working with you. Please let me know if you <br /> have any questions or concerns.</p>
+            <p>Candidate Address:</p>
+            <p>@Model.CandidateAddress<br />@Model.CityName, @Model.StateName, @Model.CandidatePincode</p>
 
-            </div>
-            <div class="row">
-                <p>Sincerely,</p>
+            <p>Subject: Employment Offer Letter</p>
 
-            </div>
-            <div class="row">
-                <p><b>[Sender Name]</b></p>
+            <p>Dear <b>@Model.Name</b>,</p>
 
-            </div>
-            <div class="row">
-                <p><b>[@Model.Designation_Name]</b></p>
+            <p>We are pleased to offer you the full-time position of <b>@Model.DesignationName</b> at <b>@Model.CompanyName</b> with a start date of <b>@Model.DateOfJoining</b>. This offer is contingent upon a background check and the signing of the standard confidentiality agreements.</p>
 
-            </div>
-            <div class="row">
-                <p><b>[@Model.CompanyName]</b></p>
+            <p>Your annual salary will be <b>@Model.AnnualCtc</b>, to be paid on a monthly basis with <b>@Model.MonthlyCtc</b> per month, starting on <b>@Model.DateOfJoining</b>. This offer also includes other benefits, such as stock options and medical coverage, as outlined in the company’s benefits package.</p>
 
-            </div>
+            <p>In your new role, you will be responsible for working on key projects within <b>@Model.DepartmentName</b>. Your duties will include, but are not limited to, developing scalable software systems, maintaining APIs, and ensuring system efficiency.</p>
+
+            <p>This employment will be at-will, meaning that either you or the company may terminate the relationship at any time and for any reason. This letter does not guarantee employment for any specific period of time.</p>
+
+            <p>If you accept this offer, please sign below and return this letter by <b>@Model.Validdate</b>. We look forward to welcoming you to the team!</p>
+
+            <p>Sincerely,</p>
+            <p>
+                <b>@Model.HrName</b><br />
+                <b>@Model.HrJobTitle</b><br />
+                <b>@Model.CompanyName</b>
+            <p>
+                <b>Signature:</b><img src='~/CompanyImage/@Model.HrSignature' style="width: 150px; height: 100px;" />
+            </p>
+            <p><b>Date:</b>@Model.Currentdate</p>
+            </p>
 
         </div>
     </div>
 </body>
 </html>
- *@
-
