@@ -479,6 +479,7 @@
     <Folder Include="wwwroot\EmpProfile\" />
     <Folder Include="wwwroot\ChequeImage\" />
     <Folder Include="wwwroot\CompanyImage\" />
+    <Folder Include="wwwroot\EMPpdfs\" />
   </ItemGroup>
 
   <ItemGroup>
