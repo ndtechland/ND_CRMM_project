@@ -13,6 +13,8 @@ namespace CRM.Models.DTO
         public string? EmployeeName { get; set; }
         public decimal? MonthlyGrossPay { get; set; }
         public decimal? MonthlyCtc { get; set; }
+        public string? SalarySlip { get; set; }
+       
         public List<GenerateSalary> GeneratedSalaries { get; set; }
     }
 }

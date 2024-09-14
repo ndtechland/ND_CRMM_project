@@ -712,51 +712,53 @@ namespace CRM.Controllers
             }
         }
         [Route("Employee/SalarySlipInPDF")]
-        public IActionResult SalarySlipInPDF(int? id)
+        public async Task<IActionResult> SalarySlipInPDF(int id)
         {
             try
             {
-                //if (HttpContext.Session.GetString("UserName") != null)
-                // {
                 string AddedBy = HttpContext.Session.Id;
                 ViewBag.UserName = AddedBy;
-                var result = (from emp in _context.EmployeeRegistrations
-                              join empsalary in _context.EmployeeSalaryDetails on emp.EmployeeId equals empsalary.EmployeeId into empsalaryGroup
-                              from empsalary in empsalaryGroup.DefaultIfEmpty()
-                              join empbank in _context.EmployeeBankDetails on emp.EmployeeId equals empbank.EmpId into empbankGroup
-                              from empbank in empbankGroup.DefaultIfEmpty()
-                              join empatt in _context.Empattendances on emp.EmployeeId equals empatt.EmployeeId into empattGroup
-                              from empatt in empattGroup.DefaultIfEmpty()
-                              join worklocation in _context.Cities on emp.WorkLocationId equals worklocation.Id.ToString() into worklocationGroup
-                              from worklocation in worklocationGroup.DefaultIfEmpty()
-                              join designation in _context.DesignationMasters on emp.DesignationId equals designation.Id.ToString() into designationGroup
-                              from designation in designationGroup.DefaultIfEmpty()
-                              join tds in _context.EmployeerTds on emp.Vendorid equals tds.CustomerId into tdsGroup
-                              from tds in tdsGroup.DefaultIfEmpty()
-                              where emp.Id == id
-                              select new SalarySlipDetails
-                              {
-                                  Id = emp.Id,
-                                  Employee_ID = emp.EmployeeId,
-                                  First_Name = emp.FirstName,
-                                  Address_Line_1 = worklocation.City1,
-                                  Epf = empsalary.Epf,
-                                  Designation_Name = designation.DesignationName,
-                                  Bank_Name = empbank.BankName,
-                                  Account_Number = empbank.AccountNumber,
-                                  Basic = empsalary.Basic,
-                                  EPF_Number = empbank.EpfNumber,
-                                  Month = getMonthName(Convert.ToInt32(empatt.Month)),
-                                  Year = empatt.Year,
-                                  HouseRentAllowance = empsalary.HouseRentAllowance,
-                                  Lop = empatt.Lop,
-                                  Professionaltax = empsalary.Professionaltax,
-                                  TravellingAllowance = empatt.TravellingAllowance,
-                                  SpecialAllowance = empsalary.SpecialAllowance,
-                                  Esic = empsalary.Esic,
-                                  Amount = tds.Amount,
-                              }).FirstOrDefault();
 
+                var result = await (from emp in _context.EmployeeRegistrations
+                                    join empsalary in _context.EmployeeSalaryDetails on emp.EmployeeId equals empsalary.EmployeeId into empsalaryGroup
+                                    from empsalary in empsalaryGroup.DefaultIfEmpty()
+                                    join empbank in _context.EmployeeBankDetails on emp.EmployeeId equals empbank.EmpId into empbankGroup
+                                    from empbank in empbankGroup.DefaultIfEmpty()
+                                    join empatt in _context.Empattendances on emp.EmployeeId equals empatt.EmployeeId into empattGroup
+                                    from empatt in empattGroup.DefaultIfEmpty()
+                                    join worklocation in _context.Cities on emp.WorkLocationId equals worklocation.Id.ToString() into worklocationGroup
+                                    from worklocation in worklocationGroup.DefaultIfEmpty()
+                                    join designation in _context.DesignationMasters on emp.DesignationId equals designation.Id.ToString() into designationGroup
+                                    from designation in designationGroup.DefaultIfEmpty()
+                                    join tds in _context.EmployeerTds on emp.Vendorid equals tds.CustomerId into tdsGroup
+                                    from tds in tdsGroup.DefaultIfEmpty()
+                                    join vrs in _context.VendorRegistrations on emp.Vendorid equals (int?)vrs.Id into vrsGroup
+                                    from vrs in vrsGroup.DefaultIfEmpty()
+                                    where emp.Id == id
+                                    select new SalarySlipDetails
+                                    {
+                                        Id = emp.Id,
+                                        Employee_ID = emp.EmployeeId,
+                                        First_Name = emp.FirstName,
+                                        Address_Line_1 = worklocation.City1,
+                                        Epf = empsalary.Epf,
+                                        Designation_Name = designation.DesignationName,
+                                        Bank_Name = empbank.BankName,
+                                        Account_Number = empbank.AccountNumber,
+                                        Basic = empsalary.Basic,
+                                        EPF_Number = empbank.EpfNumber,
+                                        Month = getMonthName(Convert.ToInt32(empatt.Month)),
+                                        Year = empatt.Year,
+                                        HouseRentAllowance = empsalary.HouseRentAllowance,
+                                        Lop = empatt.Lop,
+                                        Professionaltax = empsalary.Professionaltax,
+                                        TravellingAllowance = empatt.TravellingAllowance,
+                                        SpecialAllowance = empsalary.SpecialAllowance,
+                                        Esic = empsalary.Esic,
+                                        Amount = tds.Amount,
+                                        CompanyName = vrs.CompanyName,
+                                        CompanyImage = vrs.CompanyImage
+                                    }).FirstOrDefaultAsync();
 
                 if (result != null)
                 {
@@ -898,7 +900,7 @@ namespace CRM.Controllers
                 string uniqueFileName = $"SalarySlip_{id}_{DateTime.Now:yyyyMMddHHmmss}.pdf";
                 string filePath = Path.Combine(wwwRootPath, uniqueFileName);
                 doc.Save(filePath);
-                byte[] pdf = doc.Save();
+                byte[] pdf = System.IO.File.ReadAllBytes(filePath);
                 doc.Close();
                 string savedFileName = uniqueFileName;
                 var result = (from emp in _context.EmployeeRegistrations
@@ -1791,78 +1793,79 @@ namespace CRM.Controllers
         }
 
         [HttpGet, Route("/Employee/EmployeeOfferletter")]
-        public async Task<IActionResult> EmployeeOfferletter(int? id = 0)
-        {
-            string AddedBy = HttpContext.Session.Id;
-            int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
-            var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
-            var result = await _context.Offerletters
-                          .Where(x => x.Vendorid == adminlogin.Vendorid && x.IsDeleted == false)
-                          .Select(x => new getempOfferletter
-                          {
-                              Id = x.Id,
-                              Name = x.Name,
-                              MonthlyCtc = x.MonthlyCtc,
-                              AnnualCtc = x.AnnualCtc,
-                              CandidateAddress = x.CandidateAddress,
-                              CandidatePincode = x.CandidatePincode,
-                              HrName = x.HrName,
-                              HrJobTitle = x.HrJobTitle,
-                              HrSignature = x.HrSignature,
-                              Currentdate = DateTime.Now.Date.ToString("dd/MM/yyyy"),
-                              StateName = _context.States.Where(g => g.Id == x.StateId).Select(g => g.SName).FirstOrDefault(),
-                              CityName = _context.Cities.Where(g => g.Id == x.CityId).Select(g => g.City1).FirstOrDefault(),
-                              DateOfJoining = x.DateOfJoining != null ? x.DateOfJoining.Value.ToString("dd/MM/yyyy") : null,
-                              DepartmentName = _context.DepartmentMasters.Where(g => g.Id == Convert.ToInt16(x.DepartmentId)).Select(g => g.DepartmentName).FirstOrDefault().Trim(),
-                              DesignationName = _context.DesignationMasters.Where(g => g.Id == Convert.ToInt16(x.DesignationId)).Select(g => g.DesignationName).FirstOrDefault().Trim(),
-                              Validdate = x.Validdate != null ? x.Validdate.Value.ToString("dd/MM/yyyy") : null,
-                              CompanyImage = _context.VendorRegistrations.Where(g => g.Id == x.Vendorid).Select(g => g.CompanyImage).FirstOrDefault(),
-                              CompanyName = _context.VendorRegistrations.Where(g => g.Id == x.Vendorid).Select(g => g.CompanyName).FirstOrDefault(),
-                          }).FirstOrDefaultAsync();
-
-            if (result != null)
-            {
-                return View(result);
-            }
-            else
-            {
-                return View();
-            }
-        }
-        public IActionResult OfferletterDocPDF(int id)
+        public async Task<IActionResult> EmployeeOfferletter(int? Id = 0, int? Userid = 0)
         {
             try
             {
+                //int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                if (adminlogin == null)
+                {
+                    return BadRequest("Admin login not found");
+                }
+                var offerletter = await _context.Offerletters
+                    .Where(x => x.Vendorid == adminlogin.Vendorid && x.IsDeleted == false && x.Id == Id)
+                    .FirstOrDefaultAsync();
+                if (offerletter == null)
+                {
+                    return BadRequest("Offer letter not found");
+                }
+                var result = new getempOfferletter
+                {
+                    Id = offerletter.Id,
+                    Name = offerletter.Name,
+                    MonthlyCtc = offerletter.MonthlyCtc,
+                    AnnualCtc = offerletter.AnnualCtc,
+                    CandidateAddress = offerletter.CandidateAddress,
+                    CandidatePincode = offerletter.CandidatePincode,
+                    HrName = offerletter.HrName,
+                    HrJobTitle = offerletter.HrJobTitle,
+                    HrSignature = offerletter.HrSignature,
+                    Currentdate = DateTime.Now.Date.ToString("dd/MM/yyyy"),
+                    StateName = _context.States.Where(g => g.Id == offerletter.StateId).Select(g => g.SName).FirstOrDefault(),
+                    CityName = _context.Cities.Where(g => g.Id == offerletter.CityId).Select(g => g.City1).FirstOrDefault(),
+                    DateOfJoining = offerletter.DateOfJoining?.ToString("dd/MM/yyyy"),
+                    DepartmentName =  _context.DepartmentMasters.Where(g => g.Id == Convert.ToInt16(offerletter.DepartmentId)).Select(g => g.DepartmentName).FirstOrDefault()?.Trim(),
+                    DesignationName = _context.DesignationMasters.Where(g => g.Id == Convert.ToInt16(offerletter.DesignationId)) .Select(g => g.DesignationName).FirstOrDefault()?.Trim(),
+                    Validdate = offerletter.Validdate?.ToString("dd/MM/yyyy"),
+                    CompanyImage = _context.VendorRegistrations.Where(g => g.Id == offerletter.Vendorid).Select(g => g.CompanyImage).FirstOrDefault(),
+                    CompanyName = _context.VendorRegistrations.Where(g => g.Id == offerletter.Vendorid).Select(g => g.CompanyName).FirstOrDefault()
+                };
+                return View(result);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return BadRequest($"An error occurred: {ex.Message}");
+            }
+        }
+        public async Task<IActionResult> OfferletterDocPDF(int? Id = 0)
+        {
+            try
+            {
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                if (adminlogin == null)
+                {
+                    return BadRequest("Admin login not found");
+                }
                 string schema = Request.Scheme;
                 string host = Request.Host.Value;
+                string SlipURL = $"{schema}://{host}/Employee/EmployeeOfferletter?Id={Id}&userid={Userid}";
                 HtmlToPdf converter = new HtmlToPdf();
-                string SlipURL = $"{schema}://{host}/Employee/EmployeeOfferletter?id={id}";
-                Console.WriteLine($"Generated URL for PDF: {SlipURL}");
-
                 PdfDocument doc = converter.ConvertUrl(SlipURL);
                 string wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "EMPpdfs");
-
                 if (!Directory.Exists(wwwRootPath))
                 {
                     Directory.CreateDirectory(wwwRootPath);
                 }
-
-                string uniqueFileName = $"Offerletter_{id}_{DateTime.Now:yyyyMMddHHmmss}.pdf";
+                string uniqueFileName = $"Offerletter_{Id}_{DateTime.Now:yyyyMMddHHmmss}.pdf";
                 string filePath = Path.Combine(wwwRootPath, uniqueFileName);
-                Console.WriteLine($"PDF File Path: {filePath}");
-
                 doc.Save(filePath);
-                byte[] pdf = doc.Save();
-                doc.Close();
-
-                if (pdf == null || pdf.Length == 0)
-                {
-                    Console.WriteLine("PDF generation failed or PDF content is empty.");
-                    return BadRequest("PDF generation failed.");
-                }
+                byte[] pdf = System.IO.File.ReadAllBytes(filePath);
 
                 var result = (from off in _context.Offerletters
-                              where off.Id == id
+                              where off.Id == Id && off.Vendorid == adminlogin.Vendorid
                               select new getempOfferletter
                               {
                                   Id = off.Id,
@@ -1872,7 +1875,7 @@ namespace CRM.Controllers
 
                 if (result == null)
                 {
-                    return BadRequest("Data not found.");
+                    return BadRequest("Employee not found.");
                 }
 
                 var empoff = _context.Offerletters.FirstOrDefault(e => e.Id == result.Id);
@@ -1883,25 +1886,20 @@ namespace CRM.Controllers
                 }
                 else
                 {
-                    Console.WriteLine($"Employee offer letter not found for ID: {result.Id}");
                     return BadRequest("Data not found for the employee.");
                 }
+                string emailSubject = $"Offerletter for {result.Name}";
+                string emailBody = $"Hello {result.Name}, please find your attached offer letter.";
+                _IEmailService.SendEmailAsync(result.CandidateEmail, emailSubject, emailBody, pdf, uniqueFileName, "application/pdf");
 
-                string Email_Subject = $"Offerletter for {result.Id}";
-                string Email_body = $"Hello {result.Name} ({result.Id}), please find your attached Offerletter.";
-                Console.WriteLine($"Sending email to: {result.CandidateEmail} with attachment size: {pdf.Length}");
-
-                _IEmailService.SendEmailAsync(result.CandidateEmail, Email_Subject, Email_body, pdf, "Offerletter.pdf", "application/pdf");
-
-                Console.WriteLine($"Offerletter for Employee ID {result.Id} has been saved and emailed.");
-                return Ok("Offerletter generated and emailed successfully.");
+                return Json(new { success = true, message = "Offer letter generated and emailed successfully.", fileName = uniqueFileName });
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error: {ex.Message}");
-                return BadRequest($"An error occurred: {ex.Message}");
+                return Json(new { success = false, message = $"Error: {ex.Message}" });
             }
         }
+
         [HttpGet, Route("/Employee/Appointmentletter")]
         public IActionResult Appointmentletter(string EmployeeId)
         {

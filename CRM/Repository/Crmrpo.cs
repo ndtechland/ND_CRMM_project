@@ -536,7 +536,8 @@ namespace CRM.Repository
                         EmployeeId = Convert.ToString(rdr["Employee_ID"]),
                         EmployeeName = Convert.ToString(rdr["First_Name"]),
                         MonthlyGrossPay = Convert.ToDecimal(rdr["MonthlyGrossPay"]),
-                        MonthlyCtc = Convert.ToDecimal(rdr["MonthlyCTC"])
+                        MonthlyCtc = Convert.ToDecimal(rdr["MonthlyCTC"]),
+                        SalarySlip = Convert.ToString(rdr["SalarySlip"])
                     };
 
                     emp.Add(emps);
@@ -1733,28 +1734,7 @@ namespace CRM.Repository
         {
             try
             {
-                var query = await (from admin in _context.AdminLogins
-                                   join off in _context.Offerletters
-                                   on admin.Vendorid equals off.Id
-                                   select new Offerletter
-                                   {
-                                       Id = off.Id,
-                                       Name = off.Name,
-                                       Validdate = off.Validdate,
-                                       DateOfJoining = off.DateOfJoining,
-                                       AnnualCtc = off.AnnualCtc,
-                                       MonthlyCtc = off.MonthlyCtc,
-                                       DesignationId = off.DesignationId,
-                                       DepartmentId = off.DepartmentId,
-                                       StateId = off.StateId,
-                                       CityId = off.CityId,
-                                       CandidateAddress = admin.UserName,
-                                       CandidatePincode = off.CandidatePincode,
-                                       HrJobTitle = off.HrJobTitle,
-                                       HrSignature = off.HrSignature,
-                                       HrName = off.HrName,
-                                       CandidateEmail = off.CandidateEmail,
-                                   }).FirstOrDefaultAsync();
+                var query = await _context.Offerletters.Where(x => x.Id == id && x.IsDeleted == false).FirstOrDefaultAsync();
                 return query;
             }
             catch (Exception ex)
@@ -1767,7 +1747,8 @@ namespace CRM.Repository
             try
             {
                 FileOperation fileOperation = new FileOperation(_webHostEnvironment);
-                string[] allowedExtensions = {".png" };
+                string[] allowedExtensions = { ".png" };
+                string ImagePath = "";
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 if (model.ImageFile != null)
                 {
@@ -1776,8 +1757,7 @@ namespace CRM.Repository
                     {
                         throw new InvalidOperationException("Only  .png files are allowed.");
                     }
-                    string ImagePath = fileOperation.SaveBase64Image("CompanyImage", model.ImageFile, allowedExtensions);
-                    model.HrSignature = ImagePath;
+                    ImagePath = fileOperation.SaveBase64Image("CompanyImage", model.ImageFile, allowedExtensions);
                 }
                 Offerletter of = new Offerletter()
                 {
@@ -1797,7 +1777,8 @@ namespace CRM.Repository
                     CandidatePincode = model.CandidatePincode,
                     HrJobTitle = model.HrJobTitle,
                     HrName = model.HrName,
-                    CandidateEmail = model.CandidateEmail
+                    CandidateEmail = model.CandidateEmail,
+                    HrSignature = ImagePath
                 };
                 _context.Offerletters.Add(of);
                 _context.SaveChanges();
@@ -1872,6 +1853,7 @@ namespace CRM.Repository
                             HrSignature = x.HrSignature,
                             HrJobTitle = x.HrJobTitle,
                             HrName = x.HrName,
+                            OfferletterFile = x.OfferletterFile,
                             CandidateEmail = x.CandidateEmail,
                             StateName = _context.States.Where(g => g.Id == x.StateId).Select(g => g.SName).FirstOrDefault(),
                             CityName = _context.Cities.Where(g => g.Id == x.CityId).Select(g => g.City1).FirstOrDefault(),
