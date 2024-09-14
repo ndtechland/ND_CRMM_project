@@ -15,10 +15,16 @@
             line-height: 1.6;
         }
 
+        .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: -30px;
+        }
         .container {
             margin-top: 50px;
             margin-bottom: 50px;
-            text-align: center; 
+            text-align: center;
         }
 
         p {
@@ -33,12 +39,24 @@
         .content {
             max-width: 800px;
             margin: 0 auto;
-            text-align: left; 
+            text-align: left;
         }
 
         .signature-section {
-            text-align: center; 
+            text-align: right; /* Aligns the signature and date to the right */
+            margin-top: 40px; /* Adds spacing above the signature section */
         }
+
+            .signature-section img {
+                margin-bottom: 10px;
+                max-width: 150px; /* Ensure the image has a max width */
+                height: auto; /* Adjust height automatically */
+            }
+
+            .signature-section b {
+                margin-bottom: 5px;
+            }
+
     </style>
 </head>
 <body>
@@ -68,17 +86,20 @@
 
             <p>If you accept this offer, please sign below and return this letter by <b>@Model.Validdate</b>. We look forward to welcoming you to the team!</p>
 
-            <p>Sincerely,</p>
-            <p>
-                <b>@Model.HrName</b><br />
-                <b>@Model.HrJobTitle</b><br />
-                <b>@Model.CompanyName</b>
-            <p>
-                <b>Signature:</b><img src='~/CompanyImage/@Model.HrSignature' style="width: 150px; height: 100px;" />
-            </p>
-            <p><b>Date:</b>@Model.Currentdate</p>
-            </p>
-
+            <p>Sincerely,</p>         
+            <div class="row">
+                <div class="col-md-6 signature-section" style="text-align: left;">
+                    <p>
+                        <b>@Model.HrName</b><br />
+                        <b>@Model.HrJobTitle</b><br />
+                        <b>@Model.CompanyName</b>
+                    </p>
+                </div>
+                <div class="col-md-6 signature-section" style="text-align: right;">
+                    <p><b>Signature:</b> <img src='~/CompanyImage/@Model.HrSignature' style="width: 118px; height: 58px; background-color:white;" /></p>
+                    <p><b>Date:</b> @Model.Currentdate</p>
+                </div>
+            </div>
         </div>
     </div>
 </body>

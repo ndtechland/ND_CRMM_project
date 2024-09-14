@@ -18,6 +18,7 @@
         public string? HrJobTitle { get; set; }
         public string? HrName { get; set; }
         public string? CandidateEmail { get; set; }
+        public string? OfferletterFile { get; set; }
 
     }
     public class getempOfferletter

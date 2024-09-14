@@ -6,6 +6,26 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var message = "@TempData["Message"]";
+
+        if (message) {
+            Swal.fire({
+                title: 'Notification',
+                text: message,
+                icon: 'info',
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    setTimeout(function () {
+                        window.location.href = '@Url.Action("GenerateSalary", "Employee")';
+                    }, 1000);
+                }
+            });
+        }
+    });
+</script>
 <div class="page-wrapper">
     <div class="page-body-wrapper">
         <div class="page-sidebar">
@@ -120,21 +140,23 @@
                                                                             ID
                                                                         </th>
                                                                         <th nowrap>Sl. No.</th>
-                                                                        <th>
+                                                                        <th nowrap>
                                                                             Employee Id
                                                                         </th>
-                                                                        <th>
+                                                                        <th nowrap>
                                                                             Employee Name
                                                                         </th>
-                                                                        <th>
+                                                                        <th nowrap>
                                                                             Monthly Ctc
                                                                         </th>
-                                                                        <th>
+                                                                        <th nowrap>
                                                                             Monthly GrossPay
                                                                         </th>
+                                                                        <th nowrap>
+                                                                            View SalarySlip
+                                                                        </th>
 
-
-                                                                        <th>Action</th>
+                                                                        <th nowrap>Action</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
@@ -148,16 +170,17 @@
                                                                                 <td style="display:none">
                                                                                     @item.Id
                                                                                 </td>
-                                                                                <td>@item.EmployeeId</td>
-                                                                                <td>@item.EmployeeName</td>
-                                                                                <td>@item.MonthlyCtc</td>
-                                                                                <td>@item.MonthlyGrossPay</td>
-                                                                              @*  <td>
+                                                                                <td nowrap>@item.EmployeeId</td>
+                                                                                <td nowrap>@item.EmployeeName</td>
+                                                                                <td nowrap>@item.MonthlyCtc</td>
+                                                                                <td nowrap>@item.MonthlyGrossPay</td>
+                                                                                <td>
                                                                                     <div>
-                                                                                        <a href="@Url.Action("DocPDF","Employee",new { id=item.Id})" class="fa fa-file-pdf-o font-danger"></a>
-
+                                                                                        <a href="@Url.Content("~/EMPpdfs/" + item.SalarySlip)" target="_blank">
+                                                                                            <img src="@Url.Content("~/assets/images/layout-2/logo/pdfview.jpg")" alt="PDF Icon" style="height: 80px; width: 80px;" />
+                                                                                        </a>
                                                                                     </div>
-                                                                                </td>*@
+                                                                                </td>
                                                                                 <td>
                                                                                     <div>
                                                                                         <a href="javascript:void(0)" onclick="downloadPDF(@item.Id)">

@@ -32,7 +32,8 @@
         public decimal? Professionaltax { get; set; }
         public decimal? TravellingAllowance { get; set; }
         public decimal? Amount { get; set; }
-
+        public string? CompanyName { get; set; }
+        public string? CompanyImage { get; set; }
     }
 }
 

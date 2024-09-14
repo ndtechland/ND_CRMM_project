@@ -6,6 +6,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         var message = "@TempData["Message"]";
@@ -156,11 +157,11 @@
                                         <div class="row mb-3">
                                             <div class="col-lg-6">
                                                 <label for="Validdate">HR Name</label>
-                                                <input class="form-control" value='@ViewBag.HrName' name="HrName" id="HrName" type="text">
+                                                <input class="form-control" value='@ViewBag.HrName' placeholder="Enter Monthly HR Name" name="HrName" id="HrName" type="text">
                                             </div>
                                             <div class="col-lg-6">
                                                 <label for="HrJobTitle">HR JobTitle</label>
-                                                <input class="form-control" value='@ViewBag.HrJobTitle' name="HrJobTitle" id="HrJobTitle" type="text">
+                                                <input class="form-control" value='@ViewBag.HrJobTitle' placeholder="Enter Monthly HR JobTitle" name="HrJobTitle" id="HrJobTitle" type="text">
                                             </div>
                                         </div>
                                         <div class="row mb-3">
@@ -331,7 +332,7 @@
         bindDepartment(departmentid);
         var ddlState = $('#ddlState');
         $.ajax({
-            url: '/Home/BindStateDetails', 
+            url: '/Home/BindStateDetails',
             type: 'GET',
             dataType: 'json',
             success: function (d) {
@@ -343,7 +344,7 @@
                 alert('Error in fetching States!');
             }
         });
-
+    });
         $("#ddlState").change(function () {
             var StateId = parseInt($(this).val());
             if (!isNaN(StateId)) {
@@ -368,5 +369,5 @@
                 });
             }
         });
-    });
+   
 </script>
