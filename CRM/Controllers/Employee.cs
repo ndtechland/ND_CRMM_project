@@ -44,6 +44,7 @@ using Microsoft.TeamFoundation.SourceControl.WebApi.Legacy;
 using OfficeOpenXml.ConditionalFormatting.Contracts;
 using DocumentFormat.OpenXml.InkML;
 using CRM.IUtilities;
+using Microsoft.VisualStudio.Services.Commerce;
 
 namespace CRM.Controllers
 {
@@ -120,6 +121,12 @@ namespace CRM.Controllers
                     Value = x.Id.ToString(),
                     Text = x.CompanyName
                 }).ToList();
+                //Offerletter dropdown
+                ViewBag.Offerletter = _context.Offerletters.Select(x => new SelectListItem
+                {
+                    Value = x.Id.ToString(),
+                    Text = x.Name
+                }).ToList();
 
                 ViewBag.Emp_Reg_Code = "";
                 ViewBag.First_Name = "";
@@ -167,6 +174,7 @@ namespace CRM.Controllers
                 ViewBag.gross = "";
                 ViewBag.Amount = "";
                 ViewBag.Tdspercentage = "";
+                ViewBag.Offerletters = "";
                 ViewBag.statesy = "";
                 ViewBag.btnText = "SAVE";
 
@@ -225,6 +233,7 @@ namespace CRM.Controllers
                             ViewBag.gross = row["gross"].ToString();
                             ViewBag.Amount = row["Amount"].ToString();
                             ViewBag.Tdspercentage = row["tdspercentage"].ToString();
+                            ViewBag.Offerletters = row["offerletterid"].ToString();
                             ViewBag.statesy = row["stateId"].ToString();
                             ViewBag.Emp_Reg_Code = id;
                             ViewBag.btnText = "UPDATE";
@@ -1825,8 +1834,8 @@ namespace CRM.Controllers
                     StateName = _context.States.Where(g => g.Id == offerletter.StateId).Select(g => g.SName).FirstOrDefault(),
                     CityName = _context.Cities.Where(g => g.Id == offerletter.CityId).Select(g => g.City1).FirstOrDefault(),
                     DateOfJoining = offerletter.DateOfJoining?.ToString("dd/MM/yyyy"),
-                    DepartmentName =  _context.DepartmentMasters.Where(g => g.Id == Convert.ToInt16(offerletter.DepartmentId)).Select(g => g.DepartmentName).FirstOrDefault()?.Trim(),
-                    DesignationName = _context.DesignationMasters.Where(g => g.Id == Convert.ToInt16(offerletter.DesignationId)) .Select(g => g.DesignationName).FirstOrDefault()?.Trim(),
+                    DepartmentName = _context.DepartmentMasters.Where(g => g.Id == Convert.ToInt16(offerletter.DepartmentId)).Select(g => g.DepartmentName).FirstOrDefault()?.Trim(),
+                    DesignationName = _context.DesignationMasters.Where(g => g.Id == Convert.ToInt16(offerletter.DesignationId)).Select(g => g.DesignationName).FirstOrDefault()?.Trim(),
                     Validdate = offerletter.Validdate?.ToString("dd/MM/yyyy"),
                     CompanyImage = _context.VendorRegistrations.Where(g => g.Id == offerletter.Vendorid).Select(g => g.CompanyImage).FirstOrDefault(),
                     CompanyName = _context.VendorRegistrations.Where(g => g.Id == offerletter.Vendorid).Select(g => g.CompanyName).FirstOrDefault()
@@ -1892,7 +1901,106 @@ namespace CRM.Controllers
                 string emailBody = $"Hello {result.Name}, please find your attached offer letter.";
                 _IEmailService.SendEmailAsync(result.CandidateEmail, emailSubject, emailBody, pdf, uniqueFileName, "application/pdf");
 
-                return Json(new { success = true, message = "Offer letter generated and emailed successfully.", fileName = uniqueFileName });
+                return Json(new { success = true, message = "Offer letter  has been Sent successfully.", fileName = uniqueFileName });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Error: {ex.Message}" });
+            }
+        }
+        [HttpGet, Route("/Employee/Appointmentletter")]
+        public async Task<IActionResult> Appointmentletter(int? Id = 0,int? Userid = 0)
+        {
+            try
+            {
+                //int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                if (adminlogin == null)
+                {
+                    return BadRequest("Admin login not found");
+                }
+                var empdetail = await _context.EmployeeRegistrations
+                    .Where(x => x.Vendorid == adminlogin.Vendorid && x.IsDeleted == false && x.Id == Id)
+                    .FirstOrDefaultAsync();
+                if (empdetail == null)
+                {
+                    return BadRequest("Appointment letter not found");
+                }
+                var result = new EmpAppointmentletter
+                {
+                    Empcode = empdetail.EmployeeId,
+                    First_Name = empdetail.FirstName,
+                    MonthlyCtc = _context.EmployeeSalaryDetails.Where(x => x.EmployeeId == empdetail.EmployeeId).Select(x => x.MonthlyCtc).FirstOrDefault(),
+                    AnnualCtc = _context.EmployeeSalaryDetails.Where(x => x.EmployeeId == empdetail.EmployeeId).Select(x => x.AnnualCtc).FirstOrDefault(),
+                    CompanyName = _context.VendorRegistrations.Where(g => g.Id == empdetail.Vendorid).Select(g => g.CompanyName).FirstOrDefault(),
+                    Designation_Name = _context.DesignationMasters.Where(g => g.Id == Convert.ToInt16(empdetail.DesignationId)).Select(g => g.DesignationName).FirstOrDefault()?.Trim(),
+                    Department_Name = _context.DepartmentMasters.Where(g => g.Id == Convert.ToInt16(empdetail.DepartmentId)).Select(g => g.DepartmentName).FirstOrDefault()?.Trim(),
+                    Joiningdate = empdetail.DateOfJoining?.ToString("dd/MM/yyyy"),
+                    OfccityId = _context.Cities.Where(g => g.Id == Convert.ToInt16(empdetail.WorkLocationId)).Select(g => g.City1).FirstOrDefault(),
+                    Basic = _context.EmployeeSalaryDetails.Where(x => x.EmployeeId == empdetail.EmployeeId).Select(x => x.Basic).FirstOrDefault(),
+                    HouseRentAllowance = _context.EmployeeSalaryDetails.Where(x => x.EmployeeId == empdetail.EmployeeId).Select(x => x.HouseRentAllowance).FirstOrDefault(),
+                    EmployeeESIC = _context.EmployeeSalaryDetails.Where(x => x.EmployeeId == empdetail.EmployeeId).Select(x => x.Esic).FirstOrDefault(),
+                    EmployeeEPF = _context.EmployeeSalaryDetails.Where(x => x.EmployeeId == empdetail.EmployeeId).Select(x => x.Epf).FirstOrDefault(),
+                    CurrentDate = DateTime.Now.Date.ToString("dd/MM/yyyy"),
+                    CompanyImage = _context.VendorRegistrations.Where(g => g.Id == empdetail.Vendorid).Select(g => g.CompanyImage).FirstOrDefault(),
+                    Location = _context.VendorRegistrations.Where(g => g.Id == empdetail.Vendorid).Select(g => g.Location).FirstOrDefault(),
+                };
+                return View(result);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return BadRequest($"An error occurred: {ex.Message}");
+            }
+        }
+        public async Task<IActionResult> AppointmentletterDocPDF(int? Id = 0)
+        {
+            try
+            {
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                var emp = await _context.EmployeeRegistrations.Where(x => x.Id == Id && adminlogin.Vendorid == x.Vendorid).FirstOrDefaultAsync();
+                if (adminlogin == null)
+                {
+                    return BadRequest("Admin login not found");
+                }
+                string schema = Request.Scheme;
+                string host = Request.Host.Value;
+                string SlipURL = $"{schema}://{host}/Employee/Appointmentletter?Id={Id}&userid={Userid}";
+                HtmlToPdf converter = new HtmlToPdf();
+                PdfDocument doc = converter.ConvertUrl(SlipURL);
+                string wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "EMPpdfs");
+                if (!Directory.Exists(wwwRootPath))
+                {
+                    Directory.CreateDirectory(wwwRootPath);
+                }
+                string uniqueFileName = $"Appointmentletter_{Id}_{DateTime.Now:yyyyMMddHHmmss}.pdf";
+                string filePath = Path.Combine(wwwRootPath, uniqueFileName);
+                doc.Save(filePath);
+                byte[] pdf = System.IO.File.ReadAllBytes(filePath);
+
+                var result = await _context.EmployeePersonalDetails.Where(x => x.EmpRegId == emp.EmployeeId).FirstOrDefaultAsync();
+
+                if (result == null)
+                {
+                    return BadRequest("Employee not found.");
+                }
+
+                var empoff = _context.EmployeeRegistrations.FirstOrDefault(e => e.EmployeeId == result.EmpRegId);
+                if (empoff != null)
+                {
+                    empoff.Appoinmentletter = uniqueFileName;
+                    _context.SaveChanges();
+                }
+                else
+                {
+                    return BadRequest("Data not found for the employee.");
+                }
+                string emailSubject = $"Offerletter for {emp.FirstName}";
+                string emailBody = $"Hello {emp.FirstName}, please find your attached Appointment letter.";
+                _IEmailService.SendEmailAsync(result.PersonalEmailAddress, emailSubject, emailBody, pdf, uniqueFileName, "application/pdf");
+
+                return Json(new { success = true, message = "Appointment letter has been Sent successfully.", fileName = uniqueFileName });
             }
             catch (Exception ex)
             {
@@ -1900,99 +2008,6 @@ namespace CRM.Controllers
             }
         }
 
-        [HttpGet, Route("/Employee/Appointmentletter")]
-        public IActionResult Appointmentletter(string EmployeeId)
-        {
-            //string AddedBy = HttpContext.Session.Id;
-            //ViewBag.UserName = AddedBy;
-            //var result = (from emp in _context.EmployeeRegistrations
-            //              join empatt in _context.Employeeattendance on emp.EmployeeId equals empatt.EmployeeId into empattGroup
-            //              from empatt in empattGroup.DefaultIfEmpty()
-            //              join worklocation in _context.city on emp.OfccityId.ToString() equals worklocation.Id.ToString() into worklocationGroup
-            //              from worklocation in worklocationGroup.DefaultIfEmpty()
-            //              join dpt in _context.Drop_Industries on emp.DepartmentID equals dpt.ID into dptGroup
-            //              from dpt in dptGroup.DefaultIfEmpty()
-            //              join jb in _context.Job_Title on emp.Job_Title equals jb.Id into jbGroup
-            //              from jb in jbGroup.DefaultIfEmpty()
-            //              join Org in _context.Organizations on emp.CompanyId equals Org.Id into OrgGroup
-            //              from Org in OrgGroup.DefaultIfEmpty()
-            //              join ct in _context.city on emp.OfccityId equals ct.Id into ctGroup
-            //              from ct in ctGroup.DefaultIfEmpty()
-            //              where emp.EmployeeId == EmployeeId
-            //              select new EmpAppointmentletter
-            //              {
-            //                  Empcode = emp.EmployeeId,
-            //                  First_Name = emp.FirstName,
-            //                  OfccityId = ct.CityName,
-            //                  CurrentDate = DateTime.Now.ToString("dd/MM/yyyy"),
-            //                  pincode = emp.Pincode,
-            //                  Department_Name = dpt.IndustriesName,
-            //                  MonthlyCtc = emp.MonthlyCTC,
-            //                  AnnualCtc = emp.AnnualCTC,
-            //                  Designation_Name = jb.JobTitle,
-            //                  CompanyName = Org.OrganizationName,
-            //                  Joiningdate = emp.DateOfJoining != null ? emp.DateOfJoining.Value.ToString("dd/MM/yyyy") : "",
-            //                  Basic = emp.Basic,
-            //                  HouseRentAllowance = emp.HouseRentAllowance,
-            //                  EmployeeEPF = emp.EmployeeEPF,
-            //                  EmployeeESIC = emp.EmployeeESIC,
-            //              }).FirstOrDefault();
-
-            //if (result != null)
-            //{
-            //    return View(result);
-            //}
-            //else
-            //{
-            return View();
-            // }
-        }
-        public string AppointmentletterDocPDF(string EmployeeId)
-        {
-            string schema = Request.Scheme;
-            string host = Request.Host.Value;
-            HtmlToPdf converter = new HtmlToPdf();
-            WebClient client = new WebClient();
-            string SlipURL = $"{schema}://{host}/Employee/Appointmentletter?EmployeeId={EmployeeId}";
-            PdfDocument doc = converter.ConvertUrl(SlipURL);
-
-            byte[] pdf = doc.Save();
-            doc.Close();
-
-            /// Save method code -----------
-
-            // Specify the directory where you want to save the PDF file
-            string directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "AppointmentLetter");
-
-            // Ensure the directory exists, if not, create it
-            if (!Directory.Exists(directoryPath))
-            {
-                Directory.CreateDirectory(directoryPath);
-            }
-
-            DateTime dt = DateTime.Now;
-
-            string savedFileName = $"{Guid.NewGuid()}{dt:yyyyMMddHHmmssfff}";
-            string extension = ".pdf";
-            // Combine the directory path with the file name
-            string filePath = Path.Combine(directoryPath, $"{savedFileName}{extension}");
-
-            // Write the PDF content to the specified file path
-            using (FileStream fileStream = new FileStream(filePath, FileMode.Create))
-            {
-                fileStream.Write(pdf, 0, pdf.Length);
-            }
-            // Create a file result to return the PDF
-            FileResult fileResult = new PhysicalFileResult(filePath, "application/pdf");
-            fileResult.FileDownloadName = $"{savedFileName}{extension}";
-            ///-----end
-
-
-            //FileResult fileResult = new FileContentResult(pdf, "application/pdf");
-            //fileResult.FileDownloadName = "Appointmentletter.pdf";
-            return "AppointmentLetter/" + fileResult.FileDownloadName;
-
-        }
         [HttpGet, Route("/Employee/AddOfferletterdetail")]
         public async Task<IActionResult> AddOfferletterdetail(int? id = 0)
         {
@@ -2173,6 +2188,43 @@ namespace CRM.Controllers
             }
             return Json(success);
         }
+
+        [HttpGet, Route("/Employee/Appointmentletterlist")]
+        public async Task<IActionResult> Appointmentletterlist()
+        {
+            try
+            {
+                if (HttpContext.Session.GetString("UserName") != null)
+                {
+                    string AddedBy = HttpContext.Session.GetString("UserName");
+                    ViewBag.UserName = AddedBy;
+                    int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                    var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                    var response = await _context.EmployeeRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).Select(x => new Appointmentdetail
+                    {
+                        Id =x.Id,
+                        FirstName = x.FirstName,
+                        LastName = x.LastName,
+                        DateOfJoining = x.DateOfJoining.GetValueOrDefault(),
+                        MiddleName = x.MiddleName,
+                        WorkEmail = x.WorkEmail,
+                        Emp_Reg_ID = x.EmployeeId,
+                        Appoinmentletter = x.Appoinmentletter
+                    }).ToListAsync();
+
+                    return View(response);
+                }
+                else
+                {
+                    return RedirectToAction("Login", "Admin");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error: " + ex.Message);
+            }
+        }
+
     }
 }
 

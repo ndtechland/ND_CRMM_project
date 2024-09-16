@@ -20,7 +20,7 @@
 </style>
 <div class="appointment-letter">
     <p style="text-align: center;font-size:20px">
-        <img src="~/assets/images/logo.png" style="width: 150px;height: 100px;" />
+        <img src='~/CompanyImage/@Model.CompanyImage' style="width: 150px; height: 100px;" />
     </p>
     <p>
         @*Employee Code *@ @Model.Empcode <br />
@@ -29,7 +29,7 @@
     <p>
         Mr. ƒ Ms.  @Model.First_Name <br />
         Address<br />
-        @Model.OfccityId- @Model.pincode
+        @Model.OfccityId- @Model.Location
     </p>
     <p>
         Dear Applicant @Model.First_Name,
