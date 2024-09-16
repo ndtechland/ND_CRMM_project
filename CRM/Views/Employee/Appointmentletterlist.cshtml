@@ -1,0 +1,214 @@
+﻿@model IEnumerable<CRM.Models.Crm.Appointmentdetail>
+
+@{
+    ViewData["Title"] = "Appointmentdetail";
+    Layout = "~/Views/Shared/_adminLayout.cshtml";
+}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style>
+    #loader {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 9999;
+    }
+</style>
+
+<div class="page-wrapper">
+    <div class="page-body-wrapper">
+        <div class="page-sidebar">
+        </div>
+        <div class="page-body">
+            <div class="container-fluid">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="page-header-left">
+                                <h3>
+                                    Appointment Letter List
+                                </h3>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <ol class="breadcrumb pull-right">
+                                <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
+                                <li class="breadcrumb-item">Letter</li>
+                                <li class="breadcrumb-item active">Appointment Letter</li>
+                                <li class="breadcrumb-item active">Appointment List</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Container-fluid Ends-->
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="table-responsive" style="margin-top: 16px;">
+
+                                    <table id="datatable" class="table table-responsive">
+                                        <thead>
+                                            <tr style="background-color: #00baf2;">
+                                                <th nowrap>
+                                                    Sl. No.
+
+                                                </th>
+
+                                                <th nowrap>
+                                                    First Name
+                                                </th>
+
+                                                <th nowrap>
+                                                    Middle Name
+                                                </th>
+
+                                                <th nowrap>
+                                                    Last Name
+                                                </th>
+
+                                                <th nowrap>
+                                                    Employee ID
+                                                </th>
+
+                                                <th nowrap>
+                                                    Date Of Joining
+                                                </th>
+
+                                                <th nowrap>
+                                                    Work Email
+                                                </th>
+                                                <th nowrap>
+                                                    View AppointmentLetter
+                                                </th>
+                                                <th nowrap>
+                                                    Send AppointmentLetter
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{
+                                                var count = 0;
+                                                @foreach (var item in Model)
+                                                {
+                                                    count++;
+                                                    <tr class="table-row">
+                                                        <td>@count</td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.FirstName)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.MiddleName)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.LastName)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.Emp_Reg_ID)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @item.DateOfJoining.ToString("dd/MM/yyyy")
+                                                        </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.WorkEmail)
+                                                        </td>
+                                                        <td>
+                                                            <div>
+                                                                <a href="@Url.Content("~/EMPpdfs/" + item.Appoinmentletter)" target="_blank">
+                                                                    <img src="@Url.Content("~/assets/images/layout-2/logo/pdfview.jpg")" alt="PDF Icon" style="height: 80px; width: 80px;" />
+                                                                </a>
+                                                            </div>
+                                                        </td>
+
+                                                        <td>
+                                                            <div>
+                                                                <a href="javascript:void(0)"
+                                                                   onclick="AppointmentletterdownloadPDF(@(item.Id))">
+                                                                    <img src="@Url.Content("~/assets/images/layout-2/logo/pdf-icon-4.png")"
+                                                                         alt="PDF Icon" style="height: 80px; width: 80px;" />
+                                                                </a>
+                                                            </div>
+                                                        </td>
+
+
+
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="pagination-container">
+                <ul id="pagination" class="pagination"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="loader" style="display:none;">
+    <img src="~/assets/images/layout-2/logo/loddergif.gif" alt="Loading..." />
+</div>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script type="text/javascript">
+    function AppointmentletterdownloadPDF(Id) {
+        var url = '@Url.Action("AppointmentletterDocPDF", "Employee")' + '?Id=' + Id;
+
+        // Show the loader before starting the fetch process
+        document.getElementById('loader').style.display = 'block';
+
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        })
+            .then(response => {
+                // Hide the loader once a response is received
+                document.getElementById('loader').style.display = 'none';
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: 'Success',
+                        text: data.message,
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: data.message,
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            })
+            .catch(error => {
+                // Hide the loader if an error occurs
+                document.getElementById('loader').style.display = 'none';
+
+                Swal.fire({
+                    title: 'Error',
+                    text: 'An error occurred while processing the request.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            });
+    }
+</script>
+
