@@ -18,7 +18,15 @@
         margin-top: 33px;
     }
 </style>
-
+<style>
+    #loader {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 9999;
+    }
+</style>
 <style>
     .se-pre-con {
         position: fixed;
@@ -230,11 +238,11 @@
     </div>
 
 </div>
+<div id="loader" style="display:none;">
+    <img src="~/assets/images/layout-2/logo/loddergif.gif" alt="Loading..." />
+</div>
 <input hidden type="text" id="custid" value="@Context.Session.GetString("custid")" />
 <input hidden type="text" id="locid" value="@Context.Session.GetString("locid")" />
-
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-
 <script>
     function ESCExcelfn() {
         var customerId = document.getElementById("CustomerID").value;
@@ -252,8 +260,9 @@
     function gensal() {
         var check = true;
         var tbody = $("#datatable tbody");
+
         if (tbody.children().length > 0) {
-            var modeldata = new Array;
+            var modeldata = [];
             $('#datatable tbody tr').each(function (index) {
                 var customer = {};
                 customer.Id = $(this).find('td:eq(1)').text().trim();
@@ -263,6 +272,7 @@
                 customer.Incentive = $(this).find('td:eq(6)').text().trim();
                 customer.TravellingAllowance = $(this).find('td:eq(7)').text().trim();
                 customer.Attendance = $(this).find('input[name="Attendance"]').val();
+
                 if (customer.Attendance === "") {
                     Swal.fire({
                         title: 'Error',
@@ -277,14 +287,19 @@
             });
 
             if (check == true) {
+                // Show loader before AJAX call
+                $("#loader").show();
+
                 $.ajax({
                     url: '/Employee/Empattendance',
                     data: { customers: modeldata },
                     dataType: 'json',
                     type: 'post',
-                    async: 'false',
-
+                    async: true, // Set async to true (default behavior)
                     success: function (data) {
+                        // Hide loader after success
+                        $("#loader").hide();
+
                         if (data.data == true) {
                             $(".attnd").val("");
                             Swal.fire({
@@ -306,8 +321,10 @@
                             });
                         }
                     },
-
                     error: function (err) {
+                        // Hide loader after error
+                        $("#loader").hide();
+
                         Swal.fire({
                             title: 'Error',
                             text: "An error occurred while generating the salary.",
@@ -333,18 +350,18 @@
         });
     });
 </script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <script type="text/javascript">
+    var maxLimit = @ViewBag.Nodays; 
+
     function fnc(inputElement) {
         var value = inputElement.value;
 
         if (parseInt(value) < 0 || isNaN(value)) {
             inputElement.value = '';
-        } else if (parseInt(value) > 25) {
+        } else if (parseInt(value) > maxLimit) {
             Swal.fire({
                 title: 'Error',
-                text: "Number is greater than 25",
+                text: "Number is greater than " + maxLimit,
                 icon: 'error',
                 confirmButtonText: 'OK'
             });
@@ -538,10 +555,7 @@
 
 <script>
     $(document).ready(function () {
-        // Get the annual salary input element
         var annualSalaryInput = $('#txtAnnualCTC');
-
-        // Get the monthly salary input element
         var monthlySalaryInput = $('#txtMonthlyCTC');
         var basicSalaryInput = $('#txtBasicSalary');
         var basicSalaryInput = $('#txtBasicSalary');
@@ -550,15 +564,9 @@
         var MonthlyGrossPayInput = $('#txtMonthlyGrossPay');
         var ESICInput = $('#ESIC');
         var ProfessionaltaxInput = $('#Professionaltax');
-
-        // Attach an input event listener to the annual salary input
         annualSalaryInput.on('input', function () {
-            // Get the value from the annual salary input
             var annualSalary = parseFloat($(this).val());
-
-            // Check if the entered value is a valid number
             if (!isNaN(annualSalary)) {
-                // Calculate monthly salary (assuming 12 months in a year)
                 var monthlySalary = annualSalary / 12;
                 var basicSalary = annualSalary / 2;
                 var houseRent = basicSalary / 2;
@@ -579,8 +587,6 @@
                     default:
                         professionaltax = 0;
                 }
-
-                // Update the value of the monthly salary input
                 monthlySalaryInput.val(monthlySalary.toFixed(2));
                 basicSalaryInput.val(basicSalary.toFixed(2));
                 HouseRentAllowanceInput.val(houseRent.toFixed(2));
@@ -589,7 +595,6 @@
                 ESICInput.val(ESIC.toFixed(2));
                 ProfessionaltaxInput.val(professionaltax.toFixed(2));
             } else {
-                // If the entered value is not a valid number, clear the monthly salary input
                 monthlySalaryInput.val('');
                 basicSalaryInput.val('');
                 HouseRentAllowanceInput.val('');
@@ -684,13 +689,8 @@
             success: function (data) {
                 if (data != null || data.length != 0) {
                     data.forEach(function (item) {
-                        // Find the corresponding row in the table based on the employee ID
                         var $row = $("td:contains('" + item.employeeId + "')").closest('tr');
-
-                        // Check if the row is found
                         if ($row.length) {
-                            // Set the attendance value in the corresponding field in the table
-                            //   $row.find("td:eq(6)").text(item.attendance); // Assuming the attendance field is the 6th column (index 5)
                             if (parseInt(item.attendance) < 30) {
                                 $row.find(".attnd").val(item.attendance);
                             } else {

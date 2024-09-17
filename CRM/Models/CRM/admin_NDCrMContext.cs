@@ -22,6 +22,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<AdminLogin> AdminLogins { get; set; } = null!;
         public virtual DbSet<ApprovedPresnolInfo> ApprovedPresnolInfos { get; set; } = null!;
         public virtual DbSet<Approvedbankdetail> Approvedbankdetails { get; set; } = null!;
+        public virtual DbSet<Attendanceday> Attendancedays { get; set; } = null!;
         public virtual DbSet<BannerMaster> BannerMasters { get; set; } = null!;
         public virtual DbSet<BillingDetail> BillingDetails { get; set; } = null!;
         public virtual DbSet<BillingHistory> BillingHistories { get; set; } = null!;
@@ -222,6 +223,21 @@ namespace CRM.Models.Crm
                     .HasColumnName("Re_Enter_Account_Number");
 
                 entity.Property(e => e.UpdateDate).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<Attendanceday>(entity =>
+            {
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Createdate)
+                    .HasColumnType("datetime")
+                    .HasColumnName("createdate");
+
+                entity.Property(e => e.Nodays)
+                    .HasMaxLength(50)
+                    .HasColumnName("nodays");
+
+                entity.Property(e => e.Vendorid).HasColumnName("vendorid");
             });
 
             modelBuilder.Entity<BannerMaster>(entity =>
