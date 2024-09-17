@@ -483,36 +483,14 @@ namespace CRM.Controllers
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                var attt = await _context.Attendancedays.Where(x => x.Vendorid == adminlogin.Vendorid).FirstOrDefaultAsync();
+                ViewBag.Nodays = attt.Nodays;
                 ViewBag.UserName = AddedBy;
                 TempData["UserName"] = AddedBy;
-                //TempData["custid"] = customerId;
-                //TempData["locid"] = WorkLocation;
-                //
-                // Manage session variables
                 if (!string.IsNullOrEmpty(AddedBy))
                 {
                     HttpContext.Session.SetString("UserName", AddedBy);
                 }
-
-                //if (!string.IsNullOrEmpty(customerId))
-                //{
-                //    HttpContext.Session.SetString("custid", customerId);
-                //}
-                //else
-                //{
-                //    customerId = HttpContext.Session.GetString("custid");
-                //}
-
-                //if (!string.IsNullOrEmpty(WorkLocation))
-                //{
-                //    HttpContext.Session.SetString("locid", WorkLocation);
-                //}
-                //else
-                //{
-                //    WorkLocation = HttpContext.Session.GetString("locid");
-                //}
-                //
-
                 var response = await _ICrmrpo.salarydetail(Userid);
                 decimal total = 0.00M;
                 foreach (var item in response)
@@ -542,6 +520,10 @@ namespace CRM.Controllers
 
             try
             {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                ViewBag.UserName = AddedBy;
                 foreach (Empattendance empattendance in customers)
                 {
                     var month = await _context.Empattendances.Where(x => x.Month == DateTime.Now.Month && x.EmployeeId == empattendance.EmployeeId).ToListAsync();
@@ -562,6 +544,7 @@ namespace CRM.Controllers
                                 var ctc = await _context.EmployeeSalaryDetails
                                     .Where(x => x.EmployeeId == item.EmployeeId)
                                     .FirstOrDefaultAsync();
+                                var attt = await _context.Attendancedays.Where(x => x.Vendorid == adminlogin.Vendorid).FirstOrDefaultAsync();
                                 if (ctc.Incentive != null && ctc.TravellingAllowance != null)
                                 {
                                     if (ctc.Incentive != null && ctc.Incentive >= 0 && ctc.TravellingAllowance != null && ctc.TravellingAllowance >= 0)
@@ -583,8 +566,8 @@ namespace CRM.Controllers
                                         Entry = DateTime.Now,
                                         Incentive = item.Incentive,
                                         TravellingAllowance = item.TravellingAllowance,
-                                        GenerateSalary = decimal.Round((decimal)(ctc.MonthlyCtc / 25 * item.Attendance), 2) + item.Incentive,
-                                        Lop = (decimal)(ctc.MonthlyCtc) - decimal.Round((decimal)(ctc.MonthlyCtc / 25 * item.Attendance), 2),
+                                        GenerateSalary = decimal.Round((decimal)(ctc.MonthlyCtc /Convert.ToDecimal(attt.Nodays) * item.Attendance), 2) + item.Incentive,
+                                        Lop = (decimal)(ctc.MonthlyCtc) - decimal.Round((decimal)(ctc.MonthlyCtc / Convert.ToDecimal(attt.Nodays) * item.Attendance), 2),
                                     };
 
                                     _context.Empattendances.Add(emp);
@@ -857,11 +840,18 @@ namespace CRM.Controllers
             {
                 string schema = Request.Scheme;
                 string host = Request.Host.Value;
-                string SlipURL = $"{schema}://{host}/Employee/SalarySlipInPDF?id={id}";
-
                 HtmlToPdf converter = new HtmlToPdf();
+                string SlipURL = $"{schema}://{host}/Employee/SalarySlipInPDF?id={id}";
                 PdfDocument doc = converter.ConvertUrl(SlipURL);
-                byte[] pdf = doc.Save();
+                string wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "EMPpdfs");
+                if (!Directory.Exists(wwwRootPath))
+                {
+                    Directory.CreateDirectory(wwwRootPath);
+                }
+                string uniqueFileName = $"SalarySlip_{id}_{DateTime.Now:yyyyMMddHHmmss}.pdf";
+                string filePath = Path.Combine(wwwRootPath, uniqueFileName);
+                doc.Save(filePath);
+                byte[] pdf = System.IO.File.ReadAllBytes(filePath);
                 doc.Close();
 
                 var result = (from emp in _context.EmployeeRegistrations
@@ -881,7 +871,7 @@ namespace CRM.Controllers
                     string emailBody = $"Hello {result.First_Name} ({result.Employee_ID}), please find your attached salary slip.";
                     _IEmailService.SendEmailAsync(result.Email_Id, emailSubject, emailBody, pdf, fileName, "application/pdf");
 
-                    return Json(new { success = true, message = "Salary Slip downloaded successfully.", fileName = fileName, pdf = Convert.ToBase64String(pdf) });
+                    return Json(new { success = true, message = "Salary Slip has been Sent successfully.", fileName = fileName, pdf = Convert.ToBase64String(pdf) });
                 }
 
                 return Json(new { success = false, message = "Error: Employee not found." });
@@ -891,7 +881,6 @@ namespace CRM.Controllers
                 return Json(new { success = false, message = $"Error: {ex.Message}" });
             }
         }
-
         public void SendPDF(int id)
         {
             try
@@ -947,8 +936,6 @@ namespace CRM.Controllers
                 throw ex;
             }
         }
-
-
         public static string getMonthName(int monthValue)
         {
             string monthName;

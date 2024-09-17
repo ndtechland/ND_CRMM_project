@@ -474,7 +474,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\EMPpdfs\" />
     <Folder Include="wwwroot\img1\" />
     <Folder Include="wwwroot\EmpProfile\" />
     <Folder Include="wwwroot\ChequeImage\" />

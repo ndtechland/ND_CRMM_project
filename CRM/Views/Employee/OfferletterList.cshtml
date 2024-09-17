@@ -171,7 +171,7 @@
                                                         <td>
                                                             <div>
                                                                 <a href="@Url.Content("~/EMPpdfs/" + item.OfferletterFile)" target="_blank">
-                                                                    <img src="@Url.Content("~/assets/images/layout-2/logo/pdfview.jpg")" alt="PDF Icon" style="height: 80px; width: 80px;" />
+                                                                    <img src="@Url.Content("~/assets/images/layout-2/logo/pdfview.jpg")" alt="PDF Icon" style="height: 60px; width: 60px;" />
                                                                 </a>
                                                             </div>
                                                         </td>
@@ -179,7 +179,7 @@
                                                         <td>
                                                             <div>
                                                                 <a href="javascript:void(0)" onclick="OfferletterdownloadPDF(@item.Id)">
-                                                                    <img src="@Url.Content("~/assets/images/layout-2/logo/pdf-icon-4.png")" alt="PDF Icon" style=" height: 80px; width: 80px;" />
+                                                                    <img src="@Url.Content("~/assets/images/layout-2/logo/email.png")" alt="PDF Icon" style=" height: 60px; width: 60px;" />
                                                                 </a>
                                                             </div>
                                                         </td>
@@ -187,7 +187,6 @@
                                                             <div>
                                                                 <a href="@Url.Action("AddOfferletterdetail","Employee",new { id=item.Id})" class="fa fa-edit m-2 font-success"></a>
                                                                 <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteOfferletter", "Employee", new { id = item.Id })')" class="fa fa-trash font-danger"></a>
-
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -274,8 +273,6 @@
         }
     }
 </script>
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-
 <script type="text/javascript">
     function OfferletterdownloadPDF(id) {
         var url = '@Url.Action("OfferletterDocPDF", "Employee")' + '?id=' + id;

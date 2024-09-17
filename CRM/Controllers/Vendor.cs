@@ -2,6 +2,7 @@
 using CRM.Models.Crm;
 using CRM.Models.DTO;
 using CRM.Repository;
+using DocumentFormat.OpenXml.Drawing.Charts;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -142,13 +143,13 @@ namespace CRM.Controllers
             }
         }
 
-        [HttpGet,Route("Vendor/VendorProfile")]
+        [HttpGet, Route("Vendor/VendorProfile")]
         public async Task<IActionResult> VendorProfile()
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
                 string AddedBy = HttpContext.Session.GetString("UserName");
-                string id = Convert.ToString(HttpContext.Session.GetString("UserId")); 
+                string id = Convert.ToString(HttpContext.Session.GetString("UserId"));
                 ViewBag.UserName = AddedBy;
                 var data = await _ICrmrpo.GetVendorProfile(id);
                 ViewBag.vendorid = data.Id;
@@ -184,7 +185,7 @@ namespace CRM.Controllers
             catch (InvalidOperationException ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
-                return View(model);  
+                return View(model);
             }
             catch (Exception Ex)
             {
@@ -192,7 +193,7 @@ namespace CRM.Controllers
             }
         }
 
-        [HttpGet,Route("Vendor/ApprovedPresnolInfo")]
+        [HttpGet, Route("Vendor/ApprovedPresnolInfo")]
         public async Task<IActionResult> ApprovedPresnolInfo(int? id)
         {
             try
@@ -306,11 +307,11 @@ namespace CRM.Controllers
                     if (model.Aadharbase64 != null && model.Aadharbase64.Count == 2)
                     {
                         var aadharOneImageName = fileOperation.SaveBase64Image("img1", model.Aadharbase64[0], allowedExtensions);
-                        var aadharTwoImageName = fileOperation.SaveBase64Image("img1",model.Aadharbase64[1], allowedExtensions);
+                        var aadharTwoImageName = fileOperation.SaveBase64Image("img1", model.Aadharbase64[1], allowedExtensions);
 
                         if (aadharOneImageName != "not allowed")
                         {
-                            model.AadharOne =  aadharOneImageName;
+                            model.AadharOne = aadharOneImageName;
                         }
 
                         if (aadharTwoImageName != "not allowed")
@@ -356,7 +357,7 @@ namespace CRM.Controllers
                     {
                         empRe.FirstName = item.FullName;
                         emp.PersonalEmailAddress = item.PersonalEmailAddress;
-                        emp.MobileNumber =Convert.ToString(item.MobileNumber);
+                        emp.MobileNumber = Convert.ToString(item.MobileNumber);
                         emp.DateOfBirth = (DateTime)item.DateOfBirth;
                         emp.Pan = item.Pan;
                         emp.AddressLine1 = item.AddressLine1;
@@ -546,6 +547,130 @@ namespace CRM.Controllers
                 }
             }
             return Json(success);
+        }
+        [HttpGet, Route("Vendor/VendorAttendancedays")]
+        public async Task<IActionResult> VendorAttendancedays(int? id = 0)
+        {
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                ViewBag.UserName = AddedBy;
+                ViewBag.id = 0;
+                ViewBag.Nodays = "";
+                ViewBag.Heading = "Add Days";
+                ViewBag.BtnText = "SAVE";
+                if (id != 0)
+                {
+                    var data = await _context.Attendancedays.Where(x => x.Id == id).FirstOrDefaultAsync();
+                    ViewBag.id = data.Id;
+                    ViewBag.Nodays = data.Nodays;
+                    ViewBag.Heading = "Update Days";
+                    ViewBag.BtnText = "UPDATE";
+                }
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> VendorAttendancedays(Attendanceday model)
+        {
+            try
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                ViewBag.UserName = AddedBy;
+
+                if (model == null)
+                {
+                    ModelState.Clear();
+                    return View();
+                }
+                if (model.Id != 0)
+                {
+                    var existingData = await _context.Attendancedays.FindAsync(model.Id);
+                    if (existingData != null)
+                    {
+                        existingData.Nodays = model.Nodays;
+                        existingData.Createdate = DateTime.Now.Date;
+                        existingData.Vendorid = adminlogin.Vendorid;
+
+                        await _context.SaveChangesAsync();
+                        TempData["Message"] = "Data Update Successfully.";
+                        return RedirectToAction("VendorAttendancedays", "Vendor");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Record not found for update.");
+                        return View(model);
+                    }
+                }
+                else
+                {
+                    var data = new Attendanceday()
+                    {
+                        Nodays = model.Nodays,
+                        Createdate = DateTime.Now.Date,
+                        Vendorid = adminlogin.Vendorid,
+                    };
+
+                    _context.Attendancedays.Add(data);
+                    await _context.SaveChangesAsync();
+                    TempData["Message"] = "Data Added Successfully.";
+                    return RedirectToAction("VendorAttendancedays", "Vendor");
+                }
+            }
+            catch (InvalidOperationException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error: " + ex.Message);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> VendorAttendancedayslist()
+        {
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                var response = _context.Attendancedays.Where(x => x.Vendorid == adminlogin.Vendorid).ToList();
+                ViewBag.UserName = AddedBy;
+                return View(response);
+
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
+        }
+
+        public async Task<IActionResult> DeleteAttendancedays(int id)
+        {
+            try
+            {
+                var data = _context.Attendancedays.Find(id);
+                if (data != null)
+                {
+                    _context.Attendancedays.Remove(data);
+                    _context.SaveChanges();
+                }
+                return RedirectToAction("VendorAttendancedayslist");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while deleting the DeleteQuationList:" + ex.Message);
+            }
         }
     }
 }
