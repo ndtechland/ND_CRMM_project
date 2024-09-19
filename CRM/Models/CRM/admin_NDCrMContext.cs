@@ -1069,6 +1069,8 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Id).HasColumnName("ID");
 
+                entity.Property(e => e.Amount).HasMaxLength(200);
+
                 entity.Property(e => e.CompanyName)
                     .HasMaxLength(255)
                     .HasColumnName("Company_Name");

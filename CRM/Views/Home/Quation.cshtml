@@ -199,7 +199,7 @@
                                         <div class="form-group col-sm">
                                             <label asp-for="Amount" class="control-label"></label>
                                             <input name="Amount" type="text" value="@ViewBag.Amount" class="form-control" placeholder="Enter Amount" required=""
-                                                   onkeydown="validateNumericInput(event)"
+                                                   onkeydown="validateammInput(event)"
                                                    oninvalid="this.setCustomValidity('Please Enter Amount')"
                                                    oninput="this.setCustomValidity('')" />
                                             <span asp-validation-for="Amount" class="text-danger"></span>
@@ -273,14 +273,23 @@
             bindProductId("");
         }
     });
-    function validateNumericInput(event) {
-        var input = event.target.value;
-        var regex = /^[\d,]*$/; 
+ function validateammInput(event) {
+    var input = event.target.value;
+    var regex = /^(\d+)(,\d+)*$/;
 
-        if (!regex.test(input)) {
-            event.preventDefault();
+    if (!regex.test(input)) {
+        event.target.setCustomValidity('Please enter a valid amount (e.g., 10000,10000).');
+    } else {
+        var sanitizedValue = input.replace(/,/g, '');
+        if (!isNaN(sanitizedValue)) {
+            event.target.setCustomValidity('');
+        } else {
+            event.target.setCustomValidity('Please enter a valid numeric amount.');
         }
     }
+}
+
+
 
 </script>
 

@@ -12,7 +12,7 @@ namespace CRM.Models.Crm
         public string SalesPersonName { get; set; } = null!;
         public string ProductId { get; set; } = null!;
         public string Subject { get; set; } = null!;
-        public double Amount { get; set; }
+        public string? Amount { get; set; }
         public string? Mobile { get; set; }
         public bool? IsDeleted { get; set; }
     }

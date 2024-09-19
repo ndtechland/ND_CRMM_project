@@ -7,7 +7,7 @@ namespace CRM.Models.APIDTO
         public string FullName { get; set; } = null!;
         public string WorkEmail { get; set; } = null!;
         public long? MobileNumber { get; set; }
-        public DateTime? DateOfBirth { get; set; }
+        public string? DateOfBirth { get; set; }
         public long? Stateid { get; set; }
         public int? Cityid { get; set; }
         public string? Address1 { get; set; }

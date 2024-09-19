@@ -92,21 +92,21 @@ namespace CRM.Controllers.Api
                     {
                         response.StatusCode = StatusCodes.Status401Unauthorized;
                         response.Message = "Data not found.";
-                        return Ok(response);
+                        return BadRequest(response);
                     }
                 }
                 else
                 {
                     response.StatusCode = StatusCodes.Status401Unauthorized;
                     response.Message = "Token is expired.";
-                    return Ok(response);
+                    return BadRequest(response);
                 }
             }
             catch (Exception ex)
             {
                 response.StatusCode = StatusCodes.Status500InternalServerError;
                 response.Message = $"An error occurred: {ex.Message}";
-                return Ok(response);
+                return BadRequest(response);
             }
         }
         [Route("GetBankdetail")]

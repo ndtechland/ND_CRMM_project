@@ -100,9 +100,8 @@
                                                         <td>
                                                             @Html.DisplayFor(modelItem => item.Subject)
                                                         </td>
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => item.Amount)
-                                                        </td>
+
+                                                        <td>@string.Join(",", item.Amount)</td>
                                                         <td>
                                                             @Html.DisplayFor(modelItem => item.Mobile)
                                                         </td>
