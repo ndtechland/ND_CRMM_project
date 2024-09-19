@@ -321,10 +321,10 @@ namespace CRM.Repository
             return employeeList;
         }
 
-        public ProductMaster GetproductById(int id)
-        {
-            return _context.ProductMasters.Find(id);
-        }
+        //public ProductMaster GetproductById(int id)
+        //{
+        //    return _context.ProductMasters.Find(id);
+        //}
         public async Task<int> updateproduct(ProductMaster model)
         {
             var parameter = new List<SqlParameter>();
@@ -400,7 +400,7 @@ namespace CRM.Repository
             return result;
         }
 
-        public async Task<int> Quation(Quation model)
+        public async Task<int> Quation(QuationDto model)
         {
 
             var parameter = new List<SqlParameter>();
@@ -410,7 +410,7 @@ namespace CRM.Repository
             parameter.Add(new SqlParameter("@Customer_Name", model.CustomerName));
             parameter.Add(new SqlParameter("@Email", model.Email));
             parameter.Add(new SqlParameter("@Sales_Person_Name", model.SalesPersonName));
-            parameter.Add(new SqlParameter("@Product_ID", model.ProductId));
+            parameter.Add(new SqlParameter("@Product_ID", string.Join(",", model.ProductId)));
             parameter.Add(new SqlParameter("@Subject", model.Subject));
             parameter.Add(new SqlParameter("@Amount", model.Amount));
             parameter.Add(new SqlParameter("@Mobile", model.Mobile));
@@ -424,19 +424,48 @@ namespace CRM.Repository
         }
 
 
-        public async Task<List<Quation>> QuationList()
+        public async Task<List<QuationDto>> QuationList()
         {
-            var result = await _context.Quations.FromSqlRaw<Quation>("QuationList").ToListAsync();
-            return result;
+            List<QuationDto> cs = new List<QuationDto>();
+            try
+            {
+                using (SqlConnection con = new SqlConnection(_context.Database.GetConnectionString()))
+                {
+                    SqlCommand cmd = new SqlCommand("QuationList", con)
+                    {
+                        CommandType = CommandType.StoredProcedure
+                    };
+                    con.Open();
+                    using (SqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        while (rdr.Read())
+                        {
+                            var cse = new QuationDto()
+                            {
+                                Id = Convert.ToInt32(rdr["ID"]),
+                                CompanyName = rdr["Company_Name"] == DBNull.Value ? null : Convert.ToString(rdr["Company_Name"]),
+                                CustomerName = rdr["Customer_Name"] == DBNull.Value ? null : Convert.ToString(rdr["Customer_Name"]),
+                                Email = rdr["Email"] == DBNull.Value ? null : Convert.ToString(rdr["Email"]),
+                                SalesPersonName = rdr["Sales_Person_Name"] == DBNull.Value ? null : Convert.ToString(rdr["Sales_Person_Name"]),
+                                ProductId = rdr["Product_ID"] == DBNull.Value ? Array.Empty<string>() : Convert.ToString(rdr["Product_ID"]).Split(','),
+                                Subject = rdr["Subject"] == DBNull.Value ? null : Convert.ToString(rdr["Subject"]),
+                                Amount = rdr["Amount"] == DBNull.Value ? 0 : Convert.ToDouble(rdr["Amount"]),
+                                Mobile = rdr["Mobile"] == DBNull.Value ? null : Convert.ToString(rdr["Mobile"]),
+                                IsDeleted = rdr["IsDeleted"] == DBNull.Value ? (bool?)null : Convert.ToBoolean(rdr["IsDeleted"])
+                            };
+                            cs.Add(cse);
+                        }
+                    }
+                }
+                return cs;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
-
-        public Quation GetempQuationById(int id)
-        {
-            return _context.Quations.Find(id);
-        }
-
-        public async Task<int> Iupdate(Quation model)
+        public async Task<int> Iupdate(QuationDto model)
         {
             int result;
             try
@@ -450,7 +479,7 @@ namespace CRM.Repository
                 parameter.Add(new SqlParameter("@Customer_Name", model.CustomerName));
                 parameter.Add(new SqlParameter("@Email", model.Email));
                 parameter.Add(new SqlParameter("@Sales_Person_Name", model.SalesPersonName));
-                parameter.Add(new SqlParameter("@Product_ID ", model.ProductId));
+                parameter.Add(new SqlParameter("@Product_ID ", string.Join(",", model.ProductId)));
                 parameter.Add(new SqlParameter("@Subject", model.Subject));
                 parameter.Add(new SqlParameter("@Amount", model.Amount));
                 parameter.Add(new SqlParameter("@Mobile", model.Mobile));

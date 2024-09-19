@@ -1855,11 +1855,6 @@ namespace CRM.Controllers
                 {
                     Directory.CreateDirectory(wwwRootPath);
                 }
-                string uniqueFileName = $"Offerletter_{Id}_{DateTime.Now:yyyyMMddHHmmss}.pdf";
-                string filePath = Path.Combine(wwwRootPath, uniqueFileName);
-                doc.Save(filePath);
-                byte[] pdf = System.IO.File.ReadAllBytes(filePath);
-
                 var result = (from off in _context.Offerletters
                               where off.Id == Id && off.Vendorid == adminlogin.Vendorid
                               select new getempOfferletter
@@ -1868,6 +1863,12 @@ namespace CRM.Controllers
                                   Name = off.Name,
                                   CandidateEmail = off.CandidateEmail
                               }).FirstOrDefault();
+                string uniqueFileName = $"Offerletter_{Id}.pdf";
+                string filePath = Path.Combine(wwwRootPath, uniqueFileName);
+                doc.Save(filePath);
+                byte[] pdf = System.IO.File.ReadAllBytes(filePath);
+
+                
 
                 if (result == null)
                 {
@@ -1879,16 +1880,16 @@ namespace CRM.Controllers
                 {
                     empoff.OfferletterFile = uniqueFileName;
                     _context.SaveChanges();
+                    string emailSubject = $"Offerletter for {result.Name}";
+                    string emailBody = $"Hello {result.Name}, please find your attached offer letter.";
+                  await  _IEmailService.SendEmailAsync(result.CandidateEmail, emailSubject, emailBody, pdf, uniqueFileName, "application/pdf");
+                  return Json(new { success = true, message = "Offer letter  has been Sent successfully.", fileName = uniqueFileName });
+
                 }
                 else
                 {
-                    return BadRequest("Data not found for the employee.");
-                }
-                string emailSubject = $"Offerletter for {result.Name}";
-                string emailBody = $"Hello {result.Name}, please find your attached offer letter.";
-                _IEmailService.SendEmailAsync(result.CandidateEmail, emailSubject, emailBody, pdf, uniqueFileName, "application/pdf");
-
-                return Json(new { success = true, message = "Offer letter  has been Sent successfully.", fileName = uniqueFileName });
+                    return Json(new { BadRequest = 404, message = "Data not found for the employee." });
+                }               
             }
             catch (Exception ex)
             {
@@ -1961,7 +1962,7 @@ namespace CRM.Controllers
                 {
                     Directory.CreateDirectory(wwwRootPath);
                 }
-                string uniqueFileName = $"Appointmentletter_{Id}_{DateTime.Now:yyyyMMddHHmmss}.pdf";
+                string uniqueFileName = $"Appointmentletter_{Id}.pdf";
                 string filePath = Path.Combine(wwwRootPath, uniqueFileName);
                 doc.Save(filePath);
                 byte[] pdf = System.IO.File.ReadAllBytes(filePath);
@@ -1978,16 +1979,16 @@ namespace CRM.Controllers
                 {
                     empoff.Appoinmentletter = uniqueFileName;
                     _context.SaveChanges();
+                    string emailSubject = $"Appointmentletter for {emp.FirstName}";
+                    string emailBody = $"Hello {emp.FirstName}, please find your attached Appointment letter.";
+                    await _IEmailService.SendEmailAsync(result.PersonalEmailAddress, emailSubject, emailBody, pdf, uniqueFileName, "application/pdf");
+
+                    return Json(new { success = true, message = "Appointment letter has been Sent successfully.", fileName = uniqueFileName });
                 }
                 else
                 {
-                    return BadRequest("Data not found for the employee.");
+                    return Json(new { BadRequest = 404, message = "Data not found for the employee." });
                 }
-                string emailSubject = $"Offerletter for {emp.FirstName}";
-                string emailBody = $"Hello {emp.FirstName}, please find your attached Appointment letter.";
-                _IEmailService.SendEmailAsync(result.PersonalEmailAddress, emailSubject, emailBody, pdf, uniqueFileName, "application/pdf");
-
-                return Json(new { success = true, message = "Appointment letter has been Sent successfully.", fileName = uniqueFileName });
             }
             catch (Exception ex)
             {
@@ -2189,7 +2190,7 @@ namespace CRM.Controllers
                     var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                     var response = await _context.EmployeeRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).Select(x => new Appointmentdetail
                     {
-                        Id =x.Id,
+                        Id = x.Id,
                         FirstName = x.FirstName,
                         LastName = x.LastName,
                         DateOfJoining = x.DateOfJoining.GetValueOrDefault(),
@@ -2210,6 +2211,25 @@ namespace CRM.Controllers
             {
                 throw new Exception("Error: " + ex.Message);
             }
+        }
+        [HttpGet]
+        public async Task<IActionResult> OfferletterList1()
+        {
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName = AddedBy;
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var response = await _ICrmrpo.OfferletterdetailList(Userid);
+
+                return View(response);
+
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
+
         }
 
     }

@@ -1,10 +1,9 @@
-﻿@{
-    @model IEnumerable<CRM.Models.Crm.ProductMaster>
-}
+﻿ @model IEnumerable<CRM.Models.Crm.ProductMaster>
 @{
     ViewData["Title"] = "ProductList";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
 <div class="page-wrapper">
     <div class="page-body-wrapper">
@@ -27,6 +26,7 @@
                         <div class="col-lg-6">
                             <ol class="breadcrumb pull-right">
                                 <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
+                                <li class="breadcrumb-item">CRM</li>
                                 <li class="breadcrumb-item">Product</li>
                                 <li class="breadcrumb-item active">Product List</li>
                             </ol>
@@ -47,19 +47,19 @@
                                     <thead>
                                         <tr style="background-color: #00baf2;">
                                             <th nowrap>Sl. No.</th>
-                                            <th>
+                                            <th nowrap>
                                                ProductName
                                             </th>
-                                            <th>
+                                            <th nowrap>
                                                 Category
                                             </th>
-                                            <th>
+                                            <th nowrap>
                                                Gst
                                             </th>
-                                            <th>
+                                            <th nowrap>
                                                 HSN Code
                                             </th>
-                                            <th>
+                                            <th nowrap>
                                                Price
                                             </th>
                                             <th>Action</th>
@@ -90,10 +90,8 @@
                                                 </td>
                                                 <td>
                                                     <div>
-                                                        <a href="#" class="fa fa-edit m-2 font-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="EditProduct(@item.Id)"></a>
-                                                            <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteProduct", "Product", new { id = item.Id })')" class="fa fa-trash font-danger"></a>
-
-                                                          
+                                                     <a href="@Url.Action("Product","Product",new { id=item.Id})" class="fa fa-edit m-2 font-success"></a>
+                                                     <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteProduct", "Product", new { id = item.Id })')" class="fa fa-trash font-danger"></a>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -120,115 +118,9 @@
 </div>
 
 
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script>
-    function EditProduct(id) {
-        debugger;
-        $.ajax({
-            url: '/Admin/EditProduct?id=' + id,
-            type: 'GET',
-            dataType: 'json',
-            contentType: 'application/json; charset=utf-8',
-            success: function (response) {
-                debugger;
-                $('#Id').val(response.product.id);
-                $('#ProductName').val(response.product.productName);
-                $('#Price').val(response.product.price);
-                $('#HsnSacCode').val(response.product.hsnSacCode);
-                $('#Gst').empty(); 
-                var row = "";
-                $('#Gst').html('');
-                row += "<option value=''>-- Select Gst --</option>";
-                $.each(response.gstData, function (ind, item) {
-                    var isSelected = item.id === response.product.gst;
-                    row += "<option value='" + item.id + "' " + (isSelected ? "selected" : "") + ">" + item.gstPercentagen + "</option>";
-
-                });
-                $('#Gst').html(row);
-                $('#Gst').val(response.product.gst)
-                //category
-                $('#Category').empty(); 
-                var row = "";
-                $('#Category').html('');
-                row += "<option value=''>-- Select Category --</option>";
-                $.each(response.category, function (ind, item) {
-                    var isSelected = item.id === response.product.category;
-                    row += "<option value='" + item.id + "' " + (isSelected ? "selected" : "") + ">" + item.categoryName + "</option>";
-
-                });
-                $('#Category').html(row);
-                $('#Category').val(response.product.category)
-                $('#staticBackdrop').modal('show');
-
-            },
-            error: function () {
-                alert('Data not found');
-            }
-        });
-    }
-</script>
-
-
-
-<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="staticBackdropLabel">Edit Product</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-12">
-                        <form action="EditProduct" method="post" autocomplete="off">
-                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                            <input name="Id" type="text" id="Id" style="display:none">
-
-                            <div class="row">                               
-                                <div class="form-group col-sm">
-                                    <label for="validationCustom0">Product Name</label>
-                                    <input class="form-control" id="ProductName" name="ProductName" type="text" required="">
-
-                                </div>
-                                <div class="form-group col-sm">
-                                    <label for="validationCustom0">Category</label>
-                                    <select id="Category" name="Category" class="form-control searchableselect"></select>
-
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="form-group col-sm">
-                                    <label for="validationCustom0">Price</label>
-                                    <input class="form-control" id="Price" name="Price" type="text" required="">
-
-                                </div>
-                                <div class="form-group col-sm">
-                                    <label for="validationCustom0">HSN Code</label>
-                                    <input class="form-control" id="HsnSacCode" name="HsnSacCode" type="text" required="">
-
-                                </div>
-                            </div>
-                            <div class="row">
-                            <div class="form-group col-sm-6">
-                            <label for="validationCustom0">GST</label>
-                                    <select id="Gst" name="Gst"  class="form-control searchableselect"></select>
-
-                                </div>
-                            </div>
-                                <button class="btn btn-warning" id="btnUpdate">Update</button>
-                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-              
-                        </form>
-                    </div>
-                </div>
-            </div>           
-        </div>
-    </div>
-</div>
-
 <script>
     var currentPage = 1;
-    var rowsPerPage = 20;
+    var rowsPerPage = 5;
     $(document).ready(function () {
         function paginateTable() {
             var table = $('#datatable');

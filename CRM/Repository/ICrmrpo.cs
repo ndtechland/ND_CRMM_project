@@ -22,16 +22,15 @@ namespace CRM.Repository
         // EmployeeList
         public Task<List<EmployeeImportExcel>> EmployeeList();
 
-        public ProductMaster GetproductById(int id);
+        //public ProductMaster GetproductById(int id);
         public Task<int> updateproduct(ProductMaster model);
         public Task<int> Iupdate(EmployeePersonalDetail model);
         public EmployeePersonalDetail GetempPersonalDetailById(int id);
         public Task<int> updateEmployee(EmployeeList model);
 
-        public Task<int> Quation(Quation model);
-        public Task<List<Quation>> QuationList();
-        public Quation GetempQuationById(int id);
-        public Task<int> Iupdate(Quation model);
+        public Task<int> Quation(QuationDto model);
+        public Task<List<QuationDto>> QuationList();
+        public Task<int> Iupdate(QuationDto model);
         public DataTable ForgetPassword(AdminLogin model);
 
         public Task<List<salarydetail>> salarydetail(int Userid);
