@@ -255,7 +255,7 @@ namespace CRM.Repository
                     apppersonal.Vendorid = emp.Vendorid;
                     apppersonal.PersonalEmailAddress = model.PersonalEmailAddress;
                     apppersonal.MobileNumber = model.MobileNumber;
-                    apppersonal.DateOfBirth = (DateTime)model.DateOfBirth;
+                    apppersonal.DateOfBirth = model.DateOfBirth == null ? Convert.ToDateTime( _context.EmployeePersonalDetails.Where(x => x.EmpRegId == userid && x.IsDeleted == false).First().DateOfBirth) :  Convert.ToDateTime(model.DateOfBirth); 
                     apppersonal.Pan = model.PanNo;
                     apppersonal.AddressLine1 = model.Address1;
                     apppersonal.AddressLine2 = model.Address2;
@@ -295,7 +295,7 @@ namespace CRM.Repository
                     if (model.Empprofile != null)
                     {
                         string EmpprofileImagePath = fileOperation.SaveBase64Image("EmpProfile", model.Empprofile, allowedExtensions);
-                        apppersonal.EmpProfile = EmpprofileImagePath;
+                        emp.EmpProfile = EmpprofileImagePath;
                     }
 
                     await _context.SaveChangesAsync();
@@ -310,7 +310,7 @@ namespace CRM.Repository
                         empP.EmployeeId = userid;
                         empP.PersonalEmailAddress = model.PersonalEmailAddress;
                         empP.MobileNumber = model.MobileNumber;
-                        empP.DateOfBirth = (DateTime)model.DateOfBirth;
+                        empP.DateOfBirth = model.DateOfBirth == null ? Convert.ToDateTime(_context.EmployeePersonalDetails.Where(x => x.EmpRegId == userid && x.IsDeleted == false).First().DateOfBirth) : Convert.ToDateTime(model.DateOfBirth);
                         empP.AddressLine1 = model.Address1;
                         empP.AddressLine2 = model.Address2;
                         empP.City = Convert.ToString(model.Cityid);
@@ -344,7 +344,7 @@ namespace CRM.Repository
                         if (model.Empprofile != null)
                         {
                             string EmpprofileImagePath = fileOperation.SaveBase64Image("EmpProfile", model.Empprofile, allowedExtensions);
-                            empP.EmpProfile = EmpprofileImagePath;
+                            emp.EmpProfile = EmpprofileImagePath;
                         }
                     }
 

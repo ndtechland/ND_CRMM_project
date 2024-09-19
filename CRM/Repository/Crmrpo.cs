@@ -412,7 +412,7 @@ namespace CRM.Repository
             parameter.Add(new SqlParameter("@Sales_Person_Name", model.SalesPersonName));
             parameter.Add(new SqlParameter("@Product_ID", string.Join(",", model.ProductId)));
             parameter.Add(new SqlParameter("@Subject", model.Subject));
-            parameter.Add(new SqlParameter("@Amount", model.Amount));
+            parameter.Add(new SqlParameter("@Amount", string.Join(",", model.Amount)));
             parameter.Add(new SqlParameter("@Mobile", model.Mobile));
             parameter.Add(new SqlParameter("@IsDeleted", '0'));
 
@@ -449,7 +449,7 @@ namespace CRM.Repository
                                 SalesPersonName = rdr["Sales_Person_Name"] == DBNull.Value ? null : Convert.ToString(rdr["Sales_Person_Name"]),
                                 ProductId = rdr["Product_ID"] == DBNull.Value ? Array.Empty<string>() : Convert.ToString(rdr["Product_ID"]).Split(','),
                                 Subject = rdr["Subject"] == DBNull.Value ? null : Convert.ToString(rdr["Subject"]),
-                                Amount = rdr["Amount"] == DBNull.Value ? 0 : Convert.ToDouble(rdr["Amount"]),
+                                Amount = rdr["Amount"] == DBNull.Value ? Array.Empty<string>() : Convert.ToString(rdr["Amount"]).Split(',').Select(a => a.Trim()).ToArray(),
                                 Mobile = rdr["Mobile"] == DBNull.Value ? null : Convert.ToString(rdr["Mobile"]),
                                 IsDeleted = rdr["IsDeleted"] == DBNull.Value ? (bool?)null : Convert.ToBoolean(rdr["IsDeleted"])
                             };
@@ -481,7 +481,7 @@ namespace CRM.Repository
                 parameter.Add(new SqlParameter("@Sales_Person_Name", model.SalesPersonName));
                 parameter.Add(new SqlParameter("@Product_ID ", string.Join(",", model.ProductId)));
                 parameter.Add(new SqlParameter("@Subject", model.Subject));
-                parameter.Add(new SqlParameter("@Amount", model.Amount));
+                parameter.Add(new SqlParameter("@Amount", string.Join(",", model.Amount)));
                 parameter.Add(new SqlParameter("@Mobile", model.Mobile));
                 parameter.Add(new SqlParameter("@IsDeleted", '0'));
 
