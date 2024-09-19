@@ -105,23 +105,53 @@ namespace CRM.Controllers
         }
 
         //-----Quation
-        [HttpGet]
-        public IActionResult Quation()
+        [HttpGet, Route("Home/Quation")]
+        public async Task<IActionResult> Quation(int? id = 0)
         {
-            var emp = new Quation();
             if (HttpContext.Session.GetString("UserName") != null)
             {
-
                 string AddedBy = HttpContext.Session.GetString("UserName");
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 ViewBag.UserName = AddedBy;
-                ViewBag.ProductDetails = _context.ProductMasters.Where(x => x.IsDeleted == false)
-             .Select(p => new SelectListItem
-             {
-                 Value = p.Id.ToString(),
-                 Text = p.ProductName
-             })
-              .ToList();
-                return View(emp);
+
+                ViewBag.ProductDetails = await _context.ProductMasters.Where(x => x.IsDeleted == false).Select(p => new SelectListItem
+                {
+                    Value = p.Id.ToString(),
+                    Text = p.ProductName
+                }).ToListAsync();
+                ViewBag.id = 0;
+                ViewBag.CompanyName = "";
+                ViewBag.CustomerName = "";
+                ViewBag.Email = "";
+                ViewBag.SalesPersonName = "";
+                ViewBag.ProductId = "";
+                ViewBag.Subject = "";
+                ViewBag.Amount = "";
+                ViewBag.Mobile = "";
+                ViewBag.Heading = "Add Quation";
+                ViewBag.btnText = "SAVE";
+
+                if (id != 0)
+                {
+                    var data = await _context.Quations.Where(x => x.Id == id).FirstOrDefaultAsync();
+                    if (data != null)
+                    {
+                        ViewBag.id = data.Id;
+                        ViewBag.CompanyName = data.CompanyName;
+                        ViewBag.CustomerName = data.CustomerName;
+                        ViewBag.Email = data.Email;
+                        ViewBag.SalesPersonName = data.SalesPersonName;
+                        ViewBag.ProductId = data.ProductId;
+                        ViewBag.Subject = data.Subject;
+                        ViewBag.Amount = data.Amount;
+                        ViewBag.Mobile = data.Mobile;
+                        ViewBag.Heading = "Update Quation";
+                        ViewBag.btnText = "Update";
+                    }
+                }
+
+                return View();
             }
             else
             {
@@ -129,24 +159,40 @@ namespace CRM.Controllers
             }
         }
 
-
         [HttpPost]
-        public async Task<IActionResult> Quation(Quation model)
+        public async Task<IActionResult> Quation(QuationDto model)
         {
             try
             {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                ViewBag.UserName = AddedBy;
 
-                var response = await _ICrmrpo.Quation(model);
-                if (response != null)
-                {
-
-                    return RedirectToAction("QuationList", "Home");
-                    TempData["msg"] = "Regiter Successfully.";
-                }
-                else
+                if (model == null)
                 {
                     ModelState.Clear();
                     return View();
+                }
+                if (model.Id != 0)
+                {
+                    var response = await _ICrmrpo.Iupdate(model);
+                    if (response != null)
+                    {
+                        TempData["Message"] = "Data Update Successfully.";
+                        return RedirectToAction("Quation", "Home");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Record not found for update.");
+                        return View(model);
+                    }
+                }
+                else
+                {
+                    var response = await _ICrmrpo.Quation(model);
+                    TempData["Message"] = "Data Added Successfully.";
+                    return RedirectToAction("Quation", "Home");
                 }
             }
             catch (Exception Ex)
@@ -154,14 +200,16 @@ namespace CRM.Controllers
                 throw new Exception("Error:" + Ex.Message);
             }
         }
-        // get quation List 
+
         [HttpGet]
         public async Task<IActionResult> QuationList()
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                var response = await _ICrmrpo.QuationList();
                 string AddedBy = HttpContext.Session.GetString("UserName");
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                var response = await _ICrmrpo.QuationList();
                 ViewBag.UserName = AddedBy;
                 return View(response);
 
@@ -187,47 +235,6 @@ namespace CRM.Controllers
             catch (Exception ex)
             {
                 throw new Exception("An error occurred while deleting the DeleteQuationList:" + ex.Message);
-            }
-        }
-
-
-        [HttpGet]
-        public JsonResult EditQuation(int id)
-        {
-            var emp = _ICrmrpo.GetempQuationById(id);
-            var Productdata = _context.ProductMasters.Where(x => x.IsDeleted == false).ToList();
-            var result = new
-            {
-                Emp = emp,
-                Productdata = Productdata,
-
-            };
-
-            return new JsonResult(result);
-        }
-
-
-        [HttpPost]
-        public async Task<IActionResult> EditQuation(Quation model)
-        {
-            try
-            {
-                var response = await _ICrmrpo.Iupdate(model);
-                if (response != null)
-                {
-
-                    return RedirectToAction("QuationList", "Home");
-                    TempData["msg"] = "Quation Successfully.";
-                }
-                else
-                {
-                    ModelState.Clear();
-                    return View();
-                }
-            }
-            catch (Exception Ex)
-            {
-                throw new Exception("Error:" + Ex.Message);
             }
         }
 
@@ -594,7 +601,7 @@ namespace CRM.Controllers
                 throw new Exception("Error:" + Ex.Message);
             }
         }
-    
+
         public IActionResult employeerTDS()
         {
             if (HttpContext.Session.GetString("UserName") != null)
@@ -765,8 +772,8 @@ namespace CRM.Controllers
             }
         }
 
-    
-      
+
+
     }
 
 }

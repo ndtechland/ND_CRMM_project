@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CRM.Models.Crm.Quation>
+﻿@model IEnumerable<CRM.Models.DTO.QuationDto>
 
 @{
     ViewData["Title"] = "QuationList";
@@ -41,226 +41,103 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-body">
-         <div class=" table-responsive">
+                                <div class=" table-responsive">
                                     <table id="datatable" class="table table-responsive">
-                  <thead>
+                                        <thead>
                                             <tr style="background-color: #00baf2;">
                                                 <th nowrap>Sl. No.</th>
-            <th>
-                Company Name
-            </th>
-            <th>
-                Customer Name
-            </th>
-            <th>
-               Email
-            </th>
-            <th>
-               Sales Person Name
-            </th>
-            <th>
-             Product Name
-            </th>
-            <th>
-                Subject
-            </th>
-            <th>
-                Amount
-            </th>
-            <th>
-                Mobile
-            </th>
-            <th>Action</th>
-        </tr>
-    </thead>
-             <tbody>
-                                           @{
+                                                <th>
+                                                    Company Name
+                                                </th>
+                                                <th>
+                                                    Customer Name
+                                                </th>
+                                                <th>
+                                                    Email
+                                                </th>
+                                                <th>
+                                                    Sales Person Name
+                                                </th>
+                                                <th>
+                                                    Product Name
+                                                </th>
+                                                <th>
+                                                    Subject
+                                                </th>
+                                                <th>
+                                                    Amount
+                                                </th>
+                                                <th>
+                                                    Mobile
+                                                </th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{
                                                 var count = 0;
                                                 @foreach (var item in Model)
-                                            {
+                                                {
                                                     count++;
-                                                        <tr class="table-row">
-                                                            <td>@count</td>
-              
-                    <td>
-                                                            @Html.DisplayFor(modelItem => item.CompanyName)
-                    </td>
-                    <td>
-                                                            @Html.DisplayFor(modelItem => item.CustomerName)
-                    </td>
-                    <td>
-                                                            @Html.DisplayFor(modelItem => item.Email)
-                    </td>
-                    <td>
-                                                            @Html.DisplayFor(modelItem => item.SalesPersonName)
-                    </td>
-                    <td>
-                                                            @Html.DisplayFor(modelItem => item.ProductId)
-                    </td>
-                    <td>
-                                                            @Html.DisplayFor(modelItem => item.Subject)
-                    </td>
-                    <td>
-                                                            @Html.DisplayFor(modelItem => item.Amount)
-                    </td>
-                    <td>
-                                                            @Html.DisplayFor(modelItem => item.Mobile)
-                    </td>
-                    <td>
-                                <div>
-                                                                <a href="#" class="fa fa-edit m-2 font-success" data-toggle="modal" data-target="#editModal" onclick="EditQuation(@item.Id)"></a>
-                                                                <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteQuation", "Home", new { id = item.Id })')" class="fa fa-trash font-danger"></a>
-                                 </div>
-                    </td>
-                                         </tr>
-                                            }
-                                            }
-                                                      </tbody>
-                                                       </table>
-                               </div>
+                                                    <tr class="table-row">
+                                                        <td>@count</td>
 
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.CompanyName)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.CustomerName)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.Email)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.SalesPersonName)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.ProductId)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.Subject)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.Amount)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.Mobile)
+                                                        </td>
+                                                        <td>
+                                                            <div>
+                                                                <a href="@Url.Action("Quation","Home",new { id=item.Id})" class="fa fa-edit m-2 font-success"></a>
+                                                                <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteQuation", "Home", new { id = item.Id })')" class="fa fa-trash font-danger"></a>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
                                 </div>
+
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
             <div id="pagination-container">
                 <ul id="pagination" class="pagination"></ul>
             </div>
-            </div>
-
-
         </div>
+
 
     </div>
 
-
-<div id="editModal" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Edit Quation</h4>
-                <a id="closePopup" href="#" class="btn btn-danger" data-dismiss="modal">X</a>
-            </div>
-            <div class="modal-body">
-                <!-- Add your form fields here -->
-                <form action="EditQuation" method="post">
-                    <input name="ID" type="text" id="pID" style="display:none">
-
-                    <div class="row">
-                        <div class="form-group col-sm">
-                            <label for="CompanyName">Company Name:</label>
-                            <input name="CompanyName" type="text" id="CompanyName" class="form-control">
-                        </div>
-                        <div class="form-group col-sm">
-                            <label for="CustomerName">Customer Name:</label>
-                            <input name="CustomerName" type="text" id="CustomerName" class="form-control">
-                        </div>
-
-                    </div>
-
-                    <div class="row">
-                        <div class="form-group col-sm">
-                            <label for="Email">Email:</label>
-                            <input name="Email" type="Email" id="Email" class="form-control">
-                        </div>
-                        <div class="form-group col-sm">
-                            <label for="SalesPersonName">Sales Person Name:</label>
-                            <input name="SalesPersonName" type="text" id="SalesPersonName" class="form-control">
-                        </div>
-
-                    </div>
-
-                    <div class="row">
-                        <div class="form-group col-sm">
-                            <label for="ProductId">Product:</label>
-                            <select id="ProductId" name="ProductId" class="form-control searchableselect"></select>
-                        </div>
-                        <div class="form-group col-sm">
-                            <label for="Subject">Subject:</label>
-                            <input name="Subject" type="text" id="Subject" class="form-control">
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="form-group col-sm">
-                            <label for="Amount">Amount:</label>
-                            <input name="Amount" type="text" id="Amount" class="form-control">
-                        </div>
-                        <div class="form-group col-sm">
-                            <label for="Mobile">Mobile:</label>
-                            <input name="Mobile" type="text" id="Mobile" class="form-control" minlength="10" maxlength="10" onkeydown="validateNumericInput(event)">
-                        </div>
-
-                    </div>
-                    <button class="btn btn-warning" id="btnUpdate">Update</button>
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                </form>
-            </div>
-        </div>
-    </div>
 </div>
 
-
-
-
-
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-
-
-<script>
-
-    // jQuery code to close the modal on click of the "Close" link
-    $(document).ready(function () {
-        $("#closePopup").click(function () {
-            $("#editModal").modal("hide");
-        });
-    });
-
-    function EditQuation(id) {
-        debugger;
-        $.ajax({
-            url: '/Home/EditQuation?id=' + id,
-            type: 'GET',
-            contentType: 'application/json;charset=utf-8',
-            dataType: 'json',
-            success: function (response) {
-                debugger;
-                // Handle the success response, for example, load it into the modal
-                $('#editModal').modal('show');
-                $('#CompanyName').val(response.emp.companyName);
-                $('#CustomerName').val(response.emp.customerName);
-                $('#Email').val(response.emp.email);
-                $('#SalesPersonName').val(response.emp.salesPersonName);
-                $('#Subject').val(response.emp.subject);
-                $('#Amount').val(response.emp.amount);
-                $('#Mobile').val(response.emp.mobile);
-                $('#pID').val(response.emp.id);
-
-
-                $('#ProductId').empty();
-                var row = "";
-                $('#ProductId').html('');
-                row += "<option value=''>-- Select Product --</option>";
-                $.each(response.productdata, function (ind, item) {
-                    var isSelected = item.id === response.emp.productId;
-                    row += "<option value='" + item.id + "' " + (isSelected ? "selected" : "") + ">" + item.productName + "</option>";
-
-                });
-                $('#ProductId').html(row);
-                $('#ProductId').val(response.emp.productId);
-                $('#staticBackdrop').modal('show');
-            },
-            error: function () {
-                alert('Data not found');
-            }
-        });
-    }
-
-</script>
 <script>
     var currentPage = 1;
-    var rowsPerPage = 20;
+    var rowsPerPage = 5;
     $(document).ready(function () {
         function paginateTable() {
             var table = $('#datatable');

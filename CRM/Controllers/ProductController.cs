@@ -2,6 +2,7 @@
 using CRM.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace CRM.Controllers
 {
@@ -15,46 +16,93 @@ namespace CRM.Controllers
             this._context = _context;
             this._ICrmrpo = _ICrmrpo;
         }
-
-        public async Task<IActionResult> Product()
+        [HttpGet, Route("Product/Product")]
+        public async Task<IActionResult> Product(int? id = 0)
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
                 string AddedBy = HttpContext.Session.GetString("UserName");
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 ViewBag.UserName = AddedBy;
-                ViewBag.Gst = _context.GstMasters
-              .Select(w => new SelectListItem
-              {
-                  Value = w.Id.ToString(),
-                  Text = w.GstPercentagen
-              });
-                ViewBag.Category = _context.Categories
-              .Select(w => new SelectListItem
-              {
-                  Value = w.Id.ToString(),
-                  Text = w.CategoryName
-              });
+
+                ViewBag.Gst = await _context.GstMasters.Select(w => new SelectListItem
+                {
+                    Value = w.Id.ToString(),
+                    Text = w.GstPercentagen
+                }).ToListAsync();
+                ViewBag.Category = await _context.Categories.Select(w => new SelectListItem
+                {
+                    Value = w.Id.ToString(),
+                    Text = w.CategoryName
+                }).ToListAsync(); 
+                ViewBag.id = 0;
+                ViewBag.ProductName = "";
+                ViewBag.Categories = "";
+                ViewBag.Gstdr = "";
+                ViewBag.HsnSacCode = "";
+                ViewBag.Price = "";
+                ViewBag.Heading = "Add Product";
+                ViewBag.btnText = "SAVE";
+
+                if (id != 0)
+                {
+                    var data = await _context.ProductMasters.Where(x => x.Id == id).FirstOrDefaultAsync();
+                    if (data != null)
+                    {
+                        ViewBag.id = data.Id;
+                        ViewBag.ProductName = data.ProductName;
+                        ViewBag.Categories = data.Category; 
+                        ViewBag.Gstdr = data.Gst;
+                        ViewBag.HsnSacCode = data.HsnSacCode;
+                        ViewBag.Price = data.Price;
+                        ViewBag.Heading = "Update Product";
+                        ViewBag.btnText = "Update";
+                    }
+                }
+
+                return View();
             }
             else
             {
                 return RedirectToAction("Login", "Admin");
             }
-            return View();
         }
+
         [HttpPost]
         public async Task<IActionResult> Product(ProductMaster model)
         {
             try
             {
-                var response = await _ICrmrpo.Product(model);
-                if (response != null)
-                {
-                    return RedirectToAction("ProductList", "Product");
-                }
-                else
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                ViewBag.UserName = AddedBy;
+
+                if (model == null)
                 {
                     ModelState.Clear();
                     return View();
+                }
+                if (model.Id != 0)
+                {
+                    var response = await _ICrmrpo.updateproduct(model);
+                    if (response != null)
+                    {
+                        TempData["Message"] = "Data Update Successfully.";
+                        return RedirectToAction("Product", "Product");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Record not found for update.");
+                        return View(model);
+                    }
+                }
+                else
+                {
+                    var product = await _ICrmrpo.Product(model);
+                    TempData["Message"] = "Data Added Successfully.";
+                    return RedirectToAction("Product", "Product");
                 }
             }
             catch (Exception Ex)
@@ -65,9 +113,11 @@ namespace CRM.Controllers
         public async Task<IActionResult> ProductList()
         {
             if (HttpContext.Session.GetString("UserName") != null)
-            {
-                var response = await _ICrmrpo.ProductList();
+            {             
                 string AddedBy = HttpContext.Session.GetString("UserName");
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                var response = await _ICrmrpo.ProductList();
                 ViewBag.UserName = AddedBy;
                 return View(response);
             }
@@ -95,49 +145,6 @@ namespace CRM.Controllers
             }
 
         }
-
-        public JsonResult EditProduct(int id)
-        {
-            var product = new ProductMaster();
-            var data = _ICrmrpo.GetproductById(id);
-            var gstdata = _context.GstMasters.ToList();
-            var categorydata = _context.Categories.ToList();
-            product.Id = data.Id;
-            product.ProductName = data.ProductName;
-            product.Category = data.Category;
-            product.HsnSacCode = data.HsnSacCode;
-            product.Price = data.Price;
-            product.Gst = data.Gst;
-            var result = new
-            {
-                Product = product,
-                GstData = gstdata,
-                Category = categorydata,
-
-            };
-            return new JsonResult(result);
-        }
-        [HttpPost]
-        public async Task<IActionResult> EditProduct(ProductMaster model)
-        {
-            try
-            {
-                var product = await _ICrmrpo.updateproduct(model);
-                if (product != null)
-                {
-                    return RedirectToAction("ProductList", "Product");
-                    TempData["msg"] = "product update Successfully.";
-                }
-                else
-                {
-                    ModelState.Clear();
-                    return View();
-                }
-            }
-            catch (Exception Ex)
-            {
-                throw new Exception("Error:" + Ex.Message);
-            }
-        }
+     
     }
 }
