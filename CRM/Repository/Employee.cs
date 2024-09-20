@@ -249,13 +249,14 @@ namespace CRM.Repository
                 }
                 var emp = await _context.EmployeeRegistrations.Where(x => x.EmployeeId == userid && x.IsDeleted == false).FirstOrDefaultAsync();
                 var apppersonal = await _context.ApprovedPresnolInfos.Where(x => x.EmployeeId == userid).FirstOrDefaultAsync();
+                string formattedDate = apppersonal.DateOfBirth?.ToString("dd-MM-yyyy");
 
                 if (apppersonal != null)
                 {
                     apppersonal.Vendorid = emp.Vendorid;
                     apppersonal.PersonalEmailAddress = model.PersonalEmailAddress;
                     apppersonal.MobileNumber = model.MobileNumber;
-                    apppersonal.DateOfBirth = model.DateOfBirth == null ? Convert.ToDateTime( _context.EmployeePersonalDetails.Where(x => x.EmpRegId == userid && x.IsDeleted == false).First().DateOfBirth) :  Convert.ToDateTime(model.DateOfBirth); 
+                    formattedDate = model.DateOfBirth == null ? _context.EmployeePersonalDetails.Where(x => x.EmpRegId == userid && x.IsDeleted == false) .Select(g => g.DateOfBirth.Value.ToString("dd-MM-yyyy")) .FirstOrDefault() : Convert.ToDateTime(model.DateOfBirth).ToString("dd-MM-yyyy");
                     apppersonal.Pan = model.PanNo;
                     apppersonal.AddressLine1 = model.Address1;
                     apppersonal.AddressLine2 = model.Address2;
@@ -303,13 +304,17 @@ namespace CRM.Repository
                 }
                 else
                 {
+
                     ApprovedPresnolInfo empP = new ApprovedPresnolInfo();
                     {
+                        string formatte = empP.DateOfBirth?.ToString("dd-MM-yyyy");
+
                         empP.FullName = model.FullName;
                         empP.Vendorid = emp.Vendorid;
                         empP.EmployeeId = userid;
                         empP.PersonalEmailAddress = model.PersonalEmailAddress;
                         empP.MobileNumber = model.MobileNumber;
+                        formatte = model.DateOfBirth == null ? _context.EmployeePersonalDetails.Where(x => x.EmpRegId == userid && x.IsDeleted == false).Select(g => g.DateOfBirth.Value.ToString("dd-MM-yyyy")).FirstOrDefault() : Convert.ToDateTime(model.DateOfBirth).ToString("dd-MM-yyyy");
                         empP.DateOfBirth = model.DateOfBirth == null ? Convert.ToDateTime(_context.EmployeePersonalDetails.Where(x => x.EmpRegId == userid && x.IsDeleted == false).First().DateOfBirth) : Convert.ToDateTime(model.DateOfBirth);
                         empP.AddressLine1 = model.Address1;
                         empP.AddressLine2 = model.Address2;

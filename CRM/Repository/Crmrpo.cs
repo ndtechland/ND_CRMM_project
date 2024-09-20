@@ -1635,7 +1635,6 @@ namespace CRM.Repository
                     EmployeeId = x.EmployeeId,
                     IsApproved = x.IsApproved,
                     UpdateDate = x.UpdateDate,
-                    EmpProfile = x.EmpProfile,
                 }).ToList();
                 return PresnolInfo;
             }
@@ -1676,10 +1675,6 @@ namespace CRM.Repository
                         if (model.AadharTwo! != null)
                         {
                             existingEntity.AadharTwo = model.AadharTwo;
-                        }
-                        if (model.Empprofile! != null)
-                        {
-                            existingEntity.EmpProfile = model.EmpProfiles;
                         }
                         existingEntity.UpdateDate = DateTime.Now;
                         existingEntity.IsApproved = false;

@@ -20,7 +20,6 @@ namespace CRM.Models.DTO
         public string? AadharNo { get; set; }
         public string? AadharOne { get; set; }
         public string? Panimg { get; set; }
-        public string? EmpProfiles { get; set; }
         public string? AadharTwo { get; set; }
         public string? EmployeeId { get; set; }
         public bool? IsApproved { get; set; }
@@ -29,7 +28,6 @@ namespace CRM.Models.DTO
         
 
         [NotMapped]
-        public IFormFile Empprofile { get; set; }
         public List<IFormFile> Aadharbase64 { get; set; }
         public IFormFile Panbase64 { get; set; }
     }
@@ -55,7 +53,6 @@ namespace CRM.Models.DTO
         public string? EmployeeId { get; set; }
         public bool? IsApproved { get; set; }
         public DateTime? UpdateDate { get; set; }
-        public string? EmpProfile { get; set; }
 
     }
 }

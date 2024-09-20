@@ -140,23 +140,6 @@
                                                     }
                                                 </div>
                                             </div>
-                                            <div class="row mb-3">
-                                                <div class="col-lg-6">
-                                                    <label for="Empprofile">Profile Image</label>
-                                                    @if (Model != null && Model.Panimg != null)
-                                                    {
-                                                        <input type="file" id="hdnFilePath" name="EmpProfiles" />
-                                                    }
-                                                    else
-                                                    {
-                                                        <input type="file" accept=".jpg, .jpeg, .png, .gif, .mp4, .avi, .mkv" id="Empprofile" name="Empprofile">
-                                                    }
-                                                    @if (Model != null)
-                                                    {
-                                                        <img src='~/EmpProfile/@ViewBag.EmpProfile' class="img-thumbnail" alt="Profile Image" />
-                                                    }
-                                                </div>
-                                            </div>
                                             <div class="form-group text-center">
                                                 <input type="submit" value="@ViewBag.btnText" class="btn btn-primary" />
                                             </div>
@@ -262,10 +245,7 @@ else
                                                     </th>
                                                     <th nowrap>
                                                         Pan Image
-                                                    </th>
-                                                    <th nowrap>
-                                                        Profile Image
-                                                    </th>
+                                                    </th>                                                   
                                                     <th nowrap>
                                                         Update Date
                                                     </th>
@@ -284,7 +264,6 @@ else
                                                             var isPdf = !string.IsNullOrEmpty(item.AadharOne) && item.AadharOne.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase);
                                                             var isPdf0 = !string.IsNullOrEmpty(item.AadharTwo) && item.AadharTwo.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase);
                                                             var isPdf1 = !string.IsNullOrEmpty(item.Panimg) && item.Panimg.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase);
-                                                            var isPdf2 = !string.IsNullOrEmpty(item.EmpProfile) && item.EmpProfile.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase);
                                                             <tr>
 
                                                                 <th scope="row">@count</th>
@@ -336,18 +315,6 @@ else
                                                                     else
                                                                     {
                                                                         <img src='~/img1/@item.Panimg' style="height:100px;width:100px" />
-                                                                    }
-                                                                </td>
-                                                                <td>
-                                                                    @if (isPdf2)
-                                                                    {
-                                                                        <a target="_blank" href="~/EmpProfile/@item.EmpProfile" title="Click here to Open Document (Document will be open in new Tab)">
-                                                                            <img src="~/assets/images/layout-2/logo/pdf-icon-4.png" style="height:100px;width:100px" />
-                                                                        </a>
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        <img src='~/EmpProfile/@item.EmpProfile' style="height:100px;width:100px" />
                                                                     }
                                                                 </td>
                                                                 <td style="white-space: nowrap">@item.UpdateDate?.ToString("dd/MM/yyyy")</td>
