@@ -26,5 +26,6 @@
         public string? AadharOne { get; set; }
         public string? Panimg { get; set; }
         public string? AadharTwo { get; set; }
+        public string? FatherName { get; set; }
     }
 }

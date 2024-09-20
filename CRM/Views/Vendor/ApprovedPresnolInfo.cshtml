@@ -96,6 +96,10 @@
                                                     <label for="AadharNo">Aadhar No</label>
                                                     <input class="form-control" value='@ViewBag.AadharNo' name="AadharNo" maxlength="12" id="AadharNo" placeholder="Enter Aadhar No" type="text" required onkeydown="validateNumericInput(event)">
                                                 </div>
+                                                <div class="col-lg-6">
+                                                    <label for="FatherName">Father Name</label>
+                                                    <input class="form-control" value='@ViewBag.FatherName' name="FatherName" id="FatherName" placeholder="Enter FatherName" type="text" required >
+                                                </div>
                                             </div>                                             
                                             <div class="row mb-3">
                                                 <div class="col-lg-6">
@@ -213,6 +217,9 @@ else
                                                         Mobile Number
                                                     </th>
                                                     <th nowrap>
+                                                        Father Name
+                                                    </th>
+                                                    <th nowrap>
                                                         Date Of Birth
                                                     </th>
                                                     <th nowrap>
@@ -245,7 +252,7 @@ else
                                                     </th>
                                                     <th nowrap>
                                                         Pan Image
-                                                    </th>                                                   
+                                                    </th>
                                                     <th nowrap>
                                                         Update Date
                                                     </th>
@@ -271,6 +278,7 @@ else
                                                                 <td style="white-space: nowrap">@item.PersonalEmailAddress</td>
                                                                 <td style="white-space: nowrap">@item.EmployeeId</td>
                                                                 <td style="white-space: nowrap">@item.MobileNumber</td>
+                                                                <td style="white-space: nowrap">@item.FatherName</td>
                                                                 <td style="white-space: nowrap">@item.DateOfBirth?.ToString("dd/MM/yyyy")</td>
                                                                 <td style="white-space: nowrap">@item.PAN</td>
                                                                 <td style="white-space: nowrap">@item.AddressLine1</td>

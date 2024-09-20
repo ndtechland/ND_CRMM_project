@@ -43,6 +43,7 @@ namespace CRM.Repository
                         MobileNumber = _context.EmployeePersonalDetails.Where(g => g.EmpId == x.Id).Select(g => g.MobileNumber).First(),
                         DateOfBirth = _context.EmployeePersonalDetails.Where(g => g.EmpId == x.Id).Select(g => g.DateOfBirth.Value.ToString("dd-MM-yyyy")).First(),
                         Stateid = x.StateId,
+                        FatherName = _context.EmployeePersonalDetails.Where(g => g.EmpId == x.Id).Select(g => g.FatherName).First(),
                         Cityid = _context.EmployeePersonalDetails.Where(g => g.EmpId == x.Id).Select(g => Convert.ToInt16(g.City)).First(),
                         StateName = _context.States.Where(g => g.Id == x.StateId).Select(g => g.SName).First(),
                         CityName = _context.Cities.Where(g => g.Id == Convert.ToInt16(x.WorkLocationId)).Select(g => g.City1).First(),
@@ -249,14 +250,14 @@ namespace CRM.Repository
                 }
                 var emp = await _context.EmployeeRegistrations.Where(x => x.EmployeeId == userid && x.IsDeleted == false).FirstOrDefaultAsync();
                 var apppersonal = await _context.ApprovedPresnolInfos.Where(x => x.EmployeeId == userid).FirstOrDefaultAsync();
-                string formattedDate = apppersonal.DateOfBirth?.ToString("dd-MM-yyyy");
+             
 
                 if (apppersonal != null)
                 {
                     apppersonal.Vendorid = emp.Vendorid;
                     apppersonal.PersonalEmailAddress = model.PersonalEmailAddress;
                     apppersonal.MobileNumber = model.MobileNumber;
-                    formattedDate = model.DateOfBirth == null ? _context.EmployeePersonalDetails.Where(x => x.EmpRegId == userid && x.IsDeleted == false) .Select(g => g.DateOfBirth.Value.ToString("dd-MM-yyyy")) .FirstOrDefault() : Convert.ToDateTime(model.DateOfBirth).ToString("dd-MM-yyyy");
+                    apppersonal.DateOfBirth = model.DateOfBirth == null ? _context.EmployeePersonalDetails.Where(x => x.EmpRegId == userid && x.IsDeleted == false).First().DateOfBirth : Convert.ToDateTime(model.DateOfBirth);
                     apppersonal.Pan = model.PanNo;
                     apppersonal.AddressLine1 = model.Address1;
                     apppersonal.AddressLine2 = model.Address2;
@@ -267,6 +268,7 @@ namespace CRM.Repository
                     apppersonal.UpdateDate = DateTime.Now.Date;
                     apppersonal.IsApproved = false;
                     apppersonal.FullName = model.FullName;
+                    apppersonal.FatherName = model.FatherName;
                     if (!string.IsNullOrEmpty(panImagePath))
                     {
                         apppersonal.Panimg = fileOperation.SaveBase64Image("img1", model.PanbaseImage, allowedExtensions);
@@ -307,15 +309,13 @@ namespace CRM.Repository
 
                     ApprovedPresnolInfo empP = new ApprovedPresnolInfo();
                     {
-                        string formatte = empP.DateOfBirth?.ToString("dd-MM-yyyy");
 
                         empP.FullName = model.FullName;
                         empP.Vendorid = emp.Vendorid;
                         empP.EmployeeId = userid;
                         empP.PersonalEmailAddress = model.PersonalEmailAddress;
                         empP.MobileNumber = model.MobileNumber;
-                        formatte = model.DateOfBirth == null ? _context.EmployeePersonalDetails.Where(x => x.EmpRegId == userid && x.IsDeleted == false).Select(g => g.DateOfBirth.Value.ToString("dd-MM-yyyy")).FirstOrDefault() : Convert.ToDateTime(model.DateOfBirth).ToString("dd-MM-yyyy");
-                        empP.DateOfBirth = model.DateOfBirth == null ? Convert.ToDateTime(_context.EmployeePersonalDetails.Where(x => x.EmpRegId == userid && x.IsDeleted == false).First().DateOfBirth) : Convert.ToDateTime(model.DateOfBirth);
+                        empP.DateOfBirth = model.DateOfBirth == null ? _context.EmployeePersonalDetails.Where(x => x.EmpRegId == userid && x.IsDeleted == false).First().DateOfBirth : Convert.ToDateTime(model.DateOfBirth);
                         empP.AddressLine1 = model.Address1;
                         empP.AddressLine2 = model.Address2;
                         empP.City = Convert.ToString(model.Cityid);
@@ -323,6 +323,7 @@ namespace CRM.Repository
                         empP.Pincode = model.Pincode;
                         empP.Pan = model.PanNo;
                         empP.AadharNo = model.AadharNo;
+                        empP.FatherName = model.FatherName;
                         empP.UpdateDate = DateTime.Now.Date;
                         empP.IsApproved = false;
                         if (model.AadharImage != null && model.AadharImage.Count > 0)

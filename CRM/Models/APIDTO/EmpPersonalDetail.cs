@@ -21,10 +21,36 @@ namespace CRM.Models.APIDTO
         public string CompanyLocationName { get; set; } = null!;
         public string? AadharNo { get; set; }
         public string? PanNo { get; set; }
+        public string? FatherName { get; set; }
 
         [NotMapped]
         public IFormFile Empprofile { get; set; }
         public List<IFormFile> AadharImage { get; set; }
         public IFormFile PanbaseImage { get; set; }
+    }
+
+    public partial class ApprovedPresnolRes
+    {
+        public int Id { get; set; }
+        public string? PersonalEmailAddress { get; set; }
+        public long? MobileNumber { get; set; }
+        public string? DateOfBirth { get; set; }
+        public string? Pan { get; set; }
+        public string? AddressLine1 { get; set; }
+        public string? AddressLine2 { get; set; }
+        public string? City { get; set; }
+        public string StateId { get; set; } = null!;
+        public string? Pincode { get; set; }
+        public string? EmployeeId { get; set; }
+        public string? AadharNo { get; set; }
+        public string? AadharOne { get; set; }
+        public string? Panimg { get; set; }
+        public string? AadharTwo { get; set; }
+        public bool? IsApproved { get; set; }
+        public DateTime? UpdateDate { get; set; }
+        public int? Vendorid { get; set; }
+        public string? FullName { get; set; }
+        public string? FatherName { get; set; }
+        public string? EmpProfile { get; set; }
     }
 }

@@ -65,7 +65,7 @@
                             <div class="card-body">
                                 <form method="post" asp-controller="Vendor" asp-action="VendorAttendancedays" autocomplete="off" onsubmit="return validateForm()">
                                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                                    <div class="form-group col-sm-4">
+                                    <div class="form-group col-sm-6">
                                         <label class="control-label">Attendance Days</label>
                                         <input asp-for="Id" type="hidden" value="@ViewBag.id" />
                                         <input asp-for="Nodays" value="@ViewBag.Nodays" class="form-control" onkeydown="validateNumericInput(event)" maxlength="2" minlength="2" />
