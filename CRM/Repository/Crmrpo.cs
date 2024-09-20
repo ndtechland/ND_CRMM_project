@@ -1408,6 +1408,8 @@ namespace CRM.Repository
                         State = rdr["State"] == DBNull.Value ? null : Convert.ToString(rdr["State"]),
                         StateId = rdr["stateId"] == DBNull.Value ? (int?)null : Convert.ToInt32(rdr["stateId"]),
                         Location = rdr["Billing_Address"] == DBNull.Value ? null : Convert.ToString(rdr["Location"]),
+                        Renewprice = rdr["Renewprice"] == DBNull.Value ? null : Convert.ToString(rdr["Renewprice"]),
+                        NoOfRenewMonth = rdr["NoOfRenewMonth"] == DBNull.Value ? (int?)null : Convert.ToInt32(rdr["NoOfRenewMonth"]),
 
                     };
                 }
@@ -1418,7 +1420,7 @@ namespace CRM.Repository
                 throw ex;
             }
         }
-        public async Task<int> Vendorreg(VendorDto model)
+        public async Task<VendorRegResultDTO> Vendorreg(VendorDto model)
         {
             var parameters = new List<SqlParameter>
     {
@@ -1435,6 +1437,9 @@ namespace CRM.Repository
         new SqlParameter("@State", model.State),
         new SqlParameter("@stateId", model.StateId),
         new SqlParameter("@Location", model.Location),
+        new SqlParameter("@productprice", model.Price),
+        new SqlParameter("@Renewprice", model.Renewprice),
+        new SqlParameter("@NoOfRenewMonth", model.NoOfRenewMonth),
         
         // Add output parameter
         new SqlParameter
@@ -1448,7 +1453,7 @@ namespace CRM.Repository
             string dynamicPassword = GenerateDynamicPassword();
 
             // Execute stored procedure
-            await _context.Database.ExecuteSqlRawAsync("exec VendorRegistration @Company_Name, @Work_Location, @Mobile_number, @Alternate_number, @Email, @GST_Number, @Billing_Address, @Product_Details, @Start_date, @Renew_Date, @State, @stateId,@Location, @CustomerId OUTPUT", parameters.ToArray());
+            await _context.Database.ExecuteSqlRawAsync("exec VendorRegistration @Company_Name, @Work_Location, @Mobile_number, @Alternate_number, @Email, @GST_Number, @Billing_Address, @Product_Details, @Start_date, @Renew_Date, @State, @stateId,@Location,@productprice,@Renewprice,@NoOfRenewMonth, @CustomerId OUTPUT", parameters.ToArray());
 
             // Get the new CustomerId
             int newCustomerId = (int)parameters.First(p => p.ParameterName == "@CustomerId").Value;
@@ -1465,15 +1470,20 @@ namespace CRM.Repository
                 };
 
                 _context.AdminLogins.Add(adminRole);
-                await _context.SaveChangesAsync(); // Ensure this is awaited
+                await _context.SaveChangesAsync(); 
             }
-
-            return newCustomerId;
+            return new VendorRegResultDTO
+            {
+                NewCustomerId = newCustomerId,
+                UserName = dynamicUserName,
+                Password = dynamicPassword
+            };
+            //return newCustomerId;
         }
         public async Task<int> updateVendorreg(VendorDto model)
         {
             var parameters = new List<SqlParameter>
-    {
+            {
         new SqlParameter("@id", model.Id),
         new SqlParameter("@Company_Name", model.CompanyName),
         new SqlParameter("@Work_Location", string.Join(",", model.WorkLocation)),
@@ -1487,10 +1497,13 @@ namespace CRM.Repository
         new SqlParameter("@Renew_Date", model.RenewDate),
         new SqlParameter("@State", model.State),
         new SqlParameter("@stateId", model.StateId),
-        new SqlParameter("@Location", model.Location)
+        new SqlParameter("@Location", model.Location),
+        new SqlParameter("@productprice", model.Price),
+        new SqlParameter("@Renewprice", model.Renewprice),
+        new SqlParameter("@NoOfRenewMonth", model.NoOfRenewMonth)
     };
 
-            var result = await _context.Database.ExecuteSqlRawAsync(@"exec sp_updateVendor_Reg @id, @Company_Name, @Work_Location, @Mobile_number, @Alternate_number, @Email, @GST_Number, @Billing_Address, @Product_Details, @Start_date, @Renew_Date, @State, @stateId, @Location", parameters.ToArray());
+            var result = await _context.Database.ExecuteSqlRawAsync(@"exec sp_updateVendor_Reg @id, @Company_Name, @Work_Location, @Mobile_number, @Alternate_number, @Email, @GST_Number, @Billing_Address, @Product_Details, @Start_date, @Renew_Date, @State, @stateId, @Location,@productprice,@Renewprice,@NoOfRenewMonth", parameters.ToArray());
             return result;
         }
 

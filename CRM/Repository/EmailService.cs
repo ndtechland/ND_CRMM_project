@@ -127,6 +127,59 @@ namespace CRM.Repository
                 throw;
             }
         }
+
+        public async Task SendEmailCredentials(string toEmail,string CompanyName, string username, string password)
+        {
+            var emailMessage = new MimeMessage();
+
+            emailMessage.From.Add(new MailboxAddress("N D Techland Private Limited", "aastrolense@gmail.com"));
+            emailMessage.To.Add(new MailboxAddress("", toEmail));
+            emailMessage.Subject = "Welcome to N D Connect!";
+
+            emailMessage.Body = new TextPart("html")
+            {
+                Text = $@"
+        <p>Dear {CompanyName},</p>
+        <p>Welcome to N D Connect!</p>
+        <p>We’re thrilled to have you on board. At N D Connect, we’re committed to helping you streamline your operations and achieve your business goals. Our platform provides comprehensive solutions, from customer management and invoicing to employee tracking and more.</p>
+        
+        <h3>Your Account Details:</h3>
+        <ul>
+            <li>Username: {username}</li>
+            <li>Password: {password}</li>
+        </ul>
+        
+        <h3>Getting Started:</h3>
+        <ul>
+            <li><strong>Log In:</strong> Access your account and explore our features using your credentials.</li>
+            <li><strong>Support:</strong> If you have any questions or need assistance, don’t hesitate to contact us at 0120-4354103 or email us at <a href='mailto:customer@ndtechland.com'>customer@ndtechland.com</a>.</li>
+        </ul>
+        
+        <p>Thank you for choosing N D Connect. We look forward to working with you and supporting your success.</p>
+        <p>Best regards,</p>
+        <p>N D Techland Private Limited<br />
+        Phone: 0120-4354103<br />
+        <a href='https://www.ndtechland.com'>www.ndtechland.com</a></p>"
+            };
+
+            using (var client = new SmtpClient())
+            {
+                try
+                {
+                    // Connect to your SMTP server
+                    await client.ConnectAsync("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
+                    await client.AuthenticateAsync("aastrolense@gmail.com", "efpbsimjkzxeoxnv");
+
+                    await client.SendAsync(emailMessage);
+                }
+                finally
+                {
+                    await client.DisconnectAsync(true);
+                    client.Dispose();
+                }
+            }
+        }
+
     }
 
 }

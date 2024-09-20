@@ -1231,9 +1231,15 @@ namespace CRM.Models.Crm
                     .HasMaxLength(255)
                     .HasColumnName("Product_Details");
 
+                entity.Property(e => e.Productprice)
+                    .HasMaxLength(200)
+                    .HasColumnName("productprice");
+
                 entity.Property(e => e.RenewDate)
                     .HasColumnType("date")
                     .HasColumnName("Renew_Date");
+
+                entity.Property(e => e.Renewprice).HasMaxLength(200);
 
                 entity.Property(e => e.StartDate)
                     .HasColumnType("date")
