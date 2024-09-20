@@ -71,7 +71,7 @@ namespace CRM.Repository
         public Task<int> UpdateChangepassword(ChangePassworddto model, string AddedBy, int id);
         public Task<List<EmployeeImportExcel>> CustomerEmployeeList(int id);
         public VendorDto GetVendorById(int id);
-        public Task<int> Vendorreg(VendorDto model);
+        public Task<VendorRegResultDTO> Vendorreg(VendorDto model);
         public Task<int> updateVendorreg(VendorDto model);
         public Task<List<VendorDto>> VendorList();
         public Task<VendorRegistrationDto> GetVendorProfile(string? id);

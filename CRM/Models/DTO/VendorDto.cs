@@ -22,6 +22,8 @@ namespace CRM.Models.DTO
         public string? Gst { get; set; }
         public string? HsnSacCode { get; set; }
         public double Price { get; set; }
+        public int? NoOfRenewMonth { get; set; }
+        public string? Renewprice { get; set; }
         public string? State { get; set; }
         public int? StateId { get; set; }
         public string StateName { get; set; } = null!;
