@@ -7,6 +7,7 @@ using DocumentFormat.OpenXml.Bibliography;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.TeamFoundation.TestManagement.WebApi;
 using City = CRM.Models.Crm.City;
 
@@ -25,7 +26,7 @@ namespace CRM.Controllers.Api
             this._apiemp = apiemp;
             this._context = context;
         }
-       [Route("GetEmployeeBasicInfo")]
+        [Route("GetEmployeeBasicInfo")]
         [HttpGet]
         public async Task<IActionResult> GetEmployeeBasicInfo()
         {
@@ -35,22 +36,22 @@ namespace CRM.Controllers.Api
                 if (User.Identity.IsAuthenticated)
                 {
                     var userid = User.Claims.FirstOrDefault().Value;
-                      EmployeeBasicInfo isEmployeeExists = await _apiemp.GetEmployeeById(userid);
-                        if (isEmployeeExists != null)
-                        {
-                            response.Succeeded = true;
-                            response.StatusCode = StatusCodes.Status200OK;
-                            response.Status = "Success";
-                            response.Message = "Employee Details Here.";
-                            response.Data = isEmployeeExists;
-                            return Ok(response);
-                        }
-                        else
-                        {
-                            response.StatusCode = StatusCodes.Status401Unauthorized;
-                            response.Message = "Data not found.";
-                            return Ok(response);
-                        }                                  
+                    EmployeeBasicInfo isEmployeeExists = await _apiemp.GetEmployeeById(userid);
+                    if (isEmployeeExists != null)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = "Employee Details Here.";
+                        response.Data = isEmployeeExists;
+                        return Ok(response);
+                    }
+                    else
+                    {
+                        response.StatusCode = StatusCodes.Status401Unauthorized;
+                        response.Message = "Data not found.";
+                        return Ok(response);
+                    }
                 }
                 else
                 {
@@ -70,45 +71,71 @@ namespace CRM.Controllers.Api
         [HttpPost]
         public async Task<IActionResult> EmployeePersonalDetail([FromForm] EmpPersonalDetail model)
         {
-            var response = new Response<ApprovedPresnolInfo>();
+            var response = new Response<ApprovedPresnolRes>();
             try
             {
                 if (User.Identity.IsAuthenticated)
                 {
                     var userid = User.Claims.FirstOrDefault().Value;
 
-                    ApprovedPresnolInfo apiModel = await _apiemp.PersonalDetail(model, userid);
-
+                    var apiModel = await _apiemp.PersonalDetail(model, userid);
+                    var empp = await _context.EmployeeRegistrations
+                        .Where(x => x.EmployeeId == userid)
+                        .FirstOrDefaultAsync();
+                    ApprovedPresnolRes hgh = new ApprovedPresnolRes()
+                    {
+                        PersonalEmailAddress = apiModel.PersonalEmailAddress,
+                        MobileNumber = apiModel.MobileNumber,
+                        DateOfBirth = apiModel.DateOfBirth?.ToString("dd-MM-yyyy"),
+                        Pan = apiModel.Pan,
+                        AddressLine1 = apiModel.AddressLine1,
+                        AddressLine2 = apiModel.AddressLine2,
+                        City = apiModel.City,
+                        StateId = apiModel.StateId,
+                        Pincode = apiModel.Pincode,
+                        EmployeeId = apiModel.EmployeeId,
+                        AadharNo = apiModel.AadharNo,
+                        AadharOne = apiModel.AadharOne,
+                        Panimg = apiModel.Panimg,
+                        AadharTwo = apiModel.AadharTwo,
+                        IsApproved = apiModel.IsApproved,
+                        UpdateDate = apiModel.UpdateDate,
+                        Vendorid = apiModel.Vendorid,
+                        FullName = apiModel.FullName,
+                        FatherName = apiModel.FatherName,
+                        EmpProfile = empp.EmpProfile
+                    };
                     if (apiModel != null)
                     {
                         response.Succeeded = true;
                         response.StatusCode = StatusCodes.Status200OK;
                         response.Status = "Success";
-                        response.Message = "Personal Detail Update successfully.";
-                        response.Data = apiModel;
-                        return Ok(response);
+                        response.Message = "Personal Detail updated successfully.";
+                        response.Data = hgh;
+                        return Ok(new { response });
                     }
                     else
                     {
-                        response.StatusCode = StatusCodes.Status401Unauthorized;
+                        response.StatusCode = StatusCodes.Status404NotFound;
                         response.Message = "Data not found.";
-                        return BadRequest(response);
+                        return NotFound(response);
                     }
                 }
                 else
                 {
                     response.StatusCode = StatusCodes.Status401Unauthorized;
                     response.Message = "Token is expired.";
-                    return BadRequest(response);
+                    return Unauthorized(response);
                 }
             }
             catch (Exception ex)
             {
                 response.StatusCode = StatusCodes.Status500InternalServerError;
                 response.Message = $"An error occurred: {ex.Message}";
-                return BadRequest(response);
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
+
         [Route("GetBankdetail")]
         [HttpGet]
         public async Task<IActionResult> GetBankdetail()
@@ -197,10 +224,10 @@ namespace CRM.Controllers.Api
             var response = new Response<List<City>>();
             try
             {
-                    List<City> cities = await _apiemp.getcity(stateid); 
-                    response.Data = cities;
-                    response.Message = "Cities retrieved successfully.";
-                    return Ok(response);
+                List<City> cities = await _apiemp.getcity(stateid);
+                response.Data = cities;
+                response.Message = "Cities retrieved successfully.";
+                return Ok(response);
             }
             catch (Exception ex)
             {
@@ -217,11 +244,11 @@ namespace CRM.Controllers.Api
             var response = new Response<List<State>>();
             try
             {
-                    List<State> st = await _apiemp.Getstate();
-                    response.Data = st;
-                    response.Message = "State retrieved successfully.";
-                    return Ok(response);
-            }  
+                List<State> st = await _apiemp.Getstate();
+                response.Data = st;
+                response.Message = "State retrieved successfully.";
+                return Ok(response);
+            }
             catch (Exception ex)
             {
                 response.StatusCode = StatusCodes.Status500InternalServerError;
@@ -229,7 +256,7 @@ namespace CRM.Controllers.Api
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
-       
+
         [Route("Getsalarydetails")]
         [HttpGet]
         public async Task<IActionResult> Getsalarydetails()

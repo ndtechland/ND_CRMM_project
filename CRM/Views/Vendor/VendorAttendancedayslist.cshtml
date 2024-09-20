@@ -63,6 +63,9 @@
                                                 <th>
                                                     Attendance Days
                                                 </th>
+                                                <th>
+                                                    Create Date
+                                                </th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -76,6 +79,9 @@
                                                         <td>@count</td>
                                                         <td>
                                                             @Html.DisplayFor(modelItem => item.Nodays)
+                                                        </td>
+                                                        <td>
+                                                            @item.Createdate?.ToString("dd/MM/yyyy")
                                                         </td>
                                                         <td>
                                                             <div>

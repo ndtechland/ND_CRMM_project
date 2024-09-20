@@ -316,7 +316,7 @@ namespace CRM.Repository
 
         public async Task<List<EmployeeImportExcel>> EmployeeList()
         {
-            List<EmployeeImportExcel> employeeList = _context.EmpMultiforms.FromSqlRaw<EmployeeImportExcel>("USP_GetEmployeeDetails").ToListAsync().Result;
+            List<EmployeeImportExcel> employeeList = _context.EmployeeImportExcels.FromSqlRaw<EmployeeImportExcel>("USP_GetEmployeeDetails").ToListAsync().Result;
 
             return employeeList;
         }
@@ -692,7 +692,7 @@ namespace CRM.Repository
         //for excel
         public byte[] EmployeeListForExcel()
         {
-            List<EmployeeImportExcel> employeeList = _context.EmpMultiforms.FromSqlRaw<EmployeeImportExcel>("USP_GetEmployeeDetails").ToListAsync().Result;
+            List<EmployeeImportExcel> employeeList = _context.EmployeeImportExcels.FromSqlRaw<EmployeeImportExcel>("USP_GetEmployeeDetails").ToListAsync().Result;
 
             using (var workbook = new XLWorkbook())
             {
@@ -804,7 +804,7 @@ namespace CRM.Repository
                     worksheet.Cell(currentwork, 13).Value = item.DateOfBirth;
                     worksheet.Cell(currentwork, 14).Value = item.Age;
                     worksheet.Cell(currentwork, 15).Value = item.FatherName;
-                    worksheet.Cell(currentwork, 16).Value = item.PAN;
+                    worksheet.Cell(currentwork, 16).Value = item.Pan;
                     //worksheet.Cell(currentwork, 19).Value = item.AddressLine1;
                     //worksheet.Cell(currentwork, 20).Value = item.AddressLine2;
                     //worksheet.Cell(currentwork, 21).Value = item.City;
@@ -814,17 +814,17 @@ namespace CRM.Repository
                     worksheet.Cell(currentwork, 17).Value = item.BankName;
                     worksheet.Cell(currentwork, 18).Value = item.AccountNumber;
                     //worksheet.Cell(currentwork, 27).Value = item.ReEnterAccountNumber;
-                    worksheet.Cell(currentwork, 19).Value = item.IFSC;
-                    worksheet.Cell(currentwork, 20).Value = item.EPF_Number;
-                    worksheet.Cell(currentwork, 21).Value = item.Employee_Contribution_Rate;
-                    worksheet.Cell(currentwork, 22).Value = item.Deduction_Cycle;
+                    worksheet.Cell(currentwork, 19).Value = item.Ifsc;
+                    worksheet.Cell(currentwork, 20).Value = item.EpfNumber;
+                    worksheet.Cell(currentwork, 21).Value = item.EmployeeContributionRate;
+                    worksheet.Cell(currentwork, 22).Value = item.DeductionCycle;
                     worksheet.Cell(currentwork, 23).Value = item.AccountType;
-                    worksheet.Cell(currentwork, 24).Value = item.AnnualCTC;
+                    worksheet.Cell(currentwork, 24).Value = item.AnnualCtc;
                     //worksheet.Cell(currentwork, 34).Value = item.Basic;
                     //worksheet.Cell(currentwork, 35).Value = item.HouseRentAllowance;
                     //worksheet.Cell(currentwork, 36).Value = item.ConveyanceAllowance;
                     //worksheet.Cell(currentwork, 37).Value = item.FixedAllowance;
-                    worksheet.Cell(currentwork, 25).Value = item.EPF;
+                    worksheet.Cell(currentwork, 25).Value = item.Epf;
                     //worksheet.Cell(currentwork, 39).Value = item.MonthlyCTC;
                     worksheet.Cell(currentwork, 26).Value = item.MonthlyGrossPay;
                     currentwork++;
@@ -1319,7 +1319,7 @@ namespace CRM.Repository
                                        GstNumber = customer.GstNumber,
                                        AlternateNumber = customer.AlternateNumber,
                                        BillingAddress = customer.BillingAddress,
-                                       UserName = admin.UserName
+                                       //UserName = admin.UserName
                                    }).FirstOrDefaultAsync();
                 return query;
             }
@@ -1346,7 +1346,7 @@ namespace CRM.Repository
             await _context.SaveChangesAsync();
             if (adminusername != null)
             {
-                adminusername.UserName = model.UserName;
+                //adminusername.UserName = model.UserName;
                 _context.AdminLogins.Update(adminusername);
                 await _context.SaveChangesAsync();
 
@@ -1372,7 +1372,7 @@ namespace CRM.Repository
         }
         public async Task<List<EmployeeImportExcel>> CustomerEmployeeList(int id)
         {
-            List<EmployeeImportExcel> employeeList = await _context.EmpMultiforms
+            List<EmployeeImportExcel> employeeList = await _context.EmployeeImportExcels
                 .FromSqlRaw("USP_GetCustomerEmployeeDetails @id", new SqlParameter("@id", id))
                 .ToListAsync();
 
@@ -1648,6 +1648,7 @@ namespace CRM.Repository
                     EmployeeId = x.EmployeeId,
                     IsApproved = x.IsApproved,
                     UpdateDate = x.UpdateDate,
+                    FatherName = x.FatherName,
                 }).ToList();
                 return PresnolInfo;
             }
@@ -1676,6 +1677,7 @@ namespace CRM.Repository
                         existingEntity.City = Convert.ToString(model.cityid);
                         existingEntity.Pincode = model.Pincode;
                         existingEntity.AadharNo = model.AadharNo;
+                        existingEntity.FatherName = model.FatherName;
                         if (model.AadharOne != null)
                         {
                             existingEntity.AadharOne = model.AadharOne;

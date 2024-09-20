@@ -1,8 +1,10 @@
-﻿using CRM.IUtilities;
+using CRM.IUtilities;
 using CRM.Models.Crm;
 using CRM.Models.DTO;
 using CRM.Repository;
 using DocumentFormat.OpenXml.Drawing.Charts;
+
+using DocumentFormat.OpenXml.Office2010.Excel;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -219,7 +221,7 @@ namespace CRM.Controllers
                     int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                     ViewBag.UserName = addedBy;
                     ViewBag.id = 0;
-                    ViewBag.FullName = "";                  
+                    ViewBag.FullName = "";
                     ViewBag.Personal_Email_Address = "";
                     ViewBag.Mobile_Number = "";
                     ViewBag.Date_Of_Birth = "";
@@ -235,6 +237,7 @@ namespace CRM.Controllers
                     ViewBag.Aadharone = "";
                     ViewBag.Aadhartwo = "";
                     ViewBag.Panimg = "";
+                    ViewBag.FatherName = "";
                     ViewBag.Heading = "Add PersonalInfo";
                     ViewBag.BtnText = "SAVE";
 
@@ -258,6 +261,7 @@ namespace CRM.Controllers
                             ViewBag.Aadharone = ApprovedPresnolInfo.AadharOne;
                             ViewBag.Aadhartwo = ApprovedPresnolInfo.AadharTwo;
                             ViewBag.Panimg = ApprovedPresnolInfo.Panimg;
+                            ViewBag.FatherName = ApprovedPresnolInfo.FatherName;
                             ViewBag.Heading = "Update PersonalInfo";
                             ViewBag.BtnText = "UPDATE";
                         }
@@ -365,6 +369,7 @@ namespace CRM.Controllers
                         emp.AadharOne = item.AadharOne;
                         emp.Panimg = item.Panimg;
                         emp.AadharTwo = item.AadharTwo;
+                        emp.FatherName = item.FatherName;
                         await _context.SaveChangesAsync();
                         return Json(new { success = true, message = "Approved Successfully" });
                     }
@@ -661,6 +666,158 @@ namespace CRM.Controllers
                     _context.SaveChanges();
                 }
                 return RedirectToAction("VendorAttendancedayslist");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while deleting the DeleteQuationList:" + ex.Message);
+            }
+        }
+        [HttpGet, Route("Vendor/Officeshift")]
+        public async Task<IActionResult> Officeshift(int? id = 0)
+        {
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                ViewBag.UserName = AddedBy;
+                ViewBag.Officeshifttype = await _context.Officeshifttypes.Select(w => new SelectListItem
+                {
+                    Value = w.Id.ToString(),
+                    Text = w.ShiftType
+                }).ToListAsync();
+                ViewBag.id = 0;
+                ViewBag.Starttime = "";
+                ViewBag.Endtime = "";
+                ViewBag.ShiftTypeid = "";
+                ViewBag.Heading = "Add Office Shift";
+                ViewBag.BtnText = "SAVE";
+                if (id != 0)
+                {
+                    var data = await _context.Officeshifts.Where(x => x.Id == id).FirstOrDefaultAsync();
+                    ViewBag.id = data.Id;
+                    ViewBag.Starttime = data.Starttime;
+                    ViewBag.Endtime = data.Endtime;
+                    ViewBag.ShiftTypeid = data.ShiftTypeid;
+                    ViewBag.Heading = "Update Office Shift";
+                    ViewBag.BtnText = "UPDATE";
+                }
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> Officeshift(Officeshift model)
+        {
+            try
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                ViewBag.UserName = AddedBy;
+
+                if (model == null)
+                {
+                    ModelState.Clear();
+                    return View();
+                }
+                if (model.Id != 0)
+                {
+                    var existingData = await _context.Officeshifts.FindAsync(model.Id);
+                    if (existingData != null)
+                    {
+                        existingData.Starttime = model.Starttime;
+                        existingData.Endtime = model.Endtime;
+                        existingData.ShiftTypeid = model.ShiftTypeid;
+                        existingData.Createdate = DateTime.Now.Date;
+                        existingData.Vendorid = adminlogin.Vendorid;
+
+                        await _context.SaveChangesAsync();
+                        TempData["Message"] = "Data Update Successfully.";
+                        return RedirectToAction("Officeshift", "Vendor");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Record not found for update.");
+                        return View(model);
+                    }
+                }
+                else
+                {
+                    var data = new Officeshift()
+                    {
+                        Starttime = model.Starttime,
+                        Endtime = model.Endtime,
+                        ShiftTypeid = model.ShiftTypeid,
+                        Createdate = DateTime.Now.Date,
+                        Vendorid = adminlogin.Vendorid,
+                    };
+
+                    _context.Officeshifts.Add(data);
+                    await _context.SaveChangesAsync();
+                    TempData["Message"] = "Data Added Successfully.";
+                    return RedirectToAction("Officeshift", "Vendor");
+                }
+            }
+            catch (InvalidOperationException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error: " + ex.Message);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> VendorOfficeshiftlist()
+        {
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                var response = _context.Officeshifts
+     .Where(x => x.Vendorid == adminlogin.Vendorid)
+     .Select(x => new OfficeshiftDto
+     {
+         Id = x.Id,
+         Starttime = x.Starttime,
+         Endtime = x.Endtime,
+         Createdate = x.Createdate,
+         Vendorid = x.Vendorid,
+         ShiftTypeid = _context.Officeshifttypes
+             .Where(s => s.Id == x.ShiftTypeid)
+             .Select(s => s.ShiftType)
+             .FirstOrDefault()
+     }).ToList();
+
+
+                ViewBag.UserName = AddedBy;
+                return View(response);
+
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
+        }
+
+        public async Task<IActionResult> DeleteOfficeshift(int id)
+        {
+            try
+            {
+                var data = _context.Officeshifts.Find(id);
+                if (data != null)
+                {
+                    _context.Officeshifts.Remove(data);
+                    _context.SaveChanges();
+                }
+                return RedirectToAction("VendorOfficeshiftlist");
             }
             catch (Exception ex)
             {

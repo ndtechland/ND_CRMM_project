@@ -15,7 +15,7 @@ namespace CRM.Models.Crm
             : base(options)
         {
         }
-        public virtual DbSet<EmployeeImportExcel> EmpMultiforms { get; set; } = null!;
+
         public virtual DbSet<AccountTypeMaster> AccountTypeMasters { get; set; } = null!;
         public virtual DbSet<Additonalcontribution> Additonalcontributions { get; set; } = null!;
         public virtual DbSet<AdminLogin> AdminLogins { get; set; } = null!;
@@ -35,6 +35,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<DesignationMaster> DesignationMasters { get; set; } = null!;
         public virtual DbSet<Empattendance> Empattendances { get; set; } = null!;
         public virtual DbSet<EmployeeBankDetail> EmployeeBankDetails { get; set; } = null!;
+        public virtual DbSet<EmployeeImportExcel> EmployeeImportExcels { get; set; } = null!;
         public virtual DbSet<EmployeeLeaveMaster> EmployeeLeaveMasters { get; set; } = null!;
         public virtual DbSet<EmployeeLogin> EmployeeLogins { get; set; } = null!;
         public virtual DbSet<EmployeePersonalDetail> EmployeePersonalDetails { get; set; } = null!;
@@ -48,6 +49,8 @@ namespace CRM.Models.Crm
         public virtual DbSet<HeadOfficeAddress> HeadOfficeAddresses { get; set; } = null!;
         public virtual DbSet<IndustryMaster> IndustryMasters { get; set; } = null!;
         public virtual DbSet<Offerletter> Offerletters { get; set; } = null!;
+        public virtual DbSet<Officeshift> Officeshifts { get; set; } = null!;
+        public virtual DbSet<Officeshifttype> Officeshifttypes { get; set; } = null!;
         public virtual DbSet<OrganisationProfile> OrganisationProfiles { get; set; } = null!;
         public virtual DbSet<OrganisationTaxDetail> OrganisationTaxDetails { get; set; } = null!;
         public virtual DbSet<PayMethodMaster> PayMethodMasters { get; set; } = null!;
@@ -155,6 +158,8 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.EmployeeId)
                     .HasMaxLength(100)
                     .HasColumnName("EmployeeId ");
+
+                entity.Property(e => e.FatherName).HasMaxLength(100);
 
                 entity.Property(e => e.FullName).HasMaxLength(250);
 
@@ -513,6 +518,152 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.ReEnterAccountNumber)
                     .HasMaxLength(50)
                     .HasColumnName("Re_Enter_Account_Number");
+            });
+
+            modelBuilder.Entity<EmployeeImportExcel>(entity =>
+            {
+                entity.HasKey(e => e.EmployeeId)
+                    .HasName("PK__Employee__7AD04F11713A65C3");
+
+                entity.ToTable("EmployeeImportExcel");
+
+                entity.Property(e => e.EmployeeId).ValueGeneratedNever();
+
+                entity.Property(e => e.AadharOne).HasMaxLength(255);
+
+                entity.Property(e => e.AadharTwo).HasMaxLength(255);
+
+                entity.Property(e => e.Aadharcard).HasMaxLength(255);
+
+                entity.Property(e => e.AccountHolderName).HasMaxLength(255);
+
+                entity.Property(e => e.AccountNumber).HasMaxLength(255);
+
+                entity.Property(e => e.AccountType).HasMaxLength(255);
+
+                entity.Property(e => e.AccountTypeId).HasColumnName("AccountTypeID");
+
+                entity.Property(e => e.AddressLine1).HasMaxLength(255);
+
+                entity.Property(e => e.AddressLine2).HasMaxLength(255);
+
+                entity.Property(e => e.AnnualCtc)
+                    .HasColumnType("decimal(18, 2)")
+                    .HasColumnName("AnnualCTC");
+
+                entity.Property(e => e.BankName).HasMaxLength(255);
+
+                entity.Property(e => e.Basic).HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.Chequeimage).HasMaxLength(255);
+
+                entity.Property(e => e.City).HasMaxLength(255);
+
+                entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
+
+                entity.Property(e => e.CustomerName).HasMaxLength(255);
+
+                entity.Property(e => e.DateOfBirth).HasColumnType("datetime");
+
+                entity.Property(e => e.DateOfJoining).HasColumnType("datetime");
+
+                entity.Property(e => e.DeductionCycle)
+                    .HasMaxLength(255)
+                    .HasColumnName("Deduction_Cycle");
+
+                entity.Property(e => e.DepartmentId).HasColumnName("DepartmentID");
+
+                entity.Property(e => e.DepartmentName).HasMaxLength(255);
+
+                entity.Property(e => e.DesignationId).HasColumnName("DesignationID");
+
+                entity.Property(e => e.DesignationName).HasMaxLength(255);
+
+                entity.Property(e => e.EmpRegId)
+                    .HasMaxLength(255)
+                    .HasColumnName("Emp_Reg_ID");
+
+                entity.Property(e => e.EmployeeContributionRate)
+                    .HasMaxLength(50)
+                    .HasColumnName("Employee_Contribution_Rate");
+
+                entity.Property(e => e.Epf)
+                    .HasColumnType("decimal(18, 2)")
+                    .HasColumnName("EPF");
+
+                entity.Property(e => e.EpfNumber)
+                    .HasMaxLength(255)
+                    .HasColumnName("EPF_Number");
+
+                entity.Property(e => e.Esic)
+                    .HasColumnType("decimal(18, 2)")
+                    .HasColumnName("ESIC");
+
+                entity.Property(e => e.FatherName).HasMaxLength(255);
+
+                entity.Property(e => e.FirstName).HasMaxLength(255);
+
+                entity.Property(e => e.Gender).HasMaxLength(255);
+
+                entity.Property(e => e.GenderId).HasColumnName("GenderID");
+
+                entity.Property(e => e.Gross)
+                    .HasColumnType("decimal(18, 2)")
+                    .HasColumnName("gross");
+
+                entity.Property(e => e.HouseRentAllowance).HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Ifsc)
+                    .HasMaxLength(50)
+                    .HasColumnName("IFSC");
+
+                entity.Property(e => e.LastName).HasMaxLength(255);
+
+                entity.Property(e => e.MiddleName).HasMaxLength(255);
+
+                entity.Property(e => e.Mobile).HasMaxLength(255);
+
+                entity.Property(e => e.MonthlyCtc)
+                    .HasColumnType("decimal(18, 2)")
+                    .HasColumnName("MonthlyCTC");
+
+                entity.Property(e => e.MonthlyGrossPay).HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.Nominee)
+                    .HasMaxLength(255)
+                    .HasColumnName("nominee");
+
+                entity.Property(e => e.Pan)
+                    .HasMaxLength(255)
+                    .HasColumnName("PAN");
+
+                entity.Property(e => e.Panimg).HasMaxLength(255);
+
+                entity.Property(e => e.PersonalEmailAddress).HasMaxLength(255);
+
+                entity.Property(e => e.Pincode).HasMaxLength(50);
+
+                entity.Property(e => e.ReEnterAccountNumber).HasMaxLength(255);
+
+                entity.Property(e => e.Servicecharge).HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.SpecialAllowance).HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.State).HasMaxLength(255);
+
+                entity.Property(e => e.StateId)
+                    .HasMaxLength(50)
+                    .HasColumnName("StateID");
+
+                entity.Property(e => e.TravellingAllowance).HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.WorkEmail).HasMaxLength(255);
+
+                entity.Property(e => e.WorkLocation).HasMaxLength(255);
+
+                entity.Property(e => e.WorkLocationId).HasColumnName("WorkLocationID");
             });
 
             modelBuilder.Entity<EmployeeLeaveMaster>(entity =>
@@ -903,6 +1054,30 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.StateId).HasColumnName("stateId");
 
                 entity.Property(e => e.Validdate).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<Officeshift>(entity =>
+            {
+                entity.ToTable("officeshift");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Createdate).HasColumnType("datetime");
+
+                entity.Property(e => e.ShiftTypeid).HasColumnName("shiftTypeid");
+
+                entity.Property(e => e.Starttime).HasColumnName("starttime");
+            });
+
+            modelBuilder.Entity<Officeshifttype>(entity =>
+            {
+                entity.ToTable("officeshifttype");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.ShiftType)
+                    .HasMaxLength(255)
+                    .HasColumnName("shiftType");
             });
 
             modelBuilder.Entity<OrganisationProfile>(entity =>

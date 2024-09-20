@@ -271,7 +271,7 @@
                                                             @Html.DisplayFor(modelItem => item.LastName)
                                                         </td>
                                                         <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.Emp_Reg_ID)
+                                                            @Html.DisplayFor(modelItem => item.EmpRegId)
                                                         </td>
                                                         <td nowrap>
                                                             @item.DateOfJoining.ToString("dd/MM/yyyy")
@@ -293,7 +293,7 @@
                                                         </td>
 
                                                         <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.AnnualCTC)
+                                                            @Html.DisplayFor(modelItem => item.AnnualCtc)
                                                         </td>
 
                                                         <td nowrap>
@@ -313,13 +313,13 @@
                                                             @Html.DisplayFor(modelItem => item.Servicecharge)
                                                         </td>
                                                         <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.ESIC)
+                                                            @Html.DisplayFor(modelItem => item.Esic)
                                                         </td>
                                                         <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.gross)
+                                                            @Html.DisplayFor(modelItem => item.Gross)
                                                         </td>
                                                         <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.EPF)
+                                                            @Html.DisplayFor(modelItem => item.Epf)
                                                         </td>
 
                                                         <td nowrap>
@@ -346,7 +346,7 @@
                                                         </td>
 
                                                         <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.PAN)
+                                                            @Html.DisplayFor(modelItem => item.Pan)
                                                         </td>
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.Aadharcard)
@@ -385,26 +385,26 @@
                                                         </td>
 
                                                         <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.IFSC)
+                                                            @Html.DisplayFor(modelItem => item.Ifsc)
                                                         </td>
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.AccountType)
                                                         </td>
 
                                                         <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.EPF_Number)
+                                                            @Html.DisplayFor(modelItem => item.EpfNumber)
                                                         </td>
                                                         <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.Deduction_Cycle)
+                                                            @Html.DisplayFor(modelItem => item.DeductionCycle)
                                                         </td>
 
 
                                                         <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.Employee_Contribution_Rate)
+                                                            @Html.DisplayFor(modelItem => item.EmployeeContributionRate)
                                                         </td>
 
                                                         <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.nominee)
+                                                            @Html.DisplayFor(modelItem => item.Nominee)
                                                         </td>
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.CustomerName)
@@ -426,8 +426,8 @@
                                                         </td>
                                                         <td nowrap>
                                                             <div>
-                                                                <a href="EmployeeRegistration?id=@item.Emp_Reg_ID" class="fa fa-edit m-2 font-success"></a>
-                                                                <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteEmployee","Employee", new { Emp_Reg_ID = item.Emp_Reg_ID })')" class="fa fa-trash font-danger"></a>
+                                                                <a href="EmployeeRegistration?id=@item.EmpRegId" class="fa fa-edit m-2 font-success"></a>
+                                                                <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteEmployee","Employee", new { Emp_Reg_ID = item.EmpRegId })')" class="fa fa-trash font-danger"></a>
                                                             </div>
                                                         </td>
                                                     </tr>

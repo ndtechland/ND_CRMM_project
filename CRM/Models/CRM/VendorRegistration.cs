@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace CRM.Models.Crm
@@ -23,6 +23,6 @@ namespace CRM.Models.Crm
         public string? Productprice { get; set; }
         public string? Renewprice { get; set; }
         public int? NoOfRenewMonth { get; set; }
-        public string? UserName { get; set; }
+
     }
 }

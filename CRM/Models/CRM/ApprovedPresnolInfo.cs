@@ -24,5 +24,6 @@ namespace CRM.Models.Crm
         public DateTime? UpdateDate { get; set; }
         public int? Vendorid { get; set; }
         public string? FullName { get; set; }
+        public string? FatherName { get; set; }
     }
 }
