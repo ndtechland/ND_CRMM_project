@@ -23,7 +23,6 @@ namespace CRM.Models.Crm
         public bool? IsApproved { get; set; }
         public DateTime? UpdateDate { get; set; }
         public int? Vendorid { get; set; }
-        public string? EmpProfile { get; set; }
         public string? FullName { get; set; }
     }
 }

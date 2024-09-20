@@ -16,7 +16,6 @@ namespace CRM.Models.Crm
         {
         }
         public virtual DbSet<EmployeeImportExcel> EmpMultiforms { get; set; } = null!;
-
         public virtual DbSet<AccountTypeMaster> AccountTypeMasters { get; set; } = null!;
         public virtual DbSet<Additonalcontribution> Additonalcontributions { get; set; } = null!;
         public virtual DbSet<AdminLogin> AdminLogins { get; set; } = null!;
@@ -152,8 +151,6 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.DateOfBirth)
                     .HasColumnType("datetime")
                     .HasColumnName("Date_Of_Birth");
-
-                entity.Property(e => e.EmpProfile).HasMaxLength(250);
 
                 entity.Property(e => e.EmployeeId)
                     .HasMaxLength(100)
