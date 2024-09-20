@@ -167,6 +167,16 @@
                                             <span asp-validation-for="CompanyName" class="text-danger"></span>
                                         </div>
                                         <div class="form-group col-sm">
+                                            <label for="validationCustom0">Office Location</label>
+                                            <div class="input-group">
+                                                <input type="text" asp-for="Location" placeholder="Enter Location" class="form-control" required="" oninvalid="this.setCustomValidity('Please Enter Location')" oninput="this.setCustomValidity('')" />
+                                            </div>
+                                            <span asp-validation-for="Location" class="text-danger"></span>
+                                        </div>
+
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-sm">
                                             <label class="control-label">State Name</label>
                                             <div>
                                                 <select class="form-control" name="StateId" id="ddlState">
@@ -180,7 +190,6 @@
                                                 </select>*@
                                             </div>
                                         </div>
-
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">City Name</label>
                                             <div>
@@ -209,13 +218,7 @@
                                             </div>
                                             <span asp-validation-for="MobileNumber" class="text-danger"></span>
                                         </div>
-                                        <div class="form-group col-sm">
-                                            <label for="validationCustom0">Office Location</label>
-                                            <div class="input-group">
-                                                <input type="text" asp-for="Location" placeholder="Enter Location" class="form-control" required="" oninvalid="this.setCustomValidity('Please Enter Location')" oninput="this.setCustomValidity('')" />
-                                            </div>
-                                            <span asp-validation-for="Location" class="text-danger"></span>
-                                        </div>
+                                       
                                     </div>
                                     <div class="row">
                                         <div class="form-group col-sm">
@@ -243,6 +246,25 @@
                                             <span asp-validation-for="ProductDetails" class="text-danger"></span>
                                         </div>
                                     </div>
+                                    
+                                    <div class="row">
+                                        <div class="form-group col-sm">
+                                            <label for="validationCustom0">Price</label>
+                                            <input class="form-control" name="Price" placeholder="00.0" id="Price" type="text" onkeydown="validateNumericInput(event)">
+                                            <span asp-validation-for="Price" class="text-danger"></span>
+                                        </div>
+                                        <div class="form-group col-sm">
+                                            <label for="validationCustom0">Renew Price</label>
+                                            <input class="form-control" name="Renewprice" value="@ViewBag.Renewprice" id="Renewprice" type="text" onkeydown="validateNumericInput(event)">
+                                            <span asp-validation-for="Renewprice" class="text-danger"></span>
+                                        </div> 
+                                        <div class="form-group col-sm">
+                                            <label for="validationCustom0">Number Of Renew Month</label>
+                                            <input class="form-control" name="NoOfRenewMonth" placeholder="1" value="@ViewBag.NoOfRenewMonth" id="NoOfRenewMonth" type="text" onkeydown="validateNumericInput(event)" maxlength="2">
+                                            <span asp-validation-for="NoOfRenewMonth" class="text-danger"></span>
+                                        </div>
+
+                                    </div>
                                     <div class="row">
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Start Date</label>
@@ -251,16 +273,12 @@
                                         </div>
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Renew Date</label>
-                                            <input name="RenewDate" type="date" class="form-control" required="" oninvalid="this.setCustomValidity('Please select RenewDate')" oninput="this.setCustomValidity('')" value="@ViewBag.renewDate" />
+                                            <input name="RenewDate" type="date" id="RenewDate" class="form-control" required="" oninvalid="this.setCustomValidity('Please select RenewDate')" oninput="this.setCustomValidity('')" value="@ViewBag.renewDate" readonly="readonly" />
                                             <span asp-validation-for="RenewDate" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="form-group col-sm">
-                                            <label for="validationCustom0">Price</label>
-                                            <input class="form-control" name="Price" placeholder="00.0" id="Price" type="text" readonly>
-                                            <span asp-validation-for="Price" class="text-danger"></span>
-                                        </div>
+                                         
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">State</label>
                                             <select asp-for="State" id="State" class="form-control" required="required" onchange="validateState(this)" oninvalid="this.setCustomValidity('Select State')" oninput="this.setCustomValidity('')">
@@ -269,15 +287,14 @@
                                                 <option value="Other">Other</option>
                                             </select>
                                         </div>
-
-
-                                    </div>
-
-                                    <div class="row">
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">HSN Code</label>
                                             <input type="text" asp-for="HsnSacCode" id="HsnSacCode" placeholder="HsnSacCode" class="form-control" readonly />
                                         </div>
+
+                                    </div>
+                                    <div class="row">
+                                        
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">IGST</label>
                                             <input type="Igst" asp-for="Igst" id="IGST" placeholder="00.0" class="form-control" readonly />
@@ -321,6 +338,43 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/js/select2.min.js" defer></script>
 
 
+@* <script>
+    document.getElementById('NoOfRenewMonth').addEventListener('input', function () {
+        const renewMonth = parseInt(this.value);
+        const startDate = document.getElementById('StartDate').value;
+
+        if (renewMonth && startDate) {
+            const start = new Date(startDate);
+            start.setMonth(start.getMonth() + renewMonth); // Add the inputted number of months
+
+            // Format date as YYYY-MM-DD
+            const formattedDate = start.toISOString().split('T')[0];
+
+            document.getElementById('RenewDate').value = formattedDate;
+        }
+    });
+</script> *@
+
+<script>
+    function calculateRenewDate() {
+        const renewMonth = parseInt(document.getElementById('NoOfRenewMonth').value);
+        const startDate = document.getElementById('StartDate').value;
+
+        if (renewMonth && startDate) {
+            const start = new Date(startDate);
+            start.setMonth(start.getMonth() + renewMonth); // Add the inputted number of months
+
+            // Format date as YYYY-MM-DD
+            const formattedDate = start.toISOString().split('T')[0];
+
+            document.getElementById('RenewDate').value = formattedDate;
+        }
+    }
+
+    // Event listeners for both Start Date and Number Of Renew Month fields
+    document.getElementById('NoOfRenewMonth').addEventListener('input', calculateRenewDate);
+    document.getElementById('StartDate').addEventListener('input', calculateRenewDate);
+</script>
 <script>
     $(document).ready(function () {
         onProductChange();

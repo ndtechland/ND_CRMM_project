@@ -3,6 +3,7 @@ using CRM.Models.Crm;
 using CRM.Models.DTO;
 using CRM.Repository;
 using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -15,11 +16,13 @@ namespace CRM.Controllers
         private readonly admin_NDCrMContext _context;
         private readonly ICrmrpo _ICrmrpo;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        public Vendor(ICrmrpo _ICrmrpo, admin_NDCrMContext _context, IWebHostEnvironment hostingEnvironment)
+        private readonly IEmailService _emailService;
+        public Vendor(ICrmrpo _ICrmrpo, admin_NDCrMContext _context, IWebHostEnvironment hostingEnvironment, IEmailService emailService)
         {
             this._context = _context;
             this._ICrmrpo = _ICrmrpo;
             _webHostEnvironment = hostingEnvironment;
+            _emailService = emailService;
         }
         [HttpGet, Route("Vendor/VendorRegistration")]
         public IActionResult VendorRegistration(int id = 0)
@@ -42,6 +45,8 @@ namespace CRM.Controllers
                             })
                             .ToList();
                         ViewBag.SelectedStateId = data.StateId;
+                        ViewBag.Renewprice = data.Renewprice;
+                        ViewBag.NoOfRenewMonth = data.NoOfRenewMonth;
                         ViewBag.SelectedCityId = data.WorkLocation;
                         ViewBag.state = data.State;
                         ViewBag.startDate = ((DateTime)data.StartDate).ToString("yyyy-MM-dd");
@@ -89,9 +94,10 @@ namespace CRM.Controllers
                 else
                 {
                     var response = await _ICrmrpo.Vendorreg(model);
-                    if (response > 0)
+                    if (response !=null)
                     {
                         TempData["Message"] = "Registration Successfully.";
+                        await _emailService.SendEmailCredentials(model.Email,model.CompanyName, response.UserName, response.Password);
                         return RedirectToAction("VendorRegistration", "Vendor");
                     }
                     else
