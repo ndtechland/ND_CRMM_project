@@ -20,6 +20,8 @@ namespace CRM.Models.DTO
         public string? Emp_Reg_ID { get; set; }
         public string? EmployeeId { get; set; }
         public int stateId { get; set; }
+        public int officeshiftTypeid { get; set; }
+        public int offerletterid { get; set; }
         // Salary Details
         [NotMapped]
         public decimal AnnualCTC { get; set; }

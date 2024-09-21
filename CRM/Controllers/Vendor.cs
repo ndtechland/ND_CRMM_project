@@ -681,11 +681,6 @@ namespace CRM.Controllers
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 ViewBag.UserName = AddedBy;
-                ViewBag.Officeshifttype = await _context.Officeshifttypes.Select(w => new SelectListItem
-                {
-                    Value = w.Id.ToString(),
-                    Text = w.ShiftType
-                }).ToListAsync();
                 ViewBag.id = 0;
                 ViewBag.Starttime = "";
                 ViewBag.Endtime = "";
@@ -781,22 +776,7 @@ namespace CRM.Controllers
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
-                var response = _context.Officeshifts
-     .Where(x => x.Vendorid == adminlogin.Vendorid)
-     .Select(x => new OfficeshiftDto
-     {
-         Id = x.Id,
-         Starttime = x.Starttime,
-         Endtime = x.Endtime,
-         Createdate = x.Createdate,
-         Vendorid = x.Vendorid,
-         ShiftTypeid = _context.Officeshifttypes
-             .Where(s => s.Id == x.ShiftTypeid)
-             .Select(s => s.ShiftType)
-             .FirstOrDefault()
-     }).ToList();
-
-
+                var response = _context.Officeshifts.Where(x => x.Vendorid == adminlogin.Vendorid).ToList();
                 ViewBag.UserName = AddedBy;
                 return View(response);
 

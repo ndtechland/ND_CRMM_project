@@ -23,5 +23,6 @@ namespace CRM.Models.Crm
         public string? EmpProfile { get; set; }
         public string? Appoinmentletter { get; set; }
         public int? Offerletterid { get; set; }
+        public long? OfficeshiftTypeid { get; set; }
     }
 }

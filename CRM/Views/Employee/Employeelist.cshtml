@@ -234,6 +234,12 @@
                                                     Company Name
                                                 </th>
                                                 <th nowrap>
+                                                    Offer Accept Name
+                                                </th>
+                                                <th nowrap>
+                                                    Shift Type
+                                                </th>
+                                                <th nowrap>
                                                     Profile Image
                                                 </th>
                                                 <th nowrap>
@@ -408,6 +414,12 @@
                                                         </td>
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.CustomerName)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.Offerletterid)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.OfficeshiftTypeid)
                                                         </td>
                                                         <td nowrap>
                                                             <img src='../EmpProfile/@item.EmpProfile' style="height:100px;width:100px" />

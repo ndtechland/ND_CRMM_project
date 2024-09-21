@@ -443,8 +443,6 @@
 
                                         <select class="form-control" name="WorkLocationID" id="ddlCity">
                                             <option value="0">-- Select WorkLocation --</option>
-
-
                                         </select>
                                     </div>
                                 </div>
@@ -469,11 +467,21 @@
                                     </div>
                                 </div>
                                 <div class="col-md-3">
-                                    <label>Accept Offer</label>
+                                    <label>Accept Offer Letter</label>
                                     <div class="form-group">
 
                                         <select name="Offerletterid" class="form-control" id="ddOfferletterid">
                                             <option value="0">-- Select Accept Offer --</option>
+
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label>Office Shift Type</label>
+                                    <div class="form-group">
+
+                                        <select name="OfficeshiftTypeid" class="form-control" id="ddshifttypeidid">
+                                            <option value="0">-- Select Office Shift Type --</option>
 
                                         </select>
                                     </div>
@@ -1175,6 +1183,17 @@
     //         $("#ddCustomerID").val(customerid);
     //     }
     // }
+    function bindshifttypeid(OfficeshiftTypeid) {
+        var itemsListforshifttypeid = @Json.Serialize(ViewBag.officeshift);
+        debugger
+        var dropdownforshifttypeid = $("#ddshifttypeidid");
+        $.each(itemsListforshifttypeid, function (index, item) {
+            dropdownforshifttypeid.append($('<option></option>').val(item.value).text(item.text));
+        });
+        if (OfficeshiftTypeid != "") {
+            $("#ddshifttypeidid").val(OfficeshiftTypeid)
+        }
+    }
     function bindOfferletter(Offerletterid) {
         var itemsListforOfferletter = @Json.Serialize(ViewBag.Offerletter);
         debugger
@@ -1394,12 +1413,21 @@
     var statesid = '@ViewBag.statesy';
     var city = '@ViewBag.City';
     var userOfferletter = '@ViewBag.Offerletters';
+    var userOfficeshift = '@ViewBag.shifttype';
+
+
 
     if (userOfferletter != "") {
         bindOfferletter(userOfferletter);
     }
     else {
         bindOfferletter("");
+    }
+    if (userOfficeshift != "") {
+        bindshifttypeid(userOfficeshift);
+    }
+    else {
+        bindshifttypeid("");
     }
     // if (customerid != "") {
     //     bindcustomer(customerid);

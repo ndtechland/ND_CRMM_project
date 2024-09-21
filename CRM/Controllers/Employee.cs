@@ -122,10 +122,15 @@ namespace CRM.Controllers
                     Text = x.CompanyName
                 }).ToList();
                 //Offerletter dropdown
-                ViewBag.Offerletter = _context.Offerletters.Select(x => new SelectListItem
+                ViewBag.Offerletter = _context.Offerletters.Where(x => x.Vendorid == adminlogin.Vendorid).Select(x => new SelectListItem
                 {
                     Value = x.Id.ToString(),
                     Text = x.Name
+                }).ToList();
+                ViewBag.officeshift = _context.Officeshifts.Where(x => x.Vendorid == adminlogin.Vendorid).Select(x => new SelectListItem
+                {
+                    Value = x.Id.ToString(),
+                    Text = $"{x.Starttime} - {x.Endtime} - {x.ShiftTypeid}" 
                 }).ToList();
 
                 ViewBag.Emp_Reg_Code = "";
@@ -175,6 +180,7 @@ namespace CRM.Controllers
                 ViewBag.Amount = "";
                 ViewBag.Tdspercentage = "";
                 ViewBag.Offerletters = "";
+                ViewBag.shifttype = "";
                 ViewBag.statesy = "";
                 ViewBag.btnText = "SAVE";
 
@@ -235,6 +241,7 @@ namespace CRM.Controllers
                             ViewBag.Tdspercentage = row["tdspercentage"].ToString();
                             ViewBag.Offerletters = row["offerletterid"].ToString();
                             ViewBag.statesy = row["stateId"].ToString();
+                            ViewBag.shifttype = row["officeshiftTypeid"].ToString();
                             ViewBag.Emp_Reg_Code = id;
                             ViewBag.btnText = "UPDATE";
 

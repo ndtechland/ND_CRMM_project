@@ -64,5 +64,7 @@ namespace CRM.Models.Crm
         public string? Panimg { get; set; }
         public string? AadharTwo { get; set; }
         public string? Chequeimage { get; set; }
+        public string? Offerletterid { get; set; }
+        public string? OfficeshiftTypeid { get; set; }
     }
 }

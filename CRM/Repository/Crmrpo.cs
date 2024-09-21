@@ -206,6 +206,8 @@ namespace CRM.Repository
                 cmd.Parameters.AddWithValue("@DesignationID", model.DesignationID);
                 cmd.Parameters.AddWithValue("@DepartmentID", model.DepartmentID);
                 cmd.Parameters.AddWithValue("@stateId", model.stateId);
+                cmd.Parameters.AddWithValue("@offerletterid", model.offerletterid);
+                cmd.Parameters.AddWithValue("@officeshiftTypeid", model.officeshiftTypeid);
 
                 //-- Salary Details
                 cmd.Parameters.AddWithValue("@AnnualCTC", model.AnnualCTC);

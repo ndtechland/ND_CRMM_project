@@ -50,7 +50,6 @@ namespace CRM.Models.Crm
         public virtual DbSet<IndustryMaster> IndustryMasters { get; set; } = null!;
         public virtual DbSet<Offerletter> Offerletters { get; set; } = null!;
         public virtual DbSet<Officeshift> Officeshifts { get; set; } = null!;
-        public virtual DbSet<Officeshifttype> Officeshifttypes { get; set; } = null!;
         public virtual DbSet<OrganisationProfile> OrganisationProfiles { get; set; } = null!;
         public virtual DbSet<OrganisationTaxDetail> OrganisationTaxDetails { get; set; } = null!;
         public virtual DbSet<PayMethodMaster> PayMethodMasters { get; set; } = null!;
@@ -635,6 +634,14 @@ namespace CRM.Models.Crm
                     .HasMaxLength(255)
                     .HasColumnName("nominee");
 
+                entity.Property(e => e.Offerletterid)
+                    .HasMaxLength(200)
+                    .HasColumnName("offerletterid");
+
+                entity.Property(e => e.OfficeshiftTypeid)
+                    .HasMaxLength(200)
+                    .HasColumnName("officeshiftTypeid");
+
                 entity.Property(e => e.Pan)
                     .HasMaxLength(255)
                     .HasColumnName("PAN");
@@ -794,6 +801,8 @@ namespace CRM.Models.Crm
                     .HasColumnName("Middle_Name");
 
                 entity.Property(e => e.Offerletterid).HasColumnName("offerletterid");
+
+                entity.Property(e => e.OfficeshiftTypeid).HasColumnName("officeshiftTypeid");
 
                 entity.Property(e => e.RoleId).HasColumnName("RoleID");
 
@@ -1064,20 +1073,11 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Createdate).HasColumnType("datetime");
 
-                entity.Property(e => e.ShiftTypeid).HasColumnName("shiftTypeid");
+                entity.Property(e => e.ShiftTypeid)
+                    .HasMaxLength(200)
+                    .HasColumnName("shiftTypeid");
 
                 entity.Property(e => e.Starttime).HasColumnName("starttime");
-            });
-
-            modelBuilder.Entity<Officeshifttype>(entity =>
-            {
-                entity.ToTable("officeshifttype");
-
-                entity.Property(e => e.Id).HasColumnName("id");
-
-                entity.Property(e => e.ShiftType)
-                    .HasMaxLength(255)
-                    .HasColumnName("shiftType");
             });
 
             modelBuilder.Entity<OrganisationProfile>(entity =>
