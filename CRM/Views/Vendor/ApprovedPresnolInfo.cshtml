@@ -4,6 +4,9 @@
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 @if (ViewBag.BtnText == "UPDATE")
 {
     <div class="page-wrapper">
@@ -104,7 +107,7 @@
                                             <div class="row mb-3">
                                                 <div class="col-lg-6">
                                                     <label for="PAN">PAN</label>
-                                                    <input class="form-control" value='@ViewBag.PAN' name="PAN" id="PAN" placeholder="Enter PAN" type="text" required onkeydown="validateNumericInput(event)">
+                                                    <input class="form-control" value='@ViewBag.PAN' name="PAN" id="PAN" placeholder="Enter PAN" type="text" required>
                                                 </div>
                                                 <div class="col-lg-6">
                                                     <label for="dobInput">Date Of Birth</label>
@@ -499,29 +502,59 @@ else
 
 <script>
     function updateApprovalStatus(itemId, isApproved) {
-        var confirmationMessage = isApproved ? "Are you sure you want to approve this item?" : "Are you sure you want to disapprove this item?";
-        if (confirm(confirmationMessage)) {
-            $.ajax({
-                url: '@Url.Action("UpdateApprovalStatus", "Vendor")',
-                type: 'POST',
-                data: {
-                    itemId: itemId,
-                    isApproved: isApproved
-                },
-                success: function (response) {
-                    if (response.success) {
-                        alert("Status updated successfully.");
-                        window.location.href = '/Vendor/ApprovedPresnolInfo';
-                    } else {
-                        alert("Error: " + response.message);
+        var confirmationMessage = isApproved
+            ? "Are you sure you want to approve this item?"
+            : "Are you sure you want to disapprove this item?";
+
+        Swal.fire({
+            title: 'Confirmation',
+            text: confirmationMessage,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '@Url.Action("UpdateApprovalStatus", "Vendor")',
+                    type: 'POST',
+                    data: {
+                        itemId: itemId,
+                        isApproved: isApproved
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                title: 'Success',
+                                text: "Status updated successfully.",
+                                icon: 'success'
+                            }).then(() => {
+                                window.location.href = '/Vendor/ApprovedPresnolInfo';
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Error',
+                                text: "Error: " + response.message,
+                                icon: 'error'
+                            });
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            title: 'Error',
+                            text: "An error occurred while updating the status.",
+                            icon: 'error'
+                        });
                     }
-                },
-                error: function () {
-                    alert("An error occurred while updating the status.");
-                }
-            });
-        } else {
-            alert("Action cancelled by user.");
-        }
+                });
+            } else {
+                Swal.fire({
+                    title: 'Cancelled',
+                    text: "Action cancelled by user.",
+                    icon: 'info'
+                });
+            }
+        });
     }
+
 </script>
