@@ -162,12 +162,12 @@
                                     <input type="hidden" asp-for="Id" />
                                     <div class="row">
                                         <div class="form-group col-sm">
-                                            <label for="validationCustom0">Company Name</label>
+                                            <label for="validationCustom0">Company Name <span class="text-danger">*</span></label>
                                             <input asp-for="CompanyName" id="CompanyName" placeholder="Enter CompanyName" class="form-control" required="" oninvalid="this.setCustomValidity('Please Enter CompanyName')" oninput="this.setCustomValidity('')" />
                                             <span asp-validation-for="CompanyName" class="text-danger"></span>
                                         </div>
                                         <div class="form-group col-sm">
-                                            <label for="validationCustom0">Office Location</label>
+                                            <label for="validationCustom0">Office Location <span class="text-danger">*</span></label>
                                             <div class="input-group">
                                                 <input type="text" asp-for="Location" placeholder="Enter Location" class="form-control" required="" oninvalid="this.setCustomValidity('Please Enter Location')" oninput="this.setCustomValidity('')" />
                                             </div>
@@ -177,7 +177,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="form-group col-sm">
-                                            <label class="control-label">State Name</label>
+                                            <label class="control-label">State Name <span class="text-danger">*</span></label>
                                             <div>
                                                 <select class="form-control" name="StateId" id="ddlState">
                                                 </select>
@@ -191,7 +191,7 @@
                                             </div>
                                         </div>
                                         <div class="form-group col-sm">
-                                            <label for="validationCustom0">City Name</label>
+                                            <label for="validationCustom0">City Name <span class="text-danger">*</span></label>
                                             <div>
                                                 <select class="form-control js-select2" multiple="multiple" name="WorkLocation" id="ddlCity" onchange="validateWorkLocation(this)" oninvalid="this.setCustomValidity('Please select WorkLocation')" oninput="this.setCustomValidity('')" autocomplete="off">
                                                     <option value="">-- Select City Name --</option>
@@ -203,7 +203,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="form-group col-sm">
-                                            <label for="validationCustom0">Mobile Number</label>
+                                            <label for="validationCustom0">Mobile Number <span class="text-danger">*</span></label>
                                             <div class="input-group">
                                                 <span class="input-group-text" id="basic-addon1">+91</span>
                                                 <input type="tel" asp-for="MobileNumber" id="MobileNumber" placeholder="Enter MobileNumber" class="form-control" minlength="10" maxlength="10" onkeydown="validateNumericInput(event)" required="" oninvalid="this.setCustomValidity('Please Enter MobileNumber')" oninput="this.setCustomValidity('')" autocomplete="off" />
@@ -216,30 +216,30 @@
                                                 <span class="input-group-text" id="basic-addon1">+91</span>
                                                 <input type="text" asp-for="AlternateNumber" placeholder="Enter AlternateNumber" class="form-control" minlength="10" maxlength="10" onkeydown="validateNumericInput(event)" required="" oninvalid="this.setCustomValidity('Please Enter AlternateNumber')" oninput="this.setCustomValidity('')" />
                                             </div>
-                                            <span asp-validation-for="MobileNumber" class="text-danger"></span>
+                                            <span asp-validation-for="AlternateNumber" class="text-danger"></span>
                                         </div>
                                        
                                     </div>
                                     <div class="row">
                                         <div class="form-group col-sm">
-                                            <label for="validationCustom0">Email</label>
+                                            <label for="validationCustom0">Email <span class="text-danger">*</span></label>
                                             <input type="email" asp-for="Email" placeholder="Enter Email" class="form-control" required="" oninvalid="this.setCustomValidity('Please Enter Email')" oninput="this.setCustomValidity('')" />
                                             <span asp-validation-for="Email" class="text-danger"></span>
                                         </div>
                                         <div class="form-group col-sm">
-                                            <label for="validationCustom0">Gst Number</label>
+                                            <label for="validationCustom0">Gst Number <span class="text-danger">*</span></label>
                                             <input asp-for="GstNumber" id="GstNumber" class="form-control" placeholder="Enter GstNumber" maxlength="15" minlength="15" onblur="ValidateGST()" required="" oninvalid="this.setCustomValidity('Please Enter GstNumber')" oninput="this.setCustomValidity('')" />
                                             <span asp-validation-for="GstNumber" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="form-group col-sm">
-                                            <label for="validationCustom0">Billing Address</label>
+                                            <label for="validationCustom0">Billing Address <span class="text-danger">*</span></label>
                                             <input asp-for="BillingAddress" placeholder="Enter BillingAddress" class="form-control" required="" oninvalid="this.setCustomValidity('Please Enter BillingAddress')" oninput="this.setCustomValidity('')" />
                                             <span asp-validation-for="BillingAddress" class="text-danger"></span>
                                         </div>
                                         <div class="form-group col-sm">
-                                            <label for="validationCustom0">Product Details</label>
+                                            <label for="validationCustom0">Product Details <span class="text-danger">*</span></label>
 
                                             @Html.DropDownListFor(model => model.ProductDetails, new SelectList(ViewBag.ProductDetails, "Value", "Text"), "-- Select Product --", new { @class = "form-control", onchange = "onProductChange()", required = "required", oninvalid = "this.setCustomValidity('Please select ProductDetails')", oninput = "this.setCustomValidity('')" })
 
@@ -249,17 +249,17 @@
                                     
                                     <div class="row">
                                         <div class="form-group col-sm">
-                                            <label for="validationCustom0">Price</label>
+                                            <label for="validationCustom0">Price <span class="text-danger">*</span></label>
                                             <input class="form-control" name="Price" placeholder="00.0" id="Price" type="text" onkeydown="validateNumericInput(event)">
                                             <span asp-validation-for="Price" class="text-danger"></span>
                                         </div>
                                         <div class="form-group col-sm">
-                                            <label for="validationCustom0">Renew Price</label>
+                                            <label for="validationCustom0">Renew Price <span class="text-danger">*</span></label>
                                             <input class="form-control" name="Renewprice" value="@ViewBag.Renewprice" id="Renewprice" type="text" onkeydown="validateNumericInput(event)">
                                             <span asp-validation-for="Renewprice" class="text-danger"></span>
                                         </div> 
                                         <div class="form-group col-sm">
-                                            <label for="validationCustom0">Number Of Renew Month</label>
+                                            <label for="validationCustom0">Number Of Renew Month <span class="text-danger">*</span></label>
                                             <input class="form-control" name="NoOfRenewMonth" placeholder="1" value="@ViewBag.NoOfRenewMonth" id="NoOfRenewMonth" type="text" onkeydown="validateNumericInput(event)" maxlength="2">
                                             <span asp-validation-for="NoOfRenewMonth" class="text-danger"></span>
                                         </div>
@@ -267,7 +267,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="form-group col-sm">
-                                            <label for="validationCustom0">Start Date</label>
+                                            <label for="validationCustom0">Start Date <span class="text-danger">*</span></label>
                                             <input name="StartDate" type="date" id="StartDate" class="form-control text-box single-line" required="" oninvalid="this.setCustomValidity('Please select StartDate')" oninput="this.setCustomValidity('')" value="@ViewBag.startDate" />
                                             <span asp-validation-for="StartDate" class="text-danger"></span>
                                         </div>
@@ -280,7 +280,7 @@
                                     <div class="row">
                                          
                                         <div class="form-group col-sm">
-                                            <label for="validationCustom0">State</label>
+                                            <label for="validationCustom0">State <span class="text-danger">*</span></label>
                                             <select asp-for="State" id="State" class="form-control" required="required" onchange="validateState(this)" oninvalid="this.setCustomValidity('Select State')" oninput="this.setCustomValidity('')">
                                                 <option value="">-- Select State --</option>
                                                 <option value="UP">UP</option>
