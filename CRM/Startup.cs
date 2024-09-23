@@ -122,6 +122,7 @@ namespace CRM
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSession();
+            app.UseHangfireServer();
             app.UseHangfireDashboard("/hangfire");
             // Routing and CORS
             app.UseRouting();

@@ -238,13 +238,30 @@ namespace CRM.Controllers
             }
         }
 
-        [HttpGet]
-        public IActionResult Department()
+        [HttpGet, Route("Home/Department")]
+        public IActionResult Department(int? id = 0)
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
                 string AddedBy = HttpContext.Session.GetString("UserName");
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
                 ViewBag.UserName = AddedBy;
+                ViewBag.id = "";
+                ViewBag.DepartmentName = "";
+                ViewBag.Heading = "Add Department";
+                ViewBag.btnText = "SAVE";
+                if (id != 0)
+                {
+                    var data =  _context.DepartmentMasters.Where(x => x.Id == id).FirstOrDefault();
+                    if (data != null)
+                    {
+                        ViewBag.id = data.Id;
+                        ViewBag.DepartmentName = data.DepartmentName;
+                        ViewBag.Heading = "Update Department";
+                        ViewBag.btnText = "Update";
+                    }
+                }
                 return View();
 
             }
@@ -257,22 +274,40 @@ namespace CRM.Controllers
         [HttpPost]
         public async Task<IActionResult> Department(DepartmentMaster model)
         {
-            if (model != null)
+            string AddedBy = HttpContext.Session.GetString("UserName");
+            int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+            var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+            ViewBag.UserName = AddedBy;
+
+            if (model == null)
+            {
+                ModelState.Clear();
+                return View();
+            }
+            if (model.Id != 0)
+            {
+                var Department = await _ICrmrpo.updateDepartment(model);
+                if (Department != null)
+                {
+                    TempData["Message"] = "Data Update Successfully.";
+                    return RedirectToAction("Department", "Home");
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Record not found for update.");
+                    return View(model);
+                }
+            }
+            else
             {
                 DepartmentMaster master = new DepartmentMaster
                 {
                     DepartmentName = model.DepartmentName,
                 };
                 _context.DepartmentMasters.Add(master);
-                _context.SaveChanges();
-                return RedirectToAction("Departmentlist");
+                _context.SaveChanges(); TempData["Message"] = "Data Added Successfully.";
+                return RedirectToAction("Department", "Home");
             }
-            else
-            {
-                ModelState.Clear();
-                return View("Departmentlist");
-            }
-            return View("Departmentlist");
         }
 
         [HttpGet]
@@ -395,13 +430,30 @@ namespace CRM.Controllers
             }
         }
 
-        [HttpGet]
-        public IActionResult Designation()
+        [HttpGet, Route("Home/Designation")]
+        public IActionResult Designation(int? id = 0)
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
                 string AddedBy = HttpContext.Session.GetString("UserName");
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
                 ViewBag.UserName = AddedBy;
+                ViewBag.id = "";
+                ViewBag.DesignationName = "";
+                ViewBag.Heading = "Add Designation";
+                ViewBag.btnText = "SAVE";
+                if (id != 0)
+                {
+                    var data = _context.DesignationMasters.Where(x => x.Id == id).FirstOrDefault();
+                    if (data != null)
+                    {
+                        ViewBag.id = data.Id;
+                        ViewBag.DesignationName = data.DesignationName;
+                        ViewBag.Heading = "Update Designation";
+                        ViewBag.btnText = "Update";
+                    }
+                }
                 return View();
 
             }
@@ -414,22 +466,40 @@ namespace CRM.Controllers
         [HttpPost]
         public async Task<IActionResult> Designation(DesignationMaster model)
         {
-            if (model != null)
+            string AddedBy = HttpContext.Session.GetString("UserName");
+            int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+            var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+            ViewBag.UserName = AddedBy;
+
+            if (model == null)
+            {
+                ModelState.Clear();
+                return View();
+            }
+            if (model.Id != 0)
+            {
+                var Department = await _ICrmrpo.updateDesignation(model);
+                if (Department != null)
+                {
+                    TempData["Message"] = "Data Update Successfully.";
+                    return RedirectToAction("Designation", "Home");
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Record not found for update.");
+                    return View(model);
+                }
+            }
+            else
             {
                 DesignationMaster master = new DesignationMaster
                 {
                     DesignationName = model.DesignationName,
                 };
                 _context.DesignationMasters.Add(master);
-                _context.SaveChanges();
-                return RedirectToAction("Designationlist");
+                _context.SaveChanges(); TempData["Message"] = "Data Added Successfully.";
+                return RedirectToAction("Department", "Home");
             }
-            else
-            {
-                ModelState.Clear();
-                return View("Designationlist");
-            }
-            return View("Designationlist");
         }
 
         [HttpGet]
@@ -530,78 +600,6 @@ namespace CRM.Controllers
                 throw new Exception("Error:" + Ex.Message);
             }
         }
-
-        public JsonResult EditDesignation(int id)
-        {
-            var loc = new DesignationMaster();
-            var data = _ICrmrpo.GetDesignationById(id);
-            loc.Id = data.Id;
-            loc.DesignationName = data.DesignationName;
-            var result = new
-            {
-                loc = loc,
-            };
-            return new JsonResult(result);
-        }
-        [HttpPost]
-        public async Task<IActionResult> EditDesignation(DesignationMaster model)
-        {
-            try
-            {
-                var Designation = await _ICrmrpo.updateDesignation(model);
-                if (Designation != null)
-                {
-                    TempData["ErrorMessage"] = "Designation update Successfully.";
-                    return RedirectToAction("Designationlist", "Home");
-                }
-                else
-                {
-                    TempData["ErrorMessage"] = "Designation not update.";
-                    ModelState.Clear();
-                    return View();
-                }
-            }
-            catch (Exception Ex)
-            {
-                throw new Exception("Error:" + Ex.Message);
-            }
-        }
-        public JsonResult EditDepartment(int id)
-        {
-            var loc = new DepartmentMaster();
-            var data = _ICrmrpo.GetDepartmentById(id);
-            loc.Id = data.Id;
-            loc.DepartmentName = data.DepartmentName;
-            var result = new
-            {
-                loc = loc,
-            };
-            return new JsonResult(result);
-        }
-        [HttpPost]
-        public async Task<IActionResult> EditDepartment(DepartmentMaster model)
-        {
-            try
-            {
-                var Department = await _ICrmrpo.updateDepartment(model);
-                if (Department != null)
-                {
-                    TempData["ErrorMessage"] = "Department update Successfully.";
-                    return RedirectToAction("Departmentlist", "Home");
-                }
-                else
-                {
-                    TempData["ErrorMessage"] = "Department not update.";
-                    ModelState.Clear();
-                    return View();
-                }
-            }
-            catch (Exception Ex)
-            {
-                throw new Exception("Error:" + Ex.Message);
-            }
-        }
-
         public IActionResult employeerTDS()
         {
             if (HttpContext.Session.GetString("UserName") != null)
