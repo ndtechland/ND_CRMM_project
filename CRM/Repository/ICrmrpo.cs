@@ -85,6 +85,7 @@ namespace CRM.Repository
         public Task<int> updateOfferletterdetail(Offerletters model);
         public Task<List<empOfferletter>> OfferletterdetailList(int Userid);
 
+        public Task<List<LeavemasterDto>> getLeavemaster(int Userid);
 
     }
 }

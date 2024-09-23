@@ -4,8 +4,9 @@
     ViewData["Title"] = "Employeelist";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
-@* <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css'>
- *@
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <link rel='stylesheet' href='https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css'>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js'></script>
 <script src='https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js'></script>
@@ -237,7 +238,13 @@
                                                     Offer Accept Name
                                                 </th>
                                                 <th nowrap>
+                                                    Shift Time
+                                                </th>
+                                                <th nowrap>
                                                     Shift Type
+                                                </th>
+                                                <th nowrap>
+                                                    Update Shift
                                                 </th>
                                                 <th nowrap>
                                                     Profile Image
@@ -276,7 +283,7 @@
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.LastName)
                                                         </td>
-                                                        <td nowrap>
+                                                        <td nowrap class="EmpRegId">
                                                             @Html.DisplayFor(modelItem => item.EmpRegId)
                                                         </td>
                                                         <td nowrap>
@@ -422,6 +429,20 @@
                                                             @Html.DisplayFor(modelItem => item.OfficeshiftTypeid)
                                                         </td>
                                                         <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.Shifttype)
+                                                        </td>
+                                                       <td>
+                                                            <select name="ShiftTypeid" class="form-control officeshift-dropdown" id="ddshifttypeidid_@item.Id" style="height: 40px; width: 230px;">
+                                                             <option value="0">-- Select Office Shift Type --</option>
+                                                        @foreach (var shift in ViewBag.officeshift)
+                                                         {
+                                                         <option value="@shift.Value">@shift.Text</option>
+                                                         }
+                                                       </select>
+
+                                                       </td>
+
+                                                        <td nowrap>
                                                             <img src='../EmpProfile/@item.EmpProfile' style="height:100px;width:100px" />
                                                         </td>
                                                         <td nowrap>
@@ -472,7 +493,32 @@
         }
     }
 </script>
+<script>
 
+    function bindshifttypeid(ShiftTypeid, itemId) {
+        var itemsListforshifttypeid = @Html.Raw(Json.Serialize(ViewBag.officeshift));
+        var dropdownforshifttypeid = $("#ddshifttypeidid_" + itemId);
+        if (itemId !== "0" && itemId !== "") {
+            dropdownforshifttypeid.val(ShiftTypeid);
+        }
+    }
+    $(document).ready(function () {
+        @foreach (var item in Model)
+        {
+            <text>
+                bindshifttypeid('@item.ShiftTypeid', '@item.Id');
+            </text>
+        }
+        var userOfficeshift = '@ViewBag.shiftlist';
+
+     if (userOfficeshift != "") {
+        bindshifttypeid(userOfficeshift);
+    }
+    else {
+        bindshifttypeid("");
+    }
+    });
+</script>
 
 
 <script>
@@ -494,4 +540,40 @@
             }
         );
     });
+</script>
+<script>
+    $(document).ready(function () {
+        $(document).on("change", ".officeshift-dropdown", function () {
+            var selectedShiftTypeId = $(this).val();
+            var selectedEmployeeId = $(this).closest('tr').find('.EmpRegId').text().trim();
+
+            $.ajax({
+                url: '/Employee/UpdateShiftType',
+                type: 'POST',
+                data: {
+                    OfficeshiftTypeid: selectedShiftTypeId,
+                    EmployeeId: selectedEmployeeId
+                },
+                success: function (response) {
+                    if (response.success) {
+                        // Show success message using SweetAlert2
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: response.message
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error updating shift type:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'There was an error updating the shift type.'
+                    });
+                }
+            });
+        });
+    });
+
 </script>

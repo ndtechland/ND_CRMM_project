@@ -1,0 +1,134 @@
+﻿@model CRM.Models.Crm.Officeshift
+@{
+    ViewData["Title"] = "Officeshift";
+    Layout = "~/Views/Shared/_adminLayout.cshtml";
+}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var message = "@TempData["Message"]";
+
+        if (message) {
+            Swal.fire({
+                 title: 'Success',
+                text: message,
+                icon: 'info',
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    setTimeout(function () {
+                        window.location.href = '@Url.Action("VendorOfficeshiftlist", "Vendor")';
+                    }, 1000);
+                }
+            });
+        }
+    });
+</script>
+<div class="page-wrapper">
+    <div class="page-body-wrapper">
+        <div class="page-sidebar">
+        </div>
+
+        <div class="page-body">
+
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="page-header-left">
+                                <div class="page-header-left">
+                                    <h4>@ViewBag.heading</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <ol class="breadcrumb pull-right">
+                                <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
+                                <li class="breadcrumb-item">Settings</li>
+                                <li class="breadcrumb-item active">Office Shift</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Container-fluid Ends-->
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <form method="post" asp-controller="Vendor" asp-action="Officeshift" autocomplete="off" onsubmit="return validateForm()">
+                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                   <div class="row">
+                                        <div class="form-group col-md-4">
+                                            <label class="control-label">Start Time</label>
+                                            <input asp-for="Id" type="hidden" value="@ViewBag.id" />
+                                            <input id="starttime-picker" type="text" placeholder="Please Select Start Time" asp-for="Starttime" class="form-control" />
+                                            <span asp-validation-for="Starttime" class="text-danger"></span>
+                                        </div>
+
+                                    <div class="form-group col-md-4">
+                                        <label class="control-label">Start time</label>
+                                            <input id="endtimetime-picker" type="time" asp-for="Endtime" placeholder="Please Select End Time" value="@ViewBag.Endtime" class="form-control" />
+                                        <span asp-validation-for="Endtime" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label class="control-label">Shift Type</label>
+                                        <input type="text" asp-for="ShiftTypeid" value="@ViewBag.ShiftTypeid" class="form-control" />
+                                        <span asp-validation-for="ShiftTypeid" class="text-danger"></span>
+                                    </div>
+                                   </div>
+                                  <div class="form-group" style="display:flex; justify-content:center;">
+                                        <input type="submit" value="@ViewBag.btnText" class="btn btn-primary" />
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>
+<script>
+    flatpickr("#starttime-picker", {
+        enableTime: true,             
+        noCalendar: true,             
+        dateFormat: "h:i K",         
+        time_24hr: false,           
+        minuteIncrement: 1,          
+        defaultHour: 12,             
+        defaultMinute: 0,             
+        allowInput: false,
+        disableMobile: "true"         
+    });
+</script>
+<script>
+    flatpickr("#endtimetime-picker", {
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: "h:i K",
+        time_24hr: false,
+        minuteIncrement: 1,
+        defaultHour: 12,
+        defaultMinute: 0,
+        allowInput: false,
+        disableMobile: "true"
+    });
+</script>
+

@@ -66,5 +66,7 @@ namespace CRM.Models.Crm
         public string? Chequeimage { get; set; }
         public string? Offerletterid { get; set; }
         public string? OfficeshiftTypeid { get; set; }
+        public string? Shifttype { get; set; }
+        public long? ShiftTypeid { get; set; }
     }
 }

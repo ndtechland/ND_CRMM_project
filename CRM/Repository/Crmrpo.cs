@@ -1913,6 +1913,34 @@ namespace CRM.Repository
                 throw ex;
             }
         }
+        public async Task<List<LeavemasterDto>> getLeavemaster(int Userid)
+        {
+            try
+            {
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                var result = await (from lm in _context.Leavemasters
+                                    join lt in _context.LeaveTypes
+                                    on lm.LeavetypeId equals lt.Id
+                                    join emp in _context.EmployeeRegistrations
+                                   on lm.EmpId equals emp.EmployeeId
+                                    where emp.Vendorid == adminlogin.Vendorid
+                                    select new LeavemasterDto
+                                    {
+                                        id = lm.Id,
+                                        LeavetypeId = lt.Leavetype1, 
+                                        Value = lm.Value,
+                                        EmpId = lm.EmpId,
+                                        Createddate = lm.Createddate,
+                                        IsActive = lm.IsActive
+                                    }).ToListAsync();
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
 
     }
 

@@ -316,6 +316,12 @@ namespace CRM.Controllers
                 if (HttpContext.Session.GetString("UserName") != null)
                 {
                     string userIdString = HttpContext.Session.GetString("UserId");
+                    var adminlogin = await _context.AdminLogins.Where(x => x.Id ==Convert.ToInt16(userIdString)).FirstOrDefaultAsync();
+                    ViewBag.officeshift = _context.Officeshifts.Where(x => x.Vendorid == adminlogin.Vendorid).Select(x => new SelectListItem
+                    {
+                        Value = x.Id.ToString(),
+                        Text = $"{x.Starttime} - {x.Endtime} - {x.ShiftTypeid}"
+                    }).ToList();
                     if (!string.IsNullOrEmpty(userIdString) && int.TryParse(userIdString, out int id))
                     {
                         if (id == 1)
@@ -325,6 +331,10 @@ namespace CRM.Controllers
                         else
                         {
                             response = await _ICrmrpo.CustomerEmployeeList(id);
+                            foreach(var item in response)
+                            {
+                                ViewBag.shiftlist = item.ShiftTypeid;
+                            }
                         }
 
                         ViewBag.UserName = HttpContext.Session.GetString("UserName");
@@ -2219,24 +2229,155 @@ namespace CRM.Controllers
                 throw new Exception("Error: " + ex.Message);
             }
         }
-        [HttpGet]
-        public async Task<IActionResult> OfferletterList1()
+        [HttpPost]
+        public JsonResult UpdateShiftType(int OfficeshiftTypeid, string EmployeeId)
         {
+            var emp = _context.EmployeeRegistrations.Where(x => x.EmployeeId == EmployeeId).FirstOrDefault();
+            emp.OfficeshiftTypeid = OfficeshiftTypeid;
+            _context.SaveChanges();
+            return Json(new { success = true, message = "Shift type updated successfully!" });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EmpLeavemaster(int id = 0)
+        {
+            try
+            {
+                if (HttpContext.Session.GetString("UserName") != null)
+                {
+                    ViewBag.UserName = HttpContext.Session.GetString("UserName");
+                    int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                    var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                    ViewBag.EmployeeId = _context.EmployeeRegistrations.Where(x =>x.Vendorid == adminlogin.Vendorid).Select(D => new SelectListItem
+                    {
+                        Value = D.EmployeeId.ToString(),
+                        Text = D.EmployeeId
+
+                    }).ToList();
+                    ViewBag.leavetype = _context.LeaveTypes.Select(D => new SelectListItem
+                    {
+                        Value = D.Id.ToString(),
+                        Text = D.Leavetype1
+
+                    }).ToList();
+                    ViewBag.id = 0;
+                    ViewBag.LeavetypeId = "";
+                    ViewBag.Value = "";
+                    ViewBag.EmpId = "";
+                    ViewBag.Status = "";
+                    ViewBag.heading = "Add Leavemaster :";
+                    ViewBag.btnText = "SAVE";
+                    if (id != null && id != 0)
+                    {
+                        var data = _context.Leavemasters.Find(id);
+                        if (data != null)
+                        {
+
+                            ViewBag.id = data.Id;
+                            ViewBag.LeavetypeId = data.LeavetypeId;
+                            ViewBag.Value = data.Value;
+                            ViewBag.EmpId = data.EmpId;
+                            ViewBag.Status = data.IsActive;
+                            ViewBag.btnText = "UPDATE";
+                            ViewBag.heading = "Update Leavemaster :";
+
+                        }
+                    }
+                    LeavemasterDto response = new LeavemasterDto();
+                    response.lmd = await _ICrmrpo.getLeavemaster(Userid);
+                    return View(response);
+                }
+                else
+                {
+                    return RedirectToAction("Login", "Admin");
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        [HttpPost]
+        [Route("/Employee/EmpLeavemaster")]
+        public async Task<IActionResult> EmpLeavemaster(LeavemasterDto model)
+        {
+
             if (HttpContext.Session.GetString("UserName") != null)
             {
+                var options = _context.EmployeeRegistrations
+                 .Select(D => new SelectListItem
+                 {
+                     Value = D.EmployeeId.ToString(),
+                     Text = D.EmployeeId.ToString()
+                 }).ToList();
+
+                ViewBag.EmployeeId = options;
+                ViewBag.leavetype = _context.LeaveTypes.Select(D => new SelectListItem
+                {
+                    Value = D.Id.ToString(),
+                    Text = D.Leavetype1
+
+                }).ToList();
+                int AddedByid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 string AddedBy = HttpContext.Session.GetString("UserName");
-                ViewBag.UserName = AddedBy;
-                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
-                var response = await _ICrmrpo.OfferletterdetailList(Userid);
+                ViewBag.UserLogin = AddedBy;
+                if (model.id > 0)
+                {
 
-                return View(response);
 
+                    var existingEntity = _context.Leavemasters.Find(model.id);
+                    if (existingEntity != null)
+                    {
+
+                        existingEntity.LeavetypeId = Convert.ToInt16(model.LeavetypeId);
+                        existingEntity.Value = model.Value;
+                        existingEntity.EmpId = model.EmpId;
+                        existingEntity.IsActive = model.IsActive;
+                        existingEntity.LeaveUpdateDate = DateTime.Now;
+                        _context.SaveChanges();
+                        TempData["Message"] = "Records has Update successfully.";
+                    }
+
+                }
+                else
+                {
+
+                    var newRecord = new Leavemaster
+                    {
+                        LeavetypeId = Convert.ToInt16(model.LeavetypeId),
+                        EmpId = model.EmpId,
+                        Value = model.Value,
+                        IsActive = true,
+                        Createddate = DateTime.Now.Date,
+                    };
+
+
+                    _context.Leavemasters.Add(newRecord);
+                    _context.SaveChanges();
+                    TempData["Message"] = "Records has added successfully.";
+                }
+
+                return RedirectToAction("EmpLeavemaster");
             }
             else
             {
                 return RedirectToAction("Login", "Admin");
             }
-
+        }
+        public async Task<IActionResult> DeleteEmpLeavemaster(int id)
+        {
+            var LeavemasterDelete = _context.Leavemasters.Find(id);
+            if (LeavemasterDelete != null)
+            {
+                _context.Leavemasters.Remove(LeavemasterDelete);
+                _context.SaveChanges();
+                return RedirectToAction("EmpLeavemaster");
+            }
+            else
+            {
+                return NotFound();
+            }
         }
 
     }
