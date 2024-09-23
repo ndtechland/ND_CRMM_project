@@ -298,5 +298,108 @@ namespace CRM.Controllers.Api
                 throw new Exception("Error :" + ex.Message);
             }
         }
+        [HttpGet("Dashboard")]
+        public IActionResult Dashboard()
+        {
+            var response = new Utilities.Response<dynamic>();
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    string userId = User.Claims.FirstOrDefault()?.Value;
+                    var employee = _context.EmployeeRegistrations.FirstOrDefault(emp => emp.EmployeeId == userId);
+                    //var tottalAttandance = _context.Applieddate
+                    //    .Where(ad => ad.EmployeeId == userId && ad.Isactive == true)
+                    //    .OrderByDescending(ad => ad.AppliedDate)
+                    //    .ToList();
+                    // var tottalAttandance1 = tottalAttandance.Where(ad => ad.EmployeeId == userId && ad.Isactive == true && ad.AppliedDate.Value.Month == DateTime.Now.Month && ad.AppliedDate.Value.Year == DateTime.Now.Year);
+
+                    var tottalAttandance = _context.ApplyLeaveNews.Where(x => x.UserId == userId)
+                        .OrderByDescending(ad => ad.StartDate).ToList();
+
+                    var tottalAttandance1 = tottalAttandance.Where(ad => ad.UserId == userId && ad.CreatedDate.Month == DateTime.Now.Month && ad.CreatedDate.Year == DateTime.Now.Year).ToList();
+                    decimal totalleave = (decimal)0.00;
+                    foreach (var ad in tottalAttandance1)
+                    {
+                        totalleave += ad.CountLeave;
+                    }
+
+
+                    //TotalAttendance
+                    DateTime dateOfJoining = employee.DateOfJoining.Value;
+                    DateTime currentDate = DateTime.Now;
+                    TimeSpan difference = currentDate - dateOfJoining;
+                    int totalDaysDifference = (int)difference.TotalDays;
+                    int countOfAttendance = tottalAttandance1.Count();
+                    int adjustedDifference = totalDaysDifference - countOfAttendance;
+                    //Attandance
+                    int daysInMonth = DateTime.DaysInMonth(currentDate.Year, currentDate.Month);
+                    int attendance = Math.Max(0, daysInMonth - countOfAttendance);
+                    //Leave Left
+                    var leaveRecords = _context.Leavemasters.Where(le => le.EmpId == userId && (le.LeavetypeId == 1 || le.LeavetypeId == 2 || le.LeavetypeId == 3)).ToList();
+                    var ERleave = leaveRecords.FirstOrDefault(le => le.LeavetypeId == 1)?.Value ?? 0;
+                    var FLleave = leaveRecords.FirstOrDefault(le => le.LeavetypeId == 2)?.Value ?? 0;
+                    var CMFleave = leaveRecords.FirstOrDefault(le => le.LeavetypeId == 3)?.Value ?? 0;
+                    var TotalLeaveLeft = ERleave + FLleave + CMFleave;
+                    //var TottalLeaveRight = TotalLeaveLeft - tottalAttandance.Count();
+                    var TottalLeaveRight = TotalLeaveLeft;// == 0 ? totalleave : TotalLeaveLeft - totalleave;
+                                                          //Leave month wise
+                                                          //var leave = tottalAttandance.Count();
+                    var empoffer = _context.Offerletters.Where(le => le.Id == employee.Offerletterid).FirstOrDefault();
+
+                    var leave = totalleave;
+                    var offerletter = empoffer.OfferletterFile;
+                    var appointmentletter = employee.Appoinmentletter;
+                    //EmployeeprofileComplete
+                    var totalFields = typeof(EmployeeRegistration).GetProperties().Length - 4;
+
+                    double filledFields = 0;
+                    if (employee != null)
+                    {
+                        foreach (var property in typeof(EmployeeRegistration).GetProperties())
+                        {
+                            var value = property.GetValue(employee);
+                            if (value != null)
+                            {
+                                filledFields++;
+                            }
+                        }
+                    }
+
+                    int completionPercentage = (int)((filledFields / totalFields) * 100);
+                    var CompletionPercentage = completionPercentage.ToString() + '%';
+
+                    response.Data = new
+                    {
+                        TotalAttendance = adjustedDifference,
+                        Attendance = "" + attendance + " / " + daysInMonth + "",
+                        LeaveLeft = TottalLeaveRight,
+                        Leave = leave,
+                        offerletter = offerletter,
+                        appointmentletter = appointmentletter,
+                        CompletionPercentage = CompletionPercentage
+                    };
+                    response.StatusCode = StatusCodes.Status200OK;
+                    response.Succeeded = true;
+                    response.Status = "Success";
+                    response.Message = "Total deatils Here";
+                    return Ok(response);
+                }
+                else
+                {
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Message = "Unauthorized. User not authenticated.";
+                    return Unauthorized(response);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                response.StatusCode = StatusCodes.Status500InternalServerError;
+                response.Message = "Error: " + ex.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
+        }
+
     }
 }

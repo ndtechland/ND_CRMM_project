@@ -19,6 +19,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<AccountTypeMaster> AccountTypeMasters { get; set; } = null!;
         public virtual DbSet<Additonalcontribution> Additonalcontributions { get; set; } = null!;
         public virtual DbSet<AdminLogin> AdminLogins { get; set; } = null!;
+        public virtual DbSet<ApplyLeaveNews> ApplyLeaveNews { get; set; } = null!;
         public virtual DbSet<ApprovedPresnolInfo> ApprovedPresnolInfos { get; set; } = null!;
         public virtual DbSet<Approvedbankdetail> Approvedbankdetails { get; set; } = null!;
         public virtual DbSet<Attendanceday> Attendancedays { get; set; } = null!;
@@ -48,6 +49,9 @@ namespace CRM.Models.Crm
         public virtual DbSet<GstMaster> GstMasters { get; set; } = null!;
         public virtual DbSet<HeadOfficeAddress> HeadOfficeAddresses { get; set; } = null!;
         public virtual DbSet<IndustryMaster> IndustryMasters { get; set; } = null!;
+        public virtual DbSet<Leave> Leaves { get; set; } = null!;
+        public virtual DbSet<LeaveType> LeaveTypes { get; set; } = null!;
+        public virtual DbSet<Leavemaster> Leavemasters { get; set; } = null!;
         public virtual DbSet<Offerletter> Offerletters { get; set; } = null!;
         public virtual DbSet<Officeshift> Officeshifts { get; set; } = null!;
         public virtual DbSet<OrganisationProfile> OrganisationProfiles { get; set; } = null!;
@@ -124,6 +128,13 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.Role).HasMaxLength(120);
 
                 entity.Property(e => e.UserName).HasMaxLength(120);
+            });
+
+            modelBuilder.Entity<ApplyLeaveNews>(entity =>
+            {
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.CountLeave).HasColumnType("decimal(18, 2)");
             });
 
             modelBuilder.Entity<ApprovedPresnolInfo>(entity =>
@@ -656,6 +667,10 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Servicecharge).HasColumnType("decimal(18, 2)");
 
+                entity.Property(e => e.ShiftTypeid).HasColumnName("shiftTypeid");
+
+                entity.Property(e => e.Shifttype).HasMaxLength(200);
+
                 entity.Property(e => e.SpecialAllowance).HasColumnType("decimal(18, 2)");
 
                 entity.Property(e => e.State).HasMaxLength(255);
@@ -1014,6 +1029,31 @@ namespace CRM.Models.Crm
                     .HasColumnName("Industry_Name");
             });
 
+            modelBuilder.Entity<Leave>(entity =>
+            {
+                entity.ToTable("Leave");
+
+                entity.Property(e => e.Createddate).HasColumnName("createddate");
+            });
+
+            modelBuilder.Entity<LeaveType>(entity =>
+            {
+                entity.ToTable("LeaveType");
+
+                entity.Property(e => e.Createddate).HasColumnName("createddate");
+
+                entity.Property(e => e.Leavetype1).HasColumnName("leavetype");
+            });
+
+            modelBuilder.Entity<Leavemaster>(entity =>
+            {
+                entity.ToTable("Leavemaster");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.Value).HasColumnType("decimal(18, 2)");
+            });
+
             modelBuilder.Entity<Offerletter>(entity =>
             {
                 entity.ToTable("Offerletter");
@@ -1073,11 +1113,15 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Createdate).HasColumnType("datetime");
 
+                entity.Property(e => e.Endtime).HasMaxLength(200);
+
                 entity.Property(e => e.ShiftTypeid)
                     .HasMaxLength(200)
                     .HasColumnName("shiftTypeid");
 
-                entity.Property(e => e.Starttime).HasColumnName("starttime");
+                entity.Property(e => e.Starttime)
+                    .HasMaxLength(200)
+                    .HasColumnName("starttime");
             });
 
             modelBuilder.Entity<OrganisationProfile>(entity =>

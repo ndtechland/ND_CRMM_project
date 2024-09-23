@@ -36,9 +36,10 @@ namespace CRM.Repository
             {
                 if (userid != null)
                 {
-                    var empid = _context.EmployeeRegistrations.Where(x => x.EmployeeId == userid && x.IsDeleted == false).Select(x => new EmployeeBasicInfo
+                    var empid = await _context.EmployeeRegistrations.Where(x => x.EmployeeId == userid && x.IsDeleted == false).Select(x => new EmployeeBasicInfo
                     {
-                        FullName = x.FirstName ,
+                        
+                        FullName = x.FirstName,
                         WorkEmail = x.WorkEmail,
                         MobileNumber = _context.EmployeePersonalDetails.Where(g => g.EmpId == x.Id).Select(g => g.MobileNumber).First(),
                         DateOfBirth = _context.EmployeePersonalDetails.Where(g => g.EmpId == x.Id).Select(g => g.DateOfBirth.Value.ToString("dd-MM-yyyy")).First(),
@@ -63,7 +64,9 @@ namespace CRM.Repository
                         AadharOne = _context.EmployeePersonalDetails.Where(g => g.EmpId == x.Id).Select(g => "/img1/" + g.AadharOne).First(),
                         AadharTwo = _context.EmployeePersonalDetails.Where(g => g.EmpId == x.Id).Select(g => "/img1/" + g.AadharTwo).First(),
                         Panimg = _context.EmployeePersonalDetails.Where(g => g.EmpId == x.Id).Select(g => "/img1/" + g.Panimg).First(),
-                    }).FirstOrDefault();
+                        ShiftTime = _context.Officeshifts.Where(g =>g.Id == x.OfficeshiftTypeid).Select(g => $"{g.Starttime} - {g.Endtime}").First(),
+                        ShiftType = _context.Officeshifts.Where(g => g.Id == x.OfficeshiftTypeid).First().ShiftTypeid,
+                    }).FirstOrDefaultAsync();
                     return empid;
                 }
                 return null;
@@ -228,7 +231,7 @@ namespace CRM.Repository
                 throw new Exception("Error :" + ex.Message);
             }
         }
-        public async Task<ApprovedPresnolInfo> PersonalDetail(EmpPersonalDetail model, string userid)
+        public async Task<ApprovedPresnolInfo> PersonalDetail(EmpPersonalDetail model, string userid) 
         {
             try
             {
@@ -369,7 +372,86 @@ namespace CRM.Repository
                 return null;
             }
         }
+        public async Task<leavedto> LeaveType(string userid)
+        {
 
+            leavedto GetleaveList = new leavedto();
+            GetleaveList.GetLeaveTypeList = (from lm in _context.Leavemasters
+                                             join lty in _context.LeaveTypes on lm.LeavetypeId equals lty.Id
+                                             where lm.EmpId == userid
+                                             select new LeaveTypeValue
+                                             {
+                                                 Id = lm.LeavetypeId,
+                                                 leavetype = lty.Leavetype1,
+                                                 leaveValue = (decimal)lm.Value,
+                                                 Isactive = lm.IsActive
+                                             }).ToList();
 
+            GetleaveList.GetLeaveList = _context.Leaves.Where(x => x.Isactive == true).ToList();
+            return GetleaveList;
+        }
+
+        public async Task<bool> ApplyLeave(ApplyLeave model, string userid)
+        {
+            try
+            {
+                List<Leave> FH = new List<Leave>();
+                List<Leave> SH = new List<Leave>();
+                List<Leave> FD = new List<Leave>();
+                decimal total = (decimal)0.00;
+                var TypeOfLeave = _context.Leavemasters.Where(x => x.LeavetypeId == model.TypeOfLeaveId && x.EmpId == userid).FirstOrDefault();
+                if (model.EndDate != model.StartDate)
+                {
+                    total = (model.EndDate - model.StartDate).Days;
+                }
+                if (model.StartLeaveId == 1)
+                {
+                    FH = await _context.Leaves.Where(x => x.Id == model.StartLeaveId).ToListAsync();
+                }
+                else if (model.StartLeaveId == 2)
+                {
+                    SH = await _context.Leaves.Where(x => x.Id == model.EndeaveId).ToListAsync();
+                }
+                else
+                {
+                    FD = await _context.Leaves.Where(x => x.Id == model.EndeaveId).ToListAsync();
+                }
+                if (total == 0)
+                {
+                    decimal TotalLeave = (FH.Count() == 0 ? 0 : (decimal)(FH.Count() * 0.50)) + (SH.Count() == 0 ? 0 : (decimal)(SH.Count() * 0.50)) + (FD.Count() == 0 ? 0 : (decimal)(FD.Count() * 1.00));
+                    total = TotalLeave;
+                }
+                else
+                {
+                    decimal TotalLeave = (FH.Count() == 0 ? 0 : (decimal)(FH.Count() * 0.50)) + (SH.Count() == 0 ? 0 : (decimal)(SH.Count() * 0.50));
+                    total -= TotalLeave;
+                }
+                int month = DateTime.Now.Month;
+                ApplyLeaveNews apply = new ApplyLeaveNews()
+                {
+                    UserId = userid,
+                    StartLeaveId = model.StartLeaveId,
+                    EndeaveId = model.EndeaveId,
+                    TypeOfLeaveId = model.TypeOfLeaveId,
+                    StartDate = model.StartDate,
+                    EndDate = model.EndDate,
+                    CreatedDate = DateTime.Now,
+                    Reason = model.Reason,
+                    CountLeave = total,
+                    Month = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month)
+                };
+                await _context.ApplyLeaveNews.AddAsync(apply);
+                await _context.SaveChangesAsync();
+                TypeOfLeave.Value -= total;
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("Error Message : e " + ex);
+            }
+        }
     }
 }
