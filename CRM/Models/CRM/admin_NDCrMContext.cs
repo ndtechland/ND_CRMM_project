@@ -58,9 +58,6 @@ namespace CRM.Models.Crm
         public virtual DbSet<LeaveType> LeaveTypes { get; set; } = null!;
         public virtual DbSet<Leavemaster> Leavemasters { get; set; } = null!;
         public virtual DbSet<List> Lists { get; set; } = null!;
-        public virtual DbSet<Leave> Leaves { get; set; } = null!;
-        public virtual DbSet<LeaveType> LeaveTypes { get; set; } = null!;
-        public virtual DbSet<Leavemaster> Leavemasters { get; set; } = null!;
         public virtual DbSet<Offerletter> Offerletters { get; set; } = null!;
         public virtual DbSet<Officeshift> Officeshifts { get; set; } = null!;
         public virtual DbSet<OrganisationProfile> OrganisationProfiles { get; set; } = null!;
