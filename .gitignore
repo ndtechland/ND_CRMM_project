@@ -9,5 +9,5 @@
 # Ignore specific paths
 /.vs/CRM/FileContentIndex
 /CRM
-/CRM/Views/Employee/EmployeeRegistration.cshtml
+
 
