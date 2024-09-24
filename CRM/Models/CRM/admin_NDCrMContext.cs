@@ -19,6 +19,8 @@ namespace CRM.Models.Crm
         public virtual DbSet<AccountTypeMaster> AccountTypeMasters { get; set; } = null!;
         public virtual DbSet<Additonalcontribution> Additonalcontributions { get; set; } = null!;
         public virtual DbSet<AdminLogin> AdminLogins { get; set; } = null!;
+        public virtual DbSet<AggregatedCounter> AggregatedCounters { get; set; } = null!;
+        public virtual DbSet<ApplyLeaveNews> ApplyLeaveNews { get; set; } = null!;
         public virtual DbSet<ApprovedPresnolInfo> ApprovedPresnolInfos { get; set; } = null!;
         public virtual DbSet<Approvedbankdetail> Approvedbankdetails { get; set; } = null!;
         public virtual DbSet<Attendanceday> Attendancedays { get; set; } = null!;
@@ -27,6 +29,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<BillingHistory> BillingHistories { get; set; } = null!;
         public virtual DbSet<Category> Categories { get; set; } = null!;
         public virtual DbSet<City> Cities { get; set; } = null!;
+        public virtual DbSet<Counter> Counters { get; set; } = null!;
         public virtual DbSet<CustomerRegistration> CustomerRegistrations { get; set; } = null!;
         public virtual DbSet<DateFormatMaster> DateFormatMasters { get; set; } = null!;
         public virtual DbSet<DeductorNameMaster> DeductorNameMasters { get; set; } = null!;
@@ -36,7 +39,6 @@ namespace CRM.Models.Crm
         public virtual DbSet<Empattendance> Empattendances { get; set; } = null!;
         public virtual DbSet<EmployeeBankDetail> EmployeeBankDetails { get; set; } = null!;
         public virtual DbSet<EmployeeImportExcel> EmployeeImportExcels { get; set; } = null!;
-        public virtual DbSet<EmployeeLeaveMaster> EmployeeLeaveMasters { get; set; } = null!;
         public virtual DbSet<EmployeeLogin> EmployeeLogins { get; set; } = null!;
         public virtual DbSet<EmployeePersonalDetail> EmployeePersonalDetails { get; set; } = null!;
         public virtual DbSet<EmployeeRegistration> EmployeeRegistrations { get; set; } = null!;
@@ -46,8 +48,16 @@ namespace CRM.Models.Crm
         public virtual DbSet<EmployeerTd> EmployeerTds { get; set; } = null!;
         public virtual DbSet<GenderMaster> GenderMasters { get; set; } = null!;
         public virtual DbSet<GstMaster> GstMasters { get; set; } = null!;
+        public virtual DbSet<Hash> Hashes { get; set; } = null!;
         public virtual DbSet<HeadOfficeAddress> HeadOfficeAddresses { get; set; } = null!;
         public virtual DbSet<IndustryMaster> IndustryMasters { get; set; } = null!;
+        public virtual DbSet<Job> Jobs { get; set; } = null!;
+        public virtual DbSet<JobParameter> JobParameters { get; set; } = null!;
+        public virtual DbSet<JobQueue> JobQueues { get; set; } = null!;
+        public virtual DbSet<Leave> Leaves { get; set; } = null!;
+        public virtual DbSet<LeaveType> LeaveTypes { get; set; } = null!;
+        public virtual DbSet<Leavemaster> Leavemasters { get; set; } = null!;
+        public virtual DbSet<List> Lists { get; set; } = null!;
         public virtual DbSet<Offerletter> Offerletters { get; set; } = null!;
         public virtual DbSet<Officeshift> Officeshifts { get; set; } = null!;
         public virtual DbSet<OrganisationProfile> OrganisationProfiles { get; set; } = null!;
@@ -56,11 +66,16 @@ namespace CRM.Models.Crm
         public virtual DbSet<Payroll> Payrolls { get; set; } = null!;
         public virtual DbSet<ProductMaster> ProductMasters { get; set; } = null!;
         public virtual DbSet<Quation> Quations { get; set; } = null!;
+        public virtual DbSet<Schema> Schemas { get; set; } = null!;
+        public virtual DbSet<Server> Servers { get; set; } = null!;
+        public virtual DbSet<Set> Sets { get; set; } = null!;
         public virtual DbSet<State> States { get; set; } = null!;
+        public virtual DbSet<State1> States1 { get; set; } = null!;
         public virtual DbSet<StateMaster> StateMasters { get; set; } = null!;
         public virtual DbSet<TErrorLog> TErrorLogs { get; set; } = null!;
         public virtual DbSet<TaxDeductor> TaxDeductors { get; set; } = null!;
         public virtual DbSet<TransactionDetail> TransactionDetails { get; set; } = null!;
+        public virtual DbSet<VendorProductMaster> VendorProductMasters { get; set; } = null!;
         public virtual DbSet<VendorRegistration> VendorRegistrations { get; set; } = null!;
         public virtual DbSet<WorkLocation> WorkLocations { get; set; } = null!;
         public virtual DbSet<WorkLocation1> WorkLocations1 { get; set; } = null!;
@@ -124,6 +139,28 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.Role).HasMaxLength(120);
 
                 entity.Property(e => e.UserName).HasMaxLength(120);
+            });
+
+            modelBuilder.Entity<AggregatedCounter>(entity =>
+            {
+                entity.HasKey(e => e.Key)
+                    .HasName("PK_HangFire_CounterAggregated");
+
+                entity.ToTable("AggregatedCounter", "HangFire");
+
+                entity.HasIndex(e => e.ExpireAt, "IX_HangFire_AggregatedCounter_ExpireAt")
+                    .HasFilter("([ExpireAt] IS NOT NULL)");
+
+                entity.Property(e => e.Key).HasMaxLength(100);
+
+                entity.Property(e => e.ExpireAt).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<ApplyLeaveNews>(entity =>
+            {
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.CountLeave).HasColumnType("decimal(18, 2)");
             });
 
             modelBuilder.Entity<ApprovedPresnolInfo>(entity =>
@@ -333,6 +370,20 @@ namespace CRM.Models.Crm
                     .HasColumnName("city");
 
                 entity.Property(e => e.StateId).HasColumnName("State_id");
+            });
+
+            modelBuilder.Entity<Counter>(entity =>
+            {
+                entity.HasKey(e => new { e.Key, e.Id })
+                    .HasName("PK_HangFire_Counter");
+
+                entity.ToTable("Counter", "HangFire");
+
+                entity.Property(e => e.Key).HasMaxLength(100);
+
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+
+                entity.Property(e => e.ExpireAt).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<CustomerRegistration>(entity =>
@@ -656,6 +707,10 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Servicecharge).HasColumnType("decimal(18, 2)");
 
+                entity.Property(e => e.ShiftTypeid).HasColumnName("shiftTypeid");
+
+                entity.Property(e => e.Shifttype).HasMaxLength(200);
+
                 entity.Property(e => e.SpecialAllowance).HasColumnType("decimal(18, 2)");
 
                 entity.Property(e => e.State).HasMaxLength(255);
@@ -671,23 +726,6 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.WorkLocation).HasMaxLength(255);
 
                 entity.Property(e => e.WorkLocationId).HasColumnName("WorkLocationID");
-            });
-
-            modelBuilder.Entity<EmployeeLeaveMaster>(entity =>
-            {
-                entity.ToTable("Employee_Leave_Master", "dbo");
-
-                entity.Property(e => e.Id).HasColumnName("ID");
-
-                entity.Property(e => e.FromDate)
-                    .HasColumnType("date")
-                    .HasColumnName("From_Date");
-
-                entity.Property(e => e.Reason).HasMaxLength(255);
-
-                entity.Property(e => e.ToDate)
-                    .HasColumnType("date")
-                    .HasColumnName("To_Date");
             });
 
             modelBuilder.Entity<EmployeeLogin>(entity =>
@@ -978,6 +1016,21 @@ namespace CRM.Models.Crm
                     .HasColumnName("SCGST");
             });
 
+            modelBuilder.Entity<Hash>(entity =>
+            {
+                entity.HasKey(e => new { e.Key, e.Field })
+                    .HasName("PK_HangFire_Hash");
+
+                entity.ToTable("Hash", "HangFire");
+
+                entity.HasIndex(e => e.ExpireAt, "IX_HangFire_Hash_ExpireAt")
+                    .HasFilter("([ExpireAt] IS NOT NULL)");
+
+                entity.Property(e => e.Key).HasMaxLength(100);
+
+                entity.Property(e => e.Field).HasMaxLength(100);
+            });
+
             modelBuilder.Entity<HeadOfficeAddress>(entity =>
             {
                 entity.ToTable("Head_Office_Address", "dbo");
@@ -1012,6 +1065,94 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.IndustryName)
                     .HasMaxLength(255)
                     .HasColumnName("Industry_Name");
+            });
+
+            modelBuilder.Entity<Job>(entity =>
+            {
+                entity.ToTable("Job", "HangFire");
+
+                entity.HasIndex(e => e.ExpireAt, "IX_HangFire_Job_ExpireAt")
+                    .HasFilter("([ExpireAt] IS NOT NULL)");
+
+                entity.HasIndex(e => e.StateName, "IX_HangFire_Job_StateName")
+                    .HasFilter("([StateName] IS NOT NULL)");
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.ExpireAt).HasColumnType("datetime");
+
+                entity.Property(e => e.StateName).HasMaxLength(20);
+            });
+
+            modelBuilder.Entity<JobParameter>(entity =>
+            {
+                entity.HasKey(e => new { e.JobId, e.Name })
+                    .HasName("PK_HangFire_JobParameter");
+
+                entity.ToTable("JobParameter", "HangFire");
+
+                entity.Property(e => e.Name).HasMaxLength(40);
+
+                entity.HasOne(d => d.Job)
+                    .WithMany(p => p.JobParameters)
+                    .HasForeignKey(d => d.JobId)
+                    .HasConstraintName("FK_HangFire_JobParameter_Job");
+            });
+
+            modelBuilder.Entity<JobQueue>(entity =>
+            {
+                entity.HasKey(e => new { e.Queue, e.Id })
+                    .HasName("PK_HangFire_JobQueue");
+
+                entity.ToTable("JobQueue", "HangFire");
+
+                entity.Property(e => e.Queue).HasMaxLength(50);
+
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+
+                entity.Property(e => e.FetchedAt).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<Leave>(entity =>
+            {
+                entity.ToTable("Leave");
+
+                entity.Property(e => e.Createddate).HasColumnName("createddate");
+            });
+
+            modelBuilder.Entity<LeaveType>(entity =>
+            {
+                entity.ToTable("LeaveType");
+
+                entity.Property(e => e.Createddate).HasColumnName("createddate");
+
+                entity.Property(e => e.Leavetype1).HasColumnName("leavetype");
+            });
+
+            modelBuilder.Entity<Leavemaster>(entity =>
+            {
+                entity.ToTable("Leavemaster");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.Value).HasColumnType("decimal(18, 2)");
+            });
+
+            modelBuilder.Entity<List>(entity =>
+            {
+                entity.HasKey(e => new { e.Key, e.Id })
+                    .HasName("PK_HangFire_List");
+
+                entity.ToTable("List", "HangFire");
+
+                entity.HasIndex(e => e.ExpireAt, "IX_HangFire_List_ExpireAt")
+                    .HasFilter("([ExpireAt] IS NOT NULL)");
+
+                entity.Property(e => e.Key).HasMaxLength(100);
+
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+
+                entity.Property(e => e.ExpireAt).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<Offerletter>(entity =>
@@ -1073,11 +1214,15 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Createdate).HasColumnType("datetime");
 
+                entity.Property(e => e.Endtime).HasMaxLength(200);
+
                 entity.Property(e => e.ShiftTypeid)
                     .HasMaxLength(200)
                     .HasColumnName("shiftTypeid");
 
-                entity.Property(e => e.Starttime).HasColumnName("starttime");
+                entity.Property(e => e.Starttime)
+                    .HasMaxLength(200)
+                    .HasColumnName("starttime");
             });
 
             modelBuilder.Entity<OrganisationProfile>(entity =>
@@ -1266,12 +1411,75 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.Subject).HasMaxLength(255);
             });
 
+            modelBuilder.Entity<Schema>(entity =>
+            {
+                entity.HasKey(e => e.Version)
+                    .HasName("PK_HangFire_Schema");
+
+                entity.ToTable("Schema", "HangFire");
+
+                entity.Property(e => e.Version).ValueGeneratedNever();
+            });
+
+            modelBuilder.Entity<Server>(entity =>
+            {
+                entity.ToTable("Server", "HangFire");
+
+                entity.HasIndex(e => e.LastHeartbeat, "IX_HangFire_Server_LastHeartbeat");
+
+                entity.Property(e => e.Id).HasMaxLength(200);
+
+                entity.Property(e => e.LastHeartbeat).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<Set>(entity =>
+            {
+                entity.HasKey(e => new { e.Key, e.Value })
+                    .HasName("PK_HangFire_Set");
+
+                entity.ToTable("Set", "HangFire");
+
+                entity.HasIndex(e => e.ExpireAt, "IX_HangFire_Set_ExpireAt")
+                    .HasFilter("([ExpireAt] IS NOT NULL)");
+
+                entity.HasIndex(e => new { e.Key, e.Score }, "IX_HangFire_Set_Score");
+
+                entity.Property(e => e.Key).HasMaxLength(100);
+
+                entity.Property(e => e.Value).HasMaxLength(256);
+
+                entity.Property(e => e.ExpireAt).HasColumnType("datetime");
+            });
+
             modelBuilder.Entity<State>(entity =>
             {
                 entity.Property(e => e.SName)
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("S_Name");
+            });
+
+            modelBuilder.Entity<State1>(entity =>
+            {
+                entity.HasKey(e => new { e.JobId, e.Id })
+                    .HasName("PK_HangFire_State");
+
+                entity.ToTable("State", "HangFire");
+
+                entity.HasIndex(e => e.CreatedAt, "IX_HangFire_State_CreatedAt");
+
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Name).HasMaxLength(20);
+
+                entity.Property(e => e.Reason).HasMaxLength(100);
+
+                entity.HasOne(d => d.Job)
+                    .WithMany(p => p.State1s)
+                    .HasForeignKey(d => d.JobId)
+                    .HasConstraintName("FK_HangFire_State_Job");
             });
 
             modelBuilder.Entity<StateMaster>(entity =>
@@ -1366,6 +1574,25 @@ namespace CRM.Models.Crm
                     .HasForeignKey(d => d.PayMethod)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Transaction_Details_Pay_Method_ID");
+            });
+
+            modelBuilder.Entity<VendorProductMaster>(entity =>
+            {
+                entity.ToTable("VendorProductMaster");
+
+                entity.Property(e => e.CreatedAt).HasColumnType("date");
+
+                entity.Property(e => e.Gst)
+                    .HasMaxLength(100)
+                    .HasColumnName("GST");
+
+                entity.Property(e => e.Hsncode)
+                    .HasMaxLength(200)
+                    .HasColumnName("HSNCode");
+
+                entity.Property(e => e.ProductName).HasMaxLength(200);
+
+                entity.Property(e => e.ProductPrice).HasColumnType("decimal(18, 0)");
             });
 
             modelBuilder.Entity<VendorRegistration>(entity =>
