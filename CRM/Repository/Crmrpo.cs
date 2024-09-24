@@ -1976,13 +1976,28 @@ namespace CRM.Repository
            
         }
 
-        public async Task<List<VendorProductMaster>> GetVendorProductList(int vendorid)
+        public async Task<List<VendorProductDTO>> GetVendorProductList(int vendorid)
         {
-            var result = await _context.VendorProductMasters
-        .FromSqlRaw($"EXEC sp_GetVendorProducts {vendorid} ")
-        .ToListAsync();
+            var result = await (from p in _context.VendorProductMasters
+                                join c in _context.Categories on p.CategoryId equals c.Id
+                                join g in _context.GstMasters on p.Gst equals g.Id
+                                where p.VendorId == vendorid && p.IsActive == true
+                                select new VendorProductDTO
+                                {
+                                    Id = p.Id,
+                                    ProductName = p.ProductName,
+                                    Category = c.CategoryName, 
+                                    Hsncode = p.Hsncode,
+                                    Gst = g.GstPercentagen,  
+                                    ProductPrice = p.ProductPrice,
+                                    IsActive = p.IsActive,
+                                    CreatedAt = p.CreatedAt
+                                }).ToListAsync();
+
             return result;
         }
+
+
     }
 
 }

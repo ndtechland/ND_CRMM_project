@@ -176,15 +176,15 @@ namespace CRM.Controllers
 
                 if (id != 0)
                 {
-                    var data = await _context.ProductMasters.Where(x => x.Id == id).FirstOrDefaultAsync();
+                    var data = await _context.VendorProductMasters.Where(x => x.Id == id).FirstOrDefaultAsync();
                     if (data != null)
                     {
                         ViewBag.id = data.Id;
                         ViewBag.ProductName = data.ProductName;
-                        ViewBag.Categories = data.Category;
+                        ViewBag.Categories = data.CategoryId;
                         ViewBag.Gstdr = data.Gst;
-                        ViewBag.HsnSacCode = data.HsnSacCode;
-                        ViewBag.Price = data.Price;
+                        ViewBag.HsnSacCode = data.Hsncode;
+                        ViewBag.Price = data.ProductPrice;
                         ViewBag.Heading = "Update Product";
                         ViewBag.btnText = "Update";
                     }
@@ -256,6 +256,25 @@ namespace CRM.Controllers
             {
                 return RedirectToAction("Login", "Admin");
             }
+        }
+        public async Task<IActionResult> DeleteVendorProduct(int id)
+        {
+            try
+            {
+                var data = _context.VendorProductMasters.Find(id);
+                if (data != null)
+                {
+                    data.IsActive = false;
+                    _context.SaveChanges();
+
+                }
+                return RedirectToAction("VendorProductList", "Product");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
         }
 
     }
