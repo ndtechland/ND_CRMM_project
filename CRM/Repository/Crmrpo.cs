@@ -1935,6 +1935,54 @@ namespace CRM.Repository
             }
         }
 
+
+        //Vendor Product
+        public async Task<int> AddVendorProduct(VendorProductMaster model,int VendorId)
+        {
+            if(model.Id==0)
+            {
+                var parameter = new List<SqlParameter>();
+                parameter.Add(new SqlParameter("@VendorId", VendorId));
+                parameter.Add(new SqlParameter("@ProductName", model.ProductName));
+                parameter.Add(new SqlParameter("@CategoryId", model.CategoryId));
+                parameter.Add(new SqlParameter("@Gst", model.Gst));
+                parameter.Add(new SqlParameter("@ProductPrice", model.ProductPrice));
+                parameter.Add(new SqlParameter("@Hsncode", model.Hsncode));
+                parameter.Add(new SqlParameter("@IsActive", true));
+                parameter.Add(new SqlParameter("@CreatedAt", DateTime.Now));
+
+
+                var result = await Task.Run(() => _context.Database
+               .ExecuteSqlRawAsync(@"exec sp_AddVendorProduct @VendorId,@ProductName,@CategoryId,@GST,@ProductPrice,@HSNCode,@IsActive,@CreatedAt", parameter.ToArray()));
+
+                return result;
+            }
+            else
+            {
+                var parameter = new List<SqlParameter>();
+                parameter.Add(new SqlParameter("@id", model.Id));
+                parameter.Add(new SqlParameter("@VendorId", VendorId));
+                parameter.Add(new SqlParameter("@ProductName", model.ProductName));
+                parameter.Add(new SqlParameter("@CategoryId", model.CategoryId));
+                parameter.Add(new SqlParameter("@Gst", model.Gst));
+                parameter.Add(new SqlParameter("@ProductPrice", model.ProductPrice));
+                parameter.Add(new SqlParameter("@Hsncode", model.Hsncode));
+
+                var result = await Task.Run(() => _context.Database
+               .ExecuteSqlRawAsync(@"exec sp_UpdateVendorProduct @id,@VendorId,@ProductName,@CategoryId,@GST,@ProductPrice,@HSNCode", parameter.ToArray()));
+
+                return result;
+            }
+           
+        }
+
+        public async Task<List<VendorProductMaster>> GetVendorProductList(int vendorid)
+        {
+            var result = await _context.VendorProductMasters
+        .FromSqlRaw($"EXEC sp_GetVendorProducts {vendorid} ")
+        .ToListAsync();
+            return result;
+        }
     }
 
 }
