@@ -858,10 +858,6 @@ namespace CRM.Repository
             return result;
         }
 
-        public DesignationMaster GetDesignationById(int id)
-        {
-            return _context.DesignationMasters.Find(id);
-        }
         public async Task<int> updateDesignation(DesignationMaster model)
         {
             var parameter = new List<SqlParameter>();
@@ -872,10 +868,6 @@ namespace CRM.Repository
            .ExecuteSqlRawAsync(@"exec sp_updateDesignation @id,@DesignationName", parameter.ToArray()));
 
             return result;
-        }
-        public DepartmentMaster GetDepartmentById(int id)
-        {
-            return _context.DepartmentMasters.Find(id);
         }
         public async Task<int> updateDepartment(DepartmentMaster model)
         {
@@ -1411,6 +1403,7 @@ namespace CRM.Repository
                         StateId = rdr["stateId"] == DBNull.Value ? (int?)null : Convert.ToInt32(rdr["stateId"]),
                         Location = rdr["Billing_Address"] == DBNull.Value ? null : Convert.ToString(rdr["Location"]),
                         Renewprice = rdr["Renewprice"] == DBNull.Value ? null : Convert.ToString(rdr["Renewprice"]),
+                        productprice = rdr["productprice"] == DBNull.Value ? null : Convert.ToString(rdr["productprice"]),
                         NoOfRenewMonth = rdr["NoOfRenewMonth"] == DBNull.Value ? (int?)null : Convert.ToInt32(rdr["NoOfRenewMonth"]),
 
                     };
@@ -1472,7 +1465,7 @@ namespace CRM.Repository
                 };
 
                 _context.AdminLogins.Add(adminRole);
-                await _context.SaveChangesAsync(); 
+                await _context.SaveChangesAsync();
             }
             return new VendorRegResultDTO
             {
@@ -1911,6 +1904,34 @@ namespace CRM.Repository
             catch (Exception ex)
             {
                 throw ex;
+            }
+        }
+        public async Task<List<LeavemasterDto>> getLeavemaster(int Userid)
+        {
+            try
+            {
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                var result = await (from lm in _context.Leavemasters
+                                    join lt in _context.LeaveTypes
+                                    on lm.LeavetypeId equals lt.Id
+                                    join emp in _context.EmployeeRegistrations
+                                   on lm.EmpId equals emp.EmployeeId
+                                    where emp.Vendorid == adminlogin.Vendorid
+                                    select new LeavemasterDto
+                                    {
+                                        id = lm.Id,
+                                        LeavetypeId = lt.Leavetype1,
+                                        Value = lm.Value,
+                                        EmpId = lm.EmpId,
+                                        Createddate = lm.Createddate,
+                                        IsActive = lm.IsActive
+                                    }).ToListAsync();
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw;
             }
         }
 

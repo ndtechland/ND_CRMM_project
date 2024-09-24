@@ -58,6 +58,9 @@ namespace CRM.Models.Crm
         public virtual DbSet<LeaveType> LeaveTypes { get; set; } = null!;
         public virtual DbSet<Leavemaster> Leavemasters { get; set; } = null!;
         public virtual DbSet<List> Lists { get; set; } = null!;
+        public virtual DbSet<Leave> Leaves { get; set; } = null!;
+        public virtual DbSet<LeaveType> LeaveTypes { get; set; } = null!;
+        public virtual DbSet<Leavemaster> Leavemasters { get; set; } = null!;
         public virtual DbSet<Offerletter> Offerletters { get; set; } = null!;
         public virtual DbSet<Officeshift> Officeshifts { get; set; } = null!;
         public virtual DbSet<OrganisationProfile> OrganisationProfiles { get; set; } = null!;
@@ -140,7 +143,6 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.UserName).HasMaxLength(120);
             });
-
             modelBuilder.Entity<AggregatedCounter>(entity =>
             {
                 entity.HasKey(e => e.Key)
@@ -1066,7 +1068,6 @@ namespace CRM.Models.Crm
                     .HasMaxLength(255)
                     .HasColumnName("Industry_Name");
             });
-
             modelBuilder.Entity<Job>(entity =>
             {
                 entity.ToTable("Job", "HangFire");
@@ -1112,7 +1113,6 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.FetchedAt).HasColumnType("datetime");
             });
-
             modelBuilder.Entity<Leave>(entity =>
             {
                 entity.ToTable("Leave");
@@ -1137,7 +1137,6 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Value).HasColumnType("decimal(18, 2)");
             });
-
             modelBuilder.Entity<List>(entity =>
             {
                 entity.HasKey(e => new { e.Key, e.Id })
