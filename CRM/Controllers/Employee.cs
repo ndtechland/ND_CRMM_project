@@ -792,6 +792,8 @@ namespace CRM.Controllers
                 if (HttpContext.Session.GetString("UserName") != null)
                 {
                     string AddedBy = HttpContext.Session.GetString("UserName");
+                    int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                    var adminlogin =  _context.AdminLogins.Where(x => x.Id ==  Userid).FirstOrDefault();
                     ViewBag.UserName = AddedBy;
                     return View();
                 }
@@ -826,20 +828,30 @@ namespace CRM.Controllers
         [Route("Employee/Employee_list")]
         public async Task<IActionResult> Employee_list(string Deduction_Cycle)
         {
-            if (Deduction_Cycle != null)
+            ViewBag.UserName = HttpContext.Session.GetString("UserName");
+            int? userId = HttpContext.Session.GetString("UserId") != null
+                ? Convert.ToInt32(HttpContext.Session.GetString("UserId"))
+                : (int?)null;
+
+            if (userId == null)
             {
+                TempData["ErrorMessage"] = "Session expired. Please log in again.";
+                return RedirectToAction("Login");
+            }
+
+            if (!string.IsNullOrEmpty(Deduction_Cycle))
+            {
+                var adminLogin = await _context.AdminLogins.Where(x => x.Id == userId).FirstOrDefaultAsync();
                 var response = await _ICrmrpo.EmployerList(Deduction_Cycle);
-                ViewBag.UserName = HttpContext.Session.GetString("UserName");
+
                 if (response.Count > 0)
                 {
                     return View(response);
-
                 }
                 else
                 {
-                    TempData["ErrorMessage"] = "No details found.";
-                    return RedirectToAction("Employee_list");
-
+                    ViewBag.ErrorMessage = "No details found.";
+                    return View();
                 }
             }
             else
@@ -847,8 +859,8 @@ namespace CRM.Controllers
                 ModelState.Clear();
                 return View();
             }
-
         }
+
         //  send  pdf and mail //
 
         public IActionResult DocPDF(int id)

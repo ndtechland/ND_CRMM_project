@@ -5,6 +5,31 @@
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var message = "@TempData["Message"]";
+
+        if (message) {
+            Swal.fire({
+                title: 'Success',
+                text: message,
+                icon: 'info',
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    setTimeout(function () {
+                        window.location.href = '@Url.Action("Departmentlist", "Home")';
+                    }, 1000);
+                }
+            });
+        }
+    });
+</script>
 
 <div class="page-wrapper">
     <div class="page-body-wrapper">
@@ -20,7 +45,7 @@
                         <div class="col-lg-6">
                             <div class="page-header-left">
                                 <h2>
-                                    Add Designation
+                                    @ViewBag.Heading
                                 </h2>
                             </div>
                         </div>
@@ -45,11 +70,12 @@
                                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                                     <div class="form-group col-sm-4">
                                         <label class="control-label">Designation Name</label>
-                                        <input asp-for="DesignationName" class="form-control" />
+                                        <input type="hidden" asp-for="Id" value="@ViewBag.id" />
+                                        <input asp-for="DesignationName" value="@ViewBag.DesignationName" class="form-control" />
                                         <span asp-validation-for="DesignationName" class="text-danger"></span>
                                     </div>
                                     <div class="form-group">
-                                        <input type="submit" value="Submit" class="btn btn-primary" />
+                                        <input type="submit" value="@ViewBag.btnText" class="btn btn-primary" />
                                     </div>
                                 </form>
                             </div>

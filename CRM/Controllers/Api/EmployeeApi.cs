@@ -299,7 +299,7 @@ namespace CRM.Controllers.Api
             }
         }
         [HttpGet("Dashboard")]
-        public IActionResult Dashboard()
+        public async Task<IActionResult> Dashboard()
         {
             var response = new Utilities.Response<dynamic>();
             try
