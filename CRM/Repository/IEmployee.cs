@@ -16,6 +16,8 @@ namespace CRM.Repository
         public Task<salarydetails> Getsalarydetails(string userid);
         public Task<leavedto> LeaveType(string userid);
         public Task<bool> ApplyLeave(ApplyLeave model, string userid);
+        public Task<List<EmpattendanceDto>> GetAllEmpsalaryslip(string userid);
+        public Task<EmpattendanceDto> Getsalarydetails(string userid, int month, int year);
 
     }
 }

@@ -38,7 +38,7 @@ namespace CRM.Repository
                 {
                     var empid = await _context.EmployeeRegistrations.Where(x => x.EmployeeId == userid && x.IsDeleted == false).Select(x => new EmployeeBasicInfo
                     {
-                        
+
                         FullName = x.FirstName,
                         WorkEmail = x.WorkEmail,
                         MobileNumber = _context.EmployeePersonalDetails.Where(g => g.EmpId == x.Id).Select(g => g.MobileNumber).First(),
@@ -64,7 +64,7 @@ namespace CRM.Repository
                         AadharOne = _context.EmployeePersonalDetails.Where(g => g.EmpId == x.Id).Select(g => "/img1/" + g.AadharOne).First(),
                         AadharTwo = _context.EmployeePersonalDetails.Where(g => g.EmpId == x.Id).Select(g => "/img1/" + g.AadharTwo).First(),
                         Panimg = _context.EmployeePersonalDetails.Where(g => g.EmpId == x.Id).Select(g => "/img1/" + g.Panimg).First(),
-                        ShiftTime = _context.Officeshifts.Where(g =>g.Id == x.OfficeshiftTypeid).Select(g => $"{g.Starttime} - {g.Endtime}").First(),
+                        ShiftTime = _context.Officeshifts.Where(g => g.Id == x.OfficeshiftTypeid).Select(g => $"{g.Starttime} - {g.Endtime}").First(),
                         ShiftType = _context.Officeshifts.Where(g => g.Id == x.OfficeshiftTypeid).First().ShiftTypeid,
                     }).FirstOrDefaultAsync();
                     return empid;
@@ -231,7 +231,7 @@ namespace CRM.Repository
                 throw new Exception("Error :" + ex.Message);
             }
         }
-        public async Task<ApprovedPresnolInfo> PersonalDetail(EmpPersonalDetail model, string userid) 
+        public async Task<ApprovedPresnolInfo> PersonalDetail(EmpPersonalDetail model, string userid)
         {
             try
             {
@@ -253,7 +253,7 @@ namespace CRM.Repository
                 }
                 var emp = await _context.EmployeeRegistrations.Where(x => x.EmployeeId == userid && x.IsDeleted == false).FirstOrDefaultAsync();
                 var apppersonal = await _context.ApprovedPresnolInfos.Where(x => x.EmployeeId == userid).FirstOrDefaultAsync();
-             
+
 
                 if (apppersonal != null)
                 {
@@ -264,8 +264,8 @@ namespace CRM.Repository
                     apppersonal.Pan = model.PanNo;
                     apppersonal.AddressLine1 = model.Address1;
                     apppersonal.AddressLine2 = model.Address2;
-                    apppersonal.City =Convert.ToString(model.Cityid);
-                    apppersonal.StateId =Convert.ToString(model.Stateid);
+                    apppersonal.City = Convert.ToString(model.Cityid);
+                    apppersonal.StateId = Convert.ToString(model.Stateid);
                     apppersonal.Pincode = model.Pincode;
                     apppersonal.AadharNo = model.AadharNo;
                     apppersonal.UpdateDate = DateTime.Now.Date;
@@ -341,7 +341,7 @@ namespace CRM.Repository
                                 }
                                 else if (i == 1)
                                 {
-                                    empP.AadharTwo =  aadharImagePath;
+                                    empP.AadharTwo = aadharImagePath;
                                 }
                             }
                         }
@@ -451,6 +451,85 @@ namespace CRM.Repository
             {
 
                 throw new Exception("Error Message : e " + ex);
+            }
+        }
+
+        public async Task<List<EmpattendanceDto>> GetAllEmpsalaryslip(string userid)
+        {
+            try
+            {
+                if (userid != null)
+                {
+                    var result = _context.Empattendances.Where(x => x.EmployeeId == userid).Select(x => new EmpattendanceDto
+                    {
+                        Id = x.Id,
+                        SalarySlipPath = "~/EMPpdfs/" + x.SalarySlip,
+                        Month = x.Month,
+                        Year = x.Year,
+                        SalarySlipName = getMonthName(x.Month) + '-' + x.Year
+                    }).ToList();
+                    return result;
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("Error :" + ex.Message);
+            }
+        }
+        public static String getMonthName(int? monthNumber)
+        {
+            switch (monthNumber)
+            {
+                case 1:
+                    return "January";
+                case 2:
+                    return "February";
+                case 3:
+                    return "March";
+                case 4:
+                    return "April";
+                case 5:
+                    return "May";
+                case 6:
+                    return "June";
+                case 7:
+                    return "July";
+                case 8:
+                    return "August";
+                case 9:
+                    return "September";
+                case 10:
+                    return "October";
+                case 11:
+                    return "November";
+                case 12:
+                    return "December";
+                default:
+                    return "Invalid month";
+            }
+        }
+        public async Task<EmpattendanceDto> Getsalarydetails(string userid, int month, int year)
+        {
+            try
+            {
+                if (userid != null)
+                {
+                    var result = _context.Empattendances.Where(x => x.EmployeeId == userid && x.Month == month && x.Year == year).Select(x => new EmpattendanceDto
+                    {
+                        SalarySlipPath = "~/EMPpdfs/" + x.SalarySlip,
+                        Month = x.Month,
+                        Year = x.Year
+                    }).FirstOrDefault();
+                    return result;
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("Error :" + ex.Message);
             }
         }
     }

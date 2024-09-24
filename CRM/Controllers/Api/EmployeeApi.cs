@@ -1,5 +1,6 @@
 ﻿using CRM.Models.APIDTO;
 using CRM.Models.Crm;
+using CRM.Models.CRM;
 using CRM.Models.DTO;
 using CRM.Repository;
 using CRM.Utilities;
@@ -21,10 +22,17 @@ namespace CRM.Controllers.Api
 
         private readonly IEmployee _apiemp;
         private readonly admin_NDCrMContext _context;
-        public EmployeeApiController(IEmployee apiemp, admin_NDCrMContext context)
+        private readonly Dcrypt _dcrypt;
+        private readonly IEmailService _IEmailService;
+        private readonly Encrypt _encrypt;
+
+        public EmployeeApiController(IEmployee apiemp, admin_NDCrMContext context,Dcrypt dcrypt, IEmailService iEmailService,Encrypt encrypt)
         {
             this._apiemp = apiemp;
             this._context = context;
+            this._dcrypt = dcrypt;
+            _IEmailService = iEmailService;
+            _encrypt = encrypt;
         }
         [Route("GetEmployeeBasicInfo")]
         [HttpGet]
@@ -298,8 +306,8 @@ namespace CRM.Controllers.Api
                 throw new Exception("Error :" + ex.Message);
             }
         }
-        [HttpGet("Dashboard")]
-        public async Task<IActionResult> Dashboard()
+        [HttpGet("EmployeeDashboard")]
+        public async Task<IActionResult> EmployeeDashboard()
         {
             var response = new Utilities.Response<dynamic>();
             try
@@ -348,26 +356,26 @@ namespace CRM.Controllers.Api
                     var empoffer = _context.Offerletters.Where(le => le.Id == employee.Offerletterid).FirstOrDefault();
 
                     var leave = totalleave;
-                    var offerletter = empoffer.OfferletterFile;
-                    var appointmentletter = employee.Appoinmentletter;
+                    var offerletter = "/EMPpdfs/" + empoffer.OfferletterFile;
+                    var appointmentletter = "/EMPpdfs/" + employee.Appoinmentletter;
                     //EmployeeprofileComplete
-                    var totalFields = typeof(EmployeeRegistration).GetProperties().Length - 4;
+                    //var totalFields = typeof(EmployeeRegistration).GetProperties().Length - 4;
 
-                    double filledFields = 0;
-                    if (employee != null)
-                    {
-                        foreach (var property in typeof(EmployeeRegistration).GetProperties())
-                        {
-                            var value = property.GetValue(employee);
-                            if (value != null)
-                            {
-                                filledFields++;
-                            }
-                        }
-                    }
+                    //double filledFields = 0;
+                    //if (employee != null)
+                    //{
+                    //    foreach (var property in typeof(EmployeeRegistration).GetProperties())
+                    //    {
+                    //        var value = property.GetValue(employee);
+                    //        if (value != null)
+                    //        {
+                    //            filledFields++;
+                    //        }
+                    //    }
+                    //}
 
-                    int completionPercentage = (int)((filledFields / totalFields) * 100);
-                    var CompletionPercentage = completionPercentage.ToString() + '%';
+                    //int completionPercentage = (int)((filledFields / totalFields) * 100);
+                    //var CompletionPercentage = completionPercentage.ToString() + '%';
 
                     response.Data = new
                     {
@@ -377,7 +385,7 @@ namespace CRM.Controllers.Api
                         Leave = leave,
                         offerletter = offerletter,
                         appointmentletter = appointmentletter,
-                        CompletionPercentage = CompletionPercentage
+                        //CompletionPercentage = CompletionPercentage
                     };
                     response.StatusCode = StatusCodes.Status200OK;
                     response.Succeeded = true;
@@ -400,6 +408,191 @@ namespace CRM.Controllers.Api
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
+        [Route("GetAllEmployeesalaryslip")]
+        [HttpGet]
+        public async Task<IActionResult> GetAllEmployeesalaryslip()
+        {
+            var response = new Utilities.Response<List<EmpattendanceDto>>();
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    string userid = User.Claims.FirstOrDefault().Value;
+                    List<EmpattendanceDto> isEmployeeExists = await _apiemp.GetAllEmpsalaryslip(userid);
+                    if (isEmployeeExists != null)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = "Employee Salary deatils Here.";
+                        response.Data = isEmployeeExists;
+                        return Ok(response);
+                    }
+                    else
+                    {
+                        response.StatusCode = StatusCodes.Status401Unauthorized;
+                        response.Message = "Data not found.";
+                        return Ok(response);
+                    }
+                }
+                else
+                {
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Message = "Token is expired.";
+                    return BadRequest(response);
+                }
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
 
+                throw new Exception("Error :" + ex.Message);
+            }
+        }
+        [Route("GetEmployeesalaryslip")]
+        [HttpGet]
+        public async Task<IActionResult> GetEmployeesalaryslip(int month, int year)
+        {
+            var response = new Utilities.Response<EmpattendanceDto>();
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    string userid = User.Claims.FirstOrDefault().Value;
+                    EmpattendanceDto isEmployeeExists = await _apiemp.Getsalarydetails(userid, month, year);
+                    if (isEmployeeExists != null)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = "Employee Salary deatils Here.";
+                        response.Data = isEmployeeExists;
+                        return Ok(response);
+                    }
+                    else
+                    {
+                        response.StatusCode = StatusCodes.Status401Unauthorized;
+                        response.Message = "Data not found.";
+                        return Ok(response);
+                    }
+                }
+                else
+                {
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Message = "Token is expired.";
+                    return BadRequest(response);
+                }
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("Error :" + ex.Message);
+            }
+        }
+        [HttpPost("EmployeeForgotPassword")]
+        public async Task<IActionResult> EmployeeForgotPassword(ForgotPassword model)
+        {
+            var response = new Utilities.Response<string>();
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userId = User.Claims.FirstOrDefault().Value;
+                    var employee = await _context.EmployeeRegistrations.FirstOrDefaultAsync(x => x.WorkEmail == model.Email && x.EmployeeId == userId);
+                    var EmployeePassword = await _context.EmployeeLogins.FirstOrDefaultAsync(x => x.EmployeeId == employee.EmployeeId);
+                    if (employee == null)
+                    {
+                        response.StatusCode = StatusCodes.Status404NotFound;
+                        response.Message = "Invalid email address.";
+                        return NotFound(response);
+                    }
+                    var newPassword = _dcrypt.GenerateRandomPassword();
+                    EmployeePassword.Password = newPassword;
+                    _context.Update(employee);
+                    await _context.SaveChangesAsync();
+                    await _IEmailService.EmpRandomPasswordSendEmailAsync(model, newPassword, userId);
+                    response.Succeeded = true;
+                    response.StatusCode = StatusCodes.Status200OK;
+                    response.Status = "Success";
+                    response.Message = "Instructions to reset your password have been sent to your email.";
+
+                    return Ok(response);
+                }
+                else
+                {
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Message = "Unauthorized. User not authenticated.";
+                    return Unauthorized(response);
+                }
+            }
+            catch (Exception ex)
+            {
+                response.StatusCode = StatusCodes.Status500InternalServerError;
+                response.Message = "An error occurred while processing your request.";
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
+        }
+        [HttpPost("EmployeeChangePassword")]
+        public async Task<IActionResult> EmployeeChangePassword([FromForm] EmpchangepasswordDto model)
+        {
+            var response = new Utilities.Response<EmpchangepasswordDto>();
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userId = User.Claims.FirstOrDefault().Value;
+                    var employee = await _context.EmployeeRegistrations.FirstOrDefaultAsync(x => x.EmployeeId == userId);
+                    var EmployeePassword = await _context.EmployeeLogins.FirstOrDefaultAsync(x => x.EmployeeId == employee.EmployeeId);
+
+                    if (employee != null)
+                    {
+                        string Password = _dcrypt.DecryptPassword(EmployeePassword.Password);
+
+                        if (Password != model.CurrentPassword)
+                        {
+                            response.StatusCode = StatusCodes.Status400BadRequest;
+                            response.Message = "Current password is incorrect.";
+                            return BadRequest(response);
+                        }
+                        if (model.ConfirmPassword != model.NewPassword)
+                        {
+                            response.StatusCode = StatusCodes.Status400BadRequest;
+                            response.Message = "New Password and Confirm Password does not match.";
+                            return BadRequest(response);
+                        }
+                        EmployeePassword.Password = _encrypt.EncryptPassword(model.NewPassword);
+                        _context.Update(employee);
+                        await _context.SaveChangesAsync();
+
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = "Password changed successfully.";
+                        response.Data = model;
+
+                        return Ok(response);
+                    }
+                    else
+                    {
+                        response.StatusCode = StatusCodes.Status404NotFound;
+                        response.Message = "Employee not found.";
+                        return NotFound(response);
+                    }
+                }
+                else
+                {
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Message = "Unauthorized. User not authenticated.";
+                    return Unauthorized(response);
+                }
+            }
+            catch (Exception ex)
+            {
+                response.StatusCode = StatusCodes.Status500InternalServerError;
+                response.Message = "An error occurred while processing your request.";
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
+        }
     }
 }

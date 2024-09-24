@@ -2,6 +2,18 @@
 
 namespace CRM.Models.DTO
 {
+    public class EmpattendanceDto
+    {
+        public int Id { get; set; }
+        public int? Month { get; set; }
+        public int? Year { get; set; }
+        public string? SalarySlipPath { get; set; }
+        public string? SalarySlipName { get; set; }
+    }
+    public class ForgotPassword
+    {
+        public string? Email { get; set; }
+    }
     public class leavedto
     {
         public List<Leave> GetLeaveList { get; set; }
@@ -24,5 +36,12 @@ namespace CRM.Models.DTO
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public string? Reason { get; set; }
+    }
+    public class EmpchangepasswordDto
+    {
+        public int userId { get; set; }
+        public string CurrentPassword { get; set; }
+        public string NewPassword { get; set; }
+        public string ConfirmPassword { get; set; }
     }
 }

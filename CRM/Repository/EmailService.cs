@@ -179,7 +179,43 @@ namespace CRM.Repository
                 }
             }
         }
+        public async Task EmpRandomPasswordSendEmailAsync(ForgotPassword model, string newPassword, string userId)
+        {
+            try
+            {
+                var emailMessage = new MimeMessage();
+                emailMessage.From.Add(new MailboxAddress("Hirejobindia", "aastrolense@gmail.com"));
+                emailMessage.To.Add(new MailboxAddress("Recipient Name", model.Email));
+                //emailMessage.Cc.Add(new MailboxAddress("Recipient Name", "ndcaretrust@gmail.com"));
+                //emailMessage.Bcc.Add(new MailboxAddress("Recipient Name", "ndinfotechnoida@gmail.com"));
+                emailMessage.Subject = "Hire Job India";
 
+                var textPart = new TextPart("plain")
+                {
+                    Text = "Hi " + userId + ", you have successfully reset your password. Your temporary password is: " + newPassword + ". Please log in and change it as soon as possible for security reasons."
+
+                };
+
+                var multipart = new Multipart("mixed");
+                multipart.Add(textPart);
+
+                emailMessage.Body = multipart;
+
+                using (var client = new MailKit.Net.Smtp.SmtpClient())
+                {
+
+                    await client.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
+                    await client.AuthenticateAsync("aastrolense@gmail.com", "efpbsimjkzxeoxnv");
+                    await client.SendAsync(emailMessage);
+                    await client.DisconnectAsync(true);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 
 }
