@@ -140,6 +140,7 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.UserName).HasMaxLength(120);
             });
+
             modelBuilder.Entity<AggregatedCounter>(entity =>
             {
                 entity.HasKey(e => e.Key)
@@ -1065,6 +1066,7 @@ namespace CRM.Models.Crm
                     .HasMaxLength(255)
                     .HasColumnName("Industry_Name");
             });
+
             modelBuilder.Entity<Job>(entity =>
             {
                 entity.ToTable("Job", "HangFire");
@@ -1110,6 +1112,7 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.FetchedAt).HasColumnType("datetime");
             });
+
             modelBuilder.Entity<Leave>(entity =>
             {
                 entity.ToTable("Leave");
@@ -1134,6 +1137,7 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Value).HasColumnType("decimal(18, 2)");
             });
+
             modelBuilder.Entity<List>(entity =>
             {
                 entity.HasKey(e => new { e.Key, e.Id })
@@ -1578,9 +1582,7 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.CreatedAt).HasColumnType("date");
 
-                entity.Property(e => e.Gst)
-                    .HasMaxLength(100)
-                    .HasColumnName("GST");
+                entity.Property(e => e.Gst).HasColumnName("GST");
 
                 entity.Property(e => e.Hsncode)
                     .HasMaxLength(200)
