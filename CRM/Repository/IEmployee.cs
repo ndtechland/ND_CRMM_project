@@ -14,5 +14,8 @@ namespace CRM.Repository
         public Task<List<State>> Getstate();
         public Task<bankdetail> GetBankdetail(string userid);
         public Task<salarydetails> Getsalarydetails(string userid);
+        public Task<leavedto> LeaveType(string userid);
+        public Task<bool> ApplyLeave(ApplyLeave model, string userid);
+
     }
 }

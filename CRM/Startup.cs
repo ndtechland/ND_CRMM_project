@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using CRM.Controllers;
 using Employee = CRM.Repository.Employee;
+using Hangfire;
 
 namespace CRM
 {
@@ -93,9 +94,14 @@ namespace CRM
                     builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
                 });
             });
-
+            services.AddHangfire(config =>
+            {
+                config.UseSqlServerStorage(Configuration.GetConnectionString("db1"));
+            });
             // Controllers with views
             services.AddControllersWithViews();
+            services.AddHangfireServer();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -113,11 +119,11 @@ namespace CRM
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
-
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSession();
-
+            app.UseHangfireServer();
+            app.UseHangfireDashboard("/hangfire");
             // Routing and CORS
             app.UseRouting();
             app.UseCors("CorsPolicy");

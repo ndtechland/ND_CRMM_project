@@ -35,6 +35,9 @@ namespace CRM.Controllers
 
                 if (id != 0)
                 {
+                    ViewBag.Heading = "Vendor Registration";
+                    ViewBag.btnText = "Update";
+                    var vendor = _context.VendorRegistrations.Where(x => x.Id == id).FirstOrDefault();
                     ViewBag.UserName = AddedBy;
                     var data = _ICrmrpo.GetVendorById(id);
                     if (data != null)
@@ -47,6 +50,7 @@ namespace CRM.Controllers
                             })
                             .ToList();
                         ViewBag.SelectedStateId = data.StateId;
+                        ViewBag.Price = vendor.Productprice;
                         ViewBag.Renewprice = data.Renewprice;
                         ViewBag.NoOfRenewMonth = data.NoOfRenewMonth;
                         ViewBag.SelectedCityId = data.WorkLocation;
@@ -56,6 +60,8 @@ namespace CRM.Controllers
                         return View(data);
                     }
                 }
+                ViewBag.Heading = "Vendor Registration";
+                ViewBag.btnText = "SAVE";
                 ViewBag.UserName = AddedBy;
                 ViewBag.SelectedStateId = null;
                 ViewBag.SelectedCityId = null;

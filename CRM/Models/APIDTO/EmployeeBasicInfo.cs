@@ -27,5 +27,7 @@
         public string? Panimg { get; set; }
         public string? AadharTwo { get; set; }
         public string? FatherName { get; set; }
+        public string? ShiftTime { get; set; }
+        public string? ShiftType { get; set; }
     }
 }

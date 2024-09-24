@@ -4,6 +4,7 @@
     ViewData["Title"] = "Departmentlist";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
 <div class="page-wrapper">
     <div class="page-body-wrapper">
@@ -53,34 +54,34 @@
 
                                     <br />
                                     <table id="datatable" class="table table-responsive">
-                                      <thead>
+                                        <thead>
                                             <tr style="background-color: #00baf2;">
                                                 <th nowrap>Sl. No.</th>
-                                        <th>
-                                         Department Name
-                                          </th>
-                                        <th>Action</th>
-                                        </tr>
-                                      </thead>
+                                                <th>
+                                                    Department Name
+                                                </th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
                                         <tbody>
                                             @{
                                                 var count = 0;
-                                            @foreach (var item in Model)
-                                            {
+                                                @foreach (var item in Model)
+                                                {
                                                     count++;
-                                                <tr class="table-row">
+                                                    <tr class="table-row">
                                                         <td>@count</td>
-                                                    <td>
-                                                        @Html.DisplayFor(modelItem => item.DepartmentName)
-                                                    </td>
-                                                    <td>
-                                                        <div>
-                                                                <a href="#" class="fa fa-edit m-2 font-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="EditDepartment(@item.Id)"></a>
-                                                            <a href="@Url.Action("DeleteDepartment","Home",new { id=item.Id})" class="fa fa-trash font-danger"></a>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            }
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.DepartmentName)
+                                                        </td>
+                                                        <td>
+                                                            <div>
+                                                                <a href="@Url.Action("Department","Home",new { id=item.Id})" class="fa fa-edit m-2 font-success"></a>
+                                                                <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteDepartment", "Home", new { id = item.Id })')" class="fa fa-trash font-danger"></a>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                }
                                             }
                                         </tbody>
                                     </table>
@@ -90,64 +91,74 @@
                         </div>
                     </div>
                 </div>
-            </div>            
+            </div>
+            <div id="pagination-container">
+                <ul id="pagination" class="pagination"></ul>
+            </div>
         </div>
 
 
     </div>
 
 </div>
-<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="staticBackdropLabel">Edit Department</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-12">
-                        <form action="EditDepartment" method="post" autocomplete="off">
-                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                            <input name="Id" type="text" id="Id" style="display:none">
 
-                            <div class="row">
-                                <div class="form-group col-sm">
-                                    <label for="validationCustom0"> Department Name</label>
-                                    <input class="form-control" id="DepartmentName" name="DepartmentName" type="text" required="">
-
-                                </div>
-                            </div>
-
-
-                            <button class="btn btn-warning" id="btnUpdate">Update</button>
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
-    function EditDepartment(id) {
-        debugger;
-        $.ajax({
-            url: '/Home/EditDepartment?id=' + id,
-            type: 'GET',
-            dataType: 'json',
-            contentType: 'application/json; charset=utf-8',
-            success: function (response) {
-                debugger;
-                $('#Id').val(response.loc.id);
-                $('#DepartmentName').val(response.loc.departmentName);
-                $('#staticBackdrop').modal('show');
-            },
-            error: function () {
-                alert('Data not found');
+    var currentPage = 1;
+    var rowsPerPage = 5;
+    $(document).ready(function () {
+        function paginateTable() {
+            var table = $('#datatable');
+            var rows = table.find('tbody tr');
+
+
+            var totalPages = Math.ceil(rows.length / rowsPerPage);
+
+
+            var pagination = $('#pagination');
+            pagination.empty();
+
+            for (var i = 1; i <= totalPages; i++) {
+                var link = $('<li class="page-item"><a class="page-link" href="#">' + i + '</a></li>');
+
+
+                if (i === currentPage) {
+                    link.addClass('active');
+                }
+
+                pagination.append(link);
             }
+
+
+            var startIndex = (currentPage - 1) * rowsPerPage;
+            var endIndex = startIndex + rowsPerPage;
+
+            rows.hide().slice(startIndex, endIndex).show();
+        }
+
+
+        paginateTable();
+
+        $(document).on('click', '#pagination li a', function (event) {
+            event.preventDefault();
+
+            var clickedPage = parseInt($(this).text());
+
+
+            currentPage = clickedPage;
+            paginateTable();
+
+
+            $('html, body').animate({ scrollTop: $('#table-container').offset().top }, 'slow');
         });
+    });
+
+</script>
+<script>
+    function confirmDelete(url) {
+        var result = confirm("Are you sure you want to delete?");
+        if (result) {
+            window.location.href = url;
+        }
     }
 </script>
