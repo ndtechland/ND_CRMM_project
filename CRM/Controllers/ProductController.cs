@@ -29,7 +29,7 @@ namespace CRM.Controllers
                 ViewBag.Gst = await _context.GstMasters.Select(w => new SelectListItem
                 {
                     Value = w.Id.ToString(),
-                    Text = w.GstPercentagen
+                    Text = w.GstPercentagen + "%"
                 }).ToListAsync();
                 ViewBag.Category = await _context.Categories.Select(w => new SelectListItem
                 {

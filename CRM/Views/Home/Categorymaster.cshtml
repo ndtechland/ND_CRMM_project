@@ -1,0 +1,104 @@
+﻿@model CRM.Models.Crm.Category
+
+@{
+    ViewData["Title"] = "Category";
+    Layout = "~/Views/Shared/_adminLayout.cshtml";
+}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var message = "@TempData["Message"]";
+
+        if (message) {
+            Swal.fire({
+                title: 'Success',
+                text: message,
+                icon: 'info',
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    setTimeout(function () {
+                        window.location.href = '@Url.Action("Categorymasterlist", "Home")';
+                    }, 1000);
+                }
+            });
+        }
+    });
+</script>
+
+<div class="page-wrapper">
+    <div class="page-body-wrapper">
+        <div class="page-sidebar">
+        </div>
+
+        <div class="page-body">
+
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="page-header-left">
+                                <h2>
+                                    @ViewBag.Heading
+                                </h2>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <ol class="breadcrumb pull-right">
+                                <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
+                                <li class="breadcrumb-item">Settings</li>
+                                <li class="breadcrumb-item active">Category</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Container-fluid Ends-->
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <form asp-action="Categorymaster" autocomplete="off" onsubmit="return validateForm()">
+                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                    <div class="form-group col-sm-4">
+                                        <label class="control-label">Category Name</label>
+                                        <input type="hidden" asp-for="Id" value="@ViewBag.id" />
+                                        <input asp-for="CategoryName" value="@ViewBag.CategoryName" class="form-control" />
+                                        <span asp-validation-for="CategoryName" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="submit" value="@ViewBag.btnText" class="btn btn-primary" />
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>
+<script>
+    function validateForm() {
+        var designationName = document.getElementById('CategoryName').value;
+
+        if (designationName.trim() === '') {
+            alert('Category Name  cannot be blank.');
+            return false;
+        }
+
+        return true;
+    }
+</script>

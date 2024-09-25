@@ -770,7 +770,245 @@ namespace CRM.Controllers
             }
         }
 
+        [HttpGet, Route("Home/Gstmaster")]
+        public IActionResult Gstmaster(int? id = 0)
+        {
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
+                ViewBag.UserName = AddedBy;
+                ViewBag.id = "";
+                ViewBag.GstPercentagen = "";
+                ViewBag.Scgst = "";
+                ViewBag.Cgst = "";
+                ViewBag.Igst = "";
+                ViewBag.Heading = "Add Gst";
+                ViewBag.btnText = "SAVE";
+                if (id != 0)
+                {
+                    var data = _context.GstMasters.Where(x => x.Id == id).FirstOrDefault();
+                    if (data != null)
+                    {
+                        ViewBag.id = data.Id;
+                        ViewBag.GstPercentagen = data.GstPercentagen;
+                        ViewBag.Scgst = data.Scgst;
+                        ViewBag.Cgst = data.Cgst;
+                        ViewBag.Igst = data.Igst;
+                        ViewBag.Heading = "Update Gst";
+                        ViewBag.btnText = "Update";
+                    }
+                }
+                return View();
 
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> Gstmaster(GstMaster model)
+        {
+            string AddedBy = HttpContext.Session.GetString("UserName");
+            int UserId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+            var adminlogin = await _context.AdminLogins.Where(x => x.Id == UserId).FirstOrDefaultAsync();
+            ViewBag.UserName = AddedBy;
+
+            if (model == null)
+            {
+                ModelState.AddModelError("", "Model cannot be null.");
+                return View(model);
+            }
+            if (!decimal.TryParse(model.GstPercentagen, out decimal gstPercentage))
+            {
+                ModelState.AddModelError("", "Invalid GST Percentage value.");
+                return View(model);
+            }
+
+            decimal halfGst = gstPercentage / 2; 
+
+            if (model.Id != 0)  
+            {
+                var gst = await _context.GstMasters.FirstOrDefaultAsync(x => x.Id == model.Id);
+                if (gst != null)
+                {
+                    gst.GstPercentagen = gstPercentage.ToString();  
+                    gst.Scgst = halfGst.ToString();  
+                    gst.Cgst = halfGst.ToString();  
+                    gst.Igst = gstPercentage.ToString();  
+
+                    await _context.SaveChangesAsync();
+                    TempData["Message"] = "Data updated successfully.";
+                    return RedirectToAction("Gstmaster", "Home");
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Record not found for update.");
+                    return View(model);
+                }
+            }
+            else  
+            {
+                GstMaster master = new GstMaster
+                {
+                    GstPercentagen = gstPercentage.ToString(),  
+                    Scgst = halfGst.ToString(), 
+                    Cgst = halfGst.ToString(),  
+                    Igst = gstPercentage.ToString(), 
+                };
+
+                await _context.GstMasters.AddAsync(master);
+                await _context.SaveChangesAsync();
+                TempData["Message"] = "Data added successfully.";
+                return RedirectToAction("Gstmaster", "Home");
+            }
+        }
+        [HttpGet]
+        public IActionResult Gstmasterlist()
+        {
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                var response = _context.GstMasters.ToList();
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName = AddedBy;
+                return View(response);
+
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
+        }
+
+        public async Task<IActionResult> DeleteGstmaster(int id)
+        {
+            try
+            {
+                var data = _context.GstMasters.Find(id);
+                if (data != null)
+                {
+                    _context.GstMasters.Remove(data);
+                    _context.SaveChanges();
+                }
+                return RedirectToAction("Gstmasterlist");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception();
+            }
+        }
+
+        [HttpGet, Route("Home/Categorymaster")]
+        public IActionResult Categorymaster(int? id = 0)
+        {
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
+                ViewBag.UserName = AddedBy;
+                ViewBag.id = "";
+                ViewBag.CategoryName = "";
+                ViewBag.Heading = "Add Category";
+                ViewBag.btnText = "SAVE";
+                if (id != 0)
+                {
+                    var data = _context.Categories.Where(x => x.Id == id).FirstOrDefault();
+                    if (data != null)
+                    {
+                        ViewBag.id = data.Id;
+                        ViewBag.CategoryName = data.CategoryName;
+                        ViewBag.Heading = "Update Category";
+                        ViewBag.btnText = "Update";
+                    }
+                }
+                return View();
+
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> Categorymaster(Models.Crm.Category model)
+        {
+            string AddedBy = HttpContext.Session.GetString("UserName");
+            int UserId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+            var adminlogin = await _context.AdminLogins.Where(x => x.Id == UserId).FirstOrDefaultAsync();
+            ViewBag.UserName = AddedBy;
+
+            if (model == null)
+            {
+                ModelState.AddModelError("", "Model cannot be null.");
+                return View(model);
+            }
+          
+            if (model.Id != 0)
+            {
+                var ca = await _context.Categories.FirstOrDefaultAsync(x => x.Id == model.Id);
+                if (ca != null)
+                {
+                    ca.CategoryName = model.CategoryName;
+                    await _context.SaveChangesAsync();
+                    TempData["Message"] = "Data updated successfully.";
+                    return RedirectToAction("Categorymaster", "Home");
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Record not found for update.");
+                    return View(model);
+                }
+            }
+            else
+            {
+                Models.Crm.Category master = new Models.Crm.Category
+                {
+                    CategoryName = model.CategoryName,
+                };
+
+                await _context.Categories.AddAsync(master);
+                await _context.SaveChangesAsync();
+                TempData["Message"] = "Data added successfully.";
+                return RedirectToAction("Categorymaster", "Home");
+            }
+        }
+        [HttpGet]
+        public IActionResult Categorymasterlist()
+        {
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                var response = _context.Categories.ToList();
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName = AddedBy;
+                return View(response);
+
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
+        }
+
+        public async Task<IActionResult> DeleteCategorymaster(int id)
+        {
+            try
+            {
+                var data = _context.Categories.Find(id);
+                if (data != null)
+                {
+                    _context.Categories.Remove(data);
+                    _context.SaveChanges();
+                }
+                return RedirectToAction("Gstmasterlist");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception();
+            }
+        }
 
     }
 
