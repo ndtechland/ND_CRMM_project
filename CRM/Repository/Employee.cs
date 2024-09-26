@@ -236,7 +236,8 @@ namespace CRM.Repository
             try
             {
                 string panImagePath = "";
-                string aadharImagePath = "";
+                string aadharImagePath1 = "";
+                string aadharImagePath2 = "";
                 FileOperation fileOperation = new FileOperation(_webHostEnvironment);
                 string[] allowedExtensions = { ".jpg", ".jpeg", ".png" };
                 if (model.PanbaseImage != null)
@@ -247,6 +248,16 @@ namespace CRM.Repository
                     }
                     panImagePath = fileOperation.SaveBase64Image("img1", model.PanbaseImage, allowedExtensions);
                     if (panImagePath == "not allowed")
+                    {
+                        throw new Exception("File upload not allowed.");
+                    }
+                    aadharImagePath1 = fileOperation.SaveBase64Image("img1", model.Aadhar1, allowedExtensions);
+                    if (aadharImagePath1 == "not allowed")
+                    {
+                        throw new Exception("File upload not allowed.");
+                    }
+                    aadharImagePath2 = fileOperation.SaveBase64Image("img1", model.Aadhar2, allowedExtensions);
+                    if (aadharImagePath2 == "not allowed")
                     {
                         throw new Exception("File upload not allowed.");
                     }
@@ -276,27 +287,13 @@ namespace CRM.Repository
                     {
                         apppersonal.Panimg = fileOperation.SaveBase64Image("img1", model.PanbaseImage, allowedExtensions);
                     }
-                    if (model.AadharImage != null && model.AadharImage.Count > 0)
+                    if (!string.IsNullOrEmpty(aadharImagePath1))
                     {
-                        for (int i = 0; i < model.AadharImage.Count; i++)
-                        {
-                            if (model.AadharImage[i] != null)
-                            {
-                                aadharImagePath = fileOperation.SaveBase64Image("img1", model.AadharImage[i], allowedExtensions);
-                                if (aadharImagePath == "not allowed")
-                                {
-                                    throw new Exception("File upload not allowed.");
-                                }
-                                if (i == 0)
-                                {
-                                    apppersonal.AadharOne = aadharImagePath; ;
-                                }
-                                else if (i == 1)
-                                {
-                                    apppersonal.AadharTwo = aadharImagePath;
-                                }
-                            }
-                        }
+                        apppersonal.Panimg = fileOperation.SaveBase64Image("img1", model.Aadhar1, allowedExtensions);
+                    }
+                    if (!string.IsNullOrEmpty(aadharImagePath2))
+                    {
+                        apppersonal.Panimg = fileOperation.SaveBase64Image("img1", model.Aadhar2, allowedExtensions);
                     }
                     if (model.Empprofile != null)
                     {
@@ -329,21 +326,15 @@ namespace CRM.Repository
                         empP.FatherName = model.FatherName;
                         empP.UpdateDate = DateTime.Now.Date;
                         empP.IsApproved = false;
-                        if (model.AadharImage != null && model.AadharImage.Count > 0)
+                        if (model.Aadhar1 != null)
                         {
-                            for (int i = 0; i < model.AadharImage.Count; i++)
-                            {
-                                aadharImagePath = fileOperation.SaveBase64Image("img1", model.AadharImage[i], allowedExtensions);
-
-                                if (i == 0)
-                                {
-                                    empP.AadharOne = aadharImagePath;
-                                }
-                                else if (i == 1)
-                                {
-                                    empP.AadharTwo = aadharImagePath;
-                                }
-                            }
+                            panImagePath = fileOperation.SaveBase64Image("img1", model.Aadhar1, allowedExtensions);
+                            empP.AadharOne = aadharImagePath1;
+                        }
+                        if (model.Aadhar2 != null)
+                        {
+                            panImagePath = fileOperation.SaveBase64Image("img1", model.Aadhar2, allowedExtensions);
+                            empP.AadharTwo = aadharImagePath2;
                         }
                         if (model.PanbaseImage != null)
                         {

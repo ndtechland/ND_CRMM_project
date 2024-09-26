@@ -25,7 +25,8 @@ namespace CRM.Models.APIDTO
 
         [NotMapped]
         public IFormFile Empprofile { get; set; }
-        public List<IFormFile> AadharImage { get; set; }
+        public IFormFile Aadhar1 { get; set; }
+        public IFormFile Aadhar2 { get; set; }
         public IFormFile PanbaseImage { get; set; }
     }
 
