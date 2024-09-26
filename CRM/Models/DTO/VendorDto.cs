@@ -53,5 +53,8 @@ namespace CRM.Models.DTO
 
         public IFormFile ImageFile { get; set; }
         public string UserName { get; set; } = null!;
+        public string radious { get; set; } = null!;
+        public string maplat { get; set; } = null!;
+        public string maplong { get; set; } = null!;
     }
 }
