@@ -422,11 +422,11 @@ namespace CRM.Models.Crm
                     .HasColumnType("date")
                     .HasColumnName("Renew_Date");
 
+                entity.Property(e => e.Renewprice).HasMaxLength(100);
+
                 entity.Property(e => e.StartDate)
                     .HasColumnType("date")
                     .HasColumnName("Start_date");
-
-                entity.Property(e => e.State).HasMaxLength(255);
 
                 entity.Property(e => e.StateId).HasColumnName("stateId");
 
@@ -1623,6 +1623,16 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Location).HasMaxLength(200);
 
+                entity.Property(e => e.Maplat)
+                    .HasMaxLength(200)
+                    .IsUnicode(false)
+                    .HasColumnName("maplat");
+
+                entity.Property(e => e.Maplong)
+                    .HasMaxLength(200)
+                    .IsUnicode(false)
+                    .HasColumnName("maplong");
+
                 entity.Property(e => e.MobileNumber)
                     .HasMaxLength(255)
                     .HasColumnName("Mobile_number");
@@ -1634,6 +1644,11 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.Productprice)
                     .HasMaxLength(200)
                     .HasColumnName("productprice");
+
+                entity.Property(e => e.Radious)
+                    .HasMaxLength(200)
+                    .IsUnicode(false)
+                    .HasColumnName("radious");
 
                 entity.Property(e => e.RenewDate)
                     .HasColumnType("date")

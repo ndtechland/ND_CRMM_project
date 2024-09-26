@@ -24,8 +24,10 @@ namespace CRM.Models.DTO
         public double Price { get; set; }
         public string productprice { get; set; }
         public int? NoOfRenewMonth { get; set; }
+        public int? BillingCityId { get; set; }
         public string? Renewprice { get; set; }
         public string? State { get; set; }
+        public string? BillingStateId { get; set; }
         public int? StateId { get; set; }
         public string StateName { get; set; } = null!;
         public string? Location { get; set; }
