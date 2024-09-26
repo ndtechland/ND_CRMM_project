@@ -251,10 +251,24 @@ namespace CRM.Repository
                     {
                         throw new Exception("File upload not allowed.");
                     }
+                }
+                if (model.Aadhar1 != null)
+                {
+                    if (model.Aadhar1.Length > 10 * 1024 * 1024)
+                    {
+                        throw new Exception("Pan file size exceeds the 10 MB limit.");
+                    }
                     aadharImagePath1 = fileOperation.SaveBase64Image("img1", model.Aadhar1, allowedExtensions);
                     if (aadharImagePath1 == "not allowed")
                     {
                         throw new Exception("File upload not allowed.");
+                    }
+                }
+                if (model.Aadhar2 != null)
+                {
+                    if (model.Aadhar2.Length > 10 * 1024 * 1024)
+                    {
+                        throw new Exception("Pan file size exceeds the 10 MB limit.");
                     }
                     aadharImagePath2 = fileOperation.SaveBase64Image("img1", model.Aadhar2, allowedExtensions);
                     if (aadharImagePath2 == "not allowed")
@@ -264,8 +278,6 @@ namespace CRM.Repository
                 }
                 var emp = await _context.EmployeeRegistrations.Where(x => x.EmployeeId == userid && x.IsDeleted == false).FirstOrDefaultAsync();
                 var apppersonal = await _context.ApprovedPresnolInfos.Where(x => x.EmployeeId == userid).FirstOrDefaultAsync();
-
-
                 if (apppersonal != null)
                 {
                     apppersonal.Vendorid = emp.Vendorid;
@@ -289,11 +301,11 @@ namespace CRM.Repository
                     }
                     if (!string.IsNullOrEmpty(aadharImagePath1))
                     {
-                        apppersonal.Panimg = fileOperation.SaveBase64Image("img1", model.Aadhar1, allowedExtensions);
+                        apppersonal.AadharOne = fileOperation.SaveBase64Image("img1", model.Aadhar1, allowedExtensions);
                     }
                     if (!string.IsNullOrEmpty(aadharImagePath2))
                     {
-                        apppersonal.Panimg = fileOperation.SaveBase64Image("img1", model.Aadhar2, allowedExtensions);
+                        apppersonal.AadharTwo = fileOperation.SaveBase64Image("img1", model.Aadhar2, allowedExtensions);
                     }
                     if (model.Empprofile != null)
                     {
@@ -328,12 +340,12 @@ namespace CRM.Repository
                         empP.IsApproved = false;
                         if (model.Aadhar1 != null)
                         {
-                            panImagePath = fileOperation.SaveBase64Image("img1", model.Aadhar1, allowedExtensions);
+                            aadharImagePath1 = fileOperation.SaveBase64Image("img1", model.Aadhar1, allowedExtensions);
                             empP.AadharOne = aadharImagePath1;
                         }
                         if (model.Aadhar2 != null)
                         {
-                            panImagePath = fileOperation.SaveBase64Image("img1", model.Aadhar2, allowedExtensions);
+                            aadharImagePath2 = fileOperation.SaveBase64Image("img1", model.Aadhar2, allowedExtensions);
                             empP.AadharTwo = aadharImagePath2;
                         }
                         if (model.PanbaseImage != null)
@@ -454,7 +466,7 @@ namespace CRM.Repository
                     var result = _context.Empattendances.Where(x => x.EmployeeId == userid).Select(x => new EmpattendanceDto
                     {
                         Id = x.Id,
-                        SalarySlipPath = "~/EMPpdfs/" + x.SalarySlip,
+                        SalarySlipPath = "/EMPpdfs/" + x.SalarySlip,
                         Month = x.Month,
                         Year = x.Year,
                         SalarySlipName = getMonthName(x.Month) + '-' + x.Year
@@ -509,9 +521,10 @@ namespace CRM.Repository
                 {
                     var result = _context.Empattendances.Where(x => x.EmployeeId == userid && x.Month == month && x.Year == year).Select(x => new EmpattendanceDto
                     {
-                        SalarySlipPath = "~/EMPpdfs/" + x.SalarySlip,
+                        SalarySlipPath = "/EMPpdfs/" + x.SalarySlip,
                         Month = x.Month,
-                        Year = x.Year
+                        Year = x.Year,
+                        SalarySlipName = getMonthName(x.Month) + '-' + x.Year
                     }).FirstOrDefault();
                     return result;
                 }

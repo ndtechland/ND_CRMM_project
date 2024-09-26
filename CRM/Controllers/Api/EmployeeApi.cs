@@ -516,7 +516,7 @@ namespace CRM.Controllers.Api
                     response.StatusCode = StatusCodes.Status200OK;
                     response.Status = "Success";
                     response.Message = "Instructions to reset your password have been sent to your email.";
-
+                    response.Data = employee.WorkEmail;
                     return Ok(response);
                 }
                 else
@@ -534,7 +534,7 @@ namespace CRM.Controllers.Api
             }
         }
         [HttpPost("EmployeeChangePassword")]
-        public async Task<IActionResult> EmployeeChangePassword([FromForm] EmpchangepasswordDto model)
+        public async Task<IActionResult> EmployeeChangePassword(EmpchangepasswordDto model)
         {
             var response = new Utilities.Response<EmpchangepasswordDto>();
             try
@@ -547,9 +547,7 @@ namespace CRM.Controllers.Api
 
                     if (employee != null)
                     {
-                        string Password = _dcrypt.DecryptPassword(EmployeePassword.Password);
-
-                        if (Password != model.CurrentPassword)
+                        if (EmployeePassword.Password != model.CurrentPassword)
                         {
                             response.StatusCode = StatusCodes.Status400BadRequest;
                             response.Message = "Current password is incorrect.";
@@ -561,7 +559,7 @@ namespace CRM.Controllers.Api
                             response.Message = "New Password and Confirm Password does not match.";
                             return BadRequest(response);
                         }
-                        EmployeePassword.Password = _encrypt.EncryptPassword(model.NewPassword);
+                        EmployeePassword.Password = model.NewPassword;
                         _context.Update(employee);
                         await _context.SaveChangesAsync();
 
