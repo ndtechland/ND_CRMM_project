@@ -147,7 +147,7 @@
                                         </div>
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">State <span class="text-danger">*</span></label>
-                                            <select asp-for="State" asp-items="@ViewBag.StateItems" id="stateid" class="form-control" required>
+                                            <select asp-for="BillingStateId" asp-items="@ViewBag.StateItems" id="stateid" class="form-control" required>
                                                 <option value="">--Select State--</option>
                                             </select>
                                         </div>
@@ -165,7 +165,28 @@
                                             <span asp-validation-for="ProductDetails" class="text-danger"></span>
                                         </div>
                                     </div>
+                                    <div class="row">
+                                        <div class="form-group col-sm">
+                                            <label for="validationCustom0">Price <span class="text-danger">*</span></label>
+                                            <input class="form-control" name="Price" placeholder="00.0" id="Price" type="text" readonly>
+                                            <span asp-validation-for="Price" class="text-danger"></span>
+                                        </div>
+                                        <div class="form-group col-sm">
+                                            <label for="validationCustom0">Renew Price <span class="text-danger">*</span></label>
+                                            <input class="form-control" name="Renewprice" value="@ViewBag.Renewprice" id="Renewprice" type="text" onkeydown="validateNumericInput(event)">
+                                            <span asp-validation-for="Renewprice" class="text-danger"></span>
+                                        </div>
+                                        <div class="form-group col-sm">
+                                            <label for="validationCustom0">Number Of Renew Month <span class="text-danger">*</span></label>
+                                            <input class="form-control" name="NoOfRenewMonth" placeholder="1" value="@ViewBag.NoOfRenewMonth" id="NoOfRenewMonth" type="text" onkeydown="validateNumericInput(event)" maxlength="2">
+                                            <span asp-validation-for="NoOfRenewMonth" class="text-danger"></span>
+                                        </div>
+                                        <div class="form-group col-sm">
+                                            <label for="validationCustom0">HSN Code</label>
+                                            <input type="text" asp-for="HsnSacCode" id="HsnSacCode" placeholder="HsnSacCode" class="form-control" readonly />
+                                        </div>
 
+                                    </div>
                                     <div class="row">
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Start Date <span class="text-danger">*</span></label>
@@ -174,22 +195,11 @@
                                         </div>
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Renew Date <span class="text-danger">*</span></label>
-                                            <input name="RenewDate" type="date" class="form-control" required="" oninvalid="this.setCustomValidity('Please select RenewDate')" oninput="this.setCustomValidity('')" value="@ViewBag.renewDate" />
+                                            <input name="RenewDate" type="date" id="RenewDate" class="form-control" required="" oninvalid="this.setCustomValidity('Please select RenewDate')" oninput="this.setCustomValidity('')" value="@ViewBag.renewDate" />
                                             <span asp-validation-for="RenewDate" class="text-danger"></span>
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="form-group col-sm">
-                                            <label for="validationCustom0">Price <span class="text-danger">*</span></label>
-                                            <input class="form-control" name="Price" placeholder="00.0" id="Price" type="text" readonly>
-                                            <span asp-validation-for="Price" class="text-danger"></span>
-                                        </div>                                      
-                                        <div class="form-group col-sm">
-                                            <label for="validationCustom0">HSN Code</label>
-                                            <input type="text" asp-for="HsnSacCode" id="HsnSacCode" placeholder="HsnSacCode" class="form-control" readonly />
-                                        </div>
-
-                                    </div>
+                                    
 
                                     <div class="row">
                                         
@@ -719,7 +729,7 @@
                     $('#Price').val(response.data.price);
 
                     // Check if the selected state is Uttar Pradesh
-                    if (stateId === '23') {
+                    if (ViewBag.checkvendorbillingstateid === stateId) {
                         $('#CGST').val(response.data.cgst);
                         $('#SGST').val(response.data.scgst);
                         $('#IGST').val(''); // Clear IGST
@@ -766,6 +776,26 @@
             }
         }
     }
+</script>
+<script>
+    function calculateRenewDate() {
+        const renewMonth = parseInt(document.getElementById('NoOfRenewMonth').value);
+        const startDate = document.getElementById('StartDate').value;
+
+        if (renewMonth && startDate) {
+            const start = new Date(startDate);
+            start.setMonth(start.getMonth() + renewMonth); // Add the inputted number of months
+
+            // Format date as YYYY-MM-DD
+            const formattedDate = start.toISOString().split('T')[0];
+
+            document.getElementById('RenewDate').value = formattedDate;
+        }
+    }
+
+    // Event listeners for both Start Date and Number Of Renew Month fields
+    document.getElementById('NoOfRenewMonth').addEventListener('input', calculateRenewDate);
+    document.getElementById('StartDate').addEventListener('input', calculateRenewDate);
 </script>
 
 

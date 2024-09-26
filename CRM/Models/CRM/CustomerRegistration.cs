@@ -16,9 +16,11 @@ namespace CRM.Models.Crm
         public string? ProductDetails { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime RenewDate { get; set; }
-        public string? State { get; set; }
         public int? StateId { get; set; }
         public int? Vendorid { get; set; }
         public int? BillingCityId { get; set; }
+        public int? BillingStateId { get; set; }
+        public string? Renewprice { get; set; }
+        public int? NoOfRenewMonth { get; set; }
     }
 }

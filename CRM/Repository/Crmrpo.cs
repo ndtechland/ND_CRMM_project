@@ -129,7 +129,7 @@ namespace CRM.Repository
                     parameters.Add("@Product_Details", model.ProductDetails);
                     parameters.Add("@Start_date", model.StartDate);
                     parameters.Add("@Renew_Date", model.RenewDate);
-                    parameters.Add("@State", model.State);
+                    parameters.Add("@BillingStateId", model.BillingStateId);
                     parameters.Add("@stateId", model.StateId);
                     parameters.Add("@BillingCityId", model.BillingCityId);
                     parameters.Add("@Vendorid", vendorid);
@@ -178,7 +178,7 @@ namespace CRM.Repository
                             ProductDetails = rdr["Product_Details"] == DBNull.Value ? "0" : Convert.ToString(rdr["Product_Details"]),
                             StartDate = rdr["Start_date"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(rdr["Start_date"]),
                             RenewDate = rdr["Renew_Date"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(rdr["Renew_Date"]),
-                            State = rdr["State"] == DBNull.Value ? null : Convert.ToString(rdr["State"]),
+                            BillingStateId = rdr["BillingStateId"] == DBNull.Value ? null : Convert.ToString(rdr["BillingStateId"]),
                             StateName = rdr["statename"] == DBNull.Value ? null : Convert.ToString(rdr["statename"]),
                         };
 
@@ -919,7 +919,7 @@ namespace CRM.Repository
                         ProductDetails = rdr["ProductDetails"] == DBNull.Value ? null : Convert.ToString(rdr["ProductDetails"]),
                         StartDate = (DateTime)(rdr["Start_date"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(rdr["Start_date"])),
                         RenewDate = (DateTime)(rdr["Renew_Date"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(rdr["Renew_Date"])),
-                        State = rdr["State"] == DBNull.Value ? null : Convert.ToString(rdr["State"]),
+                        BillingStateId = rdr["BillingStateId"] == DBNull.Value ? null : Convert.ToString(rdr["BillingStateId"]),
                         StateId = rdr["stateId"] == DBNull.Value ? (int?)null : Convert.ToInt32(rdr["stateId"]),
                     };
                 }
@@ -966,7 +966,7 @@ namespace CRM.Repository
             parameter.Add(new SqlParameter("@Product_Details", model.ProductDetails));
             parameter.Add(new SqlParameter("@Start_date", model.StartDate));
             parameter.Add(new SqlParameter("@Renew_Date", model.RenewDate));
-            parameter.Add(new SqlParameter("@State", model.State));
+            parameter.Add(new SqlParameter("@BillingStateId", model.BillingStateId));
             parameter.Add(new SqlParameter("@stateId", model.StateId));
             var result = await _context.Database.ExecuteSqlRawAsync(@"exec sp_updateCustomer_Reg @id,@Company_Name, @Work_Location,@Mobile_number,@Alternate_number,@Email,@GST_Number,@Billing_Address,@Product_Details,@Start_date,@Renew_Date,@State,@stateId", parameter.ToArray());
             return result;
@@ -1429,90 +1429,103 @@ namespace CRM.Repository
         }
         public async Task<VendorRegResultDTO> Vendorreg(VendorDto model)
         {
-            var parameters = new List<SqlParameter>
-    {
-        new SqlParameter("@Company_Name", model.CompanyName),
-        new SqlParameter("@Work_Location", string.Join(",", model.WorkLocation)),
-        new SqlParameter("@Mobile_number", model.MobileNumber),
-        new SqlParameter("@Alternate_number", model.AlternateNumber),
-        new SqlParameter("@Email", model.Email),
-        new SqlParameter("@GST_Number", model.GstNumber),
-        new SqlParameter("@Billing_Address", model.BillingAddress),
-        new SqlParameter("@Product_Details", model.ProductDetails),
-        new SqlParameter("@Start_date", model.StartDate),
-        new SqlParameter("@Renew_Date", model.RenewDate),
-        new SqlParameter("@State", model.State),
-        new SqlParameter("@stateId", model.StateId),
-        new SqlParameter("@Location", model.Location),
-        new SqlParameter("@productprice", model.Price),
-        new SqlParameter("@Renewprice", model.Renewprice),
-        new SqlParameter("@NoOfRenewMonth", model.NoOfRenewMonth),
-        
-        // Add output parameter
-        new SqlParameter
-        {
-            ParameterName = "@CustomerId",
-            SqlDbType = SqlDbType.Int,
-            Direction = ParameterDirection.Output
-        }
-    };
-            string dynamicUserName = GenerateDynamicUsername(model.CompanyName);
-            string dynamicPassword = GenerateDynamicPassword();
-
-            // Execute stored procedure
-            await _context.Database.ExecuteSqlRawAsync("exec VendorRegistration @Company_Name, @Work_Location, @Mobile_number, @Alternate_number, @Email, @GST_Number, @Billing_Address, @Product_Details, @Start_date, @Renew_Date, @State, @stateId,@Location,@productprice,@Renewprice,@NoOfRenewMonth, @CustomerId OUTPUT", parameters.ToArray());
-
-            // Get the new CustomerId
-            int newCustomerId = (int)parameters.First(p => p.ParameterName == "@CustomerId").Value;
-
-            if (newCustomerId > 0)
+            using (var connection = new SqlConnection(Configuration.GetConnectionString("db1"))) // Use your actual connection string here
             {
-                var adminRole = new AdminLogin
+                // Generate dynamic username and password
+                string dynamicUserName = GenerateDynamicUsername(model.CompanyName);
+                string dynamicPassword = GenerateDynamicPassword();
+
+                // Set up parameters for the stored procedure
+                var parameters = new DynamicParameters();
+                parameters.Add("@Company_Name", model.CompanyName);
+                parameters.Add("@Work_Location", string.Join(",", model.WorkLocation));
+                parameters.Add("@Mobile_number", model.MobileNumber);
+                parameters.Add("@Alternate_number", model.AlternateNumber);
+                parameters.Add("@Email", model.Email);
+                parameters.Add("@GST_Number", model.GstNumber);
+                parameters.Add("@Billing_Address", model.BillingAddress);
+                parameters.Add("@Product_Details", model.ProductDetails);
+                parameters.Add("@Start_date", model.StartDate);
+                parameters.Add("@Renew_Date", model.RenewDate);
+                parameters.Add("@BillingStateId", model.BillingStateId);
+                parameters.Add("@BillingCityId", model.BillingCityId);
+                parameters.Add("@stateId", model.StateId);
+                parameters.Add("@Location", model.Location);
+                parameters.Add("@productprice", model.Price);
+                parameters.Add("@Renewprice", model.Renewprice);
+                parameters.Add("@NoOfRenewMonth", model.NoOfRenewMonth);
+
+                // Add the output parameter for CustomerId
+                parameters.Add("@CustomerId", dbType: DbType.Int32, direction: ParameterDirection.Output);
+
+                // Execute the stored procedure
+                await connection.ExecuteAsync("VendorRegistration", parameters, commandType: CommandType.StoredProcedure);
+
+                // Retrieve the new CustomerId from the output parameter
+                int newCustomerId = parameters.Get<int>("@CustomerId");
+
+                // If a new customer was created, insert the AdminLogin entry
+                if (newCustomerId > 0)
                 {
-                    UserName = dynamicUserName,
-                    Password = dynamicPassword,
-                    Role = "Vendor",
-                    Emailid = model.Email,
-                    Vendorid = newCustomerId
-                };
+                    var adminRole = new AdminLogin
+                    {
+                        UserName = dynamicUserName,
+                        Password = dynamicPassword,
+                        Role = "Vendor",
+                        Emailid = model.Email,
+                        Vendorid = newCustomerId
+                    };
 
-                _context.AdminLogins.Add(adminRole);
-                await _context.SaveChangesAsync();
+                    string insertAdminLoginQuery = @"
+                INSERT INTO AdminLogin (UserName, Password, Role, Emailid, Vendorid)
+                VALUES (@UserName, @Password, @Role, @Emailid, @Vendorid)";
+
+                    await connection.ExecuteAsync(insertAdminLoginQuery, adminRole);
+                }
+
+                // Return the result
+                return new VendorRegResultDTO
+                {
+                    NewCustomerId = newCustomerId,
+                    UserName = dynamicUserName,
+                    Password = dynamicPassword
+                };
             }
-            return new VendorRegResultDTO
-            {
-                NewCustomerId = newCustomerId,
-                UserName = dynamicUserName,
-                Password = dynamicPassword
-            };
-            //return newCustomerId;
         }
         public async Task<int> updateVendorreg(VendorDto model)
         {
-            var parameters = new List<SqlParameter>
+            using (var connection = new SqlConnection(Configuration.GetConnectionString("db1"))) // Use your actual connection string here
             {
-        new SqlParameter("@id", model.Id),
-        new SqlParameter("@Company_Name", model.CompanyName),
-        new SqlParameter("@Work_Location", string.Join(",", model.WorkLocation)),
-        new SqlParameter("@Mobile_number", model.MobileNumber),
-        new SqlParameter("@Alternate_number", model.AlternateNumber),
-        new SqlParameter("@Email", model.Email),
-        new SqlParameter("@GST_Number", model.GstNumber),
-        new SqlParameter("@Billing_Address", model.BillingAddress),
-        new SqlParameter("@Product_Details", model.ProductDetails),
-        new SqlParameter("@Start_date", model.StartDate),
-        new SqlParameter("@Renew_Date", model.RenewDate),
-        new SqlParameter("@State", model.State),
-        new SqlParameter("@stateId", model.StateId),
-        new SqlParameter("@Location", model.Location),
-        new SqlParameter("@productprice", model.Price),
-        new SqlParameter("@Renewprice", model.Renewprice),
-        new SqlParameter("@NoOfRenewMonth", model.NoOfRenewMonth)
-    };
+                var parameters = new DynamicParameters();
+                parameters.Add("@id", model.Id);
+                parameters.Add("@Company_Name", model.CompanyName);
+                parameters.Add("@Work_Location", string.Join(",", model.WorkLocation));
+                parameters.Add("@Mobile_number", model.MobileNumber);
+                parameters.Add("@Alternate_number", model.AlternateNumber);
+                parameters.Add("@Email", model.Email);
+                parameters.Add("@GST_Number", model.GstNumber);
+                parameters.Add("@Billing_Address", model.BillingAddress);
+                parameters.Add("@Product_Details", model.ProductDetails);
+                parameters.Add("@Start_date", model.StartDate);
+                parameters.Add("@Renew_Date", model.RenewDate);
+                parameters.Add("@BillingStateId", model.BillingStateId);
+                parameters.Add("@BillingCityId", model.BillingCityId);
+                parameters.Add("@stateId", model.StateId);
+                parameters.Add("@Location", model.Location);
+                parameters.Add("@productprice", model.Price);
+                parameters.Add("@Renewprice", model.Renewprice);
+                parameters.Add("@NoOfRenewMonth", model.NoOfRenewMonth);
 
-            var result = await _context.Database.ExecuteSqlRawAsync(@"exec sp_updateVendor_Reg @id, @Company_Name, @Work_Location, @Mobile_number, @Alternate_number, @Email, @GST_Number, @Billing_Address, @Product_Details, @Start_date, @Renew_Date, @State, @stateId, @Location,@productprice,@Renewprice,@NoOfRenewMonth", parameters.ToArray());
-            return result;
+                var result = await connection.ExecuteAsync(
+                    "sp_updateVendor_Reg",
+                    parameters,
+                    commandType: CommandType.StoredProcedure
+                );
+
+                return result;
+            }
         }
+
 
         public async Task<List<VendorDto>> VendorList()
         {
