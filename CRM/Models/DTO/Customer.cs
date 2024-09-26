@@ -7,7 +7,7 @@ namespace CRM.Models.DTO
         public int Id { get; set; }
         public string? CompanyName { get; set; }
         [NotMapped]
-        public string[] WorkLocation { get; set; }
+        public string WorkLocation { get; set; }
         public string? MobileNumber { get; set; }
         public string? AlternateNumber { get; set; }
         public string? Email { get; set; }
@@ -25,5 +25,6 @@ namespace CRM.Models.DTO
         public string? State { get; set; }
         public int? StateId { get; set; }
         public string StateName { get; set; } = null!;
+        public int? BillingCityId { get; set; }
     }
 }
