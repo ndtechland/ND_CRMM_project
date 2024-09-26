@@ -1598,7 +1598,10 @@ namespace CRM.Repository
                                        BillingAddress = customer.BillingAddress,
                                        Location = customer.Location,
                                        UserName = admin.UserName,
-                                       CompanyImage = customer.CompanyImage
+                                       CompanyImage = customer.CompanyImage,
+                                       maplat = customer.Maplong,
+                                       maplong = customer.Maplong,
+                                       radious = customer.Radious
                                    }).FirstOrDefaultAsync();
                 return query;
             }
@@ -1638,9 +1641,9 @@ namespace CRM.Repository
             customer.BillingAddress = model.BillingAddress;
             customer.Location = model.Location;
 
-            //customer.radious = model.radious;
-            //customer.maplat = model.maplat;
-            //customer.maplong = model.maplong;
+            customer.Radious = model.radious;
+            customer.Maplat = model.maplat;
+            customer.Maplong = model.maplong;
 
             _context.VendorRegistrations.Update(customer);
             await _context.SaveChangesAsync();
