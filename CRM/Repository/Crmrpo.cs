@@ -1610,6 +1610,7 @@ namespace CRM.Repository
                 string ImagePath = fileOperation.SaveBase64Image("CompanyImage", model.ImageFile, allowedExtensions);
                 customer.CompanyImage = ImagePath;
             }
+
             customer.CompanyName = model.CompanyName;
             customer.Email = model.Email;
             customer.GstNumber = model.GstNumber;
@@ -1617,8 +1618,14 @@ namespace CRM.Repository
             customer.AlternateNumber = model.AlternateNumber;
             customer.BillingAddress = model.BillingAddress;
             customer.Location = model.Location;
+
+            //customer.radious = model.radious;
+            //customer.maplat = model.maplat;
+            //customer.maplong = model.maplong;
+
             _context.VendorRegistrations.Update(customer);
             await _context.SaveChangesAsync();
+
             if (adminusername != null)
             {
                 adminusername.UserName = model.UserName;
