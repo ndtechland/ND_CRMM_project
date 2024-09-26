@@ -168,6 +168,9 @@ namespace CRM.Controllers
                 ViewBag.UserName = AddedBy;
                 var data = await _ICrmrpo.GetVendorProfile(id);
                 ViewBag.vendorid = data.Id;
+                ViewBag.radious = data.radious;
+                ViewBag.maplong = data.maplong;
+                ViewBag.maplat = data.maplat;
                 ViewBag.FilePathDetail = data.CompanyImage;
                 ViewBag.id = id;
                 return View(data);
