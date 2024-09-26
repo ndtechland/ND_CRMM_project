@@ -75,8 +75,8 @@
                                         </div>
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Address <span class="text-danger">*</span></label>
-                                            <input asp-for="GstNumber" id="address" class="form-control" placeholder="Enter Address" required="" />
-                                            <span asp-validation-for="GstNumber" class="text-danger"></span>
+                                            <input asp-for="Location" id="address" class="form-control" placeholder="Enter Address" required="" />
+                                            <span asp-validation-for="Location" class="text-danger"></span>
                                         </div>
                                         <div class="form-group col-sm">
                                             <label class="control-label">State Name <span class="text-danger">*</span></label>
@@ -195,7 +195,7 @@
                                         </div>
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Renew Date <span class="text-danger">*</span></label>
-                                            <input name="RenewDate" type="date" id="RenewDate" class="form-control" required="" oninvalid="this.setCustomValidity('Please select RenewDate')" oninput="this.setCustomValidity('')" value="@ViewBag.renewDate" />
+                                            <input name="RenewDate" type="date" id="RenewDate" class="form-control" required="" readonly="readonly" oninvalid="this.setCustomValidity('Please select RenewDate')" oninput="this.setCustomValidity('')" value="@ViewBag.renewDate" />
                                             <span asp-validation-for="RenewDate" class="text-danger"></span>
                                         </div>
                                     </div>
@@ -729,7 +729,7 @@
                     $('#Price').val(response.data.price);
 
                     // Check if the selected state is Uttar Pradesh
-                    if (ViewBag.checkvendorbillingstateid === stateId) {
+                    if ('@ViewBag.checkvendorbillingstateid' === stateId) {
                         $('#CGST').val(response.data.cgst);
                         $('#SGST').val(response.data.scgst);
                         $('#IGST').val(''); // Clear IGST

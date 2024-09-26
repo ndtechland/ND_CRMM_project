@@ -27,7 +27,7 @@ namespace CRM.Models.DTO
         public int? BillingCityId { get; set; }
         public string? Renewprice { get; set; }
         public string? State { get; set; }
-        public string? BillingStateId { get; set; }
+        public int BillingStateId { get; set; }
         public int? StateId { get; set; }
         public string StateName { get; set; } = null!;
         public string? Location { get; set; }
