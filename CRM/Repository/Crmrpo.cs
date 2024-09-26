@@ -26,6 +26,7 @@ using DocumentFormat.OpenXml.Office2010.Excel;
 using System.Linq;
 using DocumentFormat.OpenXml.Wordprocessing;
 using CRM.Models.APIDTO;
+using Dapper;
 
 
 namespace CRM.Repository
@@ -109,34 +110,43 @@ namespace CRM.Repository
         .ToListAsync();
             return result;
         }
-        public async Task<int> Customer(Customer model)
+        public async Task<int> Customer(Customer model,int vendorid)
         {
-            var parameters = new List<SqlParameter>
-    {
-        new SqlParameter("@Company_Name", model.CompanyName),
-        new SqlParameter("@Work_Location", string.Join(",", model.WorkLocation)),
-        new SqlParameter("@Mobile_number", model.MobileNumber),
-        new SqlParameter("@Alternate_number", model.AlternateNumber),
-        new SqlParameter("@Email", model.Email),
-        new SqlParameter("@GST_Number", model.GstNumber),
-        new SqlParameter("@Billing_Address", model.BillingAddress),
-        new SqlParameter("@Product_Details", model.ProductDetails),
-        new SqlParameter("@Start_date", model.StartDate),
-        new SqlParameter("@Renew_Date", model.RenewDate),
-        new SqlParameter("@State", model.State),
-        new SqlParameter("@stateId", model.StateId),
+            try
+            {
+                using (var connection = new SqlConnection(Configuration.GetConnectionString("db1"))) // Make sure to define _connectionString
+                {
+                    await connection.OpenAsync();
 
-        new SqlParameter
-        {
-            ParameterName = "@CustomerId",
-            SqlDbType = SqlDbType.Int,
-            Direction = ParameterDirection.Output
+                    var parameters = new DynamicParameters();
+                    parameters.Add("@Company_Name", model.CompanyName);
+                    parameters.Add("@Work_Location", string.Join(",", model.WorkLocation));
+                    parameters.Add("@Mobile_number", model.MobileNumber);
+                    parameters.Add("@Alternate_number", model.AlternateNumber);
+                    parameters.Add("@Email", model.Email);
+                    parameters.Add("@GST_Number", model.GstNumber);
+                    parameters.Add("@Billing_Address", model.BillingAddress);
+                    parameters.Add("@Product_Details", model.ProductDetails);
+                    parameters.Add("@Start_date", model.StartDate);
+                    parameters.Add("@Renew_Date", model.RenewDate);
+                    parameters.Add("@State", model.State);
+                    parameters.Add("@stateId", model.StateId);
+                    parameters.Add("@BillingCityId", model.BillingCityId);
+                    parameters.Add("@Vendorid", vendorid);
+                    parameters.Add("@CustomerId", dbType: DbType.Int32, direction: ParameterDirection.Output);
+
+                    await connection.ExecuteAsync("CustomerRegistration", parameters, commandType: CommandType.StoredProcedure);
+
+                    int newCustomerId = parameters.Get<int>("@CustomerId");
+                    return newCustomerId;
+                }
+            }
+            catch (Exception)
+            {
+                throw; // Consider logging the exception here
+            }
         }
-    };
-            await _context.Database.ExecuteSqlRawAsync("exec CustomerRegistration @Company_Name, @Work_Location, @Mobile_number, @Alternate_number, @Email, @GST_Number, @Billing_Address, @Product_Details, @Start_date, @Renew_Date, @State, @stateId, @CustomerId OUTPUT", parameters.ToArray());
-            int newCustomerId = (int)parameters.First(p => p.ParameterName == "@CustomerId").Value;
-            return newCustomerId;
-        }
+
 
         public async Task<List<Customer>> CustomerList(string userIdString)
         {
@@ -158,7 +168,8 @@ namespace CRM.Repository
                         {
                             Id = Convert.ToInt32(rdr["ID"]),
                             CompanyName = rdr["Company_Name"] == DBNull.Value ? null : Convert.ToString(rdr["Company_Name"]),
-                            WorkLocation = rdr["Work_Location"] == DBNull.Value ? null : rdr["Work_Location"].ToString().Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries),
+                            //WorkLocation = rdr["Work_Location"] == DBNull.Value ? null : rdr["Work_Location"].ToString().Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries),
+                            WorkLocation = rdr["Work_Location"] == DBNull.Value ? "0" : Convert.ToString(rdr["Work_Location"]),
                             MobileNumber = rdr["Mobile_number"] == DBNull.Value ? "0" : Convert.ToString(rdr["Mobile_number"]),
                             AlternateNumber = rdr["Alternate_number"] == DBNull.Value ? "0" : Convert.ToString(rdr["Alternate_number"]),
                             Email = rdr["Email"] == DBNull.Value ? "0" : Convert.ToString(rdr["Email"]),
@@ -898,7 +909,8 @@ namespace CRM.Repository
                     {
                         Id = Convert.ToInt32(rdr["id"]),
                         CompanyName = rdr["Company_Name"] == DBNull.Value ? null : Convert.ToString(rdr["Company_Name"]),
-                        WorkLocation = rdr["Work_Location"] == DBNull.Value ? new string[0] : ((string)rdr["Work_Location"]).Split(','),
+                        //WorkLocation = rdr["Work_Location"] == DBNull.Value ? new string[0] : ((string)rdr["Work_Location"]).Split(','),
+                        WorkLocation = rdr["Work_Location"] == DBNull.Value ? null : Convert.ToString(rdr["Work_Location"]),
                         MobileNumber = rdr["Mobile_number"] == DBNull.Value ? null : Convert.ToString(rdr["Mobile_number"]),
                         AlternateNumber = (rdr["Alternate_number"] == DBNull.Value ? null : Convert.ToString(rdr["Alternate_number"])),
                         Email = rdr["Email"] == DBNull.Value ? null : Convert.ToString(rdr["Email"]),

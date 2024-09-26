@@ -3,6 +3,7 @@ using CRM.Models.DTO;
 using CRM.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace CRM.Controllers
 {
@@ -23,13 +24,22 @@ namespace CRM.Controllers
             if (HttpContext.Session.GetString("UserName") != null)
             {
                 string AddedBy = HttpContext.Session.GetString("UserName");
-
+                //ViewBag.StateItems = _context.States
+                //    .Select(p => new SelectListItem
+                //    {
+                //        Value = p.Id.ToString(),
+                //        Text = p.SName,
+                //    })
+                //    .ToList();
+                var items = _context.States.ToList();
+                ViewBag.StateItems = new SelectList(items, "Id", "SName");
                 if (id != 0)
                 {
                     ViewBag.UserName = AddedBy;
                     var data = _ICrmrpo.GetCustomerById(id);
                     if (data != null)
                     {
+                        
                         ViewBag.ProductDetails = _context.ProductMasters.Where(x => x.IsDeleted == false)
                             .Select(p => new SelectListItem
                             {
@@ -40,6 +50,7 @@ namespace CRM.Controllers
                         ViewBag.SelectedStateId = data.StateId;
                         ViewBag.SelectedCityId = data.WorkLocation;
                         ViewBag.state = data.State;
+                        ViewBag.BillingCityId = data.BillingCityId;
                         ViewBag.startDate = ((DateTime)data.StartDate).ToString("yyyy-MM-dd");
                         ViewBag.renewDate = ((DateTime)data.RenewDate).ToString("yyyy-MM-dd");
                         return View(data);
@@ -68,6 +79,8 @@ namespace CRM.Controllers
         {
             try
             {
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 if (model.Id > 0)
                 {
                     var data = await _ICrmrpo.updateCustomerReg(model);
@@ -84,7 +97,7 @@ namespace CRM.Controllers
                 }
                 else
                 {
-                    var response = await _ICrmrpo.Customer(model);
+                    var response = await _ICrmrpo.Customer(model,(int)adminlogin.Vendorid);
                     if (response > 0)
                     {
                         TempData["Message"] = "Registration Successfully.";
@@ -180,6 +193,17 @@ namespace CRM.Controllers
             {
                 throw new Exception("Error:" + Ex.Message);
             }
+        }
+
+
+        //new 
+        public async Task<IActionResult> GetCityByStateId(int stateid)
+        {
+            var dist = await _context.Cities
+                .Where(s => s.StateId == stateid)
+                .Select(s => new { id = s.Id, name = s.City1 }).ToListAsync();
+
+            return Json(dist);
         }
     }
 }
