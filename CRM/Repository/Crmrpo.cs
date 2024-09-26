@@ -120,6 +120,7 @@ namespace CRM.Repository
 
                     var parameters = new DynamicParameters();
                     parameters.Add("@Company_Name", model.CompanyName);
+                    parameters.Add("@Location", model.Location);
                     parameters.Add("@Work_Location", string.Join(",", model.WorkLocation));
                     parameters.Add("@Mobile_number", model.MobileNumber);
                     parameters.Add("@Alternate_number", model.AlternateNumber);
@@ -133,6 +134,8 @@ namespace CRM.Repository
                     parameters.Add("@stateId", model.StateId);
                     parameters.Add("@BillingCityId", model.BillingCityId);
                     parameters.Add("@Vendorid", vendorid);
+                    parameters.Add("@Renewprice", model.Renewprice);
+                    parameters.Add("@NoOfRenewMonth", model.NoOfRenewMonth);
                     parameters.Add("@CustomerId", dbType: DbType.Int32, direction: ParameterDirection.Output);
 
                     await connection.ExecuteAsync("CustomerRegistration", parameters, commandType: CommandType.StoredProcedure);
@@ -957,6 +960,7 @@ namespace CRM.Repository
             var parameter = new List<SqlParameter>();
             parameter.Add(new SqlParameter("@id", model.Id));
             parameter.Add(new SqlParameter("@Company_Name", model.CompanyName));
+            parameter.Add(new SqlParameter("@Location", model.Location));
             parameter.Add(new SqlParameter("@Work_Location", string.Join(",", model.WorkLocation)));
             parameter.Add(new SqlParameter("@Mobile_number", model.MobileNumber));
             parameter.Add(new SqlParameter("@Alternate_number", model.AlternateNumber));
@@ -968,6 +972,8 @@ namespace CRM.Repository
             parameter.Add(new SqlParameter("@Renew_Date", model.RenewDate));
             parameter.Add(new SqlParameter("@BillingStateId", model.BillingStateId));
             parameter.Add(new SqlParameter("@stateId", model.StateId));
+            parameter.Add(new SqlParameter("@Renewprice", model.Renewprice));
+            parameter.Add(new SqlParameter("@NoOfRenewMonth", model.NoOfRenewMonth));
             var result = await _context.Database.ExecuteSqlRawAsync(@"exec sp_updateCustomer_Reg @id,@Company_Name, @Work_Location,@Mobile_number,@Alternate_number,@Email,@GST_Number,@Billing_Address,@Product_Details,@Start_date,@Renew_Date,@State,@stateId", parameter.ToArray());
             return result;
         }

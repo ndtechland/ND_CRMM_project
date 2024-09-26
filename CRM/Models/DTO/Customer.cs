@@ -12,6 +12,7 @@ namespace CRM.Models.DTO
         public string? AlternateNumber { get; set; }
         public string? Email { get; set; }
         public string? GstNumber { get; set; }
+        public string? Location { get; set; }
         public string? BillingAddress { get; set; }
         public string? ProductDetails { get; set; }
         public DateTime StartDate { get; set; }
