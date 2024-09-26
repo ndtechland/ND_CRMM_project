@@ -381,7 +381,11 @@
         circle.setRadius(radiusInMeters);
         const lat = position.lat();
         const lng = position.lng();
+        document.getElementById("latitude").value = lat;
+        document.getElementById("longitude").value = lng;
+
         console.log(`Latitude: ${lat}, Longitude: ${lng}`);
+
         // alert(`Latitude: ${lat}, Longitude: ${lng}`);
     }
 </script>
