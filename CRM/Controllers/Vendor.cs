@@ -32,7 +32,8 @@ namespace CRM.Controllers
             if (HttpContext.Session.GetString("UserName") != null)
             {
                 string AddedBy = HttpContext.Session.GetString("UserName");
-
+                var items = _context.States.ToList();
+                ViewBag.StateItems = new SelectList(items, "Id", "SName");
                 if (id != 0)
                 {
                     ViewBag.Heading = "Vendor Registration";

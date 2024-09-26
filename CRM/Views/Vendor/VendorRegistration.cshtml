@@ -169,7 +169,7 @@
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Office Location <span class="text-danger">*</span></label>
                                             <div class="input-group">
-                                                <input type="text" asp-for="Location" placeholder="Enter Location" class="form-control" required="" oninvalid="this.setCustomValidity('Please Enter Location')" oninput="this.setCustomValidity('')" />
+                                                <input type="text" asp-for="Location" placeholder="Enter Location" id="address" class="form-control" required="" oninvalid="this.setCustomValidity('Please Enter Location')" oninput="this.setCustomValidity('')" />
                                             </div>
                                             <span asp-validation-for="Location" class="text-danger"></span>
                                         </div>
@@ -179,8 +179,11 @@
                                         <div class="form-group col-sm">
                                             <label class="control-label">State Name <span class="text-danger">*</span></label>
                                             <div>
-                                                <select class="form-control" name="StateId" id="ddlState">
+                                                <select class="form-control" asp-for="StateId" asp-items="@ViewBag.StateItems" id="ddlState">
+                                                    <option value="">--Select State--</option>
                                                 </select>
+                                              @*   <select class="form-control" name="StateId" id="ddlState">
+                                                </select> *@
                                                 @*<select class="form-control" name="StateId" id="ddlState">
                                                 <option value="">-- Select State --</option>
                                                 @foreach (var state in ViewBag.States as IEnumerable<SelectListItem>)
@@ -193,7 +196,10 @@
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">City Name <span class="text-danger">*</span></label>
                                             <div>
-                                                <select class="form-control js-select2" multiple="multiple" name="WorkLocation" id="ddlCity" onchange="validateWorkLocation(this)" oninvalid="this.setCustomValidity('Please select WorkLocation')" oninput="this.setCustomValidity('')" autocomplete="off">
+                                                @* <select class="form-control js-select2" multiple="multiple" name="WorkLocation" id="ddlCity" onchange="validateWorkLocation(this)" oninvalid="this.setCustomValidity('Please select WorkLocation')" oninput="this.setCustomValidity('')" autocomplete="off">
+                                                    <option value="">-- Select City Name --</option>
+                                                </select> *@
+                                                <select class="form-control" name="WorkLocation" id="ddlCityid">
                                                     <option value="">-- Select City Name --</option>
                                                 </select>
                                             </div>
@@ -232,11 +238,28 @@
                                             <span asp-validation-for="GstNumber" class="text-danger"></span>
                                         </div>
                                     </div>
+                                    <div class="form-group col-sm">
+                                        <label for="sameAsCompanyAddress">
+                                            <input type="checkbox" id="sameAsCompanyAddress" onclick="copyAddress()"> Same as Company Address
+                                        </label>
+                                    </div>
                                     <div class="row">
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Billing Address <span class="text-danger">*</span></label>
                                             <input asp-for="BillingAddress" placeholder="Enter BillingAddress" class="form-control" required="" oninvalid="this.setCustomValidity('Please Enter BillingAddress')" oninput="this.setCustomValidity('')" />
                                             <span asp-validation-for="BillingAddress" class="text-danger"></span>
+                                        </div>
+                                        <div class="form-group col-sm">
+                                            <label for="validationCustom0">State <span class="text-danger">*</span></label>
+                                            <select asp-for="BillingStateId" asp-items="@ViewBag.StateItems" id="stateid" class="form-control" required>
+                                                <option value="">--Select State--</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-sm">
+                                            <label for="validationCustom0">City <span class="text-danger">*</span></label>
+                                            <select asp-for="BillingCityId" class="form-control" id="districtid" required>
+                                                <option value="">--Select City--</option>
+                                            </select>
                                         </div>
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Product Details <span class="text-danger">*</span></label>
@@ -279,14 +302,14 @@
                                     </div>
                                     <div class="row">
                                          
-                                        <div class="form-group col-sm">
+                                        @* <div class="form-group col-sm">
                                             <label for="validationCustom0">State <span class="text-danger">*</span></label>
                                             <select asp-for="State" id="State" class="form-control" required="required" onchange="validateState(this)" oninvalid="this.setCustomValidity('Select State')" oninput="this.setCustomValidity('')">
                                                 <option value="">-- Select State --</option>
                                                 <option value="UP">UP</option>
                                                 <option value="Other">Other</option>
                                             </select>
-                                        </div>
+                                        </div> *@
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">HSN Code</label>
                                             <input type="text" asp-for="HsnSacCode" id="HsnSacCode" placeholder="HsnSacCode" class="form-control" readonly />
@@ -446,7 +469,7 @@
     });
 </script>
 
-<script>
+@* <script>
     function onProductChange() {
         var id = $("#ProductDetails").val();
         $.ajax({
@@ -538,9 +561,86 @@
             }
         }
     }
-</script>
+</script> *@
 
 <script>
+    $(document).ready(function () {
+        // Event listener for product change
+        $("#ProductDetails").change(function () {
+            updateTaxFields();
+        });
+
+        // Event listener for state change
+        $("#stateid").change(function () {
+            updateTaxFields();
+        });
+    });
+
+    function updateTaxFields() {
+        var productId = $("#ProductDetails").val();
+        var stateId = $("#stateid").val();
+
+        $.ajax({
+            url: '/Home/product?id=' + productId,
+            type: 'GET',
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            success: function (response) {
+                if (response.data != null) {
+                    $('#HsnSacCode').val(response.data.hsnSacCode);
+                    $('#Price').val(response.data.price);
+
+                    // Check if the selected state is Uttar Pradesh
+                    if (stateId === '23') {
+                        $('#CGST').val(response.data.cgst);
+                        $('#SGST').val(response.data.scgst);
+                        $('#IGST').val(''); // Clear IGST
+                    } else {
+                        $('#IGST').val(response.data.igst);
+                        $('#CGST').val(''); // Clear CGST
+                        $('#SGST').val(''); // Clear SGST
+                    }
+                } else {
+                    // Clear all fields if no data is found
+                    $('#CGST').val('');
+                    $('#SGST').val('');
+                    $('#HsnSacCode').val('');
+                    $('#Price').val('');
+                    $('#IGST').val('');
+                }
+            },
+            error: function () {
+                alert('Error fetching data');
+            }
+        });
+    }
+
+    function validateNumericInput(event) {
+        if ([46, 8, 9, 27, 13].indexOf(event.keyCode) !== -1 ||
+            (event.keyCode == 65 && event.ctrlKey === true) ||
+            (event.keyCode >= 35 && event.keyCode <= 39)) {
+            return;
+        }
+        if ((event.shiftKey || (event.keyCode < 48 || event.keyCode > 57)) && (event.keyCode < 96 || event.keyCode > 105)) {
+            event.preventDefault();
+        }
+    }
+
+    function ValidateGST() {
+        var Obj = document.getElementById("GstNumber");
+        if (Obj.value != "") {
+            var ObjVal = Obj.value;
+            var gstPat = /^([0-9]{2}[a-zA-Z]{4}([a-zA-Z]{1}|[0-9]{1})[0-9]{4}[a-zA-Z]{1}([a-zA-Z]|[0-9]){3}){0,15}$/;
+            if (ObjVal.search(gstPat) == -1) {
+                swal("Invalid GstNumber. It should be in this format: 11AAAAA1111Z1");
+                Obj.value = '';
+                return false;
+            }
+        }
+    }
+</script>
+
+@* <script>
     function validateWorkLocation(selectElement) {
         var selectedValues = Array.from(selectElement.selectedOptions, option => option.value);
 
@@ -672,11 +772,156 @@
             }
         });
     })
+</script> *@
+
+
+@* for auto selected details same as company address *@
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const checkbox = document.getElementById('sameAsCompanyAddress');
+
+        // Add event listeners for the checkbox and input fields
+        checkbox.addEventListener('change', copyAddress);
+        document.getElementById('address').addEventListener('input', copyAddress);
+        document.getElementById('ddlState').addEventListener('change', copyAddress);
+        document.getElementById('ddlCityid').addEventListener('change', copyAddress);
+    });
+
+    function copyAddress() {
+        const checkbox = document.getElementById('sameAsCompanyAddress');
+        const companyAddress = document.getElementById('address').value;
+        const companyState = document.getElementById('ddlState').value;
+        const companyCity = document.getElementById('ddlCityid').value;
+
+        const billingAddress = document.getElementById('BillingAddress');
+        const billingState = document.getElementById('stateid');
+        const billingCity = document.getElementById('districtid');
+
+        if (checkbox.checked) {
+            billingAddress.value = companyAddress;
+            billingState.value = companyState;
+
+            // Trigger change event to populate city dropdown
+            billingState.dispatchEvent(new Event('change'));
+
+            // Use a timeout to wait for the city dropdown to be populated
+            setTimeout(() => {
+                billingCity.value = companyCity;
+            }, 500); // Adjust the delay if needed
+
+            billingAddress.readOnly = true;
+            billingState.disabled = false; // Keep dropdown enabled but inform the user
+            billingCity.disabled = false; // Keep city dropdown enabled
+        } else {
+            billingAddress.readOnly = false;
+            billingState.disabled = false; // Enable dropdown again
+            billingCity.disabled = false; // Enable city dropdown again
+
+            billingAddress.value = ''; // Clear billing address fields
+            billingState.value = '';
+            billingCity.value = '';
+        }
+    }
 </script>
 
 
+@* for company city *@
+<script type="text/javascript">
+    $(document).ready(function () {
+        // Store DistrictId from the view for edit time
+        var selectedDistrictId = '@Html.Raw(ViewBag.SelectedCityId ?? "null")'; // Fetch DistrictId, use null if not set
+        // Check if stateId is already set (useful for edit scenario)
+        var stateId = $('#ddlState').val();
+        if (stateId) {
+            loadDistricts(stateId, selectedDistrictId); // Pass selectedDistrictId for edit time
+        }
 
+        $('#ddlState').change(function () {
+            var stateId = $(this).val();
+            if (stateId) {
+                loadDistricts(stateId); // On change, no need to pass selectedDistrictId
+            } else {
+                $('#ddlCityid').empty();
+                $('#ddlCityid').append('<option value="">--Select City--</option>');
+            }
+        });
 
+        // Function to load districts based on selected state
+        function loadDistricts(stateId, selectedDistrictId = null) {
+            $.ajax({
+                url: '@Url.Action("GetCityByStateId", "Customer")',
+                type: "GET",
+                data: { stateId: stateId },
+                success: function (data) {
+                    $('#ddlCityid').empty();
+                    $('#ddlCityid').append('<option value="">--Select City--</option>');
+
+                    $.each(data, function (index, item) {
+                        var isSelected = selectedDistrictId && item.id == selectedDistrictId ? 'selected' : '';
+                        $('#ddlCityid').append('<option value="' + item.id + '" ' + isSelected + '>' + item.name + '</option>');
+                    });
+
+                    // If district is pre-selected (edit mode), ensure it is selected in the dropdown
+                    if (selectedDistrictId) {
+                        $('#ddlCityid').val(selectedDistrictId); // Set the selected district in case it wasn't set correctly by "selected" attribute
+                    }
+                },
+                error: function () {
+                    console.error('Failed to load districts.');
+                }
+            });
+        }
+    });
+</script>
+
+@* for billing city *@
+<script type="text/javascript">
+    $(document).ready(function () {
+        // Store DistrictId from the view for edit time
+        var selectedBillingDistrictId = '@Html.Raw(ViewBag.BillingCityId ?? "null")'; // Fetch DistrictId, use null if not set
+        // Check if stateId is already set (useful for edit scenario)
+        var stateId = $('#stateid').val();
+        if (stateId) {
+            loadDistricts(stateId, selectedBillingDistrictId); // Pass selectedDistrictId for edit time
+        }
+
+        $('#stateid').change(function () {
+            var stateId = $(this).val();
+            if (stateId) {
+                loadDistricts(stateId); // On change, no need to pass selectedDistrictId
+            } else {
+                $('#districtid').empty();
+                $('#districtid').append('<option value="">--Select City--</option>');
+            }
+        });
+
+        // Function to load districts based on selected state
+        function loadDistricts(stateId, selectedBillingDistrictId = null) {
+            $.ajax({
+                url: '@Url.Action("GetCityByStateId", "Customer")',
+                type: "GET",
+                data: { stateId: stateId },
+                success: function (data) {
+                    $('#districtid').empty();
+                    $('#districtid').append('<option value="">--Select City--</option>');
+
+                    $.each(data, function (index, item) {
+                        var isSelected = selectedBillingDistrictId && item.id == selectedBillingDistrictId ? 'selected' : '';
+                        $('#districtid').append('<option value="' + item.id + '" ' + isSelected + '>' + item.name + '</option>');
+                    });
+
+                    // If district is pre-selected (edit mode), ensure it is selected in the dropdown
+                    if (selectedBillingDistrictId) {
+                        $('#districtid').val(selectedBillingDistrictId); // Set the selected district in case it wasn't set correctly by "selected" attribute
+                    }
+                },
+                error: function () {
+                    console.error('Failed to load districts.');
+                }
+            });
+        }
+    });
+</script>
 
 
 

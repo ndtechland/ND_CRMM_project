@@ -23,5 +23,10 @@ namespace CRM.Models.Crm
         public string? Productprice { get; set; }
         public string? Renewprice { get; set; }
         public int? NoOfRenewMonth { get; set; }
+        public string? Maplat { get; set; }
+        public string? Maplong { get; set; }
+        public string? Radious { get; set; }
+        public int? BillingStateId { get; set; }
+        public int? BillingCityId { get; set; }
     }
 }
