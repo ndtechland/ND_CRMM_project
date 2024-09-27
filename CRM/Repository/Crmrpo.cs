@@ -1627,9 +1627,11 @@ namespace CRM.Repository
                                        Location = customer.Location,
                                        UserName = admin.UserName,
                                        CompanyImage = customer.CompanyImage,
-                                       maplat = customer.Maplong,
+                                       maplat = customer.Maplat,
                                        maplong = customer.Maplong,
-                                       radious = customer.Radious
+                                       radious = customer.Radious,
+                                       BillingCityId = customer.BillingCityId,
+                                       BillingStateId = customer.BillingStateId
                                    }).FirstOrDefaultAsync();
                 return query;
             }
@@ -1672,7 +1674,8 @@ namespace CRM.Repository
             customer.Radious = model.radious;
             customer.Maplat = model.maplat;
             customer.Maplong = model.maplong;
-
+            customer.BillingStateId = model.BillingStateId;
+            customer.BillingCityId = model.BillingCityId;
             _context.VendorRegistrations.Update(customer);
             await _context.SaveChangesAsync();
 

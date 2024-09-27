@@ -169,12 +169,13 @@ namespace CRM.Controllers
             {
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 string id = Convert.ToString(HttpContext.Session.GetString("UserId"));
+                var items = _context.States.ToList();
+                ViewBag.StateItems = new SelectList(items, "Id", "SName");
                 ViewBag.UserName = AddedBy;
                 var data = await _ICrmrpo.GetVendorProfile(id);
                 ViewBag.vendorid = data.Id;
-                ViewBag.radious = data.radious;
-                ViewBag.maplong = data.maplong;
-                ViewBag.maplat = data.maplat;
+                ViewBag.SelectedBillingCityId = data.BillingCityId;
+                ViewBag.SelectedBillingStateId = data.BillingStateId;
                 ViewBag.FilePathDetail = data.CompanyImage;
                 ViewBag.id = id;
                 return View(data);

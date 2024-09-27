@@ -490,39 +490,50 @@ namespace CRM.Controllers.Api
                 throw new Exception("Error :" + ex.Message);
             }
         }
+        [AllowAnonymous]
         [HttpPost("EmployeeForgotPassword")]
         public async Task<IActionResult> EmployeeForgotPassword(ForgotPassword model)
         {
             var response = new Utilities.Response<string>();
             try
             {
-                if (User.Identity.IsAuthenticated)
+                if (model != null)
                 {
-                    var userId = User.Claims.FirstOrDefault().Value;
-                    var employee = await _context.EmployeeRegistrations.FirstOrDefaultAsync(x => x.WorkEmail == model.Email && x.EmployeeId == userId);
-                    var EmployeePassword = await _context.EmployeeLogins.FirstOrDefaultAsync(x => x.EmployeeId == employee.EmployeeId);
+                    var employee = await _context.EmployeeRegistrations.FirstOrDefaultAsync(x => x.WorkEmail == model.Email);
                     if (employee == null)
                     {
                         response.StatusCode = StatusCodes.Status404NotFound;
                         response.Message = "Invalid email address.";
                         return NotFound(response);
                     }
+
+                    var employeePassword = await _context.EmployeeLogins.FirstOrDefaultAsync(x => x.EmployeeId == employee.EmployeeId);
+                    if (employeePassword == null)
+                    {
+                        response.StatusCode = StatusCodes.Status404NotFound;
+                        response.Message = "Employee login details not found.";
+                        return NotFound(response);
+                    }
+
                     var newPassword = _dcrypt.GenerateRandomPassword();
-                    EmployeePassword.Password = newPassword;
-                    _context.Update(employee);
+                    employeePassword.Password = newPassword;
+
+                    _context.Update(employeePassword);
                     await _context.SaveChangesAsync();
-                    await _IEmailService.EmpRandomPasswordSendEmailAsync(model, newPassword, userId);
+
+                    await _IEmailService.EmpRandomPasswordSendEmailAsync(model, newPassword);
+
                     response.Succeeded = true;
                     response.StatusCode = StatusCodes.Status200OK;
                     response.Status = "Success";
-                    response.Message = "Instructions to reset your password have been sent to your email.";
+                    response.Message = "A new password has been generated and sent to your registered email address.";
                     response.Data = employee.WorkEmail;
                     return Ok(response);
                 }
                 else
                 {
-                    response.StatusCode = StatusCodes.Status401Unauthorized;
-                    response.Message = "Unauthorized. User not authenticated.";
+                    response.StatusCode = StatusCodes.Status404NotFound;
+                    response.Message = "Data not Found";
                     return Unauthorized(response);
                 }
             }
@@ -533,6 +544,7 @@ namespace CRM.Controllers.Api
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
+
         [HttpPost("EmployeeChangePassword")]
         public async Task<IActionResult> EmployeeChangePassword(EmpchangepasswordDto model)
         {

@@ -52,6 +52,8 @@ namespace CRM.Models.DTO
         public int? StateId { get; set; }
         public string? Location { get; set; }
         public string? CompanyImage { get; set; }
+        public int? BillingStateId { get; set; }
+        public int? BillingCityId { get; set; }
 
         public IFormFile ImageFile { get; set; }
         public string UserName { get; set; } = null!;
