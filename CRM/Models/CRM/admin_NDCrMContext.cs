@@ -400,6 +400,10 @@ namespace CRM.Models.Crm
                     .HasMaxLength(255)
                     .HasColumnName("Billing_Address");
 
+                entity.Property(e => e.Cgst)
+                    .HasColumnType("decimal(18, 0)")
+                    .HasColumnName("CGST");
+
                 entity.Property(e => e.CompanyName)
                     .HasMaxLength(255)
                     .HasColumnName("Company_Name");
@@ -410,6 +414,12 @@ namespace CRM.Models.Crm
                     .HasMaxLength(255)
                     .HasColumnName("GST_Number");
 
+                entity.Property(e => e.Igst)
+                    .HasColumnType("decimal(18, 0)")
+                    .HasColumnName("IGST");
+
+                entity.Property(e => e.Location).HasMaxLength(200);
+
                 entity.Property(e => e.MobileNumber)
                     .HasMaxLength(255)
                     .HasColumnName("Mobile_number");
@@ -418,11 +428,19 @@ namespace CRM.Models.Crm
                     .HasMaxLength(255)
                     .HasColumnName("Product_Details");
 
+                entity.Property(e => e.Productprice)
+                    .HasMaxLength(200)
+                    .HasColumnName("productprice");
+
                 entity.Property(e => e.RenewDate)
                     .HasColumnType("date")
                     .HasColumnName("Renew_Date");
 
                 entity.Property(e => e.Renewprice).HasMaxLength(100);
+
+                entity.Property(e => e.Scgst)
+                    .HasColumnType("decimal(18, 0)")
+                    .HasColumnName("SCGST");
 
                 entity.Property(e => e.StartDate)
                     .HasColumnType("date")

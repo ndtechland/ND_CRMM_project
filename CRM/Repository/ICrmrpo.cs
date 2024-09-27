@@ -15,7 +15,7 @@ namespace CRM.Repository
         public Task<int> Product(ProductMaster model);
         public Task<List<ProductMaster>> ProductList();
         public Task<int> Customer(Customer model,int vendorid);
-        public Task<List<Customer>> CustomerList(string userIdString);
+        public Task<List<CustomerListDto>> CustomerList(string userIdString);
         public Task<int> EmpRegistration(EmpMultiform model, string Mode, string Emp_Reg_ID,int userId);
         public Task<List<StateMaster>> GetAllState();
         public Task<int> Banner(BannerMaster model);

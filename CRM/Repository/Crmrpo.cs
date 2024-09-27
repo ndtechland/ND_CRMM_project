@@ -150,10 +150,9 @@ namespace CRM.Repository
             }
         }
 
-
-        public async Task<List<Customer>> CustomerList(string userIdString)
+        public async Task<List<CustomerListDto>> CustomerList(string userIdString)
         {
-            List<Customer> cs = new List<Customer>();
+            List<CustomerListDto> cs = new List<CustomerListDto>();
             try
             {
                 using (SqlConnection con = new SqlConnection(_context.Database.GetConnectionString()))
@@ -167,7 +166,7 @@ namespace CRM.Repository
 
                     while (await rdr.ReadAsync())
                     {
-                        var cse = new Customer()
+                        var cse = new CustomerListDto()
                         {
                             Id = Convert.ToInt32(rdr["ID"]),
                             CompanyName = rdr["Company_Name"] == DBNull.Value ? null : Convert.ToString(rdr["Company_Name"]),
@@ -181,8 +180,15 @@ namespace CRM.Repository
                             ProductDetails = rdr["Product_Details"] == DBNull.Value ? "0" : Convert.ToString(rdr["Product_Details"]),
                             StartDate = rdr["Start_date"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(rdr["Start_date"]),
                             RenewDate = rdr["Renew_Date"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(rdr["Renew_Date"]),
-                            BillingStateId = rdr["BillingStateId"] == DBNull.Value ? null : Convert.ToString(rdr["BillingStateId"]),
                             StateName = rdr["statename"] == DBNull.Value ? null : Convert.ToString(rdr["statename"]),
+                            BillingStateId = rdr["BillingStateId"] == DBNull.Value ? null : Convert.ToString(rdr["BillingStateId"]),
+                            BillingCityId = rdr["BillingCityId"] == DBNull.Value ? null : Convert.ToString(rdr["BillingCityId"]),
+                            Location = rdr["Location"] == DBNull.Value ? null : Convert.ToString(rdr["Location"]),
+                            productprice = rdr["productprice"] == DBNull.Value ? null : Convert.ToString(rdr["productprice"]),
+                            Renewprice = rdr["Renewprice"] == DBNull.Value ? null : Convert.ToString(rdr["Renewprice"]),
+                            Igst = rdr["Igst"] == DBNull.Value ? null : Convert.ToString(rdr["Igst"]),
+                            Scgst = rdr["Scgst"] == DBNull.Value ? null : Convert.ToString(rdr["Scgst"]),
+                            Cgst = rdr["Cgst"] == DBNull.Value ? null : Convert.ToString(rdr["Cgst"]),
                         };
 
                         cs.Add(cse);
@@ -923,7 +929,14 @@ namespace CRM.Repository
                         StartDate = (DateTime)(rdr["Start_date"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(rdr["Start_date"])),
                         RenewDate = (DateTime)(rdr["Renew_Date"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(rdr["Renew_Date"])),
                         BillingStateId = rdr["BillingStateId"] == DBNull.Value ? null : Convert.ToString(rdr["BillingStateId"]),
-                        StateId = rdr["stateId"] == DBNull.Value ? (int?)null : Convert.ToInt32(rdr["stateId"]),
+                        //StateId = rdr["stateId"] == DBNull.Value ? (int?)null : Convert.ToInt32(rdr["stateId"]),
+                        BillingCityId = rdr["BillingCityId"] == DBNull.Value ? (int?)null : Convert.ToInt32(rdr["BillingCityId"]),
+                        Location = rdr["Location"] == DBNull.Value ? null : Convert.ToString(rdr["Location"]),
+                        productprice = rdr["productprice"] == DBNull.Value ? null : Convert.ToString(rdr["productprice"]),
+                        Renewprice = rdr["Renewprice"] == DBNull.Value ? null : Convert.ToString(rdr["Renewprice"]),
+                        Igst = rdr["Igst"] == DBNull.Value ? null : Convert.ToString(rdr["Igst"]),
+                        Scgst = rdr["Scgst"] == DBNull.Value ? null : Convert.ToString(rdr["Scgst"]),
+                        Cgst = rdr["Cgst"] == DBNull.Value ? null : Convert.ToString(rdr["Cgst"]),
                     };
                 }
                 return cs;
@@ -961,7 +974,7 @@ namespace CRM.Repository
             parameter.Add(new SqlParameter("@id", model.Id));
             parameter.Add(new SqlParameter("@Company_Name", model.CompanyName));
             parameter.Add(new SqlParameter("@Location", model.Location));
-            parameter.Add(new SqlParameter("@Work_Location", string.Join(",", model.WorkLocation)));
+            parameter.Add(new SqlParameter("@Work_Location", model.WorkLocation));
             parameter.Add(new SqlParameter("@Mobile_number", model.MobileNumber));
             parameter.Add(new SqlParameter("@Alternate_number", model.AlternateNumber));
             parameter.Add(new SqlParameter("@Email", model.Email));
@@ -974,6 +987,12 @@ namespace CRM.Repository
             parameter.Add(new SqlParameter("@stateId", model.StateId));
             parameter.Add(new SqlParameter("@Renewprice", model.Renewprice));
             parameter.Add(new SqlParameter("@NoOfRenewMonth", model.NoOfRenewMonth));
+            parameter.Add(new SqlParameter("@productprice", model.productprice));
+            parameter.Add(new SqlParameter("@SCGST", model.Scgst));
+            parameter.Add(new SqlParameter("@CGST", model.Cgst));
+            parameter.Add(new SqlParameter("@IGST", model.Igst));
+
+
             var result = await _context.Database.ExecuteSqlRawAsync(@"exec sp_updateCustomer_Reg @id,@Company_Name, @Work_Location,@Mobile_number,@Alternate_number,@Email,@GST_Number,@Billing_Address,@Product_Details,@Start_date,@Renew_Date,@State,@stateId", parameter.ToArray());
             return result;
         }
