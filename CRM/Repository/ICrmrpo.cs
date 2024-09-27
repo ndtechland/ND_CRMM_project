@@ -85,6 +85,8 @@ namespace CRM.Repository
         Task<int> AddVendorProduct(VendorProductMaster model, int VendorId);
         Task<List<VendorProductDTO>> GetVendorProductList(int vendorid);
         public Task<List<LeavemasterDto>> getLeavemaster(int Userid);
+        Task<bool> AddVendorCategory(VendorCategoryMaster model, int VendorId);
+        Task<List<VendorCategoryMaster>> GetVendorCategoryListByVendorId(int VendorId);
 
     }
 }

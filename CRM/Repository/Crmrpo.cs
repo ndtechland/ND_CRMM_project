@@ -2060,7 +2060,7 @@ namespace CRM.Repository
         public async Task<List<VendorProductDTO>> GetVendorProductList(int vendorid)
         {
             var result = await (from p in _context.VendorProductMasters
-                                join c in _context.Categories on p.CategoryId equals c.Id
+                                join c in _context.VendorCategoryMasters on p.CategoryId equals c.Id
                                 join g in _context.GstMasters on p.Gst equals g.Id
                                 where p.VendorId == vendorid && p.IsActive == true
                                 select new VendorProductDTO
@@ -2078,7 +2078,48 @@ namespace CRM.Repository
             return result;
         }
 
+        public async Task<bool> AddVendorCategory(VendorCategoryMaster model,int VendorId)
+        {
+            try
+            {
+                if (model.Id == 0)
+                {
+                    var data = new VendorCategoryMaster()
+                    {
+                        VendorId = VendorId,
+                        CategoryName = model.CategoryName,
+                    };
+                    _context.Add(data);
+                    _context.SaveChanges();
+                    return true;
+                }
+                else
+                {
+                    var existdata = _context.VendorCategoryMasters.Find(model.Id);
+                    existdata.CategoryName=model.CategoryName;
+                }
+                _context.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
 
+                throw;
+            }
+        }
+        public async Task<List<VendorCategoryMaster>> GetVendorCategoryListByVendorId(int VendorId)
+        {
+            try
+            {
+                var result = _context.VendorCategoryMasters.Where(c => c.VendorId == VendorId).ToList();
+                return result;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 
 }

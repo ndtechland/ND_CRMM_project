@@ -820,5 +820,96 @@ namespace CRM.Controllers
                 throw new Exception("An error occurred while deleting the DeleteQuationList:" + ex.Message);
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> VendorCategory(int id)
+        {
+            try
+            {
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                int vendorid = (int)adminlogin.Vendorid;
+                List<VendorCategoryMaster> Category = await _ICrmrpo.GetVendorCategoryListByVendorId(vendorid)
+;
+                int iId = (int)(id == null ? 0 : id);
+                ViewBag.id = 0;
+                ViewBag.CategoryName = "";
+                ViewBag.heading = "Add Category";
+                ViewBag.btnText = "SAVE";
+                if (iId != null && iId != 0)
+                {
+                    var data = _context.VendorCategoryMasters.Find(iId);
+                    if (data != null)
+                    {
+                        ViewBag.id = data.Id;
+                        ViewBag.CategoryName = data.CategoryName;
+                        ViewBag.btnText = "UPDATE";
+                        ViewBag.heading = "Update Category";
+
+                    }
+                }
+
+                return View(Category);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> VendorCategory(VendorCategoryMaster model)
+        {
+            try
+            {
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                int vendorid = (int)adminlogin.Vendorid;
+
+                bool check = await _ICrmrpo.AddVendorCategory(model,vendorid);
+                if(check)
+                {
+                    if(model.Id==0)
+                    {
+                        TempData["msg"] = "Category added successfully!";
+                        return RedirectToAction("VendorCategory");
+                    }
+                    else
+                    {
+                        TempData["msg"] = "Category updated successfully!";
+                        return RedirectToAction("VendorCategory");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("VendorCategory");
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public async Task<IActionResult> DeleteVendorCategory(int id)
+        {
+            try
+            {
+                var dlt = _context.VendorCategoryMasters.Find(id);
+                if (dlt != null)
+                {
+                    _context.VendorCategoryMasters.Remove(dlt);
+                    _context.SaveChanges();
+                }
+                TempData["msg"] = "Category deleted successfully!";
+                return RedirectToAction("VendorCategory");
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 }

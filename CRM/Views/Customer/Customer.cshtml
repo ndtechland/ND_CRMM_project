@@ -295,7 +295,7 @@
         setTimeout(ddstatetrigger, 3000);
     });
 </script> *@
-<script>
+@* <script>
     $(document).ready(function () {
         $('#State').change(function () {
             var selectedState = $(this).val();
@@ -315,7 +315,7 @@
             }
         });
     });
-</script>
+</script> *@
 
 @* <script>
     function onProductChange() {
@@ -685,12 +685,23 @@
             }, 500); // Adjust the delay if needed
 
             billingAddress.readOnly = true;
-            billingState.disabled = false; // Keep dropdown enabled but inform the user
+
+            $("#stateid").css("pointer-events", "none");
+            $("#stateid").css("background-color", "#e9ecef");
+
+            // $("#districtid").css("opacity", "0.5");
+            $("#districtid").css("pointer-events", "none");
+            $("#districtid").css("background-color", "#e9ecef");
             billingCity.disabled = false; // Keep city dropdown enabled
         } else {
             billingAddress.readOnly = false;
-            billingState.disabled = false; // Enable dropdown again
-            billingCity.disabled = false; // Enable city dropdown again
+
+            $("#stateid").css("pointer-events", "auto");
+            $("#stateid").css("background-color", "#FFFFFF");
+
+            $("#districtid").css("pointer-events", "auto");
+            $("#districtid").css("background-color", "#FFFFFF");
+
 
             billingAddress.value = ''; // Clear billing address fields
             billingState.value = '';
@@ -803,12 +814,12 @@
 @*  for checkbox *@
 <script>
     if ('@ViewBag.CheckIsSameAddress' == 'True') {
-        document.addEventListener("DOMContentLoaded", function (event) { 
-          setTimeout(check, 1000);
-        function check() {
-            $('.Activechecked').trigger('click')
-            $('.Activechecked').attr('checked', true);
-        }
+        document.addEventListener("DOMContentLoaded", function (event) {
+            setTimeout(check, 1000);
+            function check() {
+                $('.Activechecked').trigger('click')
+                $('.Activechecked').attr('checked', true);
+            }
         });
     }
     else {
