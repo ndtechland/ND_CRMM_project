@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CRM.Models.DTO.Customer>
+﻿@model IEnumerable<CRM.Models.DTO.CustomerListDto>
 
 @{
     ViewData["Title"] = "CustomerList";
@@ -61,13 +61,16 @@
                                                     Alternate Number
                                                 </th>
                                                 <th nowrap>
-                                                   Email
+                                                   Email Id
                                                 </th>
                                                 <th nowrap>
                                                    Gst Number
                                                 </th>
                                                 <th nowrap>
                                                    Billing Address
+                                                </th>
+                                                  <th nowrap>
+                                                   Office Address 
                                                 </th>
                                                 <th nowrap>
                                                     Product Name
@@ -78,11 +81,20 @@
                                                 <th nowrap>
                                                     Renew Date
                                                 </th>
-                                                <th nowrap>
-                                                    State
+                                                 <th nowrap>
+                                                   Product Price 
                                                 </th>
-                                                <th nowrap>
-                                                    State Name
+                                                 <th nowrap>
+                                                   Product Renew Price 
+                                                </th>
+                                                 <th nowrap>
+                                                  SCGST
+                                                </th>
+                                                 <th nowrap>
+                                                  CGST
+                                                </th>
+                                                 <th nowrap>
+                                                  IGST
                                                 </th>
                                                 <th>Action</th>
                                             </tr>
@@ -90,16 +102,16 @@
                                         <tbody>
                                             @{
                                                 var count = 0;
-                                                @foreach (var item in Model)
-                                            {
+                                                foreach (var item in Model)
+                                                {
                                                     count++;
-                                                        <tr class="table-row">
-                                                            <td>@count</td>
+                                                    <tr class="table-row">
+                                                        <td>@count</td>
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.CompanyName)
                                                         </td>
                                                         <td nowrap>
-                                                                @Html.DisplayFor(modelItem => item.WorkLocation)
+                                                            @Html.DisplayFor(modelItem => item.WorkLocation)
                                                         </td>
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.MobileNumber)
@@ -114,7 +126,10 @@
                                                             @Html.DisplayFor(modelItem => item.GstNumber)
                                                         </td>
                                                         <td>
-                                                            @Html.DisplayFor(modelItem => item.BillingAddress)
+                                                            @($"{item.BillingAddress} {item.BillingStateId} {item.BillingCityId}")
+                                                        </td>
+                                                        <td nowrap>
+                                                            @($"{item.Location} {item.WorkLocation} {item.StateId}")
                                                         </td>
                                                         <td>
                                                             @Html.DisplayFor(modelItem => item.ProductDetails)
@@ -124,23 +139,32 @@
                                                         </td>
                                                         <td nowrap>
                                                             @item.RenewDate.ToString("dd/MM/yyyy")
-                                                        </td nowrap>
-                                                            <td nowrap>
-                                                                @Html.DisplayFor(modelItem => item.BillingStateId)
-                                                            </td>
-                                                        <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.StateName)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.productprice)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.Renewprice)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.Scgst)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.Cgst)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.Igst)
                                                         </td>
                                                         <td>
                                                             <div>
                                                                 <a href="@Url.Action("Customer","Customer",new { id=item.Id})" class="fa fa-edit m-2 font-success"></a>
                                                                 <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteCustomer", "Customer", new { id = item.Id })')" class="fa fa-trash font-danger"></a>
-
                                                             </div>
                                                         </td>
                                                     </tr>
+                                                }
                                             }
-                                            }
+
                                         </tbody>
                                     </table>
                                 </div>
