@@ -42,6 +42,8 @@ namespace CRM.Controllers
                 if (id != 0)
                 {
                     ViewBag.UserName = AddedBy;
+                    ViewBag.Heading = "Customer Registration";
+                    ViewBag.btnText = "Update";
                     var data = _ICrmrpo.GetCustomerById(id);
                     if (data != null)
                     {
@@ -57,14 +59,23 @@ namespace CRM.Controllers
                         ViewBag.SelectedCityId = data.WorkLocation;
                         ViewBag.state = data.BillingStateId;
                         ViewBag.BillingCityId = data.BillingCityId;
+                        ViewBag.CheckIsSameAddress = data.IsSameAddress;
+                        ViewBag.NoOfRenewMonth = data.NoOfRenewMonth;
+                        ViewBag.Renewprice = data.Renewprice;
                         ViewBag.startDate = ((DateTime)data.StartDate).ToString("yyyy-MM-dd");
                         ViewBag.renewDate = ((DateTime)data.RenewDate).ToString("yyyy-MM-dd");
                         return View(data);
                     }
                 }
                 ViewBag.UserName = AddedBy;
+                ViewBag.Heading = "Customer Registration";
+                ViewBag.btnText = "SAVE";
                 ViewBag.SelectedStateId = null;
                 ViewBag.SelectedCityId = null;
+                ViewBag.BillingCityId = null;
+                ViewBag.CheckIsSameAddress =null;
+                ViewBag.NoOfRenewMonth = null;
+                ViewBag.Renewprice = null;
                 ViewBag.ProductDetails = _context.ProductMasters.Where(x => x.IsDeleted == false)
                     .Select(p => new SelectListItem
                     {
