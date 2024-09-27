@@ -146,6 +146,15 @@
         margin-left: 1rem;
         margin-right: 1rem;
     }
+    
+@@media (min-width: 1200px) {
+    .col-xl-6 {
+        -webkit-box-flex: 0;
+        -ms-flex: 0 0 auto;
+        flex: 0 0 auto;
+        width: 63%;
+    }
+}
 </style>
 <div class="page-wrapper">
     <div class="page-body-wrapper">
@@ -236,17 +245,31 @@
                                         </div>
                                     </div>
                                     <div class="row gx-3 mb-3">
-                                        <div class="input-group">
-                                            <input type="text" id="radius-input" value="@ViewBag.radious"  asp-for="radious" placeholder="Enter radius" min="0" style="height: 38px; width: 113px;" onkeydown="validateNumericInput(event)">
-                                            <input type="hidden" id="latitude" value="@ViewBag.maplat"  asp-for="maplat">
-                                            <input type="hidden" id="longitude" value="@ViewBag.maplong"  asp-for="maplong">
-
+                                        <div class="col-md-6">
+                                            <label for="validationCustom0">State <span class="text-danger">*</span></label>
+                                            <select asp-for="BillingStateId" asp-items="@ViewBag.StateItems" id="stateid" class="form-control" required>
+                                                <option value="">--Select State--</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="validationCustom0">City <span class="text-danger">*</span></label>
+                                            <select asp-for="BillingCityId" class="form-control" id="billingcityid" required>
+                                                <option value="">--Select City--</option>
+                                            </select>
                                         </div>
                                     </div>
-                                    <div id="map"></div>
                                     @if (ViewBag.FilePathDetail != "")
                                     {
                                         <div class="row gx-3 mb-3">
+                                          
+                                            <div class="col-md-6">
+                                                <label for="validationCustom0">Radius</label>
+                                                <input type="text" id="radius-input" asp-for="radious" placeholder="Enter radius" onkeydown="validateNumericInput(event)">
+                                                <span asp-validation-for="radious" class="text-danger"></span>
+                                                <input type="hidden" id="latitude" asp-for="maplat">
+                                                <input type="hidden" id="longitude" asp-for="maplong">
+
+                                            </div>
                                             <div class="col-md-6">
                                                 <label for="exampleInputFile">Company Image</label>
                                                 <input type="hidden" value='@ViewBag.vendorid' name="Id" />
@@ -264,13 +287,28 @@
                                     {
                                         <div class="row gx-3 mb-3">
                                             <div class="col-md-6">
+                                                <label for="validationCustom0">Radius</label>
+                                                <input type="text" id="radius-input"  asp-for="radious" placeholder="Enter radius" onkeydown="validateNumericInput(event)">
+                                                <span asp-validation-for="radious" class="text-danger"></span>
+                                                <input type="hidden" id="latitude"  asp-for="maplat">
+                                                <input type="hidden" id="longitude"  asp-for="maplong">
+
+                                            </div>
+                                            <div class="col-md-6">
                                                 <label for="exampleInputFile">Company Image</label>
                                                 <input type="hidden" value='@ViewBag.vendorid' name="Id" />
                                                 <input type="file" accept=".jpg, .jpeg, .png, .gif, .mp4, .avi, .mkv" id="ImageFile" name="ImageFile">
                                                 <input type="hidden" value='@ViewBag.FilePathDetail' name="FilePath" />
                                             </div>
+                                           
                                         </div>                                
                                     }
+                                    <div class="row gx-3 mb-3">
+                                        <div class="col-md-12">
+                                            <div id="map"></div>
+                                        </div>
+                                    </div>
+                                   
                                     <div class="form-group d-flex justify-content-center">
                                         <input type="submit" value="Update" class="btn btn-primary" />
                                     </div>
@@ -287,6 +325,52 @@
 
 
 </div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var selectedDistrictId = '@Html.Raw(ViewBag.SelectedBillingCityId ?? "null")';
+        var stateId = $('#stateid').val();
+        $("#stateid").trigger('change');
+        $("#location-input").trigger('keyup');
+        if (stateId) {
+            loadDistricts(stateId, selectedDistrictId); 
+        }
+
+        $('#stateid').change(function () {
+            var stateId = $(this).val();
+            if (stateId) {
+                loadDistricts(stateId); 
+            } else {
+                $('#billingcityid').empty();
+                $('#billingcityid').append('<option value="">--Select City--</option>');
+            }
+        });
+        function loadDistricts(stateId, selectedDistrictId = null) {
+            $.ajax({
+                url: '@Url.Action("GetCityByStateId", "Customer")',
+                type: "GET",
+                data: { stateId: stateId },
+                success: function (data) {
+                    $('#billingcityid').empty();
+                    $('#billingcityid').append('<option value="">--Select City--</option>');
+
+                    $.each(data, function (index, item) {
+                        var isSelected = selectedDistrictId && item.id == selectedDistrictId ? 'selected' : '';
+                        $('#billingcityid').append('<option value="' + item.id + '" ' + isSelected + '>' + item.name + '</option>');
+                    });
+                    if (selectedDistrictId) {
+                        $('#billingcityid').val(selectedDistrictId);
+                    }
+                },
+                error: function () {
+                    console.error('Failed to load districts.');
+                }
+            });
+        }
+    });
+</script>
+
+
 <script>
     function validateNumericInput(event) {
         if ([46, 8, 9, 27, 13].indexOf(event.keyCode) !== -1 ||
@@ -320,10 +404,10 @@
     let circle;
 
     function initMap() {
-        const initialLocation = { lat: -34.397, lng: 150.644 };
+        const initialLocation = { lat: 21.7679, lng: 78.8718 };
         map = new google.maps.Map(document.getElementById("map"), {
             center: initialLocation,
-            zoom: 8,
+            zoom: 15,
         });
 
         marker = new google.maps.Marker({
@@ -358,12 +442,42 @@
         document.getElementById("longitude").value = lng;
 
         console.log(`Latitude: ${lat}, Longitude: ${lng}, Radius: ${radiusInput} meters`);
+        // alert(`Latitude: ${lat}, Longitude: ${lng}, Radius: ${radiusInput} meters`);
     }
 
-
+   
 
     window.onload = initMap;
+    document.getElementById("location-input").addEventListener('keyup', function () {
+
+        const locationInput = document.getElementById("location-input").value;
+        // const radiusInput = parseInt(document.getElementById("radius-input").value, 10);
+
+        const geocoder = new google.maps.Geocoder();
+        geocoder.geocode({ address: locationInput }, (results, status) => {
+            if (status === "OK") {
+                map.setCenter(results[0].geometry.location);
+                marker.setPosition(results[0].geometry.location);
+                updateCircle();
+            } else {
+               // alert("Geocode was not successful for the following reason: " + status);
+            }
+        });
+    });
+    function triggerKeyupIn2Seconds() {
+        setTimeout(function () {
+            // Create a new keyup event
+            var event = new Event('keyup');
+
+            // Dispatch the event on the input element
+            document.getElementById("location-input").dispatchEvent(event);
+        }, 2000);  // 2000 milliseconds = 2 seconds
+    }
+
+    // Example usage: call the function
+    triggerKeyupIn2Seconds();
 </script>
+
 <script async defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBrbWFXlOYpaq51wteSyFS2UjdMPOWBlQw&callback=initMap">
 </script>

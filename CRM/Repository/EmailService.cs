@@ -180,15 +180,16 @@ namespace CRM.Repository
             }
         }
 
-        public async Task EmpRandomPasswordSendEmailAsync(ForgotPassword model, string newPassword, string userId)
+        public async Task EmpRandomPasswordSendEmailAsync(ForgotPassword model, string newPassword)
         {
             try
             {
+                var employee = await _context.EmployeeRegistrations.FirstOrDefaultAsync(x => x.WorkEmail == model.Email);
                 var emailMessage = new MimeMessage();
                 emailMessage.From.Add(new MailboxAddress("ND Connect", "aastrolense@gmail.com"));
                 emailMessage.To.Add(new MailboxAddress("Recipient Name", model.Email));
                 emailMessage.Subject = "ND Connect - Password Reset";
-                var message = "<p><strong>Hi :</strong> " + userId + "</p>" +
+                var message = "<p><strong>Hi :</strong> " + employee.EmployeeId + "</p>" +
                               "<p>You have successfully reset your password. Your temporary password is: " +
                               "<strong style='color: black ;'>" + newPassword + "</strong></p>" +
                               "<p><strong>Please log in and change it as soon as possible for security reasons.</strong></p>";
