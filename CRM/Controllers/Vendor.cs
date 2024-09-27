@@ -41,6 +41,7 @@ namespace CRM.Controllers
                     var vendor = _context.VendorRegistrations.Where(x => x.Id == id).FirstOrDefault();
                     ViewBag.UserName = AddedBy;
                     var data = _ICrmrpo.GetVendorById(id);
+
                     if (data != null)
                     {
                         ViewBag.ProductDetails = _context.ProductMasters.Where(x => x.IsDeleted == false)
@@ -55,6 +56,9 @@ namespace CRM.Controllers
                         ViewBag.Renewprice = data.Renewprice;
                         ViewBag.NoOfRenewMonth = data.NoOfRenewMonth;
                         ViewBag.SelectedCityId = data.WorkLocation;
+                        ViewBag.SelectedBillingCityId = data.BillingCityId;
+                        ViewBag.SelectedBillingStateId = data.BillingStateId;
+                        ViewBag.CheckIsSameAddress = data.IsSameAddress;
                         ViewBag.state = data.State;
                         ViewBag.startDate = ((DateTime)data.StartDate).ToString("yyyy-MM-dd");
                         ViewBag.renewDate = ((DateTime)data.RenewDate).ToString("yyyy-MM-dd");

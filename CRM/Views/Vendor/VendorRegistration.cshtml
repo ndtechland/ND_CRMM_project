@@ -200,7 +200,7 @@
                                                     <option value="">-- Select City Name --</option>
                                                 </select> *@
                                                 <select class="form-control" name="WorkLocation" id="ddlCityid">
-                                                    <option value="">-- Select City Name --</option>
+                                                    <option value="">-- Select City --</option>
                                                 </select>
                                             </div>
                                             <span asp-validation-for="WorkLocation" class="text-danger"></span>
@@ -240,7 +240,7 @@
                                     </div>
                                     <div class="form-group col-sm">
                                         <label for="sameAsCompanyAddress">
-                                            <input type="checkbox" id="sameAsCompanyAddress" onclick="copyAddress()"> Same as Company Address
+                                            <input type="checkbox" id="sameAsCompanyAddress" name="IsSameAddress" value="true" class="Activechecked" onclick="copyAddress()"> Same as Company Address
                                         </label>
                                     </div>
                                     <div class="row">
@@ -398,7 +398,7 @@
     document.getElementById('NoOfRenewMonth').addEventListener('input', calculateRenewDate);
     document.getElementById('StartDate').addEventListener('input', calculateRenewDate);
 </script>
-<script>
+@* <script>
     $(document).ready(function () {
         onProductChange();
 
@@ -410,8 +410,8 @@
         }
         setTimeout(mess, 1000);
     });
-</script>
-<script>
+</script> *@
+@* <script>
     $(document).ready(function () {
         var selectedStateId = @Html.Raw(Json.Serialize(ViewBag.SelectedStateId));
 
@@ -444,9 +444,9 @@
         }
         //  ddlState.trigger('change');
         // Call ddstatetrigger after 3 seconds
-        setTimeout(ddstatetrigger, 3000);
+        //setTimeout(ddstatetrigger, 3000);
     });
-</script>
+</script> *@
 <script>
     $(document).ready(function () {
         $('#State').change(function () {
@@ -575,7 +575,7 @@
             updateTaxFields();
         });
     });
-
+    
     function updateTaxFields() {
         var productId = $("#ProductDetails").val();
         var stateId = $("#stateid").val();
@@ -878,11 +878,12 @@
 <script type="text/javascript">
     $(document).ready(function () {
         // Store DistrictId from the view for edit time
-        var selectedBillingDistrictId = '@Html.Raw(ViewBag.BillingCityId ?? "null")'; // Fetch DistrictId, use null if not set
+        var selectedDistrictId = '@Html.Raw(ViewBag.SelectedBillingCityId ?? "null")'; // Fetch DistrictId, use null if not set
         // Check if stateId is already set (useful for edit scenario)
         var stateId = $('#stateid').val();
+        $("#stateid").trigger('change');
         if (stateId) {
-            loadDistricts(stateId, selectedBillingDistrictId); // Pass selectedDistrictId for edit time
+            loadDistricts(stateId, selectedDistrictId); // Pass selectedDistrictId for edit time
         }
 
         $('#stateid').change(function () {
@@ -896,7 +897,7 @@
         });
 
         // Function to load districts based on selected state
-        function loadDistricts(stateId, selectedBillingDistrictId = null) {
+        function loadDistricts(stateId, selectedDistrictId = null) {
             $.ajax({
                 url: '@Url.Action("GetCityByStateId", "Customer")',
                 type: "GET",
@@ -906,13 +907,13 @@
                     $('#districtid').append('<option value="">--Select City--</option>');
 
                     $.each(data, function (index, item) {
-                        var isSelected = selectedBillingDistrictId && item.id == selectedBillingDistrictId ? 'selected' : '';
+                        var isSelected = selectedDistrictId && item.id == selectedDistrictId ? 'selected' : '';
                         $('#districtid').append('<option value="' + item.id + '" ' + isSelected + '>' + item.name + '</option>');
                     });
 
                     // If district is pre-selected (edit mode), ensure it is selected in the dropdown
-                    if (selectedBillingDistrictId) {
-                        $('#districtid').val(selectedBillingDistrictId); // Set the selected district in case it wasn't set correctly by "selected" attribute
+                    if (selectedDistrictId) {
+                        $('#districtid').val(selectedDistrictId); // Set the selected district in case it wasn't set correctly by "selected" attribute
                     }
                 },
                 error: function () {
@@ -923,6 +924,20 @@
     });
 </script>
 
+@*  for checkbox *@
+<script>
+    if ('@ViewBag.CheckIsSameAddress' == 'True') {
+        document.addEventListener("DOMContentLoaded", function (event) {
+            $('.Activechecked').trigger('click')
+            $('.Activechecked').attr('checked', true);
+        });
+    }
+    else {
+        document.addEventListener("DOMContentLoaded", function (event) {
+            $('.Activechecked').attr('checked', false);
+        });
+    }
+</script>
 
 
 

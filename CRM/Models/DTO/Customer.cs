@@ -23,6 +23,7 @@ namespace CRM.Models.DTO
         public string? Gst { get; set; }
         public string? HsnSacCode { get; set; } 
         public double Price { get; set; }
+        public bool? IsSameAddress { get; set; }
         public string? BillingStateId { get; set; }
         public int? StateId { get; set; }
         public string StateName { get; set; } = null!;

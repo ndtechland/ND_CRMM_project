@@ -22,5 +22,11 @@ namespace CRM.Models.Crm
         public int? BillingStateId { get; set; }
         public string? Renewprice { get; set; }
         public int? NoOfRenewMonth { get; set; }
+        public string? Location { get; set; }
+        public string? Productprice { get; set; }
+        public decimal? Scgst { get; set; }
+        public decimal? Cgst { get; set; }
+        public decimal? Igst { get; set; }
+        public bool? IsSameAddress { get; set; }
     }
 }
