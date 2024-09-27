@@ -75,6 +75,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<TErrorLog> TErrorLogs { get; set; } = null!;
         public virtual DbSet<TaxDeductor> TaxDeductors { get; set; } = null!;
         public virtual DbSet<TransactionDetail> TransactionDetails { get; set; } = null!;
+        public virtual DbSet<VendorCategoryMaster> VendorCategoryMasters { get; set; } = null!;
         public virtual DbSet<VendorProductMaster> VendorProductMasters { get; set; } = null!;
         public virtual DbSet<VendorRegistration> VendorRegistrations { get; set; } = null!;
         public virtual DbSet<WorkLocation> WorkLocations { get; set; } = null!;
@@ -1592,6 +1593,13 @@ namespace CRM.Models.Crm
                     .HasForeignKey(d => d.PayMethod)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Transaction_Details_Pay_Method_ID");
+            });
+
+            modelBuilder.Entity<VendorCategoryMaster>(entity =>
+            {
+                entity.ToTable("VendorCategoryMaster");
+
+                entity.Property(e => e.CategoryName).HasMaxLength(100);
             });
 
             modelBuilder.Entity<VendorProductMaster>(entity =>
