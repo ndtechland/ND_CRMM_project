@@ -30,4 +30,10 @@
         public string? ShiftTime { get; set; }
         public string? ShiftType { get; set; }
     }
+    public class CompanyLoctionDto
+    {
+        public string? Companylat { get; set; }
+        public string? Companylong { get; set; }
+        public string? Radious { get; set; }
+    }
 }

@@ -536,5 +536,71 @@ namespace CRM.Repository
                 throw new Exception("Error :" + ex.Message);
             }
         }
+
+        public async Task<CompanyLoctionDto> GetCompanyLoction(string userid)
+        {
+            try
+            {
+                if (userid != null)
+                {
+                    var empid = await _context.EmployeeRegistrations.Where(x => x.EmployeeId == userid && x.IsDeleted == false).Select(x => new CompanyLoctionDto
+                    {
+                        Companylat = _context.VendorRegistrations.Where(g => g.Id == x.Vendorid).Select(g => g.Maplat).First(),
+                        Companylong = _context.VendorRegistrations.Where(g => g.Id == x.Vendorid).Select(g => g.Maplong).First(),
+                        Radious = _context.VendorRegistrations.Where(g => g.Id == x.Vendorid).Select(g => g.Radious).First(),
+                    }).FirstOrDefaultAsync();
+                    return empid;
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("Error : " + ex.Message);
+            }
+        }
+
+        public async Task<EmployeeCheckIn> Empcheckin(EmpCheckIn model, string userid)
+        {
+            try
+            {
+                var empcheck = await _context.EmployeeCheckIns
+                    .Where(x => x.EmployeeId == userid && x.Currentdate.Value.Date == DateTime.Now.Date)
+                    .FirstOrDefaultAsync();
+
+                if (empcheck != null)
+                {
+                    empcheck.CurrentLat = model.CurrentLat;
+                    empcheck.Currentlong = model.Currentlong;
+                    empcheck.CheckIn = model.CheckIn;
+                    empcheck.CheckOutTime = DateTime.Today.AddHours(15).AddMinutes(30);
+                    empcheck.Currentdate = DateTime.Now;
+
+                    _context.EmployeeCheckIns.Update(empcheck);
+                }
+                else
+                {
+                    empcheck = new EmployeeCheckIn
+                    {
+                        EmployeeId = userid,
+                        CurrentLat = model.CurrentLat,
+                        Currentlong = model.Currentlong,
+                        CheckIn = model.CheckIn,
+                        CheckInTime = DateTime.Today.AddHours(15).AddMinutes(30),
+                        Currentdate = DateTime.Now,
+                    };
+
+                    _context.EmployeeCheckIns.Add(empcheck);
+                }
+
+                await _context.SaveChangesAsync();
+                return empcheck;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error: " + ex.Message);
+            }
+        }
+
     }
 }
