@@ -41,7 +41,7 @@
                         <div class="col-lg-6">
                             <div class="page-header-left">
                                 <h2>
-                                    Customer Registration
+                                    @ViewBag.Heading
                                 </h2>
                             </div>
                         </div>
@@ -173,12 +173,12 @@
                                         </div>
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Renew Price <span class="text-danger">*</span></label>
-                                            <input class="form-control" name="Renewprice" value="@ViewBag.Renewprice" id="Renewprice" type="text" onkeydown="validateNumericInput(event)">
+                                            <input class="form-control" name="Renewprice" value="@ViewBag.Renewprice" value="@ViewBag.Renewprice" id="Renewprice" type="text" onkeydown="validateNumericInput(event)">
                                             <span asp-validation-for="Renewprice" class="text-danger"></span>
                                         </div>
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Number Of Renew Month <span class="text-danger">*</span></label>
-                                            <input class="form-control" name="NoOfRenewMonth" placeholder="1" value="@ViewBag.NoOfRenewMonth" id="NoOfRenewMonth" type="text" onkeydown="validateNumericInput(event)" maxlength="2">
+                                            <input class="form-control" name="NoOfRenewMonth" value="@ViewBag.NoOfRenewMonth" placeholder="1" value="@ViewBag.NoOfRenewMonth" id="NoOfRenewMonth" type="text" onkeydown="validateNumericInput(event)" maxlength="2">
                                             <span asp-validation-for="NoOfRenewMonth" class="text-danger"></span>
                                         </div>
                                         <div class="form-group col-sm">
@@ -218,7 +218,7 @@
                                     </div>
 
                                     <div class="form-group" style="display:flex; justify-content:center;">
-                                        <input type="submit" value="Save" class="btn btn-primary" />
+                                        <input type="submit" value="@ViewBag.btnText" class="btn btn-primary" />
                                     </div>
                                 </form>
                             </div>
@@ -246,7 +246,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/js/select2.min.js" defer></script>
 
 
-<script>
+@* <script>
     $(document).ready(function () {
         onProductChange();
 
@@ -258,7 +258,7 @@
         }
         setTimeout(mess, 1000);
     });
-</script>
+</script> *@
 @* <script>
     $(document).ready(function () {
         var selectedStateId = @Html.Raw(Json.Serialize(ViewBag.SelectedStateId));
@@ -604,11 +604,12 @@
 <script type="text/javascript">
     $(document).ready(function () {
         // Store DistrictId from the view for edit time
-        var selectedBillingDistrictId = '@Html.Raw(ViewBag.BillingCityId ?? "null")'; // Fetch DistrictId, use null if not set
+        var selectedDistrictId = '@Html.Raw(ViewBag.BillingCityId ?? "null")'; // Fetch DistrictId, use null if not set
         // Check if stateId is already set (useful for edit scenario)
         var stateId = $('#stateid').val();
+        $("#stateid").trigger('change');
         if (stateId) {
-            loadDistricts(stateId, selectedBillingDistrictId); // Pass selectedDistrictId for edit time
+            loadDistricts(stateId, selectedDistrictId); // Pass selectedDistrictId for edit time
         }
 
         $('#stateid').change(function () {
@@ -622,23 +623,23 @@
         });
 
         // Function to load districts based on selected state
-        function loadDistricts(stateId, selectedBillingDistrictId = null) {
+        function loadDistricts(stateId, selectedDistrictId = null) {
             $.ajax({
                 url: '@Url.Action("GetCityByStateId", "Customer")',
                 type: "GET",
                 data: { stateId: stateId },
                 success: function (data) {
-                    $('#districtid').empty();  
+                    $('#districtid').empty();
                     $('#districtid').append('<option value="">--Select City--</option>');
 
                     $.each(data, function (index, item) {
-                        var isSelected = selectedBillingDistrictId && item.id == selectedBillingDistrictId ? 'selected' : '';
+                        var isSelected = selectedDistrictId && item.id == selectedDistrictId ? 'selected' : '';
                         $('#districtid').append('<option value="' + item.id + '" ' + isSelected + '>' + item.name + '</option>');
                     });
 
                     // If district is pre-selected (edit mode), ensure it is selected in the dropdown
-                    if (selectedBillingDistrictId) {
-                        $('#districtid').val(selectedBillingDistrictId); // Set the selected district in case it wasn't set correctly by "selected" attribute
+                    if (selectedDistrictId) {
+                        $('#districtid').val(selectedDistrictId); // Set the selected district in case it wasn't set correctly by "selected" attribute
                     }
                 },
                 error: function () {
@@ -698,9 +699,7 @@
     }
 </script>
 
-
-
-
+@* Gst *@
 <script>
     $(document).ready(function () {
         // Event listener for product change
@@ -777,6 +776,8 @@
         }
     }
 </script>
+
+@* autoselect renew date base on renew month and startdate *@
 <script>
     function calculateRenewDate() {
         const renewMonth = parseInt(document.getElementById('NoOfRenewMonth').value);
@@ -802,9 +803,12 @@
 @*  for checkbox *@
 <script>
     if ('@ViewBag.CheckIsSameAddress' == 'True') {
-        document.addEventListener("DOMContentLoaded", function (event) {
+        document.addEventListener("DOMContentLoaded", function (event) { 
+          setTimeout(check, 1000);
+        function check() {
             $('.Activechecked').trigger('click')
             $('.Activechecked').attr('checked', true);
+        }
         });
     }
     else {

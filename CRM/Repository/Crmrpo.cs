@@ -936,6 +936,7 @@ namespace CRM.Repository
                         StartDate = (DateTime)(rdr["Start_date"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(rdr["Start_date"])),
                         RenewDate = (DateTime)(rdr["Renew_Date"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(rdr["Renew_Date"])),
                         BillingStateId = rdr["BillingStateId"] == DBNull.Value ? null : Convert.ToString(rdr["BillingStateId"]),
+                        NoOfRenewMonth = rdr["NoOfRenewMonth"] == DBNull.Value ? (int?)null : Convert.ToInt32(rdr["NoOfRenewMonth"]),
                         StateId = rdr["stateId"] == DBNull.Value ? (int?)null : Convert.ToInt32(rdr["stateId"]),
                         IsSameAddress = rdr["IsSameAddress"] == DBNull.Value ? null : Convert.ToBoolean(rdr["IsSameAddress"]),
                         //StateId = rdr["stateId"] == DBNull.Value ? (int?)null : Convert.ToInt32(rdr["stateId"]),
@@ -979,32 +980,40 @@ namespace CRM.Repository
         }
         public async Task<int> updateCustomerReg(Customer model)
         {
-            var parameter = new List<SqlParameter>();
-            parameter.Add(new SqlParameter("@id", model.Id));
-            parameter.Add(new SqlParameter("@Company_Name", model.CompanyName));
-            parameter.Add(new SqlParameter("@Location", model.Location));
-            parameter.Add(new SqlParameter("@Work_Location", model.WorkLocation));
-            parameter.Add(new SqlParameter("@Mobile_number", model.MobileNumber));
-            parameter.Add(new SqlParameter("@Alternate_number", model.AlternateNumber));
-            parameter.Add(new SqlParameter("@Email", model.Email));
-            parameter.Add(new SqlParameter("@GST_Number", model.GstNumber));
-            parameter.Add(new SqlParameter("@Billing_Address", model.BillingAddress));
-            parameter.Add(new SqlParameter("@Product_Details", model.ProductDetails));
-            parameter.Add(new SqlParameter("@Start_date", model.StartDate));
-            parameter.Add(new SqlParameter("@Renew_Date", model.RenewDate));
-            parameter.Add(new SqlParameter("@BillingStateId", model.BillingStateId));
-            parameter.Add(new SqlParameter("@BillingCityId", model.BillingCityId));
-            parameter.Add(new SqlParameter("@stateId", model.StateId));
-            parameter.Add(new SqlParameter("@Renewprice", model.Renewprice));
-            parameter.Add(new SqlParameter("@NoOfRenewMonth", model.NoOfRenewMonth));
-            parameter.Add(new SqlParameter("@productprice", model.productprice));
-            parameter.Add(new SqlParameter("@SCGST", model.Scgst));
-            parameter.Add(new SqlParameter("@CGST", model.Cgst));
-            parameter.Add(new SqlParameter("@IGST", model.Igst));
+            using (var connection = new SqlConnection(_context.Database.GetConnectionString()))
+            {
+                var parameters = new DynamicParameters();
+                parameters.Add("@id", model.Id, DbType.Int32);
+                parameters.Add("@Company_Name", model.CompanyName, DbType.String);
+                parameters.Add("@Location", model.Location, DbType.String);
+                parameters.Add("@Work_Location", model.WorkLocation, DbType.String);
+                parameters.Add("@Mobile_number", model.MobileNumber, DbType.String);
+                parameters.Add("@Alternate_number", model.AlternateNumber, DbType.String);
+                parameters.Add("@Email", model.Email, DbType.String);
+                parameters.Add("@GST_Number", model.GstNumber, DbType.String);
+                parameters.Add("@Billing_Address", model.BillingAddress, DbType.String);
+                parameters.Add("@Product_Details", model.ProductDetails, DbType.String);
+                parameters.Add("@Start_date", model.StartDate, DbType.DateTime);
+                parameters.Add("@Renew_Date", model.RenewDate, DbType.DateTime);
+                parameters.Add("@BillingStateId", model.BillingStateId, DbType.Int32);
+                parameters.Add("@BillingCityId", model.BillingCityId, DbType.Int32);
+                parameters.Add("@stateId", model.StateId, DbType.Int32);
+                parameters.Add("@Renewprice", model.Renewprice, DbType.Decimal);
+                parameters.Add("@NoOfRenewMonth", model.NoOfRenewMonth, DbType.Int32);
+                parameters.Add("@productprice", model.productprice, DbType.Decimal);
+                parameters.Add("@SCGST", model.Scgst, DbType.Decimal);
+                parameters.Add("@CGST", model.Cgst, DbType.Decimal);
+                parameters.Add("@IGST", model.Igst, DbType.Decimal);
+                parameters.Add("@IsSameAddress", model.IsSameAddress, DbType.Boolean);
 
+                var result = await connection.ExecuteAsync(
+                    "sp_updateCustomer_Reg",
+                    parameters,
+                    commandType: CommandType.StoredProcedure
+                );
 
-            var result = await _context.Database.ExecuteSqlRawAsync(@"exec sp_updateCustomer_Reg @id,@Company_Name, @Work_Location,@Mobile_number,@Alternate_number,@Email,@GST_Number,@Billing_Address,@Product_Details,@Start_date,@Renew_Date,@State,@stateId,@Renewprice,@NoOfRenewMonth,@productprice,@SCGST,@CGST,@IGST", parameter.ToArray());
-            return result;
+                return result;
+            }
         }
 
         public async Task<List<ECS>> ESCExcel(string customerId, string WorkLocation)
