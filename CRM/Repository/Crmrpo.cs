@@ -136,12 +136,18 @@ namespace CRM.Repository
                     parameters.Add("@Vendorid", vendorid);
                     parameters.Add("@Renewprice", model.Renewprice);
                     parameters.Add("@NoOfRenewMonth", model.NoOfRenewMonth);
+                    parameters.Add("@productprice", model.productprice);
+                    parameters.Add("@SCGST", model.Scgst);
+                    parameters.Add("@CGST", model.Cgst);
+                    parameters.Add("@IGST", model.Igst);
                     parameters.Add("@CustomerId", dbType: DbType.Int32, direction: ParameterDirection.Output);
 
                     await connection.ExecuteAsync("CustomerRegistration", parameters, commandType: CommandType.StoredProcedure);
 
                     int newCustomerId = parameters.Get<int>("@CustomerId");
                     return newCustomerId;
+
+
                 }
             }
             catch (Exception)
@@ -993,7 +999,7 @@ namespace CRM.Repository
             parameter.Add(new SqlParameter("@IGST", model.Igst));
 
 
-            var result = await _context.Database.ExecuteSqlRawAsync(@"exec sp_updateCustomer_Reg @id,@Company_Name, @Work_Location,@Mobile_number,@Alternate_number,@Email,@GST_Number,@Billing_Address,@Product_Details,@Start_date,@Renew_Date,@State,@stateId", parameter.ToArray());
+            var result = await _context.Database.ExecuteSqlRawAsync(@"exec sp_updateCustomer_Reg @id,@Company_Name, @Work_Location,@Mobile_number,@Alternate_number,@Email,@GST_Number,@Billing_Address,@Product_Details,@Start_date,@Renew_Date,@State,@stateId,@Renewprice,@NoOfRenewMonth,@productprice,@SCGST,@CGST,@IGST", parameter.ToArray());
             return result;
         }
 
