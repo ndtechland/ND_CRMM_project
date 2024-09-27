@@ -26,7 +26,7 @@ namespace CRM.Controllers.Api
         private readonly IEmailService _IEmailService;
         private readonly Encrypt _encrypt;
 
-        public EmployeeApiController(IEmployee apiemp, admin_NDCrMContext context,Dcrypt dcrypt, IEmailService iEmailService,Encrypt encrypt)
+        public EmployeeApiController(IEmployee apiemp, admin_NDCrMContext context, Dcrypt dcrypt, IEmailService iEmailService, Encrypt encrypt)
         {
             this._apiemp = apiemp;
             this._context = context;
@@ -604,5 +604,216 @@ namespace CRM.Controllers.Api
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
+
+        [Route("GetCompanyLoction")]
+        [HttpGet]
+        public async Task<IActionResult> GetCompanyLoction()
+        {
+            var response = new Response<CompanyLoctionDto>();
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userid = User.Claims.FirstOrDefault().Value;
+                    CompanyLoctionDto isLoctionExists = await _apiemp.GetCompanyLoction(userid);
+                    if (isLoctionExists != null)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = "Company Loction Here.";
+                        response.Data = isLoctionExists;
+                        return Ok(response);
+                    }
+                    else
+                    {
+                        response.StatusCode = StatusCodes.Status401Unauthorized;
+                        response.Message = "Data not found.";
+                        return Ok(response);
+                    }
+                }
+                else
+                {
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Message = "Token is expired.";
+                    return BadRequest(response);
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        [HttpPost,Route("EmployeeCheckIn")]
+        public async Task<IActionResult> EmployeeCheckIn([FromBody] EmpCheckIn model)
+        {
+            var response = new Response<EmployeeCheckIn>();
+            try
+            {
+                if (!User.Identity.IsAuthenticated)
+                {
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Message = "Token is expired.";
+                    return Unauthorized(response);
+                }
+
+                var userId = User.Claims.FirstOrDefault()?.Value;
+                var employee = await _context.EmployeeRegistrations
+                    .FirstOrDefaultAsync(x => x.EmployeeId == userId);
+
+                if (employee == null)
+                {
+                    response.StatusCode = StatusCodes.Status404NotFound;
+                    response.Message = "Employee not found.";
+                    return NotFound(response);
+                }
+
+                var company = await _context.VendorRegistrations
+                    .FirstOrDefaultAsync(x => x.Id == employee.Vendorid);
+                if (company == null)
+                {
+                    response.StatusCode = StatusCodes.Status404NotFound;
+                    response.Message = "Company not found.";
+                    return NotFound(response);
+                }
+
+                if (company.Maplat != model.CurrentLat)
+                {
+                    response.StatusCode = StatusCodes.Status400BadRequest;
+                    response.Message = "Current latitude does not match the company's location.";
+                    return BadRequest(response);
+                }
+
+                if (company.Maplong != model.Currentlong)
+                {
+                    response.StatusCode = StatusCodes.Status400BadRequest; 
+                    response.Message = "Current longitude does not match the company's location.";
+                    return BadRequest(response);
+                }
+
+                var apiModel = await _apiemp.Empcheckin(model, userId);
+                if (apiModel != null)
+                {
+                    response.Succeeded = true;
+                    response.StatusCode = StatusCodes.Status200OK;
+                    response.Status = "Success";
+                    response.Message = "Check-in successful.";
+                    response.Data = apiModel;
+                    return Ok(response);
+                }
+                else
+                {
+                    response.StatusCode = StatusCodes.Status400BadRequest;
+                    response.Message = "Check-in failed. Please check your input.";
+                    return BadRequest(response);
+                }
+            }
+            catch (Exception ex)
+            {
+                response.StatusCode = StatusCodes.Status500InternalServerError;
+                response.Message = "An error occurred: " + ex.Message;
+                return StatusCode(response.StatusCode, response);
+            }
+        }
+        //[AllowAnonymous]
+        //private double CalculateDistance(double lat1, double lon1, double lat2, double lon2)
+        //{
+        //    const double R = 6371000;
+        //    var lat1Rad = ToRadians(lat1);
+        //    var lat2Rad = ToRadians(lat2);
+        //    var deltaLat = ToRadians(lat2 - lat1);
+        //    var deltaLon = ToRadians(lon2 - lon1);
+
+        //    var a = Math.Sin(deltaLat / 2) * Math.Sin(deltaLat / 2) +
+        //            Math.Cos(lat1Rad) * Math.Cos(lat2Rad) *
+        //            Math.Sin(deltaLon / 2) * Math.Sin(deltaLon / 2);
+
+        //    var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+
+        //    var distance = R * c;
+        //    return distance;
+        //}
+        //[AllowAnonymous]
+        //private double ToRadians(double degrees)
+        //{
+        //    return degrees * (Math.PI / 180);
+        //}
+        //[HttpPost, Route("EmployeeCheckIn")]
+        //public async Task<IActionResult> EmployeeCheckIn([FromBody] EmpCheckIn model)
+        //{
+        //    var response = new Response<EmployeeCheckIn>();
+        //    try
+        //    {
+        //        if (!User.Identity.IsAuthenticated)
+        //        {
+        //            response.StatusCode = StatusCodes.Status401Unauthorized;
+        //            response.Message = "Token is expired.";
+        //            return Unauthorized(response);
+        //        }
+
+        //        var userId = User.Claims.FirstOrDefault()?.Value;
+        //        var employee = await _context.EmployeeRegistrations
+        //            .FirstOrDefaultAsync(x => x.EmployeeId == userId);
+
+        //        if (employee == null)
+        //        {
+        //            response.StatusCode = StatusCodes.Status404NotFound;
+        //            response.Message = "Employee not found.";
+        //            return NotFound(response);
+        //        }
+
+        //        var company = await _context.VendorRegistrations
+        //            .FirstOrDefaultAsync(x => x.Id == employee.Vendorid);
+
+        //        if (company == null)
+        //        {
+        //            response.StatusCode = StatusCodes.Status404NotFound;
+        //            response.Message = "Company not found.";
+        //            return NotFound(response);
+        //        }
+
+        //        double radiusInMeters =Convert.ToDecimal(company.Radious);
+        //        double distance = CalculateDistance(
+        //            double.Parse(company.Maplat),
+        //            double.Parse(company.Maplong),
+        //            double.Parse(model.CurrentLat),
+        //            double.Parse(model.Currentlong)
+        //        );
+
+        //        if (distance > radiusInMeters)
+        //        {
+        //            response.StatusCode = StatusCodes.Status400BadRequest;
+        //            response.Message = $"Employee is not within the {radiusInMeters} meter radius of the company's location.";
+        //            return BadRequest(response);
+        //        }
+
+        //        var apiModel = await _apiemp.Empcheckin(model, userId);
+        //        if (apiModel != null)
+        //        {
+        //            response.Succeeded = true;
+        //            response.StatusCode = StatusCodes.Status200OK;
+        //            response.Status = "Success";
+        //            response.Message = "Check-in successful.";
+        //            response.Data = apiModel;
+        //            return Ok(response);
+        //        }
+        //        else
+        //        {
+        //            response.StatusCode = StatusCodes.Status400BadRequest;
+        //            response.Message = "Check-in failed. Please check your input.";
+        //            return BadRequest(response);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        response.StatusCode = StatusCodes.Status500InternalServerError;
+        //        response.Message = "An error occurred: " + ex.Message;
+        //        return StatusCode(response.StatusCode, response);
+        //    }
+        //}
+
     }
 }

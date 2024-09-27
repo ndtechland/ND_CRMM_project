@@ -38,6 +38,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<DesignationMaster> DesignationMasters { get; set; } = null!;
         public virtual DbSet<Empattendance> Empattendances { get; set; } = null!;
         public virtual DbSet<EmployeeBankDetail> EmployeeBankDetails { get; set; } = null!;
+        public virtual DbSet<EmployeeCheckIn> EmployeeCheckIns { get; set; } = null!;
         public virtual DbSet<EmployeeImportExcel> EmployeeImportExcels { get; set; } = null!;
         public virtual DbSet<EmployeeLogin> EmployeeLogins { get; set; } = null!;
         public virtual DbSet<EmployeePersonalDetail> EmployeePersonalDetails { get; set; } = null!;
@@ -75,6 +76,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<TErrorLog> TErrorLogs { get; set; } = null!;
         public virtual DbSet<TaxDeductor> TaxDeductors { get; set; } = null!;
         public virtual DbSet<TransactionDetail> TransactionDetails { get; set; } = null!;
+        public virtual DbSet<VendorCategoryMaster> VendorCategoryMasters { get; set; } = null!;
         public virtual DbSet<VendorProductMaster> VendorProductMasters { get; set; } = null!;
         public virtual DbSet<VendorRegistration> VendorRegistrations { get; set; } = null!;
         public virtual DbSet<WorkLocation> WorkLocations { get; set; } = null!;
@@ -586,6 +588,33 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.ReEnterAccountNumber)
                     .HasMaxLength(50)
                     .HasColumnName("Re_Enter_Account_Number");
+            });
+
+            modelBuilder.Entity<EmployeeCheckIn>(entity =>
+            {
+                entity.ToTable("EmployeeCheckIn");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.CheckInTime).HasColumnType("datetime");
+
+                entity.Property(e => e.CheckOutTime).HasColumnType("datetime");
+
+                entity.Property(e => e.CurrentLat)
+                    .HasMaxLength(200)
+                    .HasColumnName("currentLat");
+
+                entity.Property(e => e.Currentdate)
+                    .HasColumnType("datetime")
+                    .HasColumnName("currentdate");
+
+                entity.Property(e => e.Currentlong)
+                    .HasMaxLength(200)
+                    .HasColumnName("currentlong");
+
+                entity.Property(e => e.EmployeeId)
+                    .HasMaxLength(200)
+                    .HasColumnName("Employee_ID");
             });
 
             modelBuilder.Entity<EmployeeImportExcel>(entity =>
@@ -1592,6 +1621,13 @@ namespace CRM.Models.Crm
                     .HasForeignKey(d => d.PayMethod)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Transaction_Details_Pay_Method_ID");
+            });
+
+            modelBuilder.Entity<VendorCategoryMaster>(entity =>
+            {
+                entity.ToTable("VendorCategoryMaster");
+
+                entity.Property(e => e.CategoryName).HasMaxLength(100);
             });
 
             modelBuilder.Entity<VendorProductMaster>(entity =>
