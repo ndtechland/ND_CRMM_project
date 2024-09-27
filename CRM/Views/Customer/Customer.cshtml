@@ -135,7 +135,7 @@
 
                                     <div class="form-group col-sm">
                                         <label for="sameAsCompanyAddress">
-                                            <input type="checkbox" id="sameAsCompanyAddress" onclick="copyAddress()"> Same as Company Address
+                                            <input type="checkbox" id="sameAsCompanyAddress" name="IsSameAddress" value="true" class="Activechecked" onclick="copyAddress()"> Same as Company Address
                                         </label>
                                     </div>
 
@@ -799,7 +799,20 @@
 </script>
 
 
-
+@*  for checkbox *@
+<script>
+    if ('@ViewBag.CheckIsSameAddress' == 'True') {
+        document.addEventListener("DOMContentLoaded", function (event) {
+            $('.Activechecked').trigger('click')
+            $('.Activechecked').attr('checked', true);
+        });
+    }
+    else {
+        document.addEventListener("DOMContentLoaded", function (event) {
+            $('.Activechecked').attr('checked', false);
+        });
+    }
+</script>
 
 
 

@@ -27,5 +27,6 @@ namespace CRM.Models.Crm
         public decimal? Scgst { get; set; }
         public decimal? Cgst { get; set; }
         public decimal? Igst { get; set; }
+        public bool? IsSameAddress { get; set; }
     }
 }

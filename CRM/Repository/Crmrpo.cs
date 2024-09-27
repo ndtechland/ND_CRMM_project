@@ -140,6 +140,7 @@ namespace CRM.Repository
                     parameters.Add("@SCGST", model.Scgst);
                     parameters.Add("@CGST", model.Cgst);
                     parameters.Add("@IGST", model.Igst);
+                    parameters.Add("@IsSameAddress", model.IsSameAddress);
                     parameters.Add("@CustomerId", dbType: DbType.Int32, direction: ParameterDirection.Output);
 
                     await connection.ExecuteAsync("CustomerRegistration", parameters, commandType: CommandType.StoredProcedure);
@@ -935,6 +936,8 @@ namespace CRM.Repository
                         StartDate = (DateTime)(rdr["Start_date"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(rdr["Start_date"])),
                         RenewDate = (DateTime)(rdr["Renew_Date"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(rdr["Renew_Date"])),
                         BillingStateId = rdr["BillingStateId"] == DBNull.Value ? null : Convert.ToString(rdr["BillingStateId"]),
+                        StateId = rdr["stateId"] == DBNull.Value ? (int?)null : Convert.ToInt32(rdr["stateId"]),
+                        IsSameAddress = rdr["IsSameAddress"] == DBNull.Value ? null : Convert.ToBoolean(rdr["IsSameAddress"]),
                         //StateId = rdr["stateId"] == DBNull.Value ? (int?)null : Convert.ToInt32(rdr["stateId"]),
                         BillingCityId = rdr["BillingCityId"] == DBNull.Value ? (int?)null : Convert.ToInt32(rdr["BillingCityId"]),
                         Location = rdr["Location"] == DBNull.Value ? null : Convert.ToString(rdr["Location"]),
@@ -990,6 +993,7 @@ namespace CRM.Repository
             parameter.Add(new SqlParameter("@Start_date", model.StartDate));
             parameter.Add(new SqlParameter("@Renew_Date", model.RenewDate));
             parameter.Add(new SqlParameter("@BillingStateId", model.BillingStateId));
+            parameter.Add(new SqlParameter("@BillingCityId", model.BillingCityId));
             parameter.Add(new SqlParameter("@stateId", model.StateId));
             parameter.Add(new SqlParameter("@Renewprice", model.Renewprice));
             parameter.Add(new SqlParameter("@NoOfRenewMonth", model.NoOfRenewMonth));
@@ -1433,7 +1437,8 @@ namespace CRM.Repository
                     {
                         Id = Convert.ToInt32(rdr["id"]),
                         CompanyName = rdr["Company_Name"] == DBNull.Value ? null : Convert.ToString(rdr["Company_Name"]),
-                        WorkLocation = rdr["Work_Location"] == DBNull.Value ? new string[0] : ((string)rdr["Work_Location"]).Split(','),
+                        //WorkLocation = rdr["Work_Location"] == DBNull.Value ? new string[0] : ((string)rdr["Work_Location"]).Split(','),
+                        WorkLocation = rdr["Work_Location"] == DBNull.Value ? null : Convert.ToString(rdr["Work_Location"]),
                         MobileNumber = rdr["Mobile_number"] == DBNull.Value ? null : Convert.ToString(rdr["Mobile_number"]),
                         AlternateNumber = (rdr["Alternate_number"] == DBNull.Value ? null : Convert.ToString(rdr["Alternate_number"])),
                         Email = rdr["Email"] == DBNull.Value ? null : Convert.ToString(rdr["Email"]),
@@ -1443,6 +1448,9 @@ namespace CRM.Repository
                         StartDate = (DateTime)(rdr["Start_date"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(rdr["Start_date"])),
                         RenewDate = (DateTime)(rdr["Renew_Date"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(rdr["Renew_Date"])),
                         State = rdr["State"] == DBNull.Value ? null : Convert.ToString(rdr["State"]),
+                        BillingStateId = rdr["BillingStateId"] == DBNull.Value ? (int?)null : Convert.ToInt32(rdr["BillingStateId"]),
+                        BillingCityId = rdr["BillingCityId"] == DBNull.Value ? (int?)null : Convert.ToInt32(rdr["BillingCityId"]),
+                        IsSameAddress = rdr["IsSameAddress"] == DBNull.Value ? null : Convert.ToBoolean(rdr["IsSameAddress"]),
                         StateId = rdr["stateId"] == DBNull.Value ? (int?)null : Convert.ToInt32(rdr["stateId"]),
                         Location = rdr["Billing_Address"] == DBNull.Value ? null : Convert.ToString(rdr["Location"]),
                         Renewprice = rdr["Renewprice"] == DBNull.Value ? null : Convert.ToString(rdr["Renewprice"]),
@@ -1485,17 +1493,10 @@ namespace CRM.Repository
                 parameters.Add("@productprice", model.Price);
                 parameters.Add("@Renewprice", model.Renewprice);
                 parameters.Add("@NoOfRenewMonth", model.NoOfRenewMonth);
-
-                // Add the output parameter for CustomerId
+                parameters.Add("@IsSameAddress", model.IsSameAddress);
                 parameters.Add("@CustomerId", dbType: DbType.Int32, direction: ParameterDirection.Output);
-
-                // Execute the stored procedure
                 await connection.ExecuteAsync("VendorRegistration", parameters, commandType: CommandType.StoredProcedure);
-
-                // Retrieve the new CustomerId from the output parameter
                 int newCustomerId = parameters.Get<int>("@CustomerId");
-
-                // If a new customer was created, insert the AdminLogin entry
                 if (newCustomerId > 0)
                 {
                     var adminRole = new AdminLogin
@@ -1546,6 +1547,7 @@ namespace CRM.Repository
                 parameters.Add("@productprice", model.Price);
                 parameters.Add("@Renewprice", model.Renewprice);
                 parameters.Add("@NoOfRenewMonth", model.NoOfRenewMonth);
+                parameters.Add("@IsSameAddress", model.IsSameAddress);
 
                 var result = await connection.ExecuteAsync(
                     "sp_updateVendor_Reg",
@@ -1574,7 +1576,8 @@ namespace CRM.Repository
                     {
                         Id = Convert.ToInt32(rdr["id"]),
                         CompanyName = rdr["Company_Name"] == DBNull.Value ? null : Convert.ToString(rdr["Company_Name"]),
-                        WorkLocation = rdr["Work_Location"] == DBNull.Value ? null : new string[] { Convert.ToString(rdr["Work_Location"]) },
+                        //WorkLocation = rdr["Work_Location"] == DBNull.Value ? null : new string[] { Convert.ToString(rdr["Work_Location"]) },
+                        WorkLocation = rdr["Work_Location"] == DBNull.Value ? "0" : Convert.ToString(rdr["Work_Location"]),
                         MobileNumber = rdr["Mobile_number"] == DBNull.Value ? "0" : Convert.ToString(rdr["Mobile_number"]),
                         AlternateNumber = rdr["Alternate_number"] == DBNull.Value ? "0" : Convert.ToString(rdr["Alternate_number"]),
                         Email = rdr["Email"] == DBNull.Value ? "0" : Convert.ToString(rdr["Email"]),

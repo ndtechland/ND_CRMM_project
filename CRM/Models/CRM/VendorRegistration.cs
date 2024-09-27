@@ -28,5 +28,6 @@ namespace CRM.Models.Crm
         public string? Radious { get; set; }
         public int? BillingStateId { get; set; }
         public int? BillingCityId { get; set; }
+        public bool? IsSameAddress { get; set; }
     }
 }
