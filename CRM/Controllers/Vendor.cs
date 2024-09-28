@@ -914,36 +914,36 @@ namespace CRM.Controllers
             }
         }
         [HttpGet]
-        [Route("Vendor/Invoice")]
-        public async Task<IActionResult> VendorInvoice(/*string customerId, int Month, int year, string WorkLocation*/)
+        [Route("Vendor/VendorInvoice")]
+        public async Task<IActionResult> VendorInvoice(int ID)
         {
             try
             {
-                return View();
-                //if (customerId != null && Month != null && year != null && WorkLocation != null)
-                //{
-                //    ViewBag.CustomerName = _context.CustomerRegistrations.Select(x => new SelectListItem
-                //    {
-                //        Value = x.Id.ToString(),
-                //        Text = x.CompanyName
-                //    }).ToList();
-                //    List<Invoice> invoice = new List<Invoice>();
+               // return View();
+                if (ID != null)
+                {
+                    ViewBag.CustomerName = _context.CustomerRegistrations.Select(x => new SelectListItem
+                    {
+                        Value = x.Id.ToString(),
+                        Text = x.CompanyName
+                    }).ToList();
+                    Invoice invoice = new Invoice();
 
-                //    invoice = await _ICrmrpo.GenerateInvoice(customerId, Month, year, WorkLocation);
-                //    if (invoice.Count > 0)
-                //    {
-                //        return View(invoice[0]);
-                //    }
-                //    else
-                //    {
-                //        TempData["ErrorMessage"] = "No data found";
-                //        return RedirectToAction("GenerateSalary");
-                //    }
-                //}
-                //else
-                //{
-                //    return RedirectToAction("GenerateSalary");
-                //}
+                    invoice = await _ICrmrpo.GenerateInvoice(ID);
+                    if (invoice != null)
+                    {
+                        return View(invoice);
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "No data found";
+                        return RedirectToAction("GenerateSalary");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("GenerateSalary");
+                }
             }
             catch (Exception ex)
             {
@@ -954,7 +954,7 @@ namespace CRM.Controllers
 
         }
         [HttpPost]
-        public JsonResult UpdateVendoractive(bool Isactive,int Id)
+        public JsonResult UpdateVendoractive(bool? Isactive,int Id)
         {
             var vendor = _context.VendorRegistrations.Where(x => x.Id == Id).FirstOrDefault();
             vendor.Isactive = Isactive;

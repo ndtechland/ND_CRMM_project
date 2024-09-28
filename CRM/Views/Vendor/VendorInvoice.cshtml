@@ -120,7 +120,7 @@
 
     <div class="invoice-container">
         <div class="header">
-            <img src="logo-url-here" alt="Company Logo">
+            <img src="~/assets/images/layout-2/logo/logo.png" alt="Company Logo">
             <div>
                 <h3>N D Techland Private Limited</h3>
                 <p>
@@ -140,8 +140,8 @@
                     <td>Place of Supply: Uttar Pradesh (09)</td>
                 </tr>
                 <tr>
-                    <td>Invoice Date: 24/06/2024</td>
-                    <td>Due Date: 24/06/2024</td>
+                    <td>Invoice Date: @fordate</td>
+                    <td>Due Date: @fordate</td>
                 </tr>
                 <tr>
                     <td>Terms: Due on Receipt</td>
@@ -154,16 +154,17 @@
                 <tr>
                     <td>
                         <strong>Bill To:</strong><br>
-                        RIDHI SIDHI INDUSTRIES<br>
-                        A-78, Roop Nagar, Industrial Area, Loni<br>
-                        Ghaziabad, 201102 Uttar Pradesh<br>
-                        GSTIN: 09ACRPV7723L1ZK
+                        @Model.CompanyName<br>
+                        @Model.BillingAddress,<br>
+                        @Model.CityName,@Model.StateName<br>
+                        GSTIN: @Model.GstNumber
                     </td>
                     <td>
                         <strong>Ship To:</strong><br>
-                        A-78, Roop Nagar, Industrial Area, Loni<br>
-                        Ghaziabad, 201102 Uttar Pradesh<br>
-                        GSTIN: 09ACRPV7723L1ZK
+                        @Model.CompanyName<br>
+                        @Model.BillingAddress,<br>
+                        @Model.CityName,@Model.StateName<br>
+                        GSTIN: @Model.GstNumber
                     </td>
                 </tr>
             </table>
@@ -271,6 +272,7 @@
 
 </body>
 </html>
+
 
 
 

@@ -30,5 +30,8 @@ namespace CRM.Models.Crm
         public int? BillingCityId { get; set; }
         public bool? IsSameAddress { get; set; }
         public bool? Isactive { get; set; }
+        public decimal? Scgst { get; set; }
+        public decimal? Igst { get; set; }
+        public decimal? Cgst { get; set; }
     }
 }
