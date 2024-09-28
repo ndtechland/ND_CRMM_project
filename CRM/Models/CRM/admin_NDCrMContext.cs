@@ -1661,6 +1661,10 @@ namespace CRM.Models.Crm
                     .HasMaxLength(255)
                     .HasColumnName("Billing_Address");
 
+                entity.Property(e => e.Cgst)
+                    .HasColumnType("decimal(18, 0)")
+                    .HasColumnName("CGST");
+
                 entity.Property(e => e.CompanyImage)
                     .HasMaxLength(250)
                     .HasColumnName("Company_Image");
@@ -1674,6 +1678,10 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.GstNumber)
                     .HasMaxLength(255)
                     .HasColumnName("GST_Number");
+
+                entity.Property(e => e.Igst)
+                    .HasColumnType("decimal(18, 0)")
+                    .HasColumnName("IGST");
 
                 entity.Property(e => e.Location).HasMaxLength(200);
 
@@ -1710,6 +1718,10 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Renewprice).HasMaxLength(200);
 
+                entity.Property(e => e.Scgst)
+                    .HasColumnType("decimal(18, 0)")
+                    .HasColumnName("SCGST");
+
                 entity.Property(e => e.StartDate)
                     .HasColumnType("date")
                     .HasColumnName("Start_date");
@@ -1717,10 +1729,6 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.State).HasMaxLength(255);
 
                 entity.Property(e => e.StateId).HasColumnName("stateId");
-
-                entity.Property(e => e.WorkLocation)
-                    .HasMaxLength(255)
-                    .HasColumnName("Work_Location");
             });
 
             modelBuilder.Entity<WorkLocation>(entity =>

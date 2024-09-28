@@ -8,7 +8,7 @@ namespace CRM.Models.DTO
         public string? CompanyName { get; set; }
         [NotMapped]
         //public string[] WorkLocation { get; set; }
-        public string WorkLocation { get; set; }
+        public int CityId { get; set; }
         public string? MobileNumber { get; set; }
         public string? AlternateNumber { get; set; }
         public string? Email { get; set; }
@@ -31,6 +31,7 @@ namespace CRM.Models.DTO
         public int? BillingStateId { get; set; }
         public int? StateId { get; set; }
         public string StateName { get; set; } = null!;
+        public string CityName { get; set; }
         public string? Location { get; set; }
         public string? CompanyImage { get; set; }
         public bool? IsSameAddress { get; set; }
@@ -41,7 +42,7 @@ namespace CRM.Models.DTO
     {
         public int Id { get; set; }
         public string? CompanyName { get; set; }
-        public string? WorkLocation { get; set; }
+        public int? CityId { get; set; }
         public string? MobileNumber { get; set; }
         public string? AlternateNumber { get; set; }
         public string? Email { get; set; }
