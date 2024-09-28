@@ -34,7 +34,7 @@
         public decimal? Scgst { get; set; }
         public decimal? Igst { get; set; }
         public decimal? Cgst { get; set; }
-        public string? Productprice { get; set; }
+        public decimal? Productprice { get; set; }
         public string? ProductName { get; set; } 
         public string? HsnSacCode { get; set; } 
         public string? StateName { get; set; }
