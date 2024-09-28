@@ -30,8 +30,11 @@ namespace CRM.Models.DTO
         public string? State { get; set; }
         public int? BillingStateId { get; set; }
         public int? StateId { get; set; }
-        public string StateName { get; set; } = null!;
-        public string CityName { get; set; }
+        public string? StateName { get; set; } = null!;
+        public string? BillingState { get; set; } = null!;
+        public string? OfficeCity { get; set; }
+        public string? BillingCity { get; set; }
+        public string? OfficeState { get; set; }
         public string? Location { get; set; }
         public string? CompanyImage { get; set; }
         public bool? IsSameAddress { get; set; }

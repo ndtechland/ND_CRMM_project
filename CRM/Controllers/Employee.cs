@@ -649,34 +649,34 @@ namespace CRM.Controllers
                 throw new Exception("Error : " + ex.Message);
             }
         }
-        [HttpPost]
-        public IActionResult GetLocationsByCustomer(string customerId)
-        {
-            var locationsJsonblank = "";
-            if (!string.IsNullOrEmpty(customerId))
-            {
-                var locations = _context.CustomerRegistrations.FirstOrDefault(x => x.Id == Convert.ToInt32(customerId));
-                string[] strlocation = locations.WorkLocation?.Split(new string[] { "," }, StringSplitOptions.None);
-                List<City> locationlist = new List<City>();
+        //[HttpPost]
+        //public IActionResult GetLocationsByCustomer(string customerId)
+        //{
+        //    var locationsJsonblank = "";
+        //    if (!string.IsNullOrEmpty(customerId))
+        //    {
+        //        var locations = _context.CustomerRegistrations.FirstOrDefault(x => x.Id == Convert.ToInt32(customerId));
+        //        string[] strlocation = locations.WorkLocation?.Split(new string[] { "," }, StringSplitOptions.None);
+        //        List<City> locationlist = new List<City>();
 
-                foreach (var loc in strlocation)
-                {
-                    locationlist.Add(_context.Cities.FirstOrDefault(x => x.Id == Convert.ToInt32(loc)));
-                }
+        //        foreach (var loc in strlocation)
+        //        {
+        //            locationlist.Add(_context.Cities.FirstOrDefault(x => x.Id == Convert.ToInt32(loc)));
+        //        }
 
 
-                var locationsJson = locationlist.Select(x => new SelectListItem
-                {
-                    Text = x.Id.ToString(),
-                    Value = x.City1
-                }).ToList();
+        //        var locationsJson = locationlist.Select(x => new SelectListItem
+        //        {
+        //            Text = x.Id.ToString(),
+        //            Value = x.City1
+        //        }).ToList();
 
-                return Json(locationsJson);
-            }
+        //        return Json(locationsJson);
+        //    }
 
-            return Json(locationsJsonblank);
+        //    return Json(locationsJsonblank);
 
-        }
+        //}
         [HttpPost]
         public async Task<IActionResult> GenerateSalary(int Month, int year,string EmployeeId)
         {

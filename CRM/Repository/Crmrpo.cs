@@ -121,7 +121,7 @@ namespace CRM.Repository
                     var parameters = new DynamicParameters();
                     parameters.Add("@Company_Name", model.CompanyName);
                     parameters.Add("@Location", model.Location);
-                    parameters.Add("@Work_Location", string.Join(",", model.WorkLocation));
+                    parameters.Add("@CityId", string.Join(",", model.CityId));
                     parameters.Add("@Mobile_number", model.MobileNumber);
                     parameters.Add("@Alternate_number", model.AlternateNumber);
                     parameters.Add("@Email", model.Email);
@@ -157,7 +157,7 @@ namespace CRM.Repository
             }
         }
 
-        public async Task<List<CustomerListDto>> CustomerList(string userIdString)
+        public async Task<List<CustomerListDto>> CustomerList(int VendorId)
         {
             List<CustomerListDto> cs = new List<CustomerListDto>();
             try
@@ -166,7 +166,7 @@ namespace CRM.Repository
                 {
                     SqlCommand cmd = new SqlCommand("Customerlist", con);
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@id", Convert.ToInt32(userIdString));
+                    cmd.Parameters.AddWithValue("@id", Convert.ToInt32(VendorId));
 
                     con.Open();
                     SqlDataReader rdr = await cmd.ExecuteReaderAsync();
@@ -178,7 +178,7 @@ namespace CRM.Repository
                             Id = Convert.ToInt32(rdr["ID"]),
                             CompanyName = rdr["Company_Name"] == DBNull.Value ? null : Convert.ToString(rdr["Company_Name"]),
                             //WorkLocation = rdr["Work_Location"] == DBNull.Value ? null : rdr["Work_Location"].ToString().Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries),
-                            WorkLocation = rdr["Work_Location"] == DBNull.Value ? "0" : Convert.ToString(rdr["Work_Location"]),
+                            OfficeCity = rdr["OfficeCity"] == DBNull.Value ? "0" : Convert.ToString(rdr["OfficeCity"]),
                             MobileNumber = rdr["Mobile_number"] == DBNull.Value ? "0" : Convert.ToString(rdr["Mobile_number"]),
                             AlternateNumber = rdr["Alternate_number"] == DBNull.Value ? "0" : Convert.ToString(rdr["Alternate_number"]),
                             Email = rdr["Email"] == DBNull.Value ? "0" : Convert.ToString(rdr["Email"]),
@@ -187,15 +187,15 @@ namespace CRM.Repository
                             ProductDetails = rdr["Product_Details"] == DBNull.Value ? "0" : Convert.ToString(rdr["Product_Details"]),
                             StartDate = rdr["Start_date"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(rdr["Start_date"]),
                             RenewDate = rdr["Renew_Date"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(rdr["Renew_Date"]),
-                            StateName = rdr["statename"] == DBNull.Value ? null : Convert.ToString(rdr["statename"]),
-                            BillingStateId = rdr["BillingStateId"] == DBNull.Value ? null : Convert.ToString(rdr["BillingStateId"]),
-                            BillingCityId = rdr["BillingCityId"] == DBNull.Value ? null : Convert.ToString(rdr["BillingCityId"]),
+                            OfficeState = rdr["OfficeState"] == DBNull.Value ? null : Convert.ToString(rdr["OfficeState"]),
+                            BillingState = rdr["BillingState"] == DBNull.Value ? null : Convert.ToString(rdr["BillingState"]),
+                            BillingCity = rdr["BillingCity"] == DBNull.Value ? null : Convert.ToString(rdr["BillingCity"]),
                             Location = rdr["Location"] == DBNull.Value ? null : Convert.ToString(rdr["Location"]),
                             productprice = rdr["productprice"] == DBNull.Value ? null : Convert.ToString(rdr["productprice"]),
                             Renewprice = rdr["Renewprice"] == DBNull.Value ? null : Convert.ToString(rdr["Renewprice"]),
-                            Igst = rdr["Igst"] == DBNull.Value ? null : Convert.ToString(rdr["Igst"]),
-                            Scgst = rdr["Scgst"] == DBNull.Value ? null : Convert.ToString(rdr["Scgst"]),
-                            Cgst = rdr["Cgst"] == DBNull.Value ? null : Convert.ToString(rdr["Cgst"]),
+                            Igst = rdr["Igst"] == DBNull.Value ? "0" : Convert.ToString(rdr["Igst"]),
+                            Scgst = rdr["Scgst"] == DBNull.Value ? "0" : Convert.ToString(rdr["Scgst"]),
+                            Cgst = rdr["Cgst"] == DBNull.Value ? "0" : Convert.ToString(rdr["Cgst"]),
                         };
 
                         cs.Add(cse);
@@ -909,7 +909,7 @@ namespace CRM.Repository
                         Id = Convert.ToInt32(rdr["id"]),
                         CompanyName = rdr["Company_Name"] == DBNull.Value ? null : Convert.ToString(rdr["Company_Name"]),
                         //WorkLocation = rdr["Work_Location"] == DBNull.Value ? new string[0] : ((string)rdr["Work_Location"]).Split(','),
-                        WorkLocation = rdr["Work_Location"] == DBNull.Value ? null : Convert.ToString(rdr["Work_Location"]),
+                        CityId = rdr["CityId"] == DBNull.Value ? (int?)null : Convert.ToInt32(rdr["CityId"]),
                         MobileNumber = rdr["Mobile_number"] == DBNull.Value ? null : Convert.ToString(rdr["Mobile_number"]),
                         AlternateNumber = (rdr["Alternate_number"] == DBNull.Value ? null : Convert.ToString(rdr["Alternate_number"])),
                         Email = rdr["Email"] == DBNull.Value ? null : Convert.ToString(rdr["Email"]),
@@ -918,7 +918,7 @@ namespace CRM.Repository
                         ProductDetails = rdr["ProductDetails"] == DBNull.Value ? null : Convert.ToString(rdr["ProductDetails"]),
                         StartDate = (DateTime)(rdr["Start_date"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(rdr["Start_date"])),
                         RenewDate = (DateTime)(rdr["Renew_Date"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(rdr["Renew_Date"])),
-                        BillingStateId = rdr["BillingStateId"] == DBNull.Value ? null : Convert.ToString(rdr["BillingStateId"]),
+                        BillingStateId = rdr["BillingStateId"] == DBNull.Value ? (int?)null : Convert.ToInt32(rdr["BillingStateId"]),
                         NoOfRenewMonth = rdr["NoOfRenewMonth"] == DBNull.Value ? (int?)null : Convert.ToInt32(rdr["NoOfRenewMonth"]),
                         StateId = rdr["stateId"] == DBNull.Value ? (int?)null : Convert.ToInt32(rdr["stateId"]),
                         IsSameAddress = rdr["IsSameAddress"] == DBNull.Value ? null : Convert.ToBoolean(rdr["IsSameAddress"]),
@@ -969,7 +969,7 @@ namespace CRM.Repository
                 parameters.Add("@id", model.Id, DbType.Int32);
                 parameters.Add("@Company_Name", model.CompanyName, DbType.String);
                 parameters.Add("@Location", model.Location, DbType.String);
-                parameters.Add("@Work_Location", model.WorkLocation, DbType.String);
+                parameters.Add("@CityId", model.CityId, DbType.String);
                 parameters.Add("@Mobile_number", model.MobileNumber, DbType.String);
                 parameters.Add("@Alternate_number", model.AlternateNumber, DbType.String);
                 parameters.Add("@Email", model.Email, DbType.String);
@@ -1346,7 +1346,7 @@ namespace CRM.Repository
                                    select new CustomerRegistration
                                    {
                                        CompanyName = customer.CompanyName,
-                                       WorkLocation = customer.WorkLocation,
+                                       CityId = customer.CityId,
                                        MobileNumber = customer.MobileNumber,
                                        Email = customer.Email,
                                        GstNumber = customer.GstNumber,
@@ -1430,7 +1430,7 @@ namespace CRM.Repository
                         Id = Convert.ToInt32(rdr["id"]),
                         CompanyName = rdr["Company_Name"] == DBNull.Value ? null : Convert.ToString(rdr["Company_Name"]),
                         //WorkLocation = rdr["Work_Location"] == DBNull.Value ? new string[0] : ((string)rdr["Work_Location"]).Split(','),
-                        CityName = rdr["CityName"] == DBNull.Value ? null : Convert.ToString(rdr["CityName"]),
+                        CityId = rdr["CityId"] == DBNull.Value ? '0' : Convert.ToInt32(rdr["CityId"]),
                         MobileNumber = rdr["Mobile_number"] == DBNull.Value ? null : Convert.ToString(rdr["Mobile_number"]),
                         AlternateNumber = (rdr["Alternate_number"] == DBNull.Value ? null : Convert.ToString(rdr["Alternate_number"])),
                         Email = rdr["Email"] == DBNull.Value ? null : Convert.ToString(rdr["Email"]),
@@ -1469,7 +1469,7 @@ namespace CRM.Repository
                 // Set up parameters for the stored procedure
                 var parameters = new DynamicParameters();
                 parameters.Add("@Company_Name", model.CompanyName);
-                parameters.Add("@Work_Location", string.Join(",", model.CityId));
+                parameters.Add("@CityId", string.Join(",", model.CityId));
                 parameters.Add("@Mobile_number", model.MobileNumber);
                 parameters.Add("@Alternate_number", model.AlternateNumber);
                 parameters.Add("@Email", model.Email);
@@ -1569,7 +1569,7 @@ namespace CRM.Repository
                         Id = Convert.ToInt32(rdr["id"]),
                         CompanyName = rdr["Company_Name"] == DBNull.Value ? null : Convert.ToString(rdr["Company_Name"]),
                         //WorkLocation = rdr["Work_Location"] == DBNull.Value ? null : new string[] { Convert.ToString(rdr["Work_Location"]) },
-                        CityName = rdr["CityName"] == DBNull.Value ? "0" : Convert.ToString(rdr["CityName"]),
+                        OfficeCity = rdr["OfficeCity"] == DBNull.Value ? null : Convert.ToString(rdr["OfficeCity"]),
                         MobileNumber = rdr["Mobile_number"] == DBNull.Value ? "0" : Convert.ToString(rdr["Mobile_number"]),
                         AlternateNumber = rdr["Alternate_number"] == DBNull.Value ? "0" : Convert.ToString(rdr["Alternate_number"]),
                         Email = rdr["Email"] == DBNull.Value ? "0" : Convert.ToString(rdr["Email"]),
@@ -1578,8 +1578,8 @@ namespace CRM.Repository
                         ProductDetails = rdr["Product_Details"] == DBNull.Value ? "0" : Convert.ToString(rdr["Product_Details"]),
                         StartDate = rdr["Start_date"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(rdr["Start_date"]),
                         RenewDate = rdr["Renew_Date"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(rdr["Renew_Date"]),
-                        State = rdr["State"] == DBNull.Value ? null : Convert.ToString(rdr["State"]),
-                        StateName = rdr["statename"] == DBNull.Value ? null : Convert.ToString(rdr["statename"]),
+                        OfficeState = rdr["OfficeState"] == DBNull.Value ? null : Convert.ToString(rdr["OfficeState"]),
+                        BillingState = rdr["BillingState"] == DBNull.Value ? null : Convert.ToString(rdr["BillingState"]),
                         Location = rdr["Billing_Address"] == DBNull.Value ? null : Convert.ToString(rdr["Location"]),
                         CompanyImage = rdr["Company_Image"] == DBNull.Value ? null : Convert.ToString(rdr["Company_Image"]),
                         Isactive = rdr["Isactive"] == DBNull.Value ? null : Convert.ToBoolean(rdr["Isactive"]),

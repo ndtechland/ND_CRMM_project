@@ -75,7 +75,7 @@
                                                     Company Name
                                                 </th>
                                                 <th nowrap>
-                                                    Work Location
+                                                    Office Location
                                                 </th>
                                                 <th nowrap>
                                                     Mobile Number
@@ -102,15 +102,6 @@
                                                     Renew Date
                                                 </th>
                                                 <th nowrap>
-                                                    State
-                                                </th>
-                                                <th nowrap>
-                                                    State Name
-                                                </th>
-                                                <th nowrap>
-                                                    Location
-                                                </th>
-                                                <th nowrap>
                                                     Is Active
                                                 </th>
                                                 <th nowrap>
@@ -132,7 +123,7 @@
                                                             @Html.DisplayFor(modelItem => item.CompanyName)
                                                         </td>
                                                         <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.CityName)
+                                                            @item.Location, @item.OfficeCity, @item.OfficeState
                                                         </td>
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.MobileNumber)
@@ -147,7 +138,7 @@
                                                             @Html.DisplayFor(modelItem => item.GstNumber)
                                                         </td>
                                                         <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.BillingAddress)
+                                                            @item.BillingAddress, @item.BillingCity, @item.BillingState
                                                         </td>
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.ProductDetails)
@@ -158,15 +149,8 @@
                                                         <td nowrap>
                                                             @item.RenewDate.ToString("dd/MM/yyyy")
                                                         </td>
-                                                        <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.State)
-                                                        </td>
-                                                        <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.StateName)
-                                                        </td>
-                                                        <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.Location)
-                                                        </td>
+ 
+                                                      
                                                         <td>
                                                             @if ((bool)item.Isactive)
                                                             {

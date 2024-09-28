@@ -7,7 +7,7 @@ namespace CRM.Models.DTO
         public int Id { get; set; }
         public string? CompanyName { get; set; }
         [NotMapped]
-        public string WorkLocation { get; set; }
+        public int? CityId { get; set; }
         public string? MobileNumber { get; set; }
         public string? AlternateNumber { get; set; }
         public string? Email { get; set; }
@@ -24,7 +24,7 @@ namespace CRM.Models.DTO
         public string? HsnSacCode { get; set; }
         public double Price { get; set; }
         public bool? IsSameAddress { get; set; }
-        public string? BillingStateId { get; set; }
+        public int? BillingStateId { get; set; }
         public int? StateId { get; set; }
         public string StateName { get; set; } = null!;
         public int? BillingCityId { get; set; }
@@ -38,7 +38,7 @@ namespace CRM.Models.DTO
         public int Id { get; set; }
         public string? CompanyName { get; set; }
         [NotMapped]
-        public string WorkLocation { get; set; }
+        public string OfficeCity { get; set; }
         public string? MobileNumber { get; set; }
         public string? AlternateNumber { get; set; }
         public string? Email { get; set; }
@@ -54,10 +54,10 @@ namespace CRM.Models.DTO
         public string? Gst { get; set; }
         public string? HsnSacCode { get; set; }
         public double Price { get; set; }
-        public string? BillingStateId { get; set; }
+        public string? BillingState { get; set; }
         public int? StateId { get; set; }
-        public string StateName { get; set; } = null!;
-        public string? BillingCityId { get; set; }
+        public string OfficeState { get; set; } = null!;
+        public string? BillingCity { get; set; }
         public int? NoOfRenewMonth { get; set; }
         public string? Renewprice { get; set; }
         public string? productprice { get; set; }

@@ -52,7 +52,7 @@
                                                     Company Name
                                                 </th>
                                                 <th nowrap>
-                                                    Work Location
+                                                    Office Location
                                                 </th>
                                                 <th nowrap>
                                                     Mobile Number
@@ -67,11 +67,8 @@
                                                    Gst Number
                                                 </th>
                                                 <th nowrap>
-                                                   Billing Address
-                                                </th>
-                                                  <th nowrap>
-                                                   Office Address 
-                                                </th>
+                                                   Billing Location
+                                                </th> 
                                                 <th nowrap>
                                                     Product Name
                                                 </th>
@@ -111,7 +108,7 @@
                                                             @Html.DisplayFor(modelItem => item.CompanyName)
                                                         </td>
                                                         <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.WorkLocation)
+                                                            @item.Location, @item.OfficeCity, @item.OfficeState
                                                         </td>
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.MobileNumber)
@@ -126,11 +123,8 @@
                                                             @Html.DisplayFor(modelItem => item.GstNumber)
                                                         </td>
                                                         <td>
-                                                            @($"{item.BillingAddress} {item.BillingStateId} {item.BillingCityId}")
-                                                        </td>
-                                                        <td nowrap>
-                                                            @($"{item.Location} {item.WorkLocation} {item.StateId}")
-                                                        </td>
+                                                            @item.BillingAddress, @item.BillingCity, @item.BillingState
+                                                        </td> 
                                                         <td>
                                                             @Html.DisplayFor(modelItem => item.ProductDetails)
                                                         </td>
@@ -147,13 +141,13 @@
                                                             @Html.DisplayFor(modelItem => item.Renewprice)
                                                         </td>
                                                         <td>
-                                                            @Html.DisplayFor(modelItem => item.Scgst)
+                                                            @Html.DisplayFor(modelItem => item.Scgst) %
                                                         </td>
                                                         <td>
-                                                            @Html.DisplayFor(modelItem => item.Cgst)
+                                                            @Html.DisplayFor(modelItem => item.Cgst) %
                                                         </td>
                                                         <td>
-                                                            @Html.DisplayFor(modelItem => item.Igst)
+                                                            @Html.DisplayFor(modelItem => item.Igst) %
                                                         </td>
                                                         <td>
                                                             <div>
