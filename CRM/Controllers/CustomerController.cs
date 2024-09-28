@@ -56,7 +56,7 @@ namespace CRM.Controllers
                             })
                             .ToList();
                         ViewBag.SelectedStateId = data.StateId;
-                        ViewBag.SelectedCityId = data.WorkLocation;
+                        ViewBag.SelectedCityId = data.CityId;
                         ViewBag.state = data.BillingStateId;
                         ViewBag.BillingCityId = data.BillingCityId;
                         ViewBag.CheckIsSameAddress = data.IsSameAddress;
@@ -140,8 +140,9 @@ namespace CRM.Controllers
             if (HttpContext.Session.GetString("UserName") != null)
             {
                 string AddedBy = HttpContext.Session.GetString("UserName");
-                string userIdString = HttpContext.Session.GetString("UserId");
-                var response = await _ICrmrpo.CustomerList(userIdString);
+                int Adminid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Adminid).FirstOrDefaultAsync();
+                var response = await _ICrmrpo.CustomerList((int)adminlogin.Vendorid);
                 ViewBag.UserName = AddedBy;
                 return View(response);
 
@@ -214,7 +215,6 @@ namespace CRM.Controllers
         }
 
 
-        //new 
         public async Task<IActionResult> GetCityByStateId(int stateid)
         {
             var dist = await _context.Cities

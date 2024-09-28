@@ -653,36 +653,36 @@ namespace CRM.Controllers
                 throw new Exception("Error:" + Ex.Message);
             }
         }
-        [HttpPost]
-        public IActionResult GetLocationsByCustomer(string customerId)
-        {
-            if (!string.IsNullOrEmpty(customerId))
-            {
-                var locations = _context.CustomerRegistrations
-                    .AsEnumerable()
-                    .Select(c => new
-                    {
-                        c.Id,
-                        WorkLocations = c.WorkLocation?.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                                                    .Select(loc => _context.Cities.FirstOrDefault(w => w.Id == Convert.ToInt32(loc)))
-                                                    .Where(w => w != null)
-                    })
-                    .FirstOrDefault(x => x.Id == Convert.ToInt32(customerId));
+        //[HttpPost]
+        //public IActionResult GetLocationsByCustomer(string customerId)
+        //{
+        //    if (!string.IsNullOrEmpty(customerId))
+        //    {
+        //        var locations = _context.CustomerRegistrations
+        //            .AsEnumerable()
+        //            .Select(c => new
+        //            {
+        //                c.Id,
+        //                WorkLocations = c.WorkLocation?.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+        //                                            .Select(loc => _context.Cities.FirstOrDefault(w => w.Id == Convert.ToInt32(loc)))
+        //                                            .Where(w => w != null)
+        //            })
+        //            .FirstOrDefault(x => x.Id == Convert.ToInt32(customerId));
 
-                if (locations != null && locations.WorkLocations != null)
-                {
-                    var locationList = locations.WorkLocations.Select(x => new SelectListItem
-                    {
-                        Value = x.Id.ToString(),
-                        Text = x.City1
-                    }).ToList();
+        //        if (locations != null && locations.WorkLocations != null)
+        //        {
+        //            var locationList = locations.WorkLocations.Select(x => new SelectListItem
+        //            {
+        //                Value = x.Id.ToString(),
+        //                Text = x.City1
+        //            }).ToList();
 
-                    return Json(locationList);
-                }
-            }
+        //            return Json(locationList);
+        //        }
+        //    }
 
-            return Json(new List<SelectListItem>());
-        }
+        //    return Json(new List<SelectListItem>());
+        //}
 
 
         [HttpGet]

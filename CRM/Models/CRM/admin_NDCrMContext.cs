@@ -449,10 +449,6 @@ namespace CRM.Models.Crm
                     .HasColumnName("Start_date");
 
                 entity.Property(e => e.StateId).HasColumnName("stateId");
-
-                entity.Property(e => e.WorkLocation)
-                    .HasMaxLength(255)
-                    .HasColumnName("Work_Location");
             });
 
             modelBuilder.Entity<DateFormatMaster>(entity =>
