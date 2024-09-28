@@ -713,6 +713,11 @@
 @* Gst *@
 <script>
     $(document).ready(function () {
+        // Call updateTaxFields on page load if a product is already selected
+        if ($("#ProductDetails").val()) {
+            updateTaxFields();
+        }
+
         // Event listener for product change
         $("#ProductDetails").change(function () {
             updateTaxFields();
@@ -728,6 +733,12 @@
         var productId = $("#ProductDetails").val();
         var stateId = $("#stateid").val();
 
+        if (!productId) {
+            // If no product is selected, clear the fields and return
+            clearTaxFields();
+            return;
+        }
+
         $.ajax({
             url: '/Home/product?id=' + productId,
             type: 'GET',
@@ -738,7 +749,7 @@
                     $('#HsnSacCode').val(response.data.hsnSacCode);
                     $('#Price').val(response.data.price);
 
-                    // Check if the selected state is Uttar Pradesh
+                    // Check if the selected state is Same state
                     if ('@ViewBag.checkvendorbillingstateid' === stateId) {
                         $('#CGST').val(response.data.cgst);
                         $('#SGST').val(response.data.scgst);
@@ -750,17 +761,21 @@
                     }
                 } else {
                     // Clear all fields if no data is found
-                    $('#CGST').val('');
-                    $('#SGST').val('');
-                    $('#HsnSacCode').val('');
-                    $('#Price').val('');
-                    $('#IGST').val('');
+                    clearTaxFields();
                 }
             },
             error: function () {
                 alert('Error fetching data');
-            }
+                clearTaxFields();       }
         });
+    }
+
+    function clearTaxFields() {
+        $('#CGST').val('');
+        $('#SGST').val('');
+        $('#HsnSacCode').val('');
+        $('#Price').val('');
+        $('#IGST').val('');
     }
 
     function validateNumericInput(event) {
@@ -787,6 +802,7 @@
         }
     }
 </script>
+
 
 @* autoselect renew date base on renew month and startdate *@
 <script>
