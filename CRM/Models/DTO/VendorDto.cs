@@ -34,6 +34,8 @@ namespace CRM.Models.DTO
         public string? Location { get; set; }
         public string? CompanyImage { get; set; }
         public bool? IsSameAddress { get; set; }
+        public bool? Isactive { get; set; }
+
     }
     public partial class VendorRegistrationDto
     {

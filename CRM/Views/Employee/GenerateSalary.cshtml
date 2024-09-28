@@ -6,13 +6,38 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+
+<style>
+    .select2-container .select2-selection--single {
+        height: 34px !important;
+    }
+
+    .select2-container--default .select2-selection--single {
+        border: 1px solid #ccc !important;
+        border-radius: 0px !important;
+    }
+
+    .select2-results__options {
+        display: grid !important;
+    }
+
+</style>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         var message = "@TempData["Message"]";
 
         if (message) {
             Swal.fire({
-                 title: 'Success',
+                title: 'Not Found',
                 text: message,
                 icon: 'info',
                 confirmButtonText: 'OK'
@@ -60,39 +85,11 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-body">
-                               @*  <div style="text-align: right;">
-                                    <button type="button" class="btn btn-primary" id="downloadButton" style="color: black; border: 2px solid black;" onclick="MonthlyExcelfn()">
-                                        Monthly Report
-                                    </button>
-                                    <button type="submit" class="btn btn-primary" style="color: black; border: 2px solid black;" onclick="return generateInvoice()">
-                                        <i class="fa fa-plus"></i> Generate Invoice
-                                    </button>
-                                </div> *@
-                                <div></div>
                                 <form asp-action="GenerateSalary" autocomplete="off" method="post">
                                     <div class="row">
-                                     @*    <div class="form-group col-md-3">
-                                            <label for="validationCustom0">Company Name</label>
-                                            <select class="form-control" id="CustomerID" name="CustomerID" onchange="Locations()">
-                                                <option value="">-- Select Company --</option>
-
-                                                @foreach (var item in ViewBag.CustomerName)
-                                                {
-                                                    <option value="@item.Value">@item.Text</option>
-                                                }
-                                            </select>
-                                        </div>
-                                        <div class="form-group col-sm">
-                                            <label for="validationCustom0">Work Location</label>
-                                            <select class="form-control col-md-" id="LocationID" name="WorkLocation">
-                                                <option value="">--Select WorkLocation--</option>
-
-                                            </select>
-                                        </div> *@
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Month</label>
                                             <select id="Month" class="form-control" name="Month">
-
                                                 <option value="">-- Select Month --</option>
                                                 <option value="1">January</option>
                                                 <option value="2">February</option>
@@ -115,6 +112,16 @@
                                                 <option value="">-- Select Year --</option>
                                                 <option value="2023">2023</option>
                                                 <option value="2024">2024</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-sm">
+                                            <label for="empEmpId">Employee Id</label>
+                                            <select id="empEmpId" name="EmployeeId" class="form-control select2">
+                                                <option value="0">-- Select EmployeeId --</option>
+                                                @foreach (var item in ViewBag.EmployeeId)
+                                                {
+                                                    <option value="@item.Value">@item.Text</option>
+                                                }
                                             </select>
                                         </div>
                                     </div>
@@ -220,7 +227,8 @@
 <input hidden type="text" id="locid" value="@ViewBag.locid" />
 <input hidden type="text" id="monthid" value="@ViewBag.monthid" />
 <input hidden type="text" id="yearid" value="@ViewBag.yearid" />
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<input hidden type="text" id="empid" value="@ViewBag.empid" />
+
 <div id="loader" style="display:none;">
     <img src="~/assets/images/layout-2/logo/loddergif.gif" alt="Loading..." />
 </div>
@@ -277,7 +285,9 @@
 </script>
 
 
-
+<script>
+    $('.select2').select2();
+</script>
 
 
 <script>
@@ -338,6 +348,7 @@
         // $("#CustomerID").val($("#custid").val());
         $("#Month").val($("#monthid").val());
         $("#Year").val($("#yearid").val());
+        $("#EmployeeId").val($("#empid").val());
         // $("#LocationID").val($("#locid").val());
 
         Locations();
@@ -379,29 +390,24 @@
 </script>
 <script>
     function validateForm() {
-        // var CustomerID = document.getElementById('CustomerID').value;
         var Month = document.getElementById('Month').value;
         var Year = document.getElementById('Year').value;
-        // var WorkLocation = document.getElementById('LocationID').value;
+        var empid = document.getElementById('empEmpId').value;
 
-        // if (CustomerID === '') {
-        //     alert("Please select Company.");
-        //     return false;
-        // }
-        // if (WorkLocation === '') {
-        //     alert("Please select WorkLocation.");
-        //     return false;
-        // }
         if (Month === '') {
-            alert("Please select Month.");
+            Swal.fire('Error', 'Please select Month.', 'error');
+            return false;
+        }
+        if (empid === '') {
+            Swal.fire('Error', 'Please select Employee.', 'error');
             return false;
         }
         if (Year === '') {
-            alert("Please select Year.");
+            Swal.fire('Error', 'Please select Year.', 'error');
             return false;
         }
-
     }
+
 </script>
 <script>
     function generateInvoice() {
@@ -425,13 +431,13 @@
             alert("Please select Year.");
             return false;
         }
-        if (CustomerID != null || Month != null || Year != null || WorkLocation != null) {
-            window.location.href = '/Employee/Invoice?customerId=' + CustomerID + '&Month=' + Month + '&year=' + Year + '&WorkLocation=' + WorkLocation;
-        }
+        // if (CustomerID != null || Month != null || Year != null || WorkLocation != null) {
+        //     window.location.href = '/Employee/Invoice?customerId=' + CustomerID + '&Month=' + Month + '&year=' + Year + '&WorkLocation=' + WorkLocation;
+        // }
 
     }
 </script>
-<script>
+@* <script>
     function MonthlyExcelfn() {
         // var customerId = document.getElementById("CustomerID").value;
         // var workLocation = document.getElementById("LocationID").value;
@@ -454,6 +460,12 @@
             return false;
         }
         window.location.href = '/Employee/MonthlysalaryReport?customerId=' + customerId + '&WorkLocation=' + workLocation + '&Month=' + Month + '&Year=' + Year;
+    }
+</script> *@
+<script type="text/javascript">
+    var selectedEmpId = '@ViewBag.empid'
+    if (selectedEmpId != "") {
+        $("#empEmpId").val(selectedEmpId).trigger('change');
     }
 </script>
 

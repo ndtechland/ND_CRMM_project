@@ -88,6 +88,9 @@
                                                     Location
                                                 </th>
                                                 <th nowrap>
+                                                    Isactive
+                                                </th>
+                                                <th nowrap>
                                                     Company Image
                                                 </th>
                                                 <th>Action</th>
@@ -101,6 +104,7 @@
                                                     count++;
                                                     <tr class="table-row">
                                                         <td>@count</td>
+                                                        <td class="Id" hidden>@item.Id</td>
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.CompanyName)
                                                         </td>
@@ -140,6 +144,16 @@
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.Location)
                                                         </td>
+                                                        <td>
+                                                            <select name="Isactive" class="form-control active-dropdown" style="width: 90px;">
+                                                                <option value="true">Active</option>
+                                                                <option value="false">Inactive</option>
+                                                            </select>
+                                                        </td>
+
+
+                                                        <td class="isactive" hidden>@item.Isactive.ToString().ToLower()</td>
+
                                                         <td nowrap>
                                                             <img src='../CompanyImage/@item.CompanyImage' style="height:100px;width:100px" />
                                                         </td>
@@ -230,4 +244,87 @@
             window.location.href = url;
         }
     }
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.active-dropdown').each(function () {
+            var selectedStatus = $(this).closest('tr').find('.isactive').text().trim();
+            if (selectedStatus !== "") {
+                $(this).val(selectedStatus); 
+            }
+        });
+        $(document).on("change", ".active-dropdown", function () {
+            var selectedStatus = $(this).val();
+            var selectedEmployeeId = $(this).closest('tr').find('.Id').text().trim(); 
+
+            if (selectedStatus !== "") {
+                $.ajax({
+                    url: '/Vendor/UpdateVendoractive',
+                    type: 'POST',
+                    data: {
+                        Isactive: selectedStatus === "true", 
+                        Id: selectedEmployeeId 
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: response.message
+                            });
+
+                            var statusText = selectedStatus === "true" ? "Active" : "Inactive";
+                            $(this).closest('tr').find('.status-column').text(statusText);
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: response.message
+                            });
+                        }
+                    }.bind(this), 
+                    error: function (xhr, status, error) {
+                        console.error('Error updating status:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'There was an error updating the status.'
+                        });
+                    }
+                });
+            } else {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning',
+                    text: 'Please select a valid status.'
+                });
+            }
+        });
+    });
+    $(document).ready(function () {
+        function updateDropdownColor(dropdown) {
+            var selectedValue = dropdown.val();
+
+            dropdown.removeClass('bg-success bg-danger text-white');
+
+            if (selectedValue === "true") {
+                // Add green background for "Active" status
+                dropdown.addClass('bg-success text-white');
+            } else if (selectedValue === "false") {
+                // Add red background for "Inactive" status
+                dropdown.addClass('bg-danger text-white');
+            }
+        }
+
+        // Initial color update on page load
+        $('.active-dropdown').each(function () {
+            updateDropdownColor($(this));
+        });
+
+        // Update color when a value is selected
+        $('.active-dropdown').on("change", function () {
+            updateDropdownColor($(this));
+        });
+    });
+
 </script>

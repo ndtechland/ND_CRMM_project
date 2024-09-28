@@ -634,6 +634,12 @@ namespace CRM.Controllers
                     Value = x.Id.ToString(),
                     Text = x.CompanyName
                 }).ToList();
+                ViewBag.EmployeeId = _context.EmployeeRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).Select(D => new SelectListItem
+                {
+                    Value = D.EmployeeId.ToString(),
+                    Text = D.EmployeeId
+
+                }).ToList();
                 return View();
 
             }
@@ -672,7 +678,7 @@ namespace CRM.Controllers
 
         }
         [HttpPost]
-        public async Task<IActionResult> GenerateSalary(int Month, int year)
+        public async Task<IActionResult> GenerateSalary(int Month, int year,string EmployeeId)
         {
             try
             {
@@ -682,10 +688,10 @@ namespace CRM.Controllers
 
                 ViewBag.monthid = Month;
                 ViewBag.yearid = year;
+                ViewBag.empid = EmployeeId;
 
                 if (Month != 0 && year != 0)
                 {
-                    // Fetch customer information
                     ViewBag.CustomerName = _context.CustomerRegistrations
                         .Where(x => x.Vendorid == adminlogin.Vendorid)
                         .Select(x => new SelectListItem
@@ -693,12 +699,14 @@ namespace CRM.Controllers
                             Value = x.Id.ToString(),
                             Text = x.CompanyName
                         }).ToList();
+                    ViewBag.EmployeeId = _context.EmployeeRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).Select(D => new SelectListItem
+                    {
+                        Value = D.EmployeeId.ToString(),
+                        Text = D.EmployeeId
 
-                    // Call to generate salary
+                    }).ToList();
                     GenerateSalary salary = new GenerateSalary();
-                    salary.GeneratedSalaries = await _ICrmrpo.GenerateSalary(Month, year, Userid);
-
-                    // Check if data is found
+                    salary.GeneratedSalaries = await _ICrmrpo.GenerateSalary(Month, year, Userid,EmployeeId);
                     if (salary.GeneratedSalaries.Count > 0)
                     {
                         return View(salary);
@@ -877,7 +885,7 @@ namespace CRM.Controllers
                 {
                     Directory.CreateDirectory(wwwRootPath);
                 }
-                string uniqueFileName = $"SalarySlip_{id}_{DateTime.Now:yyyyMMddHHmmss}.pdf";
+                string uniqueFileName = $"SalarySlip_{Guid.NewGuid()}_{id}_{DateTime.Now:yyyyMMddHHmmss}.pdf";
                 string filePath = Path.Combine(wwwRootPath, uniqueFileName);
                 doc.Save(filePath);
                 byte[] pdf = System.IO.File.ReadAllBytes(filePath);
@@ -924,7 +932,7 @@ namespace CRM.Controllers
                 {
                     Directory.CreateDirectory(wwwRootPath);
                 }
-                string uniqueFileName = $"SalarySlip_{id}_{DateTime.Now:yyyyMMddHHmmss}.pdf";
+                string uniqueFileName = $"SalarySlip_{Guid.NewGuid()}_{id}_{DateTime.Now:yyyyMMddHHmmss}.pdf";
                 string filePath = Path.Combine(wwwRootPath, uniqueFileName);
                 doc.Save(filePath);
                 byte[] pdf = System.IO.File.ReadAllBytes(filePath);
@@ -1014,46 +1022,7 @@ namespace CRM.Controllers
 
             return monthName;
         }
-        [HttpGet]
-        [Route("Employee/Invoice")]
-        public async Task<IActionResult> Invoice(string customerId, int Month, int year, string WorkLocation)
-        {
-            try
-            {
-                if (customerId != null && Month != null && year != null && WorkLocation != null)
-                {
-                    ViewBag.CustomerName = _context.CustomerRegistrations.Select(x => new SelectListItem
-                    {
-                        Value = x.Id.ToString(),
-                        Text = x.CompanyName
-                    }).ToList();
-                    List<Invoice> invoice = new List<Invoice>();
-
-                    invoice = await _ICrmrpo.GenerateInvoice(customerId, Month, year, WorkLocation);
-                    if (invoice.Count > 0)
-                    {
-                        return View(invoice[0]);
-                    }
-                    else
-                    {
-                        TempData["ErrorMessage"] = "No data found";
-                        return RedirectToAction("GenerateSalary");
-                    }
-                }
-                else
-                {
-                    return RedirectToAction("GenerateSalary");
-                }
-            }
-            catch (Exception ex)
-            {
-
-                throw new Exception("Error : " + ex.Message);
-            }
-
-
-        }
-
+       
         //-----ImportToExcelEmployeeList
         public IActionResult ImportToExcelEmployeeList()
         {
