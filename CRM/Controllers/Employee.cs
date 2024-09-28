@@ -1828,6 +1828,7 @@ namespace CRM.Controllers
                 {
                     return BadRequest("Admin login not found");
                 }
+                var vendorinfo = _context.VendorRegistrations.Where(v => v.Id == adminlogin.Vendorid).FirstOrDefault();
                 var offerletter = await _context.Offerletters
                     .Where(x => x.Vendorid == adminlogin.Vendorid && x.IsDeleted == false && x.Id == Id)
                     .FirstOrDefaultAsync();
@@ -1854,7 +1855,8 @@ namespace CRM.Controllers
                     DesignationName = _context.DesignationMasters.Where(g => g.Id == Convert.ToInt16(offerletter.DesignationId)).Select(g => g.DesignationName).FirstOrDefault()?.Trim(),
                     Validdate = offerletter.Validdate?.ToString("dd/MM/yyyy"),
                     CompanyImage = _context.VendorRegistrations.Where(g => g.Id == offerletter.Vendorid).Select(g => g.CompanyImage).FirstOrDefault(),
-                    CompanyName = _context.VendorRegistrations.Where(g => g.Id == offerletter.Vendorid).Select(g => g.CompanyName).FirstOrDefault()
+                    CompanyName = _context.VendorRegistrations.Where(g => g.Id == offerletter.Vendorid).Select(g => g.CompanyName).FirstOrDefault(),
+                    OfficeLocation = _context.VendorRegistrations.Where(g => g.Id == offerletter.Vendorid).Select(g => g.WorkLocation).FirstOrDefault()
                 };
                 return View(result);
             }

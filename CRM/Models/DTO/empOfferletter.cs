@@ -42,6 +42,7 @@
         public string? HrJobTitle { get; set; }
         public string? HrName { get; set; }
         public string? CandidateEmail { get; set; }
+        public string? OfficeLocation { get; set; }
     }
     public partial class Offerletters
     {
