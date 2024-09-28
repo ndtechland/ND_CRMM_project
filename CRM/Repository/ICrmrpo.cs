@@ -1,4 +1,5 @@
-﻿using CRM.Models.Crm;
+﻿using CRM.Controllers;
+using CRM.Models.Crm;
 using CRM.Models.CRM;
 using CRM.Models.DTO;
 using DocumentFormat.OpenXml.Office2010.Excel;
@@ -35,7 +36,7 @@ namespace CRM.Repository
 
         public Task<List<salarydetail>> salarydetail(int Userid);
 
-        public Task<List<GenerateSalary>> GenerateSalary(int Month, int year, int Userid);
+        public Task<List<GenerateSalary>> GenerateSalary(int Month, int year, int Userid,string EmployeeId);
         public Task<int> Employer(EmployeerModelEPF model);
         public Task<List<EmployeerEpf>> EmployerList(string Deduction_Cycle);
         public Task<List<Invoice>> GenerateInvoice(string customerId, int Month, int year, string WorkLocation);

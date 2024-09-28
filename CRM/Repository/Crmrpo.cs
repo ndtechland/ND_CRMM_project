@@ -571,7 +571,7 @@ namespace CRM.Repository
             }
         }
 
-        public async Task<List<GenerateSalary>> GenerateSalary(int Month, int year, int Userid)
+        public async Task<List<GenerateSalary>> GenerateSalary(int Month, int year, int Userid, string EmployeeId)
         {
             try
             {
@@ -582,6 +582,7 @@ namespace CRM.Repository
                 cmd.Parameters.Add(new SqlParameter("@id", SqlDbType.Int) { Value = Convert.ToInt32(adminlogin.Vendorid) });
                 cmd.Parameters.Add(new SqlParameter("@Month", SqlDbType.Int) { Value = Convert.ToInt32(Month) });
                 cmd.Parameters.Add(new SqlParameter("@year", SqlDbType.Int) { Value = Convert.ToInt32(year) });
+                cmd.Parameters.Add(new SqlParameter("@EmployeeId", SqlDbType.VarChar) { Value = EmployeeId });
                 cmd.CommandType = CommandType.StoredProcedure;
                 con.Open();
                 SqlDataReader rdr = cmd.ExecuteReader();
@@ -1599,6 +1600,7 @@ namespace CRM.Repository
                         StateName = rdr["statename"] == DBNull.Value ? null : Convert.ToString(rdr["statename"]),
                         Location = rdr["Billing_Address"] == DBNull.Value ? null : Convert.ToString(rdr["Location"]),
                         CompanyImage = rdr["Company_Image"] == DBNull.Value ? null : Convert.ToString(rdr["Company_Image"]),
+                        Isactive = rdr["Isactive"] == DBNull.Value ? null : Convert.ToBoolean(rdr["Isactive"]),
 
                     };
 

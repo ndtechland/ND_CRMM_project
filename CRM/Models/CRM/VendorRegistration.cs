@@ -29,5 +29,6 @@ namespace CRM.Models.Crm
         public int? BillingStateId { get; set; }
         public int? BillingCityId { get; set; }
         public bool? IsSameAddress { get; set; }
+        public bool? Isactive { get; set; }
     }
 }

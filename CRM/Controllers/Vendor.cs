@@ -825,6 +825,7 @@ namespace CRM.Controllers
         {
             try
             {
+                ViewBag.UserName = HttpContext.Session.GetString("UserName");
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 int vendorid = (int)adminlogin.Vendorid;
@@ -861,6 +862,7 @@ namespace CRM.Controllers
         {
             try
             {
+                ViewBag.UserName = HttpContext.Session.GetString("UserName");
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 int vendorid = (int)adminlogin.Vendorid;
@@ -911,5 +913,54 @@ namespace CRM.Controllers
                 throw;
             }
         }
+        [HttpGet]
+        [Route("Vendor/Invoice")]
+        public async Task<IActionResult> VendorInvoice(/*string customerId, int Month, int year, string WorkLocation*/)
+        {
+            try
+            {
+                return View();
+                //if (customerId != null && Month != null && year != null && WorkLocation != null)
+                //{
+                //    ViewBag.CustomerName = _context.CustomerRegistrations.Select(x => new SelectListItem
+                //    {
+                //        Value = x.Id.ToString(),
+                //        Text = x.CompanyName
+                //    }).ToList();
+                //    List<Invoice> invoice = new List<Invoice>();
+
+                //    invoice = await _ICrmrpo.GenerateInvoice(customerId, Month, year, WorkLocation);
+                //    if (invoice.Count > 0)
+                //    {
+                //        return View(invoice[0]);
+                //    }
+                //    else
+                //    {
+                //        TempData["ErrorMessage"] = "No data found";
+                //        return RedirectToAction("GenerateSalary");
+                //    }
+                //}
+                //else
+                //{
+                //    return RedirectToAction("GenerateSalary");
+                //}
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("Error : " + ex.Message);
+            }
+
+
+        }
+        [HttpPost]
+        public JsonResult UpdateVendoractive(bool Isactive,int Id)
+        {
+            var vendor = _context.VendorRegistrations.Where(x => x.Id == Id).FirstOrDefault();
+            vendor.Isactive = Isactive;
+            _context.SaveChanges();
+            return Json(new { success = true, message = "Status updated successfully!" });
+        }
+
     }
 }
