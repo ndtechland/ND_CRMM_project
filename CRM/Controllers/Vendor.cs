@@ -923,11 +923,6 @@ namespace CRM.Controllers
                // return View();
                 if (ID != null)
                 {
-                    ViewBag.CustomerName = _context.CustomerRegistrations.Select(x => new SelectListItem
-                    {
-                        Value = x.Id.ToString(),
-                        Text = x.CompanyName
-                    }).ToList();
                     Invoice invoice = new Invoice();
 
                     invoice = await _ICrmrpo.GenerateInvoice(ID);

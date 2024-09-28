@@ -2,8 +2,16 @@
 @{
     DateTime date = DateTime.Now;
     string fordate = date.ToString("dd-MM-yyyy");
+    var count = 1; // Initialize count
+    decimal productPrice = Model.Productprice ?? 0;
+    decimal cgst = Model.Cgst ?? 0;
+    decimal scgst = Model.Scgst ?? 0;
+    decimal igst = Model.Igst ?? 0;
+    var cgstAmount = productPrice * cgst / 100;
+    var scgstAmount = productPrice * scgst / 100;
+    var igstAmount = productPrice * igst / 100;
+    var totalAmount = productPrice + (Model.Igst == null ? (cgstAmount + scgstAmount) : igstAmount);
 }
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -11,6 +19,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invoice</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -48,20 +57,55 @@
             text-transform: uppercase;
         }
 
-        .invoice-details, .billing-details {
-            margin-bottom: 20px;
-            width: 100%;
-        }
+   .invoice-details, .billing-details {
+    margin-bottom: 20px;
+    width: 100%;
+    font-family: Arial, sans-serif;
+}
 
-            .invoice-details table, .billing-details table {
-                width: 100%;
-                border-collapse: collapse;
-            }
+.invoice-details table, .billing-details table {
+    width: 100%;
+    border-collapse: collapse;
+}
 
-            .invoice-details td, .billing-details td {
-                padding: 8px;
-                border: 1px solid #ccc;
-            }
+.invoice-details td, .billing-details td {
+    padding: 12px;
+    vertical-align: top;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+.invoice-details td {
+    width: 50%; 
+}
+
+.billing-details td {
+    width: 50%;
+}
+
+strong {
+    font-weight: bold;
+}
+
+td b {
+    font-size: 16px; 
+    display: block;
+}
+
+@@media screen and (max-width: 768px) {
+    .invoice-details table, .billing-details table {
+        width: 100%;
+    }
+
+    .invoice-details td, .billing-details td {
+        display: block;
+        width: 100%;
+    }
+
+    .invoice-details td {
+        margin-bottom: 10px;
+    }
+}
 
         .invoice-table {
             width: 100%;
@@ -81,7 +125,7 @@
 
         .totals {
             float: right;
-            margin-top: 20px;
+            margin-top: -31px;
         }
 
             .totals table {
@@ -97,8 +141,8 @@
 
         .bank-details {
             margin-top: 20px;
-            border-top: 2px solid black;
             padding-top: 10px;
+            font-weight: bold;
         }
 
         .footer {
@@ -136,15 +180,15 @@
         <div class="invoice-details">
             <table>
                 <tr>
-                    <td>Invoice #: ND-2024/25-1014</td>
-                    <td>Place of Supply: Uttar Pradesh (09)</td>
-                </tr>
-                <tr>
-                    <td>Invoice Date: @fordate</td>
-                    <td>Due Date: @fordate</td>
-                </tr>
-                <tr>
-                    <td>Terms: Due on Receipt</td>
+                    <td>
+                        <strong>Invoice #:</strong> ND-2024/25-1014<br>
+                        <strong>Invoice Date:</strong> @fordate <br>
+                        <strong>Terms:</strong> Due on Receipt<br>
+                        <strong>Due Date:</strong> @fordate
+                    </td>
+                    <td>
+                        <strong>Place of Supply:</strong> Uttar Pradesh (09)
+                    </td>
                 </tr>
             </table>
         </div>
@@ -154,17 +198,16 @@
                 <tr>
                     <td>
                         <strong>Bill To:</strong><br>
-                        @Model.CompanyName<br>
+                        <b>@Model.CompanyName</b><br>
                         @Model.BillingAddress,<br>
-                        @Model.CityName,@Model.StateName<br>
-                        GSTIN: @Model.GstNumber
+                        @Model.CityName, @Model.StateName<br>
+                        <strong>GSTIN:</strong> @Model.GstNumber
                     </td>
                     <td>
                         <strong>Ship To:</strong><br>
-                        @Model.CompanyName<br>
                         @Model.BillingAddress,<br>
-                        @Model.CityName,@Model.StateName<br>
-                        GSTIN: @Model.GstNumber
+                        @Model.CityName, @Model.StateName<br>
+                        <strong>GSTIN:</strong> @Model.GstNumber
                     </td>
                 </tr>
             </table>
@@ -176,43 +219,35 @@
                     <th>#</th>
                     <th>Item & Description</th>
                     <th>HSN/SAC</th>
-                    <th>Qty</th>
                     <th>Rate</th>
-                    <th>CGST</th>
-                    <th>SGST</th>
+                    @if (Model.Igst == null)
+                    {
+                        <th>CGST</th>
+                        <th>SGST</th>
+                    }
+                    else
+                    {
+                        <th>IGST</th>
+                    }
                     <th>Amount</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>1</td>
-                    <td>Domain rapic.co.in</td>
-                    <td>998314</td>
-                    <td>1</td>
-                    <td>649.00</td>
-                    <td>9% (58.41)</td>
-                    <td>9% (58.41)</td>
-                    <td>649.00</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>Hosting Rapic.co.in</td>
-                    <td>998315</td>
-                    <td>1</td>
-                    <td>2,000.00</td>
-                    <td>9% (180.00)</td>
-                    <td>9% (180.00)</td>
-                    <td>2,000.00</td>
-                </tr>
-                <tr>
-                    <td>3</td>
-                    <td>Domain scyara.in</td>
-                    <td>998315</td>
-                    <td>1</td>
-                    <td>699.00</td>
-                    <td>9% (62.91)</td>
-                    <td>9% (62.91)</td>
-                    <td>699.00</td>
+                    <td>@count</td>
+                    <td>@Model.ProductName</td>
+                    <td>@Model.HsnSacCode</td>
+                    <td>@String.Format("{0:0.00}", productPrice)</td>
+                    @if (Model.Igst == null)
+                    {
+                        <td>@cgst% (@String.Format("{0:0.00}", cgstAmount))</td>
+                        <td>@scgst% (@String.Format("{0:0.00}", scgstAmount))</td>
+                    }
+                    else
+                    {
+                        <td>@igst% (@String.Format("{0:0.00}", igstAmount))</td>
+                    }
+                    <td>@String.Format("{0:0.00}", productPrice)</td>
                 </tr>
             </tbody>
         </table>
@@ -221,27 +256,37 @@
             <table>
                 <tr>
                     <td>Sub Total</td>
-                    <td>3,348.00</td>
+                    <td>@String.Format("{0:0.00}", productPrice)</td>
                 </tr>
-                <tr>
-                    <td>CGST (9%)</td>
-                    <td>301.32</td>
-                </tr>
-                <tr>
-                    <td>SGST (9%)</td>
-                    <td>301.32</td>
-                </tr>
+                @if (Model.Igst == null)
+                {
+                    <tr>
+                        <td>CGST (@cgst%)</td>
+                        <td>@String.Format("{0:0.00}", cgstAmount)</td>
+                    </tr>
+                    <tr>
+                        <td>SGST (@scgst%)</td>
+                        <td>@String.Format("{0:0.00}", scgstAmount)</td>
+                    </tr>
+                }
+                else
+                {
+                    <tr>
+                        <td>IGST (@igst%)</td>
+                        <td>@String.Format("{0:0.00}", igstAmount)</td>
+                    </tr>
+                }
                 <tr>
                     <td>Rounding</td>
                     <td>0.36</td>
                 </tr>
                 <tr>
                     <td><strong>Total</strong></td>
-                    <td><strong>₹ 3,951.00</strong></td>
+                    <td><strong>₹ @String.Format("{0:0.00}", totalAmount)</strong></td>
                 </tr>
                 <tr>
                     <td>Payment Made</td>
-                    <td>₹ 3,951.00</td>
+                    <td>₹ @String.Format("{0:0.00}", totalAmount)</td>
                 </tr>
                 <tr>
                     <td><strong>Balance Due</strong></td>
@@ -249,7 +294,12 @@
                 </tr>
             </table>
         </div>
-
+        <div>
+            <h6>Total In Words</h6>
+            <p style="font-weight: bold;" id="totalInWords"></p>
+            <p>Notes</p>
+            <p>Thanks for your business</p>
+        </div>
         <div class="bank-details">
             <h3>Bank Details</h3>
             <p>
@@ -270,13 +320,69 @@
         </div>
     </div>
 
+    <script>
+        function inWords(num) {
+            var units = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+            var teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+            var tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+
+            function convertLessThanThousand(number) {
+                if (number === 0) {
+                    return '';
+                } else if (number < 10) {
+                    return units[number] + ' ';
+                } else if (number < 20) {
+                    return teens[number - 10] + ' ';
+                } else if (number < 100) {
+                    return tens[Math.floor(number / 10)] + ' ' + convertLessThanThousand(number % 10);
+                } else {
+                    return units[Math.floor(number / 100)] + ' Hundred ' + convertLessThanThousand(number % 100);
+                }
+            }
+
+            if (num === 0) {
+                return 'Zero Only';
+            } else {
+                var result = '';
+                if (num < 0) {
+                    result += 'Negative ';
+                    num = Math.abs(num);
+                }
+
+                if (num >= 1000000) {
+                    result += convertLessThanThousand(Math.floor(num / 1000000)) + 'Million ';
+                    num %= 1000000;
+                }
+
+                if (num >= 1000) {
+                    result += convertLessThanThousand(Math.floor(num / 1000)) + 'Thousand ';
+                    num %= 1000;
+                }
+
+                result += convertLessThanThousand(Math.floor(num));
+
+                // Handle the decimal part
+                var decimalPart = '';
+                if (num % 1 !== 0) {
+                    decimalPart = ' Point ';
+                    var decimal = (num.toFixed(2).split('.')[1]).replace(/^0+/, '');
+                    for (var i = 0; i < decimal.length; i++) {
+                        decimalPart += units[parseInt(decimal[i])] + ' ';
+                    }
+                    decimalPart += 'Only.';
+                } else {
+                    decimalPart = 'Only.';
+                }
+
+                return (result + decimalPart).trim();
+            }
+        }
+
+        // Get the total amount for conversion
+        var totalAmount = @String.Format("{0:0.00}", totalAmount);
+        var words = inWords(parseFloat(totalAmount));
+        document.getElementById('totalInWords').innerHTML = 'Indian Rupee ' + words;
+    </script>
+
 </body>
 </html>
-
-
-
-
-  
-
-
-
