@@ -663,45 +663,27 @@ namespace CRM.Repository
         }
 
 
-        public async Task<List<Invoice>> GenerateInvoice(string customerId, int Month, int year, string WorkLocation)
+        public async Task<Invoice> GenerateInvoice(int ID)
         {
             try
             {
-                SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
-                SqlCommand cmd = new SqlCommand("GenerateInvoice", con);
-                cmd.Parameters.Add(new SqlParameter("@CustomerID", SqlDbType.Int) { Value = Convert.ToInt32(customerId) });
-                cmd.Parameters.Add(new SqlParameter("@Month", SqlDbType.Int) { Value = Convert.ToInt32(Month) });
-                cmd.Parameters.Add(new SqlParameter("@year", SqlDbType.Int) { Value = Convert.ToInt32(year) });
-                cmd.Parameters.Add(new SqlParameter("@WorkLocation", SqlDbType.NVarChar) { Value = WorkLocation });
-                cmd.CommandType = CommandType.StoredProcedure;
-                con.Open();
-                SqlDataReader rdr = cmd.ExecuteReader();
-                List<Invoice> emp = new List<Invoice>();
-                while (rdr.Read())
+                using (var con = new SqlConnection(_context.Database.GetConnectionString()))
                 {
-                    var emps = new Invoice()
-                    {
-                        EmployeeCount = Convert.ToInt32(rdr["EmployeeCount"]),
-                        Company_Name = Convert.ToString(rdr["Company_Name"]),
-                        Billing_Address = Convert.ToString(rdr["Billing_Address"]),
-                        GST_Number = Convert.ToString(rdr["GST_Number"]),
-                        HSN_SAC_Code = Convert.ToString(rdr["HSN_SAC_Code"]),
-                        Cgst = Convert.ToString(rdr["Cgst"]),
-                        Scgst = Convert.ToString(rdr["Scgst"]),
-                        Igst = Convert.ToString(rdr["Igst"]),
-                        State = Convert.ToString(rdr["State"]),
-                        GenerateSalary = Convert.ToDecimal(rdr["GenerateSalary"]),
-                    };
-
-                    emp.Add(emps);
+                    await con.OpenAsync();
+                    var invoice = await con.QuerySingleOrDefaultAsync<Invoice>(
+                        "GenerateInvoice",
+                        new { ID },
+                        commandType: CommandType.StoredProcedure
+                    );
+                    return invoice;
                 }
-                return emp;
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw ex; 
             }
         }
+
 
         public DataTable GetEmployDetailById(string EmpId, int Userid)
         {
