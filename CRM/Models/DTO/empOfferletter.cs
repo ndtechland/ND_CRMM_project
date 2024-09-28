@@ -43,6 +43,8 @@
         public string? HrName { get; set; }
         public string? CandidateEmail { get; set; }
         public string? OfficeLocation { get; set; }
+        public string? OfficeState { get; set; }
+        public string? OfficeCity { get; set; }
     }
     public partial class Offerletters
     {

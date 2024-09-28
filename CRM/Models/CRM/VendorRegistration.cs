@@ -7,7 +7,6 @@ namespace CRM.Models.Crm
     {
         public int Id { get; set; }
         public string? CompanyName { get; set; }
-        public string? WorkLocation { get; set; }
         public string? MobileNumber { get; set; }
         public string? AlternateNumber { get; set; }
         public string? Email { get; set; }
@@ -33,5 +32,6 @@ namespace CRM.Models.Crm
         public decimal? Scgst { get; set; }
         public decimal? Igst { get; set; }
         public decimal? Cgst { get; set; }
+        public int? CityId { get; set; }
     }
 }

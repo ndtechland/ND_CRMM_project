@@ -1430,7 +1430,7 @@ namespace CRM.Repository
                         Id = Convert.ToInt32(rdr["id"]),
                         CompanyName = rdr["Company_Name"] == DBNull.Value ? null : Convert.ToString(rdr["Company_Name"]),
                         //WorkLocation = rdr["Work_Location"] == DBNull.Value ? new string[0] : ((string)rdr["Work_Location"]).Split(','),
-                        WorkLocation = rdr["Work_Location"] == DBNull.Value ? null : Convert.ToString(rdr["Work_Location"]),
+                        CityName = rdr["CityName"] == DBNull.Value ? null : Convert.ToString(rdr["CityName"]),
                         MobileNumber = rdr["Mobile_number"] == DBNull.Value ? null : Convert.ToString(rdr["Mobile_number"]),
                         AlternateNumber = (rdr["Alternate_number"] == DBNull.Value ? null : Convert.ToString(rdr["Alternate_number"])),
                         Email = rdr["Email"] == DBNull.Value ? null : Convert.ToString(rdr["Email"]),
@@ -1469,7 +1469,7 @@ namespace CRM.Repository
                 // Set up parameters for the stored procedure
                 var parameters = new DynamicParameters();
                 parameters.Add("@Company_Name", model.CompanyName);
-                parameters.Add("@Work_Location", string.Join(",", model.WorkLocation));
+                parameters.Add("@Work_Location", string.Join(",", model.CityId));
                 parameters.Add("@Mobile_number", model.MobileNumber);
                 parameters.Add("@Alternate_number", model.AlternateNumber);
                 parameters.Add("@Email", model.Email);
@@ -1523,7 +1523,7 @@ namespace CRM.Repository
                 var parameters = new DynamicParameters();
                 parameters.Add("@id", model.Id);
                 parameters.Add("@Company_Name", model.CompanyName);
-                parameters.Add("@Work_Location", string.Join(",", model.WorkLocation));
+                parameters.Add("@CityId", string.Join(",", model.CityId));
                 parameters.Add("@Mobile_number", model.MobileNumber);
                 parameters.Add("@Alternate_number", model.AlternateNumber);
                 parameters.Add("@Email", model.Email);
@@ -1569,7 +1569,7 @@ namespace CRM.Repository
                         Id = Convert.ToInt32(rdr["id"]),
                         CompanyName = rdr["Company_Name"] == DBNull.Value ? null : Convert.ToString(rdr["Company_Name"]),
                         //WorkLocation = rdr["Work_Location"] == DBNull.Value ? null : new string[] { Convert.ToString(rdr["Work_Location"]) },
-                        WorkLocation = rdr["Work_Location"] == DBNull.Value ? "0" : Convert.ToString(rdr["Work_Location"]),
+                        CityName = rdr["CityName"] == DBNull.Value ? "0" : Convert.ToString(rdr["CityName"]),
                         MobileNumber = rdr["Mobile_number"] == DBNull.Value ? "0" : Convert.ToString(rdr["Mobile_number"]),
                         AlternateNumber = rdr["Alternate_number"] == DBNull.Value ? "0" : Convert.ToString(rdr["Alternate_number"]),
                         Email = rdr["Email"] == DBNull.Value ? "0" : Convert.ToString(rdr["Email"]),
@@ -1611,7 +1611,7 @@ namespace CRM.Repository
                                    {
                                        Id = (int)admin.Vendorid,
                                        CompanyName = customer.CompanyName,
-                                       WorkLocation = customer.WorkLocation,
+                                       CityId = customer.CityId,
                                        MobileNumber = customer.MobileNumber,
                                        Email = customer.Email,
                                        GstNumber = customer.GstNumber,

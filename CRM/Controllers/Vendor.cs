@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Data.SqlClient;
 
 namespace CRM.Controllers
 {
@@ -55,7 +56,7 @@ namespace CRM.Controllers
                         ViewBag.Price = vendor.Productprice;
                         ViewBag.Renewprice = data.Renewprice;
                         ViewBag.NoOfRenewMonth = data.NoOfRenewMonth;
-                        ViewBag.SelectedCityId = data.WorkLocation;
+                        ViewBag.SelectedCityId = data.CityId;
                         ViewBag.SelectedBillingCityId = data.BillingCityId;
                         ViewBag.SelectedBillingStateId = data.BillingStateId;
                         ViewBag.CheckIsSameAddress = data.IsSameAddress;
@@ -953,13 +954,21 @@ namespace CRM.Controllers
 
 
         }
-        [HttpPost]
-        public JsonResult UpdateVendoractive(bool? Isactive,int Id)
+     
+        public async Task<IActionResult> UpdateVendorActiveStatus(int Id)
         {
-            var vendor = _context.VendorRegistrations.Where(x => x.Id == Id).FirstOrDefault();
-            vendor.Isactive = Isactive;
+            var vendor = _context.VendorRegistrations.FirstOrDefault(x => x.Id == Id);
+
+            if (vendor == null)
+            {
+                TempData["msg"] = "Vendor not found!";
+                return RedirectToAction("VendorList");
+            }
+             
+            vendor.Isactive = vendor.Isactive == true ? false : true;
             _context.SaveChanges();
-            return Json(new { success = true, message = "Status updated successfully!" });
+            TempData["msg"] = "Active status updated successfully!";
+            return RedirectToAction("VendorList");
         }
 
     }

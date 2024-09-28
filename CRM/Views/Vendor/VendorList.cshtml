@@ -4,6 +4,29 @@
     ViewData["Title"] = "VendorList";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var message = "@TempData["msg"]";
+
+        if (message) {
+            Swal.fire({
+                title: 'Success',
+                text: message,
+                icon: 'info',
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    setTimeout(function () {
+                        window.location.href = '@Url.Action("VendorList", "Vendor")';
+                    }, 1000);
+                }
+            });
+        }
+    });
+</script>
 <div class="page-wrapper">
     <div class="page-body-wrapper">
         <div class="page-sidebar">
@@ -88,7 +111,7 @@
                                                     Location
                                                 </th>
                                                 <th nowrap>
-                                                    Isactive
+                                                    Is Active
                                                 </th>
                                                 <th nowrap>
                                                     Company Image
@@ -109,7 +132,7 @@
                                                             @Html.DisplayFor(modelItem => item.CompanyName)
                                                         </td>
                                                         <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.WorkLocation)
+                                                            @Html.DisplayFor(modelItem => item.CityName)
                                                         </td>
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.MobileNumber)
@@ -145,15 +168,18 @@
                                                             @Html.DisplayFor(modelItem => item.Location)
                                                         </td>
                                                         <td>
-                                                            <select name="Isactive" class="form-control active-dropdown" style="width: 90px;">
-                                                                <option value="true">Active</option>
-                                                                <option value="false">Inactive</option>
-                                                            </select>
+                                                            @if ((bool)item.Isactive)
+                                                            {
+                                                                <a href="/Vendor/UpdateVendorActiveStatus?Id=@item.Id" class="btn btn-success"
+                                                                   onclick="return confirm('Are you sure you want to inactivate @item.CompanyName?');">
+                                                                    Active
+                                                                </a>
+                                                            }
+                                                            else
+                                                            {
+                                                                <a href="/Vendor/UpdateVendorActiveStatus?Id=@item.Id" class="btn btn-danger" onclick="return confirm('Are you sure you want to Activate @item.CompanyName?');">Inactive</a>
+                                                            }
                                                         </td>
-
-
-                                                        <td class="isactive" hidden>@item.Isactive.ToString().ToLower()</td>
-
                                                         <td nowrap>
                                                             <img src='../CompanyImage/@item.CompanyImage' style="height:100px;width:100px" />
                                                         </td>
@@ -245,86 +271,4 @@
         }
     }
 </script>
-<script type="text/javascript">
-    $(document).ready(function () {
-        $('.active-dropdown').each(function () {
-            var selectedStatus = $(this).closest('tr').find('.isactive').text().trim();
-            if (selectedStatus !== "") {
-                $(this).val(selectedStatus); 
-            }
-        });
-        $(document).on("change", ".active-dropdown", function () {
-            var selectedStatus = $(this).val();
-            var selectedEmployeeId = $(this).closest('tr').find('.Id').text().trim(); 
 
-            if (selectedStatus !== "") {
-                $.ajax({
-                    url: '/Vendor/UpdateVendoractive',
-                    type: 'POST',
-                    data: {
-                        Isactive: selectedStatus === "true", 
-                        Id: selectedEmployeeId 
-                    },
-                    success: function (response) {
-                        if (response.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Success',
-                                text: response.message
-                            });
-
-                            var statusText = selectedStatus === "true" ? "Active" : "Inactive";
-                            $(this).closest('tr').find('.status-column').text(statusText);
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: response.message
-                            });
-                        }
-                    }.bind(this), 
-                    error: function (xhr, status, error) {
-                        console.error('Error updating status:', error);
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'There was an error updating the status.'
-                        });
-                    }
-                });
-            } else {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Warning',
-                    text: 'Please select a valid status.'
-                });
-            }
-        });
-    });
-    $(document).ready(function () {
-        function updateDropdownColor(dropdown) {
-            var selectedValue = dropdown.val();
-
-            dropdown.removeClass('bg-success bg-danger text-white');
-
-            if (selectedValue === "true") {
-                // Add green background for "Active" status
-                dropdown.addClass('bg-success text-white');
-            } else if (selectedValue === "false") {
-                // Add red background for "Inactive" status
-                dropdown.addClass('bg-danger text-white');
-            }
-        }
-
-        // Initial color update on page load
-        $('.active-dropdown').each(function () {
-            updateDropdownColor($(this));
-        });
-
-        // Update color when a value is selected
-        $('.active-dropdown').on("change", function () {
-            updateDropdownColor($(this));
-        });
-    });
-
-</script>
