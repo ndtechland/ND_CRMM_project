@@ -246,6 +246,8 @@ namespace CRM.Controllers
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
+                List<DepartmentMaster> response = _context.DepartmentMasters.ToList();
+
                 ViewBag.UserName = AddedBy;
                 ViewBag.id = "";
                 ViewBag.DepartmentName = "";
@@ -262,7 +264,7 @@ namespace CRM.Controllers
                         ViewBag.btnText = "Update";
                     }
                 }
-                return View();
+                return View(response);
 
             }
             else
@@ -307,23 +309,6 @@ namespace CRM.Controllers
                 _context.DepartmentMasters.Add(master);
                 _context.SaveChanges(); TempData["Message"] = "Data Added Successfully.";
                 return RedirectToAction("Department", "Home");
-            }
-        }
-
-        [HttpGet]
-        public IActionResult Departmentlist()
-        {
-            if (HttpContext.Session.GetString("UserName") != null)
-            {
-                var response = _context.DepartmentMasters.ToList();
-                string AddedBy = HttpContext.Session.GetString("UserName");
-                ViewBag.UserName = AddedBy;
-                return View(response);
-
-            }
-            else
-            {
-                return RedirectToAction("Login", "Admin");
             }
         }
         public async Task<IActionResult> DeleteDepartment(int id)
@@ -438,6 +423,8 @@ namespace CRM.Controllers
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
+                List<DesignationMaster > response = _context.DesignationMasters.ToList();
+
                 ViewBag.UserName = AddedBy;
                 ViewBag.id = "";
                 ViewBag.DesignationName = "";
@@ -454,7 +441,7 @@ namespace CRM.Controllers
                         ViewBag.btnText = "Update";
                     }
                 }
-                return View();
+                return View(response);
 
             }
             else
@@ -501,24 +488,6 @@ namespace CRM.Controllers
                 return RedirectToAction("Department", "Home");
             }
         }
-
-        [HttpGet]
-        public IActionResult Designationlist()
-        {
-            if (HttpContext.Session.GetString("UserName") != null)
-            {
-                var response = _context.DesignationMasters.ToList();
-                string AddedBy = HttpContext.Session.GetString("UserName");
-                ViewBag.UserName = AddedBy;
-                return View(response);
-
-            }
-            else
-            {
-                return RedirectToAction("Login", "Admin");
-            }
-        }
-
         public async Task<IActionResult> DeleteDesignation(int id)
         {
             try
@@ -778,6 +747,7 @@ namespace CRM.Controllers
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
+                List<GstMaster> response = _context.GstMasters.ToList();
                 ViewBag.UserName = AddedBy;
                 ViewBag.id = "";
                 ViewBag.GstPercentagen = "";
@@ -800,7 +770,7 @@ namespace CRM.Controllers
                         ViewBag.btnText = "Update";
                     }
                 }
-                return View();
+                return View(response);
 
             }
             else
@@ -865,23 +835,6 @@ namespace CRM.Controllers
                 return RedirectToAction("Gstmaster", "Home");
             }
         }
-        [HttpGet]
-        public IActionResult Gstmasterlist()
-        {
-            if (HttpContext.Session.GetString("UserName") != null)
-            {
-                var response = _context.GstMasters.ToList();
-                string AddedBy = HttpContext.Session.GetString("UserName");
-                ViewBag.UserName = AddedBy;
-                return View(response);
-
-            }
-            else
-            {
-                return RedirectToAction("Login", "Admin");
-            }
-        }
-
         public async Task<IActionResult> DeleteGstmaster(int id)
         {
             try
@@ -908,6 +861,8 @@ namespace CRM.Controllers
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
+                List<Models.Crm.Category> response = _context.Categories.ToList();
+
                 ViewBag.UserName = AddedBy;
                 ViewBag.id = "";
                 ViewBag.CategoryName = "";
@@ -924,7 +879,7 @@ namespace CRM.Controllers
                         ViewBag.btnText = "Update";
                     }
                 }
-                return View();
+                return View(response);
 
             }
             else
@@ -975,23 +930,6 @@ namespace CRM.Controllers
                 return RedirectToAction("Categorymaster", "Home");
             }
         }
-        [HttpGet]
-        public IActionResult Categorymasterlist()
-        {
-            if (HttpContext.Session.GetString("UserName") != null)
-            {
-                var response = _context.Categories.ToList();
-                string AddedBy = HttpContext.Session.GetString("UserName");
-                ViewBag.UserName = AddedBy;
-                return View(response);
-
-            }
-            else
-            {
-                return RedirectToAction("Login", "Admin");
-            }
-        }
-
         public async Task<IActionResult> DeleteCategorymaster(int id)
         {
             try

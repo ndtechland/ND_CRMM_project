@@ -1,0 +1,160 @@
+﻿@model CRM.Models.DTO.getempOfferletter
+@{
+    Layout = "";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Experience Letter</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            line-height: 1.6;
+            color: #000;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 800px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 40px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ddd;
+        }
+
+        .header {
+            position: relative;
+            margin-bottom: 20px;
+            overflow: hidden;
+            height: 100px;
+        }
+
+        .logo {
+            position: absolute;
+            top: 10px;
+            right: 0;
+            width: 200px;
+        }
+
+        .header-bg {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0C70B5 50%, transparent 50%);
+        }
+
+        .content {
+            margin-top: 20px;
+        }
+        p {
+            margin: 10px 0;
+        }
+        .footer {
+            margin-top: 40px;
+            font-size: 0.85em;
+            color: #555;
+            text-align: center;
+            border-top: 2px solid #0C70B5;
+            padding-top: 10px;
+            position: relative;
+        }
+
+            .footer::before {
+                content: '';
+                position: absolute;
+                top: -12px;
+                left: 0;
+                width: 100%;
+                height: 10px;
+                background-color: #0C70B5;
+            }
+
+        .company-details {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 0.85em;
+            color: #555;
+        }
+
+        .subject {
+            font-weight: bold;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .details, .signature {
+            margin-top: 20px;
+        }
+
+        .signature {
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <div class="header">
+            <img src="~/CompanyImage/@Model.CompanyImage" alt="Company Logo" class="logo">
+            <div class="header-bg"></div>
+        </div>
+
+        <!-- Content Section -->
+        <div class="content">
+            <p>To,</p>
+            <p>
+                <strong>[Employee Name]</strong><br>
+                Employee Code / No.: <strong>[Employee Code]</strong><br>
+                Current Designation: <strong>[Current Designation]</strong><br>
+                Residential Address: <strong>[Residential Address]</strong>
+            </p>
+
+            <div class="subject">
+                <p>Subject: Experience Letter</p>
+            </div>
+
+            <div class="details">
+                <p>
+                    This is to certify that <strong>[Employee Name]</strong> joined our organization as a <strong>[Designation]</strong>.
+                    She was associated with our organization from <strong>[Start Date]</strong> to <strong>[End Date]</strong>. During
+                    this tenure, we had ample opportunity to assess her professional and personal abilities.
+                </p>
+
+                <p>
+                    In our organization, she worked with dedication, sincerity, and hard work. We wish
+                    her all the success in her future endeavors and for a bright career ahead.
+                </p>
+            </div>
+
+            <div class="signature">
+                <p>
+                    For <strong>[Company Name]</strong><br>
+                    <strong>[Your Name]</strong><br>
+                    <strong>[Your Designation]</strong><br>
+                    <strong>[Company Address]</strong><br>
+                    <strong>[Company Email]</strong><br>
+                    <strong>[Company Phone Number]</strong>
+                </p>
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="footer">
+            <p>
+                N D Techland Private Limited<br>
+                Head Office: C-53, Sector-2, Noida-201301, U.P. | Branches: Noida | Delhi | Patna | Bangalore<br>
+                Web: www.ndtechland.com | Email: info@ndtechland.com
+            </p>
+        </div>
+    </div>
+</body>
+</html>

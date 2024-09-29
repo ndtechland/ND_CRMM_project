@@ -1,10 +1,11 @@
-﻿@model CRM.Models.Crm.Attendanceday
+﻿@model IEnumerable<CRM.Models.Crm.Attendanceday>
 
 @{
     ViewData["Title"] = "Attendanceday";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
@@ -67,9 +68,9 @@
                                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                                     <div class="form-group col-sm-6">
                                         <label class="control-label">Attendance Days</label>
-                                        <input asp-for="Id" type="hidden" value="@ViewBag.id" />
-                                        <input asp-for="Nodays" value="@ViewBag.Nodays" class="form-control" onkeydown="validateNumericInput(event)" maxlength="2" minlength="2" />
-                                        <span asp-validation-for="Nodays" class="text-danger"></span>
+                                        <input name="Id" type="hidden" value="@ViewBag.id" />
+                                        <input name="Nodays" value="@ViewBag.Nodays" class="form-control" onkeydown="validateNumericInput(event)" maxlength="2" minlength="2" />
+                                        <span name="Nodays" class="text-danger"></span>
                                     </div>
                                     <div class="form-group">
                                         <input type="submit" value="@ViewBag.btnText" class="btn btn-primary" />
@@ -80,7 +81,61 @@
                     </div>
                 </div>
             </div>
+            <div class="container-fluid">
+                <div class="row">
 
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class=" table-responsive">
+                                    <table id="datatable" class="table table-responsive">
+                                        <thead>
+                                            <tr style="background-color: #00baf2;">
+                                                <th nowrap>Sl. No.</th>
+                                                <th>
+                                                    Attendance Days
+                                                </th>
+                                                <th>
+                                                    Create Date
+                                                </th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{
+                                                var count = 0;
+                                                @foreach (var item in Model)
+                                                {
+                                                    count++;
+                                                    <tr class="table-row">
+                                                        <td>@count</td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.Nodays)
+                                                        </td>
+                                                        <td>
+                                                            @item.Createdate?.ToString("dd/MM/yyyy")
+                                                        </td>
+                                                        <td>
+                                                            <div>
+                                                                <a href="@Url.Action("VendorAttendancedays","Vendor",new { id=item.Id})" class="fa fa-edit m-2 font-success"></a>
+                                                                <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteAttendancedays", "Vendor", new { id = item.Id })')" class="fa fa-trash font-danger"></a>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="pagination-container">
+                <ul id="pagination" class="pagination"></ul>
+            </div>
         </div>
 
 
@@ -108,5 +163,64 @@
             event.preventDefault();
         }
 
+    }
+</script>
+<script>
+    var currentPage = 1;
+    var rowsPerPage = 5;
+    $(document).ready(function () {
+        function paginateTable() {
+            var table = $('#datatable');
+            var rows = table.find('tbody tr');
+
+
+            var totalPages = Math.ceil(rows.length / rowsPerPage);
+
+
+            var pagination = $('#pagination');
+            pagination.empty();
+
+            for (var i = 1; i <= totalPages; i++) {
+                var link = $('<li class="page-item"><a class="page-link" href="#">' + i + '</a></li>');
+
+
+                if (i === currentPage) {
+                    link.addClass('active');
+                }
+
+                pagination.append(link);
+            }
+
+
+            var startIndex = (currentPage - 1) * rowsPerPage;
+            var endIndex = startIndex + rowsPerPage;
+
+            rows.hide().slice(startIndex, endIndex).show();
+        }
+
+
+        paginateTable();
+
+        $(document).on('click', '#pagination li a', function (event) {
+            event.preventDefault();
+
+            var clickedPage = parseInt($(this).text());
+
+
+            currentPage = clickedPage;
+            paginateTable();
+
+
+            $('html, body').animate({ scrollTop: $('#table-container').offset().top }, 'slow');
+        });
+    });
+
+</script>
+<script>
+    function confirmDelete(url) {
+        var result = confirm("Are you sure you want to delete?");
+        if (result) {
+            window.location.href = url;
+        }
     }
 </script>

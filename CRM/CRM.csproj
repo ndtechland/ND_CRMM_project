@@ -481,6 +481,7 @@
     <Folder Include="wwwroot\ChequeImage\" />
     <Folder Include="wwwroot\EMPpdfs\" />
     <Folder Include="wwwroot\EMPpdfs\" />
+    <Folder Include="wwwroot\VendorInvoicefile\" />
   </ItemGroup>
 
   <ItemGroup>

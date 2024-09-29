@@ -33,5 +33,6 @@ namespace CRM.Models.Crm
         public decimal? Igst { get; set; }
         public decimal? Cgst { get; set; }
         public int? CityId { get; set; }
+        public string? Invoicefile { get; set; }
     }
 }

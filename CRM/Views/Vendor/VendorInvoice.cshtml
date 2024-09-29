@@ -2,7 +2,7 @@
 @{
     DateTime date = DateTime.Now;
     string fordate = date.ToString("dd-MM-yyyy");
-    var count = 1; // Initialize count
+    var count = 1;
     decimal productPrice = Model.Productprice ?? 0;
     decimal cgst = Model.Cgst ?? 0;
     decimal scgst = Model.Scgst ?? 0;
@@ -25,12 +25,19 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
+            background-color: #f2f2f2;
+        }
+        @@page {
+            size: A4;
+            margin: 10mm;
         }
 
         .invoice-container {
-            width: 80%;
-            margin: auto;
+            width: 210mm;
+            height: 297mm;
+            margin: 10mm auto;
             padding: 20px;
+            background-color: white;
             border: 1px solid #ccc;
         }
 
@@ -57,55 +64,55 @@
             text-transform: uppercase;
         }
 
-   .invoice-details, .billing-details {
-    margin-bottom: 20px;
-    width: 100%;
-    font-family: Arial, sans-serif;
-}
+        .invoice-details, .billing-details {
+            margin-bottom: 20px;
+            width: 100%;
+            font-family: Arial, sans-serif;
+        }
 
-.invoice-details table, .billing-details table {
-    width: 100%;
-    border-collapse: collapse;
-}
+            .invoice-details table, .billing-details table {
+                width: 100%;
+                border-collapse: collapse;
+            }
 
-.invoice-details td, .billing-details td {
-    padding: 12px;
-    vertical-align: top;
-    border: 1px solid #ccc;
-    font-size: 14px;
-}
+            .invoice-details td, .billing-details td {
+                padding: 12px;
+                vertical-align: top;
+                border: 1px solid #ccc;
+                font-size: 14px;
+            }
 
-.invoice-details td {
-    width: 50%; 
-}
+            .invoice-details td {
+                width: 50%;
+            }
 
-.billing-details td {
-    width: 50%;
-}
+            .billing-details td {
+                width: 50%;
+            }
 
-strong {
-    font-weight: bold;
-}
+        strong {
+            font-weight: bold;
+        }
 
-td b {
-    font-size: 16px; 
-    display: block;
-}
+        td b {
+            font-size: 16px;
+            display: block;
+        }
 
-@@media screen and (max-width: 768px) {
-    .invoice-details table, .billing-details table {
-        width: 100%;
-    }
+        @@media screen and (max-width: 768px) {
+            .invoice-details table, .billing-details table {
+                width: 100%;
+            }
 
-    .invoice-details td, .billing-details td {
-        display: block;
-        width: 100%;
-    }
+            .invoice-details td, .billing-details td {
+                display: block;
+                width: 100%;
+            }
 
-    .invoice-details td {
-        margin-bottom: 10px;
-    }
-}
+            .invoice-details td {
+                margin-bottom: 10px;
+            }
+        }
 
         .invoice-table {
             width: 100%;
@@ -147,7 +154,7 @@ td b {
 
         .footer {
             clear: both;
-            margin-top: 30px;
+            margin-top: -111px;
             text-align: right;
         }
 
@@ -210,6 +217,7 @@ td b {
                         <strong>GSTIN:</strong> @Model.GstNumber
                     </td>
                 </tr>
+
             </table>
         </div>
 
@@ -310,12 +318,10 @@ td b {
                 Branch: Sector - 22
             </p>
         </div>
-
         <div class="footer">
-            <p><strong>For N D Techland Pvt. Ltd.</strong></p>
+            <p>For N D Techland Private Limited</p>
             <div class="signature">
-                <p>Director</p>
-                <p>Authorized Signature</p>
+                <p>(Authorized Signature)</p>
             </div>
         </div>
     </div>
@@ -386,3 +392,9 @@ td b {
 
 </body>
 </html>
+
+
+
+
+
+
