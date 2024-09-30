@@ -1679,6 +1679,10 @@ namespace CRM.Models.Crm
                     .HasColumnType("decimal(18, 0)")
                     .HasColumnName("IGST");
 
+                entity.Property(e => e.Invoicefile)
+                    .HasMaxLength(250)
+                    .HasColumnName("invoicefile");
+
                 entity.Property(e => e.Location).HasMaxLength(200);
 
                 entity.Property(e => e.Maplat)

@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using SelectPdf;
 using System.Data.SqlClient;
 
 namespace CRM.Controllers
@@ -108,10 +109,10 @@ namespace CRM.Controllers
                 else
                 {
                     var response = await _ICrmrpo.Vendorreg(model);
-                    if (response !=null)
+                    if (response != null)
                     {
                         TempData["Message"] = "Registration Successfully.";
-                        await _emailService.SendEmailCredentials(model.Email,model.CompanyName, response.UserName, response.Password);
+                        await _emailService.SendEmailCredentials(model.Email, model.CompanyName, response.UserName, response.Password);
                         return RedirectToAction("VendorRegistration", "Vendor");
                     }
                     else
@@ -573,6 +574,7 @@ namespace CRM.Controllers
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                List<Attendanceday> response = _context.Attendancedays.Where(x => x.Vendorid == adminlogin.Vendorid).ToList();
                 ViewBag.UserName = AddedBy;
                 ViewBag.id = 0;
                 ViewBag.Nodays = "";
@@ -586,7 +588,7 @@ namespace CRM.Controllers
                     ViewBag.Heading = "Update Days";
                     ViewBag.BtnText = "UPDATE";
                 }
-                return View();
+                return View(response);
             }
             else
             {
@@ -653,25 +655,6 @@ namespace CRM.Controllers
             }
         }
 
-        [HttpGet]
-        public async Task<IActionResult> VendorAttendancedayslist()
-        {
-            if (HttpContext.Session.GetString("UserName") != null)
-            {
-                string AddedBy = HttpContext.Session.GetString("UserName");
-                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
-                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
-                var response = _context.Attendancedays.Where(x => x.Vendorid == adminlogin.Vendorid).ToList();
-                ViewBag.UserName = AddedBy;
-                return View(response);
-
-            }
-            else
-            {
-                return RedirectToAction("Login", "Admin");
-            }
-        }
-
         public async Task<IActionResult> DeleteAttendancedays(int id)
         {
             try
@@ -697,8 +680,9 @@ namespace CRM.Controllers
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                List<Officeshift> response = await _context.Officeshifts.Where(x => x.Vendorid == adminlogin.Vendorid).ToListAsync();
+
                 ViewBag.UserName = AddedBy;
-                ViewBag.id = 0;
                 ViewBag.Starttime = "";
                 ViewBag.Endtime = "";
                 ViewBag.ShiftTypeid = "";
@@ -714,7 +698,7 @@ namespace CRM.Controllers
                     ViewBag.Heading = "Update Office Shift";
                     ViewBag.BtnText = "UPDATE";
                 }
-                return View();
+                return View(response);
             }
             else
             {
@@ -785,25 +769,6 @@ namespace CRM.Controllers
             }
         }
 
-        [HttpGet]
-        public async Task<IActionResult> VendorOfficeshiftlist()
-        {
-            if (HttpContext.Session.GetString("UserName") != null)
-            {
-                string AddedBy = HttpContext.Session.GetString("UserName");
-                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
-                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
-                var response = _context.Officeshifts.Where(x => x.Vendorid == adminlogin.Vendorid).ToList();
-                ViewBag.UserName = AddedBy;
-                return View(response);
-
-            }
-            else
-            {
-                return RedirectToAction("Login", "Admin");
-            }
-        }
-
         public async Task<IActionResult> DeleteOfficeshift(int id)
         {
             try
@@ -868,10 +833,10 @@ namespace CRM.Controllers
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 int vendorid = (int)adminlogin.Vendorid;
 
-                bool check = await _ICrmrpo.AddVendorCategory(model,vendorid);
-                if(check)
+                bool check = await _ICrmrpo.AddVendorCategory(model, vendorid);
+                if (check)
                 {
-                    if(model.Id==0)
+                    if (model.Id == 0)
                     {
                         TempData["msg"] = "Category added successfully!";
                         return RedirectToAction("VendorCategory");
@@ -920,7 +885,6 @@ namespace CRM.Controllers
         {
             try
             {
-               // return View();
                 if (ID != null)
                 {
                     Invoice invoice = new Invoice();
@@ -949,21 +913,87 @@ namespace CRM.Controllers
 
 
         }
-     
         public async Task<IActionResult> UpdateVendorActiveStatus(int Id)
         {
-            var vendor = _context.VendorRegistrations.FirstOrDefault(x => x.Id == Id);
+            var vendor = await _context.VendorRegistrations.FirstOrDefaultAsync(x => x.Id == Id);
 
             if (vendor == null)
             {
                 TempData["msg"] = "Vendor not found!";
                 return RedirectToAction("VendorList");
             }
-             
-            vendor.Isactive = vendor.Isactive == true ? false : true;
-            _context.SaveChanges();
-            TempData["msg"] = "Active status updated successfully!";
+            vendor.Isactive = !vendor.Isactive;
+            await _context.SaveChangesAsync();
+            if(vendor.Isactive == true)
+            {
+                var pdfResult = await VendorInvoiceDocPDF(vendor.Id);
+                if (pdfResult is JsonResult jsonResult && jsonResult.Value is IDictionary<string, object> result &&
+                    result.TryGetValue("success", out var success) && (bool)success)
+                {
+                    TempData["msg"] = "Active status updated successfully and PDF sent!";
+                }
+                else
+                {
+                    TempData["msg"] = "Active status updated successfully, but failed to send PDF.";
+                }
+            }
             return RedirectToAction("VendorList");
+        }
+
+        public async Task<IActionResult> VendorInvoiceDocPDF(int? Id = 0)
+        {
+            try
+            {               
+                string schema = Request.Scheme;
+                string host = Request.Host.Value;
+                string SlipURL = $"{schema}://{host}/Vendor/VendorInvoice?Id={Id}";
+                HtmlToPdf converter = new HtmlToPdf();
+                PdfDocument doc = converter.ConvertUrl(SlipURL);
+                string wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "VendorInvoicefile");
+                if (!Directory.Exists(wwwRootPath))
+                {
+                    Directory.CreateDirectory(wwwRootPath);
+                }
+                var result = (from vr in _context.VendorRegistrations
+                              where vr.Id == Id 
+                              select new
+                              {
+                                  Id = vr.Id,
+                                  CompanyName = vr.CompanyName,
+                                  Email = vr.Email
+                              }).FirstOrDefault();
+                string uniqueFileName = $"Invoice_{Guid.NewGuid()}_{Id}_{DateTime.Now:yyyyMMddHHmmss}.pdf";
+                string filePath = Path.Combine(wwwRootPath, uniqueFileName);
+                doc.Save(filePath);
+                byte[] pdf = System.IO.File.ReadAllBytes(filePath);
+
+
+
+                if (result == null)
+                {
+                    return BadRequest("Vendor not found.");
+                }
+
+                var empoff = _context.VendorRegistrations.FirstOrDefault(e => e.Id == result.Id);
+                if (empoff != null)
+                {
+                    empoff.Invoicefile = uniqueFileName;
+                    _context.SaveChanges();
+                    string emailSubject = $"Invoice for {result.CompanyName}";
+                    string emailBody = $"Hello {result.CompanyName}";
+                    await _emailService.SendEmailAsync(result.Email, emailSubject, emailBody, pdf, uniqueFileName, "application/pdf");
+                    return Json(new { success = true, message = "Invoice  has been Sent successfully.", fileName = uniqueFileName });
+
+                }
+                else
+                {
+                    return Json(new { BadRequest = 404, message = "Data not found for the employee." });
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Error: {ex.Message}" });
+            }
         }
 
     }

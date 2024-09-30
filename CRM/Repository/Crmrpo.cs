@@ -1486,6 +1486,9 @@ namespace CRM.Repository
                 parameters.Add("@Renewprice", model.Renewprice);
                 parameters.Add("@NoOfRenewMonth", model.NoOfRenewMonth);
                 parameters.Add("@IsSameAddress", model.IsSameAddress);
+                parameters.Add("@Cgst", model.Cgst);
+                parameters.Add("@Scgst", model.Scgst);
+                parameters.Add("@Igst", model.Igst);
                 parameters.Add("@CustomerId", dbType: DbType.Int32, direction: ParameterDirection.Output);
                 await connection.ExecuteAsync("VendorRegistration", parameters, commandType: CommandType.StoredProcedure);
                 int newCustomerId = parameters.Get<int>("@CustomerId");
@@ -1540,6 +1543,9 @@ namespace CRM.Repository
                 parameters.Add("@Renewprice", model.Renewprice);
                 parameters.Add("@NoOfRenewMonth", model.NoOfRenewMonth);
                 parameters.Add("@IsSameAddress", model.IsSameAddress);
+                parameters.Add("@Cgst", model.Cgst);
+                parameters.Add("@Scgst", model.Scgst);
+                parameters.Add("@Igst", model.Igst);
 
                 var result = await connection.ExecuteAsync(
                     "sp_updateVendor_Reg",
