@@ -1,4 +1,4 @@
-﻿@model CRM.Models.DTO.getempOfferletter
+﻿@model CRM.Models.DTO.Experienceletters
 @{
     Layout = "";
 }
@@ -111,15 +111,15 @@
         <div class="content">
             <p>To,</p>
             <p>
-                <strong>[Employee Name]</strong><br>
-                Employee Code / No.: <strong>[Employee Code]</strong><br>
+                <strong>@Model.EmployeeName</strong><br>
+                Employee Code / No.: <strong>@Model.EmployeeCode</strong><br>
                 Current Designation: <strong>[Current Designation]</strong><br>
                 Residential Address: <strong>[Residential Address]</strong>
             </p>
 
             <div class="subject">
                 <p>Subject: Experience Letter</p>
-            </div>
+            </div> 
 
             <div class="details">
                 <p>

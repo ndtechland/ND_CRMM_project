@@ -32,8 +32,7 @@
     }
     public class CompanyLoctionDto
     {
-        public string? Companylat { get; set; }
-        public string? Companylong { get; set; }
+        public string? CompanyOfficeLocation { get; set; }
         public string? Radious { get; set; }
     }
 }

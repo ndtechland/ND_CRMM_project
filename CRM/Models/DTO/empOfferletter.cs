@@ -69,4 +69,23 @@
         public IFormFile ImageFile { get; set; }
         public string? CandidateEmail { get; set; }
     }
+    public partial class Experienceletters
+    {
+        public int Id { get; set; }
+        public string? EmployeeName { get; set; }
+        public string? EmployeeCode { get; set; }
+        public string? CurrentDesignation { get; set; }
+        public string? Designation { get; set; }
+        public string? StartDate { get; set; }
+        public string? EndDate { get; set; }
+        public string? CompanyName { get; set; }
+        public string? HrName { get; set; }
+        public string? WorkEmail { get; set; }
+        public string? ExperienceletterFile { get; set; }
+        public string? HrDesignation { get; set; }
+        public string? CompanyAddress { get; set; }
+        public string? CompanyEmail { get; set; }
+        public string? CompanyPhoneNumber { get; set; }
+        public string? CompanyImage { get; set; }
+    }
 }

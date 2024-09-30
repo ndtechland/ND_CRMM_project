@@ -60,12 +60,12 @@
             <div class="container-fluid">
                 <div class="page-header">
                     <div class="row">
-                        <div class="col-lg-6">
+                        <div class="col-lg-6 form-group">
                             <div class="page-header-left">
                                 <h4>@ViewBag.heading</h4>
                             </div>
                         </div>
-                        <div class="col-lg-6">
+                        <div class="col-lg-6 form-group">
                             <ol class="breadcrumb pull-right">
                                 <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
                                 <li class="breadcrumb-item">Approval List</li>
@@ -85,34 +85,32 @@
                                 <form method="post" enctype="multipart/form-data" action="/Employee/AddOfferletterdetail" autocomplete="off">
                                     <div class="container">
                                         <div class="row mb-3">
-                                            <div class="col-lg-6">
+                                            <div class="col-lg-4 form-group">
                                                 <input type="hidden" name="Id" value="@ViewBag.id ">
                                                 <label for="FullName">Candidate Name</label>
                                                 <input class="form-control" value='@ViewBag.Name' name="Name" id="FullName" placeholder="Enter Full Name" type="text">
                                             </div>
-                                            <div class="col-lg-6">
+                                            <div class="col-lg-4 form-group">
                                                 <label for="CandidatePincode">Pincode</label>
                                                 <input class="form-control" value='@ViewBag.CandidatePincode' name="CandidatePincode" id="CandidatePincode" placeholder="Enter Pincode" type="text" maxlength="6">
                                             </div>
-                                        </div>
-                                        <div class="row mb-3">
-                                            <div class="col-lg-6">
+                                            <div class="col-lg-4 form-group">
                                                 <label for="CandidateAddress">Address</label>
                                                 <input class="form-control" value='@ViewBag.CandidateAddress' name="CandidateAddress" id="CandidateAddress" placeholder="Enter Address" type="text">
                                             </div>
-                                            <div class="col-lg-6">
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-lg-4 form-group">
                                                 <label for="DepartmentId">Department</label>
                                                 <select name="DepartmentId" class="form-control" id="ddDepartmentID">
                                                     <option value="0">-- Select Department --</option>
                                                 </select>
                                             </div>
-                                        </div>
-                                        <div class="row mb-3">
-                                            <div class="col-lg-6">
+                                            <div class="col-lg-4 form-group">
                                                 <label for="CandidateAddress">Candidate Email</label>
                                                 <input class="form-control" value='@ViewBag.CandidateEmail' name="CandidateEmail" id="CandidateEmail" placeholder="Enter CandidateEmail" type="text">
                                             </div>
-                                            <div class="col-lg-6">
+                                            <div class="col-lg-4 form-group">
                                                 <label for="DesignationId">Designation</label>
                                                 <select name="DesignationId" class="form-control" id="ddDesignationID">
                                                     <option value="0">-- Select Designation --</option>
@@ -120,54 +118,49 @@
                                             </div>
                                         </div>
                                         <div class="row mb-3">
-                                            <div class="col-lg-6">
+                                            <div class="col-lg-4 form-group">
                                                 <label for="MonthlyCtc">Monthly CTC</label>
                                                 <input class="form-control" value='@ViewBag.MonthlyCtc' name="MonthlyCtc" id="MonthlyCtc" placeholder="Enter Monthly CTC" type="text" onkeydown="validateNumericInput(event)" >
                                             </div>
-                                            <div class="col-lg-6">
+                                            <div class="col-lg-4 form-group">
                                                 <label for="AnnualCtc">Annual CTC</label>
                                                 <input class="form-control" value='@ViewBag.AnnualCtc' name="AnnualCtc" id="AnnualCtc" placeholder="Enter Annual CTC" type="text" onkeydown="validateNumericInput(event)">
                                             </div>
-                                        </div>
-                                        <div class="row mb-3">
-                                            <div class="col-lg-6">
+                                            <div class="col-lg-4 form-group">
                                                 <label for="StateId">State</label>
                                                 <select class="form-control" id="ddlState" name="StateId">
                                                     <option value="0">-- Select State --</option>
                                                 </select>
                                             </div>
-                                            <div class="col-lg-6">
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-lg-4 form-group">
                                                 <label for="CityId">City</label>
                                                 <select class="form-control" name="CityId" id="City">
                                                     <option value="0">-- Select City --</option>
                                                 </select>
                                             </div>
-                                        </div>
-                                        <div class="row mb-3">
-                                           
-                                            <div class="col-lg-6">
+                                            <div class="col-lg-4 form-group">
                                                 <label for="DateOfJoining">Date Of Joining</label>
                                                 <input class="form-control" value='@ViewBag.DateOfJoining' name="DateOfJoining" id="DateOfJoining" type="date">
                                             </div>
-                                            <div class="col-lg-6">
+                                            <div class="col-lg-4 form-group">
                                                 <label for="Validdate">Valid Date</label>
                                                 <input class="form-control" value='@ViewBag.Validdate' name="Validdate" id="Validdate" type="date">
                                             </div>
                                         </div>
                                         <div class="row mb-3">
-                                            <div class="col-lg-6">
-                                                <label for="Validdate">HR Name</label>
-                                                <input class="form-control" value='@ViewBag.HrName' placeholder="Enter Monthly HR Name" name="HrName" id="HrName" type="text">
+                                            <div class="col-lg-4 form-group">
+                                                <label for="HRName">HR Name</label>
+                                                <input class="form-control" value='@ViewBag.HrName' placeholder="Enter  HR Name" name="HrName" id="HrName" type="text">
                                             </div>
-                                            <div class="col-lg-6">
+                                            <div class="col-lg-4 form-group">
                                                 <label for="HrJobTitle">HR JobTitle</label>
-                                                <input class="form-control" value='@ViewBag.HrJobTitle' placeholder="Enter Monthly HR JobTitle" name="HrJobTitle" id="HrJobTitle" type="text">
+                                                <input class="form-control" value='@ViewBag.HrJobTitle' placeholder="Enter HR JobTitle" name="HrJobTitle" id="HrJobTitle" type="text">
                                             </div>
-                                        </div>
-                                        <div class="row mb-3">
                                             @if (ViewBag.HrSignature != "")
                                             {
-                                                <div class="col-md-6">
+                                                <div class="col-lg-4 form-group">
                                                     <label for="exampleInputFile">HR Signature</label>
                                                     <input type="hidden" value='@ViewBag.id' name="Id" />
                                                     <input type="file" accept=".png" id="ImageFile" name="ImageFile">
@@ -181,7 +174,7 @@
                                             else
                                             {
                                                 <div class="row gx-3 mb-3">
-                                                    <div class="col-md-6">
+                                                    <div class="col-lg-4 form-group">
                                                         <label for="exampleInputFile">HR Signature</label>
                                                         <input type="hidden" value='@ViewBag.id' name="Id" />
                                                         <input type="file" accept=" .png" id="ImageFile" name="ImageFile">
@@ -189,9 +182,7 @@
                                                     </div>
                                                 </div>
                                             }
-                                          
                                         </div>
-                                      
                                         <div class="form-group text-center">
                                             <input type="submit" value="@ViewBag.btnText" class="btn btn-primary" />
                                         </div>

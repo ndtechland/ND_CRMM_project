@@ -110,7 +110,7 @@ namespace CRM.Repository
         .ToListAsync();
             return result;
         }
-        public async Task<int> Customer(Customer model,int vendorid)
+        public async Task<int> Customer(Customer model, int vendorid)
         {
             try
             {
@@ -680,7 +680,7 @@ namespace CRM.Repository
             }
             catch (Exception ex)
             {
-                throw ex; 
+                throw ex;
             }
         }
 
@@ -2008,9 +2008,9 @@ namespace CRM.Repository
 
 
         //Vendor Product
-        public async Task<int> AddVendorProduct(VendorProductMaster model,int VendorId)
+        public async Task<int> AddVendorProduct(VendorProductMaster model, int VendorId)
         {
-            if(model.Id==0)
+            if (model.Id == 0)
             {
                 var parameter = new List<SqlParameter>();
                 parameter.Add(new SqlParameter("@VendorId", VendorId));
@@ -2044,7 +2044,7 @@ namespace CRM.Repository
 
                 return result;
             }
-           
+
         }
 
         public async Task<List<VendorProductDTO>> GetVendorProductList(int vendorid)
@@ -2057,9 +2057,9 @@ namespace CRM.Repository
                                 {
                                     Id = p.Id,
                                     ProductName = p.ProductName,
-                                    Category = c.CategoryName, 
+                                    Category = c.CategoryName,
                                     Hsncode = p.Hsncode,
-                                    Gst = g.GstPercentagen,  
+                                    Gst = g.GstPercentagen,
                                     ProductPrice = p.ProductPrice,
                                     IsActive = p.IsActive,
                                     CreatedAt = p.CreatedAt
@@ -2068,7 +2068,7 @@ namespace CRM.Repository
             return result;
         }
 
-        public async Task<bool> AddVendorCategory(VendorCategoryMaster model,int VendorId)
+        public async Task<bool> AddVendorCategory(VendorCategoryMaster model, int VendorId)
         {
             try
             {
@@ -2086,7 +2086,7 @@ namespace CRM.Repository
                 else
                 {
                     var existdata = _context.VendorCategoryMasters.Find(model.Id);
-                    existdata.CategoryName=model.CategoryName;
+                    existdata.CategoryName = model.CategoryName;
                 }
                 _context.SaveChanges();
                 return true;
@@ -2108,6 +2108,69 @@ namespace CRM.Repository
             {
 
                 throw;
+            }
+        }
+
+        public async Task<EmpExperienceletter> GetExperienceletterbyid(int? id)
+        {
+            try
+            {
+                var query = await _context.EmpExperienceletters.Where(x => x.Id == id).FirstOrDefaultAsync();
+                return query;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<int> updateExperienceletterdetail(EmpExperienceletter model)
+        {
+            try
+            {
+                var existing= await _context.EmpExperienceletters.FindAsync(model.Id);
+                if (existing != null)
+                {
+                    existing.CurrDesignationId = model.CurrDesignationId;
+                    existing.DesignationId = model.CurrDesignationId;
+                    existing.StartDate = model.StartDate;
+                    existing.EndDate = model.EndDate;
+                    existing.HrDesignation = model.HrDesignation;
+                    existing.HrName = model.HrName;
+                    existing.EmployeeId = model.EmployeeId;
+                    return await _context.SaveChangesAsync();
+                }
+
+                return 1;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<int> AddExperienceletterdetail(EmpExperienceletter model, int Userid)
+        {
+            try
+            {
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                EmpExperienceletter of = new EmpExperienceletter()
+                {
+                    CurrDesignationId = model.CurrDesignationId,
+                    DesignationId = model.DesignationId,
+                    StartDate = model.StartDate,
+                    EndDate = model.EndDate,
+                    Vendorid = adminlogin.Vendorid,
+                    HrDesignation = model.HrDesignation,
+                    HrName = model.HrName,
+                    EmployeeId = model.EmployeeId,
+                };
+                _context.EmpExperienceletters.Add(of);
+                _context.SaveChanges();
+                return 1;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
         }
     }

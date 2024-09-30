@@ -54,4 +54,25 @@ namespace CRM.Models.APIDTO
         public string? FatherName { get; set; }
         public string? EmpProfile { get; set; }
     }
+    public class webPersonalDetail
+    {
+        public string FullName { get; set; } = null!;
+        public long? MobileNumber { get; set; }
+        public string? DateOfBirth { get; set; }
+        public long? Stateid { get; set; }
+        public int? Cityid { get; set; }
+        public string? Address1 { get; set; }
+        public string? Address2 { get; set; }
+        public string? Pincode { get; set; }
+        public string? PersonalEmailAddress { get; set; }
+        public string? AadharNo { get; set; }
+        public string? PanNo { get; set; }
+        public string? FatherName { get; set; }
+
+        [NotMapped]
+        public IFormFile Empprofile { get; set; }
+        public IFormFile Aadhar1 { get; set; }
+        public IFormFile Aadhar2 { get; set; }
+        public IFormFile PanbaseImage { get; set; }
+    }
 }

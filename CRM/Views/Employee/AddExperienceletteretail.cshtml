@@ -1,0 +1,186 @@
+﻿@model CRM.Models.Crm.EmpExperienceletter
+@{
+    ViewData["Title"] = "AddExperienceletters";
+    Layout = "~/Views/Shared/_adminLayout.cshtml";
+}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+<style>
+    .select2-container .select2-selection--single {
+        height: 34px !important;
+    }
+
+    .select2-container--default .select2-selection--single {
+        border: 1px solid #ccc !important;
+        border-radius: 0px !important;
+    }
+
+    .select2-results__options {
+        display: grid !important;
+    }
+
+</style>
+<style>
+    #loader {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 9999;
+    }
+</style>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var message = "@TempData["Message"]";
+
+        if (message) {
+            Swal.fire({
+                 title: 'Success',
+                text: message,
+                icon: 'info',
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    setTimeout(function () {
+                        window.location.href = '@Url.Action("ExperienceletterList", "Employee")';
+                    }, 1000);
+                }
+            });
+        }
+    });
+</script>
+<div class="page-wrapper">
+    <div class="page-body-wrapper">
+        <div class="page-sidebar">
+        </div>
+
+        <div class="page-body">
+            <div class="container-fluid">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-lg-6 form-group">
+                            <div class="page-header-left">
+                                <h4>@ViewBag.heading</h4>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 form-group">
+                            <ol class="breadcrumb pull-right">
+                                <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
+                                <li class="breadcrumb-item">Approval List</li>
+                                <li class="breadcrumb-item active">Add Experienceletter Detail</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Container-fluid Ends-->
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <form method="post" enctype="multipart/form-data" action="/Employee/AddExperienceletteretail" autocomplete="off">
+                                    <div class="container">
+                                        <div class="row mb-3">
+                                            <div class="form-group col-lg-6">
+                                                <label for="TxtEmpId">Employee Id</label>
+                                                <select id="TxtEmpId" name="EmployeeId" class="form-control select2">
+                                                    <option value="0">-- Select EmployeeId --</option>
+                                                    @foreach (var item in ViewBag.EmployeeId)
+                                                    {
+                                                        <option value="@item.Value">@item.Text</option>
+                                                    }
+                                                </select>
+                                                <span asp-validation-for="EmployeeId" class="text-danger"></span>
+                                            </div>
+                                            <div class="col-lg-6 form-group">
+                                                <label for="CurrDesignationId">Current Designation</label>
+                                                <select name="CurrDesignationId" class="form-control" id="CurrentddDesignationID">
+                                                    <option value="0">-- Select Current Designation --</option>
+                                                    @foreach (var item in ViewBag.CurrentDesignation)
+                                                    {
+                                                        <option value="@item.Value">@item.Text</option>
+                                                    }
+                                                </select>
+                                            </div>
+                                           
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-lg-6 form-group">
+                                                <label for="DesignationId">Designation</label>
+                                                <select name="DesignationId" class="form-control" id="ddDesignationID">
+                                                    <option value="0">-- Select Designation --</option>
+                                                    @foreach (var item in ViewBag.Designation)
+                                                    {
+                                                        <option value="@item.Value">@item.Text</option>
+                                                    }
+                                                </select>
+                                            </div>
+                                            <div class="col-lg-6 form-group">
+                                                <label for="StartDate">Start Date</label>
+                                                <input class="form-control" value='@ViewBag.StartDate' name="StartDate" id="StartDate" type="date">
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-lg-6 form-group">
+                                                <label for="EndDate">End Date</label>
+                                                <input class="form-control" value='@ViewBag.EndDate' name="EndDate" id="EndDate" type="date">
+                                            </div>
+                                            <div class="col-lg-6 form-group">
+                                                <label for="HrName">HR Name</label>
+                                                <input class="form-control" value='@ViewBag.HrName' placeholder="Enter HR Name" name="HrName" id="HrName" type="text">
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-lg-6 form-group">
+                                                <label for="HrDesignation">HR Designation</label>
+                                                <input class="form-control" value='@ViewBag.HrJobTitle' placeholder="Enter HR Designation" name="HrDesignation" id="HrDesignation" type="text">
+                                            </div>
+                                        </div>
+                                        <div class="form-group text-center">
+                                            <input type="submit" value="@ViewBag.btnText" class="btn btn-primary" />
+                                        </div>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        var designationId = '@ViewBag.DesignationId';
+        if (designationId) {
+            $('#ddDesignationID').val(designationId);
+        }
+
+        var currDesignationId = '@ViewBag.CurrDesignationId';
+        if (currDesignationId) {
+            $('#CurrentddDesignationID').val(currDesignationId);
+        }
+    });
+</script>
+
+<script>
+    $('.select2').select2();
+</script>
+
+<script type="text/javascript">
+    var selectedEmpId = '@ViewBag.EmpId'
+    if (selectedEmpId != "") {
+        $("#TxtEmpId").val(selectedEmpId).trigger('change');
+    }
+</script>

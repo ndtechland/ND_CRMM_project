@@ -130,7 +130,7 @@ namespace CRM.Controllers
                 ViewBag.officeshift = _context.Officeshifts.Where(x => x.Vendorid == adminlogin.Vendorid).Select(x => new SelectListItem
                 {
                     Value = x.Id.ToString(),
-                    Text = $"{x.Starttime} - {x.Endtime} - {x.ShiftTypeid}" 
+                    Text = $"{x.Starttime} - {x.Endtime} - {x.ShiftTypeid}"
                 }).ToList();
 
                 ViewBag.Emp_Reg_Code = "";
@@ -316,7 +316,7 @@ namespace CRM.Controllers
                 if (HttpContext.Session.GetString("UserName") != null)
                 {
                     string userIdString = HttpContext.Session.GetString("UserId");
-                    var adminlogin = await _context.AdminLogins.Where(x => x.Id ==Convert.ToInt16(userIdString)).FirstOrDefaultAsync();
+                    var adminlogin = await _context.AdminLogins.Where(x => x.Id == Convert.ToInt16(userIdString)).FirstOrDefaultAsync();
                     ViewBag.officeshift = _context.Officeshifts.Where(x => x.Vendorid == adminlogin.Vendorid).Select(x => new SelectListItem
                     {
                         Value = x.Id.ToString(),
@@ -331,7 +331,7 @@ namespace CRM.Controllers
                         else
                         {
                             response = await _ICrmrpo.CustomerEmployeeList(id);
-                            foreach(var item in response)
+                            foreach (var item in response)
                             {
                                 ViewBag.shiftlist = item.ShiftTypeid;
                             }
@@ -583,7 +583,7 @@ namespace CRM.Controllers
                                         Entry = DateTime.Now,
                                         Incentive = item.Incentive,
                                         TravellingAllowance = item.TravellingAllowance,
-                                        GenerateSalary = decimal.Round((decimal)(ctc.MonthlyCtc /Convert.ToDecimal(attt.Nodays) * item.Attendance), 2) + item.Incentive,
+                                        GenerateSalary = decimal.Round((decimal)(ctc.MonthlyCtc / Convert.ToDecimal(attt.Nodays) * item.Attendance), 2) + item.Incentive,
                                         Lop = (decimal)(ctc.MonthlyCtc) - decimal.Round((decimal)(ctc.MonthlyCtc / Convert.ToDecimal(attt.Nodays) * item.Attendance), 2),
                                     };
 
@@ -678,7 +678,7 @@ namespace CRM.Controllers
 
         //}
         [HttpPost]
-        public async Task<IActionResult> GenerateSalary(int Month, int year,string EmployeeId)
+        public async Task<IActionResult> GenerateSalary(int Month, int year, string EmployeeId)
         {
             try
             {
@@ -706,7 +706,7 @@ namespace CRM.Controllers
 
                     }).ToList();
                     GenerateSalary salary = new GenerateSalary();
-                    salary.GeneratedSalaries = await _ICrmrpo.GenerateSalary(Month, year, Userid,EmployeeId);
+                    salary.GeneratedSalaries = await _ICrmrpo.GenerateSalary(Month, year, Userid, EmployeeId);
                     if (salary.GeneratedSalaries.Count > 0)
                     {
                         return View(salary);
@@ -801,7 +801,7 @@ namespace CRM.Controllers
                 {
                     string AddedBy = HttpContext.Session.GetString("UserName");
                     int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
-                    var adminlogin =  _context.AdminLogins.Where(x => x.Id ==  Userid).FirstOrDefault();
+                    var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
                     ViewBag.UserName = AddedBy;
                     return View();
                 }
@@ -1022,7 +1022,7 @@ namespace CRM.Controllers
 
             return monthName;
         }
-       
+
         //-----ImportToExcelEmployeeList
         public IActionResult ImportToExcelEmployeeList()
         {
@@ -1898,66 +1898,8 @@ namespace CRM.Controllers
                 return Json(new { success = false, message = $"Error: {ex.Message}" });
             }
         }
-        public async Task<IActionResult> OfferletterDocPDF1(int? Id = 0)
-        {
-            try
-            {
-                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
-                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
-                if (adminlogin == null)
-                {
-                    return BadRequest("Admin login not found");
-                }
-                string schema = Request.Scheme;
-                string host = Request.Host.Value;
-                string SlipURL = $"{schema}://{host}/Employee/EmployeeOfferletter?Id={Id}&userid={Userid}";
-                HtmlToPdf converter = new HtmlToPdf();
-                PdfDocument doc = converter.ConvertUrl(SlipURL);
-                string wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "EMPpdfs");
-                if (!Directory.Exists(wwwRootPath))
-                {
-                    Directory.CreateDirectory(wwwRootPath);
-                }
-                var result = (from off in _context.Offerletters
-                              where off.Id == Id && off.Vendorid == adminlogin.Vendorid
-                              select new getempOfferletter
-                              {
-                                  Id = off.Id,
-                                  Name = off.Name,
-                                  CandidateEmail = off.CandidateEmail
-                              }).FirstOrDefault();
-                string uniqueFileName = $"Offerletter_{Id}.pdf";
-                string filePath = Path.Combine(wwwRootPath, uniqueFileName);
-                doc.Save(filePath);
-                byte[] pdf = System.IO.File.ReadAllBytes(filePath);
-
-
-
-                if (result == null)
-                {
-                    return BadRequest("Employee not found.");
-                }
-
-                var empoff = _context.Offerletters.FirstOrDefault(e => e.Id == result.Id);
-                if (empoff != null)
-                {
-                    empoff.OfferletterFile = uniqueFileName;
-                    _context.SaveChanges();
-                    return Json(new { success = true, message = "Offer letter  has been Sent successfully.", fileName = uniqueFileName });
-
-                }
-                else
-                {
-                    return Json(new { BadRequest = 404, message = "Data not found for the employee." });
-                }
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = $"Error: {ex.Message}" });
-            }
-        }
         [HttpGet, Route("/Employee/Appointmentletter")]
-        public async Task<IActionResult> Appointmentletter(int? Id = 0,int? Userid = 0)
+        public async Task<IActionResult> Appointmentletter(int? Id = 0, int? Userid = 0)
         {
             try
             {
@@ -2142,12 +2084,6 @@ namespace CRM.Controllers
                     if (data > 0)
                     {
                         TempData["Message"] = "Data Update Successfully.";
-
-                        var pdfResult = await OfferletterDocPDF1(model.Id);
-                        if (pdfResult is JsonResult jsonResult && jsonResult.Value is IDictionary<string, object> result && result["success"].ToString() == "true")
-                        {
-                        }
-
                         return RedirectToAction("AddOfferletterdetail", "Employee");
                     }
                     else
@@ -2162,12 +2098,6 @@ namespace CRM.Controllers
                     if (response > 0)
                     {
                         TempData["Message"] = "Data Add Successfully.";
-                        var latestOfferLetter = await _context.Offerletters.OrderByDescending(a => a.Id).FirstOrDefaultAsync();
-                        var pdfResult = await OfferletterDocPDF1(latestOfferLetter.Id);
-                        if (pdfResult is JsonResult jsonResult && jsonResult.Value is IDictionary<string, object> result && result["success"].ToString() == "true")
-                        {
-                        }
-
                         return RedirectToAction("AddOfferletterdetail", "Employee");
                     }
                     else
@@ -2304,7 +2234,7 @@ namespace CRM.Controllers
                     ViewBag.UserName = HttpContext.Session.GetString("UserName");
                     int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                     var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
-                    ViewBag.EmployeeId = _context.EmployeeRegistrations.Where(x =>x.Vendorid == adminlogin.Vendorid).Select(D => new SelectListItem
+                    ViewBag.EmployeeId = _context.EmployeeRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).Select(D => new SelectListItem
                     {
                         Value = D.EmployeeId.ToString(),
                         Text = D.EmployeeId
@@ -2447,36 +2377,26 @@ namespace CRM.Controllers
                     return BadRequest("Admin login not found");
                 }
                 var vendorinfo = _context.VendorRegistrations.Where(v => v.Id == adminlogin.Vendorid).FirstOrDefault();
-                var offerletter = await _context.Offerletters
-                    .Where(x => x.Vendorid == adminlogin.Vendorid && x.IsDeleted == false && x.Id == Id)
-                    .FirstOrDefaultAsync();
-                if (offerletter == null)
+                var Experienceletter = await _context.EmpExperienceletters.Where(x => x.Vendorid == adminlogin.Vendorid && x.Id == Id).FirstOrDefaultAsync();
+                var empExperienceletter = await _context.EmployeeRegistrations.Where(x => x.EmployeeId == Experienceletter.EmployeeId).FirstOrDefaultAsync();
+                if (Experienceletter == null)
                 {
-                    return BadRequest("Offer letter not found");
+                    return BadRequest("Experience letter not found");
                 }
-                var result = new getempOfferletter
+                var result = new Experienceletters
                 {
-                    Id = offerletter.Id,
-                    Name = offerletter.Name,
-                    MonthlyCtc = offerletter.MonthlyCtc,
-                    AnnualCtc = offerletter.AnnualCtc,
-                    CandidateAddress = offerletter.CandidateAddress,
-                    CandidatePincode = offerletter.CandidatePincode,
-                    HrName = offerletter.HrName,
-                    HrJobTitle = offerletter.HrJobTitle,
-                    HrSignature = offerletter.HrSignature,
-                    Currentdate = DateTime.Now.Date.ToString("dd/MM/yyyy"),
-                    StateName = _context.States.Where(g => g.Id == offerletter.StateId).Select(g => g.SName).FirstOrDefault(),
-                    CityName = _context.Cities.Where(g => g.Id == offerletter.CityId).Select(g => g.City1).FirstOrDefault(),
-                    DateOfJoining = offerletter.DateOfJoining?.ToString("dd/MM/yyyy"),
-                    DepartmentName = _context.DepartmentMasters.Where(g => g.Id == Convert.ToInt16(offerletter.DepartmentId)).Select(g => g.DepartmentName).FirstOrDefault()?.Trim(),
-                    DesignationName = _context.DesignationMasters.Where(g => g.Id == Convert.ToInt16(offerletter.DesignationId)).Select(g => g.DesignationName).FirstOrDefault()?.Trim(),
-                    Validdate = offerletter.Validdate?.ToString("dd/MM/yyyy"),
-                    CompanyImage = _context.VendorRegistrations.Where(g => g.Id == offerletter.Vendorid).Select(g => g.CompanyImage).FirstOrDefault(),
-                    CompanyName = _context.VendorRegistrations.Where(g => g.Id == offerletter.Vendorid).Select(g => g.CompanyName).FirstOrDefault(),
-                    OfficeLocation = _context.VendorRegistrations.Where(g => g.Id == offerletter.Vendorid).Select(g => g.Location).FirstOrDefault(),
-                    OfficeState = _context.States.Where(g => g.Id == vendorinfo.StateId).Select(g => g.SName).FirstOrDefault(),
-                    OfficeCity = _context.Cities.Where(g => g.Id == vendorinfo.CityId).Select(g => g.City1).FirstOrDefault()
+                    EmployeeName = empExperienceletter.FirstName + " " + empExperienceletter.MiddleName + " " + empExperienceletter.LastName,
+                    EmployeeCode = Experienceletter.EmployeeId,
+                    HrName = Experienceletter.HrName,
+                    HrDesignation =Experienceletter.HrDesignation,
+                    CurrentDesignation = _context.DesignationMasters.Where(g => g.Id == Convert.ToInt16(Experienceletter.CurrDesignationId)).Select(g => g.DesignationName).FirstOrDefault()?.Trim(),
+                    Designation = _context.DesignationMasters.Where(g => g.Id == Convert.ToInt16(Experienceletter.DesignationId)).Select(g => g.DesignationName).FirstOrDefault()?.Trim(),
+                    StartDate = DateTime.Now.Date.ToString("dd/MM/yyyy"),
+                    EndDate = DateTime.Now.Date.ToString("dd/MM/yyyy"),
+                    CompanyName = vendorinfo.CompanyName,
+                    CompanyAddress = vendorinfo.Location,
+                    CompanyEmail = vendorinfo.Email,
+                    CompanyPhoneNumber = vendorinfo.MobileNumber,
                 };
                 return View(result);
             }
@@ -2486,6 +2406,226 @@ namespace CRM.Controllers
                 return BadRequest($"An error occurred: {ex.Message}");
             }
         }
+        public async Task<IActionResult> ExperienceletterDocPDF(int? Id = 0)
+        {
+            try
+            {
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                if (adminlogin == null)
+                {
+                    return BadRequest("Admin login not found");
+                }
+                string schema = Request.Scheme;
+                string host = Request.Host.Value;
+                string SlipURL = $"{schema}://{host}/Employee/EmployeeExperienceletter?Id={Id}&userid={Userid}";
+                HtmlToPdf converter = new HtmlToPdf();
+                PdfDocument doc = converter.ConvertUrl(SlipURL);
+                string wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "EMPpdfs");
+                if (!Directory.Exists(wwwRootPath))
+                {
+                    Directory.CreateDirectory(wwwRootPath);
+                }
+                var result = (from er in _context.EmployeeRegistrations
+                              join emp in _context.EmployeePersonalDetails
+                              on er.EmployeeId equals emp.EmpId.ToString() 
+                              where er.Id == Id && er.Vendorid == adminlogin.Vendorid
+                              select new
+                              {
+                                  Id = er.Id,
+                                  EmployeeId = er.EmployeeId,
+                                  Name = er.FirstName,
+                                  WorkEmail = emp.PersonalEmailAddress 
+                              }).FirstOrDefault();
+
+
+
+                string uniqueFileName = $"Experienceletter_{Id}.pdf";
+                string filePath = Path.Combine(wwwRootPath, uniqueFileName);
+                doc.Save(filePath);
+                byte[] pdf = System.IO.File.ReadAllBytes(filePath);
+
+
+
+                if (result == null)
+                {
+                    return BadRequest("Employee not found.");
+                }
+
+                //var empoff = _context.Offerletters.FirstOrDefault(e => e.Id == result.Id);
+                if (result != null)
+                {
+                    //empoff.OfferletterFile = uniqueFileName;
+                    //_context.SaveChanges();
+                    string emailSubject = $"Experience letter for {result.Name}";
+                    string emailBody = $"Hello {result.Name}, please find your attached Experience letter.";
+                    await _IEmailService.SendEmailAsync(result.WorkEmail, emailSubject, emailBody, pdf, uniqueFileName, "application/pdf");
+                    return Json(new { success = true, message = "Experience letter  has been Sent successfully.", fileName = uniqueFileName });
+
+                }
+                else
+                {
+                    return Json(new { BadRequest = 404, message = "Data not found for the employee." });
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Error: {ex.Message}" });
+            }
+        }
+        [HttpGet, Route("/Employee/AddExperienceletteretail")]
+        public async Task<IActionResult> AddExperienceletteretail(int? id = 0)
+        {
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                ViewBag.UserName = HttpContext.Session.GetString("UserName");
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+
+                ViewBag.CurrentDesignation = await _context.DesignationMasters.Select(w => new SelectListItem
+                {
+                    Value = w.Id.ToString(),
+                    Text = w.DesignationName
+                }).ToListAsync();
+
+                ViewBag.Designation = await _context.DesignationMasters.Select(w => new SelectListItem
+                {
+                    Value = w.Id.ToString(),
+                    Text = w.DesignationName
+                }).ToListAsync();
+
+                ViewBag.EmployeeId = _context.EmployeeRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).Select(D => new SelectListItem
+                {
+                    Value = D.EmployeeId.ToString(),
+                    Text = D.EmployeeId
+
+                }).ToList();
+                ViewBag.CurrDesignationId = "";
+                ViewBag.DesignationId = "";
+                ViewBag.StartDate = "";
+                ViewBag.EndDate = "";
+                ViewBag.HrJobTitle = "";
+                ViewBag.HrName = "";
+                ViewBag.EmpId = "";
+                ViewBag.userId = adminlogin.Vendorid;
+                ViewBag.Heading = "Add Experienceletter Detail";
+                ViewBag.btnText = "SAVE";
+                if (id != 0)
+                {
+                    var data = await _ICrmrpo.GetExperienceletterbyid(id);
+                    if (data != null)
+                    {
+                        ViewBag.id = data.Id;
+                        ViewBag.CurrDesignationId = Convert.ToInt16(data.CurrDesignationId);
+                        ViewBag.DesignationId =Convert.ToInt16(data.DesignationId);
+                        ViewBag.StartDate = data.StartDate?.ToString("yyyy-MM-dd");
+                        ViewBag.EndDate = data.EndDate?.ToString("yyyy-MM-dd");
+                        ViewBag.HrJobTitle = data.HrDesignation;
+                        ViewBag.HrName = data.HrName;
+                        ViewBag.EmpId = data.EmployeeId;
+                        ViewBag.Heading = "Update Experienceletter Detail";
+                        ViewBag.btnText = "UPDATE";
+                    }
+                }
+
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddExperienceletteretail(EmpExperienceletter model)
+        {
+            try
+            {
+                ViewBag.UserName = HttpContext.Session.GetString("UserName");
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+
+                if (model.Id > 0)
+                {
+                    var data = await _ICrmrpo.updateExperienceletterdetail(model);
+                    if (data > 0)
+                    {
+                        TempData["Message"] = "Data Update Successfully.";
+                        return RedirectToAction("AddExperienceletteretail", "Employee");
+                    }
+                    else
+                    {
+                        TempData["Message"] = "Update Failed.";
+                        return View(model);
+                    }
+                }
+                else
+                {
+                    var response = await _ICrmrpo.AddExperienceletterdetail(model, Userid);
+                    if (response > 0)
+                    {
+                        TempData["Message"] = "Data Add Successfully.";
+                        return RedirectToAction("AddExperienceletteretail", "Employee");
+                    }
+                    else
+                    {
+                        TempData["Message"] = "Registration Failed.";
+                        ModelState.Clear();
+                        return View(model);
+                    }
+                }
+                return View();
+            }
+            catch (Exception Ex)
+            {
+                throw new Exception("Error:" + Ex.Message);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> ExperienceletterList()
+        {
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                string addedBy = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName = addedBy;
+                int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminLogin = await _context.AdminLogins.FirstOrDefaultAsync(x => x.Id == userId);
+
+                if (adminLogin == null)
+                {
+                    return RedirectToAction("Login", "Admin");
+                }
+
+                var response = await (from exp in _context.EmpExperienceletters
+                                      join emp in _context.EmployeeRegistrations
+                                      on exp.EmployeeId equals emp.EmployeeId
+                                      join cdm in _context.DesignationMasters
+                                     on Convert.ToInt32(exp.CurrDesignationId) equals cdm.Id
+                                      join dm in _context.DesignationMasters
+                                      on Convert.ToInt32(exp.DesignationId) equals dm.Id
+                                      where exp.Vendorid == adminLogin.Vendorid 
+                                      select new Experienceletters
+                                      {
+                                          Id = exp.Id,
+                                          EmployeeName = emp.FirstName + " " + emp.MiddleName + " " + emp.LastName,
+                                          EmployeeCode = exp.EmployeeId,
+                                          CurrentDesignation = cdm.DesignationName,
+                                          Designation = dm.DesignationName,
+                                          StartDate = exp.StartDate.Value.ToString("dd/MM/yyyy"),
+                                          EndDate = exp.EndDate.Value.ToString("dd/MM/yyyy"),
+                                          HrName = exp.HrName,
+                                          WorkEmail = emp.WorkEmail,
+                                          ExperienceletterFile = exp.ExperienceletterFile,
+                                          HrDesignation = exp.HrDesignation,
+                                      }).ToListAsync();
+
+                return View(response);
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
+        }
+
     }
 }
 

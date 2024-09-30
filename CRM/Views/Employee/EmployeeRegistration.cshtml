@@ -369,16 +369,16 @@
                             <div class="row">
                                 <div class="col">
                                     <label>Frist Name</label>
-                                    <input class="form-control" value='@ViewBag.First_Name' name="FirstName" placeholder="Enter First Name" id="FirstName" type="text" required>
+                                    <input class="form-control" value='@ViewBag.First_Name' name="FirstName" placeholder="Enter First Name" id="FirstName" type="text" >
                                 </div>
 
                                 <div class="col">
                                     <label>Middle Name</label>
-                                    <input class="form-control" value='@ViewBag.Middle_Name' name="MiddleName" placeholder="Enter Middle Name" id="MiddleName" type="text" required>
+                                    <input class="form-control" value='@ViewBag.Middle_Name' name="MiddleName" placeholder="Enter Middle Name" id="MiddleName" type="text" >
                                 </div>
                                 <div class="col">
                                     <label>Last Name</label>
-                                    <input class="form-control " value='@ViewBag.Last_Name' name="LastName" placeholder="Enter Last Name" id="LastName" type="text" required>
+                                    <input class="form-control " value='@ViewBag.Last_Name' name="LastName" placeholder="Enter Last Name" id="LastName" type="text" >
                                 </div>
 
                             </div>
@@ -388,7 +388,7 @@
                                     <label>Work Email</label>
                                     <div class="form-group">
                                         <input type="hidden" name="Emp_Reg_ID" value='@ViewBag.Emp_Reg_Code' />
-                                        <input class="form-control " value='@ViewBag.Work_Email' name="WorkEmail" placeholder="Enter Work Email" id="WorkEmail" type="email" required>
+                                        <input class="form-control " value='@ViewBag.Work_Email' name="WorkEmail" placeholder="Enter Work Email" id="WorkEmail" type="email" >
 
                                     </div>
                                 </div>
@@ -397,7 +397,7 @@
                                     <label>Date Of Joining</label>
                                     <div class="form-group">
 
-                                        <input class="form-control " value='@ViewBag.Date_Of_Joining' name="DateOfJoining" id="DateOfJoining" type="date" required>
+                                        <input class="form-control " value='@ViewBag.Date_Of_Joining' name="DateOfJoining" id="DateOfJoining" type="date" >
 
                                     </div>
                                 </div>
@@ -500,19 +500,19 @@
                             <div class="row">
                                 <div class="col">
                                     <label>Personal Email Address</label>
-                                    <input class="form-control " value='@ViewBag.Personal_Email_Address' placeholder="Enter Personal Email Address" name="PersonalEmailAddress" id="PersonalEmailAddress" type="email" required="">
+                                    <input class="form-control " value='@ViewBag.Personal_Email_Address' placeholder="Enter Personal Email Address" name="PersonalEmailAddress" id="PersonalEmailAddress" type="email" ="">
                                 </div>
 
                                 <div class="col">
                                     <label>Mobile Number</label>
                                     <div class="input-group">
                                         <span class="input-group-text" id="basic-addon1">+91</span>
-                                        <input class="form-control " value='@ViewBag.Mobile_Number' name="MobileNumber" placeholder="Enter Mobile Number" id="MobileNumber" type="text" maxlength="10" minlength="10" required="">
+                                        <input class="form-control " value='@ViewBag.Mobile_Number' name="MobileNumber" placeholder="Enter Mobile Number" id="MobileNumber" type="text" maxlength="10" minlength="10" ="">
                                     </div>
                                 </div>
                                 <div class="col">
                                     <label>Date Of Birth</label>
-                                    <input class="form-control " value='@ViewBag.Date_Of_Birth' name="DateOfBirth" id="dobInput" type="date" required="">
+                                    <input class="form-control " value='@ViewBag.Date_Of_Birth' name="DateOfBirth" id="dobInput" type="date" ="">
                                 </div>
 
                             </div>
@@ -520,16 +520,16 @@
                             <div class="row">
                                 <div class="col">
                                     <label>Age</label>
-                                    <input class="form-control " value='@ViewBag.Age' id="ageInput" type="text" required="" readonly>
+                                    <input class="form-control " value='@ViewBag.Age' id="ageInput" type="text" ="" readonly>
                                 </div>
 
                                 <div class="col">
                                     <label>Father Name</label>
-                                    <input class="form-control " value='@ViewBag.Father_Name' name="FatherName" id="FatherName" placeholder="Enter Father Name" type="text" required="">
+                                    <input class="form-control " value='@ViewBag.Father_Name' name="FatherName" id="FatherName" placeholder="Enter Father Name" type="text" ="">
                                 </div>
                                 <div class="col">
                                     <label>Pan</label>
-                                    <input class="form-control " value='@ViewBag.PAN' name="PAN" id="PAN" placeholder="Enter PAN" type="text" required="">
+                                    <input class="form-control " value='@ViewBag.PAN' name="PAN" id="PAN" placeholder="Enter PAN" type="text" ="">
                                 </div>
 
                             </div>
@@ -537,12 +537,12 @@
                             <div class="row">
                                 <div class="col">
                                     <label>Address 1</label>
-                                    <input class="form-control " value='@ViewBag.Address_Line_1' name="AddressLine1" placeholder="Enter Address Line1" id="AddressLine1" type="text" required="">
+                                    <input class="form-control " value='@ViewBag.Address_Line_1' name="AddressLine1" placeholder="Enter Address Line1" id="AddressLine1" type="text" ="">
                                 </div>
 
                                 <div class="col">
                                     <label>Address 2</label>
-                                    <input class="form-control " value='@ViewBag.Address_Line_2' name="AddressLine2" placeholder="Enter Address Line2" id="AddressLine2" type="text" required="">
+                                    <input class="form-control " value='@ViewBag.Address_Line_2' name="AddressLine2" placeholder="Enter Address Line2" id="AddressLine2" type="text" ="">
                                 </div>
                                 <div class="col">
                                     <label>State</label>
@@ -560,12 +560,12 @@
                                         <option value="0">-- Select City --</option>
                                     </select>
 
-                                    @*                                                        <input class="form-control " value='@ViewBag.City' name="City" id="City"  placeholder="Enter City" type="text" required="">
+                                    @*                                                        <input class="form-control " value='@ViewBag.City' name="City" id="City"  placeholder="Enter City" type="text" ="">
                                     *@
                                 </div>
                                 <div class="col">
                                     <label>Pincode</label>
-                                    <input class="form-control " value='@ViewBag.Pincode' name="Pincode" maxlength="6" id="Pincode" placeholder="Enter Pincode" type="text" required onkeydown="validateNumericInput(event)">
+                                    <input class="form-control " value='@ViewBag.Pincode' name="Pincode" maxlength="6" id="Pincode" placeholder="Enter Pincode" type="text"  onkeydown="validateNumericInput(event)">
                                 </div>
 
                             </div>
@@ -583,31 +583,31 @@
                             <div class="row">
                                 <div class="col">
                                     <label>Account Holder Name</label>
-                                    <input class="form-control " value='@ViewBag.Account_Holder_Name' name="AccountHolderName" placeholder="Enter Account Holder Name" id="AccountHolderName" type="text" required="">
+                                    <input class="form-control " value='@ViewBag.Account_Holder_Name' name="AccountHolderName" placeholder="Enter Account Holder Name" id="AccountHolderName" type="text" ="">
                                 </div>
                                 <div class="col">
                                     <label>Bank Name</label>
-                                    <input class="form-control " value='@ViewBag.Bank_Name' name="BankName" id="BankName" placeholder="Enter BankName" type="text" required="">
+                                    <input class="form-control " value='@ViewBag.Bank_Name' name="BankName" id="BankName" placeholder="Enter BankName" type="text" ="">
                                 </div>
                                 <div class="col">
                                     <label>Account Number</label>
-                                    <input class="form-control " value='@ViewBag.Account_Number' name="AccountNumber" placeholder="Enter Account Number" id="AccountNumber" type="number" required="">
+                                    <input class="form-control " value='@ViewBag.Account_Number' name="AccountNumber" placeholder="Enter Account Number" id="AccountNumber" type="number" ="">
                                 </div>
                             </div>
 
                             <div class="row">
                                 <div class="col">
                                     <label>Re-enter Account Number</label>
-                                    <input class="form-control " value='@ViewBag.Re_Enter_Account_Number' name="ReEnterAccountNumber" placeholder="Enter Re-EnterAccountNumber" id="ReEnterAccountNumber" type="number" required="">
+                                    <input class="form-control " value='@ViewBag.Re_Enter_Account_Number' name="ReEnterAccountNumber" placeholder="Enter Re-EnterAccountNumber" id="ReEnterAccountNumber" type="number" ="">
                                 </div>
                                 <div class="col">
                                     <label>IFSC</label>
-                                    <input class="form-control " value='@ViewBag.IFSC' name="IFSC" id="IFSC" placeholder="Enter IFSC" type="text" required="">
+                                    <input class="form-control " value='@ViewBag.IFSC' name="IFSC" id="IFSC" placeholder="Enter IFSC" type="text" ="">
                                 </div>
 
                                 <div class="col">
                                     <label>EPF Number</label>
-                                    <input class="form-control " value='@ViewBag.EPF_Number' name="EPF_Number" placeholder="Enter EPF Number" id="EPF_Number" type="text" required="">
+                                    <input class="form-control " value='@ViewBag.EPF_Number' name="EPF_Number" placeholder="Enter EPF Number" id="EPF_Number" type="text" ="">
                                 </div>
                             </div>
 
@@ -615,7 +615,7 @@
                             <div class="row">
                                 <div class="col">
                                     <label>Employee Contribution Rate</label>
-                                    <input class="form-control " value='@ViewBag.Employee_Contribution_Rate' name="Employee_Contribution_Rate" placeholder="Enter Employee Contribution Rate" id="Employee_Contribution_Rate" type="text" required="">
+                                    <input class="form-control " value='@ViewBag.Employee_Contribution_Rate' name="Employee_Contribution_Rate" placeholder="Enter Employee Contribution Rate" id="Employee_Contribution_Rate" type="text" ="">
                                 </div>
 
                                 <div class="col">
@@ -629,7 +629,7 @@
 
                                 <div class="col">
                                     <label>Nominees Name</label>
-                                    <input class="form-control " value='@ViewBag.nominee' name="nominee" id="nominee" placeholder="Enter nominee name" type="text" required="">
+                                    <input class="form-control " value='@ViewBag.nominee' name="nominee" id="nominee" placeholder="Enter nominee name" type="text" ="">
                                 </div>
 
                             </div>
@@ -658,20 +658,20 @@
                             <div class="row">
                                 @*<div class="col">
                                 <label>Annual CTC</label>*@
-                                <input class="form-control" value='@ViewBag.AnnualCTC' name="AnnualCTC" placeholder="Enter AnnualCTC" id="txtAnnualCTC" type="hidden" required style="display: none;">
+                                <input class="form-control" value='@ViewBag.AnnualCTC' name="AnnualCTC" placeholder="Enter AnnualCTC" id="txtAnnualCTC" type="hidden"  style="display: none;">
                                 @*</div>*@
-                                <input class="form-control" value='@ViewBag.AnnualCTC' name="AnnualCTC" placeholder="Enter AnnualCTC" id="txtAnnualCTC" type="hidden" required style="display: none;">
+                                <input class="form-control" value='@ViewBag.AnnualCTC' name="AnnualCTC" placeholder="Enter AnnualCTC" id="txtAnnualCTC" type="hidden"  style="display: none;">
                                 <div class="col">
                                     <label>Monthly CTC</label>
-                                    <input class="form-control " value='@ViewBag.MonthlyCTC' name="MonthlyCTC" placeholder="Enter Monthly CTC" id="txtMonthlyCTC" type="text" required="">
+                                    <input class="form-control " value='@ViewBag.MonthlyCTC' name="MonthlyCTC" placeholder="Enter Monthly CTC" id="txtMonthlyCTC" type="text" ="">
                                 </div>
                                 <div class="col">
                                     <label>Special Allowance</label>
-                                    <input class="form-control " value='@ViewBag.specialallowance' name="SpecialAllowance" id="SpecialAllowance" placeholder="Enter Special Allowance" type="text" required="">
+                                    <input class="form-control " value='@ViewBag.specialallowance' name="SpecialAllowance" id="SpecialAllowance" placeholder="Enter Special Allowance" type="text" ="">
                                 </div>
                                 <div class="col">
                                     <label>Basic</label>
-                                    <input class="form-control " value='@ViewBag.Basic' name="Basic" placeholder="00.0" id="txtBasicSalary" type="text" required="" readonly>
+                                    <input class="form-control " value='@ViewBag.Basic' name="Basic" placeholder="00.0" id="txtBasicSalary" type="text" ="" readonly>
                                 </div>
 
                             </div>
@@ -680,37 +680,37 @@
 
                                 <div class="col">
                                     <label>HouseRent Allowance</label>
-                                    <input class="form-control " value='@ViewBag.HouseRentAllowance' name="HouseRentAllowance" placeholder="00.0" id="txtHouseRentAllowance" type="text" required="" readonly>
+                                    <input class="form-control " value='@ViewBag.HouseRentAllowance' name="HouseRentAllowance" placeholder="00.0" id="txtHouseRentAllowance" type="text" ="" readonly>
                                 </div>
                                 <div class="col">
                                     <label>Gross</label>
-                                    <input class="form-control " value='@ViewBag.gross' name="gross" id="txtgross" type="text" required="" readonly>
+                                    <input class="form-control " value='@ViewBag.gross' name="gross" id="txtgross" type="text" ="" readonly>
                                 </div>
                                 <div class="col">
                                     <label>Monthly GrossPay</label>
-                                    <input class="form-control " value='@ViewBag.MonthlyGrossPay' name="MonthlyGrossPay" placeholder="00.0" id="txtMonthlyGrossPay" type="text" required="" readonly>
+                                    <input class="form-control " value='@ViewBag.MonthlyGrossPay' name="MonthlyGrossPay" placeholder="00.0" id="txtMonthlyGrossPay" type="text" ="" readonly>
                                 </div>
-                                <input class="form-control " value='@ViewBag.servicecharge' name="servicecharge" id="Servicecharge" type="hidden" required style="display: none;">
+                                <input class="form-control " value='@ViewBag.servicecharge' name="servicecharge" id="Servicecharge" type="hidden"  style="display: none;">
                             </div>
                             <br />
                             <h4 class="text-danger">Employee Contribution</h4>
                             <div class="row">
                                 <div class="col">
                                     <label>EPF</label>
-                                    <input class="form-control " value='@ViewBag.EPF' name="EPF" placeholder="00.0" id="txtEPF" type="text" required="" readonly>
+                                    <input class="form-control " value='@ViewBag.EPF' name="EPF" placeholder="00.0" id="txtEPF" type="text" ="" readonly>
                                 </div>
                                 <div class="col">
                                     <label>Professional tax</label>
-                                    <input class="form-control " value='@ViewBag.Professionaltax' name="Professionaltax" placeholder="Enter Professional tax" id="Professionaltax" type="text" required="" readonly>
+                                    <input class="form-control " value='@ViewBag.Professionaltax' name="Professionaltax" placeholder="Enter Professional tax" id="Professionaltax" type="text" ="" readonly>
                                 </div>
                                 <div class="col">
                                     <label>ESIC</label>
-                                    <input class="form-control " value='@ViewBag.ESIC' name="ESIC" id="ESIC" type="text" required="" readonly>
+                                    <input class="form-control " value='@ViewBag.ESIC' name="ESIC" id="ESIC" type="text" ="" readonly>
                                 </div>
                                 <div class="col">
                                     <label>TDS (<span id="displayTdsPercentage">@ViewBag.Tdspercentage</span>%)</label>
-                                    <input class="form-control" value='@ViewBag.Amount' name="Amount" placeholder="00.0" id="txtAmount" type="text" required="" readonly>
-                                    <input class="form-control" name="TdsPercentage" value='@ViewBag.Tdspercentage' placeholder="00.0" id="txtTdspercentage" type="hidden" required="" style="display: none;">
+                                    <input class="form-control" value='@ViewBag.Amount' name="Amount" placeholder="00.0" id="txtAmount" type="text" ="" readonly>
+                                    <input class="form-control" name="TdsPercentage" value='@ViewBag.Tdspercentage' placeholder="00.0" id="txtTdspercentage" type="hidden" ="" style="display: none;">
                                 </div>
                             </div>
                             <br />
@@ -718,12 +718,12 @@
                             <div class="row">
                                 <div class="col">
                                     <label>EPF (<span id="displayEPFMaster">@ViewBag.epfNumber</span>%)</label>
-                                    <input class="form-control " name="EPF" placeholder="00.0" id="txtEPFMaster" type="text" required="" readonly>
-                                    <input class="form-control" name="Epf_Number" value='@ViewBag.epfNumber' placeholder="00.0" id="txtepfNumber" type="hidden" required="" style="display: none;">
+                                    <input class="form-control " name="EPF" placeholder="00.0" id="txtEPFMaster" type="text" ="" readonly>
+                                    <input class="form-control" name="Epf_Number" value='@ViewBag.epfNumber' placeholder="00.0" id="txtepfNumber" type="hidden" ="" style="display: none;">
                                 </div>
                                 <div class="col">
                                     <label>ESIC (<span id="displayESICMaster">@ViewBag.epfNumber</span>%)</label>
-                                    <input class="form-control " name="ESIC_Number" id="ESICMaster" type="text" required="" readonly>
+                                    <input class="form-control " name="ESIC_Number" id="ESICMaster" type="text" ="" readonly>
                                 </div>
                             </div>
                         </div>
