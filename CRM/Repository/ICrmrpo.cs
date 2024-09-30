@@ -88,6 +88,8 @@ namespace CRM.Repository
         public Task<List<LeavemasterDto>> getLeavemaster(int Userid);
         Task<bool> AddVendorCategory(VendorCategoryMaster model, int VendorId);
         Task<List<VendorCategoryMaster>> GetVendorCategoryListByVendorId(int VendorId);
-
+        public Task<EmpExperienceletter> GetExperienceletterbyid(int? id);
+        public Task<int> updateExperienceletterdetail(EmpExperienceletter model);
+        public Task<int> AddExperienceletterdetail(EmpExperienceletter model, int Userid);
     }
 }

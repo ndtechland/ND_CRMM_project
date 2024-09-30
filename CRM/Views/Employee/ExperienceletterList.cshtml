@@ -1,7 +1,7 @@
-﻿@model IEnumerable<CRM.Models.DTO.empOfferletter>
+﻿@model IEnumerable<CRM.Models.DTO.Experienceletters>
 
 @{
-    ViewData["Title"] = "OfferletterList";
+    ViewData["Title"] = "EmpExperienceletterList";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -33,7 +33,7 @@
                         <div class="col-lg-6">
                             <div class="page-header-left">
                                 <h2>
-                                    OfferLetter List
+                                    Experienceletter List
                                 </h2>
                             </div>
                         </div>
@@ -41,8 +41,8 @@
                             <ol class="breadcrumb pull-right">
                                 <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
                                 <li class="breadcrumb-item">Letter</li>
-                                <li class="breadcrumb-item">OfferLetter</li>
-                                <li class="breadcrumb-item active">OfferLetter List</li>
+                                <li class="breadcrumb-item">Experience letter</li>
+                                <li class="breadcrumb-item active">ExperienceletterList</li>
                             </ol>
                         </div>
                     </div>
@@ -60,59 +60,46 @@
                                     <table id="datatable" class="table table-responsive">
                                         <thead>
                                             <tr style="background-color: #00baf2;">
-                                                <th nowrap>Sl. No.</th>
                                                 <th nowrap>
-                                                    Candidate Name
+                                                    Sl. No.
+
                                                 </th>
                                                 <th nowrap>
-                                                    Monthly Ctc
+                                                    Employee Name
                                                 </th>
                                                 <th nowrap>
-                                                    Annual Ctc
+                                                    Employee ID
                                                 </th>
                                                 <th nowrap>
-                                                    Designation Name
+                                                    Current Designation
                                                 </th>
                                                 <th nowrap>
-                                                    Department Name
+                                                   Designation
                                                 </th>
                                                 <th nowrap>
-                                                    State Name
+                                                    Work Email
                                                 </th>
                                                 <th nowrap>
-                                                    City Name
+                                                    StartDate
                                                 </th>
                                                 <th nowrap>
-                                                    Candidate Address
+                                                    EndDate
                                                 </th>
                                                 <th nowrap>
-                                                    Candidate Email
-                                                </th>
-                                                <th nowrap>
-                                                    Candidate Pincode
-                                                </th>
-                                                <th nowrap>
-                                                    Valid Date
-                                                </th>
-                                                <th nowrap>
-                                                    DateOfJoining
-                                                </th>
-                                                <th nowrap>
-                                                    HR JobTitle
-                                                </th>
-                                                  <th nowrap>
                                                     HR Name
                                                 </th>
                                                 <th nowrap>
-                                                    HR Signature
+                                                    HR Designation
                                                 </th>
                                                 <th nowrap>
-                                                    View Offerletter
+                                                    View Experienceletter
                                                 </th>
                                                 <th nowrap>
-                                                    Send Offerletter
+                                                    Send Experienceletter
                                                 </th>
-                                                <th>Action</th>
+                                                <th nowrap>
+                                                   Action
+                                                </th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -124,53 +111,36 @@
                                                     <tr class="table-row">
                                                         <td>@count</td>
                                                         <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.Name)
+                                                            @Html.DisplayFor(modelItem => item.EmployeeName)
                                                         </td>
                                                         <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.MonthlyCtc)
+                                                            @Html.DisplayFor(modelItem => item.EmployeeName)
                                                         </td>
                                                         <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.AnnualCtc)
+                                                            @Html.DisplayFor(modelItem => item.CurrentDesignation)
                                                         </td>
                                                         <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.DesignationName)
+                                                            @Html.DisplayFor(modelItem => item.Designation)
                                                         </td>
                                                         <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.DepartmentName)
+                                                            @Html.DisplayFor(modelItem => item.WorkEmail)
                                                         </td>
                                                         <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.StateName)
+                                                            @item.StartDate
                                                         </td>
                                                         <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.CityName)
+                                                            @item.EndDate
                                                         </td>
-                                                        <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.CandidateAddress)
-                                                        </td>
-                                                        <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.CandidateEmail)
-                                                        </td>
-                                                        <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.CandidatePincode)
-                                                        </td>
-                                                        <td nowrap>
-                                                            @item.Validdate.ToString("dd/MM/yyyy")
-                                                        </td>
-                                                        <td nowrap>
-                                                            @item.DateOfJoining.ToString("dd/MM/yyyy")
-                                                        </td>
-                                                        <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.HrJobTitle)
-                                                        </td>
+                                                       
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.HrName)
                                                         </td>
                                                         <td nowrap>
-                                                            <img src='../CompanyImage/@item.HrSignature' style="height:100px;width:100px" />
+                                                            @Html.DisplayFor(modelItem => item.HrDesignation)
                                                         </td>
                                                         <td>
                                                             <div>
-                                                                <a href="@Url.Content("~/EMPpdfs/" + item.OfferletterFile)" target="_blank">
+                                                                <a href="@Url.Content("~/EMPpdfs/" + item.ExperienceletterFile)" target="_blank">
                                                                     <img src="@Url.Content("~/assets/images/layout-2/logo/pdfview.jpg")" alt="PDF Icon" style="height: 60px; width: 60px;" />
                                                                 </a>
                                                             </div>
@@ -178,14 +148,14 @@
 
                                                         <td>
                                                             <div>
-                                                                <a href="javascript:void(0)" onclick="OfferletterdownloadPDF(@item.Id)">
+                                                                <a href="javascript:void(0)" onclick="ExperienceletterdownloadPDF(@item.Id)">
                                                                     <img src="@Url.Content("~/assets/images/layout-2/logo/email.png")" alt="PDF Icon" style=" height: 60px; width: 60px;" />
                                                                 </a>
                                                             </div>
                                                         </td>
                                                         <td>
                                                             <div>
-                                                                <a href="@Url.Action("AddOfferletterdetail","Employee",new { id=item.Id})" class="fa fa-edit m-2 font-success"></a>
+                                                                <a href="@Url.Action("AddExperienceletteretail","Employee",new { id=item.Id})" class="fa fa-edit m-2 font-success"></a>
                                                                 <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteOfferletter", "Employee", new { id = item.Id })')" class="fa fa-trash font-danger"></a>
                                                             </div>
                                                         </td>
@@ -274,8 +244,8 @@
     }
 </script>
 <script type="text/javascript">
-    function OfferletterdownloadPDF(id) {
-        var url = '@Url.Action("OfferletterDocPDF", "Employee")' + '?id=' + id;
+    function ExperienceletterdownloadPDF(id) {
+        var url = '@Url.Action("ExperienceletterDocPDF", "Employee")' + '?id=' + id;
         // Show the loader before starting the fetch process
         document.getElementById('loader').style.display = 'block';
 

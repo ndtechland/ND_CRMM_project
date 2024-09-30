@@ -10,7 +10,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.TeamFoundation.TestManagement.WebApi;
+using System.Security.Claims;
 using City = CRM.Models.Crm.City;
+
 
 namespace CRM.Controllers.Api
 {
@@ -647,22 +649,34 @@ namespace CRM.Controllers.Api
             }
         }
 
-        [HttpPost,Route("EmployeeCheckIn")]
+        public static double CalculateDistance(double lat1, double lon1, double lat2, double lon2)
+        {
+            const double R = 6371; 
+            double latDistance = ToRadians(lat2 - lat1);
+            double lonDistance = ToRadians(lon2 - lon1);
+
+            double a = Math.Sin(latDistance / 2) * Math.Sin(latDistance / 2) +
+                       Math.Cos(ToRadians(lat1)) * Math.Cos(ToRadians(lat2)) *
+                       Math.Sin(lonDistance / 2) * Math.Sin(lonDistance / 2);
+
+            double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+
+            double distance = R * c * 1000; 
+            return distance;
+        }
+
+        private static double ToRadians(double angle)
+        {
+            return angle * (Math.PI / 180);
+        }
+        [AllowAnonymous]
+        [HttpPost, Route("EmployeeCheckIn")]
         public async Task<IActionResult> EmployeeCheckIn([FromBody] EmpCheckIn model)
         {
             var response = new Response<EmployeeCheckIn>();
             try
             {
-                if (!User.Identity.IsAuthenticated)
-                {
-                    response.StatusCode = StatusCodes.Status401Unauthorized;
-                    response.Message = "Token is expired.";
-                    return Unauthorized(response);
-                }
-
-                var userId = User.Claims.FirstOrDefault()?.Value;
-                var employee = await _context.EmployeeRegistrations
-                    .FirstOrDefaultAsync(x => x.EmployeeId == userId);
+                var employee = await _context.EmployeeRegistrations.FirstOrDefaultAsync(x => x.Id == model.Userid);
 
                 if (employee == null)
                 {
@@ -670,9 +684,15 @@ namespace CRM.Controllers.Api
                     response.Message = "Employee not found.";
                     return NotFound(response);
                 }
+                var employeeCheckIns = await _context.EmployeeCheckIns.FirstOrDefaultAsync(x => x.EmployeeId == employee.EmployeeId && x.CheckIn == true);
+                if (employeeCheckIns != null)
+                {
+                    response.StatusCode = StatusCodes.Status409Conflict;
+                    response.Message = "You are already checked in.";
+                    return Conflict(response);
+                }
+                var company = await _context.VendorRegistrations.FirstOrDefaultAsync(x => x.Id == employee.Vendorid);
 
-                var company = await _context.VendorRegistrations
-                    .FirstOrDefaultAsync(x => x.Id == employee.Vendorid);
                 if (company == null)
                 {
                     response.StatusCode = StatusCodes.Status404NotFound;
@@ -680,21 +700,22 @@ namespace CRM.Controllers.Api
                     return NotFound(response);
                 }
 
-                if (company.Maplat != model.CurrentLat)
+                double radiusInMeters = (double)Convert.ToDecimal(company.Radious);
+                double distance = CalculateDistance(
+                    double.Parse(company.Maplat),
+                    double.Parse(company.Maplong),
+                    double.Parse(model.CurrentLat),
+                    double.Parse(model.Currentlong)
+                );
+
+                if (distance > radiusInMeters)
                 {
                     response.StatusCode = StatusCodes.Status400BadRequest;
-                    response.Message = "Current latitude does not match the company's location.";
+                    response.Message = $"Employee is not within the {radiusInMeters} meter radius of the company's location.";
                     return BadRequest(response);
                 }
 
-                if (company.Maplong != model.Currentlong)
-                {
-                    response.StatusCode = StatusCodes.Status400BadRequest; 
-                    response.Message = "Current longitude does not match the company's location.";
-                    return BadRequest(response);
-                }
-
-                var apiModel = await _apiemp.Empcheckin(model, userId);
+                var apiModel = await _apiemp.Empcheckin(model, model.Userid);
                 if (apiModel != null)
                 {
                     response.Succeeded = true;
@@ -718,102 +739,74 @@ namespace CRM.Controllers.Api
                 return StatusCode(response.StatusCode, response);
             }
         }
-        //[AllowAnonymous]
-        //private double CalculateDistance(double lat1, double lon1, double lat2, double lon2)
-        //{
-        //    const double R = 6371000;
-        //    var lat1Rad = ToRadians(lat1);
-        //    var lat2Rad = ToRadians(lat2);
-        //    var deltaLat = ToRadians(lat2 - lat1);
-        //    var deltaLon = ToRadians(lon2 - lon1);
 
-        //    var a = Math.Sin(deltaLat / 2) * Math.Sin(deltaLat / 2) +
-        //            Math.Cos(lat1Rad) * Math.Cos(lat2Rad) *
-        //            Math.Sin(deltaLon / 2) * Math.Sin(deltaLon / 2);
+        [HttpPost,Route("WebEmployeePersonalDetail")]
+        public async Task<IActionResult> WebEmployeePersonalDetail([FromForm] webPersonalDetail model)
+        {
+            var response = new Response<ApprovedPresnolRes>();
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userid = User.Claims.FirstOrDefault().Value;
 
-        //    var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
-
-        //    var distance = R * c;
-        //    return distance;
-        //}
-        //[AllowAnonymous]
-        //private double ToRadians(double degrees)
-        //{
-        //    return degrees * (Math.PI / 180);
-        //}
-        //[HttpPost, Route("EmployeeCheckIn")]
-        //public async Task<IActionResult> EmployeeCheckIn([FromBody] EmpCheckIn model)
-        //{
-        //    var response = new Response<EmployeeCheckIn>();
-        //    try
-        //    {
-        //        if (!User.Identity.IsAuthenticated)
-        //        {
-        //            response.StatusCode = StatusCodes.Status401Unauthorized;
-        //            response.Message = "Token is expired.";
-        //            return Unauthorized(response);
-        //        }
-
-        //        var userId = User.Claims.FirstOrDefault()?.Value;
-        //        var employee = await _context.EmployeeRegistrations
-        //            .FirstOrDefaultAsync(x => x.EmployeeId == userId);
-
-        //        if (employee == null)
-        //        {
-        //            response.StatusCode = StatusCodes.Status404NotFound;
-        //            response.Message = "Employee not found.";
-        //            return NotFound(response);
-        //        }
-
-        //        var company = await _context.VendorRegistrations
-        //            .FirstOrDefaultAsync(x => x.Id == employee.Vendorid);
-
-        //        if (company == null)
-        //        {
-        //            response.StatusCode = StatusCodes.Status404NotFound;
-        //            response.Message = "Company not found.";
-        //            return NotFound(response);
-        //        }
-
-        //        double radiusInMeters =Convert.ToDecimal(company.Radious);
-        //        double distance = CalculateDistance(
-        //            double.Parse(company.Maplat),
-        //            double.Parse(company.Maplong),
-        //            double.Parse(model.CurrentLat),
-        //            double.Parse(model.Currentlong)
-        //        );
-
-        //        if (distance > radiusInMeters)
-        //        {
-        //            response.StatusCode = StatusCodes.Status400BadRequest;
-        //            response.Message = $"Employee is not within the {radiusInMeters} meter radius of the company's location.";
-        //            return BadRequest(response);
-        //        }
-
-        //        var apiModel = await _apiemp.Empcheckin(model, userId);
-        //        if (apiModel != null)
-        //        {
-        //            response.Succeeded = true;
-        //            response.StatusCode = StatusCodes.Status200OK;
-        //            response.Status = "Success";
-        //            response.Message = "Check-in successful.";
-        //            response.Data = apiModel;
-        //            return Ok(response);
-        //        }
-        //        else
-        //        {
-        //            response.StatusCode = StatusCodes.Status400BadRequest;
-        //            response.Message = "Check-in failed. Please check your input.";
-        //            return BadRequest(response);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        response.StatusCode = StatusCodes.Status500InternalServerError;
-        //        response.Message = "An error occurred: " + ex.Message;
-        //        return StatusCode(response.StatusCode, response);
-        //    }
-        //}
+                    var apiModel = await _apiemp.webPersonalDetail(model, userid);
+                    var empp = await _context.EmployeeRegistrations
+                        .Where(x => x.EmployeeId == userid)
+                        .FirstOrDefaultAsync();
+                    ApprovedPresnolRes hgh = new ApprovedPresnolRes()
+                    {
+                        PersonalEmailAddress = apiModel.PersonalEmailAddress,
+                        MobileNumber = apiModel.MobileNumber,
+                        DateOfBirth = apiModel.DateOfBirth?.ToString("dd-MM-yyyy"),
+                        Pan = apiModel.Pan,
+                        AddressLine1 = apiModel.AddressLine1,
+                        AddressLine2 = apiModel.AddressLine2,
+                        City = apiModel.City,
+                        StateId = apiModel.StateId,
+                        Pincode = apiModel.Pincode,
+                        EmployeeId = apiModel.EmployeeId,
+                        AadharNo = apiModel.AadharNo,
+                        AadharOne = apiModel.AadharOne,
+                        Panimg = apiModel.Panimg,
+                        AadharTwo = apiModel.AadharTwo,
+                        IsApproved = apiModel.IsApproved,
+                        UpdateDate = apiModel.UpdateDate,
+                        Vendorid = apiModel.Vendorid,
+                        FullName = apiModel.FullName,
+                        FatherName = apiModel.FatherName,
+                        EmpProfile = empp.EmpProfile
+                    };
+                    if (apiModel != null)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = "Personal Detail updated successfully.";
+                        response.Data = hgh;
+                        return Ok(new { response });
+                    }
+                    else
+                    {
+                        response.StatusCode = StatusCodes.Status404NotFound;
+                        response.Message = "Data not found.";
+                        return NotFound(response);
+                    }
+                }
+                else
+                {
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Message = "Token is expired.";
+                    return Unauthorized(response);
+                }
+            }
+            catch (Exception ex)
+            {
+                response.StatusCode = StatusCodes.Status500InternalServerError;
+                response.Message = $"An error occurred: {ex.Message}";
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
+        }
 
     }
 }

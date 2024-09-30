@@ -36,6 +36,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<DeductorTypeMaster> DeductorTypeMasters { get; set; } = null!;
         public virtual DbSet<DepartmentMaster> DepartmentMasters { get; set; } = null!;
         public virtual DbSet<DesignationMaster> DesignationMasters { get; set; } = null!;
+        public virtual DbSet<EmpExperienceletter> EmpExperienceletters { get; set; } = null!;
         public virtual DbSet<Empattendance> Empattendances { get; set; } = null!;
         public virtual DbSet<EmployeeBankDetail> EmployeeBankDetails { get; set; } = null!;
         public virtual DbSet<EmployeeCheckIn> EmployeeCheckIns { get; set; } = null!;
@@ -504,6 +505,33 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.DesignationName)
                     .HasMaxLength(150)
                     .HasColumnName("Designation_Name");
+            });
+
+            modelBuilder.Entity<EmpExperienceletter>(entity =>
+            {
+                entity.ToTable("EmpExperienceletter");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.CurrDesignationId)
+                    .HasMaxLength(120)
+                    .HasColumnName("CurrDesignationID");
+
+                entity.Property(e => e.DesignationId)
+                    .HasMaxLength(120)
+                    .HasColumnName("DesignationID");
+
+                entity.Property(e => e.EmployeeId).HasMaxLength(120);
+
+                entity.Property(e => e.EndDate).HasColumnType("datetime");
+
+                entity.Property(e => e.ExperienceletterFile).HasMaxLength(250);
+
+                entity.Property(e => e.HrDesignation).HasMaxLength(250);
+
+                entity.Property(e => e.HrName).HasMaxLength(250);
+
+                entity.Property(e => e.StartDate).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<Empattendance>(entity =>

@@ -4,7 +4,7 @@
     {
         public string? CurrentLat { get; set; }
         public string? Currentlong { get; set; }
-        public bool? CheckIn { get; set; }
+        public int? Userid { get; set; }
 
     }
 }

@@ -545,8 +545,7 @@ namespace CRM.Repository
                 {
                     var empid = await _context.EmployeeRegistrations.Where(x => x.EmployeeId == userid && x.IsDeleted == false).Select(x => new CompanyLoctionDto
                     {
-                        Companylat = _context.VendorRegistrations.Where(g => g.Id == x.Vendorid).Select(g => g.Maplat).First(),
-                        Companylong = _context.VendorRegistrations.Where(g => g.Id == x.Vendorid).Select(g => g.Maplong).First(),
+                        CompanyOfficeLocation = _context.VendorRegistrations.Where(g => g.Id == x.Vendorid).Select(g => g.Maplat).First(),
                         Radious = _context.VendorRegistrations.Where(g => g.Id == x.Vendorid).Select(g => g.Radious).First(),
                     }).FirstOrDefaultAsync();
                     return empid;
@@ -560,19 +559,22 @@ namespace CRM.Repository
             }
         }
 
-        public async Task<EmployeeCheckIn> Empcheckin(EmpCheckIn model, string userid)
+        public async Task<EmployeeCheckIn> Empcheckin(EmpCheckIn model, int? userid)
         {
             try
             {
+                var emp = await _context.EmployeeRegistrations
+                   .Where(x => x.Id == userid)
+                   .FirstOrDefaultAsync();
                 var empcheck = await _context.EmployeeCheckIns
-                    .Where(x => x.EmployeeId == userid && x.Currentdate.Value.Date == DateTime.Now.Date)
+                    .Where(x => x.EmployeeId == emp.EmployeeId && x.Currentdate.Value.Date == DateTime.Now.Date)
                     .FirstOrDefaultAsync();
 
                 if (empcheck != null)
                 {
                     empcheck.CurrentLat = model.CurrentLat;
                     empcheck.Currentlong = model.Currentlong;
-                    empcheck.CheckIn = model.CheckIn;
+                    empcheck.CheckIn = false;
                     empcheck.CheckOutTime = DateTime.Today.AddHours(15).AddMinutes(30);
                     empcheck.Currentdate = DateTime.Now;
 
@@ -582,10 +584,10 @@ namespace CRM.Repository
                 {
                     empcheck = new EmployeeCheckIn
                     {
-                        EmployeeId = userid,
+                        EmployeeId = emp.EmployeeId,
                         CurrentLat = model.CurrentLat,
                         Currentlong = model.Currentlong,
-                        CheckIn = model.CheckIn,
+                        CheckIn = true,
                         CheckInTime = DateTime.Today.AddHours(15).AddMinutes(30),
                         Currentdate = DateTime.Now,
                     };
@@ -601,6 +603,149 @@ namespace CRM.Repository
                 throw new Exception("Error: " + ex.Message);
             }
         }
+        public async Task<ApprovedPresnolInfo> webPersonalDetail(webPersonalDetail model, string userid)
+        {
+            try
+            {
+                string panImagePath = "";
+                string aadharImagePath1 = "";
+                string aadharImagePath2 = "";
+                FileOperation fileOperation = new FileOperation(_webHostEnvironment);
+                string[] allowedExtensions = { ".jpg", ".jpeg", ".png" };
+                if (model.PanbaseImage != null)
+                {
+                    if (model.PanbaseImage.Length > 10 * 1024 * 1024)
+                    {
+                        throw new Exception("Pan file size exceeds the 10 MB limit.");
+                    }
+                    panImagePath = fileOperation.SaveBase64Image("img1", model.PanbaseImage, allowedExtensions);
+                    if (panImagePath == "not allowed")
+                    {
+                        throw new Exception("File upload not allowed.");
+                    }
+                }
+                if (model.Aadhar1 != null)
+                {
+                    if (model.Aadhar1.Length > 10 * 1024 * 1024)
+                    {
+                        throw new Exception("Pan file size exceeds the 10 MB limit.");
+                    }
+                    aadharImagePath1 = fileOperation.SaveBase64Image("img1", model.Aadhar1, allowedExtensions);
+                    if (aadharImagePath1 == "not allowed")
+                    {
+                        throw new Exception("File upload not allowed.");
+                    }
+                }
+                if (model.Aadhar2 != null)
+                {
+                    if (model.Aadhar2.Length > 10 * 1024 * 1024)
+                    {
+                        throw new Exception("Pan file size exceeds the 10 MB limit.");
+                    }
+                    aadharImagePath2 = fileOperation.SaveBase64Image("img1", model.Aadhar2, allowedExtensions);
+                    if (aadharImagePath2 == "not allowed")
+                    {
+                        throw new Exception("File upload not allowed.");
+                    }
+                }
+                var emp = await _context.EmployeeRegistrations.Where(x => x.EmployeeId == userid && x.IsDeleted == false).FirstOrDefaultAsync();
+                var apppersonal = await _context.ApprovedPresnolInfos.Where(x => x.EmployeeId == userid).FirstOrDefaultAsync();
+                if (apppersonal != null)
+                {
+                    apppersonal.Vendorid = emp.Vendorid;
+                    apppersonal.PersonalEmailAddress = model.PersonalEmailAddress;
+                    apppersonal.MobileNumber = model.MobileNumber;
+                    apppersonal.DateOfBirth = model.DateOfBirth == null ? _context.EmployeePersonalDetails.Where(x => x.EmpRegId == userid && x.IsDeleted == false).First().DateOfBirth : Convert.ToDateTime(model.DateOfBirth);
+                    apppersonal.Pan = model.PanNo;
+                    apppersonal.AddressLine1 = model.Address1;
+                    apppersonal.AddressLine2 = model.Address2;
+                    apppersonal.City = Convert.ToString(model.Cityid);
+                    apppersonal.StateId = Convert.ToString(model.Stateid);
+                    apppersonal.Pincode = model.Pincode;
+                    apppersonal.AadharNo = model.AadharNo;
+                    apppersonal.UpdateDate = DateTime.Now.Date;
+                    apppersonal.IsApproved = false;
+                    apppersonal.FullName = model.FullName;
+                    apppersonal.FatherName = model.FatherName;
+                    if (!string.IsNullOrEmpty(panImagePath))
+                    {
+                        apppersonal.Panimg = fileOperation.SaveBase64Image("img1", model.PanbaseImage, allowedExtensions);
+                    }
+                    if (!string.IsNullOrEmpty(aadharImagePath1))
+                    {
+                        apppersonal.AadharOne = fileOperation.SaveBase64Image("img1", model.Aadhar1, allowedExtensions);
+                    }
+                    if (!string.IsNullOrEmpty(aadharImagePath2))
+                    {
+                        apppersonal.AadharTwo = fileOperation.SaveBase64Image("img1", model.Aadhar2, allowedExtensions);
+                    }
+                    if (model.Empprofile != null)
+                    {
+                        string EmpprofileImagePath = fileOperation.SaveBase64Image("EmpProfile", model.Empprofile, allowedExtensions);
+                        emp.EmpProfile = EmpprofileImagePath;
+                    }
 
+                    await _context.SaveChangesAsync();
+                    return apppersonal;
+                }
+                else
+                {
+
+                    ApprovedPresnolInfo empP = new ApprovedPresnolInfo();
+                    {
+
+                        empP.FullName = model.FullName;
+                        empP.Vendorid = emp.Vendorid;
+                        empP.EmployeeId = userid;
+                        empP.PersonalEmailAddress = model.PersonalEmailAddress;
+                        empP.MobileNumber = model.MobileNumber;
+                        empP.DateOfBirth = model.DateOfBirth == null ? _context.EmployeePersonalDetails.Where(x => x.EmpRegId == userid && x.IsDeleted == false).First().DateOfBirth : Convert.ToDateTime(model.DateOfBirth);
+                        empP.AddressLine1 = model.Address1;
+                        empP.AddressLine2 = model.Address2;
+                        empP.City = Convert.ToString(model.Cityid);
+                        empP.StateId = Convert.ToString(model.Stateid);
+                        empP.Pincode = model.Pincode;
+                        empP.Pan = model.PanNo;
+                        empP.AadharNo = model.AadharNo;
+                        empP.FatherName = model.FatherName;
+                        empP.UpdateDate = DateTime.Now.Date;
+                        empP.IsApproved = false;
+                        if (model.Aadhar1 != null)
+                        {
+                            aadharImagePath1 = fileOperation.SaveBase64Image("img1", model.Aadhar1, allowedExtensions);
+                            empP.AadharOne = aadharImagePath1;
+                        }
+                        if (model.Aadhar2 != null)
+                        {
+                            aadharImagePath2 = fileOperation.SaveBase64Image("img1", model.Aadhar2, allowedExtensions);
+                            empP.AadharTwo = aadharImagePath2;
+                        }
+                        if (model.PanbaseImage != null)
+                        {
+                            panImagePath = fileOperation.SaveBase64Image("img1", model.PanbaseImage, allowedExtensions);
+                            empP.Panimg = panImagePath;
+                        }
+                        if (model.Empprofile != null)
+                        {
+                            string EmpprofileImagePath = fileOperation.SaveBase64Image("EmpProfile", model.Empprofile, allowedExtensions);
+                            emp.EmpProfile = EmpprofileImagePath;
+                        }
+                    }
+
+                    _context.ApprovedPresnolInfos.Add(empP);
+                    await _context.SaveChangesAsync();
+
+                    return empP;
+                }
+
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in PersonalDetail: {ex.Message}");
+                return null;
+            }
+        }
     }
 }
