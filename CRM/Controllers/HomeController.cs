@@ -246,7 +246,7 @@ namespace CRM.Controllers
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
-                List<DepartmentMaster> response = _context.DepartmentMasters.Where(x => x.AdminLoginId == adminlogin.Id).ToList();
+                List<DepartmentMaster> response = _context.DepartmentMasters.Where(x => x.AdminLoginId == adminlogin.Id).OrderByDescending(d=>d.Id).ToList();
 
                 ViewBag.UserName = AddedBy;
                 ViewBag.id = "";
@@ -322,7 +322,7 @@ namespace CRM.Controllers
                     _context.DepartmentMasters.Remove(data);
                     _context.SaveChanges();
                 }
-                return RedirectToAction("Departmentlist");
+                return RedirectToAction("Department");
             }
             catch (Exception ex)
             {
@@ -424,7 +424,8 @@ namespace CRM.Controllers
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
-                List<DesignationMaster > response = _context.DesignationMasters.Where(x =>x.AdminLoginId == adminlogin.Id).ToList();
+                List<DesignationMaster > response = _context.DesignationMasters.Where(x =>x.AdminLoginId == adminlogin.Id).OrderByDescending(d=>d.Id).ToList();
+
 
                 ViewBag.UserName = AddedBy;
                 ViewBag.id = "";
@@ -486,8 +487,8 @@ namespace CRM.Controllers
                     AdminLoginId = adminlogin.Id,
                 };
                 _context.DesignationMasters.Add(master);
-                _context.SaveChanges(); TempData["Message"] = "Data Added Successfully.";
-                return RedirectToAction("Department", "Home");
+                _context.SaveChanges(); TempData["Message"] = "Designation Added Successfully.";
+                return RedirectToAction("Designation", "Home");
             }
         }
         public async Task<IActionResult> DeleteDesignation(int id)
@@ -500,7 +501,7 @@ namespace CRM.Controllers
                     _context.DesignationMasters.Remove(data);
                     _context.SaveChanges();
                 }
-                return RedirectToAction("Designationlist");
+                return RedirectToAction("Designation");
             }
             catch (Exception ex)
             {
