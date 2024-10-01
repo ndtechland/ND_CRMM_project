@@ -263,9 +263,16 @@ namespace CRM.Controllers
         {
             try
             {
+                if (model == null) 
+                {
+                    TempData["Message"] = "Invalid data received. Please try again.";
+                    return View();
+                }
+
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 string Mode = "INS";
                 string Empid = "";
+
                 if (!string.IsNullOrEmpty(model.Emp_Reg_ID))
                 {
                     Mode = "UPD";
@@ -275,6 +282,7 @@ namespace CRM.Controllers
                 {
                     Empid = GenerateEmployeeId();
                     model.EmployeeId = Empid;
+
                     var existingEmployee = _context.EmployeeRegistrations.FirstOrDefault(x => x.WorkEmail == model.WorkEmail);
                     if (existingEmployee != null)
                     {
@@ -282,6 +290,7 @@ namespace CRM.Controllers
                         return View();
                     }
                 }
+
                 if (Userid != null)
                 {
                     if (Mode == "INS")
@@ -291,7 +300,7 @@ namespace CRM.Controllers
                         ModelState.Clear();
                         return RedirectToAction("EmployeeRegistration");
                     }
-                    if (Mode == "UPD")
+                    else if (Mode == "UPD")
                     {
                         TempData["Message"] = "Employee Data Update successful";
                         var response = await _ICrmrpo.EmpRegistration(model, Mode, Empid, Userid);
@@ -299,6 +308,7 @@ namespace CRM.Controllers
                         return RedirectToAction("EmployeeRegistration");
                     }
                 }
+
                 return View();
             }
             catch (Exception ex)
@@ -307,6 +317,7 @@ namespace CRM.Controllers
                 return View();
             }
         }
+
         [HttpGet, Route("Employee/Employeelist")]
         public async Task<IActionResult> Employeelist()
         {
