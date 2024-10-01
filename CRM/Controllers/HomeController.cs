@@ -424,7 +424,7 @@ namespace CRM.Controllers
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
-                List<DesignationMaster > response = _context.DesignationMasters.Where(x =>x.AdminLoginId == adminlogin.Id).OrderByDescending(d=>d.Id).ToList();
+                List<DesignationMaster > response = _context.DesignationMasters.OrderByDescending(d => d.Id).Where(x =>x.AdminLoginId  == adminlogin.Id).ToList();
 
 
                 ViewBag.UserName = AddedBy;
