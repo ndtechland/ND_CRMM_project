@@ -2017,13 +2017,13 @@ namespace CRM.Controllers
                 ViewBag.UserName = HttpContext.Session.GetString("UserName");
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
 
-                ViewBag.Department = await _context.DepartmentMasters.Select(w => new SelectListItem
+                ViewBag.Department = await _context.DepartmentMasters.Where(d => d.AdminLoginId == Userid).Select(w => new SelectListItem
                 {
                     Value = w.Id.ToString(),
                     Text = w.DepartmentName
                 }).ToListAsync();
 
-                ViewBag.Designation = await _context.DesignationMasters.Select(w => new SelectListItem
+                ViewBag.Designation = await _context.DesignationMasters.Where(x => x.AdminLoginId == Userid).Select(w => new SelectListItem
                 {
                     Value = w.Id.ToString(),
                     Text = w.DesignationName
