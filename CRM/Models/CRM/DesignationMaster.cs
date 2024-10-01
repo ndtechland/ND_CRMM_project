@@ -7,5 +7,6 @@ namespace CRM.Models.Crm
     {
         public int Id { get; set; }
         public string DesignationName { get; set; } = null!;
+        public int? AdminLoginId { get; set; }
     }
 }

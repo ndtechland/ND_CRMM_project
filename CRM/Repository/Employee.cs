@@ -38,7 +38,7 @@ namespace CRM.Repository
                 {
                     var empid = await _context.EmployeeRegistrations.Where(x => x.EmployeeId == userid && x.IsDeleted == false).Select(x => new EmployeeBasicInfo
                     {
-
+                        Userid = x.Id,
                         FullName = x.FirstName,
                         WorkEmail = x.WorkEmail,
                         MobileNumber = _context.EmployeePersonalDetails.Where(g => g.EmpId == x.Id).Select(g => g.MobileNumber).First(),

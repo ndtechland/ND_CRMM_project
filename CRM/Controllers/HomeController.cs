@@ -246,7 +246,7 @@ namespace CRM.Controllers
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
-                List<DepartmentMaster> response = _context.DepartmentMasters.ToList();
+                List<DepartmentMaster> response = _context.DepartmentMasters.Where(x => x.AdminLoginId == adminlogin.Id).ToList();
 
                 ViewBag.UserName = AddedBy;
                 ViewBag.id = "";
@@ -255,7 +255,7 @@ namespace CRM.Controllers
                 ViewBag.btnText = "SAVE";
                 if (id != 0)
                 {
-                    var data =  _context.DepartmentMasters.Where(x => x.Id == id).FirstOrDefault();
+                    var data =  _context.DepartmentMasters.Where(x => x.Id == id && x.AdminLoginId == Userid).FirstOrDefault();
                     if (data != null)
                     {
                         ViewBag.id = data.Id;
@@ -305,6 +305,7 @@ namespace CRM.Controllers
                 DepartmentMaster master = new DepartmentMaster
                 {
                     DepartmentName = model.DepartmentName,
+                    AdminLoginId = adminlogin.Id,
                 };
                 _context.DepartmentMasters.Add(master);
                 _context.SaveChanges(); TempData["Message"] = "Data Added Successfully.";
@@ -423,7 +424,7 @@ namespace CRM.Controllers
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
-                List<DesignationMaster > response = _context.DesignationMasters.ToList();
+                List<DesignationMaster > response = _context.DesignationMasters.Where(x =>x.AdminLoginId == adminlogin.Id).ToList();
 
                 ViewBag.UserName = AddedBy;
                 ViewBag.id = "";
@@ -432,7 +433,7 @@ namespace CRM.Controllers
                 ViewBag.btnText = "SAVE";
                 if (id != 0)
                 {
-                    var data = _context.DesignationMasters.Where(x => x.Id == id).FirstOrDefault();
+                    var data = _context.DesignationMasters.Where(x => x.Id == id && x.AdminLoginId == Userid).FirstOrDefault();
                     if (data != null)
                     {
                         ViewBag.id = data.Id;
@@ -482,6 +483,7 @@ namespace CRM.Controllers
                 DesignationMaster master = new DesignationMaster
                 {
                     DesignationName = model.DesignationName,
+                    AdminLoginId = adminlogin.Id,
                 };
                 _context.DesignationMasters.Add(master);
                 _context.SaveChanges(); TempData["Message"] = "Data Added Successfully.";

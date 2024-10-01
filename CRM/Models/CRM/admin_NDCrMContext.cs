@@ -491,6 +491,8 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Id).HasColumnName("ID");
 
+                entity.Property(e => e.AdminLoginId).HasColumnName("adminLoginId");
+
                 entity.Property(e => e.DepartmentName)
                     .HasMaxLength(120)
                     .HasColumnName("Department_Name");
@@ -501,6 +503,8 @@ namespace CRM.Models.Crm
                 entity.ToTable("Designation_Master");
 
                 entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.AdminLoginId).HasColumnName("adminLoginId");
 
                 entity.Property(e => e.DesignationName)
                     .HasMaxLength(150)
