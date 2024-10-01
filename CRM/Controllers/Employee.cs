@@ -96,14 +96,14 @@ namespace CRM.Controllers
                     Text = w.SName
                 })
                  .ToList();
-                ViewBag.Department = _context.DepartmentMasters.Select(w => new SelectListItem
+                ViewBag.Department = _context.DepartmentMasters.Where(x =>x.AdminLoginId == Userid).Select(w => new SelectListItem
                 {
                     Value = w.Id.ToString(),
                     Text = w.DepartmentName
 
                 }).ToList();
                 //Designation dropdown 
-                ViewBag.Designation = _context.DesignationMasters.Select(w => new SelectListItem
+                ViewBag.Designation = _context.DesignationMasters.Where(x => x.AdminLoginId == Userid).Select(w => new SelectListItem
                 {
                     Value = w.Id.ToString(),
                     Text = w.DesignationName
@@ -2493,13 +2493,13 @@ namespace CRM.Controllers
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
 
-                ViewBag.CurrentDesignation = await _context.DesignationMasters.Select(w => new SelectListItem
+                ViewBag.CurrentDesignation = await _context.DesignationMasters.Where(x => x.AdminLoginId == Userid).Select(w => new SelectListItem
                 {
                     Value = w.Id.ToString(),
                     Text = w.DesignationName
                 }).ToListAsync();
 
-                ViewBag.Designation = await _context.DesignationMasters.Select(w => new SelectListItem
+                ViewBag.Designation = await _context.DesignationMasters.Where(x => x.AdminLoginId == Userid).Select(w => new SelectListItem
                 {
                     Value = w.Id.ToString(),
                     Text = w.DesignationName
