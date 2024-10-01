@@ -2,6 +2,7 @@
 {
     public class EmployeeBasicInfo
     {
+        public int? Userid { get; set; }
         public string FullName { get; set; } = null!;
         public string WorkEmail { get; set; } = null!;
         public string? MobileNumber { get; set; }
