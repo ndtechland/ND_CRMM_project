@@ -1576,6 +1576,7 @@ namespace CRM.Repository
                         CompanyName = rdr["Company_Name"] == DBNull.Value ? null : Convert.ToString(rdr["Company_Name"]),
                         //WorkLocation = rdr["Work_Location"] == DBNull.Value ? null : new string[] { Convert.ToString(rdr["Work_Location"]) },
                         OfficeCity = rdr["OfficeCity"] == DBNull.Value ? null : Convert.ToString(rdr["OfficeCity"]),
+                        BillingCity = rdr["BillingCity"] == DBNull.Value ? null : Convert.ToString(rdr["BillingCity"]),
                         MobileNumber = rdr["Mobile_number"] == DBNull.Value ? "0" : Convert.ToString(rdr["Mobile_number"]),
                         AlternateNumber = rdr["Alternate_number"] == DBNull.Value ? "0" : Convert.ToString(rdr["Alternate_number"]),
                         Email = rdr["Email"] == DBNull.Value ? "0" : Convert.ToString(rdr["Email"]),

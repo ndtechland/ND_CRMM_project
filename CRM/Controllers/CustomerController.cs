@@ -213,8 +213,6 @@ namespace CRM.Controllers
                 throw new Exception("Error:" + Ex.Message);
             }
         }
-
-
         public async Task<IActionResult> GetCityByStateId(int stateid)
         {
             var dist = await _context.Cities
