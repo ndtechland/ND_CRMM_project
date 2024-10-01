@@ -79,52 +79,51 @@ namespace CRM.Repository
                 throw ex;
             }
         }
-
-
         public async Task SendEmailCred(EmpMultiform model, string password)
         {
             try
             {
-                try
+                var empdetails = await _context.EmployeeRegistrations.Where(x => x.EmployeeId == model.EmployeeId).FirstOrDefaultAsync();
+                var vendordetails = await _context.VendorRegistrations.Where(x => x.Id == model.Vendorid).FirstOrDefaultAsync();
+                var emailMessage = new MimeMessage();
+                emailMessage.From.Add(new MailboxAddress("Nd Connect", "aastrolense@gmail.com"));
+                emailMessage.To.Add(new MailboxAddress("Recipient Name", model.PersonalEmailAddress));
+                emailMessage.Subject = "Your Employee Login Credentials";
+                var body = $@"
+        Dear {model.FirstName} {model.LastName},
+        Welcome to {vendordetails.CompanyName}! Below are your login credentials to access your employee account:
+        Username: {model.EmployeeId}
+        Password: {password}
+        You can log in via the web or use our mobile app for easy access. Download the N D Connect app from the links below:
+        Google Play Store: https://api.ndtechland.com/
+        Apple App Store: https://api.ndtechland.com/
+        Please use these credentials to log in to your employee portal and manage your profile, attendance, and other related features.
+        Best regards,
+        {vendordetails.CompanyName}
+        Phone: {vendordetails.MobileNumber}
+        Email: {vendordetails.Email}";
+
+                var textPart = new TextPart("plain")
                 {
-                    var emailMessage = new MimeMessage();
-                    emailMessage.From.Add(new MailboxAddress("Nd Connect", "aastrolense@gmail.com"));
-                    emailMessage.To.Add(new MailboxAddress("Recipient Name", model.WorkEmail));
-                    //emailMessage.Cc.Add(new MailboxAddress("Recipient Name", "vishnundtechland@gmail.com"));
-                    //emailMessage.Bcc.Add(new MailboxAddress("Recipient Name", "ndcaretrust@gmail.com"));
-                    emailMessage.Subject = "Login Credencial";
+                    Text = body
+                };
 
-                    var textPart = new TextPart("plain")
-                    {
-                        Text = " Hi - '" + model.FirstName + "' '" + model.LastName + "' Here is your login Credential Email:- '" + model.EmployeeId + "' Password:- '" + password + "'"
-                    };
+                var multipart = new Multipart("mixed");
+                multipart.Add(textPart);
 
+                emailMessage.Body = multipart;
 
-
-                    var multipart = new Multipart("mixed");
-                    multipart.Add(textPart);
-
-                    emailMessage.Body = multipart;
-
-                    using (var client = new SmtpClient())
-                    {
-
-                        await client.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
-                        await client.AuthenticateAsync("aastrolense@gmail.com", "efpbsimjkzxeoxnv");
-                        await client.SendAsync(emailMessage);
-                        await client.DisconnectAsync(true);
-                    }
-
-                }
-                catch (Exception ex)
+                using (var client = new SmtpClient())
                 {
-                    throw ex;
+                    await client.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
+                    await client.AuthenticateAsync("aastrolense@gmail.com", "efpbsimjkzxeoxnv");
+                    await client.SendAsync(emailMessage);
+                    await client.DisconnectAsync(true);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                throw ex;
             }
         }
 
