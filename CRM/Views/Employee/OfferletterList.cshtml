@@ -15,6 +15,12 @@
         transform: translate(-50%, -50%);
         z-index: 9999;
     }
+
+    #content {
+        filter: blur(50%); /* Adjust the blur strength as needed */
+        pointer-events: none; /* Disable interactions with the blurred content */
+    }
+
 </style>
 <div class="page-wrapper">
     <div class="page-body-wrapper">
