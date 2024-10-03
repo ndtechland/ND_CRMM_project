@@ -778,21 +778,6 @@ namespace CRM.Repository
                 var fgdfd = await _context.EmployeeCheckIns
                        .Where(x => x.EmployeeId == emp.EmployeeId).OrderBy(x => x.Id)
                        .FirstOrDefaultAsync();
-                if (_context.EmployeeCheckIns.Count() == 1)
-                {
-                    EmployeeCheckInRecord empch = new()
-                    {
-                        EmpId = emp.EmployeeId,
-                        CheckIntime = DateTime.Now,
-                        CurrentDate = DateTime.Now,
-                        Isactive = true,
-                        Workinghour = (fgdfd.CheckInTime - DateTime.Now).Duration()
-
-                    };
-                    _context.EmployeeCheckInRecords.Add(empch);
-                    await _context.SaveChangesAsync();
-
-                }
                 if (CheckIN == false)
                 {
                     TimeSpan workingh = (fgdfd.CheckInTime - DateTime.Now).Duration();
