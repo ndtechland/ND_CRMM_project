@@ -14,7 +14,15 @@
         top: 50%;
         transform: translate(-50%, -50%);
         z-index: 9999;
+        background-color: transparent;
+        display: none;
     }
+
+    .blur {
+        filter: blur(1px);
+        pointer-events: none; 
+    }
+
 </style>
 <div class="page-wrapper">
     <div class="page-body-wrapper">
@@ -140,9 +148,18 @@
                                                         </td>
                                                         <td>
                                                             <div>
+                                                            @if (!string.IsNullOrEmpty(item.ExperienceletterFile))
+                                                            {
                                                                 <a href="@Url.Content("~/EMPpdfs/" + item.ExperienceletterFile)" target="_blank">
                                                                     <img src="@Url.Content("~/assets/images/layout-2/logo/pdfview.jpg")" alt="PDF Icon" style="height: 60px; width: 60px;" />
                                                                 </a>
+                                                            }
+                                                            else
+                                                            {
+                                                                    <a href="javascript:void(0)" onclick="showExperienceLetterAlert()">
+                                                                        <img src="@Url.Content("~/assets/images/layout-2/logo/pdfview.jpg")" alt="No PDF Icon" style="height: 60px; width: 60px;" />
+                                                                    </a>
+                                                            }
                                                             </div>
                                                         </td>
 
@@ -156,7 +173,7 @@
                                                         <td>
                                                             <div>
                                                                 <a href="@Url.Action("AddExperienceletteretail","Employee",new { id=item.Id})" class="fa fa-edit m-2 font-success"></a>
-                                                                <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteOfferletter", "Employee", new { id = item.Id })')" class="fa fa-trash font-danger"></a>
+                                                                <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteExperienceletter", "Employee", new { id = item.Id })')" class="fa fa-trash font-danger"></a>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -244,10 +261,23 @@
     }
 </script>
 <script type="text/javascript">
+    function showExperienceLetterAlert() {
+        Swal.fire({
+            icon: 'warning',
+            title: 'No Experience Letter Available',
+            text: 'Please send the experience letter via email after attempting to download.',
+            confirmButtonText: 'OK'
+        });
+    }
+</script>
+<script type="text/javascript">
     function ExperienceletterdownloadPDF(id) {
         var url = '@Url.Action("ExperienceletterDocPDF", "Employee")' + '?id=' + id;
-        // Show the loader before starting the fetch process
-        document.getElementById('loader').style.display = 'block';
+        var loader = document.getElementById('loader');
+        var content = document.querySelector('body'); 
+
+        loader.style.display = 'block';
+        content.classList.add('blur');
 
         fetch(url, {
             method: 'GET',
@@ -256,8 +286,8 @@
             }
         })
             .then(response => {
-                // Hide the loader once a response is received
-                document.getElementById('loader').style.display = 'none';
+                loader.style.display = 'none';
+                content.classList.remove('blur');
 
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -283,8 +313,9 @@
                 }
             })
             .catch(error => {
-                // Hide the loader if an error occurs
-                document.getElementById('loader').style.display = 'none';
+                // Hide the loader and remove blur if an error occurs
+                loader.style.display = 'none';
+                content.classList.remove('blur');
 
                 Swal.fire({
                     title: 'Error',
@@ -294,4 +325,5 @@
                 });
             });
     }
+
 </script>

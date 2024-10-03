@@ -15,7 +15,23 @@
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+<style>
+    #loader {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 9999;
+        background-color: transparent;
+        display: none;
+    }
 
+    .blur {
+        filter: blur(1px);
+        pointer-events: none;
+    }
+
+</style>
 <style>
     .select2-container .select2-selection--single {
         height: 34px !important;
@@ -235,8 +251,11 @@
 <script type="text/javascript">
     function downloadPDF(id) {
         var url = '@Url.Action("DocPDF", "Employee")' + '?id=' + id;
-        // Show the loader before starting the fetch process
-        document.getElementById('loader').style.display = 'block';
+        var loader = document.getElementById('loader');
+        var content = document.querySelector('body');
+
+        loader.style.display = 'block';
+        content.classList.add('blur');
 
         fetch(url, {
             method: 'GET',
@@ -245,8 +264,8 @@
             }
         })
             .then(response => {
-                // Hide the loader once a response is received
-                document.getElementById('loader').style.display = 'none';
+                loader.style.display = 'none';
+                content.classList.remove('blur');
 
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -272,7 +291,9 @@
                 }
             })
             .catch(error => {
-                document.getElementById('loader').style.display = 'none';
+                // Hide the loader and remove blur if an error occurs
+                loader.style.display = 'none';
+                content.classList.remove('blur');
 
                 Swal.fire({
                     title: 'Error',

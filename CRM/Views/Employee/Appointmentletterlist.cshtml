@@ -14,7 +14,15 @@
         top: 50%;
         transform: translate(-50%, -50%);
         z-index: 9999;
+        background-color: transparent;
+        display: none;
     }
+
+    .blur {
+        filter: blur(1px);
+        pointer-events: none;
+    }
+
 </style>
 
 <div class="page-wrapper">
@@ -119,9 +127,18 @@
                                                         </td>
                                                         <td>
                                                             <div>
-                                                                <a href="@Url.Content("~/EMPpdfs/" + item.Appoinmentletter)" target="_blank">
-                                                                    <img src="@Url.Content("~/assets/images/layout-2/logo/pdfview.jpg")" alt="PDF Icon" style="height: 60px; width: 60px;" />
-                                                                </a>
+                                                                @if (!string.IsNullOrEmpty(item.Appoinmentletter))
+                                                                {
+                                                                    <a href="@Url.Content("~/EMPpdfs/" + item.Appoinmentletter)" target="_blank">
+                                                                        <img src="@Url.Content("~/assets/images/layout-2/logo/pdfview.jpg")" alt="PDF Icon" style="height: 60px; width: 60px;" />
+                                                                    </a>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <a href="javascript:void(0)" onclick="showAppoinmentletterAlert()">
+                                                                        <img src="@Url.Content("~/assets/images/layout-2/logo/pdfview.jpg")" alt="No PDF Icon" style="height: 60px; width: 60px;" />
+                                                                    </a>
+                                                                }
                                                             </div>
                                                         </td>
                                                         <td>
@@ -159,11 +176,23 @@
 </div>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script type="text/javascript">
+    function showExperienceLetterAlert() {
+        Swal.fire({
+            icon: 'warning',
+            title: 'No Appointment Letter Available',
+            text: 'Please send the appointment letter via email after attempting to download.',
+            confirmButtonText: 'OK'
+        });
+    }
+</script>
+<script type="text/javascript">
     function AppointmentletterdownloadPDF(Id) {
         var url = '@Url.Action("AppointmentletterDocPDF", "Employee")' + '?Id=' + Id;
+        var loader = document.getElementById('loader');
+        var content = document.querySelector('body');
 
-        // Show the loader before starting the fetch process
-        document.getElementById('loader').style.display = 'block';
+        loader.style.display = 'block';
+        content.classList.add('blur');
 
         fetch(url, {
             method: 'GET',
@@ -172,8 +201,8 @@
             }
         })
             .then(response => {
-                // Hide the loader once a response is received
-                document.getElementById('loader').style.display = 'none';
+                loader.style.display = 'none';
+                content.classList.remove('blur');
 
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -199,8 +228,9 @@
                 }
             })
             .catch(error => {
-                // Hide the loader if an error occurs
-                document.getElementById('loader').style.display = 'none';
+                // Hide the loader and remove blur if an error occurs
+                loader.style.display = 'none';
+                content.classList.remove('blur');
 
                 Swal.fire({
                     title: 'Error',

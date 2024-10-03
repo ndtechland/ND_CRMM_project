@@ -19,8 +19,9 @@ namespace CRM.Repository
         public Task<List<EmpattendanceDto>> GetAllEmpsalaryslip(string userid);
         public Task<EmpattendanceDto> Getsalarydetails(string userid, int month, int year);
         public Task<CompanyLoctionDto> GetCompanyLoction(string userid);
-        public Task<EmployeeCheckIn> Empcheckin(EmpCheckIn model, int? userid);
+        public Task<EmployeeCheckIn> Empcheckin(EmpCheckIn model, bool CheckIN);
         public Task<ApprovedPresnolInfo> webPersonalDetail(webPersonalDetail model, string userid);
+        public Task<EmployeeCheckIn> Empcheckout(EmpCheckIn model, bool CheckIN);
 
     }
 }
