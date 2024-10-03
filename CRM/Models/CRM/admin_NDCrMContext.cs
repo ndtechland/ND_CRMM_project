@@ -40,6 +40,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<Empattendance> Empattendances { get; set; } = null!;
         public virtual DbSet<EmployeeBankDetail> EmployeeBankDetails { get; set; } = null!;
         public virtual DbSet<EmployeeCheckIn> EmployeeCheckIns { get; set; } = null!;
+        public virtual DbSet<EmployeeCheckInRecord> EmployeeCheckInRecords { get; set; } = null!;
         public virtual DbSet<EmployeeImportExcel> EmployeeImportExcels { get; set; } = null!;
         public virtual DbSet<EmployeeLogin> EmployeeLogins { get; set; } = null!;
         public virtual DbSet<EmployeePersonalDetail> EmployeePersonalDetails { get; set; } = null!;
@@ -643,6 +644,23 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.EmployeeId)
                     .HasMaxLength(200)
                     .HasColumnName("Employee_ID");
+            });
+
+            modelBuilder.Entity<EmployeeCheckInRecord>(entity =>
+            {
+                entity.ToTable("EmployeeCheckInRecord");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.CheckIntime).HasColumnType("datetime");
+
+                entity.Property(e => e.CheckOuttime).HasColumnType("datetime");
+
+                entity.Property(e => e.CurrentDate).HasColumnType("datetime");
+
+                entity.Property(e => e.EmpId).HasMaxLength(200);
+
+                entity.Property(e => e.Workinghour).HasColumnName("workinghour");
             });
 
             modelBuilder.Entity<EmployeeImportExcel>(entity =>

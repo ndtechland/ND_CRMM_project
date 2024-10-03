@@ -2439,19 +2439,22 @@ namespace CRM.Controllers
                 }
                 var result = (from er in _context.EmployeeRegistrations
                               join emp in _context.EmployeePersonalDetails
-                              on er.EmployeeId equals emp.EmpId.ToString() 
-                              where er.Id == Id && er.Vendorid == adminlogin.Vendorid
+                              on er.EmployeeId equals emp.EmpRegId 
+                              join emppp in _context.EmpExperienceletters
+                              on emp.EmpRegId equals emppp.EmployeeId
+                              where emppp.Id == Id && er.Vendorid == adminlogin.Vendorid
                               select new
                               {
-                                  Id = er.Id,
+                                  Id = emppp.Id,
                                   EmployeeId = er.EmployeeId,
                                   Name = er.FirstName,
-                                  WorkEmail = emp.PersonalEmailAddress 
+                                  WorkEmail = emp.PersonalEmailAddress
                               }).FirstOrDefault();
 
 
 
-                string uniqueFileName = $"Experienceletter_{Id}.pdf";
+
+                string uniqueFileName = $"Experienceletter_{result.EmployeeId}.pdf";
                 string filePath = Path.Combine(wwwRootPath, uniqueFileName);
                 doc.Save(filePath);
                 byte[] pdf = System.IO.File.ReadAllBytes(filePath);
@@ -2463,11 +2466,11 @@ namespace CRM.Controllers
                     return BadRequest("Employee not found.");
                 }
 
-                //var empoff = _context.Offerletters.FirstOrDefault(e => e.Id == result.Id);
+                var empoff = _context.EmpExperienceletters.FirstOrDefault(e => e.Id == result.Id);
                 if (result != null)
                 {
-                    //empoff.OfferletterFile = uniqueFileName;
-                    //_context.SaveChanges();
+                    empoff.ExperienceletterFile = uniqueFileName;
+                    _context.SaveChanges();
                     string emailSubject = $"Experience letter for {result.Name}";
                     string emailBody = $"Hello {result.Name}, please find your attached Experience letter.";
                     await _IEmailService.SendEmailAsync(result.WorkEmail, emailSubject, emailBody, pdf, uniqueFileName, "application/pdf");
@@ -2634,6 +2637,23 @@ namespace CRM.Controllers
             else
             {
                 return RedirectToAction("Login", "Admin");
+            }
+        }
+        public async Task<IActionResult> DeleteExperienceletter(int id)
+        {
+            try
+            {
+                var data = _context.EmpExperienceletters.Find(id);
+                if (data != null)
+                {
+                    _context.EmpExperienceletters.Remove(data);
+                    _context.SaveChanges();
+                }
+                return RedirectToAction("OfferletterList");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception();
             }
         }
 
