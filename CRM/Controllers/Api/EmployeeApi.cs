@@ -710,6 +710,7 @@ namespace CRM.Controllers.Api
                     {
                         CheckIN = false;
                         var CCModel = await _apiemp.Empcheckin(model, CheckIN);
+                        response.Succeeded = true;
                         response.StatusCode = StatusCodes.Status400BadRequest;
                         response.Message = $"Employee is not within the {radiusInMeters} meter radius of the company's location.";
                         response.Data = CCModel;
