@@ -372,22 +372,19 @@
                                     <span id="FirstNameError" class="text-danger" style="display:none;">First Name is required</span>
                                 </div>
                                 <div class="col">
-                                    <label>Middle Name<span class="text-danger">*</span></label>
+                                    <label>Middle Name</label>
                                     <input class="form-control" name="MiddleName" placeholder="Enter Middle Name" id="MiddleName" type="text">
-                                    <span id="MiddleNameError" class="text-danger" style="display:none;">Middle Name is required</span>
                                 </div>
                                 <div class="col">
-                                    <label>Last Name<span class="text-danger">*</span></label>
+                                    <label>Last Name</label>
                                     <input class="form-control" name="LastName" placeholder="Enter Last Name" id="LastName" type="text">
-                                    <span id="LastNameError" class="text-danger" style="display:none;">Last Name is required</span>
                                 </div>
                             </div>
 
                             <div class="row">
                                 <div class="col-md-6">
-                                    <label>Work Email<span class="text-danger">*</span></label>
+                                    <label>Work Email</label>
                                     <input class="form-control" name="WorkEmail" placeholder="Enter Work Email" id="WorkEmail" type="email">
-                                    <span id="WorkEmailError" class="text-danger" style="display:none;">Work Email is required</span>
                                 </div>
                                 <div class="col-md-6">
                                     <label>Date Of Joining<span class="text-danger">*</span></label>
@@ -472,6 +469,7 @@
                                 <div class="col">
                                     <label>Personal Email Address<span class="text-danger">*</span></label>
                                     <input class="form-control" value='@ViewBag.Personal_Email_Address' placeholder="Enter Personal Email Address" name="PersonalEmailAddress" id="PersonalEmailAddress" type="email">
+                                    <span id="PersonalEmailAddressError" class="text-danger" style="display:none;">Please enter a valid personal email address.</span>
                                 </div>
 
                                 <div class="col">
@@ -480,11 +478,13 @@
                                         <span class="input-group-text" id="basic-addon1">+91</span>
                                         <input class="form-control" value='@ViewBag.Mobile_Number' name="MobileNumber" placeholder="Enter Mobile Number" id="MobileNumber" type="text" maxlength="10" minlength="10">
                                     </div>
+                                    <span id="MobileNumberError" class="text-danger" style="display:none;">Please enter a valid mobile number.</span>
                                 </div>
 
                                 <div class="col">
                                     <label>Date Of Birth<span class="text-danger">*</span></label>
                                     <input class="form-control" value='@ViewBag.Date_Of_Birth' name="DateOfBirth" id="dobInput" type="date">
+                                    <span id="DateOfBirthError" class="text-danger" style="display:none;">Please enter a valid date of birth.</span>
                                 </div>
                             </div>
 
@@ -497,11 +497,13 @@
                                 <div class="col">
                                     <label>Father Name<span class="text-danger">*</span></label>
                                     <input class="form-control" value='@ViewBag.Father_Name' name="FatherName" id="FatherName" placeholder="Enter Father Name" type="text">
+                                    <span id="FatherNameError" class="text-danger" style="display:none;">Please enter your father's name.</span>
                                 </div>
 
                                 <div class="col">
                                     <label>PAN<span class="text-danger">*</span></label>
                                     <input class="form-control" value='@ViewBag.PAN' name="PAN" id="PAN" placeholder="Enter PAN" type="text">
+                                    <span id="PANError" class="text-danger" style="display:none;">Please enter a valid PAN number.</span>
                                 </div>
                             </div>
 
@@ -509,6 +511,7 @@
                                 <div class="col">
                                     <label>Address 1<span class="text-danger">*</span></label>
                                     <input class="form-control" value='@ViewBag.Address_Line_1' name="AddressLine1" placeholder="Enter Address Line1" id="AddressLine1" type="text">
+                                    <span id="AddressLine1Error" class="text-danger" style="display:none;">Please enter Address Line 1.</span>
                                 </div>
 
                                 <div class="col">
@@ -521,6 +524,7 @@
                                     <select class="form-control" id="ddlState" name="StateID">
                                         <option value="0">-- Select State --</option>
                                     </select>
+                                    <span id="StateIDError" class="text-danger" style="display:none;">Please select a state.</span>
                                 </div>
                             </div>
 
@@ -530,11 +534,13 @@
                                     <select class="form-control" name="City" id="City">
                                         <option value="0">-- Select City --</option>
                                     </select>
+                                    <span id="CityError" class="text-danger" style="display:none;">Please select a city.</span>
                                 </div>
 
                                 <div class="col">
                                     <label>Pincode<span class="text-danger">*</span></label>
                                     <input class="form-control" value='@ViewBag.Pincode' name="Pincode" maxlength="6" id="Pincode" placeholder="Enter Pincode" type="text" onkeydown="validateNumericInput(event)">
+                                    <span id="PincodeError" class="text-danger" style="display:none;">Please enter a valid pincode.</span>
                                 </div>
                             </div>
                         </div>
@@ -545,7 +551,6 @@
                         </div>
                     </section>
 
-                    <!-- Step 3 Content, default hidden on page load. -->
                     <section id="step-3" class="form-step d-none">
                         <h2 class="text-danger">Payment info</h2>
                         <!-- Step 3 input fields -->
@@ -554,25 +559,30 @@
                                 <div class="col">
                                     <label>Account Holder Name<span class="text-danger">*</span></label>
                                     <input class="form-control" value='@ViewBag.Account_Holder_Name' name="AccountHolderName" placeholder="Enter Account Holder Name" id="AccountHolderName" type="text">
+                                    <span id="AccountHolderNameError" class="text-danger" style="display:none;">This field is required.</span>
                                 </div>
                                 <div class="col">
                                     <label>Bank Name<span class="text-danger">*</span></label>
                                     <input class="form-control" value='@ViewBag.Bank_Name' name="BankName" id="BankName" placeholder="Enter Bank Name" type="text">
+                                    <span id="BankNameError" class="text-danger" style="display:none;">This field is required.</span>
                                 </div>
                                 <div class="col">
                                     <label>Account Number<span class="text-danger">*</span></label>
-                                    <input class="form-control" value='@ViewBag.Account_Number' name="AccountNumber" placeholder="Enter Account Number" id="AccountNumber" type="number">
+                                    <input class="form-control" value='@ViewBag.Account_Number' name="AccountNumber" placeholder="Enter Account Number" id="AccountNumber" type="text" onkeydown="validateNumericInput(event)">
+                                    <span id="AccountNumberError" class="text-danger" style="display:none;">This field is required.</span>
                                 </div>
                             </div>
 
                             <div class="row">
                                 <div class="col">
                                     <label>Re-enter Account Number<span class="text-danger">*</span></label>
-                                    <input class="form-control" value='@ViewBag.Re_Enter_Account_Number' name="ReEnterAccountNumber" placeholder="Re-enter Account Number" id="ReEnterAccountNumber" type="number">
+                                    <input class="form-control" value='@ViewBag.Re_Enter_Account_Number' name="ReEnterAccountNumber" placeholder="Re-enter Account Number" id="ReEnterAccountNumber" type="text" onkeydown="validateNumericInput(event)">
+                                    <span id="ReEnterAccountNumberError" class="text-danger" style="display:none;">Account numbers do not match.</span>
                                 </div>
                                 <div class="col">
                                     <label>IFSC<span class="text-danger">*</span></label>
                                     <input class="form-control" value='@ViewBag.IFSC' name="IFSC" id="IFSC" placeholder="Enter IFSC" type="text">
+                                    <span id="IFSCError" class="text-danger" style="display:none;">This field is required.</span>
                                 </div>
                                 <div class="col">
                                     <label>EPF Number</label>
@@ -586,7 +596,7 @@
                                     <input class="form-control" value='@ViewBag.Employee_Contribution_Rate' name="Employee_Contribution_Rate" placeholder="Enter Employee Contribution Rate" id="Employee_Contribution_Rate" type="text">
                                 </div>
                                 <div class="col">
-                                    <label>Deduction Cycle<span class="text-danger">*</span></label>
+                                    <label>Deduction Cycle</label>
                                     <select id="ddlDeductionTime" name="Deduction_Cycle" class="form-control">
                                         <option value="0">-- Select Deduction --</option>
                                         <option value="M">Monthly</option>
@@ -616,7 +626,6 @@
                             <button class="button btn-navigate-form-step" type="button" step_number="4">Next</button>
                         </div>
                     </section>
-
                     <section id="step-4" class="form-step d-none">
                         <h2 class="text-danger">Salary Details</h2>
                         <div class="mt-3">

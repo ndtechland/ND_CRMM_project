@@ -1,188 +1,249 @@
-﻿
-    // Function to navigate to the specified step
-    const navigateToFormStep = (stepNumber) => {
-        document.querySelectorAll(".form-step").forEach((formStepElement) => {
-            formStepElement.classList.add("d-none");
-        });
-        document.querySelectorAll(".form-stepper-list").forEach((formStepHeader) => {
+﻿// Function to navigate to the specified step
+const navigateToFormStep = (stepNumber) => {
+    document.querySelectorAll(".form-step").forEach((formStepElement) => {
+        formStepElement.classList.add("d-none");
+    });
+    document.querySelectorAll(".form-stepper-list").forEach((formStepHeader) => {
         formStepHeader.classList.add("form-stepper-unfinished");
-    formStepHeader.classList.remove("form-stepper-active", "form-stepper-completed");
-        });
+        formStepHeader.classList.remove("form-stepper-active", "form-stepper-completed");
+    });
     document.querySelector("#step-" + stepNumber).classList.remove("d-none");
+
     const formStepCircle = document.querySelector('li[step="' + stepNumber + '"]');
     formStepCircle.classList.remove("form-stepper-unfinished", "form-stepper-completed");
     formStepCircle.classList.add("form-stepper-active");
 
-    for (let index = 0; index < stepNumber; index++) {
-            const formStepCircle = document.querySelector('li[step="' + index + '"]');
-    if (formStepCircle) {
-        formStepCircle.classList.remove("form-stepper-unfinished", "form-stepper-active");
-    formStepCircle.classList.add("form-stepper-completed");
-            }
+    for (let index = 1; index < stepNumber; index++) {
+        const formStepCircle = document.querySelector('li[step="' + index + '"]');
+        if (formStepCircle) {
+            formStepCircle.classList.remove("form-stepper-unfinished", "form-stepper-active");
+            formStepCircle.classList.add("form-stepper-completed");
         }
-    };
+    }
+};
 
-    // Function to validate step 1 fields
-    const validateStep1 = () => {
-        let isValid = true;
-
-    const requiredFields = [
-    {id: "FirstName", errorId: "FirstNameError" },
-    {id: "MiddleName", errorId: "MiddleNameError" },
-    {id: "LastName", errorId: "LastNameError" },
-    {id: "WorkEmail", errorId: "WorkEmailError" },
-    {id: "DateOfJoining", errorId: "DateOfJoiningError" },
-    {id: "ddlGender", errorId: "GenderError", isSelect: true },
-    {id: "ddlStates", errorId: "StateError", isSelect: true },
-    {id: "ddlCity", errorId: "WorkLocationError", isSelect: true },
-    {id: "ddDepartmentID", errorId: "DepartmentError", isSelect: true },
-    {id: "ddDesignationID", errorId: "DesignationError", isSelect: true },
-    {id: "ddOfferletterid", errorId: "OfferLetterError", isSelect: true },
-    {id: "ddshifttypeidid", errorId: "ShiftTypeError", isSelect: true }
-    ];
-
-    requiredFields.forEach(({id, errorId, isSelect}) => {
-            const field = document.getElementById(id);
-    const errorField = document.getElementById(errorId);
-    if ((isSelect && field.value === "0") || !field.value) {
-        errorField.style.display = "block";
-    isValid = false;
-            } else {
-        errorField.style.display = "none";
-            }
-        });
-
-    return isValid;
-    };
-
-    // Event listener for navigation buttons
-    document.querySelectorAll(".btn-navigate-form-step").forEach((formNavigationBtn) => {
-        formNavigationBtn.addEventListener("click", () => {
-            const stepNumber = parseInt(formNavigationBtn.getAttribute("step_number"));
-
-            // Only validate step 1 before moving to the next step
-            if (stepNumber === 2 && !validateStep1()) {
-                console.log("Form is invalid, staying on the current step.");
-                return; // Stop navigation if validation fails
-            }
-
-            navigateToFormStep(stepNumber);
-        });
-    });
-
-
-
-document.querySelector(".btn-navigate-form-step").addEventListener("click", function (e) {
-    // Prevent default action of the button
-    e.preventDefault();
-
+// Function to validate step 1 fields
+const validateStep1 = () => {
     let isValid = true;
 
-    // Get form field values
-    const firstName = document.getElementById("FirstName");
-    const middleName = document.getElementById("MiddleName");
-    const lastName = document.getElementById("LastName");
-    const workEmail = document.getElementById("WorkEmail");
-    const dateOfJoining = document.getElementById("DateOfJoining");
-    const gender = document.getElementById("ddlGender");
-    const state = document.getElementById("ddlStates");
-    const workLocation = document.getElementById("ddlCity");
-    const department = document.getElementById("ddDepartmentID");
-    const designation = document.getElementById("ddDesignationID");
-    const offerLetter = document.getElementById("ddOfferletterid");
-    const officeShiftType = document.getElementById("ddshifttypeidid");
+    const requiredFields = [
+        { id: "FirstName", errorId: "FirstNameError" },
+        { id: "DateOfJoining", errorId: "DateOfJoiningError" },
+        { id: "ddlGender", errorId: "GenderError", isSelect: true },
+        { id: "ddlStates", errorId: "StateError", isSelect: true },
+        { id: "ddlCity", errorId: "WorkLocationError", isSelect: true },
+        { id: "ddDepartmentID", errorId: "DepartmentError", isSelect: true },
+        { id: "ddDesignationID", errorId: "DesignationError", isSelect: true },
+        { id: "ddOfferletterid", errorId: "OfferLetterError", isSelect: true },
+        { id: "ddshifttypeidid", errorId: "ShiftTypeError", isSelect: true }
+    ];
 
-    // Validate fields
-    if (!firstName.value) {
-        document.getElementById("FirstNameError").style.display = "block";
+    requiredFields.forEach(({ id, errorId, isSelect }) => {
+        const field = document.getElementById(id);
+        const errorField = document.getElementById(errorId);
+        if ((isSelect && field.value === "0") || !field.value) {
+            errorField.style.display = "block";
+            isValid = false;
+        } else {
+            errorField.style.display = "none";
+        }
+    });
+
+    return isValid;
+};
+
+// Function to validate step 2 fields
+const validateStep2 = () => {
+    let isValid = true;
+
+    // Personal Email Address validation
+    const personalEmail = document.getElementById("PersonalEmailAddress");
+    const personalEmailError = document.getElementById("PersonalEmailAddressError");
+    if (!personalEmail.value || !validateEmail(personalEmail.value)) {
+        personalEmailError.style.display = "block";
         isValid = false;
     } else {
-        document.getElementById("FirstNameError").style.display = "none";
+        personalEmailError.style.display = "none";
     }
 
-    if (!middleName.value) {
-        document.getElementById("MiddleNameError").style.display = "block";
+    // Mobile Number validation
+    const mobileNumber = document.getElementById("MobileNumber");
+    const mobileNumberError = document.getElementById("MobileNumberError");
+    if (!mobileNumber.value || mobileNumber.value.length !== 10 || isNaN(mobileNumber.value)) {
+        mobileNumberError.style.display = "block";
         isValid = false;
     } else {
-        document.getElementById("MiddleNameError").style.display = "none";
+        mobileNumberError.style.display = "none";
     }
 
-    if (!lastName.value) {
-        document.getElementById("LastNameError").style.display = "block";
+    // Date of Birth validation
+    const dateOfBirth = document.getElementById("dobInput");
+    const dateOfBirthError = document.getElementById("DateOfBirthError");
+    if (!dateOfBirth.value) {
+        dateOfBirthError.style.display = "block";
         isValid = false;
     } else {
-        document.getElementById("LastNameError").style.display = "none";
+        dateOfBirthError.style.display = "none";
     }
 
-    if (!workEmail.value) {
-        document.getElementById("WorkEmailError").style.display = "block";
+    // Father Name validation
+    const fatherName = document.getElementById("FatherName");
+    const fatherNameError = document.getElementById("FatherNameError");
+    if (!fatherName.value) {
+        fatherNameError.style.display = "block";
         isValid = false;
     } else {
-        document.getElementById("WorkEmailError").style.display = "none";
+        fatherNameError.style.display = "none";
     }
 
-    if (!dateOfJoining.value) {
-        document.getElementById("DateOfJoiningError").style.display = "block";
+    // PAN validation
+    const pan = document.getElementById("PAN");
+    const panError = document.getElementById("PANError");
+    const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+    if (!pan.value || !panRegex.test(pan.value)) {
+        panError.style.display = "block";
         isValid = false;
     } else {
-        document.getElementById("DateOfJoiningError").style.display = "none";
+        panError.style.display = "none";
     }
 
-    if (gender.value === "0") {
-        document.getElementById("GenderError").style.display = "block";
+    // Address Line 1 validation
+    const addressLine1 = document.getElementById("AddressLine1");
+    const addressLine1Error = document.getElementById("AddressLine1Error");
+    if (!addressLine1.value) {
+        addressLine1Error.style.display = "block";
         isValid = false;
     } else {
-        document.getElementById("GenderError").style.display = "none";
+        addressLine1Error.style.display = "none";
     }
 
-    if (state.value === "0") {
-        document.getElementById("StateError").style.display = "block";
+    // State validation
+    const stateID = document.getElementById("ddlState");
+    const stateIDError = document.getElementById("StateIDError");
+    if (stateID.value === "0") {
+        stateIDError.style.display = "block";
         isValid = false;
     } else {
-        document.getElementById("StateError").style.display = "none";
+        stateIDError.style.display = "none";
     }
 
-    if (workLocation.value === "0") {
-        document.getElementById("WorkLocationError").style.display = "block";
+    // City validation
+    const city = document.getElementById("City");
+    const cityError = document.getElementById("CityError");
+    if (city.value === "0") {
+        cityError.style.display = "block";
         isValid = false;
     } else {
-        document.getElementById("WorkLocationError").style.display = "none";
+        cityError.style.display = "none";
     }
 
-    if (department.value === "0") {
-        document.getElementById("DepartmentError").style.display = "block";
+    // Pincode validation
+    const pincode = document.getElementById("Pincode");
+    const pincodeError = document.getElementById("PincodeError");
+    if (!pincode.value || pincode.value.length !== 6 || isNaN(pincode.value)) {
+        pincodeError.style.display = "block";
         isValid = false;
     } else {
-        document.getElementById("DepartmentError").style.display = "none";
+        pincodeError.style.display = "none";
     }
 
-    if (designation.value === "0") {
-        document.getElementById("DesignationError").style.display = "block";
+    return isValid;
+};
+
+// Email validation helper function
+const validateEmail = (email) => {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailPattern.test(email);
+};
+
+// Function to restrict numeric input in pincode field
+const validateNumericInput = (event) => {
+    const keyCode = event.keyCode || event.which;
+    if (keyCode < 48 || keyCode > 57) {
+        event.preventDefault();
+    }
+};
+const validateStep3 = () => {
+    let isValid = true;
+
+    // Account Holder Name validation
+    const accountHolderName = document.getElementById("AccountHolderName");
+    const accountHolderNameError = document.getElementById("AccountHolderNameError");
+    if (!accountHolderName.value.trim()) {
+        accountHolderNameError.style.display = "block";
         isValid = false;
     } else {
-        document.getElementById("DesignationError").style.display = "none";
+        accountHolderNameError.style.display = "none";
     }
 
-    if (offerLetter.value === "0") {
-        document.getElementById("OfferLetterError").style.display = "block";
+    // Bank Name validation
+    const bankName = document.getElementById("BankName");
+    const bankNameError = document.getElementById("BankNameError");
+    if (!bankName.value.trim()) {
+        bankNameError.style.display = "block";
         isValid = false;
     } else {
-        document.getElementById("OfferLetterError").style.display = "none";
+        bankNameError.style.display = "none";
     }
 
-    if (officeShiftType.value === "0") {
-        document.getElementById("ShiftTypeError").style.display = "block";
+    // Account Number validation
+    const accountNumber = document.getElementById("AccountNumber");
+    const accountNumberError = document.getElementById("AccountNumberError");
+    if (!accountNumber.value.trim()) {
+        accountNumberError.style.display = "block";
         isValid = false;
     } else {
-        document.getElementById("ShiftTypeError").style.display = "none";
+        accountNumberError.style.display = "none";
     }
 
-    // Prevent navigation if the form is not valid
-    if (!isValid) {
-        console.log("Form is invalid, staying on the current step.");
+    // Re-enter Account Number validation
+    const reEnterAccountNumber = document.getElementById("ReEnterAccountNumber");
+    const reEnterAccountNumberError = document.getElementById("ReEnterAccountNumberError");
+    if (reEnterAccountNumber.value.trim() !== accountNumber.value.trim()) {
+        reEnterAccountNumberError.style.display = "block";
+        isValid = false;
     } else {
-        // Logic to move to the next step
-        console.log("Form is valid, moving to the next step.");
-        // You can include your step navigation logic here if needed.
+        reEnterAccountNumberError.style.display = "none";
     }
+
+    // IFSC validation
+    const ifsc = document.getElementById("IFSC");
+    const ifscError = document.getElementById("IFSCError");
+    if (!ifsc.value.trim()) {
+        ifscError.style.display = "block";
+        isValid = false;
+    } else {
+        ifscError.style.display = "none";
+    }
+
+    // Deduction Cycle validation
+    const deductionCycle = document.getElementById("ddlDeductionTime");
+    const deductionCycleError = document.getElementById("DeductionCycleError");
+    if (deductionCycle.value === "0") {
+        deductionCycleError.style.display = "block";
+        isValid = false;
+        deductionCycleError.style.display = "none";
+    }
+
+    return isValid;
+};
+document.querySelectorAll(".btn-navigate-form-step").forEach((formNavigationBtn) => {
+    formNavigationBtn.addEventListener("click", () => {
+        const stepNumber = parseInt(formNavigationBtn.getAttribute("step_number"));
+
+        // Validate the current step before navigating to the next
+        if (stepNumber === 3 && !validateStep2()) {
+            console.log("Step 2 form is invalid, staying on the current step.");
+            return; // Stop navigation if validation fails
+        }
+
+        // Validate the third step before navigating to the next
+        if (stepNumber === 4 && !validateStep3()) {
+            console.log("Step 3 form is invalid, staying on the current step.");
+            return; // Stop navigation if validation fails
+        }
+
+        // Move to the next step if validation succeeds
+        navigateToFormStep(stepNumber);
+    });
 });
