@@ -2173,6 +2173,111 @@ namespace CRM.Repository
                 throw ex;
             }
         }
+
+        public async Task<bool> CustomerInvoice(List<ProductDetail> model, int vendorid)
+        {
+            try
+            {
+                //if (model.Id == 0)
+                //{
+                    foreach (var product in model)  
+                    {
+                        var data = new CustomerInvoice()
+                        {
+                            VendorId = vendorid,
+                            CustomerId = product.CustomerId,
+                            ProductId = product.ProductId,  
+                            ProductPrice = product.ProductPrice,
+                            RenewPrice = product.RenewPrice,
+                            NoOfRenewMonth = product.NoOfRenewMonth,
+                            Hsncode = product.HsnSacCode,
+                            StartDate = product.StartDate,
+                            RenewDate = product.RenewDate,
+                            Igst = product.IGST,
+                            Sgst = product.SGST,
+                            Cgst = product.CGST,
+                            CreatedDate = DateTime.Now
+                        };
+                        _context.Add(data);
+                    }
+                    _context.SaveChanges();
+                    return true;
+                //}
+                //else
+                //{
+                //    var data = _context.CustomerInvoices.FirstOrDefault(ci => ci.Id == model.Id);
+                //    if (data != null)
+                //    { 
+                //        data.ProductPrice = model.ProductPrice;
+                //        data.RenewPrice = model.RenewPrice;
+                //        data.NoOfRenewMonth = model.NoOfRenewMonth;
+                //        data.Hsncode = model.Hsncode;
+                //        data.StartDate = model.StartDate;
+                //        data.RenewDate = model.RenewDate;
+                //        data.Igst = model.Igst;
+                //        data.Sgst = model.Sgst;
+                //        data.Cgst = model.Cgst;
+
+                //        _context.Update(data);
+                //        _context.SaveChanges();
+                //    }
+                //    return true;
+                //}
+
+            }
+            catch (Exception)
+            {
+                throw; // Consider logging the exception here
+            }
+        }
+
+        public async Task<List<CustomerInvoiceDTO>> GetCustometInvoiceList(int vendorid)
+        {
+            try
+            {
+                var result = await (from ci in _context.CustomerInvoices
+                                    join c in _context.CustomerRegistrations on ci.CustomerId equals c.Id
+                                    join p in _context.ProductMasters on ci.ProductId equals p.Id
+                                    join s in _context.States on c.StateId equals s.Id
+                                    join ct in _context.Cities on c.CityId equals ct.Id
+                                    join sb in _context.States on c.BillingStateId equals sb.Id
+                                    join ctb in _context.Cities on c.BillingCityId equals ctb.Id
+                                    where c.Vendorid == vendorid
+                                    group new { ci, c, p, s, ct, sb, ctb } by ci.CustomerId into grouped
+                                    select new CustomerInvoiceDTO
+                                    {
+                                        InvoiceId = grouped.FirstOrDefault().ci.Id,
+                                        CustomerId = grouped.FirstOrDefault().ci.CustomerId,
+                                        CompanyName = grouped.FirstOrDefault().c.CompanyName,
+                                        MobileNumber = grouped.FirstOrDefault().c.MobileNumber,
+                                        AlternateNumber = grouped.FirstOrDefault().c.AlternateNumber,
+                                        Email = grouped.FirstOrDefault().c.Email,
+                                        ProductName = grouped.FirstOrDefault().p.ProductName,
+                                        OfficeAddress = grouped.FirstOrDefault().c.Location,
+                                        OfficeState = grouped.FirstOrDefault().s.SName,
+                                        OfficeCity = grouped.FirstOrDefault().ct.City1,
+                                        BillingAddress = grouped.FirstOrDefault().c.BillingAddress,
+                                        BillingState = grouped.FirstOrDefault().sb.SName,
+                                        BillingCity = grouped.FirstOrDefault().ctb.City1,
+                                        InvoiceDate = grouped.FirstOrDefault().ci.CreatedDate,
+                                        ProductPrice = grouped.FirstOrDefault().ci.ProductPrice,
+                                        RenewPrice = grouped.FirstOrDefault().ci.RenewPrice,
+                                        StartDate = grouped.FirstOrDefault().ci.StartDate,
+                                        RenewDate = grouped.FirstOrDefault().ci.RenewDate,
+                                        IGST = grouped.FirstOrDefault().ci.Igst,
+                                        SGST = grouped.FirstOrDefault().ci.Sgst,
+                                        CGST = grouped.FirstOrDefault().ci.Cgst
+                                    }).ToListAsync();
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                // Optionally log the exception
+                throw; // Rethrow the exception or handle it accordingly
+            }
+        }
+       
     }
 
 }

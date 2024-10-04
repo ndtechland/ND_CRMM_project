@@ -30,6 +30,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<Category> Categories { get; set; } = null!;
         public virtual DbSet<City> Cities { get; set; } = null!;
         public virtual DbSet<Counter> Counters { get; set; } = null!;
+        public virtual DbSet<CustomerInvoice> CustomerInvoices { get; set; } = null!;
         public virtual DbSet<CustomerRegistration> CustomerRegistrations { get; set; } = null!;
         public virtual DbSet<DateFormatMaster> DateFormatMasters { get; set; } = null!;
         public virtual DbSet<DeductorNameMaster> DeductorNameMasters { get; set; } = null!;
@@ -390,6 +391,37 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.Id).ValueGeneratedOnAdd();
 
                 entity.Property(e => e.ExpireAt).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<CustomerInvoice>(entity =>
+            {
+                entity.ToTable("CustomerInvoice");
+
+                entity.Property(e => e.Cgst)
+                    .HasColumnType("decimal(18, 0)")
+                    .HasColumnName("CGST");
+
+                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Hsncode)
+                    .HasMaxLength(100)
+                    .HasColumnName("HSNCode");
+
+                entity.Property(e => e.Igst)
+                    .HasColumnType("decimal(18, 0)")
+                    .HasColumnName("IGST");
+
+                entity.Property(e => e.ProductPrice).HasColumnType("decimal(18, 0)");
+
+                entity.Property(e => e.RenewDate).HasColumnType("date");
+
+                entity.Property(e => e.RenewPrice).HasColumnType("decimal(18, 0)");
+
+                entity.Property(e => e.Sgst)
+                    .HasColumnType("decimal(18, 0)")
+                    .HasColumnName("SGST");
+
+                entity.Property(e => e.StartDate).HasColumnType("date");
             });
 
             modelBuilder.Entity<CustomerRegistration>(entity =>
