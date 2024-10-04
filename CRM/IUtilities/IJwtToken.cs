@@ -4,6 +4,8 @@ namespace CRM.IUtilities
 {
     public interface IJwtToken
     {
-        string token(LoginDTO model);
+        string GenerateAccessToken(LoginDTO model);
+        string GenerateRefreshToken(LoginDTO model);
     }
+
 }

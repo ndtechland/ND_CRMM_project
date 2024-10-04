@@ -10,10 +10,16 @@
     var cgstAmount = productPrice * cgst / 100;
     var scgstAmount = productPrice * scgst / 100;
     var igstAmount = productPrice * igst / 100;
-    var totalAmount = productPrice + (Model.Igst == null ? (cgstAmount + scgstAmount) : igstAmount);
+    var subTotal = productPrice;
+    var totalBeforeRounding = subTotal + (Model.Igst == null ? (cgstAmount + scgstAmount) : igstAmount);
+
+    var roundedTotal = Math.Round(totalBeforeRounding, 0, MidpointRounding.AwayFromZero); 
+    var rounding = roundedTotal - totalBeforeRounding; 
+    var totalAmount = totalBeforeRounding + rounding; 
+
 }
 
-<!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -171,7 +177,7 @@
 
     <div class="invoice-container">
         <div class="header">
-            <img src="~/assets/images/layout-2/logo/logo.png" alt="Company Logo">
+            <img src="~/assets/images/layout-2/logo/ndtechland.png" alt="Company Logo">
             <div>
                 <h3>N D Techland Private Limited</h3>
                 <p>
@@ -264,7 +270,7 @@
             <table>
                 <tr>
                     <td>Sub Total</td>
-                    <td>@String.Format("{0:0.00}", productPrice)</td>
+                    <td>@String.Format("{0:0.00}", subTotal)</td>
                 </tr>
                 @if (Model.Igst == null)
                 {
@@ -286,7 +292,7 @@
                 }
                 <tr>
                     <td>Rounding</td>
-                    <td>0.36</td>
+                    <td>@rounding.ToString("F2")</td> <!-- Format to two decimal places -->
                 </tr>
                 <tr>
                     <td><strong>Total</strong></td>
@@ -302,99 +308,18 @@
                 </tr>
             </table>
         </div>
-        <div>
-            <h6>Total In Words</h6>
-            <p style="font-weight: bold;" id="totalInWords"></p>
-            <p>Notes</p>
-            <p>Thanks for your business</p>
-        </div>
+
         <div class="bank-details">
-            <h3>Bank Details</h3>
-            <p>
-                Name: N D Techland Private Limited<br>
-                A/C No: 7124200110005060<br>
-                IFSC: BKID0007124<br>
-                Bank: Bank of India<br>
-                Branch: Sector - 22
-            </p>
+            Bank Account Details<br />
+            A/C Holder Name: N D Techland Private Limited<br />
+            Bank Name: HDFC Bank<br />
+            Account Number: 50200058620932<br />
+            IFSC Code: HDFC0002667
         </div>
+
         <div class="footer">
-            <p>For N D Techland Private Limited</p>
-            <div class="signature">
-                <p>(Authorized Signature)</p>
-            </div>
+            <p>Authorized Signatory</p>
         </div>
     </div>
-
-    <script>
-        function inWords(num) {
-            var units = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
-            var teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
-            var tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
-
-            function convertLessThanThousand(number) {
-                if (number === 0) {
-                    return '';
-                } else if (number < 10) {
-                    return units[number] + ' ';
-                } else if (number < 20) {
-                    return teens[number - 10] + ' ';
-                } else if (number < 100) {
-                    return tens[Math.floor(number / 10)] + ' ' + convertLessThanThousand(number % 10);
-                } else {
-                    return units[Math.floor(number / 100)] + ' Hundred ' + convertLessThanThousand(number % 100);
-                }
-            }
-
-            if (num === 0) {
-                return 'Zero Only';
-            } else {
-                var result = '';
-                if (num < 0) {
-                    result += 'Negative ';
-                    num = Math.abs(num);
-                }
-
-                if (num >= 1000000) {
-                    result += convertLessThanThousand(Math.floor(num / 1000000)) + 'Million ';
-                    num %= 1000000;
-                }
-
-                if (num >= 1000) {
-                    result += convertLessThanThousand(Math.floor(num / 1000)) + 'Thousand ';
-                    num %= 1000;
-                }
-
-                result += convertLessThanThousand(Math.floor(num));
-
-                // Handle the decimal part
-                var decimalPart = '';
-                if (num % 1 !== 0) {
-                    decimalPart = ' Point ';
-                    var decimal = (num.toFixed(2).split('.')[1]).replace(/^0+/, '');
-                    for (var i = 0; i < decimal.length; i++) {
-                        decimalPart += units[parseInt(decimal[i])] + ' ';
-                    }
-                    decimalPart += 'Only.';
-                } else {
-                    decimalPart = 'Only.';
-                }
-
-                return (result + decimalPart).trim();
-            }
-        }
-
-        // Get the total amount for conversion
-        var totalAmount = @String.Format("{0:0.00}", totalAmount);
-        var words = inWords(parseFloat(totalAmount));
-        document.getElementById('totalInWords').innerHTML = 'Indian Rupee ' + words;
-    </script>
-
 </body>
 </html>
-
-
-
-
-
-

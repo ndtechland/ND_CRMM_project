@@ -28,9 +28,9 @@
 
     const requiredFields = [
     {id: "FirstName", errorId: "FirstNameError" },
-    {id: "MiddleName", errorId: "MiddleNameError" },
-    {id: "LastName", errorId: "LastNameError" },
-    {id: "WorkEmail", errorId: "WorkEmailError" },
+    //{id: "MiddleName", errorId: "MiddleNameError" },
+    //{id: "LastName", errorId: "LastNameError" },
+    //{id: "WorkEmail", errorId: "WorkEmailError" },
     {id: "DateOfJoining", errorId: "DateOfJoiningError" },
     {id: "ddlGender", errorId: "GenderError", isSelect: true },
     {id: "ddlStates", errorId: "StateError", isSelect: true },
@@ -80,9 +80,9 @@ document.querySelector(".btn-navigate-form-step").addEventListener("click", func
 
     // Get form field values
     const firstName = document.getElementById("FirstName");
-    const middleName = document.getElementById("MiddleName");
-    const lastName = document.getElementById("LastName");
-    const workEmail = document.getElementById("WorkEmail");
+    //const middleName = document.getElementById("MiddleName");
+    //const lastName = document.getElementById("LastName");
+    //const workEmail = document.getElementById("WorkEmail");
     const dateOfJoining = document.getElementById("DateOfJoining");
     const gender = document.getElementById("ddlGender");
     const state = document.getElementById("ddlStates");
@@ -100,26 +100,26 @@ document.querySelector(".btn-navigate-form-step").addEventListener("click", func
         document.getElementById("FirstNameError").style.display = "none";
     }
 
-    if (!middleName.value) {
-        document.getElementById("MiddleNameError").style.display = "block";
-        isValid = false;
-    } else {
-        document.getElementById("MiddleNameError").style.display = "none";
-    }
+    //if (!middleName.value) {
+    //    document.getElementById("MiddleNameError").style.display = "block";
+    //    isValid = false;
+    //} else {
+    //    document.getElementById("MiddleNameError").style.display = "none";
+    //}
 
-    if (!lastName.value) {
-        document.getElementById("LastNameError").style.display = "block";
-        isValid = false;
-    } else {
-        document.getElementById("LastNameError").style.display = "none";
-    }
+    //if (!lastName.value) {
+    //    document.getElementById("LastNameError").style.display = "block";
+    //    isValid = false;
+    //} else {
+    //    document.getElementById("LastNameError").style.display = "none";
+    //}
 
-    if (!workEmail.value) {
-        document.getElementById("WorkEmailError").style.display = "block";
-        isValid = false;
-    } else {
-        document.getElementById("WorkEmailError").style.display = "none";
-    }
+    //if (!workEmail.value) {
+    //    document.getElementById("WorkEmailError").style.display = "block";
+    //    isValid = false;
+    //} else {
+    //    document.getElementById("WorkEmailError").style.display = "none";
+    //}
 
     if (!dateOfJoining.value) {
         document.getElementById("DateOfJoiningError").style.display = "block";
