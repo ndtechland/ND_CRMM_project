@@ -1,15 +1,21 @@
 ﻿using CRM.Models.Crm;
+using CRM.Models.DTO;
+using CRM.Repository;
+using DocumentFormat.OpenXml.Drawing.Charts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace CRM.Controllers
 {
     public class SaleController : Controller
     {
         private readonly admin_NDCrMContext _context;
-        public SaleController(admin_NDCrMContext context)
+        private readonly ICrmrpo _ICrmrpo;
+        public SaleController(admin_NDCrMContext context, ICrmrpo ICrmrpo)
         {
             _context = context;
+            _ICrmrpo = ICrmrpo;
         }
         [HttpGet]
         public IActionResult Invoice(int id = 0)
@@ -24,60 +30,58 @@ namespace CRM.Controllers
                     var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
 
                     ViewBag.checkvendorbillingstateid = _context.VendorRegistrations.Where(v => v.Id == adminlogin.Vendorid).FirstOrDefault().BillingStateId;
+                    //var customerData = _context.CustomerInvoices.Where(c => c.CustomerId == id).ToList();
+                    
 
-                    //ViewBag.StateItems = _context.States
-                    //    .Select(p => new SelectListItem
-                    //    {
-                    //        Value = p.Id.ToString(),
-                    //        Text = p.SName,
-                    //    })
-                    //    .ToList();
-                    var items = _context.States.ToList();
-                    ViewBag.StateItems = new SelectList(items, "Id", "SName");
                     if (id != 0)
                     {
                         ViewBag.UserName = AddedBy;
-                        ViewBag.Heading = "Customer Registration";
+                        ViewBag.Heading = "Invoice";
                         ViewBag.btnText = "Update";
-                        //var data = _ICrmrpo.GetCustomerById(id);
-                        //if (data != null)
-                        //{
+                        var data = _context.CustomerInvoices.Where(c=>c.CustomerId==id).FirstOrDefault();
+                        if (data != null)
+                        {
 
-                        //    ViewBag.ProductDetails = _context.ProductMasters.Where(x => x.IsDeleted == false)
-                        //        .Select(p => new SelectListItem
-                        //        {
-                        //            Value = p.Id.ToString(),
-                        //            Text = p.ProductName,
-                        //        })
-                        //        .ToList();
-                        //    ViewBag.SelectedStateId = data.StateId;
-                        //    ViewBag.SelectedCityId = data.CityId;
-                        //    ViewBag.state = data.BillingStateId;
-                        //    ViewBag.BillingCityId = data.BillingCityId;
-                        //    ViewBag.CheckIsSameAddress = data.IsSameAddress;
-                        //    ViewBag.NoOfRenewMonth = data.NoOfRenewMonth;
-                        //    ViewBag.Renewprice = data.Renewprice;
-                        //    ViewBag.startDate = ((DateTime)data.StartDate).ToString("yyyy-MM-dd");
-                        //    ViewBag.renewDate = ((DateTime)data.RenewDate).ToString("yyyy-MM-dd");
-                        //    return View(data);
-                        //}
+                            ViewBag.ProductDetails = _context.ProductMasters.Where(x => x.IsDeleted == false)
+                                .Select(p => new SelectListItem
+                                {
+                                    Value = p.Id.ToString(),
+                                    Text = p.ProductName,
+                                })
+                                .ToList();
+                            ViewBag.ProductId = data.ProductId;
+                            ViewBag.Price = data.ProductPrice;
+                            ViewBag.RenewPrice = data.RenewPrice;
+                            ViewBag.NoOfRenewMonth = data.NoOfRenewMonth;
+                            ViewBag.HsnSacCode = data.Hsncode;
+                            ViewBag.StartDate = data.StartDate;
+                            ViewBag.RenewDate = data.RenewDate;
+                            ViewBag.IGST = data.Igst;
+                            ViewBag.SGST = data.Sgst;
+                            ViewBag.CGST = data.Cgst;
+                            return View();
+                        }
                     }
                     ViewBag.UserName = AddedBy;
-                    ViewBag.Heading = "Customer Registration";
+                    ViewBag.Heading = "Invoice";
                     ViewBag.btnText = "SAVE";
-                    ViewBag.SelectedStateId = null;
-                    ViewBag.SelectedCityId = null;
-                    ViewBag.BillingCityId = null;
-                    ViewBag.CheckIsSameAddress = null;
+                    ViewBag.ProductId =null;
+                    ViewBag.Price = null;
+                    ViewBag.RenewPrice = null;
                     ViewBag.NoOfRenewMonth = null;
-                    ViewBag.Renewprice = null;
+                    ViewBag.HsnSacCode = null;
+                    ViewBag.StartDate = null;
+                    ViewBag.RenewDate = null;
+                    ViewBag.IGST = null;
+                    ViewBag.SGST = null;
+                    ViewBag.CGST = null;
                     ViewBag.ProductDetails = _context.ProductMasters.Where(x => x.IsDeleted == false)
-                        .Select(p => new SelectListItem
-                        {
-                            Value = p.Id.ToString(),
-                            Text = p.ProductName,
-                        })
-                        .ToList();
+                    .Select(p => new SelectListItem
+                    {
+                        Value = p.Id.ToString(),
+                        Text = p.ProductName,
+                    })
+                    .ToList();
                     return View();
                 }
                 else
@@ -91,12 +95,51 @@ namespace CRM.Controllers
 				throw;
 			}
         }
-         
+        [HttpPost]
+        public async Task<IActionResult> Invoice( List<ProductDetail> model)
+        {
+            try
+            {
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+
+                 
+                    bool data = await _ICrmrpo.CustomerInvoice(model, (int)adminlogin.Vendorid);
+                if (data)
+                {
+                    TempData["Message"] = "Added Successfully.";
+                    TempData.Keep("Message");
+                
+                    var model1 =
+                        new
+                        {
+                            path = "/Sale/CustomerInvoiceList"
+                        };
+                    return Ok(model1);
+                        //return RedirectToAction("CustomerInvoiceList", "Sale");
+                    }
+                    else
+                    {
+                        TempData["Message"] = "Add Failed.";
+                        return View(model);
+                    }
+                 
+                 
+            }
+            catch (Exception Ex)
+            {
+                throw new Exception("Error:" + Ex.Message);
+            }
+        }
+
         [HttpGet]
         public IActionResult GetCustomerNames(string searchTerm)
         {
+            int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+            var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
+
             var customers = _context.CustomerRegistrations
-                                    .Where(c => c.CompanyName.Contains(searchTerm))
+                                    .Where(c => c.CompanyName.Contains(searchTerm) && c.Vendorid==adminlogin.Vendorid)
                                     .Select(c => new
                                     {
                                         Id = c.Id,
@@ -110,24 +153,48 @@ namespace CRM.Controllers
         [HttpGet]
         public IActionResult GetCustomerDetailsById(int id)
         {
-            var customer = _context.CustomerRegistrations
-                                   .Where(c => c.Id == id)
-                                   .Select(c => new
-                                   {
-                                       BillingAddress = c.BillingAddress,
-                                       Location = c.Location,
-                                       OfficeStateId = c.StateId,
-                                       OfficeCityId = c.CityId,
-                                       BillingStateId = c.BillingStateId,
-                                       BillingCityId = c.BillingCityId
-                                   })
-                                   .FirstOrDefault();
+            int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+            var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
+
+            var customer = (from c in _context.CustomerRegistrations
+                          join so in _context.States on c.StateId equals so.Id
+                          join sb in _context.States on c.BillingStateId equals sb.Id
+                          join co in _context.Cities on c.CityId equals co.Id
+                          join cb in _context.Cities on c.BillingCityId equals cb.Id
+                          where c.Id == id && c.Vendorid== adminlogin.Vendorid
+                            select new
+                            {
+                              BillingAddress = c.BillingAddress,
+                              Location = c.Location,
+                              OfficeState = so.SName, 
+                              OfficeCity = co.City1,    
+                              BillingState = sb.SName,  
+                              BillingStateId = c.BillingStateId,
+                                MobileNumber = c.MobileNumber,
+                                Email = c.Email,
+                                GstNumber = c.GstNumber,  
+                              BillingCity = cb.City1    
+                          })
+               .FirstOrDefault();
 
             return Json(customer);
+        }        
+
+        public async Task<IActionResult> CustomerInvoiceList()
+        {
+            try
+            {
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
+
+                List<CustomerInvoiceDTO> data = await _ICrmrpo.GetCustometInvoiceList((int)adminlogin.Vendorid);
+                return View(data);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
-
-
-
-
     }
 }

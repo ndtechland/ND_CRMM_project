@@ -30,6 +30,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<Category> Categories { get; set; } = null!;
         public virtual DbSet<City> Cities { get; set; } = null!;
         public virtual DbSet<Counter> Counters { get; set; } = null!;
+        public virtual DbSet<CustomerInvoice> CustomerInvoices { get; set; } = null!;
         public virtual DbSet<CustomerRegistration> CustomerRegistrations { get; set; } = null!;
         public virtual DbSet<DateFormatMaster> DateFormatMasters { get; set; } = null!;
         public virtual DbSet<DeductorNameMaster> DeductorNameMasters { get; set; } = null!;
@@ -40,6 +41,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<Empattendance> Empattendances { get; set; } = null!;
         public virtual DbSet<EmployeeBankDetail> EmployeeBankDetails { get; set; } = null!;
         public virtual DbSet<EmployeeCheckIn> EmployeeCheckIns { get; set; } = null!;
+        public virtual DbSet<EmployeeCheckInRecord> EmployeeCheckInRecords { get; set; } = null!;
         public virtual DbSet<EmployeeImportExcel> EmployeeImportExcels { get; set; } = null!;
         public virtual DbSet<EmployeeLogin> EmployeeLogins { get; set; } = null!;
         public virtual DbSet<EmployeePersonalDetail> EmployeePersonalDetails { get; set; } = null!;
@@ -61,6 +63,8 @@ namespace CRM.Models.Crm
         public virtual DbSet<Leavemaster> Leavemasters { get; set; } = null!;
         public virtual DbSet<List> Lists { get; set; } = null!;
         public virtual DbSet<Offerletter> Offerletters { get; set; } = null!;
+        public virtual DbSet<OfficeBreak> OfficeBreaks { get; set; } = null!;
+        public virtual DbSet<OfficeBreakstatus> OfficeBreakstatuses { get; set; } = null!;
         public virtual DbSet<Officeshift> Officeshifts { get; set; } = null!;
         public virtual DbSet<OrganisationProfile> OrganisationProfiles { get; set; } = null!;
         public virtual DbSet<OrganisationTaxDetail> OrganisationTaxDetails { get; set; } = null!;
@@ -389,6 +393,37 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.ExpireAt).HasColumnType("datetime");
             });
 
+            modelBuilder.Entity<CustomerInvoice>(entity =>
+            {
+                entity.ToTable("CustomerInvoice");
+
+                entity.Property(e => e.Cgst)
+                    .HasColumnType("decimal(18, 0)")
+                    .HasColumnName("CGST");
+
+                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Hsncode)
+                    .HasMaxLength(100)
+                    .HasColumnName("HSNCode");
+
+                entity.Property(e => e.Igst)
+                    .HasColumnType("decimal(18, 0)")
+                    .HasColumnName("IGST");
+
+                entity.Property(e => e.ProductPrice).HasColumnType("decimal(18, 0)");
+
+                entity.Property(e => e.RenewDate).HasColumnType("date");
+
+                entity.Property(e => e.RenewPrice).HasColumnType("decimal(18, 0)");
+
+                entity.Property(e => e.Sgst)
+                    .HasColumnType("decimal(18, 0)")
+                    .HasColumnName("SGST");
+
+                entity.Property(e => e.StartDate).HasColumnType("date");
+            });
+
             modelBuilder.Entity<CustomerRegistration>(entity =>
             {
                 entity.ToTable("Customer_Registration");
@@ -643,6 +678,23 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.EmployeeId)
                     .HasMaxLength(200)
                     .HasColumnName("Employee_ID");
+            });
+
+            modelBuilder.Entity<EmployeeCheckInRecord>(entity =>
+            {
+                entity.ToTable("EmployeeCheckInRecord");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.CheckIntime).HasColumnType("datetime");
+
+                entity.Property(e => e.CheckOuttime).HasColumnType("datetime");
+
+                entity.Property(e => e.CurrentDate).HasColumnType("datetime");
+
+                entity.Property(e => e.EmpId).HasMaxLength(200);
+
+                entity.Property(e => e.Workinghour).HasColumnName("workinghour");
             });
 
             modelBuilder.Entity<EmployeeImportExcel>(entity =>
@@ -1279,6 +1331,34 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.StateId).HasColumnName("stateId");
 
                 entity.Property(e => e.Validdate).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<OfficeBreak>(entity =>
+            {
+                entity.ToTable("officeBreak");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Createdate).HasColumnType("datetime");
+
+                entity.Property(e => e.Endtime).HasMaxLength(200);
+
+                entity.Property(e => e.Shiftid).HasColumnName("shiftid");
+
+                entity.Property(e => e.Starttime)
+                    .HasMaxLength(200)
+                    .HasColumnName("starttime");
+            });
+
+            modelBuilder.Entity<OfficeBreakstatus>(entity =>
+            {
+                entity.ToTable("officeBreakstatus");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Breakstatus).HasMaxLength(200);
+
+                entity.Property(e => e.Createdate).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<Officeshift>(entity =>
