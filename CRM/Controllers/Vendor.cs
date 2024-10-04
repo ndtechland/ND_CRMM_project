@@ -2,6 +2,7 @@ using CRM.IUtilities;
 using CRM.Models.Crm;
 using CRM.Models.DTO;
 using CRM.Repository;
+using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Drawing.Charts;
 
 using DocumentFormat.OpenXml.Office2010.Excel;
@@ -546,7 +547,7 @@ namespace CRM.Controllers
 
             if (FilePath != "")
             {
-                string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "CompanyImage");
+                string folderPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "CompanyImage");
                 string folderfilepathPath = folderPath + "//" + FilePath;
                 if (Directory.Exists(folderPath))
                 {
@@ -669,7 +670,7 @@ namespace CRM.Controllers
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while deleting the DeleteQuationList:" + ex.Message);
+                throw new Exception("An error occurred while deleting the DeleteList:" + ex.Message);
             }
         }
         [HttpGet, Route("Vendor/Officeshift")]
@@ -779,11 +780,11 @@ namespace CRM.Controllers
                     _context.Officeshifts.Remove(data);
                     _context.SaveChanges();
                 }
-                return RedirectToAction("VendorOfficeshiftlist");
+                return RedirectToAction("Officeshift");
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while deleting the DeleteQuationList:" + ex.Message);
+                throw new Exception("An error occurred while deleting the DeleteList:" + ex.Message);
             }
         }
         [HttpGet]
@@ -949,7 +950,7 @@ namespace CRM.Controllers
                 string SlipURL = $"{schema}://{host}/Vendor/VendorInvoice?Id={Id}";
                 HtmlToPdf converter = new HtmlToPdf();
                 PdfDocument doc = converter.ConvertUrl(SlipURL);
-                string wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "VendorInvoicefile");
+                string wwwRootPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "VendorInvoicefile");
                 if (!Directory.Exists(wwwRootPath))
                 {
                     Directory.CreateDirectory(wwwRootPath);
@@ -963,7 +964,7 @@ namespace CRM.Controllers
                                   Email = vr.Email
                               }).FirstOrDefault();
                 string uniqueFileName = $"Invoice_{Guid.NewGuid()}_{Id}_{DateTime.Now:yyyyMMddHHmmss}.pdf";
-                string filePath = Path.Combine(wwwRootPath, uniqueFileName);
+                string filePath = System.IO.Path.Combine(wwwRootPath, uniqueFileName);
                 doc.Save(filePath);
                 byte[] pdf = System.IO.File.ReadAllBytes(filePath);
 
@@ -995,6 +996,247 @@ namespace CRM.Controllers
                 return Json(new { success = false, message = $"Error: {ex.Message}" });
             }
         }
+        [HttpGet, Route("Vendor/officeBreak")]
+        public async Task<IActionResult> officeBreak(int? id = 0)
+        {
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                List<OfficeBreakDto> response = await _context.OfficeBreaks.Where(x => x.Vendorid == adminlogin.Vendorid)
+               .Select(x => new OfficeBreakDto
+               {
+                   Id = x.Id,
+                   Starttime =x.Starttime,
+                   Endtime = x.Endtime,
+                   Createdate = x.Createdate,
+                   Breakstatus = _context.OfficeBreakstatuses.Where(a => a.Id == x.Breakstatusid).Select(status => status.Breakstatus).FirstOrDefault(),
+                   ShiftType = _context.Officeshifts.Where(a => a.Id == x.Shiftid).Select(sas => sas.ShiftTypeid).FirstOrDefault(),
+               }).ToListAsync();
+                ViewBag.Breakstatus = await _context.OfficeBreakstatuses.Where(x => x.Vendorid == adminlogin.Vendorid).Select(w => new SelectListItem
+                {
+                    Value = w.Id.ToString(),
+                    Text = w.Breakstatus
+                }).ToListAsync();
+                ViewBag.ShiftType = await _context.Officeshifts.Where(x => x.Vendorid == adminlogin.Vendorid).Select(w => new SelectListItem
+                {
+                    Value = w.Id.ToString(),
+                    Text = w.ShiftTypeid
+                }).ToListAsync();
+                ViewBag.UserName = AddedBy;
+                ViewBag.Starttime = "";
+                ViewBag.Endtime = "";
+                ViewBag.ShiftTypeid = "";
+                ViewBag.Breakstatusid = "";
+                ViewBag.Heading = "Add Office Break";
+                ViewBag.BtnText = "SAVE";
+                if (id != 0)
+                {
+                    var data = await _context.OfficeBreaks.Where(x => x.Id == id).FirstOrDefaultAsync();
+                    ViewBag.id = data.Id;
+                    ViewBag.Starttime = data.Starttime;
+                    ViewBag.Endtime = data.Endtime;
+                    ViewBag.ShiftTypeid = data.Shiftid;
+                    ViewBag.Breakstatusid = data.Breakstatusid;
+                    ViewBag.Heading = "Update Office Break";
+                    ViewBag.BtnText = "UPDATE";
+                }
+                return View(response);
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> officeBreak(OfficeBreakDto model)
+        {
+            try
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                ViewBag.UserName = AddedBy;
 
+                if (model == null)
+                {
+                    ModelState.Clear();
+                    return View();
+                }
+                if (model.Id != 0)
+                {
+                    var existingData = await _context.OfficeBreaks.FindAsync(model.Id);
+                    if (existingData != null)
+                    {
+                        existingData.Starttime = model.Starttime;
+                        existingData.Endtime = model.Endtime;
+                        existingData.Shiftid = Convert.ToInt16(model.ShiftType);
+                        existingData.Breakstatusid = Convert.ToInt16(model.Breakstatus);
+                        existingData.Createdate = DateTime.Now.Date;
+                        existingData.Vendorid = adminlogin.Vendorid;
+
+                        await _context.SaveChangesAsync();
+                        TempData["Message"] = "Data Update Successfully.";
+                        return RedirectToAction("officeBreak", "Vendor");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Record not found for update.");
+                        return View(model);
+                    }
+                }
+                else
+                {
+                    var data = new OfficeBreak()
+                    {
+                        Starttime = model.Starttime,
+                        Endtime = model.Endtime,
+                        Shiftid = Convert.ToInt16(model.ShiftType),
+                        Breakstatusid = Convert.ToInt16(model.Breakstatus),
+                        Createdate = DateTime.Now.Date,
+                        Vendorid = adminlogin.Vendorid,
+                    };
+
+                    _context.OfficeBreaks.Add(data);
+                    await _context.SaveChangesAsync();
+                    TempData["Message"] = "Data Added Successfully.";
+                    return RedirectToAction("officeBreak", "Vendor");
+                }
+            }
+            catch (InvalidOperationException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error: " + ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> DeleteofficeBreak(int id)
+        {
+            try
+            {
+                var data = _context.OfficeBreaks.Find(id);
+                if (data != null)
+                {
+                    _context.OfficeBreaks.Remove(data);
+                    _context.SaveChanges();
+                }
+                return RedirectToAction("officeBreak");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while deleting the DeleteList:" + ex.Message);
+            }
+        }
+        [HttpGet, Route("Vendor/officeBreakStatus")]
+        public async Task<IActionResult> officeBreakStatus(int? id = 0)
+        {
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                List<OfficeBreakstatus> response = await _context.OfficeBreakstatuses.Where(x => x.Vendorid == adminlogin.Vendorid).ToListAsync();
+                ViewBag.UserName = AddedBy;
+                ViewBag.Breakstatus = "";
+                ViewBag.Heading = "Add Office BreakStatus";
+                ViewBag.BtnText = "SAVE";
+                if (id != 0)
+                {
+                    var data = await _context.OfficeBreakstatuses.Where(x => x.Id == id).FirstOrDefaultAsync();
+                    ViewBag.id = data.Id;
+                    ViewBag.Breakstatus = data.Breakstatus;
+                    ViewBag.Heading = "Update Office BreakStatus";
+                    ViewBag.BtnText = "UPDATE";
+                }
+                return View(response);
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> officeBreakStatus(OfficeBreakstatus model)
+        {
+            try
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                ViewBag.UserName = AddedBy;
+
+                if (model == null)
+                {
+                    ModelState.Clear();
+                    return View();
+                }
+                if (model.Id != 0)
+                {
+                    var existingData = await _context.OfficeBreakstatuses.FindAsync(model.Id);
+                    if (existingData != null)
+                    {
+                        existingData.Breakstatus = model.Breakstatus;
+                        existingData.Createdate = DateTime.Now.Date;
+                        existingData.Vendorid = adminlogin.Vendorid;
+
+                        await _context.SaveChangesAsync();
+                        TempData["Message"] = "Data Update Successfully.";
+                        return RedirectToAction("officeBreakStatus", "Vendor");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Record not found for update.");
+                        return View(model);
+                    }
+                }
+                else
+                {
+                    var data = new OfficeBreakstatus()
+                    {
+                        Breakstatus = model.Breakstatus,
+                        Createdate = DateTime.Now.Date,
+                        Vendorid = adminlogin.Vendorid,
+                    };
+
+                    _context.OfficeBreakstatuses.Add(data);
+                    await _context.SaveChangesAsync();
+                    TempData["Message"] = "Data Added Successfully.";
+                    return RedirectToAction("officeBreakStatus", "Vendor");
+                }
+            }
+            catch (InvalidOperationException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error: " + ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> DeleteofficeBreakStatus(int id)
+        {
+            try
+            {
+                var data = _context.OfficeBreakstatuses.Find(id);
+                if (data != null)
+                {
+                    _context.OfficeBreakstatuses.Remove(data);
+                    _context.SaveChanges();
+                }
+                return RedirectToAction("officeBreakStatus");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while deleting the DeleteList:" + ex.Message);
+            }
+        }
     }
 }
+

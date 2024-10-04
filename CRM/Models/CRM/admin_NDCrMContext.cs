@@ -62,6 +62,8 @@ namespace CRM.Models.Crm
         public virtual DbSet<Leavemaster> Leavemasters { get; set; } = null!;
         public virtual DbSet<List> Lists { get; set; } = null!;
         public virtual DbSet<Offerletter> Offerletters { get; set; } = null!;
+        public virtual DbSet<OfficeBreak> OfficeBreaks { get; set; } = null!;
+        public virtual DbSet<OfficeBreakstatus> OfficeBreakstatuses { get; set; } = null!;
         public virtual DbSet<Officeshift> Officeshifts { get; set; } = null!;
         public virtual DbSet<OrganisationProfile> OrganisationProfiles { get; set; } = null!;
         public virtual DbSet<OrganisationTaxDetail> OrganisationTaxDetails { get; set; } = null!;
@@ -1297,6 +1299,34 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.StateId).HasColumnName("stateId");
 
                 entity.Property(e => e.Validdate).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<OfficeBreak>(entity =>
+            {
+                entity.ToTable("officeBreak");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Createdate).HasColumnType("datetime");
+
+                entity.Property(e => e.Endtime).HasMaxLength(200);
+
+                entity.Property(e => e.Shiftid).HasColumnName("shiftid");
+
+                entity.Property(e => e.Starttime)
+                    .HasMaxLength(200)
+                    .HasColumnName("starttime");
+            });
+
+            modelBuilder.Entity<OfficeBreakstatus>(entity =>
+            {
+                entity.ToTable("officeBreakstatus");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Breakstatus).HasMaxLength(200);
+
+                entity.Property(e => e.Createdate).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<Officeshift>(entity =>

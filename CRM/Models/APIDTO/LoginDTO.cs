@@ -5,6 +5,10 @@
         public string? Employee_ID { get; set; }
         public string? Password { get; set; }
     }
+    public class refreshTokenModel
+    {
+        public string? refreshToken { get; set; }
+    }
     public class LoginProfile
     {
         public int? userid { get; set; }

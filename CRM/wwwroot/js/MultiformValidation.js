@@ -55,7 +55,23 @@ const validateStep1 = () => {
 // Function to validate step 2 fields
 const validateStep2 = () => {
     let isValid = true;
+    // Get form field values
+    const firstName = document.getElementById("FirstName");
+    //const middleName = document.getElementById("MiddleName");
+    //const lastName = document.getElementById("LastName");
+    //const workEmail = document.getElementById("WorkEmail");
+    const dateOfJoining = document.getElementById("DateOfJoining");
+    const gender = document.getElementById("ddlGender");
+    const state = document.getElementById("ddlStates");
+    const workLocation = document.getElementById("ddlCity");
+    const department = document.getElementById("ddDepartmentID");
+    const designation = document.getElementById("ddDesignationID");
+    const offerLetter = document.getElementById("ddOfferletterid");
+    const officeShiftType = document.getElementById("ddshifttypeidid");
 
+    // Validate fields
+    if (!firstName.value) {
+        document.getElementById("FirstNameError").style.display = "block";
     // Personal Email Address validation
     const personalEmail = document.getElementById("PersonalEmailAddress");
     const personalEmailError = document.getElementById("PersonalEmailAddressError");
@@ -65,7 +81,26 @@ const validateStep2 = () => {
     } else {
         personalEmailError.style.display = "none";
     }
+    //if (!middleName.value) {
+    //    document.getElementById("MiddleNameError").style.display = "block";
+    //    isValid = false;
+    //} else {
+    //    document.getElementById("MiddleNameError").style.display = "none";
+    //}
 
+    //if (!lastName.value) {
+    //    document.getElementById("LastNameError").style.display = "block";
+    //    isValid = false;
+    //} else {
+    //    document.getElementById("LastNameError").style.display = "none";
+    //}
+
+    //if (!workEmail.value) {
+    //    document.getElementById("WorkEmailError").style.display = "block";
+    //    isValid = false;
+    //} else {
+    //    document.getElementById("WorkEmailError").style.display = "none";
+    //}
     // Mobile Number validation
     const mobileNumber = document.getElementById("MobileNumber");
     const mobileNumberError = document.getElementById("MobileNumberError");
