@@ -362,33 +362,34 @@
                 <!-- Step Wise Form Content -->
                 <form action="/Employee/EmployeeRegistration" enctype="multipart/form-data" method="POST" autocomplete="off">
                     <!-- Step 1 Content -->
+                    <input hidden name="Emp_Reg_ID" type="text" value="@ViewBag.Emp_Reg_Code" />
                     <section id="step-1" class="form-step">
                         <h2 class="text-danger">Basic info</h2>
                         <div class="mt-3">
                             <div class="row">
                                 <div class="col">
                                     <label>First Name<span class="text-danger">*</span></label>
-                                    <input class="form-control" name="FirstName" placeholder="Enter First Name" id="FirstName" type="text">
+                                    <input class="form-control" name="FirstName" value="@ViewBag.First_Name" placeholder="Enter First Name" id="FirstName" type="text">
                                     <span id="FirstNameError" class="text-danger" style="display:none;">First Name is required</span>
                                 </div>
                                 <div class="col">
                                     <label>Middle Name</label>
-                                    <input class="form-control" name="MiddleName" placeholder="Enter Middle Name" id="MiddleName" type="text">
+                                    <input class="form-control" name="MiddleName" value="@ViewBag.Middle_Name" placeholder="Enter Middle Name" id="MiddleName" type="text">
                                 </div>
                                 <div class="col">
                                     <label>Last Name</label>
-                                    <input class="form-control" name="LastName" placeholder="Enter Last Name" id="LastName" type="text">
+                                    <input class="form-control" name="LastName" value="@ViewBag.Last_Name" placeholder="Enter Last Name" id="LastName" type="text">
                                 </div>
                             </div>
 
                             <div class="row">
                                 <div class="col-md-6">
                                     <label>Work Email</label>
-                                    <input class="form-control" name="WorkEmail" placeholder="Enter Work Email" id="WorkEmail" type="email">
+                                    <input class="form-control" name="WorkEmail" value="@ViewBag.Work_Email" placeholder="Enter Work Email" id="WorkEmail" type="email">
                                 </div>
                                 <div class="col-md-6">
                                     <label>Date Of Joining<span class="text-danger">*</span></label>
-                                    <input class="form-control" name="DateOfJoining" id="DateOfJoining" type="date">
+                                    <input class="form-control" name="DateOfJoining" value="@ViewBag.Date_Of_Joining" id="DateOfJoining" type="date">
                                     <span id="DateOfJoiningError" class="text-danger" style="display:none;">Date Of Joining is required</span>
                                 </div>
                             </div>
@@ -632,8 +633,9 @@
                             <div class="row">
                                 <input class="form-control" value='@ViewBag.AnnualCTC' name="AnnualCTC" id="txtAnnualCTC" type="hidden">
                                 <div class="col">
-                                    <label>Monthly CTC</label>
+                                    <label>Monthly CTC <span class="text-danger">*</span></label>
                                     <input class="form-control" value='@ViewBag.MonthlyCTC' name="MonthlyCTC" placeholder="Enter Monthly CTC" id="txtMonthlyCTC" type="text">
+                                    <span id="MonthlyCTCError" class="text-danger" style="display:none;">Monthly CTC is required and must contain a decimal point.</span>
                                 </div>
                                 <div class="col">
                                     <label>Special Allowance</label>

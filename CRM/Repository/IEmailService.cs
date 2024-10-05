@@ -10,7 +10,7 @@ namespace CRM.Repository
     public interface IEmailService
     {
         Task SendEmailAsync(string toEmail, string subject, string body, byte[] filecontent, string filename, string mimetype);
-        Task SendEmailCred(EmpMultiform model,string password);
+        Task SendEmailCred(EmpMultiform model,string password,int? UserId);
         Task SendEmailCredentials(string toEmail,string CompanyName, string username, string password);
         Task EmpRandomPasswordSendEmailAsync(ForgotPassword model, string newPassword);
 
