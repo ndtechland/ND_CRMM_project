@@ -217,7 +217,6 @@ const validateStep3 = () => {
 
     return isValid;
 };
-
 // Email validation helper function
 const validateEmail = (email) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

@@ -686,7 +686,6 @@ namespace CRM.Controllers.Api
                     return NotFound(response);
                 }
                 var company = await _context.VendorRegistrations.FirstOrDefaultAsync(x => x.Id == employee.Vendorid);
-
                 if (company == null)
                 {
                     response.StatusCode = StatusCodes.Status404NotFound;
@@ -712,11 +711,14 @@ namespace CRM.Controllers.Api
                         var CCModel = await _apiemp.Empcheckin(model, CheckIN);
                         response.Succeeded = true;
                         response.StatusCode = StatusCodes.Status200OK;
-                        response.Message = $"Employee is not within the {radiusInMeters} meter radius of the company's location.";
+                        response.Status = "Success";
+                        response.Message = "Check-Out successful.";
                         response.Data = CCModel;
-                        return BadRequest(response);
+                        return Ok(response);
                     }
-                   
+                    response.StatusCode = StatusCodes.Status404NotFound;
+                    response.Message = $"Employee is not within the {radiusInMeters} meter radius of the company's location.";
+                    return BadRequest(response);
                 }
                
                 var apiModel = await _apiemp.Empcheckin(model, CheckIN);
@@ -755,9 +757,6 @@ namespace CRM.Controllers.Api
                     var userid = User.Claims.FirstOrDefault().Value;
 
                     var apiModel = await _apiemp.webPersonalDetail(model, userid);
-                    var empp = await _context.EmployeeRegistrations
-                        .Where(x => x.EmployeeId == userid)
-                        .FirstOrDefaultAsync();
                     ApprovedPresnolRes hgh = new ApprovedPresnolRes()
                     {
                         PersonalEmailAddress = apiModel.PersonalEmailAddress,
@@ -779,7 +778,6 @@ namespace CRM.Controllers.Api
                         Vendorid = apiModel.Vendorid,
                         FullName = apiModel.FullName,
                         FatherName = apiModel.FatherName,
-                        EmpProfile = empp.EmpProfile
                     };
                     if (apiModel != null)
                     {
@@ -854,7 +852,8 @@ namespace CRM.Controllers.Api
 
                 if (distance > radiusInMeters)
                 {
-                    response.StatusCode = StatusCodes.Status400BadRequest;
+                    response.Succeeded = true;
+                    response.StatusCode = StatusCodes.Status200OK;
                     response.Message = $"Employee is not within the {radiusInMeters} meter radius of the company's location.";
                     return BadRequest(response);
                 }
@@ -884,5 +883,162 @@ namespace CRM.Controllers.Api
             }
         }
 
+        [Route("Empattendancedatail")]
+        [HttpGet]
+        public async Task<IActionResult> Empattendancedatail()
+        {
+            var response = new Response<Empattendancedatail>();
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userid = User.Claims.FirstOrDefault().Value;
+                    Empattendancedatail isExists = await _apiemp.GetEmpattendance(userid);
+                    if (isExists != null)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = "Employee Attendancedatail Here.";
+                        response.Data = isExists;
+                        return Ok(response);
+                    }
+                    else
+                    {
+                        response.StatusCode = StatusCodes.Status401Unauthorized;
+                        response.Message = "Data not found.";
+                        return Ok(response);
+                    }
+                }
+                else
+                {
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Message = "Token is expired.";
+                    return BadRequest(response);
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        [Route("EmployeeUpdateprofilepicture")]
+        [HttpPost]
+        public async Task<IActionResult> EmpUpdateprofilepicture([FromForm] profilepicture model)
+        {
+            var response = new Utilities.Response<profilepicture>();
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    if (model.Empprofile != null && model.Empprofile.Length > 0)
+                    {
+                        string[] allowedExtensions = { ".jpg", ".jpeg", ".png" };
+                        string EmpprofileImagePath = model.Empprofile.FileName;
+                        string exten = EmpprofileImagePath.Split('.')[1];
+                        string extention = "." + exten;
+                        if (!allowedExtensions.Contains(extention))
+                        {
+                            response.Succeeded = false;
+                            response.StatusCode = StatusCodes.Status404NotFound;
+                            response.Status = "not allowed";
+                            response.Message = "Only .jpg, .jpeg, .png files are allowed";
+                            return BadRequest(response);
+                        }
+                        if (model.Empprofile.Length > 2 * 1024 * 1024)
+                        {
+                            response.Succeeded = false;
+                            response.StatusCode = StatusCodes.Status404NotFound;
+                            response.Status = "not allowed";
+                            response.Message = "Image should not be more than 2 MB";
+                            return BadRequest(response);
+                        }
+                    }
+                    else
+                    {
+                        response.Succeeded = false;
+                        response.StatusCode = StatusCodes.Status400BadRequest;
+                        response.Status = "not allowed";
+                        response.Message = "Empprofile is required";
+                        return BadRequest(response);
+                    }
+
+                    var userid = User.Claims.FirstOrDefault().Value;
+                    var apiModel = await _apiemp.Updateprofilepicture(model, userid);
+                    profilepicture pp = new()
+                    {
+                        EmpProfiles = "/EmpProfile/" + apiModel.EmpProfile,
+                    };
+                    if (apiModel != null)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = "Profile Update successfully.";
+                        response.Data = pp;
+                        return Ok(response);
+                    }
+                    else
+                    {
+                        response.StatusCode = StatusCodes.Status401Unauthorized;
+                        response.Message = "Data not found.";
+                        return Ok(response);
+                    }
+                }
+                else
+                {
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Message = "Token is expired.";
+                    return Ok(response);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        [Route("EmpLoginactivity")]
+        [HttpGet]
+        public async Task<IActionResult> EmpLoginactivity()
+        {
+            var response = new Response<Loginactivity>();
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userid = User.Claims.FirstOrDefault().Value;
+                    Loginactivity isLoginExists = await _apiemp.GetEmpLoginactivity(userid);
+                    if (isLoginExists != null)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = "Employee Attendancedatail Here.";
+                        response.Data = isLoginExists;
+                        return Ok(response);
+                    }
+                    else
+                    {
+                        response.StatusCode = StatusCodes.Status401Unauthorized;
+                        response.Message = "Data not found.";
+                        return Ok(response);
+                    }
+                }
+                else
+                {
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Message = "Token is expired.";
+                    return BadRequest(response);
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }

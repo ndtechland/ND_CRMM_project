@@ -24,7 +24,7 @@ namespace CRM.IUtilities
                 {
                 new Claim(ClaimTypes.Email, model.Employee_ID)
                 }),
-                Expires = DateTime.UtcNow.AddMinutes(15), 
+                Expires = DateTime.UtcNow.AddDays(1), 
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(tokenKey),
                     SecurityAlgorithms.HmacSha256Signature)
             };
