@@ -127,19 +127,19 @@ namespace CRM.Repository
                     parameters.Add("@Email", model.Email);
                     parameters.Add("@GST_Number", model.GstNumber);
                     parameters.Add("@Billing_Address", model.BillingAddress);
-                    parameters.Add("@Product_Details", model.ProductDetails);
-                    parameters.Add("@Start_date", model.StartDate);
-                    parameters.Add("@Renew_Date", model.RenewDate);
+                    //parameters.Add("@Product_Details", model.ProductDetails);
+                    //parameters.Add("@Start_date", model.StartDate);
+                    //parameters.Add("@Renew_Date", model.RenewDate);
                     parameters.Add("@BillingStateId", model.BillingStateId);
                     parameters.Add("@stateId", model.StateId);
                     parameters.Add("@BillingCityId", model.BillingCityId);
                     parameters.Add("@Vendorid", vendorid);
-                    parameters.Add("@Renewprice", model.Renewprice);
-                    parameters.Add("@NoOfRenewMonth", model.NoOfRenewMonth);
-                    parameters.Add("@productprice", model.productprice);
-                    parameters.Add("@SCGST", model.Scgst);
-                    parameters.Add("@CGST", model.Cgst);
-                    parameters.Add("@IGST", model.Igst);
+                    //parameters.Add("@Renewprice", model.Renewprice);
+                    //parameters.Add("@NoOfRenewMonth", model.NoOfRenewMonth);
+                    //parameters.Add("@productprice", model.productprice);
+                    //parameters.Add("@SCGST", model.Scgst);
+                    //parameters.Add("@CGST", model.Cgst);
+                    //parameters.Add("@IGST", model.Igst);
                     parameters.Add("@IsSameAddress", model.IsSameAddress);
                     parameters.Add("@CustomerId", dbType: DbType.Int32, direction: ParameterDirection.Output);
 
@@ -183,19 +183,11 @@ namespace CRM.Repository
                             AlternateNumber = rdr["Alternate_number"] == DBNull.Value ? "0" : Convert.ToString(rdr["Alternate_number"]),
                             Email = rdr["Email"] == DBNull.Value ? "0" : Convert.ToString(rdr["Email"]),
                             GstNumber = rdr["GST_Number"] == DBNull.Value ? "0" : Convert.ToString(rdr["GST_Number"]),
-                            BillingAddress = rdr["Billing_Address"] == DBNull.Value ? "0" : Convert.ToString(rdr["Billing_Address"]),
-                            ProductDetails = rdr["Product_Details"] == DBNull.Value ? "0" : Convert.ToString(rdr["Product_Details"]),
-                            StartDate = rdr["Start_date"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(rdr["Start_date"]),
-                            RenewDate = rdr["Renew_Date"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(rdr["Renew_Date"]),
+                            BillingAddress = rdr["Billing_Address"] == DBNull.Value ? "0" : Convert.ToString(rdr["Billing_Address"]),                            
                             OfficeState = rdr["OfficeState"] == DBNull.Value ? null : Convert.ToString(rdr["OfficeState"]),
                             BillingState = rdr["BillingState"] == DBNull.Value ? null : Convert.ToString(rdr["BillingState"]),
                             BillingCity = rdr["BillingCity"] == DBNull.Value ? null : Convert.ToString(rdr["BillingCity"]),
                             Location = rdr["Location"] == DBNull.Value ? null : Convert.ToString(rdr["Location"]),
-                            productprice = rdr["productprice"] == DBNull.Value ? null : Convert.ToString(rdr["productprice"]),
-                            Renewprice = rdr["Renewprice"] == DBNull.Value ? null : Convert.ToString(rdr["Renewprice"]),
-                            Igst = rdr["Igst"] == DBNull.Value ? "0" : Convert.ToString(rdr["Igst"]),
-                            Scgst = rdr["Scgst"] == DBNull.Value ? "0" : Convert.ToString(rdr["Scgst"]),
-                            Cgst = rdr["Cgst"] == DBNull.Value ? "0" : Convert.ToString(rdr["Cgst"]),
                         };
 
                         cs.Add(cse);
@@ -915,21 +907,12 @@ namespace CRM.Repository
                         Email = rdr["Email"] == DBNull.Value ? null : Convert.ToString(rdr["Email"]),
                         GstNumber = rdr["GST_Number"] == DBNull.Value ? null : Convert.ToString(rdr["GST_Number"]),
                         BillingAddress = rdr["Billing_Address"] == DBNull.Value ? null : Convert.ToString(rdr["Billing_Address"]),
-                        ProductDetails = rdr["ProductDetails"] == DBNull.Value ? null : Convert.ToString(rdr["ProductDetails"]),
-                        StartDate = (DateTime)(rdr["Start_date"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(rdr["Start_date"])),
-                        RenewDate = (DateTime)(rdr["Renew_Date"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(rdr["Renew_Date"])),
                         BillingStateId = rdr["BillingStateId"] == DBNull.Value ? (int?)null : Convert.ToInt32(rdr["BillingStateId"]),
-                        NoOfRenewMonth = rdr["NoOfRenewMonth"] == DBNull.Value ? (int?)null : Convert.ToInt32(rdr["NoOfRenewMonth"]),
                         StateId = rdr["stateId"] == DBNull.Value ? (int?)null : Convert.ToInt32(rdr["stateId"]),
                         IsSameAddress = rdr["IsSameAddress"] == DBNull.Value ? null : Convert.ToBoolean(rdr["IsSameAddress"]),
                         //StateId = rdr["stateId"] == DBNull.Value ? (int?)null : Convert.ToInt32(rdr["stateId"]),
                         BillingCityId = rdr["BillingCityId"] == DBNull.Value ? (int?)null : Convert.ToInt32(rdr["BillingCityId"]),
                         Location = rdr["Location"] == DBNull.Value ? null : Convert.ToString(rdr["Location"]),
-                        productprice = rdr["productprice"] == DBNull.Value ? null : Convert.ToString(rdr["productprice"]),
-                        Renewprice = rdr["Renewprice"] == DBNull.Value ? null : Convert.ToString(rdr["Renewprice"]),
-                        Igst = rdr["Igst"] == DBNull.Value ? null : Convert.ToString(rdr["Igst"]),
-                        Scgst = rdr["Scgst"] == DBNull.Value ? null : Convert.ToString(rdr["Scgst"]),
-                        Cgst = rdr["Cgst"] == DBNull.Value ? null : Convert.ToString(rdr["Cgst"]),
                     };
                 }
                 return cs;
@@ -975,18 +958,18 @@ namespace CRM.Repository
                 parameters.Add("@Email", model.Email, DbType.String);
                 parameters.Add("@GST_Number", model.GstNumber, DbType.String);
                 parameters.Add("@Billing_Address", model.BillingAddress, DbType.String);
-                parameters.Add("@Product_Details", model.ProductDetails, DbType.String);
-                parameters.Add("@Start_date", model.StartDate, DbType.DateTime);
-                parameters.Add("@Renew_Date", model.RenewDate, DbType.DateTime);
+                //parameters.Add("@Product_Details", model.ProductDetails, DbType.String);
+                //parameters.Add("@Start_date", model.StartDate, DbType.DateTime);
+                //parameters.Add("@Renew_Date", model.RenewDate, DbType.DateTime);
                 parameters.Add("@BillingStateId", model.BillingStateId, DbType.Int32);
                 parameters.Add("@BillingCityId", model.BillingCityId, DbType.Int32);
                 parameters.Add("@stateId", model.StateId, DbType.Int32);
-                parameters.Add("@Renewprice", model.Renewprice, DbType.Decimal);
-                parameters.Add("@NoOfRenewMonth", model.NoOfRenewMonth, DbType.Int32);
-                parameters.Add("@productprice", model.productprice, DbType.Decimal);
-                parameters.Add("@SCGST", model.Scgst, DbType.Decimal);
-                parameters.Add("@CGST", model.Cgst, DbType.Decimal);
-                parameters.Add("@IGST", model.Igst, DbType.Decimal);
+                //parameters.Add("@Renewprice", model.Renewprice, DbType.Decimal);
+                //parameters.Add("@NoOfRenewMonth", model.NoOfRenewMonth, DbType.Int32);
+                //parameters.Add("@productprice", model.productprice, DbType.Decimal);
+                //parameters.Add("@SCGST", model.Scgst, DbType.Decimal);
+                //parameters.Add("@CGST", model.Cgst, DbType.Decimal);
+                //parameters.Add("@IGST", model.Igst, DbType.Decimal);
                 parameters.Add("@IsSameAddress", model.IsSameAddress, DbType.Boolean);
 
                 var result = await connection.ExecuteAsync(
@@ -2174,7 +2157,7 @@ namespace CRM.Repository
             }
         }
 
-        public async Task<bool> CustomerInvoice(List<ProductDetail> model, int vendorid)
+        public async Task<bool> CustomerInvoice(List<ProductDetail> model, string InvoiceNo, int vendorid)
         {
             try
             {
@@ -2182,20 +2165,21 @@ namespace CRM.Repository
                 //{
                     foreach (var product in model)  
                     {
-                        var data = new CustomerInvoice()
-                        {
-                            VendorId = vendorid,
-                            CustomerId = product.CustomerId,
-                            ProductId = product.ProductId,  
-                            ProductPrice = product.ProductPrice,
-                            RenewPrice = product.RenewPrice,
-                            NoOfRenewMonth = product.NoOfRenewMonth,
-                            Hsncode = product.HsnSacCode,
-                            StartDate = product.StartDate,
-                            RenewDate = product.RenewDate,
-                            Igst = product.IGST,
-                            Sgst = product.SGST,
-                            Cgst = product.CGST,
+                    var data = new CustomerInvoice()
+                    {
+                        VendorId = vendorid,
+                        CustomerId = product.CustomerId,
+                        ProductId = product.ProductId,
+                        ProductPrice = product.ProductPrice,
+                        RenewPrice = product.RenewPrice,
+                        NoOfRenewMonth = product.NoOfRenewMonth,
+                        Hsncode = product.HsnSacCode,
+                        StartDate = product.StartDate,
+                        RenewDate = product.RenewDate,
+                        Igst = product.IGST,
+                        Sgst = product.SGST,
+                        Cgst = product.CGST,
+                        InvoiceNumber = InvoiceNo,
                             CreatedDate = DateTime.Now
                         };
                         _context.Add(data);
@@ -2264,6 +2248,7 @@ namespace CRM.Repository
                                         RenewPrice = grouped.FirstOrDefault().ci.RenewPrice,
                                         StartDate = grouped.FirstOrDefault().ci.StartDate,
                                         RenewDate = grouped.FirstOrDefault().ci.RenewDate,
+                                        InvoiceNumber = grouped.FirstOrDefault().ci.InvoiceNumber,
                                         IGST = grouped.FirstOrDefault().ci.Igst,
                                         SGST = grouped.FirstOrDefault().ci.Sgst,
                                         CGST = grouped.FirstOrDefault().ci.Cgst

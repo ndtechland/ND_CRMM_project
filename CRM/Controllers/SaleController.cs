@@ -5,6 +5,7 @@ using DocumentFormat.OpenXml.Drawing.Charts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Ocsp;
 
 namespace CRM.Controllers
 {
@@ -32,7 +33,6 @@ namespace CRM.Controllers
                     ViewBag.checkvendorbillingstateid = _context.VendorRegistrations.Where(v => v.Id == adminlogin.Vendorid).FirstOrDefault().BillingStateId;
                     //var customerData = _context.CustomerInvoices.Where(c => c.CustomerId == id).ToList();
                     
-
                     if (id != 0)
                     {
                         ViewBag.UserName = AddedBy;
@@ -102,9 +102,9 @@ namespace CRM.Controllers
             {
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
-
-                 
-                    bool data = await _ICrmrpo.CustomerInvoice(model, (int)adminlogin.Vendorid);
+                string InvoiceNo = "";
+                InvoiceNo = GenerateInvoiceNumber();
+                bool data = await _ICrmrpo.CustomerInvoice(model, InvoiceNo, (int)adminlogin.Vendorid);
                 if (data)
                 {
                     TempData["Message"] = "Added Successfully.";
@@ -222,6 +222,105 @@ namespace CRM.Controllers
                 TempData["Error"] = $"Error deleting invoices: {ex.Message}";
                 return RedirectToAction("CustomerInvoiceList");
             }
+        }
+       
+        private string GenerateInvoiceNumber()
+        {
+            // Fetch the most recent invoice based on ID
+            var data = _context.CustomerInvoices
+                              .OrderByDescending(x => x.Id)
+                              .FirstOrDefault();
+
+            int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+            var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
+
+            // Initialize variables
+            string invoiceid = string.Empty;
+            int numericValue = 10001; // Default starting value
+            var CompanyDetail = _context.VendorRegistrations.Where(x => x.Id == adminlogin.Vendorid).FirstOrDefault();
+
+            // Clean up the company name by removing unwanted substrings
+            string companyName = CompanyDetail.CompanyName;
+            string[] unwantedWords = new[] { "pvt ltd", "private limited", "ltd", "inc", "corporation", "corp" };
+
+            foreach (var word in unwantedWords)
+            {
+                companyName = companyName.Replace(word, "", StringComparison.OrdinalIgnoreCase).Trim();
+            }
+
+            string result = string.Empty;
+
+            // Split the company name to handle multi-word names
+            var words = companyName.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (words.Length == 2)
+            {
+                if (words[0].Equals(words[1], StringComparison.OrdinalIgnoreCase))
+                {
+                    result = char.ToUpper(words[0][0]).ToString() + char.ToUpper(words[0][1]).ToString();
+                }
+                else
+                {
+                    result = char.ToUpper(words[0][0]).ToString() + char.ToUpper(words[0][1]).ToString() + char.ToUpper(words[1][0]);
+                }
+            }
+            else if (words.Length > 2)
+            {
+                foreach (var word in words)
+                {
+                    result += char.ToUpper(word[0]);
+                }
+            }
+            else
+            {
+                result = companyName.Length >= 3 ? companyName.Substring(0, 3).ToUpper() : companyName.ToUpper();
+            }
+
+            string firstChars = result;
+
+            // Get the current date
+            DateTime now = DateTime.Now;
+            int startYear, endYear;
+
+            if (now.Month >= 4)
+            {
+                startYear = now.Year;
+                endYear = now.Year + 1;
+            }
+            else
+            {
+                startYear = now.Year - 1;
+                endYear = now.Year;
+            }
+
+            string financialYear = $"{startYear}-{endYear}";
+
+            // Reset logic based on the financial year and firstChars change
+            if (data != null && !string.IsNullOrEmpty(data.InvoiceNumber))
+            {
+                string[] parts = data.InvoiceNumber.Split('-');
+                if (parts.Length > 2 && int.TryParse(parts.Last(), out numericValue))
+                {
+                    string lastInvoiceFinancialYear = parts[1];
+                    string lastInvoiceFirstChars = parts[0].Substring(0, parts[0].Length - 4);
+
+
+                    // Check if the financial year or firstChars has changed
+                    if (Convert.ToInt32(lastInvoiceFinancialYear) != endYear || lastInvoiceFirstChars != firstChars)
+                    {
+                        numericValue = 10001; // Reset if new financial year or different firstChars
+                    }
+                    else
+                    {
+                        numericValue++; // Increment for the same financial year and same firstChars
+                    }
+                }
+            }
+
+            // Format the final invoice number
+            invoiceid = $"{firstChars}{financialYear}-{numericValue:D5}";
+
+            return invoiceid;
         }
 
     }
