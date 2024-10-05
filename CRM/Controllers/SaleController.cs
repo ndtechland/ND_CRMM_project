@@ -66,15 +66,15 @@ namespace CRM.Controllers
                     ViewBag.Heading = "Invoice";
                     ViewBag.btnText = "SAVE";
                     ViewBag.ProductId =null;
-                    ViewBag.Price = null;
+                    ViewBag.Price = 0;
                     ViewBag.RenewPrice = null;
                     ViewBag.NoOfRenewMonth = null;
                     ViewBag.HsnSacCode = null;
                     ViewBag.StartDate = null;
                     ViewBag.RenewDate = null;
-                    ViewBag.IGST = null;
-                    ViewBag.SGST = null;
-                    ViewBag.CGST = null;
+                    ViewBag.IGST = 0;
+                    ViewBag.SGST = 0;
+                    ViewBag.CGST = 0;
                     ViewBag.ProductDetails = _context.ProductMasters.Where(x => x.IsDeleted == false)
                     .Select(p => new SelectListItem
                     {
@@ -196,5 +196,33 @@ namespace CRM.Controllers
                 throw;
             }
         }
+
+        public async Task<IActionResult> DeleteCustomerInvoice(int id)
+        {
+            try
+            { 
+                var dlt = await _context.CustomerInvoices.Where(c => c.CustomerId == id).ToListAsync();  
+                 
+                if (dlt.Any())
+                {                     
+                    _context.CustomerInvoices.RemoveRange(dlt); // Use RemoveRange for multiple deletions
+                    await _context.SaveChangesAsync(); 
+                    TempData["Message"] = "Deleted Successfully.";
+                }
+                else
+                {
+                    TempData["Message"] = "No invoices found for deletion.";
+                }
+
+                return RedirectToAction("CustomerInvoiceList");
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it as needed
+                TempData["Error"] = $"Error deleting invoices: {ex.Message}";
+                return RedirectToAction("CustomerInvoiceList");
+            }
+        }
+
     }
 }
