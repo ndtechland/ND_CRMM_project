@@ -69,7 +69,7 @@
                                                 <th nowrap>
                                                    Billing Location
                                                 </th> 
-                                                <th nowrap>
+                                                @* <th nowrap>
                                                     Product Name
                                                 </th>
                                                 <th nowrap>
@@ -92,7 +92,7 @@
                                                 </th>
                                                  <th nowrap>
                                                   IGST
-                                                </th>
+                                                </th> *@
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -125,7 +125,7 @@
                                                         <td>
                                                             @item.BillingAddress, @item.BillingCity, @item.BillingState
                                                         </td> 
-                                                        <td>
+                                                        @*<td>
                                                             @Html.DisplayFor(modelItem => item.ProductDetails)
                                                         </td>
                                                         <td nowrap>
@@ -148,7 +148,7 @@
                                                         </td>
                                                         <td>
                                                             @Html.DisplayFor(modelItem => item.Igst) %
-                                                        </td>
+                                                        </td>*@
                                                         <td>
                                                             <div>
                                                                 <a href="@Url.Action("Customer","Customer",new { id=item.Id})" class="fa fa-edit m-2 font-success"></a>

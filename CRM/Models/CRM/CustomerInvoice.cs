@@ -19,5 +19,6 @@ namespace CRM.Models.Crm
         public decimal? Sgst { get; set; }
         public decimal? Cgst { get; set; }
         public DateTime? CreatedDate { get; set; }
+        public string? InvoiceNumber { get; set; }
     }
 }

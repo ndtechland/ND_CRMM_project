@@ -364,7 +364,6 @@ namespace CRM.Controllers
             }
         }
 
-
         public static int CalculatAge(DateTime DOB)
         {
             DateTime currentDate = DateTime.Now;
@@ -540,7 +539,6 @@ namespace CRM.Controllers
             }
 
         }
-
 
         [HttpPost]
         public async Task<JsonResult> Empattendance(List<Empattendance> customers)

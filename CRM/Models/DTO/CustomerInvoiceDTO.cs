@@ -23,6 +23,7 @@
         public DateTime? InvoiceDate { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? RenewDate { get; set; }
+        public string? InvoiceNumber { get; set; }
         public decimal? IGST { get; set; }
         public decimal? SGST { get; set; }
         public decimal? CGST { get; set; }
