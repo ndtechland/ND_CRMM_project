@@ -79,12 +79,12 @@ namespace CRM.Repository
                 throw ex;
             }
         }
-        public async Task SendEmailCred(EmpMultiform model, string password)
+        public async Task SendEmailCred(EmpMultiform model, string password, int? UserId)
         {
             try
             {
-                var empdetails = await _context.EmployeeRegistrations.Where(x => x.EmployeeId == model.EmployeeId).FirstOrDefaultAsync();
-                var vendordetails = await _context.VendorRegistrations.Where(x => x.Id == model.Vendorid).FirstOrDefaultAsync();
+                //var empdetails = await _context.EmployeeRegistrations.Where(x => x.EmployeeId == model.EmployeeId).FirstOrDefaultAsync();
+                var vendordetails = _context.VendorRegistrations.Where(x => x.Id == UserId).FirstOrDefault();
                 var emailMessage = new MimeMessage();
                 emailMessage.From.Add(new MailboxAddress("Nd Connect", "aastrolense@gmail.com"));
                 emailMessage.To.Add(new MailboxAddress("Recipient Name", model.PersonalEmailAddress));
