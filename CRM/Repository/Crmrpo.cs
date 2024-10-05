@@ -302,7 +302,7 @@ namespace CRM.Repository
                     _context.EmployeeLogins.Add(employeeLogin);
                     _context.SaveChanges();
                     string password = "" + model.FirstName + "" + model.DateOfBirth.Date.Year + "";
-                    _IEmailService.SendEmailCred(model, password);
+                    _IEmailService.SendEmailCred(model, password, adminlogin.Vendorid);
                 }
 
                 return 1;
