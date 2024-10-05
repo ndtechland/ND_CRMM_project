@@ -265,7 +265,10 @@ const validateStep3 = () => {
 document.querySelectorAll(".btn-navigate-form-step").forEach((formNavigationBtn) => {
     formNavigationBtn.addEventListener("click", () => {
         const stepNumber = parseInt(formNavigationBtn.getAttribute("step_number"));
-
+        if (stepNumber === 2 && !validateStep1()) {
+            console.log("Form is invalid, staying on the current step.");
+            return; // Stop navigation if validation fails
+        }
         // Validate the current step before navigating to the next
         if (stepNumber === 3 && !validateStep2()) {
             console.log("Step 2 form is invalid, staying on the current step.");

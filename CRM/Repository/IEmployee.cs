@@ -22,6 +22,9 @@ namespace CRM.Repository
         public Task<EmployeeCheckIn> Empcheckin(EmpCheckIn model, bool CheckIN);
         public Task<ApprovedPresnolInfo> webPersonalDetail(webPersonalDetail model, string userid);
         public Task<EmployeeCheckIn> Empcheckout(EmpCheckIn model, bool CheckIN);
+        public Task<Empattendancedatail> GetEmpattendance(string userid);
+        public Task<EmployeeRegistration> Updateprofilepicture(profilepicture model, string userid);
+        public Task<Loginactivity> GetEmpLoginactivity(string userid);
 
     }
 }

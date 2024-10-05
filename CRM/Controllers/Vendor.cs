@@ -897,13 +897,13 @@ namespace CRM.Controllers
                     }
                     else
                     {
-                        TempData["ErrorMessage"] = "No data found";
-                        return RedirectToAction("GenerateSalary");
+                        TempData["msg"] = "No data found";
+                        return RedirectToAction("VendorList");
                     }
                 }
                 else
                 {
-                    return RedirectToAction("GenerateSalary");
+                    return RedirectToAction("VendorList");
                 }
             }
             catch (Exception ex)

@@ -36,4 +36,29 @@
         public string? CompanyOfficeLocation { get; set; }
         public string? Radious { get; set; }
     }
+    public class Empattendancedatail
+    {
+        public string? OfficeHour { get; set; }
+        public string? CheckInTime { get; set; }
+        public string? CheckOutTime { get; set; }
+        public string? StartOverTime { get; set; }
+        public string? FinishOverTime { get; set; }
+        public string? TotalWorkingHours { get; set; }
+        public string? MonthlyWorkingHours { get; set; }
+        public string? Presencepercentage { get; set; }
+        public string? absencepercentage { get; set; }
+        public string? OvertimeWorkingHours { get; set; }
+
+    }
+    public class profilepicture
+    {
+        public string? EmpProfiles { get; set; }
+        public IFormFile Empprofile { get; set; }
+    }
+    public class Loginactivity
+    {
+        public string? OfficeHour { get; set; }
+        public string? BreakIN { get; set; }
+        public string? BreakOut { get; set; }
+    }
 }

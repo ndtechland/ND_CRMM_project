@@ -558,53 +558,80 @@ namespace CRM.Repository
                 throw new Exception("Error : " + ex.Message);
             }
         }
-        public async Task<EmployeeCheckIn> Empcheckin(EmpCheckIn model,bool CheckIN)
+        public async Task<EmployeeCheckIn> Empcheckin(EmpCheckIn model, bool checkIn)
         {
             try
             {
                 var emp = await _context.EmployeeRegistrations
-                   .Where(x => x.Id == model.Userid)
-                   .FirstOrDefaultAsync();
-                EmployeeCheckIn empcheck = new()
+                    .Where(x => x.Id == model.Userid)
+                    .FirstOrDefaultAsync();
+
+                if (emp == null)
+                {
+                    throw new Exception("Employee not found.");
+                }
+                EmployeeCheckIn empcheck = new EmployeeCheckIn()
                 {
                     EmployeeId = emp.EmployeeId,
                     CurrentLat = model.CurrentLat,
                     Currentlong = model.Currentlong,
-                    CheckIn = CheckIN,
+                    CheckIn = checkIn,
                     CheckInTime = DateTime.Now,
+                    CheckOutTime = checkIn ? (DateTime?)null : DateTime.Now,
                     Currentdate = DateTime.Now,
                 };
-                _context.EmployeeCheckIns.Add(empcheck);
+
+                await _context.EmployeeCheckIns.AddAsync(empcheck);
                 await _context.SaveChangesAsync();
 
+                // Get the latest check-in for this employee on the current date
                 var fgdfd = await _context.EmployeeCheckIns
-                       .Where(x => x.EmployeeId == emp.EmployeeId).OrderBy(x => x.Id)
-                       .FirstOrDefaultAsync();
-                if (_context.EmployeeCheckIns.Count() == 1)
+                    .Where(x => x.EmployeeId == emp.EmployeeId && x.CheckInTime.Date == DateTime.Now.Date)
+                    .OrderByDescending(x => x.Id)
+                    .FirstOrDefaultAsync();
+
+                if (fgdfd == null)
                 {
+                    throw new Exception("Check-in record not found.");
+                }
+
+                // Check if this is the first check-in for today
+                var todayCheckInsCount = await _context.EmployeeCheckIns
+                    .CountAsync(x => x.EmployeeId == emp.EmployeeId && x.CheckInTime.Date == DateTime.Now.Date);
+
+                if (todayCheckInsCount == 1)
+                {
+                    // Add a new EmployeeCheckInRecord for the first check-in of the day
                     EmployeeCheckInRecord empch = new()
                     {
                         EmpId = emp.EmployeeId,
-                        CheckIntime = DateTime.Now,
+                        CheckIntime = fgdfd.CheckInTime,
                         CurrentDate = DateTime.Now,
                         Isactive = true,
-                        Workinghour = (fgdfd.CheckInTime - DateTime.Now).Duration()
-
+                        Workinghour = TimeSpan.Zero  // Initially zero, as the user just checked in
                     };
-                    _context.EmployeeCheckInRecords.Add(empch);
+                    await _context.EmployeeCheckInRecords.AddAsync(empch);
                     await _context.SaveChangesAsync();
-
                 }
-                if (CheckIN == false)
+
+                if (!checkIn)
                 {
-                    TimeSpan workingh = (fgdfd.CheckInTime - DateTime.Now).Duration();
+                    // User is checking out; calculate working hours
+                    var checkInRecord = await _context.EmployeeCheckInRecords
+                        .Where(x => x.EmpId == emp.EmployeeId && x.CheckIntime.Value.Date == DateTime.Now.Date)
+                        .FirstOrDefaultAsync();
 
-                    var res = _context.EmployeeCheckInRecords.Where(x => x.EmpId == emp.EmployeeId).FirstOrDefault();
+                    if (checkInRecord != null)
+                    {
+                        // Calculate working hours based on CheckInTime and current time (CheckOutTime)
+                        TimeSpan workingHours = (fgdfd.CheckInTime - DateTime.Now).Duration();
 
-                    res.Workinghour = workingh;
-                    await _context.SaveChangesAsync();
+                        // Update the record with the working hours and save
+                        checkInRecord.Workinghour = workingHours;
+                        await _context.SaveChangesAsync();
+                    }
                 }
-                
+
                 return empcheck;
             }
             catch (Exception ex)
@@ -688,13 +715,6 @@ namespace CRM.Repository
                     {
                         apppersonal.AadharTwo = fileOperation.SaveBase64Image("img1", model.Aadhar2, allowedExtensions);
                     }
-                    if (model.Empprofile != null)
-                    {
-                        string EmpprofileImagePath = fileOperation.SaveBase64Image("EmpProfile", model.Empprofile, allowedExtensions);
-                        emp.EmpProfile = EmpprofileImagePath;
-                    }
-
-                    await _context.SaveChangesAsync();
                     return apppersonal;
                 }
                 else
@@ -734,11 +754,6 @@ namespace CRM.Repository
                             panImagePath = fileOperation.SaveBase64Image("img1", model.PanbaseImage, allowedExtensions);
                             empP.Panimg = panImagePath;
                         }
-                        if (model.Empprofile != null)
-                        {
-                            string EmpprofileImagePath = fileOperation.SaveBase64Image("EmpProfile", model.Empprofile, allowedExtensions);
-                            emp.EmpProfile = EmpprofileImagePath;
-                        }
                     }
 
                     _context.ApprovedPresnolInfos.Add(empP);
@@ -756,44 +771,395 @@ namespace CRM.Repository
                 return null;
             }
         }
-        public async Task<EmployeeCheckIn> Empcheckout(EmpCheckIn model, bool CheckIN)
+        public async Task<EmployeeCheckIn> Empcheckout(EmpCheckIn model, bool checkIn)
         {
             try
             {
                 var emp = await _context.EmployeeRegistrations
                    .Where(x => x.Id == model.Userid)
                    .FirstOrDefaultAsync();
-                EmployeeCheckIn empcheck = new()
+
+                if (emp == null)
                 {
-                    EmployeeId = emp.EmployeeId,
-                    CurrentLat = model.CurrentLat,
-                    Currentlong = model.Currentlong,
-                    CheckIn = CheckIN,
-                    CheckInTime = DateTime.Now,
-                    Currentdate = DateTime.Now,
-                };
-                _context.EmployeeCheckIns.Add(empcheck);
-                await _context.SaveChangesAsync();
+                    throw new Exception("Employee not found.");
+                }
+                var empCheckInRecord = await _context.EmployeeCheckIns
+                    .Where(x => x.EmployeeId == emp.EmployeeId && x.CheckInTime.Date == DateTime.Now.Date)
+                    .OrderByDescending(x => x.Id)
+                    .FirstOrDefaultAsync();
 
-                var fgdfd = await _context.EmployeeCheckIns
-                       .Where(x => x.EmployeeId == emp.EmployeeId).OrderBy(x => x.Id)
-                       .FirstOrDefaultAsync();
-                if (CheckIN == false)
+                if (empCheckInRecord == null)
                 {
-                    TimeSpan workingh = (fgdfd.CheckInTime - DateTime.Now).Duration();
+                    empCheckInRecord = new EmployeeCheckIn
+                    {
+                        EmployeeId = emp.EmployeeId,
+                        CurrentLat = model.CurrentLat,
+                        Currentlong = model.Currentlong,
+                        CheckIn = checkIn,
+                        CheckInTime = DateTime.Now,
+                        Currentdate = DateTime.Now
+                    };
+                    _context.EmployeeCheckIns.Add(empCheckInRecord);
+                }
+                else if (!checkIn)
+                {
+                    empCheckInRecord.CheckOutTime = DateTime.Now;
 
-                    var res = _context.EmployeeCheckInRecords.Where(x => x.EmpId == emp.EmployeeId).FirstOrDefault();
+                    TimeSpan workingHours = (empCheckInRecord.CheckInTime - DateTime.Now).Duration();
+                    var checkInRecord = await _context.EmployeeCheckInRecords
+                        .Where(x => x.EmpId == emp.EmployeeId && x.CheckIntime.Value.Date == DateTime.Now.Date)
+                        .FirstOrDefaultAsync();
 
-                    res.Workinghour = workingh;
-                    await _context.SaveChangesAsync();
+                    if (checkInRecord != null)
+                    {
+                        checkInRecord.Workinghour = workingHours;
+                        checkInRecord.CheckOuttime = DateTime.Now;
+                    }
+                    else
+                    {
+                        EmployeeCheckInRecord newCheckInRecord = new EmployeeCheckInRecord
+                        {
+                            EmpId = emp.EmployeeId,
+                            CheckIntime = empCheckInRecord.CheckInTime,
+                            CheckOuttime = DateTime.Now,
+                            Workinghour = workingHours,
+                            CurrentDate = DateTime.Now,
+                            Isactive = true
+                        };
+                        _context.EmployeeCheckInRecords.Add(newCheckInRecord);
+                    }
                 }
 
-                return empcheck;
+                await _context.SaveChangesAsync(); return empCheckInRecord;
             }
             catch (Exception ex)
             {
                 throw new Exception("Error: " + ex.Message);
             }
         }
+        public async Task<EmployeeRegistration> Updateprofilepicture(profilepicture model, string userid)
+        {
+            try
+            {
+                FileOperation fileOperation = new FileOperation(_webHostEnvironment);
+                string[] allowedExtensions = { ".jpg", ".jpeg", ".png" };
+                var emp = await _context.EmployeeRegistrations.Where(x => x.EmployeeId == userid).FirstOrDefaultAsync();
+
+                if (emp != null)
+                {
+
+                    if (model.Empprofile != null)
+                    {
+                        string EmpprofileImagePath = fileOperation.SaveBase64Image("EmpProfile", model.Empprofile, allowedExtensions);
+                        emp.EmpProfile = EmpprofileImagePath;
+                    }
+
+
+                    await _context.SaveChangesAsync();
+                    return emp;
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in PersonalDetail: {ex.Message}");
+                return null;
+            }
+        }
+        public async Task<Empattendancedatail> GetEmpattendance(string userid)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(userid))
+                {
+                    var empAttendanceDetails = await _context.EmployeeRegistrations
+                        .Where(x => x.EmployeeId == userid)
+                        .Select(x => new
+                        {
+                            OfficeShiftId = x.OfficeshiftTypeid,
+                            EmployeeId = x.EmployeeId
+                        })
+                        .FirstOrDefaultAsync();
+
+                    if (empAttendanceDetails != null)
+                    {
+                        if (empAttendanceDetails.OfficeShiftId.HasValue)
+                        {
+                            var officeShift = await _context.Officeshifts.FindAsync((int)empAttendanceDetails.OfficeShiftId.Value);
+                            if (officeShift == null)
+                            {
+                                throw new Exception("Office shift not found.");
+                            }
+                            if (!DateTime.TryParse(officeShift.Endtime, out DateTime shiftEndTime))
+                            {
+                                throw new Exception("Invalid shift end time format.");
+                            }
+
+                            var checkIns = await _context.EmployeeCheckIns
+                                .Where(g => g.EmployeeId == empAttendanceDetails.EmployeeId && g.CheckInTime.Date == DateTime.Now.Date)
+                                .ToListAsync();
+
+                            var checkInTime = checkIns.OrderBy(g => g.Id)
+                                .Select(g => g.CheckInTime.ToString("hh:mm tt"))
+                                .FirstOrDefault();
+
+                            var checkOutTime = checkIns.OrderByDescending(g => g.Id)
+                                .Select(g => g.CheckOutTime)
+                                .FirstOrDefault();
+                            var attendanceDetail = new Empattendancedatail
+                            {
+                                OfficeHour = $"{officeShift.Starttime} - {officeShift.Endtime}",
+                                CheckInTime = checkInTime,
+                                CheckOutTime = checkOutTime.HasValue ? checkOutTime.Value.ToString("hh:mm tt") : "",
+                                StartOverTime = shiftEndTime.ToString("hh:mm tt"),
+                                FinishOverTime = await CalculateFinishOverTime(empAttendanceDetails.EmployeeId, (int)empAttendanceDetails.OfficeShiftId.Value, _context),
+                                OvertimeWorkingHours = await CalculateOvertimeHours(empAttendanceDetails.EmployeeId, (int)empAttendanceDetails.OfficeShiftId.Value),
+                                TotalWorkingHours = await CalculateTotalWorkingHours(empAttendanceDetails.EmployeeId),
+                                MonthlyWorkingHours = await CalculateMonthlyWorkingHours(empAttendanceDetails.EmployeeId),
+                                Presencepercentage = await CalculatePresencePercentage(empAttendanceDetails.EmployeeId),
+                                absencepercentage = await CalculateAbsencePercentage(empAttendanceDetails.EmployeeId)
+                            };
+
+                            return attendanceDetail;
+                        }
+                        else
+                        {
+                            throw new Exception("Office shift ID is missing.");
+                        }
+                    }
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error: " + ex.Message);
+            }
+        }
+        private async Task<string> CalculatePresencePercentage(string employeeId)
+        {
+            var emp = await _context.EmployeeRegistrations
+                .Where(x => x.EmployeeId == employeeId)
+                .FirstOrDefaultAsync();
+
+            if (emp == null)
+            {
+                return "0";
+            }
+
+            var Attendancedays = await _context.Attendancedays
+                .Where(x => x.Vendorid == emp.Vendorid)
+                .FirstOrDefaultAsync();
+
+            if (Attendancedays == null || string.IsNullOrEmpty(Attendancedays.Nodays) || !int.TryParse(Attendancedays.Nodays, out int totalAttendanceDays) || totalAttendanceDays <= 0)
+            {
+                return "0";
+            }
+
+            var totalDaysWorked = await _context.EmployeeCheckInRecords
+                .Where(g => g.EmpId == employeeId && g.CheckIntime.Value.Month == DateTime.Now.Month && g.CheckIntime.Value.Year == DateTime.Now.Year)
+                .CountAsync();
+            decimal presencePercentage = (decimal)totalDaysWorked / totalAttendanceDays * 100;
+
+            return Math.Round(presencePercentage).ToString() + "%";
+        }
+
+        private async Task<string> CalculateAbsencePercentage(string employeeId)
+        {
+            var emp = await _context.EmployeeRegistrations
+                .Where(x => x.EmployeeId == employeeId)
+                .FirstOrDefaultAsync();
+
+            if (emp == null)
+            {
+                return "0";
+            }
+
+            var Attendancedays = await _context.Attendancedays
+                .Where(x => x.Vendorid == emp.Vendorid)
+                .FirstOrDefaultAsync();
+
+            if (Attendancedays == null || string.IsNullOrEmpty(Attendancedays.Nodays) || !int.TryParse(Attendancedays.Nodays, out int totalAttendanceDays) || totalAttendanceDays <= 0)
+            {
+                return "0";
+            }
+
+            var totalDaysWorked = await _context.EmployeeCheckInRecords
+                .Where(g => g.EmpId == employeeId && g.CheckIntime.Value.Month == DateTime.Now.Month && g.CheckIntime.Value.Year == DateTime.Now.Year)
+                .CountAsync();
+            decimal presencePercentage = (100 - (decimal)totalDaysWorked / totalAttendanceDays * 100);
+
+            return Math.Round(presencePercentage).ToString() + "%";
+        }
+        private static async Task<string> CalculateFinishOverTime(string employeeId, int officeShiftId, admin_NDCrMContext context)
+        {
+            var officeHour = await context.Officeshifts
+                .Where(h => h.Id == officeShiftId)
+                .Select(h => h.Endtime)
+                .FirstOrDefaultAsync();
+
+            if (DateTime.TryParse(officeHour, out DateTime endTime))
+            {
+                var checkInData = await context.EmployeeCheckIns
+                    .Where(g => g.EmployeeId == employeeId && g.CheckInTime.Date == DateTime.Now.Date)
+                    .OrderByDescending(g => g.Id)
+                    .FirstOrDefaultAsync();
+
+                if (checkInData != null && checkInData.CheckOutTime.HasValue)
+                {
+                    var checkOutTime = checkInData.CheckOutTime.Value;
+                    if (checkOutTime > endTime)
+                    {
+                        return checkOutTime.ToString("hh:mm tt");
+                    }
+                    else
+                    {
+                        return "";
+                    }
+                }
+            }
+
+            return "";
+        }
+        private async Task<string> CalculateTotalWorkingHours(string employeeId)
+        {
+            var now = DateTime.Now;
+
+            var checkIns = await _context.EmployeeCheckIns
+                .Where(g => g.EmployeeId == employeeId)
+                .ToListAsync();
+
+            var totalHours = checkIns
+                .Where(g => g.CheckInTime.Month == now.Month && g.CheckInTime.Year == now.Year)
+                .Sum(g =>
+                {
+                    if (g.CheckOutTime.HasValue)
+                    {
+                        return (g.CheckOutTime.Value - g.CheckInTime).TotalHours;
+                    }
+                    return 0.0;
+                });
+
+            return FormatHours(totalHours);
+        }
+
+        private async Task<string> CalculateMonthlyWorkingHours(string employeeId)
+        {
+            var checkIns = await _context.EmployeeCheckIns
+                .Where(g => g.EmployeeId == employeeId && g.CheckInTime.Month == DateTime.Now.Month && g.CheckInTime.Year == DateTime.Now.Year)
+                .ToListAsync();
+
+            var monthlyHours = checkIns
+                .Sum(g => g.CheckOutTime.HasValue
+                        ? (g.CheckOutTime.Value - g.CheckInTime).TotalHours
+                        : 0.0);
+
+            return FormatHours(monthlyHours);
+        }
+
+        private async Task<string> CalculateOvertimeHours(string employeeId, int officeShiftId)
+        {
+            var checkIns = await _context.EmployeeCheckIns
+                .Where(g => g.EmployeeId == employeeId && g.CheckInTime.Date == DateTime.Now.Date)
+                .ToListAsync();
+
+            var shiftEndTime = await _context.Officeshifts
+                .Where(h => h.Id == officeShiftId)
+                .Select(h => h.Endtime)
+                .FirstOrDefaultAsync();
+
+            if (!DateTime.TryParse(shiftEndTime, out DateTime parsedEndTime))
+            {
+                return "N/A";
+            }
+
+            double totalOvertimeHours = checkIns.Sum(g =>
+            {
+                if (g.CheckOutTime.HasValue && g.CheckOutTime > parsedEndTime)
+                {
+                    return (g.CheckOutTime.Value.TimeOfDay - parsedEndTime.TimeOfDay).TotalHours;
+                }
+                return 0.0;
+            });
+
+            return FormatHours(Math.Abs(totalOvertimeHours));
+        }
+
+        private string FormatHours(double totalHours)
+        {
+            int hours = (int)totalHours;
+            int minutes = (int)((totalHours - hours) * 60);
+            return $"{hours}h{minutes}m";
+        }
+        public async Task<Loginactivity> GetEmpLoginactivity(string userid)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(userid))
+                {
+                    throw new ArgumentException("User ID cannot be null or empty.");
+                }
+
+                var empAttendanceDetails = await _context.EmployeeRegistrations
+                    .Where(x => x.EmployeeId == userid)
+                    .Select(x => new
+                    {
+                        OfficeShiftId = x.OfficeshiftTypeid,
+                        EmployeeId = x.EmployeeId
+                    })
+                    .FirstOrDefaultAsync();
+
+                if (empAttendanceDetails == null)
+                {
+                    throw new Exception("Employee not found.");
+                }
+
+                if (!empAttendanceDetails.OfficeShiftId.HasValue)
+                {
+                    throw new Exception("Office shift ID is missing.");
+                }
+
+                var officeShift = await _context.Officeshifts.FindAsync((int)empAttendanceDetails.OfficeShiftId.Value);
+                if (officeShift == null)
+                {
+                    throw new Exception("Office shift not found.");
+                }
+
+                if (!DateTime.TryParse(officeShift.Endtime, out DateTime shiftEndTime))
+                {
+                    throw new Exception("Invalid shift end time format.");
+                }
+
+                var breakInRecords = await _context.EmployeeCheckIns
+                    .Where(g => g.EmployeeId == userid
+                                 && g.CheckInTime.Day == DateTime.Now.Day
+                                 && g.CheckInTime.Day == DateTime.Now.Day
+                                 && g.CheckIn == true)
+                    .ToListAsync();
+                var breakoutRecords = await _context.EmployeeCheckIns
+                   .Where(g => g.EmployeeId == userid
+                                && g.CheckOutTime.Value.Day == DateTime.Now.Day
+                                && g.CheckOutTime.Value.Day == DateTime.Now.Day
+                                && g.CheckIn == false)
+                   .ToListAsync();
+                var breakInTimes = breakInRecords.Select(b => b.CheckInTime.ToString("hh:mm tt")).ToList();
+                var breakInString = breakInTimes.Count > 0 ? string.Join(", ", breakInTimes) : "No BreakIn Records";
+                var breakOutTimes = breakoutRecords.Select(b => b.CheckOutTime?.ToString("hh:mm tt")).ToList();
+                var breakoutString = breakOutTimes.Count > 0 ? string.Join(", ", breakOutTimes) : "No BreakOut Records";
+
+                var attendanceDetail = new Loginactivity
+                {
+                    OfficeHour = $"{officeShift.Starttime} - {officeShift.Endtime}",
+                    BreakIN = breakInString,
+                    BreakOut = breakoutString
+                };
+
+                return attendanceDetail;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error retrieving employee login activity: " + ex.Message);
+            }
+        }
+
     }
 }
