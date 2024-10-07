@@ -42,7 +42,7 @@ namespace CRM.Controllers
                         if (data != null)
                         {
 
-                            ViewBag.ProductDetails = _context.ProductMasters.Where(x => x.IsDeleted == false)
+                            ViewBag.ProductDetails = _context.VendorProductMasters.Where(c => c.IsActive == true)
                                 .Select(p => new SelectListItem
                                 {
                                     Value = p.Id.ToString(),
@@ -75,7 +75,7 @@ namespace CRM.Controllers
                     ViewBag.IGST = 0;
                     ViewBag.SGST = 0;
                     ViewBag.CGST = 0;
-                    ViewBag.ProductDetails = _context.ProductMasters.Where(x => x.IsDeleted == false)
+                    ViewBag.ProductDetails = _context.VendorProductMasters.Where(c => c.IsActive == true)
                     .Select(p => new SelectListItem
                     {
                         Value = p.Id.ToString(),
@@ -355,6 +355,36 @@ namespace CRM.Controllers
             }
 
 
+        }
+        [HttpGet]
+        public JsonResult Product(int? id)
+        {
+            var data = (from pm in _context.VendorProductMasters
+                        join gm in _context.GstMasters on pm.Gst equals gm.Id // Assume Gst is stored as string, adjust if needed
+                        where pm.Id == id && pm.IsActive == true
+                        select new
+                        {
+                            pm,
+                            gm
+                        })
+            .AsEnumerable() // Move to client-side evaluation
+            .Select(x => new ProductDetailList
+            {
+                SGST = Convert.ToDecimal(x.gm.Scgst),
+                CGST = Convert.ToDecimal(x.gm.Cgst),
+                IGST = Convert.ToDecimal(x.gm.Igst),
+                ProductPrice = x.pm.ProductPrice,
+                HsnSacCode = x.pm.Hsncode,
+                //State = cs.State, // Uncomment and handle this part as needed
+            }).FirstOrDefault();
+
+
+            var result = new
+            {
+                Data = data,
+            };
+
+            return new JsonResult(result);
         }
 
     }

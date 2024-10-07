@@ -3,14 +3,9 @@
     int count = 0;
     DateTime date = DateTime.Now;
     string fordate = date.ToString("dd-MM-yyyy");
-    decimal cgst = Model.CGST ?? 0;
-    decimal scgst = Model.SGST ?? 0;
-    decimal igst = Model.IGST ?? 0;
-    decimal? subtotal = 0;
-
      
-
-   
+           
+    
 
 }
 
@@ -225,6 +220,46 @@
             </table>
         </div>
 
+        @{
+            decimal? subtotal = 0;
+            decimal? cgstAmount = 0;
+            decimal? sgstAmount = 0;
+            decimal? igstAmount = 0;
+            decimal? igstper = 0;
+            decimal? sgstper = 0;
+            decimal? cgstper = 0;
+            decimal totalAmount = 0;
+            decimal rounding = 0;
+
+            foreach (var item in Model.ProductDetailLists)
+            {
+                // Calculate subtotal
+                subtotal += item.ProductPrice;
+                igstper = item.IGST;
+                sgstper = item.SGST;
+                cgstper = item.CGST;
+                // Calculate CGST and SGST if applicable
+                if (item.CGST != null && item.SGST != null)
+                {
+                    cgstAmount += (item.ProductPrice * item.CGST / 100);
+                    sgstAmount += (item.ProductPrice * item.SGST / 100);
+                }
+
+                // Calculate IGST if applicable
+                if (item.IGST != null)
+                {
+                    igstAmount += (item.ProductPrice * item.IGST / 100);
+                }
+            }
+
+            // Calculate total before rounding
+            totalAmount = (decimal)subtotal + (decimal)cgstAmount + (decimal)sgstAmount + (decimal)igstAmount;
+
+            // Round the total amount
+            rounding = Math.Round(totalAmount - Math.Floor(totalAmount), 2);
+            totalAmount = Math.Round(totalAmount, 2);
+        }
+
         <table class="invoice-table">
             <thead>
                 <tr>
@@ -233,69 +268,55 @@
                     <th>HSN/SAC</th>
                     <th>CGST</th>
                     <th>SGST</th>
-                    <th>IGST</th>                    
+                    <th>IGST</th>
                     <th>Amount</th>
                 </tr>
             </thead>
-            
-            @foreach(var item in Model.ProductDetailLists)
+
+            @foreach (var item in Model.ProductDetailLists)
             {
                 count++;
                 <tbody>
-                    
                     <tr>
                         <td>@count</td>
                         <td>@item.ProductName</td>
                         <td>@item.HsnSacCode</td>
-                            <td>@cgst% @* (@String.Format("{0:0.00}", cgstAmount)) *@</td>
-                            <td>@scgst% @* (@String.Format("{0:0.00}", scgstAmount)) *@</td>
-                       
-                            <td>@igst% @* (@String.Format("{0:0.00}", igstAmount)) *@</td>
-                        
-                        <td>@String.Format("{0:0.00}", item.ProductPrice)</td>
-                        @{
-                            subtotal += item.ProductPrice;
-                        }
+                        <td>@(item.CGST != null ? $"{item.CGST}% ₹ {item.ProductPrice * item.CGST / 100}" : "0% ₹ 0.00")</td>
+                        <td>@(item.SGST != null ? $"{item.SGST}% ₹ {item.ProductPrice * item.SGST / 100}" : "0% ₹ 0.00")</td>
+                        <td>@(item.IGST != null ? $"{item.IGST}% ₹ {item.ProductPrice * item.IGST / 100}" : "0% ₹ 0.00")</td>
+                        <td>₹ @String.Format("{0:0.00}", item.ProductPrice)</td>
                     </tr>
                 </tbody>
             }
-            <tfoot>
-                <tr>
-                    <td colspan="6" style="text-align:right;"><strong>Sub Total</strong></td>
-                    <td><strong id="totalAmount">@String.Format("{0:0.00}", subtotal)</strong></td>
-                     
-                    
-                </tr>
-            </tfoot>
         </table>
 
-        @* <div class="totals">
+        <div class="totals">
             <table>
                 <tr>
                     <td><b>Sub Total</b></td>
-                    <td>@String.Format("{0:0.00}", subtotal)</td>
+                    <td>₹ @String.Format("{0:0.00}", subtotal)</td>
                 </tr>
                 @if (Model.IGST == null)
                 {
                     <tr>
-                        <td>CGST (@cgst%)</td>
-                        <td>@String.Format("{0:0.00}", cgstAmount)</td>
+                        <td>CGST</td>
+                        <td>₹ @String.Format("{0:0.00}", cgstAmount)</td>
                     </tr>
                     <tr>
-                        <td>SGST (@scgst%)</td>
-                        <td>@String.Format("{0:0.00}", scgstAmount)</td>
+                        <td>SGST</td>
+                        <td>₹ @String.Format("{0:0.00}", sgstAmount)</td>
                     </tr>
                 }
                 else
                 {
                     <tr>
-                        <td>IGST (@igst%)</td>
-                        <td>@String.Format("{0:0.00}", igstAmount)</td>
+                        <td>IGST (@igstper %)</td>
+                        <td>₹ @String.Format("{0:0.00}", igstAmount)</td>
                     </tr>
                 }
                 <tr>
                     <td>Rounding</td>
-                    <td>@rounding.ToString("F2")</td> <!-- Format to two decimal places -->
+                    <td>₹ @rounding.ToString("F2")</td>
                 </tr>
                 <tr>
                     <td><strong>Total</strong></td>
@@ -310,7 +331,8 @@
                     <td><strong>₹ 0.00</strong></td>
                 </tr>
             </table>
-        </div> *@
+        </div>
+
 
         <div class="bank-details">
             Bank Account Details<br />
