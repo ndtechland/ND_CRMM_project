@@ -52,20 +52,22 @@
                                                     Company Name
                                                 </th>
                                                 <th nowrap>
-                                                    Office Location
-                                                </th>
-                                                <th nowrap>
                                                     Mobile Number
                                                 </th>
                                                 <th nowrap>
                                                     Alternate Number
                                                 </th>
                                                 <th nowrap>
-                                                   Email Id
+                                                    Email Id
                                                 </th>
                                                 <th nowrap>
-                                                   Gst Number
+                                                    Gst Number
                                                 </th>
+                                                <th nowrap>
+                                                    Office Location
+                                                </th>
+                                                
+                                                
                                                 <th nowrap>
                                                    Billing Location
                                                 </th> 
@@ -108,9 +110,6 @@
                                                             @Html.DisplayFor(modelItem => item.CompanyName)
                                                         </td>
                                                         <td nowrap>
-                                                            @item.Location, @item.OfficeCity, @item.OfficeState
-                                                        </td>
-                                                        <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.MobileNumber)
                                                         </td>
                                                         <td nowrap>
@@ -122,6 +121,10 @@
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.GstNumber)
                                                         </td>
+                                                        <td nowrap>
+                                                            @item.Location, @item.OfficeCity, @item.OfficeState
+                                                        </td>                                                       
+                                                        
                                                         <td>
                                                             @item.BillingAddress, @item.BillingCity, @item.BillingState
                                                         </td> 

@@ -106,7 +106,9 @@ function updateTaxFields() {
                     $section.find('.Price').val(response.data.price).attr('readonly', true);
 
                     // Update GST fields based on state match
-                    if ('@ViewBag.checkvendorbillingstateid' === billingStateId) {
+                    var checkVendorBillingStateId = $("#checkvendorbillingstateid").val();
+
+                    if (checkVendorBillingStateId === billingStateId) {
                         $section.find('.CGST').val(response.data.cgst).attr('readonly', true);
                         $section.find('.SGST').val(response.data.scgst).attr('readonly', true);
                         $section.find('.IGST').val('').attr('readonly', true); // Clear IGST
@@ -114,6 +116,7 @@ function updateTaxFields() {
                         $section.find('.IGST').val(response.data.igst).attr('readonly', true);
                         $section.find('.CGST, .SGST').val('').attr('readonly', true); // Clear CGST and SGST
                     }
+
                 } else {
                     clearTaxFields($section);
                 }
@@ -252,6 +255,7 @@ function gatherProductDetails() {
         const productDetail = {
             CustomerId: $('#customerId').val(),
             ProductId: $('.ProductDetails').eq(index).val(),
+            Description: $('.Description').eq(index).val(),
             ProductPrice: $('.Price').eq(index).val(),
             NoOfRenewMonth: $('.NoOfRenewMonth').eq(index).val(),
             RenewPrice: $('.RenewPrice').eq(index).val(),
