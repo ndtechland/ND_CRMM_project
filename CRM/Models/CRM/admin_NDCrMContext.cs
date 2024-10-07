@@ -48,6 +48,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<EmployeeRegistration> EmployeeRegistrations { get; set; } = null!;
         public virtual DbSet<EmployeeRole> EmployeeRoles { get; set; } = null!;
         public virtual DbSet<EmployeeSalaryDetail> EmployeeSalaryDetails { get; set; } = null!;
+        public virtual DbSet<EmployeeTask> EmployeeTasks { get; set; } = null!;
         public virtual DbSet<EmployeerEpf> EmployeerEpfs { get; set; } = null!;
         public virtual DbSet<EmployeerTd> EmployeerTds { get; set; } = null!;
         public virtual DbSet<GenderMaster> GenderMasters { get; set; } = null!;
@@ -65,6 +66,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<Offerletter> Offerletters { get; set; } = null!;
         public virtual DbSet<OfficeBreak> OfficeBreaks { get; set; } = null!;
         public virtual DbSet<OfficeBreakstatus> OfficeBreakstatuses { get; set; } = null!;
+        public virtual DbSet<OfficeEvent> OfficeEvents { get; set; } = null!;
         public virtual DbSet<Officeshift> Officeshifts { get; set; } = null!;
         public virtual DbSet<OrganisationProfile> OrganisationProfiles { get; set; } = null!;
         public virtual DbSet<OrganisationTaxDetail> OrganisationTaxDetails { get; set; } = null!;
@@ -79,6 +81,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<State1> States1 { get; set; } = null!;
         public virtual DbSet<StateMaster> StateMasters { get; set; } = null!;
         public virtual DbSet<TErrorLog> TErrorLogs { get; set; } = null!;
+        public virtual DbSet<TaskStatus> TaskStatuses { get; set; } = null!;
         public virtual DbSet<TaxDeductor> TaxDeductors { get; set; } = null!;
         public virtual DbSet<TransactionDetail> TransactionDetails { get; set; } = null!;
         public virtual DbSet<VendorCategoryMaster> VendorCategoryMasters { get; set; } = null!;
@@ -1033,6 +1036,29 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.TravellingAllowance).HasColumnType("decimal(18, 0)");
             });
 
+            modelBuilder.Entity<EmployeeTask>(entity =>
+            {
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Date)
+                    .HasColumnType("datetime")
+                    .HasColumnName("date");
+
+                entity.Property(e => e.Description)
+                    .HasMaxLength(200)
+                    .HasColumnName("description");
+
+                entity.Property(e => e.EmployeeId)
+                    .HasMaxLength(200)
+                    .HasColumnName("Employee_ID");
+
+                entity.Property(e => e.Reason).HasMaxLength(200);
+
+                entity.Property(e => e.Task).HasMaxLength(200);
+
+                entity.Property(e => e.Tittle).HasMaxLength(200);
+            });
+
             modelBuilder.Entity<EmployeerEpf>(entity =>
             {
                 entity.ToTable("Employeer_EPF");
@@ -1331,6 +1357,25 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.Breakstatus).HasMaxLength(200);
 
                 entity.Property(e => e.Createdate).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<OfficeEvent>(entity =>
+            {
+                entity.ToTable("officeEvents");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Date)
+                    .HasColumnType("datetime")
+                    .HasColumnName("date");
+
+                entity.Property(e => e.Description)
+                    .HasMaxLength(200)
+                    .HasColumnName("description");
+
+                entity.Property(e => e.Subtittle).HasMaxLength(200);
+
+                entity.Property(e => e.Tittle).HasMaxLength(200);
             });
 
             modelBuilder.Entity<Officeshift>(entity =>
@@ -1643,6 +1688,15 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.UserId)
                     .HasMaxLength(50)
                     .HasColumnName("User_ID");
+            });
+
+            modelBuilder.Entity<TaskStatus>(entity =>
+            {
+                entity.ToTable("TaskStatus");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.StatusName).HasMaxLength(200);
             });
 
             modelBuilder.Entity<TaxDeductor>(entity =>

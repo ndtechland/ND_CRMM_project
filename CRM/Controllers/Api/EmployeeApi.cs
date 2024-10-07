@@ -1040,5 +1040,46 @@ namespace CRM.Controllers.Api
                 throw new Exception(ex.Message);
             }
         }
+        [Route("EmpTasksassign")]
+        [HttpGet]
+        public async Task<IActionResult> EmpTasksassign()
+        {
+            var response = new Response<List<TasksassignDto>>();
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userid = User.Claims.FirstOrDefault().Value;
+                    List<TasksassignDto> isLoginExists = await _apiemp.GetEmpTasksassign(userid);
+                    if (isLoginExists != null)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = "Employee Tasksassign Here.";
+                        response.Data = isLoginExists;
+                        return Ok(response);
+                    }
+                    else
+                    {
+                        response.StatusCode = StatusCodes.Status401Unauthorized;
+                        response.Message = "Data not found.";
+                        return Ok(response);
+                    }
+                }
+                else
+                {
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Message = "Token is expired.";
+                    return BadRequest(response);
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }
