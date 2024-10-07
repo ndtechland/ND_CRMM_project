@@ -2222,7 +2222,7 @@ namespace CRM.Repository
             {
                 var result = await (from ci in _context.CustomerInvoices
                                     join c in _context.CustomerRegistrations on ci.CustomerId equals c.Id
-                                    join p in _context.ProductMasters on ci.ProductId equals p.Id
+                                    join p in _context.VendorProductMasters on ci.ProductId equals p.Id
                                     join s in _context.States on c.StateId equals s.Id
                                     join ct in _context.Cities on c.CityId equals ct.Id
                                     join sb in _context.States on c.BillingStateId equals sb.Id
@@ -2345,11 +2345,14 @@ namespace CRM.Repository
                 if (invoiceDTO != null)
                 {
                     var invoiceItems = (from ci in _context.CustomerInvoices
-                                        join p in _context.ProductMasters on ci.ProductId equals p.Id
+                                        join p in _context.VendorProductMasters on ci.ProductId equals p.Id
                                         where (ci.InvoiceNumber == InvoiceNumber)
                                         select new ProductDetailList
                                         {
                                             ProductName = p.ProductName,
+                                            IGST = ci.Igst,
+                                            SGST = ci.Sgst,
+                                            CGST = ci.Cgst,
                                             StartDate = ci.StartDate,
                                             RenewDate = ci.RenewDate,
                                             HsnSacCode = ci.Hsncode,

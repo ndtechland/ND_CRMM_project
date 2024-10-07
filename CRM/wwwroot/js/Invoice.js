@@ -103,7 +103,7 @@ function updateTaxFields() {
         }
 
         $.ajax({
-            url: '/Home/product?id=' + productId,
+            url: '/Sale/product?id=' + productId,
             type: 'GET',
             dataType: 'json',
             contentType: 'application/json; charset=utf-8',
@@ -111,14 +111,14 @@ function updateTaxFields() {
                 if (response.data != null) {
                     // Update specific fields for this product section
                     $section.find('.HsnSacCode').val(response.data.hsnSacCode).attr('readonly', true);
-                    $section.find('.Price').val(response.data.price).attr('readonly', true);
+                    $section.find('.Price').val(response.data.productPrice).attr('readonly', true);
 
                     // Update GST fields based on state match
                     var checkVendorBillingStateId = $("#checkvendorbillingstateid").val();
 
                     if (checkVendorBillingStateId === billingStateId) {
                         $section.find('.CGST').val(response.data.cgst).attr('readonly', true);
-                        $section.find('.SGST').val(response.data.scgst).attr('readonly', true);
+                        $section.find('.SGST').val(response.data.sgst).attr('readonly', true);
                         $section.find('.IGST').val('').attr('readonly', true); // Clear IGST
                     } else {
                         $section.find('.IGST').val(response.data.igst).attr('readonly', true);
