@@ -4,6 +4,7 @@ using CRM.Models.APIDTO;
 using CRM.Models.Crm;
 using CRM.Models.DTO;
 using CRM.Utilities;
+using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Math;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.AspNetCore.Hosting;
@@ -1132,21 +1133,21 @@ namespace CRM.Repository
                             dd.CheckOut = (record.CheckOutTime.Value.ToString("hh:mm tt"));
                             dd.CheckIN = "N/A";
                             dd.loginactivities = null;
-                           
+
                         }
                         else if (record.CheckIn == true && (record.CheckInTime > lastBreakOutTime.Value))
                         {
-                           
-                                dd.CheckIN = (record.CheckInTime.ToString("hh:mm tt"));
-                                dd.CheckOut = "N/A";
-                                dd.loginactivities = null;
+
+                            dd.CheckIN = (record.CheckInTime.ToString("hh:mm tt"));
+                            dd.CheckOut = "N/A";
+                            dd.loginactivities = null;
 
                         }
 
                     }
                     loginactivity.loginactivities.Add(dd);
                 }
-               
+
                 loginactivity.CheckIN = checkInTime;
                 loginactivity.CheckOut = checkOutTime;
                 return loginactivity;
@@ -1154,6 +1155,26 @@ namespace CRM.Repository
             catch (Exception ex)
             {
                 throw new Exception("Error retrieving employee login activity: " + ex.Message);
+            }
+        }
+        public async Task<List<TasksassignDto>> GetEmpTasksassign(string userid)
+        {
+            try
+            {
+                var taskassign = await _context.EmployeeTasks.Where(x => x.EmployeeId == userid).Select(x => new TasksassignDto
+                {
+                    TaskName = x.Task,
+                    TaskTittle =x.Tittle,
+                    TaskDate = x.Date.Value.ToString("dd/MM/yyyy"),
+                    TaskDescription =x.Description,
+                    TaskStatus = _context.TaskStatuses.Where(a => a.Id == x.Status).Select(status => status.StatusName).FirstOrDefault(),
+                }).ToListAsync();
+
+                return taskassign;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error: " + ex.Message);
             }
         }
     }

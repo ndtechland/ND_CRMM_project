@@ -59,10 +59,18 @@ namespace CRM.Models.APIDTO
     }
     public class Loginactivity
     {
-       // public string? OfficeHour { get; set; }
+        // public string? OfficeHour { get; set; }
         public string? CheckIN { get; set; }
         public string? CheckOut { get; set; }
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<Loginactivity> loginactivities { get; set; } = new List<Loginactivity>();
+    }
+    public class TasksassignDto
+    {
+        public string? TaskName { get; set; }
+        public string? TaskTittle { get; set; }
+        public string TaskDate { get; set; }
+        public string? TaskDescription { get; set; }
+        public string? TaskStatus { get; set; }
     }
 }
