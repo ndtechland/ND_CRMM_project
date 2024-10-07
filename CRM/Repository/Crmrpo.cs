@@ -2170,6 +2170,7 @@ namespace CRM.Repository
                         VendorId = vendorid,
                         CustomerId = product.CustomerId,
                         ProductId = product.ProductId,
+                        Description = product.Description,
                         ProductPrice = product.ProductPrice,
                         RenewPrice = product.RenewPrice,
                         NoOfRenewMonth = product.NoOfRenewMonth,
@@ -2227,7 +2228,7 @@ namespace CRM.Repository
                                     join sb in _context.States on c.BillingStateId equals sb.Id
                                     join ctb in _context.Cities on c.BillingCityId equals ctb.Id
                                     where c.Vendorid == vendorid
-                                    group new { ci, c, p, s, ct, sb, ctb } by ci.CustomerId into grouped
+                                    group new { ci, c, p, s, ct, sb, ctb } by ci.InvoiceNumber into grouped
                                     select new CustomerInvoiceDTO
                                     {
                                         InvoiceId = grouped.FirstOrDefault().ci.Id,
@@ -2252,7 +2253,7 @@ namespace CRM.Repository
                                         IGST = grouped.FirstOrDefault().ci.Igst,
                                         SGST = grouped.FirstOrDefault().ci.Sgst,
                                         CGST = grouped.FirstOrDefault().ci.Cgst
-                                    }).ToListAsync();
+                                    }).OrderByDescending(o=>o.InvoiceId).ToListAsync();
 
                 return result;
             }
@@ -2260,6 +2261,110 @@ namespace CRM.Repository
             {
                 // Optionally log the exception
                 throw; // Rethrow the exception or handle it accordingly
+            }
+        }
+
+        public async Task<CustomerInvoiceDTO> CustomerProductInvoice(string InvoiceNumber)
+        {
+            try
+            {
+                //var result = (from ci in _context.CustomerInvoices
+                //              join c in _context.CustomerRegistrations on ci.CustomerId equals c.Id
+                //              join s in _context.States on c.StateId equals s.Id
+                //              join ct in _context.Cities on c.CityId equals ct.Id
+                //              join sb in _context.States on c.BillingStateId equals sb.Id
+                //              join ctb in _context.Cities on c.BillingCityId equals ctb.Id
+                //              where (ci.InvoiceNumber == InvoiceNumber)
+                //              select new CustomerInvoiceDTO
+                //              {
+                //                  InvoiceId=ci.Id,
+                //                  InvoiceNumber=ci.InvoiceNumber,
+                //                  CompanyName=c.CompanyName,
+                //                  MobileNumber=c.MobileNumber,
+                //                  Email=c.Email,
+                //                  OfficeAddress = c.Location,
+                //                  OfficeState = s.SName,
+                //                  OfficeCity = ct.City1,
+                //                  BillingAddress = c.BillingAddress,
+                //                  BillingState = sb.SName,
+                //                  // ProductName=p.ProductName,
+                //                  InvoiceDate =ci.CreatedDate,
+                //                  IGST=ci.Igst,
+                //                  CGST=ci.Cgst,
+                //                  SGST=ci.Sgst,
+                //                  //StartDate=ci.StartDate,
+                //                  //RenewDate=ci.RenewDate,
+                //                  //HsnSacCode=ci.Hsncode,
+                //                 // ProductPrice=ci.ProductPrice,
+                //                  CustomerGstNumber=c.GstNumber,
+                //                  NoOfRenewMonth=ci.NoOfRenewMonth                                  
+                //              }).FirstOrDefault();
+
+
+                CustomerInvoiceDTO invoiceDTO = new CustomerInvoiceDTO();
+                invoiceDTO = (from ci in _context.CustomerInvoices
+                              join c in _context.CustomerRegistrations on ci.CustomerId equals c.Id
+                              join s in _context.States on c.StateId equals s.Id
+                              join ct in _context.Cities on c.CityId equals ct.Id
+                              join sb in _context.States on c.BillingStateId equals sb.Id
+                              join ctb in _context.Cities on c.BillingCityId equals ctb.Id
+                              join v in _context.VendorRegistrations on ci.VendorId equals v.Id
+                              join vs in _context.States on v.StateId equals vs.Id
+                              join vct in _context.Cities on v.CityId equals vct.Id
+                              where (ci.InvoiceNumber == InvoiceNumber)
+                              select new CustomerInvoiceDTO
+                              {
+                                  InvoiceId = ci.Id,
+                                  InvoiceNumber = ci.InvoiceNumber,
+                                  CompanyName = c.CompanyName,
+                                  CompanyLogo = v.CompanyImage,
+                                  VendorCompanyName = v.CompanyName,
+                                  VendorGstNumber = v.GstNumber,
+                                  VendorOfficeAddress = v.Location,
+                                  VendorOfficeCity = vct.City1,
+                                  VendorOfficeState = vs.SName,
+                                  MobileNumber = c.MobileNumber,
+                                  Email = c.Email,
+                                  OfficeAddress = c.Location,
+                                  OfficeState = s.SName,
+                                  OfficeCity = ct.City1,
+                                  BillingCity = ctb.City1,
+                                  BillingAddress = c.BillingAddress,
+                                  BillingState = sb.SName,
+                                  InvoiceDate = ci.CreatedDate,
+                                  IGST = ci.Igst,
+                                  CGST = ci.Cgst,
+                                  SGST = ci.Sgst,
+                                  CustomerGstNumber = c.GstNumber,
+                                  NoOfRenewMonth = ci.NoOfRenewMonth
+                              }).FirstOrDefault();
+
+                // Step 2: Get the related list of invoice items
+                if (invoiceDTO != null)
+                {
+                    var invoiceItems = (from ci in _context.CustomerInvoices
+                                        join p in _context.ProductMasters on ci.ProductId equals p.Id
+                                        where (ci.InvoiceNumber == InvoiceNumber)
+                                        select new ProductDetailList
+                                        {
+                                            ProductName = p.ProductName,
+                                            StartDate = ci.StartDate,
+                                            RenewDate = ci.RenewDate,
+                                            HsnSacCode = ci.Hsncode,
+                                            ProductPrice = ci.ProductPrice,
+                                        }).ToList();
+
+                    // Add the list to the invoice DTO if needed
+                    invoiceDTO.ProductDetailLists = invoiceItems;
+                }
+
+
+                return invoiceDTO;
+            }
+            catch (Exception)
+            {
+
+                throw;
             }
         }
        

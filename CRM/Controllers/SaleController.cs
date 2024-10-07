@@ -197,11 +197,11 @@ namespace CRM.Controllers
             }
         }
 
-        public async Task<IActionResult> DeleteCustomerInvoice(int id)
+        public async Task<IActionResult> DeleteCustomerInvoice(string InvoiceNumber)
         {
             try
             { 
-                var dlt = await _context.CustomerInvoices.Where(c => c.CustomerId == id).ToListAsync();  
+                var dlt = await _context.CustomerInvoices.Where(c => c.InvoiceNumber == InvoiceNumber).ToListAsync();  
                  
                 if (dlt.Any())
                 {                     
@@ -321,6 +321,40 @@ namespace CRM.Controllers
             invoiceid = $"{firstChars}{financialYear}-{numericValue:D5}";
 
             return invoiceid;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ProductInvoice(string InvoiceNumber)
+        {
+            try
+            {
+                if (InvoiceNumber != null)
+                {
+                    CustomerInvoiceDTO invoice = new CustomerInvoiceDTO();
+
+                    invoice = await _ICrmrpo.CustomerProductInvoice(InvoiceNumber);
+                    if (invoice != null)
+                    {
+                        return View(invoice);
+                    }
+                    else
+                    {
+                        TempData["msg"] = "No data found";
+                        return RedirectToAction("VendorList");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("VendorList");
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("Error : " + ex.Message);
+            }
+
+
         }
 
     }

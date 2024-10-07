@@ -93,5 +93,6 @@ namespace CRM.Repository
         public Task<int> AddExperienceletterdetail(EmpExperienceletter model, int Userid);
         Task<bool> CustomerInvoice(List<ProductDetail> model ,string InvoiceNo, int vendorid);
         Task<List<CustomerInvoiceDTO>> GetCustometInvoiceList(int vendorid);
+        Task<CustomerInvoiceDTO> CustomerProductInvoice(string InvoiceNumber);
     }
 }
