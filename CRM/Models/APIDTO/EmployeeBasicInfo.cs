@@ -1,4 +1,6 @@
-﻿namespace CRM.Models.APIDTO
+﻿using System.Text.Json.Serialization;
+
+namespace CRM.Models.APIDTO
 {
     public class EmployeeBasicInfo
     {
@@ -57,8 +59,10 @@
     }
     public class Loginactivity
     {
-        public string? OfficeHour { get; set; }
-        public string? BreakIN { get; set; }
-        public string? BreakOut { get; set; }
+       // public string? OfficeHour { get; set; }
+        public string? CheckIN { get; set; }
+        public string? CheckOut { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<Loginactivity> loginactivities { get; set; } = new List<Loginactivity>();
     }
 }

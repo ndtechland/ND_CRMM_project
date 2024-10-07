@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.Services.Account;
 using MimeKit.Encodings;
+using NuGet.Versioning;
 using Org.BouncyCastle.Asn1.Ocsp;
 using Org.BouncyCastle.Ocsp;
 using Syncfusion.Pdf.Graphics;
@@ -1098,68 +1099,62 @@ namespace CRM.Repository
                 {
                     throw new ArgumentException("User ID cannot be null or empty.");
                 }
-
-                var empAttendanceDetails = await _context.EmployeeRegistrations
-                    .Where(x => x.EmployeeId == userid)
-                    .Select(x => new
-                    {
-                        OfficeShiftId = x.OfficeshiftTypeid,
-                        EmployeeId = x.EmployeeId
-                    })
-                    .FirstOrDefaultAsync();
-
-                if (empAttendanceDetails == null)
-                {
-                    throw new Exception("Employee not found.");
-                }
-
-                if (!empAttendanceDetails.OfficeShiftId.HasValue)
-                {
-                    throw new Exception("Office shift ID is missing.");
-                }
-
-                var officeShift = await _context.Officeshifts.FindAsync((int)empAttendanceDetails.OfficeShiftId.Value);
-                if (officeShift == null)
-                {
-                    throw new Exception("Office shift not found.");
-                }
-
-                if (!DateTime.TryParse(officeShift.Endtime, out DateTime shiftEndTime))
-                {
-                    throw new Exception("Invalid shift end time format.");
-                }
-
-                var breakInRecords = await _context.EmployeeCheckIns
-                    .Where(g => g.EmployeeId == userid
-                                 && g.CheckInTime.Day == DateTime.Now.Day
-                                 && g.CheckInTime.Day == DateTime.Now.Day
-                                 && g.CheckIn == true)
+                Loginactivity loginactivity = new Loginactivity();
+                var currentDate = DateTime.Now.Date;
+                var attendanceRecords = await _context.EmployeeCheckIns
+                    .Where(g => g.EmployeeId == userid &&
+                                (g.CheckInTime.Date == currentDate ||
+                                 g.CheckOutTime.HasValue && g.CheckOutTime.Value.Date == currentDate))
+                    .OrderBy(g => g.CheckInTime)
                     .ToListAsync();
-                var breakoutRecords = await _context.EmployeeCheckIns
-                   .Where(g => g.EmployeeId == userid
-                                && g.CheckOutTime.Value.Day == DateTime.Now.Day
-                                && g.CheckOutTime.Value.Day == DateTime.Now.Day
-                                && g.CheckIn == false)
-                   .ToListAsync();
-                var breakInTimes = breakInRecords.Select(b => b.CheckInTime.ToString("hh:mm tt")).ToList();
-                var breakInString = breakInTimes.Count > 0 ? string.Join(", ", breakInTimes) : "No BreakIn Records";
-                var breakOutTimes = breakoutRecords.Select(b => b.CheckOutTime?.ToString("hh:mm tt")).ToList();
-                var breakoutString = breakOutTimes.Count > 0 ? string.Join(", ", breakOutTimes) : "No BreakOut Records";
 
-                var attendanceDetail = new Loginactivity
+                string checkInTime = null;
+                string checkOutTime = null;
+                DateTime? lastBreakOutTime = null;
+                checkInTime = attendanceRecords
+                    .Where(g => g.CheckIn == true)
+                    .OrderBy(g => g.CheckInTime)
+                    .Select(g => g.CheckInTime.ToString("hh:mm tt"))
+                    .FirstOrDefault() ?? "N/A";
+                checkOutTime = attendanceRecords
+                    .Where(g => g.CheckOutTime.HasValue)
+                    .OrderByDescending(g => g.CheckOutTime)
+                    .Select(g => g.CheckOutTime.Value.ToString("hh:mm tt"))
+                    .FirstOrDefault() ?? "N/A";
+                attendanceRecords = attendanceRecords.Skip(1).Take(attendanceRecords.Count - 2).ToList();
+                foreach (var record in attendanceRecords)
                 {
-                    OfficeHour = $"{officeShift.Starttime} - {officeShift.Endtime}",
-                    BreakIN = breakInString,
-                    BreakOut = breakoutString
-                };
+                    Loginactivity dd = new Loginactivity();
+                    {
+                        if (record.CheckIn == false && record.CheckOutTime.HasValue)
+                        {
+                            lastBreakOutTime = record.CheckOutTime.Value;
+                            dd.CheckOut = (record.CheckOutTime.Value.ToString("hh:mm tt"));
+                            dd.CheckIN = "N/A";
+                            dd.loginactivities = null;
+                           
+                        }
+                        else if (record.CheckIn == true && (record.CheckInTime > lastBreakOutTime.Value))
+                        {
+                           
+                                dd.CheckIN = (record.CheckInTime.ToString("hh:mm tt"));
+                                dd.CheckOut = "N/A";
+                                dd.loginactivities = null;
 
-                return attendanceDetail;
+                        }
+
+                    }
+                    loginactivity.loginactivities.Add(dd);
+                }
+               
+                loginactivity.CheckIN = checkInTime;
+                loginactivity.CheckOut = checkOutTime;
+                return loginactivity;
             }
             catch (Exception ex)
             {
                 throw new Exception("Error retrieving employee login activity: " + ex.Message);
             }
         }
-
     }
 }
