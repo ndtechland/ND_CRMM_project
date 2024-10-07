@@ -2268,6 +2268,8 @@ namespace CRM.Repository
         {
             try
             {
+
+
                 //var result = (from ci in _context.CustomerInvoices
                 //              join c in _context.CustomerRegistrations on ci.CustomerId equals c.Id
                 //              join s in _context.States on c.StateId equals s.Id
