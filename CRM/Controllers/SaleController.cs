@@ -49,6 +49,8 @@ namespace CRM.Controllers
                                     Text = p.ProductName,
                                 })
                                 .ToList();
+                            ViewBag.CustomerId = data.CustomerId;
+                            ViewBag.CustomerName = _context.CustomerRegistrations.Where(x =>x.Id == data.CustomerId).First().CompanyName;
                             ViewBag.ProductId = data.ProductId;
                             ViewBag.Price = data.ProductPrice;
                             ViewBag.RenewPrice = data.RenewPrice;

@@ -41,6 +41,14 @@
             fetchCustomerDetails(customerId);
         }
     });
+   
+    var customerId = $("#customerId").val();
+    var customerName = $("#customerName").val();
+    if (customerId != '' && customerName != '') {
+        selectCustomer(customerId, customerName);
+    }
+           
+
 
     // Numeric validation for input fields
     $(".numeric-input").on("keydown", function (event) {
