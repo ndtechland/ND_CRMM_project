@@ -13,7 +13,7 @@ namespace CRM.Repository
         Task SendEmailCred(EmpMultiform model,string password,int? UserId);
         Task SendEmailCredentials(string toEmail,string CompanyName, string username, string password);
         Task EmpRandomPasswordSendEmailAsync(ForgotPassword model, string newPassword);
-
+        Task SendInvoicePdfEmail(string toEmail, string body, byte[] filecontent, string filename, string mimetype);
 
     }
 }

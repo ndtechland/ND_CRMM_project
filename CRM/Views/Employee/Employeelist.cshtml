@@ -71,16 +71,8 @@
                                                 </th>
 
                                                 <th nowrap>
-                                                    First Name
-                                                </th>
-
-                                                <th nowrap>
-                                                    Middle Name
-                                                </th>
-
-                                                <th nowrap>
-                                                    Last Name
-                                                </th>
+                                                    Employee Name
+                                                </th> 
 
                                                 <th nowrap>
                                                     Employee ID
@@ -100,16 +92,14 @@
 
                                                 <th nowrap>
                                                     WorkLocation
-                                                </th>
-
-                                                <th nowrap>
-                                                    Designation
-                                                </th>
+                                                </th> 
 
                                                 <th nowrap>
                                                     Department
                                                 </th>
-
+                                                <th nowrap>
+                                                    Designation
+                                                </th>
                                                 <th nowrap>
                                                     AnnualCTC
                                                 </th>
@@ -173,10 +163,10 @@
                                                     Aadharcard No
                                                 </th>
                                                 <th nowrap>
-                                                    Address Line1
+                                                    Employee Address
                                                 </th>
 
-                                                <th nowrap>
+                                               @*  <th nowrap>
                                                     Address Line2
                                                 </th>
 
@@ -190,7 +180,7 @@
 
                                                 <th nowrap>
                                                     Pincode
-                                                </th>
+                                                </th> *@
 
                                                 <th nowrap>
                                                     Account Holder Name
@@ -275,14 +265,9 @@
                                                     <tr class="table-row">
                                                         <td>@count</td>
                                                         <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.FirstName)
+                                                            @Html.DisplayFor(modelItem => item.FirstName) @Html.DisplayFor(modelItem => item.MiddleName)  @Html.DisplayFor(modelItem => item.LastName)
                                                         </td>
-                                                        <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.MiddleName)
-                                                        </td>
-                                                        <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.LastName)
-                                                        </td>
+                                                         
                                                         <td nowrap class="EmpRegId">
                                                             @Html.DisplayFor(modelItem => item.EmpRegId)
                                                         </td>
@@ -298,13 +283,13 @@
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.WorkLocation)
                                                         </td>
-                                                        <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.DesignationName)
-                                                        </td>
+                                                        
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.DepartmentName)
                                                         </td>
-
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.DesignationName)
+                                                        </td>
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.AnnualCtc)
                                                         </td>
@@ -365,10 +350,10 @@
                                                             @Html.DisplayFor(modelItem => item.Aadharcard)
                                                         </td>
                                                         <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.AddressLine1)
+                                                            @Html.DisplayFor(modelItem => item.AddressLine2),@Html.DisplayFor(modelItem => item.AddressLine1),@Html.DisplayFor(modelItem => item.City),@Html.DisplayFor(modelItem => item.Pincode),@Html.DisplayFor(modelItem => item.State)
                                                         </td>
 
-                                                        <td nowrap>
+                                                        @*<td nowrap>
                                                             @Html.DisplayFor(modelItem => item.AddressLine2)
                                                         </td>
 
@@ -383,6 +368,7 @@
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.Pincode)
                                                         </td>
+                                                        *@
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.AccountHolderName)
                                                         </td>

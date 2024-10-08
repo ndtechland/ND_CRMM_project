@@ -202,7 +202,7 @@ namespace CRM.Repository
 
                 emailMessage.Body = multipart;
 
-                using (var client = new MailKit.Net.Smtp.SmtpClient())
+                using (var client = new SmtpClient())
                 {
                     await client.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
                     await client.AuthenticateAsync("aastrolense@gmail.com", "efpbsimjkzxeoxnv");
@@ -214,7 +214,54 @@ namespace CRM.Repository
             {
                 throw;
             }
-        }     
+        }
+
+        //new
+        public async Task SendInvoicePdfEmail(string toEmail, string body, byte[] filecontent, string filename, string mimetype)
+        {
+            try
+            {
+                var emailMessage = new MimeMessage();
+                emailMessage.From.Add(new MailboxAddress("ND Connect", "aastrolense@gmail.com"));
+                emailMessage.To.Add(new MailboxAddress("Recipient Name", toEmail));
+                //emailMessage.Cc.Add(new MailboxAddress("Recipient Name", "ndcaretrust@gmail.com"));
+                //emailMessage.Bcc.Add(new MailboxAddress("Recipient Name", "ndinfotechteam@gmail.com"));
+                emailMessage.Subject = "Invoice Pdf";
+
+                var textPart = new TextPart("plain")
+                {
+                    Text = body
+                };
+
+                var attachment = new MimePart(mimetype)
+                {
+                    Content = new MimeContent(new MemoryStream(filecontent), ContentEncoding.Default),
+                    ContentDisposition = new ContentDisposition(ContentDisposition.Attachment),
+                    ContentTransferEncoding = ContentEncoding.Base64,
+                    FileName = filename
+                };
+
+                var multipart = new Multipart("mixed");
+                multipart.Add(textPart);
+                multipart.Add(attachment);
+
+                emailMessage.Body = multipart;
+
+                using (var client = new SmtpClient())
+                {
+
+                    await client.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
+                    await client.AuthenticateAsync("aastrolense@gmail.com", "efpbsimjkzxeoxnv");
+                    await client.SendAsync(emailMessage);
+                    await client.DisconnectAsync(true);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 
 }

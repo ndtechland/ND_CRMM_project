@@ -71,5 +71,4 @@
         public DateTime? RenewDate { get; set; }
     }
 
-
 }

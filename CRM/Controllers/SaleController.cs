@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Org.BouncyCastle.Ocsp;
+using SelectPdf;
 
 namespace CRM.Controllers
 {
@@ -13,10 +14,12 @@ namespace CRM.Controllers
     {
         private readonly admin_NDCrMContext _context;
         private readonly ICrmrpo _ICrmrpo;
-        public SaleController(admin_NDCrMContext context, ICrmrpo ICrmrpo)
+        private readonly IEmailService _IEmailService;
+        public SaleController(admin_NDCrMContext context, ICrmrpo ICrmrpo, IEmailService iEmailService)
         {
             _context = context;
             _ICrmrpo = ICrmrpo;
+            _IEmailService = iEmailService;
         }
         [HttpGet]
         public IActionResult Invoice(int id = 0)
@@ -342,12 +345,12 @@ namespace CRM.Controllers
                     else
                     {
                         TempData["msg"] = "No data found";
-                        return RedirectToAction("VendorList");
+                        return RedirectToAction("CustomerInvoiceList");
                     }
                 }
                 else
                 {
-                    return RedirectToAction("VendorList");
+                    return RedirectToAction("CustomerInvoiceList");
                 }
             }
             catch (Exception ex)
@@ -369,7 +372,7 @@ namespace CRM.Controllers
                             pm,
                             gm
                         })
-            .AsEnumerable() // Move to client-side evaluation
+            .AsEnumerable() 
             .Select(x => new ProductDetailList
             {
                 SGST = Convert.ToDecimal(x.gm.Scgst),
@@ -377,7 +380,7 @@ namespace CRM.Controllers
                 IGST = Convert.ToDecimal(x.gm.Igst),
                 ProductPrice = x.pm.ProductPrice,
                 HsnSacCode = x.pm.Hsncode,
-                //State = cs.State, // Uncomment and handle this part as needed
+                
             }).FirstOrDefault();
 
 
@@ -387,6 +390,51 @@ namespace CRM.Controllers
             };
 
             return new JsonResult(result);
+        }
+
+        public async Task <IActionResult>SendInvoicePDF(string InvoiceNumber)
+        {
+            try
+            {
+                string schema = Request.Scheme;
+                string host = Request.Host.Value;
+                HtmlToPdf converter = new HtmlToPdf();
+                string SlipURL = $"{schema}://{host}/Sale/ProductInvoice?InvoiceNumber={InvoiceNumber}";
+                PdfDocument doc = converter.ConvertUrl(SlipURL);
+
+                // Save the PDF to a byte array instead of a file
+                using (var memoryStream = new MemoryStream())
+                {
+                    doc.Save(memoryStream);
+                    byte[] pdf = memoryStream.ToArray();
+                    doc.Close();
+
+                    // Retrieve the customer invoice details
+                    CustomerInvoiceDTO result = new CustomerInvoiceDTO();
+
+                    result = await _ICrmrpo.CustomerProductInvoice(InvoiceNumber);
+
+                    if (result == null)
+                    {
+                        throw new Exception("Employee not found.");
+                    }
+
+                    // Update employee attendance with the PDF filename if needed
+                    
+
+                    // Prepare and send the email
+                    
+                    string Email_body = $"Hello {result.CompanyName}, please find your attached invoice.";
+                    await _IEmailService.SendInvoicePdfEmail(result.Email, Email_body, pdf, "Product.pdf", "application/pdf");
+                    TempData["Message"] = "Invoice sent successfully";
+                    return RedirectToAction("CustomerInvoiceList");
+                    //Console.WriteLine($"Salary slip for Employee ID {result.InvoiceNumber} has been sent via email.");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex; // Consider logging the exception instead of throwing it directly
+            }
         }
 
     }
