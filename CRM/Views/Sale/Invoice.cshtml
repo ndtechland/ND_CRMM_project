@@ -280,7 +280,7 @@
 
                                                 <div class="form-group col-sm">
                                                     <label for="ProductDetails">Product <span class="text-danger">*</span></label>
-                                                    @Html.DropDownListFor(model => model.ProductId, new SelectList(ViewBag.ProductDetails, "Value", "Text"), "-- Select Product --", new { @class = "form-control ProductDetails", required = "required" })
+                                                    @Html.DropDownListFor(model => model.ProductId, new SelectList(ViewBag.ProductDetails, "Value", "Text"), "-- Select Product --", new { @class = "form-control ProductDetails select2", required = "required", onchange = "updateTaxFields()" })
                                                     <span asp-validation-for="ProductId" class="text-danger"></span>
                                                 </div>
                                                 <div class="form-group col-sm">
@@ -343,7 +343,6 @@
                                         </div>
                                     </div>
 
-
                                     <div class="form-group" style="display:flex; justify-content:center;">
                                         <input type="button" value="@ViewBag.btnText" onclick="sendProductDetailsToAPI()" class="btn btn-primary" />
                                     </div>
@@ -353,11 +352,9 @@
                     </div>
                 </div>
             </div>
-
         </div>
-
-
     </div>
+
     <input hidden type="text" id="iGST" value="" />
     <input hidden type="text" id="cGST" value="" />
     <input hidden type="text" id="sGST" value="" />
@@ -367,7 +364,6 @@
     <input type="hidden" id="cityId" />
     <input type="hidden" id="checkvendorbillingstateid" value="@ViewBag.checkvendorbillingstateid" />
 </div>
-<!-- Add this in the head section of your HTML -->
 
 
 <script src="~/js/invoice.js"></script>

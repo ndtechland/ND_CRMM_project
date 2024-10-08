@@ -4,6 +4,36 @@
     ViewData["Title"] = "CustomerInvoiceList";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var message = "@TempData["Message"]";
+
+        if (message) {
+            Swal.fire({
+                title: 'Not Found',
+                text: message,
+                icon: 'info',
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    setTimeout(function () {
+                        window.location.href = '@Url.Action("GenerateSalary", "Employee")';
+                    }, 1000);
+                }
+            });
+        }
+    });
+</script>
 <div class="page-wrapper">
     <div class="page-body-wrapper">
         <div class="page-sidebar">
@@ -158,8 +188,12 @@
                                                             <div>
                                                                 <a href="/Sale/Invoice?Id=@item.CustomerId" class="fa fa-edit m-2 font-success"></a>
 
-                                                                <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteCustomerInvoice", "Sale", new { InvoiceNumber = item.InvoiceNumber })')" class="fa fa-trash font-danger"></a>
-                                                            </div>
+                                                                <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteCustomerInvoice", "Sale", new { InvoiceNumber = item.InvoiceNumber })')" class="fa fa-trash font-danger" ></a>
+                                                                <a href="@Url.Action("SendInvoicePDF", "Sale", new { InvoiceNumber = item.InvoiceNumber })"
+                                                                   class="fa fa-envelope m-2 font-info"
+                                                                   title="Send Email"></a>
+
+                                                                </div>
                                                         </td>
                                                     </tr>
                                                 }
