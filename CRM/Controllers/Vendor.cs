@@ -1251,7 +1251,8 @@ namespace CRM.Controllers
                    Id = x.Id,
                    Task = x.Task,
                    Tittle = x.Tittle,
-                   Date = x.Date,
+                   Startdate = x.Startdate,
+                   Enddate = x.Enddate,
                    Description = x.Description,
                    Reason = x.Reason,
                    Status = _context.TaskStatuses.Where(a => a.Id == x.Status).Select(status => status.StatusName).FirstOrDefault(),
@@ -1271,7 +1272,8 @@ namespace CRM.Controllers
                 ViewBag.UserName = AddedBy;
                 ViewBag.Task = "";
                 ViewBag.Tittle = "";
-                ViewBag.Date = "";
+                ViewBag.Startdate = "";
+                ViewBag.Enddate = "";
                 ViewBag.Description = "";
                 ViewBag.Reason = "";
                 ViewBag.Status = "";
@@ -1284,7 +1286,8 @@ namespace CRM.Controllers
                     ViewBag.id = data.Id;
                     ViewBag.Task = data.Task;
                     ViewBag.Tittle = data.Tittle;
-                    ViewBag.Date = data.Date?.ToString("dd/MM/yyyy");
+                    ViewBag.Startdate = data.Startdate?.ToString("yyyy-MM-dd");
+                    ViewBag.Enddate = data.Enddate?.ToString("yyyy-MM-dd");
                     ViewBag.Description = data.Description;
                     ViewBag.Reason = data.Reason;
                     ViewBag.Status = data.Status;
@@ -1321,7 +1324,8 @@ namespace CRM.Controllers
                     {
                         existingData.Task = model.Task;
                         existingData.Tittle = model.Tittle;
-                        existingData.Date = model.Date;
+                        existingData.Startdate = model.Startdate;
+                        existingData.Enddate = model.Enddate;
                         existingData.Description = model.Description;
                         existingData.Reason = model.Reason;
                         existingData.Status = Convert.ToInt16(model.Status);
@@ -1344,7 +1348,8 @@ namespace CRM.Controllers
                     {
                         Task = model.Task,
                         Tittle = model.Tittle,
-                        Date = model.Date,
+                        Startdate = model.Startdate,
+                        Enddate = model.Enddate,
                         Description = model.Description,
                         Reason = model.Reason,
                         Status = Convert.ToInt16(model.Status),

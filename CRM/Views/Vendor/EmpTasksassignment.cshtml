@@ -103,15 +103,18 @@
                                         </div>
                                         <div class="form-group col-md-6">
                                             <label class="control-label" for="Date-picker">Task Name</label>
-                                            <input id="Date-picker" type="text" name="Task" value="@ViewBag.Task" class="form-control" required />
+                                            <input id="Date-picker" type="text" name="Task" placeholder="Please Enter Task Name" value="@ViewBag.Task" class="form-control" required />
                                             <span name="Date" class="text-danger"></span>
                                         </div>
 
                                         <div class="form-group col-md-6">
-                                            <label class="control-label" for="Datepicker">Task Date</label>
-                                            <input id="Datepicker" type="date" name="Date" class="form-control" required />
+                                            <label class="control-label" for="Datepicker">Task Startdate</label>
+                                            <input id="Startdatepicker" type="date" name="Startdate" class="form-control" required />
                                         </div>
-
+                                        <div class="form-group col-md-6">
+                                            <label class="control-label" for="Datepicker">Task Enddate</label>
+                                            <input id="Enddatepicker" type="date" name="Enddate" class="form-control" required />
+                                        </div>
                                         <div class="form-group col-md-6">
                                             <label class="control-label" for="taskTitle">Task Title</label>
                                             <input id="taskTitle" type="text" name="Tittle" value="@ViewBag.Tittle" placeholder="Please Enter Task Title" class="form-control" required />
@@ -167,7 +170,10 @@
                                                     Task Name
                                                 </th>
                                                 <th>
-                                                    Task Date
+                                                    Task Startdate
+                                                </th>
+                                                <th>
+                                                    Task Enddate
                                                 </th>
                                                 <th>
                                                     Task Title
@@ -199,7 +205,10 @@
                                                             @Html.DisplayFor(modelItem => item.Task)
                                                         </td>
                                                         <td>
-                                                            @item.Date?.ToString("dd/MM/yyyy")
+                                                            @item.Startdate?.ToString("dd/MM/yyyy")
+                                                        </td>
+                                                        <td>
+                                                            @item.Enddate?.ToString("dd/MM/yyyy")
                                                         </td>
                                                         <td>
                                                             @Html.DisplayFor(modelItem => item.Tittle)
@@ -246,12 +255,14 @@
         if (taskstatus) {
             $('#taskStatusID').val(taskstatus);
         }
-        var taskdate = '@ViewBag.Date';
-        if (taskdate != "") {
-            var formattedDate = taskdate ? new Date(taskdate).toISOString().split('T')[0] : '';
-            $('#Datepicker').val(formattedDate);
+        var taskstartdate = '@ViewBag.Startdate';
+        if (taskstartdate != "") {
+            $('#Startdatepicker').val(taskstartdate);
         }
-       
+        var taskEnddate = '@ViewBag.Enddate';
+        if (taskEnddate != "") {
+            $('#Enddatepicker').val(taskEnddate);
+        }
     });
 </script>
 <script>

@@ -67,9 +67,11 @@ namespace CRM.Models.APIDTO
     }
     public class TasksassignDto
     {
+        public int? Id { get; set; }
         public string? TaskName { get; set; }
         public string? TaskTittle { get; set; }
-        public string TaskDate { get; set; }
+        public string taskstartdate { get; set; }
+        public string taskEnddate { get; set; }
         public string? TaskDescription { get; set; }
         public string? TaskStatus { get; set; }
     }

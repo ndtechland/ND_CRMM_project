@@ -1051,12 +1051,21 @@ namespace CRM.Controllers.Api
                 {
                     var userid = User.Claims.FirstOrDefault().Value;
                     List<TasksassignDto> isLoginExists = await _apiemp.GetEmpTasksassign(userid);
-                    if (isLoginExists != null)
+                    if (isLoginExists.Count == 0)
                     {
                         response.Succeeded = true;
                         response.StatusCode = StatusCodes.Status200OK;
                         response.Status = "Success";
-                        response.Message = "Employee Tasksassign Here.";
+                        response.Message = "Employee does not Task .";
+                        response.Data = isLoginExists;
+                        return Ok(response);
+                    }
+                    else if (isLoginExists.Count != 0)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = "Employee Task Here.";
                         response.Data = isLoginExists;
                         return Ok(response);
                     }
@@ -1081,5 +1090,6 @@ namespace CRM.Controllers.Api
                 throw new Exception(ex.Message);
             }
         }
+
     }
 }

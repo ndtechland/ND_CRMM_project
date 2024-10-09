@@ -395,7 +395,6 @@ namespace CRM.Repository
             GetleaveList.GetLeaveList = _context.Leaves.Where(x => x.Isactive == true).ToList();
             return GetleaveList;
         }
-
         public async Task<bool> ApplyLeave(ApplyLeave model, string userid)
         {
             try
@@ -404,33 +403,53 @@ namespace CRM.Repository
                 List<Leave> SH = new List<Leave>();
                 List<Leave> FD = new List<Leave>();
                 decimal total = (decimal)0.00;
-                var TypeOfLeave = _context.Leavemasters.Where(x => x.LeavetypeId == model.TypeOfLeaveId && x.EmpId == userid).FirstOrDefault();
+
+                var TypeOfLeave = await _context.Leavemasters
+                                          .Where(x => x.LeavetypeId == model.TypeOfLeaveId && x.EmpId == userid)
+                                          .FirstOrDefaultAsync();
+
+                if (TypeOfLeave == null)
+                {
+                    throw new Exception("Leave type not found for the given employee.");
+                }
+
                 if (model.EndDate != model.StartDate)
                 {
                     total = (model.EndDate - model.StartDate).Days;
                 }
-                if (model.StartLeaveId == 1)
+
+                if (model.StartLeaveId == 1) 
                 {
                     FH = await _context.Leaves.Where(x => x.Id == model.StartLeaveId).ToListAsync();
                 }
-                else if (model.StartLeaveId == 2)
+                else if (model.StartLeaveId == 2) 
                 {
                     SH = await _context.Leaves.Where(x => x.Id == model.EndeaveId).ToListAsync();
                 }
-                else
+                else 
                 {
                     FD = await _context.Leaves.Where(x => x.Id == model.EndeaveId).ToListAsync();
                 }
+
                 if (total == 0)
                 {
-                    decimal TotalLeave = (FH.Count() == 0 ? 0 : (decimal)(FH.Count() * 0.50)) + (SH.Count() == 0 ? 0 : (decimal)(SH.Count() * 0.50)) + (FD.Count() == 0 ? 0 : (decimal)(FD.Count() * 1.00));
+                    decimal TotalLeave = (FH.Count() == 0 ? 0 : (decimal)(FH.Count() * 0.50)) +
+                                         (SH.Count() == 0 ? 0 : (decimal)(SH.Count() * 0.50)) +
+                                         (FD.Count() == 0 ? 0 : (decimal)(FD.Count() * 1.00));
                     total = TotalLeave;
                 }
                 else
                 {
-                    decimal TotalLeave = (FH.Count() == 0 ? 0 : (decimal)(FH.Count() * 0.50)) + (SH.Count() == 0 ? 0 : (decimal)(SH.Count() * 0.50));
+                    decimal TotalLeave = (FH.Count() == 0 ? 0 : (decimal)(FH.Count() * 0.50)) +
+                                         (SH.Count() == 0 ? 0 : (decimal)(SH.Count() * 0.50));
                     total -= TotalLeave;
                 }
+
+                if (total > TypeOfLeave.Value)
+                {
+                    total = Convert.ToDecimal(TypeOfLeave.Value); 
+                }
+
                 int month = DateTime.Now.Month;
                 ApplyLeaveNews apply = new ApplyLeaveNews()
                 {
@@ -445,19 +464,83 @@ namespace CRM.Repository
                     CountLeave = total,
                     Month = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month)
                 };
+
                 await _context.ApplyLeaveNews.AddAsync(apply);
                 await _context.SaveChangesAsync();
                 TypeOfLeave.Value -= total;
+                _context.Entry(TypeOfLeave).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
 
                 return true;
             }
             catch (Exception ex)
             {
-
-                throw new Exception("Error Message : e " + ex);
+                throw new Exception("Error Message : e " + ex.Message);
             }
         }
+
+        //public async Task<bool> ApplyLeave(ApplyLeave model, string userid)
+        //{
+        //    try
+        //    {
+        //        List<Leave> FH = new List<Leave>();
+        //        List<Leave> SH = new List<Leave>();
+        //        List<Leave> FD = new List<Leave>();
+        //        decimal total = (decimal)0.00;
+        //        var TypeOfLeave = _context.Leavemasters.Where(x => x.LeavetypeId == model.TypeOfLeaveId && x.EmpId == userid).FirstOrDefault();
+        //        if (model.EndDate != model.StartDate)
+        //        {
+        //            total = (model.EndDate - model.StartDate).Days;
+        //        }
+        //        if (model.StartLeaveId == 1)
+        //        {
+        //            FH = await _context.Leaves.Where(x => x.Id == model.StartLeaveId).ToListAsync();
+        //        }
+        //        else if (model.StartLeaveId == 2)
+        //        {
+        //            SH = await _context.Leaves.Where(x => x.Id == model.EndeaveId).ToListAsync();
+        //        }
+        //        else
+        //        {
+        //            FD = await _context.Leaves.Where(x => x.Id == model.EndeaveId).ToListAsync();
+        //        }
+        //        if (total == 0)
+        //        {
+        //            decimal TotalLeave = (FH.Count() == 0 ? 0 : (decimal)(FH.Count() * 0.50)) + (SH.Count() == 0 ? 0 : (decimal)(SH.Count() * 0.50)) + (FD.Count() == 0 ? 0 : (decimal)(FD.Count() * 1.00));
+        //            total = TotalLeave;
+        //        }
+        //        else
+        //        {
+        //            decimal TotalLeave = (FH.Count() == 0 ? 0 : (decimal)(FH.Count() * 0.50)) + (SH.Count() == 0 ? 0 : (decimal)(SH.Count() * 0.50));
+        //            total -= TotalLeave;
+        //        }
+        //        int month = DateTime.Now.Month;
+        //        ApplyLeaveNews apply = new ApplyLeaveNews()
+        //        {
+        //            UserId = userid,
+        //            StartLeaveId = model.StartLeaveId,
+        //            EndeaveId = model.EndeaveId,
+        //            TypeOfLeaveId = model.TypeOfLeaveId,
+        //            StartDate = model.StartDate,
+        //            EndDate = model.EndDate,
+        //            CreatedDate = DateTime.Now,
+        //            Reason = model.Reason,
+        //            CountLeave = total,
+        //            Month = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month)
+        //        };
+        //        await _context.ApplyLeaveNews.AddAsync(apply);
+        //        await _context.SaveChangesAsync();
+        //        TypeOfLeave.Value -= total;
+        //        await _context.SaveChangesAsync();
+
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+
+        //        throw new Exception("Error Message : e " + ex);
+        //    }
+        //}
 
         public async Task<List<EmpattendanceDto>> GetAllEmpsalaryslip(string userid)
         {
@@ -1163,9 +1246,11 @@ namespace CRM.Repository
             {
                 var taskassign = await _context.EmployeeTasks.Where(x => x.EmployeeId == userid).Select(x => new TasksassignDto
                 {
+                    Id = x.Id,
                     TaskName = x.Task,
                     TaskTittle =x.Tittle,
-                    TaskDate = x.Date.Value.ToString("dd/MM/yyyy"),
+                    taskstartdate = x.Startdate.Value.ToString("dd/MM/yyyy"),
+                    taskEnddate = x.Enddate.Value.ToString("dd/MM/yyyy"),
                     TaskDescription =x.Description,
                     TaskStatus = _context.TaskStatuses.Where(a => a.Id == x.Status).Select(status => status.StatusName).FirstOrDefault(),
                 }).ToListAsync();

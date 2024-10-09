@@ -205,7 +205,7 @@
                                                 </th>
 
                                                 @* <th nowrap>
-                                                    ReEnter Account Number
+                                                ReEnter Account Number
                                                 </th> *@
 
                                                 <th nowrap>
@@ -394,8 +394,8 @@
                                                         </td>
 
                                                         @*<td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.ReEnterAccountNumber)
-                                                        </td>*@
+                                                @Html.DisplayFor(modelItem => item.ReEnterAccountNumber)
+                                                </td>*@
 
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.Ifsc)
@@ -431,16 +431,16 @@
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.Shifttype)
                                                         </td>
-                                                       <td>
+                                                        <td>
                                                             <select name="ShiftTypeid" class="form-control officeshift-dropdown" id="ddshifttypeidid_@item.Id" style="height: 40px; width: 230px;">
-                                                             <option value="0">-- Select Office Shift Type --</option>
-                                                        @foreach (var shift in ViewBag.officeshift)
-                                                         {
-                                                         <option value="@shift.Value">@shift.Text</option>
-                                                         }
-                                                       </select>
+                                                                <option value="0">-- Select Office Shift Type --</option>
+                                                                @foreach (var shift in ViewBag.officeshift)
+                                                                {
+                                                                    <option value="@shift.Value">@shift.Text</option>
+                                                                }
+                                                            </select>
 
-                                                       </td>
+                                                        </td>
 
                                                         <td nowrap>
                                                             <img src='../EmpProfile/@item.EmpProfile' style="height:100px;width:100px" />
@@ -503,20 +503,20 @@
         }
     }
     $(document).ready(function () {
-        @foreach (var item in Model)
-        {
-            <text>
-                bindshifttypeid('@item.ShiftTypeid', '@item.Id');
-            </text>
-        }
-        var userOfficeshift = '@ViewBag.shiftlist';
+    @foreach (var item in Model)
+    {
+        <text>
+                    bindshifttypeid('@item.ShiftTypeid', '@item.Id');
+        </text>
+    }
+            var userOfficeshift = '@ViewBag.shiftlist';
 
-     if (userOfficeshift != "") {
-        bindshifttypeid(userOfficeshift);
-    }
-    else {
-        bindshifttypeid("");
-    }
+        if (userOfficeshift != "") {
+            bindshifttypeid(userOfficeshift);
+        }
+        else {
+            bindshifttypeid("");
+        }
     });
 </script>
 
