@@ -1040,10 +1040,6 @@ namespace CRM.Models.Crm
             {
                 entity.Property(e => e.Id).HasColumnName("id");
 
-                entity.Property(e => e.Date)
-                    .HasColumnType("datetime")
-                    .HasColumnName("date");
-
                 entity.Property(e => e.Description)
                     .HasMaxLength(200)
                     .HasColumnName("description");
@@ -1052,7 +1048,13 @@ namespace CRM.Models.Crm
                     .HasMaxLength(200)
                     .HasColumnName("Employee_ID");
 
+                entity.Property(e => e.Enddate).HasColumnType("datetime");
+
                 entity.Property(e => e.Reason).HasMaxLength(200);
+
+                entity.Property(e => e.Startdate)
+                    .HasColumnType("datetime")
+                    .HasColumnName("startdate");
 
                 entity.Property(e => e.Task).HasMaxLength(200);
 

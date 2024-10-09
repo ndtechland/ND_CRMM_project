@@ -1486,10 +1486,6 @@ namespace CRM.Controllers
 
             return EmpID;
         }
-
-
-
-
         public async Task<IActionResult> DeleteEmployer(int id)
         {
             try
