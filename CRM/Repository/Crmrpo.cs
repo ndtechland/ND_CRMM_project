@@ -2046,7 +2046,7 @@ namespace CRM.Repository
                                     ProductPrice = p.ProductPrice,
                                     IsActive = p.IsActive,
                                     CreatedAt = p.CreatedAt
-                                }).ToListAsync();
+                                }).OrderByDescending(x=>x.Id).ToListAsync();
 
             return result;
         }
