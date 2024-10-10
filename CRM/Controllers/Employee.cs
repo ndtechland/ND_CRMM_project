@@ -2309,7 +2309,7 @@ namespace CRM.Controllers
                         WorkEmail = x.WorkEmail,
                         Emp_Reg_ID = x.EmployeeId,
                         Appoinmentletter = x.Appoinmentletter
-                    }).ToListAsync();
+                    }).OrderByDescending(x=>x.Id).ToListAsync();
 
                     return View(response);
                 }

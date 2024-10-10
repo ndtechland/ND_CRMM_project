@@ -4,6 +4,7 @@
     ViewData["Title"] = "CustomerList";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
+ 
 <div class="page-wrapper">
     <div class="page-body-wrapper">
         <div class="page-sidebar">
@@ -44,7 +45,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <div  class=" table-responsive">
-                                    <table id="datatable" class="table table-responsive">
+                                    <table id="datatable" class="table table-border">
                                         <thead>
                                             <tr style="background-color: #00baf2;">
                                                 <th nowrap>Sl. No.</th>
@@ -65,9 +66,7 @@
                                                 </th>
                                                 <th nowrap>
                                                     Office Location
-                                                </th>
-                                                
-                                                
+                                                </th>                                      
                                                 <th nowrap>
                                                    Billing Location
                                                 </th> 
@@ -240,3 +239,9 @@
         }
     }
 </script>
+<script>
+    $(document).ready(function () {
+        $('#datatable').DataTable();
+    });
+</script>
+ 

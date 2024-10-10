@@ -365,7 +365,7 @@ namespace CRM.Controllers
         public JsonResult Product(int? id)
         {
             var data = (from pm in _context.VendorProductMasters
-                        join gm in _context.GstMasters on pm.Gst equals gm.Id // Assume Gst is stored as string, adjust if needed
+                        join gm in _context.GstMasters on pm.Gst equals gm.Id 
                         where pm.Id == id && pm.IsActive == true
                         select new
                         {
