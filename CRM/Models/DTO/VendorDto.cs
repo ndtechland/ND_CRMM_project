@@ -40,6 +40,12 @@ namespace CRM.Models.DTO
         public bool? IsSameAddress { get; set; }
         public bool? Isactive { get; set; }
 
+        public string? AccountNumber { get; set; }
+        public string? BankName { get; set; }
+        public string? Ifsc { get; set; }
+        public string? AccountHolderName { get; set; }
+        public string? BranchAddress { get; set; }
+
     }
     public partial class VendorRegistrationDto
     {

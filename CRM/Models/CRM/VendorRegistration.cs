@@ -34,5 +34,10 @@ namespace CRM.Models.Crm
         public decimal? Cgst { get; set; }
         public int? CityId { get; set; }
         public string? Invoicefile { get; set; }
+        public string? AccountNumber { get; set; }
+        public string? BankName { get; set; }
+        public string? Ifsc { get; set; }
+        public string? AccountHolderName { get; set; }
+        public string? BranchAddress { get; set; }
     }
 }
