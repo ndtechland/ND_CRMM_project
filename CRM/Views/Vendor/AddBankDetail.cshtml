@@ -1,0 +1,227 @@
+﻿@model IEnumerable<CRM.Models.Crm.VendorRegistration>
+
+@{
+    ViewData["Title"] = "AddBankDetail";
+    Layout = "~/Views/Shared/_adminLayout.cshtml";
+}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var message = "@TempData["Message"]";
+
+        if (message) {
+            Swal.fire({
+                title: 'Success',
+                text: message,
+                icon: 'info',
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    setTimeout(function () {
+                        window.location.href = '@Url.Action("AddBankDetail", "Vendor")';
+                    }, 1000);
+                }
+            });
+        }
+    });
+</script>
+<div class="page-wrapper">
+    <div class="page-body-wrapper">
+        <div class="page-sidebar">
+        </div>
+
+        <div class="page-body">
+
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="page-header-left">
+                                <h2>
+                                    @ViewBag.heading
+                                </h2>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <ol class="breadcrumb pull-right">
+                                <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
+                                <li class="breadcrumb-item">Settings</li>
+                                <li class="breadcrumb-item active">Add Bank Detail</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Container-fluid Ends-->
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="row">
+
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <form asp-action="AddBankDetail" method="post" autocomplete="off">
+                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                    <div class="row">
+                                        <div class="form-group col-sm">
+                                            <label for="validationCustom0">Bank Name <span class="text-danger">*</span></label>
+                                            <input name="BankName" id="BankName" value="@ViewBag.BankName" placeholder="Enter Bank Name" class="form-control" required="" oninvalid="this.setCustomValidity('Please Enter Bank Name')" oninput="this.setCustomValidity('')" />
+                                            <input type="hidden" name="Id" value="@ViewBag.id" />
+                                        </div>
+
+                                        <div class="form-group col-sm">
+                                            <label for="AccountNumber">Account Number <span class="text-danger">*</span></label>
+                                            <input name="AccountNumber" id="AccountNumber" value="@ViewBag.AccountNumber" placeholder="Enter Account Number" class="form-control" required oninvalid="this.setCustomValidity('Please Enter Account Number')" onkeydown="validateNumericInput(event)" oninput="this.setCustomValidity('')" />
+                                             
+                                        </div>
+                                        <div class="form-group col-sm">
+                                            <label for="ReAccountNumber">Re-Account Number <span class="text-danger">*</span></label>
+                                            <input id="ReAccountNumber" placeholder="Enter Re-Account Number" value="@ViewBag.AccountNumber" class="form-control" required oninvalid="this.setCustomValidity('Please Enter Re-Account Number')" onkeydown="validateNumericInput(event)" oninput="this.setCustomValidity('')" />
+                                            <span class="text-danger" id="matchError"></span>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="form-group col-sm">
+                                            <label for="validationCustom0">Account Holder Name <span class="text-danger">*</span></label>
+                                            <input name="AccountHolderName" id="AccountHolderName" value="@ViewBag.AccountHolderName" placeholder="Enter Account Number" class="form-control" required="" oninvalid="this.setCustomValidity('Please Enter Account Number')" oninput="this.setCustomValidity('')" />
+                                            
+                                        </div>
+                                        <div class="form-group col-sm">
+                                            <label for="validationCustom0">IFSC Code <span class="text-danger">*</span></label>
+                                            <input name="Ifsc" id="IfscCode" value="@ViewBag.Ifsc" placeholder="Enter IFSC Code" class="form-control" required="" oninvalid="this.setCustomValidity('Please Enter IFSC Code')" oninput="this.setCustomValidity('')" />
+                                             
+                                        </div>
+                                        <div class="form-group col-sm">
+                                            <label for="validationCustom0">Branch Address <span class="text-danger">*</span></label>
+                                            <input name="BranchAddress" id="BranchAddress" value="@ViewBag.BranchAddress" placeholder="Enter Branch Address" class="form-control" required="" oninvalid="this.setCustomValidity('Please Enter IFSC Code')" oninput="this.setCustomValidity('')" />
+                                             
+                                        </div>
+
+                                        @* <div class="form-group col-sm">
+                                        <label for="validationCustom0">Account Type <span class="text-danger">*</span></label>
+                                        <select asp-for="AccountType" class="form-control" required>
+                                        <option value="">-- Select Account Type --</option>
+                                        <option value="Savings">Savings</option>
+                                        <option value="Current">Current</option>
+                                        </select>
+                                        <span asp-validation-for="AccountType" class="text-danger"></span>
+                                        </div> *@
+                                    </div>
+                                    <div class="form-group" style="display:flex; justify-content:center;">
+                                        <input type="submit" value="@ViewBag.btnText" class="btn btn-primary" />
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container-fluid">
+                <div class="row">
+
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class=" table-responsive">
+                                    <table id="datatable" class="table table-responsive">
+                                        <thead>
+                                            <tr style="background-color: #00baf2;">
+                                                <th>Account Number</th>
+                                                <th nowrap>
+                                                   Bank Name
+                                                </th>
+                                                <th nowrap>
+                                                    IFSC Code
+                                                </th>
+                                                <th nowrap>
+                                                    Account Holder Name
+                                                </th>
+                                                <th nowrap>
+                                                    Branch Address
+                                                </th>
+                                               
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{
+                                                var count = 0;
+                                                foreach (var item in Model)
+                                                {
+                                                    count++;
+                                                    <tr class="table-row">
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.AccountNumber)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.BankName)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.Ifsc)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.AccountHolderName)
+                                                        </td>
+
+                                                        <td>
+                                                            @item.BranchAddress
+                                                        </td> 
+
+                                                        <td>
+                                                            <div>
+                                                                <a href="/Vendor/AddBankDetail?Id=@item.Id" class="fa fa-edit m-2 font-success"></a>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="pagination-container">
+                <ul id="pagination" class="pagination"></ul>
+            </div>
+        </div>
+
+
+    </div> 
+</div>
+<script>
+    document.getElementById('ReAccountNumber').oninput = function () {
+        const accountNumber = document.getElementById('AccountNumber').value;
+        const reAccountNumber = this.value;
+        const matchError = document.getElementById('matchError');
+
+        if (accountNumber !== reAccountNumber) {
+            matchError.textContent = 'Account numbers do not match!';
+            this.setCustomValidity('Account numbers must match');
+        } else {
+            matchError.textContent = '';
+            this.setCustomValidity('');
+        }
+    };
+
+    function validateNumericInput(event) {
+        if ([46, 8, 9, 27, 13].indexOf(event.keyCode) !== -1 ||
+            (event.keyCode == 65 && event.ctrlKey === true) ||
+            (event.keyCode >= 35 && event.keyCode <= 39)) {
+            return;
+        }
+        if ((event.shiftKey || (event.keyCode < 48 || event.keyCode > 57)) && (event.keyCode < 96 || event.keyCode > 105)) {
+            event.preventDefault();
+        }
+    }
+</script>

@@ -230,28 +230,44 @@
                                     </div>
                                     <div class="row gx-3 mb-3">
                                         <div class="col-md-6">
+                                            <label for="validationCustom0">Office State <span class="text-danger">*</span></label>
+                                            <select asp-for="OfficeStateId" asp-items="@ViewBag.StateItems" id="ddlState" class="form-control" required>
+                                                <option value="">--Select State--</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="validationCustom0">Office City <span class="text-danger">*</span></label>
+                                            <select class="form-control" asp-for="OfficeCityId" id="ddlCityid">
+                                                <option value="">-- Select City --</option>
+                                            </select>
+                                        </div>
+                                       
+                                    </div>
+                                    <div class="row gx-3 mb-3">
+                                        <div class="col-md-6">
                                             <label for="validationCustom0">Billing Address</label>
                                             <input asp-for="BillingAddress" placeholder="Enter BillingAddress" class="form-control" required="" oninvalid="this.setCustomValidity('Please Enter BillingAddress')" oninput="this.setCustomValidity('')" />
                                             <span asp-validation-for="BillingAddress" class="text-danger"></span>
                                         </div>
                                         <div class="col-md-6">
-                                            <label for="validationCustom0">Email</label>
-                                            <input type="email" asp-for="Email" placeholder="Enter Email" class="form-control" required="" oninvalid="this.setCustomValidity('Please Enter Email')" oninput="this.setCustomValidity('')" />
-                                            <span asp-validation-for="Email" class="text-danger"></span>
-                                        </div>
-                                    </div>
-                                    <div class="row gx-3 mb-3">
-                                        <div class="col-md-6">
-                                            <label for="validationCustom0">State <span class="text-danger">*</span></label>
+                                            <label for="validationCustom0">Billing State <span class="text-danger">*</span></label>
                                             <select asp-for="BillingStateId" asp-items="@ViewBag.StateItems" id="stateid" class="form-control" required>
                                                 <option value="">--Select State--</option>
                                             </select>
                                         </div>
+                                    </div>
+                                    <div class="row gx-3 mb-3">
+                                        
                                         <div class="col-md-6">
-                                            <label for="validationCustom0">City <span class="text-danger">*</span></label>
+                                            <label for="validationCustom0">Billing City <span class="text-danger">*</span></label>
                                             <select asp-for="BillingCityId" class="form-control" id="billingcityid" required>
                                                 <option value="">--Select City--</option>
                                             </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="validationCustom0">Email</label>
+                                            <input type="email" asp-for="Email" placeholder="Enter Email" class="form-control" required="" oninvalid="this.setCustomValidity('Please Enter Email')" oninput="this.setCustomValidity('')" />
+                                            <span asp-validation-for="Email" class="text-danger"></span>
                                         </div>
                                     </div>
                                     @if (ViewBag.FilePathDetail != "")
@@ -364,7 +380,53 @@
         }
     });
 </script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        // Store DistrictId from the view for edit time
+        var selectedDistrictId = '@Html.Raw(ViewBag.SelectedCityId ?? "null")'; // Fetch DistrictId, use null if not set
+        // Check if stateId is already set (useful for edit scenario)
+        var stateId = $('#ddlState').val();
+        if (stateId) {
+            loadDistricts(stateId, selectedDistrictId); // Pass selectedDistrictId for edit time
+        }
 
+        $('#ddlState').change(function () {
+            var stateId = $(this).val();
+            if (stateId) {
+                loadDistricts(stateId); // On change, no need to pass selectedDistrictId
+            } else {
+                $('#ddlCityid').empty();
+                $('#ddlCityid').append('<option value="">--Select City--</option>');
+            }
+        });
+
+        // Function to load districts based on selected state
+        function loadDistricts(stateId, selectedDistrictId = null) {
+            $.ajax({
+                url: '@Url.Action("GetCityByStateId", "Customer")',
+                type: "GET",
+                data: { stateId: stateId },
+                success: function (data) {
+                    $('#ddlCityid').empty();
+                    $('#ddlCityid').append('<option value="">--Select City--</option>');
+
+                    $.each(data, function (index, item) {
+                        var isSelected = selectedDistrictId && item.id == selectedDistrictId ? 'selected' : '';
+                        $('#ddlCityid').append('<option value="' + item.id + '" ' + isSelected + '>' + item.name + '</option>');
+                    });
+
+                    // If district is pre-selected (edit mode), ensure it is selected in the dropdown
+                    if (selectedDistrictId) {
+                        $('#ddlCityid').val(selectedDistrictId); // Set the selected district in case it wasn't set correctly by "selected" attribute
+                    }
+                },
+                error: function () {
+                    console.error('Failed to load districts.');
+                }
+            });
+        }
+    });
+</script>
 
 <script>
     function validateNumericInput(event) {

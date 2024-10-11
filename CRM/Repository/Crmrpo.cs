@@ -1592,28 +1592,30 @@ namespace CRM.Repository
         {
             try
             {
-                var query = await (from admin in _context.AdminLogins
-                                   join customer in _context.VendorRegistrations
-                                   on admin.Vendorid equals customer.Id
-                                   where admin.Id == Convert.ToInt32(id)
+                var query = await (from a in _context.AdminLogins
+                                   join v in _context.VendorRegistrations
+                                   on a.Vendorid equals v.Id
+                                   where a.Id == Convert.ToInt32(id)
                                    select new VendorRegistrationDto
                                    {
-                                       Id = (int)admin.Vendorid,
-                                       CompanyName = customer.CompanyName,
-                                       CityId = customer.CityId,
-                                       MobileNumber = customer.MobileNumber,
-                                       Email = customer.Email,
-                                       GstNumber = customer.GstNumber,
-                                       AlternateNumber = customer.AlternateNumber,
-                                       BillingAddress = customer.BillingAddress,
-                                       Location = customer.Location,
-                                       UserName = admin.UserName,
-                                       CompanyImage = customer.CompanyImage,
-                                       maplat = customer.Maplat,
-                                       maplong = customer.Maplong,
-                                       radious = customer.Radious,
-                                       BillingCityId = customer.BillingCityId,
-                                       BillingStateId = customer.BillingStateId
+                                       Id = (int)a.Vendorid,
+                                       CompanyName = v.CompanyName,
+                                       CityId = v.CityId,
+                                       MobileNumber = v.MobileNumber,
+                                       Email = v.Email,
+                                       GstNumber = v.GstNumber,
+                                       AlternateNumber = v.AlternateNumber,
+                                       BillingAddress = v.BillingAddress,
+                                       Location = v.Location,
+                                       UserName = a.UserName,
+                                       CompanyImage = v.CompanyImage,
+                                       maplat = v.Maplat,
+                                       maplong = v.Maplong,
+                                       radious = v.Radious,
+                                       BillingCityId = v.BillingCityId,
+                                       BillingStateId = v.BillingStateId,
+                                       OfficeCityId = v.CityId,
+                                       OfficeStateId = v.StateId
                                    }).FirstOrDefaultAsync();
                 return query;
             }
@@ -1658,6 +1660,8 @@ namespace CRM.Repository
             customer.Maplong = model.maplong;
             customer.BillingStateId = model.BillingStateId;
             customer.BillingCityId = model.BillingCityId;
+            customer.StateId = model.OfficeStateId;
+            customer.CityId = model.OfficeCityId;
             _context.VendorRegistrations.Update(customer);
             await _context.SaveChangesAsync();
 
@@ -2321,6 +2325,11 @@ namespace CRM.Repository
                                   CompanyName = c.CompanyName,
                                   CompanyLogo = v.CompanyImage,
                                   VendorCompanyName = v.CompanyName,
+                                  AccountNumber = v.AccountNumber,
+                                  AccountHolderName = v.AccountHolderName,
+                                  BankName = v.BankName,
+                                  Ifsc = v.Ifsc,
+                                  BranchAddress = v.BranchAddress,
                                   VendorGstNumber = v.GstNumber,
                                   VendorOfficeAddress = v.Location,
                                   VendorOfficeCity = vct.City1,
@@ -2372,7 +2381,81 @@ namespace CRM.Repository
                 throw;
             }
         }
-       
+        public async Task<bool> AddVendorBankDeatils(VendorRegistration model,int VendorId)
+        {
+            try
+            {
+                var data = _context.VendorRegistrations.Find(VendorId);
+                if (data != null)
+                {
+                    data.AccountNumber = model.AccountNumber;
+                    data.AccountHolderName = model.AccountHolderName;
+                    data.BankName = model.BankName;
+                    data.BranchAddress = model.BranchAddress;
+                    data.Ifsc = model.Ifsc;
+                    _context.SaveChanges();
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        public async Task<List<VendorRegistration>> GetVendorBankDetail(int VendorId)
+        {
+            try
+            {
+                var result = _context.VendorRegistrations.Where(x=>x.Id==VendorId).ToList();
+                return result;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        public async Task<bool> AddOfficeEvents(OfficeEvent model, int VendorId)
+        {
+            try
+            {
+                if (model.Id == 0)
+                {
+                    var data = new OfficeEvent()
+                    {
+                        Vendorid = VendorId,
+                        Tittle = model.Tittle,
+                        Subtittle = model.Subtittle,
+                        Description = model.Description,
+                        Date = model.Date
+                    };
+                    _context.Add(data);
+                    _context.SaveChanges();
+                    return true;
+                }
+                else
+                {
+                    var existdata = _context.OfficeEvents.Find(model.Id);
+                    existdata.Tittle = model.Tittle;
+                    existdata.Subtittle = model.Subtittle;
+                    existdata.Description = model.Description;
+                    existdata.Date = model.Date;
+                }
+                _context.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
     }
 
 }

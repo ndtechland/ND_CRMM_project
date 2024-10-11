@@ -331,49 +331,6 @@
                                             <input type="Cgst" asp-for="Cgst" id="CGST" placeholder="00.0" class="form-control" readonly />
                                         </div>
                                     </div>
-
-
-                                    <div class="row">
-                                        <div class="form-group col-sm">
-                                            <label for="validationCustom0">Bank Name <span class="text-danger">*</span></label>
-                                            <input asp-for="BankName" id="BankName" placeholder="Enter Bank Name" class="form-control" required="" oninvalid="this.setCustomValidity('Please Enter Bank Name')" oninput="this.setCustomValidity('')" />
-                                            <span asp-validation-for="BankName" class="text-danger"></span>
-                                        </div>
-
-                                        <div class="form-group col-sm">
-                                            <label for="validationCustom0">Account Number <span class="text-danger">*</span></label>
-                                            <input asp-for="AccountNumber" id="AccountNumber" placeholder="Enter Account Number" class="form-control" required="" oninvalid="this.setCustomValidity('Please Enter Account Number')" oninput="this.setCustomValidity('')" />
-                                            <span asp-validation-for="AccountNumber" class="text-danger"></span>
-                                        </div>
-                                        <div class="form-group col-sm">
-                                            <label for="validationCustom0">Account Holder Name <span class="text-danger">*</span></label>
-                                            <input asp-for="AccountHolderName" id="AccountHolderName" placeholder="Enter Account Number" class="form-control" required="" oninvalid="this.setCustomValidity('Please Enter Account Number')" oninput="this.setCustomValidity('')" />
-                                            <span asp-validation-for="AccountHolderName" class="text-danger"></span>
-                                        </div>
-                                    </div>
-
-                                    <div class="row">
-                                        <div class="form-group col-sm">
-                                            <label for="validationCustom0">IFSC Code <span class="text-danger">*</span></label>
-                                            <input asp-for="Ifsc" id="IfscCode" placeholder="Enter IFSC Code" class="form-control" required="" oninvalid="this.setCustomValidity('Please Enter IFSC Code')" oninput="this.setCustomValidity('')" />
-                                            <span asp-validation-for="Ifsc" class="text-danger"></span>
-                                        </div>
-                                        <div class="form-group col-sm">
-                                            <label for="validationCustom0">Branch Address <span class="text-danger">*</span></label>
-                                            <input asp-for="BranchAddress" id="BranchAddress" placeholder="Enter IFSC Code" class="form-control" required="" oninvalid="this.setCustomValidity('Please Enter IFSC Code')" oninput="this.setCustomValidity('')" />
-                                            <span asp-validation-for="BranchAddress" class="text-danger"></span>
-                                        </div>
-
-                                        @* <div class="form-group col-sm">
-                                            <label for="validationCustom0">Account Type <span class="text-danger">*</span></label>
-                                            <select asp-for="AccountType" class="form-control" required>
-                                                <option value="">-- Select Account Type --</option>
-                                                <option value="Savings">Savings</option>
-                                                <option value="Current">Current</option>
-                                            </select>
-                                            <span asp-validation-for="AccountType" class="text-danger"></span>
-                                        </div> *@
-                                    </div>
                                     <div class="form-group" style="display:flex; justify-content:center;">
                                         <input type="submit" value="@ViewBag.btnText" class="btn btn-primary" />
                                     </div>
