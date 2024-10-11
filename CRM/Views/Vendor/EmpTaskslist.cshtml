@@ -1,6 +1,6 @@
-﻿@model IEnumerable<CRM.Models.DTO.EmpTasksassignDto>
+﻿@model IEnumerable<CRM.Models.DTO.EmpTasknameDto>
 @{
-    ViewData["Title"] = "EmpTasksassignment";
+    ViewData["Title"] = "EmpTasks";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
 
@@ -45,7 +45,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     setTimeout(function () {
-                        window.location.href = '@Url.Action("EmpTasksassignment", "Vendor")';
+                        window.location.href = '@Url.Action("EmpTaskslist", "Vendor")';
                     }, 1000);
                 }
             });
@@ -87,7 +87,7 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-body">
-                                <form method="post" asp-controller="Vendor" asp-action="EmpTasksassignment" autocomplete="off" onsubmit="return validateForm()">
+                                <form method="post" asp-controller="Vendor" asp-action="EmpTaskslist" autocomplete="off" onsubmit="return validateForm()">
                                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                                     <div class="row">
                                         <div class="form-group col-lg-6">
@@ -101,42 +101,21 @@
                                                 }
                                             </select>
                                         </div>
-                                        <div class="form-group col-md-6">
-                                            <label class="control-label" for="Date-picker">Task Name</label>
-                                            <input id="Date-picker" type="text" name="Task" placeholder="Please Enter Task Name" value="@ViewBag.Task" class="form-control" required />
-                                            <span name="Date" class="text-danger"></span>
-                                        </div>
-
-                                        <div class="form-group col-md-6">
-                                            <label class="control-label" for="Datepicker">Task Startdate</label>
-                                            <input id="Startdatepicker" type="date" name="Startdate" class="form-control" required />
-                                        </div>
-                                        <div class="form-group col-md-6">
-                                            <label class="control-label" for="Datepicker">Task Enddate</label>
-                                            <input id="Enddatepicker" type="date" name="Enddate" class="form-control" required />
-                                        </div>
-                                        <div class="form-group col-md-6">
-                                            <label class="control-label" for="taskTitle">Task Title</label>
-                                            <input id="taskTitle" type="text" name="Tittle" value="@ViewBag.Tittle" placeholder="Please Enter Task Title" class="form-control" required />
-                                        </div>
-
-                                        <div class="form-group col-md-6">
-                                            <label class="control-label" for="taskDescription">Task Description</label>
-                                            <input id="taskDescription" type="text" name="Description" value="@ViewBag.Description" placeholder="Please Enter Task Description" class="form-control" />
-                                        </div>
-                                        <div class="form-group col-md-6">
-                                            <label for="taskStatusID">Task Status</label>
-                                            <select name="Status" class="form-control" id="taskStatusID" required>
-                                                <option value="">-- Select Task Status --</option>
-                                                @foreach (var item in ViewBag.TaskStatus)
-                                                {
-                                                    <option value="@item.Value">@item.Text</option>
-                                                }
+                                        <div class="form-group col-lg-6">
+                                            <input type="hidden" name="Id" value="@ViewBag.id" />
+                                            <label for="TxttaskId">Employee Task</label>
+                                            <select id="TxttaskId" name="Emptask" class="form-control" required>
+                                                <option value="">-- Select Task --</option>
                                             </select>
                                         </div>
+                                        <div class="form-group col-md-6">
+                                            <label class="control-label" for="Taskname">Task name</label>
+                                            <input id="Taskname" type="text" name="Taskname[]" value="@ViewBag.Taskname" placeholder="Please Enter Task Name" class="form-control" />
+                                        </div>
                                     </div>
-
+                                      <div id="additionalTaskFields" class="row"></div>
                                     <div class="form-group" style="display:flex; justify-content:center;">
+                                     <button type="button" class="btn btn-primary" id="addTaskButton">Add More Task Name</button>
                                         <input type="submit" value="@ViewBag.btnText" class="btn btn-primary" />
                                     </div>
                                 </form>
@@ -146,7 +125,7 @@
                     </div>
                 </div>
             </div>
-           <div class="container-fluid">
+            <div class="container-fluid">
                 <div class="row">
 
                     <div class="col-sm-12">
@@ -161,19 +140,10 @@
                                                     Employee Id
                                                 </th>
                                                 <th>
+                                                    Emptask Name
+                                                </th>
+                                                <th>
                                                     Task Name
-                                                </th>
-                                                <th>
-                                                    Task Startdate
-                                                </th>
-                                                <th>
-                                                    Task Enddate
-                                                </th>
-                                                <th>
-                                                    Task Title
-                                                </th>
-                                                <th>
-                                                    Task Description
                                                 </th>
                                                 <th>
                                                     Task Status
@@ -193,27 +163,18 @@
                                                             @Html.DisplayFor(modelItem => item.EmployeeId)
                                                         </td>
                                                         <td>
-                                                            @Html.DisplayFor(modelItem => item.Task)
+                                                            @Html.DisplayFor(modelItem => item.Emptask)
                                                         </td>
                                                         <td>
-                                                            @item.Startdate?.ToString("dd/MM/yyyy")
+                                                            @Html.DisplayFor(modelItem => item.Taskname)
                                                         </td>
                                                         <td>
-                                                            @item.Enddate?.ToString("dd/MM/yyyy")
-                                                        </td>
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => item.Tittle)
-                                                        </td>
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => item.Description)
-                                                        </td>
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => item.Status)
+                                                            @Html.DisplayFor(modelItem => item.TaskStatus)
                                                         </td>
                                                         <td>
                                                             <div>
-                                                                <a href="@Url.Action("EmpTasksassignment","Vendor",new { id=item.Id})" class="fa fa-edit m-2 font-success"></a>
-                                                                <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteEmpTasksassignment", "Vendor", new { id = item.Id })')" class="fa fa-trash font-danger"></a>
+                                                                <a href="@Url.Action("EmpTaskslist","Vendor",new { id=item.Id})" class="fa fa-edit m-2 font-success"></a>
+                                                                <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteEmpTaskslist", "Vendor", new { id = item.Id })')" class="fa fa-trash font-danger"></a>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -227,7 +188,7 @@
                         </div>
                     </div>
                 </div>
-            </div> 
+            </div>
             <div id="pagination-container">
                 <ul id="pagination" class="pagination"></ul>
             </div>
@@ -237,22 +198,6 @@
     </div>
 
 </div>
-<script>
-    $(document).ready(function () {
-        var taskstatus = '@ViewBag.Status';
-        if (taskstatus) {
-            $('#taskStatusID').val(taskstatus);
-        }
-        var taskstartdate = '@ViewBag.Startdate';
-        if (taskstartdate != "") {
-            $('#Startdatepicker').val(taskstartdate);
-        }
-        var taskEnddate = '@ViewBag.Enddate';
-        if (taskEnddate != "") {
-            $('#Enddatepicker').val(taskEnddate);
-        }
-    });
-</script>
 <script>
     var currentPage = 1;
     var rowsPerPage = 5;
@@ -317,8 +262,73 @@
 </script>
 
 <script type="text/javascript">
-    var selectedEmpId = '@ViewBag.EmpId'
-    if (selectedEmpId != "") {
-        $("#TxtEmployeeId").val(selectedEmpId).trigger('change');
+    var selectedEmpId = '@ViewBag.EmpId';
+    if (selectedEmpId) {
+        window.addEventListener('DOMContentLoaded',function () {
+     $("#TxtEmployeeId").val(selectedEmpId);
+        const input = document.getElementById('TxtEmployeeId'); 
+        const changeEvent = new Event('change'); 
+        input.dispatchEvent(changeEvent);
+});
     }
 </script>
+
+<script>
+    $('#TxtEmployeeId').change(function () {
+        var employeeId = $(this).val();
+        if (employeeId) {
+            $.ajax({
+                url: '@Url.Action("GetTasksByEmployeeId", "Vendor")', 
+                type: 'GET',
+                data: { employeeId: employeeId },
+                success: function (data) {
+                    console.log("Data received: ", data);
+                    $('#TxttaskId').empty();
+                    $('#TxttaskId').append('<option value="">-- Select Task --</option>');
+                    $.each(data, function (index, item) {
+                        $('#TxttaskId').append('<option value="' + item.value + '">' + item.text + '</option>');
+                    });
+                    var selectedTaskId = '@ViewBag.Emptaskid'; 
+                    console.log("Selected Task ID: ", selectedTaskId); 
+                    if (selectedTaskId) {
+                        $('#TxttaskId').val(selectedTaskId).trigger('change'); 
+                        console.log("Setting task dropdown to selected task ID: ", selectedTaskId);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error occurred: " + error);
+                    console.log(xhr.responseText);
+                }
+            });
+        } else {
+            $('#TxttaskId').empty();
+            $('#TxttaskId').append('<option value="">-- Select Task --</option>');
+        }
+    });
+    $(document).ready(function() {
+        $('#TxtEmployeeId').trigger('change'); 
+    });
+</script>
+<script>
+    document.getElementById('addTaskButton').addEventListener('click', function () {
+        const taskFieldContainer = document.createElement('div');
+        taskFieldContainer.className = 'form-group col-md-6';
+
+        const taskLabel = document.createElement('label');
+        taskLabel.className = 'control-label';
+        taskLabel.textContent = 'Task name';
+        taskFieldContainer.appendChild(taskLabel);
+
+        const taskInput = document.createElement('input');
+        taskInput.type = 'text';
+        taskInput.name = 'Taskname[]'; 
+        taskInput.placeholder = 'Please Enter Task Name';
+        taskInput.className = 'form-control';
+
+        taskFieldContainer.appendChild(taskInput);
+        document.getElementById('additionalTaskFields').appendChild(taskFieldContainer);
+    });
+</script>
+
+
+

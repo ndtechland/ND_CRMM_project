@@ -651,7 +651,7 @@ namespace CRM.Controllers.Api
 
         public static double CalculateDistance(double lat1, double lon1, double lat2, double lon2)
         {
-            const double R = 6371; 
+            const double R = 6371;
             double latDistance = ToRadians(lat2 - lat1);
             double lonDistance = ToRadians(lon2 - lon1);
 
@@ -661,7 +661,7 @@ namespace CRM.Controllers.Api
 
             double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
 
-            double distance = R * c * 1000; 
+            double distance = R * c * 1000;
             return distance;
         }
 
@@ -692,7 +692,7 @@ namespace CRM.Controllers.Api
                     response.Message = "Company not found.";
                     return NotFound(response);
                 }
-               
+
                 double radiusInMeters = (double)Convert.ToDecimal(company.Radious);
                 double distance = CalculateDistance(
                     double.Parse(company.Maplat),
@@ -720,7 +720,7 @@ namespace CRM.Controllers.Api
                     response.Message = $"Employee is not within the {radiusInMeters} meter radius of the company's location.";
                     return BadRequest(response);
                 }
-               
+
                 var apiModel = await _apiemp.Empcheckin(model, CheckIN);
                 if (apiModel != null)
                 {
@@ -746,7 +746,7 @@ namespace CRM.Controllers.Api
             }
         }
 
-        [HttpPost,Route("WebEmployeePersonalDetail")]
+        [HttpPost, Route("WebEmployeePersonalDetail")]
         public async Task<IActionResult> WebEmployeePersonalDetail([FromForm] webPersonalDetail model)
         {
             var response = new Response<ApprovedPresnolRes>();
@@ -1090,6 +1090,208 @@ namespace CRM.Controllers.Api
                 throw new Exception(ex.Message);
             }
         }
+        [Route("EmpTasksassignbyid")]
+        [HttpGet]
+        public async Task<IActionResult> EmpTasksassignbyid(int id)
+        {
+            var response = new Response<TasksassignnameDto>();
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userid = User.Claims.FirstOrDefault().Value;
+                    TasksassignnameDto isLoginExists = await _apiemp.GetEmpTasksassignname(userid, id);
+                    if (isLoginExists != null)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = "Employee Task Here.";
+                        response.Data = isLoginExists;
+                        return Ok(response);
+                    }
+                    else
+                    {
+                        response.StatusCode = StatusCodes.Status401Unauthorized;
+                        response.Message = "Data not found.";
+                        return Ok(response);
+                    }
+                }
+                else
+                {
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Message = "Token is expired.";
+                    return BadRequest(response);
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        [HttpPost("/api/EmployeeApi/CompletedTasksassign")]
+        public async Task<IActionResult> CompletedTasksassign([FromForm] EmpTasksListDto model)
+        {
+            var response = new Response<EmpTasksList>();
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userid = User.Claims.FirstOrDefault().Value;
+                    var isLoginExists = await _apiemp.CompletedempTasksassign(model, userid);
+                    if (isLoginExists != null)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = "Task Completed..";
+                        response.Data = isLoginExists;
+                        return Ok(response);
+                    }
+                    else
+                    {
+                        response.StatusCode = StatusCodes.Status401Unauthorized;
+                        response.Message = "Data not found.";
+                        return Ok(response);
+                    }
+                }
+                else
+                {
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Message = "Token is expired.";
+                    return BadRequest(response);
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        [HttpPost("/api/EmployeeApi/UnCompletedTasksassign")]
+        public async Task<IActionResult> UnCompletedTasksassign([FromForm] EmpSubTasksListDto model)
+        {
+            var response = new Response<EmpTasksList>();
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userid = User.Claims.FirstOrDefault().Value;
+                    var isLoginExists = await _apiemp.UnCompletedempTasksassign(model, userid);
+                    if (isLoginExists != null)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = "Task UnCompleted..";
+                        response.Data = isLoginExists;
+                        return Ok(response);
+                    }
+                    else
+                    {
+                        response.StatusCode = StatusCodes.Status401Unauthorized;
+                        response.Message = "Data not found.";
+                        return Ok(response);
+                    }
+                }
+                else
+                {
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Message = "Token is expired.";
+                    return BadRequest(response);
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        [HttpPost("/api/EmployeeApi/AddTasksassign")]
+        public async Task<IActionResult> AddTasksassign([FromForm] TasksListDto model)
+        {
+            var response = new Response<EmpTasksList>();
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userid = User.Claims.FirstOrDefault().Value;
+                    var isLoginExists = await _apiemp.Tasksassign(model, userid);
+                    if (isLoginExists != null)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = "Task Add Successful..";
+                        response.Data = isLoginExists;
+                        return Ok(response);
+                    }
+                    else
+                    {
+                        response.StatusCode = StatusCodes.Status401Unauthorized;
+                        response.Message = "Data not found.";
+                        return Ok(response);
+                    }
+                }
+                else
+                {
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Message = "Token is expired.";
+                    return BadRequest(response);
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        [HttpPost("/api/EmployeeApi/SubTaskCompleted")]
+        public async Task<IActionResult> SubTaskCompleted([FromForm] EmpSubTasksDto model)
+        {
+            var response = new Response<EmpTasksList>();
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userid = User.Claims.FirstOrDefault().Value;
+                    var isLoginExists = await _apiemp.SubTaskCompletedempTasksassign(model, userid);
+                    if (isLoginExists != null)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = "Task Completed..";
+                        response.Data = isLoginExists;
+                        return Ok(response);
+                    }
+                    else
+                    {
+                        response.StatusCode = StatusCodes.Status401Unauthorized;
+                        response.Message = "Data not found.";
+                        return Ok(response);
+                    }
+                }
+                else
+                {
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Message = "Token is expired.";
+                    return BadRequest(response);
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
 
     }
 }
+ 
