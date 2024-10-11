@@ -1581,8 +1581,16 @@ namespace CRM.Repository
 
                         tasksToAdd.Add(subtasksList);
                     }
+
                 }
+                //empSubtask.Status = 3;
+                //var entry = _context.Entry(empSubtask);
+                //if (entry.State == EntityState.Detached)
+                //{
+                //    _context.EmployeeTasks.Attach(empSubtask);
+                //}
             }
+
             if (tasksToAdd.Count > 0)
             {
                 await _context.EmpTasksLists.AddRangeAsync(tasksToAdd);
