@@ -1823,13 +1823,21 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Id).HasColumnName("ID");
 
+                entity.Property(e => e.AccountHolderName).HasMaxLength(100);
+
+                entity.Property(e => e.AccountNumber).HasMaxLength(100);
+
                 entity.Property(e => e.AlternateNumber)
                     .HasMaxLength(255)
                     .HasColumnName("Alternate_number");
 
+                entity.Property(e => e.BankName).HasMaxLength(200);
+
                 entity.Property(e => e.BillingAddress)
                     .HasMaxLength(255)
                     .HasColumnName("Billing_Address");
+
+                entity.Property(e => e.BranchAddress).HasMaxLength(200);
 
                 entity.Property(e => e.Cgst)
                     .HasColumnType("decimal(18, 0)")
@@ -1848,6 +1856,10 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.GstNumber)
                     .HasMaxLength(255)
                     .HasColumnName("GST_Number");
+
+                entity.Property(e => e.Ifsc)
+                    .HasMaxLength(100)
+                    .HasColumnName("IFSC");
 
                 entity.Property(e => e.Igst)
                     .HasColumnType("decimal(18, 0)")
