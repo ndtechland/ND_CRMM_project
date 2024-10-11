@@ -661,16 +661,17 @@ namespace CRM.Repository
                     EmployeeId = emp.EmployeeId,
                     CurrentLat = model.CurrentLat,
                     Currentlong = model.Currentlong,
-                    CheckInTime = DateTime.Now,
-                    CheckOutTime = checkIn ? (DateTime?)null : DateTime.Now,
                     Currentdate = DateTime.Now,
                 };
                 if (!checkIn)
                 {
                     empcheck.CheckIn = checkIn;
+                    empcheck.CheckOutTime = DateTime.Now;
+
                 }
                 else
                 {
+                    empcheck.CheckInTime = DateTime.Now;
                     empcheck.CheckIn = checkIn;
                 }
                 await _context.EmployeeCheckIns.AddAsync(empcheck);
@@ -940,53 +941,54 @@ namespace CRM.Repository
                 {
                     throw new Exception("Employee not found.");
                 }
-                var empCheckInRecord = await _context.EmployeeCheckIns
-                    .Where(x => x.EmployeeId == emp.EmployeeId && x.CheckInTime.Date == DateTime.Now.Date)
-                    .OrderByDescending(x => x.Id)
-                    .FirstOrDefaultAsync();
-
-                if (empCheckInRecord == null)
+                var newEmpCheckInRecord = new EmployeeCheckIn
                 {
-                    empCheckInRecord = new EmployeeCheckIn
-                    {
-                        EmployeeId = emp.EmployeeId,
-                        CurrentLat = model.CurrentLat,
-                        Currentlong = model.Currentlong,
-                        CheckIn = checkIn,
-                        Currentdate = DateTime.Now
-                    };
-                    _context.EmployeeCheckIns.Add(empCheckInRecord);
-                }
-                else if (!checkIn)
-                {
-                    empCheckInRecord.CheckOutTime = DateTime.Now;
+                    EmployeeId = emp.EmployeeId,
+                    CurrentLat = model.CurrentLat,
+                    Currentlong = model.Currentlong,
+                    CheckIn = checkIn,
+                    Currentdate = DateTime.Now,
+                    CheckInTime = DateTime.Now,
+                    CheckOutTime = DateTime.Now
+                };
 
-                    TimeSpan workingHours = (empCheckInRecord.CheckInTime - DateTime.Now).Duration();
-                    var checkInRecord = await _context.EmployeeCheckInRecords
-                        .Where(x => x.EmpId == emp.EmployeeId && x.CheckIntime.Value.Date == DateTime.Now.Date)
+                _context.EmployeeCheckIns.Add(newEmpCheckInRecord);
+                if (!checkIn)
+                {
+                    var empCheckInRecord = await _context.EmployeeCheckIns
+                        .Where(x => x.EmployeeId == emp.EmployeeId && x.CheckInTime.Date == DateTime.Now.Date)
+                        .OrderByDescending(x => x.Id)
                         .FirstOrDefaultAsync();
 
-                    if (checkInRecord != null)
+                    if (empCheckInRecord != null)
                     {
-                        checkInRecord.Workinghour = workingHours;
-                        checkInRecord.CheckOuttime = DateTime.Now;
-                    }
-                    else
-                    {
-                        EmployeeCheckInRecord newCheckInRecord = new EmployeeCheckInRecord
+                        TimeSpan workingHours = (empCheckInRecord.CheckInTime.Date - DateTime.Now).Duration();
+                        var checkInRecord = await _context.EmployeeCheckInRecords
+                            .Where(x => x.EmpId == emp.EmployeeId && x.CheckIntime.Value.Date == DateTime.Now.Date)
+                            .FirstOrDefaultAsync();
+
+                        if (checkInRecord != null)
                         {
-                            EmpId = emp.EmployeeId,
-                            CheckIntime = empCheckInRecord.CheckInTime,
-                            CheckOuttime = DateTime.Now,
-                            Workinghour = workingHours,
-                            CurrentDate = DateTime.Now,
-                            Isactive = true
-                        };
-                        _context.EmployeeCheckInRecords.Add(newCheckInRecord);
+                            checkInRecord.Workinghour = workingHours;
+                            checkInRecord.CheckOuttime = DateTime.Now;
+                        }
+                        else
+                        {
+                            EmployeeCheckInRecord newCheckInRecord = new EmployeeCheckInRecord
+                            {
+                                EmpId = emp.EmployeeId,
+                                CheckIntime = empCheckInRecord.CheckInTime,
+                                CheckOuttime = DateTime.Now,
+                                Workinghour = workingHours,
+                                CurrentDate = DateTime.Now,
+                                Isactive = true
+                            };
+                            _context.EmployeeCheckInRecords.Add(newCheckInRecord);
+                        }
                     }
                 }
-
-                await _context.SaveChangesAsync(); return empCheckInRecord;
+                await _context.SaveChangesAsync();
+                return newEmpCheckInRecord;
             }
             catch (Exception ex)
             {
@@ -1118,7 +1120,7 @@ namespace CRM.Repository
                     lastBreakOutTime = record.CheckOutTime.Value;
                     loginActivity.CheckOut = lastBreakOutTime.Value.ToString("hh:mm tt");
                     loginActivity.CheckIN = "N/A";
-                    loginActivity.LoginStatus = "Checked-Out";
+                    loginActivity.loginactivities = null;
                 }
                 else if (record.CheckIn == true)
                 {
@@ -1126,7 +1128,8 @@ namespace CRM.Repository
                     {
                         loginActivity.CheckIN = record.CheckInTime.ToString("hh:mm tt");
                         loginActivity.CheckOut = "N/A";
-                        loginActivity.LoginStatus = "Check-In";
+                        loginActivity.loginactivities = null;
+
                     }
                 }
 
@@ -1335,7 +1338,7 @@ namespace CRM.Repository
                         lastBreakOutTime = record.CheckOutTime.Value;
                         dd.CheckOut = lastBreakOutTime.Value.ToString("hh:mm tt");
                         dd.CheckIN = "N/A";
-                        dd.LoginStatus = "Checked-Out";
+                        dd.LoginStatus = "Check-Out";
                         dd.loginactivities = null;
                     }
                     else if (record.CheckIn == true)
@@ -1348,12 +1351,12 @@ namespace CRM.Repository
                             dd.loginactivities = null;
                         }
                     }
-
+                    loginactivity.CheckIN = checkInTime;
+                    loginactivity.CheckOut = checkOutTime;
+                    loginactivity.LoginStatus = record.CheckIn == true ? "Check-In" : "Check-Out";
                     loginactivity.loginactivities.Add(dd);
                 }
-                loginactivity.CheckIN = checkInTime;
-                loginactivity.CheckOut = checkOutTime;
-
+               
                 return loginactivity;
             }
             catch (Exception ex)
@@ -1387,31 +1390,42 @@ namespace CRM.Repository
         {
             try
             {
-                var empassign = await _context.EmployeeTasks.Where(x => x.Id == id && x.EmployeeId == userid).FirstOrDefaultAsync();
-                if (empassign == null)
+                var result = await (from emp in _context.EmployeeTasks
+                                    join status in _context.TaskStatuses on emp.Status equals status.Id
+                                    where emp.Id == id && emp.EmployeeId == userid
+                                    select new
+                                    {
+                                        emp.Id,
+                                        emp.Tittle,
+                                        emp.Description,
+                                        StatusName = status.StatusName
+                                    }).FirstOrDefaultAsync();
+
+                if (result == null)
                 {
                     throw new Exception("Task not found.");
                 }
-
                 var taskassign = await _context.EmployeeTasksLists
                     .Where(x => x.EmployeeId == userid && x.Emptaskid == id)
                     .Select(x => new TasksassignlistDto
                     {
                         Id = x.Id,
                         TasksubTittle = x.Taskname,
-                        TaskStatus = _context.TaskStatuses.Where(a => a.Id == x.TaskStatus).Select(status => status.StatusName).FirstOrDefault()
-                    })
-                    .ToListAsync();
-                var result = new TasksassignnameDto
+                        TaskStatus = result.StatusName == "Completed" ? "Completed" : _context.TaskStatuses
+                            .Where(a => a.Id == x.TaskStatus)
+                            .Select(status => status.StatusName)
+                            .FirstOrDefault() 
+                    }).ToListAsync();
+                var tasksAssignNameDto = new TasksassignnameDto
                 {
-                    Id = empassign.Id,
-                    TaskTittle = empassign.Tittle,
-                    TaskDescription = empassign.Description,
-                    Status = _context.TaskStatuses.Where(a => a.Id == empassign.Status).Select(status => status.StatusName).FirstOrDefault(),
+                    Id = result.Id,
+                    TaskTittle = result.Tittle,
+                    TaskDescription = result.Description,
+                    Status = result.StatusName,
                     Empdata = taskassign
                 };
 
-                return result;
+                return tasksAssignNameDto;
             }
             catch (Exception ex)
             {
@@ -1425,38 +1439,45 @@ namespace CRM.Repository
                 var empsubtask = await _context.EmployeeTasks
                     .FirstOrDefaultAsync(x => x.Id == model.taskid && x.EmployeeId == userid);
 
-                if (empsubtask != null)
+                if (empsubtask == null)
                 {
-                    var emptyTasks = await _context.EmployeeTasksLists
-                        .Where(x => x.Emptaskid == empsubtask.Id && x.EmployeeId == userid)
-                        .ToListAsync();
-
-                    if (emptyTasks.Any())
-                    {
-                        var createdTasksList = new List<EmpTasksList>();
-                        foreach (var task in emptyTasks)
-                        {
-                            var subtasksList = new EmpTasksList
-                            {
-                                Subtaskid = empsubtask.Id,
-                                Taskid = task.Id,
-                                Taskstatus = 3,
-                                IsApprove = false,
-                                EmployeeId =userid,
-                                Replydate = DateTime.Now.Date,
-                            };
-
-                            _context.EmpTasksLists.Add(subtasksList);
-                            createdTasksList.Add(subtasksList);
-                        }
-
-                        await _context.SaveChangesAsync();
-
-                        return createdTasksList.FirstOrDefault();
-                    }
+                    throw new Exception("Subtask not found for the given employee.");
                 }
 
-                throw new Exception("Task or subtask not found for the given employee."); 
+                var emptyTasks = await _context.EmployeeTasksLists
+                    .Where(x => x.Emptaskid == empsubtask.Id && x.EmployeeId == userid)
+                    .ToListAsync();
+
+                if (!emptyTasks.Any())
+                {
+                    throw new Exception("No empty tasks found for the given employee.");
+                }
+
+                var createdTasksList = new List<EmpTasksList>();
+                foreach (var task in emptyTasks)
+                {
+                    var subtasksList = new EmpTasksList
+                    {
+                        Subtaskid = empsubtask.Id,
+                        Taskid = task.Id,
+                        Taskstatus = 3,
+                        IsApprove = false,
+                        EmployeeId = userid,
+                        Replydate = DateTime.Now.Date,
+                    };
+
+                    _context.EmpTasksLists.Add(subtasksList);
+                    createdTasksList.Add(subtasksList);
+                }
+                empsubtask.Status = 3;
+                var entry = _context.Entry(empsubtask);
+                if (entry.State == EntityState.Detached)
+                {
+                    _context.EmployeeTasks.Attach(empsubtask);
+                }
+                await _context.SaveChangesAsync();
+
+                return createdTasksList.FirstOrDefault();
             }
             catch (Exception ex)
             {
@@ -1494,7 +1515,6 @@ namespace CRM.Repository
                 throw new Exception("Error: " + ex.Message, ex);
             }
         }
-
         public async Task<EmpTasksList> Tasksassign(TasksListDto model, string userid)
         {
             if (model == null)
@@ -1609,6 +1629,62 @@ namespace CRM.Repository
             catch (Exception ex)
             {
                 throw new Exception("Error: " + ex.Message, ex);
+            }
+        }
+        public async Task<List<WebLoginactivity>> GetWebEmpLoginactivity(string userid)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(userid))
+                {
+                    throw new ArgumentException("User ID cannot be null or empty.");
+                }
+                var attendanceRecordsCheckIn = await _context.EmployeeCheckIns
+                    .Where(g => g.EmployeeId == userid && g.CheckIn == true)
+                    .OrderBy(g => g.CheckInTime).OrderByDescending(g => g.CheckInTime)
+                    .ToListAsync();
+
+                var attendanceRecordsCheckOut = await _context.EmployeeCheckIns
+                    .Where(g => g.EmployeeId == userid && g.CheckIn == false)
+                    .OrderByDescending(g => g.CheckOutTime)
+                    .ToListAsync();
+
+                if (!attendanceRecordsCheckIn.Any())
+                {
+                    return new List<WebLoginactivity>(); 
+                }
+
+                List<WebLoginactivity> loginActivities = new List<WebLoginactivity>();
+                int index = 0;
+                foreach (var CheckInrecord in attendanceRecordsCheckIn)
+                {
+                    if (index < attendanceRecordsCheckOut.Count) // Ensure index is within bounds
+                    {
+                        var CheckOutrecord = attendanceRecordsCheckOut[index]; // Use the same index
+
+                        WebLoginactivity loginActivity = new WebLoginactivity
+                        {
+                            CheckIN = CheckInrecord.CheckInTime.ToString("hh:mm tt"),
+                            CheckOut = CheckOutrecord.CheckOutTime.HasValue
+                                                    ? CheckOutrecord.CheckOutTime.Value.ToString("hh:mm tt")
+                                                    : "N/A",
+                            Currentdate = CheckInrecord.Currentdate.HasValue
+                                                    ? CheckInrecord.Currentdate.Value.ToString("dd-MM-yyyy")
+                                                    : "N/A",
+                            LoginStatus = CheckInrecord.CheckIn == true ? "Check-In" : "Check-Out"
+                        };
+
+                        loginActivities.Add(loginActivity);
+                    }
+                    index++; // Increment index after processing each CheckInrecord
+                }
+
+
+                return loginActivities;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error retrieving employee login activity: " + ex.Message);
             }
         }
 

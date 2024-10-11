@@ -31,6 +31,7 @@ namespace CRM.Repository
         public Task<EmpTasksList> UnCompletedempTasksassign(EmpSubTasksListDto model, string userid);
         public Task<EmpTasksList> Tasksassign(TasksListDto model, string userid);
         public Task<EmpTasksList> SubTaskCompletedempTasksassign(EmpSubTasksDto model, string userid);
+        public Task<List<WebLoginactivity>> GetWebEmpLoginactivity(string userid);
 
     }
 }

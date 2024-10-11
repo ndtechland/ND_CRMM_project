@@ -51,6 +51,7 @@ namespace CRM.Models.APIDTO
         public string? absencepercentage { get; set; }
         public string? OvertimeWorkingHours { get; set; }
         public string? Currentdate { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<Loginactivity> loginactivities { get; set; } 
     }
     public class profilepicture
@@ -60,12 +61,19 @@ namespace CRM.Models.APIDTO
     }
     public class Loginactivity
     {
-        // public string? OfficeHour { get; set; }
         public string? CheckIN { get; set; }
         public string? CheckOut { get; set; }
         public string? LoginStatus { get; set; }
+
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<Loginactivity> loginactivities { get; set; } = new List<Loginactivity>();
+    }
+    public class WebLoginactivity
+    {
+        public string? CheckIN { get; set; }
+        public string? CheckOut { get; set; }
+        public string? Currentdate { get; set; }
+        public string? LoginStatus { get; set; }
     }
     public class TasksassignDto
     {

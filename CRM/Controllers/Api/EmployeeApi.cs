@@ -745,7 +745,7 @@ namespace CRM.Controllers.Api
                 return StatusCode(response.StatusCode, response);
             }
         }
-
+        //Web
         [HttpPost, Route("WebEmployeePersonalDetail")]
         public async Task<IActionResult> WebEmployeePersonalDetail([FromForm] webPersonalDetail model)
         {
@@ -924,6 +924,7 @@ namespace CRM.Controllers.Api
                 throw new Exception(ex.Message);
             }
         }
+        //Web
         [Route("EmployeeUpdateprofilepicture")]
         [HttpPost]
         public async Task<IActionResult> EmpUpdateprofilepicture([FromForm] profilepicture model)
@@ -1211,6 +1212,7 @@ namespace CRM.Controllers.Api
                 throw new Exception(ex.Message);
             }
         }
+        //Web
         [HttpPost("/api/EmployeeApi/AddTasksassign")]
         public async Task<IActionResult> AddTasksassign([FromForm] TasksListDto model)
         {
@@ -1292,6 +1294,48 @@ namespace CRM.Controllers.Api
             }
         }
 
+       // Web
+        [Route("WebEmpLoginactivity")]
+        [HttpGet]
+        public async Task<IActionResult> WebEmpLoginactivity()
+        {
+            var response = new Response<List<WebLoginactivity>>();
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userid = User.Claims.FirstOrDefault().Value;
+                    List<WebLoginactivity> isLoginExists = await _apiemp.GetWebEmpLoginactivity(userid);
+                    if (isLoginExists != null)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = "Employee LoginActivity Here.";
+                        response.Data = isLoginExists;
+                        return Ok(response);
+                    }
+                    else
+                    {
+                        response.StatusCode = StatusCodes.Status401Unauthorized;
+                        response.Message = "Data not found.";
+                        return Ok(response);
+                    }
+                }
+                else
+                {
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Message = "Token is expired.";
+                    return BadRequest(response);
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }
- 
+  
