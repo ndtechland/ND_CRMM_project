@@ -26,6 +26,11 @@ namespace CRM.Repository
         public Task<EmployeeRegistration> Updateprofilepicture(profilepicture model, string userid);
         public Task<Loginactivity> GetEmpLoginactivity(string userid);
         public Task<List<TasksassignDto>> GetEmpTasksassign(string userid);
+        public Task<TasksassignnameDto> GetEmpTasksassignname(string userid, int id);
+        public Task<EmpTasksList> CompletedempTasksassign(EmpTasksListDto model, string userid);
+        public Task<EmpTasksList> UnCompletedempTasksassign(EmpSubTasksListDto model, string userid);
+        public Task<EmpTasksList> Tasksassign(TasksListDto model, string userid);
+        public Task<EmpTasksList> SubTaskCompletedempTasksassign(EmpSubTasksDto model, string userid);
 
     }
 }

@@ -925,7 +925,7 @@ namespace CRM.Controllers
             }
             vendor.Isactive = !vendor.Isactive;
             await _context.SaveChangesAsync();
-            if(vendor.Isactive == true)
+            if (vendor.Isactive == true)
             {
                 var pdfResult = await VendorInvoiceDocPDF(vendor.Id);
                 if (pdfResult is JsonResult jsonResult && jsonResult.Value is IDictionary<string, object> result &&
@@ -944,7 +944,7 @@ namespace CRM.Controllers
         public async Task<IActionResult> VendorInvoiceDocPDF(int? Id = 0)
         {
             try
-            {               
+            {
                 string schema = Request.Scheme;
                 string host = Request.Host.Value;
                 string SlipURL = $"{schema}://{host}/Vendor/VendorInvoice?Id={Id}";
@@ -956,7 +956,7 @@ namespace CRM.Controllers
                     Directory.CreateDirectory(wwwRootPath);
                 }
                 var result = (from vr in _context.VendorRegistrations
-                              where vr.Id == Id 
+                              where vr.Id == Id
                               select new
                               {
                                   Id = vr.Id,
@@ -1008,7 +1008,7 @@ namespace CRM.Controllers
                .Select(x => new OfficeBreakDto
                {
                    Id = x.Id,
-                   Starttime =x.Starttime,
+                   Starttime = x.Starttime,
                    Endtime = x.Endtime,
                    Createdate = x.Createdate,
                    Breakstatus = _context.OfficeBreakstatuses.Where(a => a.Id == x.Breakstatusid).Select(status => status.Breakstatus).FirstOrDefault(),
@@ -1245,7 +1245,7 @@ namespace CRM.Controllers
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
-                List<EmpTasksassignDto> response = await _context.EmployeeTasks.Where(x => x.Vendorid == adminlogin.Vendorid)
+                List<EmpTasksassignDto> response = await _context.EmployeeTasks.Where(x => x.Vendorid == adminlogin.Vendorid).OrderByDescending(x => x.Id)
                .Select(x => new EmpTasksassignDto
                {
                    Id = x.Id,
@@ -1254,7 +1254,6 @@ namespace CRM.Controllers
                    Startdate = x.Startdate,
                    Enddate = x.Enddate,
                    Description = x.Description,
-                   Reason = x.Reason,
                    Status = _context.TaskStatuses.Where(a => a.Id == x.Status).Select(status => status.StatusName).FirstOrDefault(),
                    EmployeeId = x.EmployeeId,
                }).ToListAsync();
@@ -1275,7 +1274,6 @@ namespace CRM.Controllers
                 ViewBag.Startdate = "";
                 ViewBag.Enddate = "";
                 ViewBag.Description = "";
-                ViewBag.Reason = "";
                 ViewBag.Status = "";
                 ViewBag.EmpId = "";
                 ViewBag.Heading = "Add TaskAssign";
@@ -1289,7 +1287,6 @@ namespace CRM.Controllers
                     ViewBag.Startdate = data.Startdate?.ToString("yyyy-MM-dd");
                     ViewBag.Enddate = data.Enddate?.ToString("yyyy-MM-dd");
                     ViewBag.Description = data.Description;
-                    ViewBag.Reason = data.Reason;
                     ViewBag.Status = data.Status;
                     ViewBag.EmpId = data.EmployeeId;
                     ViewBag.Heading = "Update TaskAssign";
@@ -1327,9 +1324,8 @@ namespace CRM.Controllers
                         existingData.Startdate = model.Startdate;
                         existingData.Enddate = model.Enddate;
                         existingData.Description = model.Description;
-                        existingData.Reason = model.Reason;
                         existingData.Status = Convert.ToInt16(model.Status);
-                        existingData.EmployeeId =model.EmployeeId;
+                        existingData.EmployeeId = model.EmployeeId;
                         existingData.Vendorid = adminlogin.Vendorid;
 
                         await _context.SaveChangesAsync();
@@ -1351,9 +1347,8 @@ namespace CRM.Controllers
                         Startdate = model.Startdate,
                         Enddate = model.Enddate,
                         Description = model.Description,
-                        Reason = model.Reason,
                         Status = Convert.ToInt16(model.Status),
-                        EmployeeId =model.EmployeeId,
+                        EmployeeId = model.EmployeeId,
                         Vendorid = adminlogin.Vendorid,
                     };
 
@@ -1391,6 +1386,153 @@ namespace CRM.Controllers
                 throw new Exception("An error occurred while deleting the DeleteList:" + ex.Message);
             }
         }
+
+        [HttpGet, Route("Vendor/EmpTaskslist")]
+        public async Task<IActionResult> EmpTaskslist(int? id = 0)
+        {
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                var emplist = _context.EmployeeRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).FirstOrDefault();
+                List<EmpTasknameDto> response = await _context.EmployeeTasksLists.OrderByDescending(x =>x.Id)
+               .Select(x => new EmpTasknameDto
+               {
+                   Id = x.Id,
+                   Emptask = _context.EmployeeTasks.Where(a => a.Id == x.Emptaskid).Select(t => t.Task).FirstOrDefault(),
+                   Taskname = x.Taskname,
+                   TaskStatus = _context.TaskStatuses.Where(a => a.Id == x.TaskStatus).Select(status => status.StatusName).FirstOrDefault(),
+                   EmployeeId = x.EmployeeId,
+               }).ToListAsync();
+                ViewBag.EmployeeId = _context.EmployeeRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).Select(D => new SelectListItem
+                {
+                    Value = D.EmployeeId.ToString(),
+                    Text = D.EmployeeId
+                }).ToList();
+                ViewBag.UserName = AddedBy;
+                ViewBag.Taskname = "";
+                ViewBag.Emptaskid = "";
+                ViewBag.EmpId = "";
+                ViewBag.Heading = "Add TaskName";
+                ViewBag.BtnText = "SAVE";
+                if (id != 0)
+                {
+                    var data = await _context.EmployeeTasksLists.Where(x => x.Id == id).FirstOrDefaultAsync();
+                    ViewBag.id = data.Id;
+                    ViewBag.Taskname = data.Taskname;
+                    ViewBag.Emptaskid = data.Emptaskid;
+                    ViewBag.EmpId = data.EmployeeId;
+                    ViewBag.Heading = "Update TaskName";
+                    ViewBag.BtnText = "UPDATE";
+                }
+                return View(response);
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> EmpTaskslist(EmpTasknameDto model, string[] Taskname)
+        {
+            try
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                ViewBag.UserName = AddedBy;
+
+                if (model == null)
+                {
+                    ModelState.Clear();
+                    return View();
+                }
+
+                if (model.Id != 0)
+                {
+                    var existingData = await _context.EmployeeTasksLists.FindAsync(model.Id);
+                    if (existingData != null)
+                    {
+                        existingData.Emptaskid = Convert.ToInt16(model.Emptask);
+                        existingData.EmployeeId = model.EmployeeId;
+                        existingData.Taskname = Taskname.FirstOrDefault(); 
+                        await _context.SaveChangesAsync();
+
+                        TempData["Message"] = "Data Update Successfully.";
+                        return RedirectToAction("EmpTaskslist", "Vendor");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Record not found for update.");
+                        return View(model);
+                    }
+                }
+                else
+                {
+                    foreach (var taskName in Taskname)
+                    {
+                        if (!string.IsNullOrWhiteSpace(taskName)) 
+                        {
+                            var data = new EmployeeTasksList()
+                            {
+                                Emptaskid = Convert.ToInt16(model.Emptask),
+                                EmployeeId = model.EmployeeId,
+                                Taskname = taskName,
+                                TaskStatus = 1,
+                            };
+
+                            _context.EmployeeTasksLists.Add(data);
+                        }
+                    }
+
+                    await _context.SaveChangesAsync();
+                    TempData["Message"] = "Data Added Successfully.";
+                    return RedirectToAction("EmpTaskslist", "Vendor");
+                }
+            }
+            catch (InvalidOperationException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error: " + ex.Message);
+            }
+        }
+        public async Task<IActionResult> DeleteEmpTaskslist(int id)
+        {
+            try
+            {
+                var data = _context.EmployeeTasksLists.Find(id);
+                if (data != null)
+                {
+                    _context.EmployeeTasksLists.Remove(data);
+                    _context.SaveChanges();
+                }
+                return RedirectToAction("EmpTaskslist");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while deleting the DeleteList:" + ex.Message);
+            }
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> GetTasksByEmployeeId(string employeeId)
+        {
+            var tasks = await _context.EmployeeTasks
+                .Where(x => x.EmployeeId == employeeId)
+                .Select(x => new SelectListItem
+                {
+                    Value = x.Id.ToString(),
+                    Text = x.Task
+                }).ToListAsync();
+
+            return Json(tasks);
+        }
+
     }
 }
 

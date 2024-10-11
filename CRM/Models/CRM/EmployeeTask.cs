@@ -9,7 +9,6 @@ namespace CRM.Models.Crm
         public string? Task { get; set; }
         public string? Tittle { get; set; }
         public string? Description { get; set; }
-        public string? Reason { get; set; }
         public int? Status { get; set; }
         public string? EmployeeId { get; set; }
         public int? Vendorid { get; set; }
