@@ -94,5 +94,8 @@ namespace CRM.Repository
         Task<bool> CustomerInvoice(List<ProductDetail> model ,string InvoiceNo, int vendorid);
         Task<List<CustomerInvoiceDTO>> GetCustometInvoiceList(int vendorid);
         Task<CustomerInvoiceDTO> CustomerProductInvoice(string InvoiceNumber);
+        Task<bool> AddVendorBankDeatils(VendorRegistration model, int VendorId);
+        Task<List<VendorRegistration>> GetVendorBankDetail(int VendorId);
+        Task<bool> AddOfficeEvents(OfficeEvent model, int VendorId);
     }
 }

@@ -177,6 +177,7 @@ namespace CRM.Controllers
                 ViewBag.UserName = AddedBy;
                 var data = await _ICrmrpo.GetVendorProfile(id);
                 ViewBag.vendorid = data.Id;
+                ViewBag.SelectedCityId = data.CityId;
                 ViewBag.SelectedBillingCityId = data.BillingCityId;
                 ViewBag.SelectedBillingStateId = data.BillingStateId;
                 ViewBag.FilePathDetail = data.CompanyImage;
@@ -1533,6 +1534,179 @@ namespace CRM.Controllers
             return Json(tasks);
         }
 
+        public async Task<IActionResult> AddBankDetail(int id)
+        {
+            try
+            {
+                ViewBag.UserName = HttpContext.Session.GetString("UserName");
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                int vendorid = (int)adminlogin.Vendorid;
+
+
+                List<VendorRegistration> data = await _ICrmrpo.GetVendorBankDetail(vendorid);
+
+                int iId = (int)(id == null ? 0 : id);
+                ViewBag.id = 0;
+                ViewBag.AccountNumber = "";
+                ViewBag.BankName = "";
+                ViewBag.Ifsc = "";
+                ViewBag.AccountHolderName = "";
+                ViewBag.BranchAddress = "";
+                ViewBag.heading = "Add Bank Detail";
+                ViewBag.btnText = "SAVE";
+                if (iId != null && iId != 0)
+                {
+                    var existdata = _context.VendorRegistrations.Find(iId);
+                    if (existdata != null)
+                    {
+                        ViewBag.id = existdata.Id;
+                        ViewBag.AccountNumber = existdata.AccountNumber;
+                        ViewBag.BankName = existdata.BankName;
+                        ViewBag.Ifsc = existdata.Ifsc;
+                        ViewBag.AccountHolderName = existdata.AccountHolderName;
+                        ViewBag.BranchAddress = existdata.BranchAddress;
+                        ViewBag.btnText = "UPDATE";
+                        ViewBag.heading = "Update Bank Detail";
+
+                    }
+                }
+                return View(data);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddBankDetail(VendorRegistration model)
+        {
+            try
+            {
+                ViewBag.UserName = HttpContext.Session.GetString("UserName");
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                int vendorid = (int)adminlogin.Vendorid;
+                bool check = await _ICrmrpo.AddVendorBankDeatils(model, vendorid);
+                if (check)
+                {
+                    if(model.Id==0)
+                    {
+                        TempData["Message"] = "Bank detail added successfully..";
+                    }
+                    else
+                    {
+                        TempData["Message"] = "Bank detail updated successfully..";
+                    }
+                    
+                    return RedirectToAction("AddBankDetail", "Vendor");
+                }
+                else
+                {
+                    TempData["Message"] = "Failed!";
+                    return View(model);
+                }
+            }
+            catch (Exception Ex)
+            {
+                throw new Exception("Error:" + Ex.Message);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> Events(int id)
+        {
+            try
+            {
+                ViewBag.UserName = HttpContext.Session.GetString("UserName");
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                int vendorid = (int)adminlogin.Vendorid;
+                List<OfficeEvent> events = _context.OfficeEvents.Where(e => e.Vendorid == vendorid).OrderByDescending(x=>x.Id).ToList();        
+;
+                int iId = (int)(id == null ? 0 : id);
+                ViewBag.id = 0;
+                ViewBag.Tittle = "";
+                ViewBag.Subtittle = "";
+                ViewBag.description = "";
+                ViewBag.Date = "";
+                ViewBag.heading = "Add Event";
+                ViewBag.btnText = "SAVE";
+                if (iId != null && iId != 0)
+                {
+                    var data = _context.OfficeEvents.Find(iId);
+                    if (data != null)
+                    {
+                        ViewBag.id = data.Id;
+                        ViewBag.Tittle = data.Tittle;
+                        ViewBag.Subtittle = data.Subtittle;
+                        ViewBag.description = data.Description;
+                        ViewBag.Date = DateTime.Now.ToString("yyyy-MM-dd");
+                        ViewBag.btnText = "UPDATE";
+                        ViewBag.heading = "Update Event";
+
+                    }
+                }
+
+                return View(events);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> Events(OfficeEvent model)
+        {
+            try
+            {
+                ViewBag.UserName = HttpContext.Session.GetString("UserName");
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                int vendorid = (int)adminlogin.Vendorid;
+
+                bool check = await _ICrmrpo.AddOfficeEvents(model, vendorid);
+                if (check)
+                {
+                    if (model.Id == 0)
+                    {
+                        TempData["msg"] = "Event added successfully!";
+                        return RedirectToAction("Events");
+                    }
+                    else
+                    {
+                        TempData["msg"] = "Event updated successfully!";
+                        return RedirectToAction("Events");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Events");
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        public async Task<IActionResult> DeleteOfficeEvent(int id)
+        {
+            try
+            {
+                var dlt = _context.OfficeEvents.Find(id);
+                _context.Remove(dlt);
+                _context.SaveChanges();
+                TempData["msg"] = "Deleted successfully!";
+                return RedirectToAction("Events");
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 }
 
