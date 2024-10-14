@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace CRM.Models.Crm
 {
-    public partial class ApplyLeaveNews
+    public partial class PaidLeavemaster
     {
         public int Id { get; set; }
         public string? UserId { get; set; }
