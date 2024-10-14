@@ -1294,7 +1294,7 @@ namespace CRM.Controllers.Api
             }
         }
 
-       // Web
+        // Web
         [Route("WebEmpLoginactivity")]
         [HttpGet]
         public async Task<IActionResult> WebEmpLoginactivity()
@@ -1336,6 +1336,99 @@ namespace CRM.Controllers.Api
                 throw new Exception(ex.Message);
             }
         }
+
+        [Route("GetofficeEvents")]
+        [HttpGet]
+        public async Task<IActionResult> GetofficeEvents()
+        {
+            var response = new Response<List<officeEventsDto>>();
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userid = User.Claims.FirstOrDefault().Value;
+                    List<officeEventsDto> isLoginExists = await _apiemp.GetOfficeEvents(userid);
+                    if (isLoginExists.Count == 0)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = "No upcoming or past events found.";
+                        response.Data = isLoginExists;
+                        return Ok(response);
+                    }
+                    else if (isLoginExists.Count != 0)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = $"{isLoginExists.Count} upcoming event(s) scheduled soon.";
+                        response.Data = isLoginExists;
+                        return Ok(response);
+                    }
+
+                    else
+                    {
+                        response.StatusCode = StatusCodes.Status401Unauthorized;
+                        response.Message = "Data not found.";
+                        return Ok(response);
+                    }
+                }
+                else
+                {
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Message = "Token is expired.";
+                    return BadRequest(response);
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        [Route("GetEmpattendancedatail")]
+        [HttpGet]
+        public async Task<IActionResult> GetEmpattendancedatail(DateTime Currentdate)
+        {
+            var response = new Response<Empattendancedatail>();
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userid = User.Claims.FirstOrDefault().Value;
+                    Empattendancedatail isExists = await _apiemp.GetFilterattendance(userid, Currentdate);
+                    if (isExists != null)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = "Employee Attendancedatail Here.";
+                        response.Data = isExists;
+                        return Ok(response);
+                    }
+                    else
+                    {
+                        response.StatusCode = StatusCodes.Status401Unauthorized;
+                        response.Message = "Data not found.";
+                        return Ok(response);
+                    }
+                }
+                else
+                {
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Message = "Token is expired.";
+                    return BadRequest(response);
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }
-  

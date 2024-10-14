@@ -106,5 +106,11 @@ namespace CRM.Models.APIDTO
         public string? TasksubTittle { get; set; }
         public string? TaskStatus { get; set; }
     }
+    public class officeEventsDto
+    {
+        public string? Subtittle { get; set; }
+        public string? Tittle { get; set; }
+        public string? Date { get; set; }
 
+    }
 }
