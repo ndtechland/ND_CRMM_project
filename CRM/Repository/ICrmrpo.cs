@@ -38,7 +38,7 @@ namespace CRM.Repository
 
         public Task<List<GenerateSalary>> GenerateSalary(int Month, int year, int Userid,string EmployeeId);
         public Task<int> Employer(EmployeerModelEPF model,int AdminLoginId);
-        public Task<List<EmployeerEpf>> EmployerList(string Deduction_Cycle);
+        public Task<List<EmployeerEpf>> EmployerList(string Deduction_Cycle, int AdminLoginId);
         public Task<Invoice> GenerateInvoice(int ID);
       
         public DataTable GetEmployDetailById(string EmpId, int Userid);
@@ -94,8 +94,8 @@ namespace CRM.Repository
         Task<bool> CustomerInvoice(List<ProductDetail> model ,string InvoiceNo, int vendorid);
         Task<List<CustomerInvoiceDTO>> GetCustometInvoiceList(int vendorid);
         Task<CustomerInvoiceDTO> CustomerProductInvoice(string InvoiceNumber);
-        Task<bool> AddVendorBankDeatils(VendorRegistration model, int VendorId);
-        Task<List<VendorRegistration>> GetVendorBankDetail(int VendorId);
+        Task<bool> AddVendorBankDeatils(VendorBankDetail model, int VendorId);
+        Task<List<VendorBankDetail>> GetVendorBankDetail(int VendorId);
         Task<bool> AddOfficeEvents(OfficeEvent model, int VendorId);
     }
 }

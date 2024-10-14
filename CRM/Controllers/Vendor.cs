@@ -1544,7 +1544,7 @@ namespace CRM.Controllers
                 int vendorid = (int)adminlogin.Vendorid;
 
 
-                List<VendorRegistration> data = await _ICrmrpo.GetVendorBankDetail(vendorid);
+                List<VendorBankDetail> data = await _ICrmrpo.GetVendorBankDetail(vendorid);
 
                 int iId = (int)(id == null ? 0 : id);
                 ViewBag.id = 0;
@@ -1557,7 +1557,7 @@ namespace CRM.Controllers
                 ViewBag.btnText = "SAVE";
                 if (iId != null && iId != 0)
                 {
-                    var existdata = _context.VendorRegistrations.Find(iId);
+                    var existdata = _context.VendorBankDetails.Find(iId);
                     if (existdata != null)
                     {
                         ViewBag.id = existdata.Id;
@@ -1580,7 +1580,7 @@ namespace CRM.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> AddBankDetail(VendorRegistration model)
+        public async Task<IActionResult> AddBankDetail(VendorBankDetail model)
         {
             try
             {
@@ -1588,6 +1588,18 @@ namespace CRM.Controllers
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 int vendorid = (int)adminlogin.Vendorid;
+                var existingBankDetail = await _context.VendorBankDetails
+            .Where(b => b.VendorId == vendorid)
+            .FirstOrDefaultAsync();
+                if(model.Id==0)
+                {
+                    if (existingBankDetail != null)
+                    {
+                        TempData["Message"] = "Bank detail already exists.";
+                        return RedirectToAction("AddBankDetail", "Vendor");
+                    }
+                }
+                
                 bool check = await _ICrmrpo.AddVendorBankDeatils(model, vendorid);
                 if (check)
                 {
@@ -1611,6 +1623,22 @@ namespace CRM.Controllers
             catch (Exception Ex)
             {
                 throw new Exception("Error:" + Ex.Message);
+            }
+        }
+        public async Task<IActionResult> DeleteVendorBankDetail(int id)
+        {
+            try
+            {
+                var dlt = _context.VendorBankDetails.Find(id);
+                _context.Remove(dlt);
+                _context.SaveChanges();
+                TempData["Message"] = "Deleted successfully!";
+                return RedirectToAction("AddBankDetail", "Vendor");
+            }
+            catch (Exception)
+            {
+
+                throw;
             }
         }
         [HttpGet]

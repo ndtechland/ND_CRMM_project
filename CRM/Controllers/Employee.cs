@@ -862,7 +862,7 @@ namespace CRM.Controllers
             if (!string.IsNullOrEmpty(Deduction_Cycle))
             {
                 var adminLogin = await _context.AdminLogins.Where(x => x.Id == userId).FirstOrDefaultAsync();
-                var response = await _ICrmrpo.EmployerList(Deduction_Cycle);
+                var response = await _ICrmrpo.EmployerList(Deduction_Cycle, (int)userId);
 
                 if (response.Count > 0)
                 {
@@ -1568,8 +1568,9 @@ namespace CRM.Controllers
         }
         public JsonResult Epfesilist()
         {
+            int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
             var employeerTd = new EmployeerEpf();
-            var data = _context.EmployeerEpfs.Where(e => e.IsActive == true).ToList();
+            var data = _context.EmployeerEpfs.Where(e => e.IsActive == true && e.AdminLoginId== Userid).ToList();
             var result = new
             {
                 data = data,
