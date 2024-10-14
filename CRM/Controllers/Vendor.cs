@@ -1622,7 +1622,7 @@ namespace CRM.Controllers
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 int vendorid = (int)adminlogin.Vendorid;
-                List<OfficeEvent> events = _context.OfficeEvents.Where(e => e.Vendorid == vendorid).OrderByDescending(x=>x.Id).ToList();        
+                List<OfficeEvent> events = _context.OfficeEvents.Where(e => e.Vendorid == vendorid).OrderBy(x=>x.Date).ToList();        
 ;
                 int iId = (int)(id == null ? 0 : id);
                 ViewBag.id = 0;
@@ -1641,7 +1641,7 @@ namespace CRM.Controllers
                         ViewBag.Tittle = data.Tittle;
                         ViewBag.Subtittle = data.Subtittle;
                         ViewBag.description = data.Description;
-                        ViewBag.Date = DateTime.Now.ToString("yyyy-MM-dd");
+                        ViewBag.Date = data.Date.Value.ToString("yyyy-MM-dd");
                         ViewBag.btnText = "UPDATE";
                         ViewBag.heading = "Update Event";
 

@@ -601,7 +601,7 @@ namespace CRM.Repository
             }
 
         }
-        public async Task<int> Employer(EmployeerModelEPF model)
+        public async Task<int> Employer(EmployeerModelEPF model, int AdminLoginId)
         {
             var existingActiveRecords = _context.EmployeerEpfs.Where(e => e.IsActive && e.DeductionCycle == model.Deduction_Cycle).ToList();
 
@@ -620,11 +620,12 @@ namespace CRM.Repository
     {
         new SqlParameter("@EPF_Number", model.EPF_Number),
         new SqlParameter("@Deduction_Cycle", model.Deduction_Cycle),
-        new SqlParameter("@Employer_Contribution_Rate", model.Employer_Contribution_Rate)
+        new SqlParameter("@Employer_Contribution_Rate", model.Employer_Contribution_Rate),
+        new SqlParameter("@AdminLoginId", AdminLoginId)
     };
 
                 var result = await Task.Run(() => _context.Database
-                    .ExecuteSqlRawAsync(@"exec USP_Employeer_EPF  @EPF_Number, @Deduction_Cycle, @Employer_Contribution_Rate", parameter.ToArray()));
+                    .ExecuteSqlRawAsync(@"exec USP_Employeer_EPF  @EPF_Number, @Deduction_Cycle, @Employer_Contribution_Rate,@AdminLoginId", parameter.ToArray()));
 
                 return result;
             }
@@ -634,11 +635,12 @@ namespace CRM.Repository
     {
         new SqlParameter("@EPF_Number", model.EsicEPF_Number),
         new SqlParameter("@Deduction_Cycle", model.Deduction_Cycle),
-        new SqlParameter("@Employer_Contribution_Rate", model.EsicEmployer_Contribution_Rate)
+        new SqlParameter("@Employer_Contribution_Rate", model.EsicEmployer_Contribution_Rate),
+        new SqlParameter("@AdminLoginId", AdminLoginId)
     };
 
                 var result = await Task.Run(() => _context.Database
-                    .ExecuteSqlRawAsync(@"exec USP_Employeer_EPF  @EPF_Number, @Deduction_Cycle, @Employer_Contribution_Rate", parameter.ToArray()));
+                    .ExecuteSqlRawAsync(@"exec USP_Employeer_EPF  @EPF_Number, @Deduction_Cycle, @Employer_Contribution_Rate,@AdminLoginId", parameter.ToArray()));
 
                 return result;
             }

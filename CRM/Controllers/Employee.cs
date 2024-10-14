@@ -831,7 +831,9 @@ namespace CRM.Controllers
         {
             try
             {
-                var response = await _ICrmrpo.Employer(model);
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                int adminloginid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var response = await _ICrmrpo.Employer(model, adminloginid);
 
                 ModelState.Clear();
                 return RedirectToAction("Employer");
