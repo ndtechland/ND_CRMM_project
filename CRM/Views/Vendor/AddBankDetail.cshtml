@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CRM.Models.Crm.VendorRegistration>
+﻿@model IEnumerable<CRM.Models.Crm.VendorBankDetail>
 
 @{
     ViewData["Title"] = "AddBankDetail";
@@ -176,6 +176,7 @@
                                                         <td>
                                                             <div>
                                                                 <a href="/Vendor/AddBankDetail?Id=@item.Id" class="fa fa-edit m-2 font-success"></a>
+                                                                <a href="/Vendor/DeleteVendorBankDetail?Id=@item.Id" class="fa fa-trash m-2 font-danger"></a>
                                                             </div>
                                                         </td>
                                                     </tr>

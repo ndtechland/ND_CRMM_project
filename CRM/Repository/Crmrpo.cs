@@ -647,14 +647,15 @@ namespace CRM.Repository
             return 1;
         }
 
-        public async Task<List<EmployeerEpf>> EmployerList(string Deduction_Cycle)
+        public async Task<List<EmployeerEpf>> EmployerList(string Deduction_Cycle, int AdminLoginId)
         {
             var result = await _context.EmployeerEpfs
-                .FromSqlInterpolated($"EXEC EmployerList {Deduction_Cycle}")
+                .FromSqlInterpolated($"EXEC EmployerList {Deduction_Cycle}, {AdminLoginId}")
                 .ToListAsync();
 
             return result;
         }
+
 
 
         public async Task<Invoice> GenerateInvoice(int ID)
@@ -2317,6 +2318,7 @@ namespace CRM.Repository
                               join sb in _context.States on c.BillingStateId equals sb.Id
                               join ctb in _context.Cities on c.BillingCityId equals ctb.Id
                               join v in _context.VendorRegistrations on ci.VendorId equals v.Id
+                              join vb in _context.VendorBankDetails on v.Id equals vb.VendorId
                               join vs in _context.States on v.StateId equals vs.Id
                               join vct in _context.Cities on v.CityId equals vct.Id
                               where (ci.InvoiceNumber == InvoiceNumber)
@@ -2327,11 +2329,11 @@ namespace CRM.Repository
                                   CompanyName = c.CompanyName,
                                   CompanyLogo = v.CompanyImage,
                                   VendorCompanyName = v.CompanyName,
-                                  AccountNumber = v.AccountNumber,
-                                  AccountHolderName = v.AccountHolderName,
-                                  BankName = v.BankName,
-                                  Ifsc = v.Ifsc,
-                                  BranchAddress = v.BranchAddress,
+                                  AccountNumber = vb.AccountNumber,
+                                  AccountHolderName = vb.AccountHolderName,
+                                  BankName = vb.BankName,
+                                  Ifsc = vb.Ifsc,
+                                  BranchAddress = vb.BranchAddress,
                                   VendorGstNumber = v.GstNumber,
                                   VendorOfficeAddress = v.Location,
                                   VendorOfficeCity = vct.City1,
@@ -2383,25 +2385,44 @@ namespace CRM.Repository
                 throw;
             }
         }
-        public async Task<bool> AddVendorBankDeatils(VendorRegistration model,int VendorId)
+        public async Task<bool> AddVendorBankDeatils(VendorBankDetail model,int VendorId)
         {
             try
             {
-                var data = _context.VendorRegistrations.Find(VendorId);
-                if (data != null)
+                if(model.Id==0)
                 {
-                    data.AccountNumber = model.AccountNumber;
-                    data.AccountHolderName = model.AccountHolderName;
-                    data.BankName = model.BankName;
-                    data.BranchAddress = model.BranchAddress;
-                    data.Ifsc = model.Ifsc;
+                    var domainmodel = new VendorBankDetail()
+                    {
+                        VendorId = VendorId,
+                        AccountNumber = model.AccountNumber,
+                        AccountHolderName = model.AccountHolderName,
+                        BankName = model.BankName,
+                        BranchAddress = model.BranchAddress,
+                        Ifsc = model.Ifsc
+                    };
+                    _context.Add(domainmodel);
                     _context.SaveChanges();
                     return true;
                 }
                 else
                 {
-                    return false;
+                    var data = _context.VendorBankDetails.Where(b=>b.Id==model.Id).FirstOrDefault();
+                    if (data != null)
+                    {
+                        data.AccountNumber = model.AccountNumber;
+                        data.AccountHolderName = model.AccountHolderName;
+                        data.BankName = model.BankName;
+                        data.BranchAddress = model.BranchAddress;
+                        data.Ifsc = model.Ifsc;
+                        _context.SaveChanges();
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
+                
             }
             catch (Exception)
             {
@@ -2409,11 +2430,11 @@ namespace CRM.Repository
                 throw;
             }
         }
-        public async Task<List<VendorRegistration>> GetVendorBankDetail(int VendorId)
+        public async Task<List<VendorBankDetail>> GetVendorBankDetail(int VendorId)
         {
             try
             {
-                var result = _context.VendorRegistrations.Where(x=>x.Id==VendorId).ToList();
+                var result = _context.VendorBankDetails.Where(x=>x.VendorId==VendorId).ToList();
                 return result;
             }
             catch (Exception)
