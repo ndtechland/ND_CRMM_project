@@ -72,6 +72,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<Officeshift> Officeshifts { get; set; } = null!;
         public virtual DbSet<OrganisationProfile> OrganisationProfiles { get; set; } = null!;
         public virtual DbSet<OrganisationTaxDetail> OrganisationTaxDetails { get; set; } = null!;
+        public virtual DbSet<PaidLeavemaster> PaidLeavemasters { get; set; } = null!;
         public virtual DbSet<PayMethodMaster> PayMethodMasters { get; set; } = null!;
         public virtual DbSet<Payroll> Payrolls { get; set; } = null!;
         public virtual DbSet<ProductMaster> ProductMasters { get; set; } = null!;
@@ -1534,6 +1535,15 @@ namespace CRM.Models.Crm
                     .HasForeignKey(d => d.TaxDeductorId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Organisation_Tax_Details_Tax_Deductor_ID");
+            });
+
+            modelBuilder.Entity<PaidLeavemaster>(entity =>
+            {
+                entity.ToTable("PaidLeavemaster");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.CountLeave).HasColumnType("decimal(18, 2)");
             });
 
             modelBuilder.Entity<PayMethodMaster>(entity =>

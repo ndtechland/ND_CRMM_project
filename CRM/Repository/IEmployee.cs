@@ -34,6 +34,7 @@ namespace CRM.Repository
         public Task<List<WebLoginactivity>> GetWebEmpLoginactivity(string userid);
         public Task<List<officeEventsDto>> GetOfficeEvents(string userid);
         public Task<Empattendancedatail> GetFilterattendance(string userid,DateTime Currentdate);
+        public Task<Monthlyattendancedatail> GetMonthAttanceDetails(string userid);
 
     }
 }
