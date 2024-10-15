@@ -403,9 +403,9 @@ namespace CRM.Repository
         {
             try
             {
-                List<Leave> FH = new List<Leave>();  
-                List<Leave> SH = new List<Leave>();  
-                List<Leave> FD = new List<Leave>();  
+                List<Leave> FH = new List<Leave>();
+                List<Leave> SH = new List<Leave>();
+                List<Leave> FD = new List<Leave>();
                 decimal totalLeaveRequested = 0.00M;
                 var TypeOfLeave = await _context.Leavemasters
                                                 .Where(x => x.LeavetypeId == model.TypeOfLeaveId && x.EmpId == userid)
@@ -419,15 +419,15 @@ namespace CRM.Repository
                 {
                     totalLeaveRequested = (model.EndDate - model.StartDate).Days;
                 }
-                if (model.StartLeaveId == 1)  
+                if (model.StartLeaveId == 1)
                 {
                     FH = await _context.Leaves.Where(x => x.Id == model.StartLeaveId).ToListAsync();
                 }
-                else if (model.StartLeaveId == 2) 
+                else if (model.StartLeaveId == 2)
                 {
                     SH = await _context.Leaves.Where(x => x.Id == model.EndeaveId).ToListAsync();
                 }
-                else  
+                else
                 {
                     FD = await _context.Leaves.Where(x => x.Id == model.EndeaveId).ToListAsync();
                 }
@@ -456,7 +456,7 @@ namespace CRM.Repository
                         EndDate = model.EndDate,
                         CreatedDate = DateTime.Now,
                         Reason = model.Reason,
-                        CountLeave = totalLeaveRequested, 
+                        CountLeave = totalLeaveRequested,
                         Isapprove = false,
                         Month = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(DateTime.Now.Month)
                     };
@@ -485,7 +485,7 @@ namespace CRM.Repository
                         EndDate = model.EndDate,
                         CreatedDate = DateTime.Now,
                         Reason = model.Reason,
-                        CountLeave = leaveBalance, 
+                        CountLeave = leaveBalance,
                         Isapprove = false,
                         Month = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(DateTime.Now.Month)
                     };
@@ -504,7 +504,7 @@ namespace CRM.Repository
                         StartDate = model.StartDate,
                         EndDate = model.EndDate,
                         CreatedDate = DateTime.Now,
-                        CountLeave = remainingLeave, 
+                        CountLeave = remainingLeave,
                         Month = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(DateTime.Now.Month),
                         Reason = model.Reason,
                         Isapprove = false
@@ -1031,7 +1031,7 @@ namespace CRM.Repository
     .ToListAsync();
 
                             var checkInTime = checkIns
-                                .Select(g => g.CheckInTime.HasValue ? g.CheckInTime.Value.ToString("hh:mm tt") :"N/A")
+                                .Select(g => g.CheckInTime.HasValue ? g.CheckInTime.Value.ToString("hh:mm tt") : "N/A")
                                 .FirstOrDefault();
 
                             var currentDate = checkIns
@@ -1042,7 +1042,7 @@ namespace CRM.Repository
                                 .Select(g => g.CheckOutTime.HasValue ? g.CheckOutTime.Value.ToString("hh:mm tt") : "N/A")
                                 .FirstOrDefault();
                             var loginActivities = await GetLoginActivities(empAttendanceDetails.EmployeeId);
-                            var latestLoginStatus = loginActivities.Any()? loginActivities.Last().LoginStatus : "No Activity";
+                            var latestLoginStatus = loginActivities.Any() ? loginActivities.Last().LoginStatus : "No Activity";
                             var attendanceDetail = new Empattendancedatail
                             {
                                 OfficeHour = $"{officeShift.Starttime} - {officeShift.Endtime}",
@@ -1081,11 +1081,11 @@ namespace CRM.Repository
 
             var attendanceRecordsCheckIn = await _context.EmployeeCheckIns
                 .Where(g => g.EmployeeId == employeeId && g.CheckIn == true && g.CheckInTime.HasValue && g.CheckInTime.Value.Date == currentDate)
-                .OrderBy(g => g.CheckInTime) 
+                .OrderBy(g => g.CheckInTime)
                 .ToListAsync();
             var attendanceRecordsCheckOut = await _context.EmployeeCheckIns
                 .Where(g => g.EmployeeId == employeeId && g.CheckIn == false && g.CheckOutTime.HasValue && g.CheckOutTime.Value.Date == currentDate)
-                .OrderByDescending(g => g.CheckOutTime) 
+                .OrderByDescending(g => g.CheckOutTime)
                 .ToListAsync();
 
             var loginActivities = new List<Loginactivity>();
@@ -1097,7 +1097,7 @@ namespace CRM.Repository
                 {
                     CheckIN = CheckInrecord.CheckInTime.Value.ToString("hh:mm tt"),
                     CheckOut = "N/A",
-                    LoginStatus = "Check-In"  ,
+                    LoginStatus = "Check-In",
                     loginactivities = null,
                 };
 
@@ -1186,10 +1186,10 @@ namespace CRM.Repository
 
             if (checkInData != null && checkInData.CheckIntime.HasValue)
             {
-               
+
                 DateTime checkoutHour = checkInData.CheckIntime.Value.Add(timeDifference1);
 
-                
+
                 return checkoutHour.ToString("hh:mm tt");
             }
             else
@@ -1231,7 +1231,7 @@ namespace CRM.Repository
         {
             var checkIns = await _context.EmployeeCheckIns
                 .Where(g => g.EmployeeId == employeeId && g.Currentdate.HasValue && g.Currentdate.Value.Date == DateTime.Now.Date)
-                .OrderBy(g => g.CheckInTime) 
+                .OrderBy(g => g.CheckInTime)
                 .ToListAsync();
 
             double totalHours = 0;
@@ -1291,9 +1291,9 @@ namespace CRM.Repository
             }
 
 
-            TimeSpan workingHours = endTime - startTime; 
-            decimal totalWorkingHours = (decimal)workingHours.TotalHours; 
-            decimal formattedWorkingHours = Math.Round(totalWorkingHours, 2); 
+            TimeSpan workingHours = endTime - startTime;
+            decimal totalWorkingHours = (decimal)workingHours.TotalHours;
+            decimal formattedWorkingHours = Math.Round(totalWorkingHours, 2);
 
             var checkIns = await _context.EmployeeCheckInRecords
                 .Where(g => g.EmpId == employeeId && g.CheckIntime.HasValue && g.CheckIntime.Value.Month == DateTime.Now.Month)
@@ -1323,9 +1323,9 @@ namespace CRM.Repository
         }
         private string FormatHoursd(decimal hours)
         {
-            int wholeHours = (int)hours; 
-            decimal minutes = (hours - wholeHours) * 60; 
-            return $"{wholeHours}h{Math.Round(minutes)}m"; 
+            int wholeHours = (int)hours;
+            decimal minutes = (hours - wholeHours) * 60;
+            return $"{wholeHours}h{Math.Round(minutes)}m";
         }
 
         private string FormatHours(double totalHours)
@@ -1777,9 +1777,9 @@ namespace CRM.Repository
                 int index = 0;
                 foreach (var CheckInrecord in attendanceRecordsCheckIn)
                 {
-                    if (index < attendanceRecordsCheckOut.Count) 
+                    if (index < attendanceRecordsCheckOut.Count)
                     {
-                        var CheckOutrecord = attendanceRecordsCheckOut[index]; 
+                        var CheckOutrecord = attendanceRecordsCheckOut[index];
 
                         WebLoginactivity loginActivity = new WebLoginactivity
                         {
@@ -1795,7 +1795,7 @@ namespace CRM.Repository
 
                         loginActivities.Add(loginActivity);
                     }
-                    index++; 
+                    index++;
                 }
                 return loginActivities;
             }
@@ -1953,11 +1953,11 @@ namespace CRM.Repository
         public async Task<List<Loginactivity>> FilterGetLoginActivities(string employeeId, DateTime currentDate)
         {
             var attendanceRecords = await _context.EmployeeCheckIns
-                .Where(g => g.EmployeeId == employeeId && g.Currentdate.Value.Date  == currentDate.Date)
+                .Where(g => g.EmployeeId == employeeId && g.Currentdate.Value.Date == currentDate.Date)
                 .ToListAsync();
 
             var loginActivities = new List<Loginactivity>();
-            HashSet<string> existingCheckOuts = new HashSet<string>(); 
+            HashSet<string> existingCheckOuts = new HashSet<string>();
 
             foreach (var record in attendanceRecords)
             {
@@ -1981,10 +1981,10 @@ namespace CRM.Repository
                             CheckIN = "N/A",
                             CheckOut = checkOutTime,
                             LoginStatus = "Check-Out",
-                            loginactivities = null 
+                            loginactivities = null
                         });
 
-                        existingCheckOuts.Add(checkOutTime); 
+                        existingCheckOuts.Add(checkOutTime);
                     }
                 }
             }
@@ -2113,6 +2113,41 @@ namespace CRM.Repository
                     TotalAbsentDays = totalAbsentDays,
                     Attendance = Math.Round(presencePercentage).ToString() + "%"
                 };
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error: " + ex.Message);
+            }
+        }
+        public async Task<List<TotalLeave>> Getleavelist(string userid)
+        {
+            try
+            {
+                var paidLeaveList = await _context.PaidLeavemasters
+                    .Where(p => p.UserId == userid)
+                    .Select(p => new TotalLeave
+                    {
+                        id = p.Id,
+                        Leavedate = p.StartDate,
+                        Reason = p.Reason,
+                        LeaveType = (p.StartLeaveId == 1 && p.EndeaveId == 1) ? "First Half (Paid)" :
+                                    (p.StartLeaveId == 2 && p.EndeaveId == 2) ? "Second Half (Paid)" :
+                                    (p.StartLeaveId == 1 && p.EndeaveId == 2) ? "Full Day (Paid)" : "Unknown (Paid)"
+                    }).ToListAsync();
+                var unpaidLeaveList = await _context.ApplyLeaveNews
+                    .Where(a => a.UserId == userid)
+                    .Select(a => new TotalLeave
+                    {
+                        id = a.Id,
+                        Leavedate = a.StartDate,
+                        Reason = a.Reason,
+                        LeaveType = (a.StartLeaveId == 1 && a.EndeaveId == 1) ? "First Half (Unpaid)" :
+                                    (a.StartLeaveId == 2 && a.EndeaveId == 2) ? "Second Half (Unpaid)" :
+                                    (a.StartLeaveId == 1 && a.EndeaveId == 2) ? "Full Day (Unpaid)" : "Unknown (Unpaid)"
+                    }).ToListAsync();
+                var empleavelist = paidLeaveList.Concat(unpaidLeaveList).ToList();
+
+                return empleavelist;
             }
             catch (Exception ex)
             {
