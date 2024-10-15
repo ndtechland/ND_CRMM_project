@@ -69,16 +69,8 @@
                                                 </th>
 
                                                 <th nowrap>
-                                                    First Name
-                                                </th>
-
-                                                <th nowrap>
-                                                    Middle Name
-                                                </th>
-
-                                                <th nowrap>
-                                                    Last Name
-                                                </th>
+                                                    Employee Name
+                                                </th> 
 
                                                 <th nowrap>
                                                     Employee ID
@@ -92,10 +84,10 @@
                                                     Work Email
                                                 </th>
                                                 <th nowrap>
-                                                    View AppointmentLetter
+                                                    View Appointment Letter
                                                 </th>
                                                 <th nowrap>
-                                                    Send AppointmentLetter
+                                                    Send Appointment Letter
                                                 </th>
                                             </tr>
                                         </thead>
@@ -108,14 +100,9 @@
                                                     <tr class="table-row">
                                                         <td>@count</td>
                                                         <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.FirstName)
+                                                            @Html.DisplayFor(modelItem => item.FirstName) @Html.DisplayFor(modelItem => item.MiddleName)  @Html.DisplayFor(modelItem => item.LastName)
                                                         </td>
-                                                        <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.MiddleName)
-                                                        </td>
-                                                        <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.LastName)
-                                                        </td>
+                                                        
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.Emp_Reg_ID)
                                                         </td>

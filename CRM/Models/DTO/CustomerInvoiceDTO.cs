@@ -37,6 +37,11 @@ namespace CRM.Models.DTO
         public decimal? IGST { get; set; }
         public decimal? SGST { get; set; }
         public decimal? CGST { get; set; }
+        public string? AccountNumber { get; set; }
+        public string? BankName { get; set; }
+        public string? Ifsc { get; set; }
+        public string? AccountHolderName { get; set; }
+        public string? BranchAddress { get; set; }
         public List<ProductDetail> ProductDetails { get; set; }
         public List<ProductDetailList> ProductDetailLists { get; set; }
         public List<CustomerInvoice> customerInvoice { get; set; }
@@ -73,6 +78,5 @@ namespace CRM.Models.DTO
         public DateTime? StartDate { get; set; }
         public DateTime? RenewDate { get; set; }
     }
-
 
 }

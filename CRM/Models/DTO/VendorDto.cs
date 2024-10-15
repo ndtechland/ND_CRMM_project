@@ -60,6 +60,8 @@ namespace CRM.Models.DTO
         public string? CompanyImage { get; set; }
         public int? BillingStateId { get; set; }
         public int? BillingCityId { get; set; }
+        public int? OfficeStateId { get; set; }
+        public int? OfficeCityId { get; set; }
 
         public IFormFile ImageFile { get; set; }
         public string UserName { get; set; } = null!;
@@ -67,4 +69,5 @@ namespace CRM.Models.DTO
         public string maplat { get; set; } = null!;
         public string maplong { get; set; } = null!;
     }
+    
 }

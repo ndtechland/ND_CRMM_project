@@ -601,7 +601,7 @@ namespace CRM.Repository
             }
 
         }
-        public async Task<int> Employer(EmployeerModelEPF model)
+        public async Task<int> Employer(EmployeerModelEPF model, int AdminLoginId)
         {
             var existingActiveRecords = _context.EmployeerEpfs.Where(e => e.IsActive && e.DeductionCycle == model.Deduction_Cycle).ToList();
 
@@ -620,11 +620,12 @@ namespace CRM.Repository
     {
         new SqlParameter("@EPF_Number", model.EPF_Number),
         new SqlParameter("@Deduction_Cycle", model.Deduction_Cycle),
-        new SqlParameter("@Employer_Contribution_Rate", model.Employer_Contribution_Rate)
+        new SqlParameter("@Employer_Contribution_Rate", model.Employer_Contribution_Rate),
+        new SqlParameter("@AdminLoginId", AdminLoginId)
     };
 
                 var result = await Task.Run(() => _context.Database
-                    .ExecuteSqlRawAsync(@"exec USP_Employeer_EPF  @EPF_Number, @Deduction_Cycle, @Employer_Contribution_Rate", parameter.ToArray()));
+                    .ExecuteSqlRawAsync(@"exec USP_Employeer_EPF  @EPF_Number, @Deduction_Cycle, @Employer_Contribution_Rate,@AdminLoginId", parameter.ToArray()));
 
                 return result;
             }
@@ -634,25 +635,27 @@ namespace CRM.Repository
     {
         new SqlParameter("@EPF_Number", model.EsicEPF_Number),
         new SqlParameter("@Deduction_Cycle", model.Deduction_Cycle),
-        new SqlParameter("@Employer_Contribution_Rate", model.EsicEmployer_Contribution_Rate)
+        new SqlParameter("@Employer_Contribution_Rate", model.EsicEmployer_Contribution_Rate),
+        new SqlParameter("@AdminLoginId", AdminLoginId)
     };
 
                 var result = await Task.Run(() => _context.Database
-                    .ExecuteSqlRawAsync(@"exec USP_Employeer_EPF  @EPF_Number, @Deduction_Cycle, @Employer_Contribution_Rate", parameter.ToArray()));
+                    .ExecuteSqlRawAsync(@"exec USP_Employeer_EPF  @EPF_Number, @Deduction_Cycle, @Employer_Contribution_Rate,@AdminLoginId", parameter.ToArray()));
 
                 return result;
             }
             return 1;
         }
 
-        public async Task<List<EmployeerEpf>> EmployerList(string Deduction_Cycle)
+        public async Task<List<EmployeerEpf>> EmployerList(string Deduction_Cycle, int AdminLoginId)
         {
             var result = await _context.EmployeerEpfs
-                .FromSqlInterpolated($"EXEC EmployerList {Deduction_Cycle}")
+                .FromSqlInterpolated($"EXEC EmployerList {Deduction_Cycle}, {AdminLoginId}")
                 .ToListAsync();
 
             return result;
         }
+
 
 
         public async Task<Invoice> GenerateInvoice(int ID)
@@ -1592,28 +1595,30 @@ namespace CRM.Repository
         {
             try
             {
-                var query = await (from admin in _context.AdminLogins
-                                   join customer in _context.VendorRegistrations
-                                   on admin.Vendorid equals customer.Id
-                                   where admin.Id == Convert.ToInt32(id)
+                var query = await (from a in _context.AdminLogins
+                                   join v in _context.VendorRegistrations
+                                   on a.Vendorid equals v.Id
+                                   where a.Id == Convert.ToInt32(id)
                                    select new VendorRegistrationDto
                                    {
-                                       Id = (int)admin.Vendorid,
-                                       CompanyName = customer.CompanyName,
-                                       CityId = customer.CityId,
-                                       MobileNumber = customer.MobileNumber,
-                                       Email = customer.Email,
-                                       GstNumber = customer.GstNumber,
-                                       AlternateNumber = customer.AlternateNumber,
-                                       BillingAddress = customer.BillingAddress,
-                                       Location = customer.Location,
-                                       UserName = admin.UserName,
-                                       CompanyImage = customer.CompanyImage,
-                                       maplat = customer.Maplat,
-                                       maplong = customer.Maplong,
-                                       radious = customer.Radious,
-                                       BillingCityId = customer.BillingCityId,
-                                       BillingStateId = customer.BillingStateId
+                                       Id = (int)a.Vendorid,
+                                       CompanyName = v.CompanyName,
+                                       CityId = v.CityId,
+                                       MobileNumber = v.MobileNumber,
+                                       Email = v.Email,
+                                       GstNumber = v.GstNumber,
+                                       AlternateNumber = v.AlternateNumber,
+                                       BillingAddress = v.BillingAddress,
+                                       Location = v.Location,
+                                       UserName = a.UserName,
+                                       CompanyImage = v.CompanyImage,
+                                       maplat = v.Maplat,
+                                       maplong = v.Maplong,
+                                       radious = v.Radious,
+                                       BillingCityId = v.BillingCityId,
+                                       BillingStateId = v.BillingStateId,
+                                       OfficeCityId = v.CityId,
+                                       OfficeStateId = v.StateId
                                    }).FirstOrDefaultAsync();
                 return query;
             }
@@ -1658,6 +1663,8 @@ namespace CRM.Repository
             customer.Maplong = model.maplong;
             customer.BillingStateId = model.BillingStateId;
             customer.BillingCityId = model.BillingCityId;
+            customer.StateId = model.OfficeStateId;
+            customer.CityId = model.OfficeCityId;
             _context.VendorRegistrations.Update(customer);
             await _context.SaveChangesAsync();
 
@@ -2046,7 +2053,7 @@ namespace CRM.Repository
                                     ProductPrice = p.ProductPrice,
                                     IsActive = p.IsActive,
                                     CreatedAt = p.CreatedAt
-                                }).ToListAsync();
+                                }).OrderByDescending(x=>x.Id).ToListAsync();
 
             return result;
         }
@@ -2311,6 +2318,7 @@ namespace CRM.Repository
                               join sb in _context.States on c.BillingStateId equals sb.Id
                               join ctb in _context.Cities on c.BillingCityId equals ctb.Id
                               join v in _context.VendorRegistrations on ci.VendorId equals v.Id
+                              join vb in _context.VendorBankDetails on v.Id equals vb.VendorId
                               join vs in _context.States on v.StateId equals vs.Id
                               join vct in _context.Cities on v.CityId equals vct.Id
                               where (ci.InvoiceNumber == InvoiceNumber)
@@ -2321,6 +2329,11 @@ namespace CRM.Repository
                                   CompanyName = c.CompanyName,
                                   CompanyLogo = v.CompanyImage,
                                   VendorCompanyName = v.CompanyName,
+                                  AccountNumber = vb.AccountNumber,
+                                  AccountHolderName = vb.AccountHolderName,
+                                  BankName = vb.BankName,
+                                  Ifsc = vb.Ifsc,
+                                  BranchAddress = vb.BranchAddress,
                                   VendorGstNumber = v.GstNumber,
                                   VendorOfficeAddress = v.Location,
                                   VendorOfficeCity = vct.City1,
@@ -2372,7 +2385,100 @@ namespace CRM.Repository
                 throw;
             }
         }
-       
+        public async Task<bool> AddVendorBankDeatils(VendorBankDetail model,int VendorId)
+        {
+            try
+            {
+                if(model.Id==0)
+                {
+                    var domainmodel = new VendorBankDetail()
+                    {
+                        VendorId = VendorId,
+                        AccountNumber = model.AccountNumber,
+                        AccountHolderName = model.AccountHolderName,
+                        BankName = model.BankName,
+                        BranchAddress = model.BranchAddress,
+                        Ifsc = model.Ifsc
+                    };
+                    _context.Add(domainmodel);
+                    _context.SaveChanges();
+                    return true;
+                }
+                else
+                {
+                    var data = _context.VendorBankDetails.Where(b=>b.Id==model.Id).FirstOrDefault();
+                    if (data != null)
+                    {
+                        data.AccountNumber = model.AccountNumber;
+                        data.AccountHolderName = model.AccountHolderName;
+                        data.BankName = model.BankName;
+                        data.BranchAddress = model.BranchAddress;
+                        data.Ifsc = model.Ifsc;
+                        _context.SaveChanges();
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        public async Task<List<VendorBankDetail>> GetVendorBankDetail(int VendorId)
+        {
+            try
+            {
+                var result = _context.VendorBankDetails.Where(x=>x.VendorId==VendorId).ToList();
+                return result;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        public async Task<bool> AddOfficeEvents(OfficeEvent model, int VendorId)
+        {
+            try
+            {
+                if (model.Id == 0)
+                {
+                    var data = new OfficeEvent()
+                    {
+                        Vendorid = VendorId,
+                        Tittle = model.Tittle,
+                        Subtittle = model.Subtittle,
+                        Description = model.Description,
+                        Date = model.Date
+                    };
+                    _context.Add(data);
+                    _context.SaveChanges();
+                    return true;
+                }
+                else
+                {
+                    var existdata = _context.OfficeEvents.Find(model.Id);
+                    existdata.Tittle = model.Tittle;
+                    existdata.Subtittle = model.Subtittle;
+                    existdata.Description = model.Description;
+                    existdata.Date = model.Date;
+                }
+                _context.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
     }
 
 }

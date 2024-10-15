@@ -38,6 +38,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<DepartmentMaster> DepartmentMasters { get; set; } = null!;
         public virtual DbSet<DesignationMaster> DesignationMasters { get; set; } = null!;
         public virtual DbSet<EmpExperienceletter> EmpExperienceletters { get; set; } = null!;
+        public virtual DbSet<EmpTasksList> EmpTasksLists { get; set; } = null!;
         public virtual DbSet<Empattendance> Empattendances { get; set; } = null!;
         public virtual DbSet<EmployeeBankDetail> EmployeeBankDetails { get; set; } = null!;
         public virtual DbSet<EmployeeCheckIn> EmployeeCheckIns { get; set; } = null!;
@@ -48,6 +49,8 @@ namespace CRM.Models.Crm
         public virtual DbSet<EmployeeRegistration> EmployeeRegistrations { get; set; } = null!;
         public virtual DbSet<EmployeeRole> EmployeeRoles { get; set; } = null!;
         public virtual DbSet<EmployeeSalaryDetail> EmployeeSalaryDetails { get; set; } = null!;
+        public virtual DbSet<EmployeeTask> EmployeeTasks { get; set; } = null!;
+        public virtual DbSet<EmployeeTasksList> EmployeeTasksLists { get; set; } = null!;
         public virtual DbSet<EmployeerEpf> EmployeerEpfs { get; set; } = null!;
         public virtual DbSet<EmployeerTd> EmployeerTds { get; set; } = null!;
         public virtual DbSet<GenderMaster> GenderMasters { get; set; } = null!;
@@ -65,9 +68,11 @@ namespace CRM.Models.Crm
         public virtual DbSet<Offerletter> Offerletters { get; set; } = null!;
         public virtual DbSet<OfficeBreak> OfficeBreaks { get; set; } = null!;
         public virtual DbSet<OfficeBreakstatus> OfficeBreakstatuses { get; set; } = null!;
+        public virtual DbSet<OfficeEvent> OfficeEvents { get; set; } = null!;
         public virtual DbSet<Officeshift> Officeshifts { get; set; } = null!;
         public virtual DbSet<OrganisationProfile> OrganisationProfiles { get; set; } = null!;
         public virtual DbSet<OrganisationTaxDetail> OrganisationTaxDetails { get; set; } = null!;
+        public virtual DbSet<PaidLeavemaster> PaidLeavemasters { get; set; } = null!;
         public virtual DbSet<PayMethodMaster> PayMethodMasters { get; set; } = null!;
         public virtual DbSet<Payroll> Payrolls { get; set; } = null!;
         public virtual DbSet<ProductMaster> ProductMasters { get; set; } = null!;
@@ -79,8 +84,10 @@ namespace CRM.Models.Crm
         public virtual DbSet<State1> States1 { get; set; } = null!;
         public virtual DbSet<StateMaster> StateMasters { get; set; } = null!;
         public virtual DbSet<TErrorLog> TErrorLogs { get; set; } = null!;
+        public virtual DbSet<TaskStatus> TaskStatuses { get; set; } = null!;
         public virtual DbSet<TaxDeductor> TaxDeductors { get; set; } = null!;
         public virtual DbSet<TransactionDetail> TransactionDetails { get; set; } = null!;
+        public virtual DbSet<VendorBankDetail> VendorBankDetails { get; set; } = null!;
         public virtual DbSet<VendorCategoryMaster> VendorCategoryMasters { get; set; } = null!;
         public virtual DbSet<VendorProductMaster> VendorProductMasters { get; set; } = null!;
         public virtual DbSet<VendorRegistration> VendorRegistrations { get; set; } = null!;
@@ -543,6 +550,25 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.HrName).HasMaxLength(250);
 
                 entity.Property(e => e.StartDate).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<EmpTasksList>(entity =>
+            {
+                entity.ToTable("empTasksList");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.EmployeeId)
+                    .HasMaxLength(200)
+                    .HasColumnName("Employee_ID");
+
+                entity.Property(e => e.Replydate)
+                    .HasColumnType("datetime")
+                    .HasColumnName("replydate");
+
+                entity.Property(e => e.Taskid).HasColumnName("taskid");
+
+                entity.Property(e => e.Taskreason).HasMaxLength(200);
             });
 
             modelBuilder.Entity<Empattendance>(entity =>
@@ -1033,6 +1059,44 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.TravellingAllowance).HasColumnType("decimal(18, 0)");
             });
 
+            modelBuilder.Entity<EmployeeTask>(entity =>
+            {
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Description)
+                    .HasMaxLength(200)
+                    .HasColumnName("description");
+
+                entity.Property(e => e.EmployeeId)
+                    .HasMaxLength(200)
+                    .HasColumnName("Employee_ID");
+
+                entity.Property(e => e.Enddate).HasColumnType("datetime");
+
+                entity.Property(e => e.Startdate)
+                    .HasColumnType("datetime")
+                    .HasColumnName("startdate");
+
+                entity.Property(e => e.Task).HasMaxLength(200);
+
+                entity.Property(e => e.Tittle).HasMaxLength(200);
+            });
+
+            modelBuilder.Entity<EmployeeTasksList>(entity =>
+            {
+                entity.ToTable("EmployeeTasksList");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.EmployeeId)
+                    .HasMaxLength(200)
+                    .HasColumnName("Employee_ID");
+
+                entity.Property(e => e.Taskname)
+                    .HasMaxLength(200)
+                    .HasColumnName("taskname");
+            });
+
             modelBuilder.Entity<EmployeerEpf>(entity =>
             {
                 entity.ToTable("Employeer_EPF");
@@ -1333,6 +1397,25 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.Createdate).HasColumnType("datetime");
             });
 
+            modelBuilder.Entity<OfficeEvent>(entity =>
+            {
+                entity.ToTable("officeEvents");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Date)
+                    .HasColumnType("datetime")
+                    .HasColumnName("date");
+
+                entity.Property(e => e.Description)
+                    .HasMaxLength(200)
+                    .HasColumnName("description");
+
+                entity.Property(e => e.Subtittle).HasMaxLength(200);
+
+                entity.Property(e => e.Tittle).HasMaxLength(200);
+            });
+
             modelBuilder.Entity<Officeshift>(entity =>
             {
                 entity.ToTable("officeshift");
@@ -1452,6 +1535,15 @@ namespace CRM.Models.Crm
                     .HasForeignKey(d => d.TaxDeductorId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Organisation_Tax_Details_Tax_Deductor_ID");
+            });
+
+            modelBuilder.Entity<PaidLeavemaster>(entity =>
+            {
+                entity.ToTable("PaidLeavemaster");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.CountLeave).HasColumnType("decimal(18, 2)");
             });
 
             modelBuilder.Entity<PayMethodMaster>(entity =>
@@ -1645,6 +1737,15 @@ namespace CRM.Models.Crm
                     .HasColumnName("User_ID");
             });
 
+            modelBuilder.Entity<TaskStatus>(entity =>
+            {
+                entity.ToTable("TaskStatus");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.StatusName).HasMaxLength(200);
+            });
+
             modelBuilder.Entity<TaxDeductor>(entity =>
             {
                 entity.ToTable("Tax_Deductor", "dbo");
@@ -1701,6 +1802,23 @@ namespace CRM.Models.Crm
                     .HasForeignKey(d => d.PayMethod)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Transaction_Details_Pay_Method_ID");
+            });
+
+            modelBuilder.Entity<VendorBankDetail>(entity =>
+            {
+                entity.ToTable("VendorBankDetail");
+
+                entity.Property(e => e.AccountHolderName).HasMaxLength(200);
+
+                entity.Property(e => e.AccountNumber).HasMaxLength(200);
+
+                entity.Property(e => e.BankName).HasMaxLength(100);
+
+                entity.Property(e => e.BranchAddress).HasMaxLength(200);
+
+                entity.Property(e => e.Ifsc)
+                    .HasMaxLength(100)
+                    .HasColumnName("IFSC");
             });
 
             modelBuilder.Entity<VendorCategoryMaster>(entity =>

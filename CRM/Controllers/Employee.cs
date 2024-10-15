@@ -831,7 +831,9 @@ namespace CRM.Controllers
         {
             try
             {
-                var response = await _ICrmrpo.Employer(model);
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                int adminloginid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var response = await _ICrmrpo.Employer(model, adminloginid);
 
                 ModelState.Clear();
                 return RedirectToAction("Employer");
@@ -860,7 +862,7 @@ namespace CRM.Controllers
             if (!string.IsNullOrEmpty(Deduction_Cycle))
             {
                 var adminLogin = await _context.AdminLogins.Where(x => x.Id == userId).FirstOrDefaultAsync();
-                var response = await _ICrmrpo.EmployerList(Deduction_Cycle);
+                var response = await _ICrmrpo.EmployerList(Deduction_Cycle, (int)userId);
 
                 if (response.Count > 0)
                 {
@@ -1486,10 +1488,6 @@ namespace CRM.Controllers
 
             return EmpID;
         }
-
-
-
-
         public async Task<IActionResult> DeleteEmployer(int id)
         {
             try
@@ -1570,8 +1568,9 @@ namespace CRM.Controllers
         }
         public JsonResult Epfesilist()
         {
+            int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
             var employeerTd = new EmployeerEpf();
-            var data = _context.EmployeerEpfs.Where(e => e.IsActive == true).ToList();
+            var data = _context.EmployeerEpfs.Where(e => e.IsActive == true && e.AdminLoginId== Userid).ToList();
             var result = new
             {
                 data = data,
@@ -2313,7 +2312,7 @@ namespace CRM.Controllers
                         WorkEmail = x.WorkEmail,
                         Emp_Reg_ID = x.EmployeeId,
                         Appoinmentletter = x.Appoinmentletter
-                    }).ToListAsync();
+                    }).OrderByDescending(x=>x.Id).ToListAsync();
 
                     return View(response);
                 }

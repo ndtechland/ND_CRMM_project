@@ -4,6 +4,9 @@ using CRM.Models.APIDTO;
 using CRM.Models.Crm;
 using CRM.Models.DTO;
 using CRM.Utilities;
+using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.Drawing.Diagrams;
+using DocumentFormat.OpenXml.InkML;
 using DocumentFormat.OpenXml.Math;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.AspNetCore.Hosting;
@@ -18,6 +21,8 @@ using Org.BouncyCastle.Ocsp;
 using Syncfusion.Pdf.Graphics;
 using System;
 using System.Globalization;
+using System.Net.WebSockets;
+using System.Threading.Tasks;
 
 namespace CRM.Repository
 {
@@ -394,69 +399,196 @@ namespace CRM.Repository
             GetleaveList.GetLeaveList = _context.Leaves.Where(x => x.Isactive == true).ToList();
             return GetleaveList;
         }
-
         public async Task<bool> ApplyLeave(ApplyLeave model, string userid)
         {
             try
             {
-                List<Leave> FH = new List<Leave>();
-                List<Leave> SH = new List<Leave>();
-                List<Leave> FD = new List<Leave>();
-                decimal total = (decimal)0.00;
-                var TypeOfLeave = _context.Leavemasters.Where(x => x.LeavetypeId == model.TypeOfLeaveId && x.EmpId == userid).FirstOrDefault();
+                List<Leave> FH = new List<Leave>();  
+                List<Leave> SH = new List<Leave>();  
+                List<Leave> FD = new List<Leave>();  
+                decimal totalLeaveRequested = 0.00M;
+                var TypeOfLeave = await _context.Leavemasters
+                                                .Where(x => x.LeavetypeId == model.TypeOfLeaveId && x.EmpId == userid)
+                                                .FirstOrDefaultAsync();
+
+                if (TypeOfLeave == null)
+                {
+                    throw new Exception("Leave type not found for the given employee.");
+                }
                 if (model.EndDate != model.StartDate)
                 {
-                    total = (model.EndDate - model.StartDate).Days;
+                    totalLeaveRequested = (model.EndDate - model.StartDate).Days;
                 }
-                if (model.StartLeaveId == 1)
+                if (model.StartLeaveId == 1)  
                 {
                     FH = await _context.Leaves.Where(x => x.Id == model.StartLeaveId).ToListAsync();
                 }
-                else if (model.StartLeaveId == 2)
+                else if (model.StartLeaveId == 2) 
                 {
                     SH = await _context.Leaves.Where(x => x.Id == model.EndeaveId).ToListAsync();
                 }
-                else
+                else  
                 {
                     FD = await _context.Leaves.Where(x => x.Id == model.EndeaveId).ToListAsync();
                 }
-                if (total == 0)
+                if (totalLeaveRequested == 0)
                 {
-                    decimal TotalLeave = (FH.Count() == 0 ? 0 : (decimal)(FH.Count() * 0.50)) + (SH.Count() == 0 ? 0 : (decimal)(SH.Count() * 0.50)) + (FD.Count() == 0 ? 0 : (decimal)(FD.Count() * 1.00));
-                    total = TotalLeave;
+                    totalLeaveRequested = (FH.Count() > 0 ? 0.50M : 0) +
+                                          (SH.Count() > 0 ? 0.50M : 0) +
+                                          (FD.Count() > 0 ? 1.00M : 0);
                 }
                 else
                 {
-                    decimal TotalLeave = (FH.Count() == 0 ? 0 : (decimal)(FH.Count() * 0.50)) + (SH.Count() == 0 ? 0 : (decimal)(SH.Count() * 0.50));
-                    total -= TotalLeave;
+                    totalLeaveRequested += (FH.Count() > 0 ? 0.50M : 0) +
+                                           (SH.Count() > 0 ? 0.50M : 0);
                 }
-                int month = DateTime.Now.Month;
-                ApplyLeaveNews apply = new ApplyLeaveNews()
+                decimal leaveBalance = (decimal)TypeOfLeave.Value;
+                decimal remainingLeave = totalLeaveRequested - leaveBalance;
+                if (leaveBalance >= totalLeaveRequested)
                 {
-                    UserId = userid,
-                    StartLeaveId = model.StartLeaveId,
-                    EndeaveId = model.EndeaveId,
-                    TypeOfLeaveId = model.TypeOfLeaveId,
-                    StartDate = model.StartDate,
-                    EndDate = model.EndDate,
-                    CreatedDate = DateTime.Now,
-                    Reason = model.Reason,
-                    CountLeave = total,
-                    Month = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month)
-                };
-                await _context.ApplyLeaveNews.AddAsync(apply);
-                await _context.SaveChangesAsync();
-                TypeOfLeave.Value -= total;
-                await _context.SaveChangesAsync();
+                    ApplyLeaveNews applyLeaveNews = new ApplyLeaveNews()
+                    {
+                        UserId = userid,
+                        StartLeaveId = model.StartLeaveId,
+                        EndeaveId = model.EndeaveId,
+                        TypeOfLeaveId = model.TypeOfLeaveId,
+                        StartDate = model.StartDate,
+                        EndDate = model.EndDate,
+                        CreatedDate = DateTime.Now,
+                        Reason = model.Reason,
+                        CountLeave = totalLeaveRequested, 
+                        Isapprove = false,
+                        Month = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(DateTime.Now.Month)
+                    };
 
-                return true;
+                    await _context.ApplyLeaveNews.AddAsync(applyLeaveNews);
+                    await _context.SaveChangesAsync();
+                    TypeOfLeave.Value -= totalLeaveRequested;
+                    if (TypeOfLeave.Value < 0)
+                    {
+                        TypeOfLeave.Value = 0.00M;
+                    }
+                    _context.Entry(TypeOfLeave).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+
+                    return true;
+                }
+                else if (leaveBalance > 0)
+                {
+                    ApplyLeaveNews applyLeaveNews = new ApplyLeaveNews()
+                    {
+                        UserId = userid,
+                        StartLeaveId = model.StartLeaveId,
+                        EndeaveId = model.EndeaveId,
+                        TypeOfLeaveId = model.TypeOfLeaveId,
+                        StartDate = model.StartDate,
+                        EndDate = model.EndDate,
+                        CreatedDate = DateTime.Now,
+                        Reason = model.Reason,
+                        CountLeave = leaveBalance, 
+                        Isapprove = false,
+                        Month = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(DateTime.Now.Month)
+                    };
+
+                    await _context.ApplyLeaveNews.AddAsync(applyLeaveNews);
+                    await _context.SaveChangesAsync();
+                    TypeOfLeave.Value -= leaveBalance;
+                    _context.Entry(TypeOfLeave).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                    PaidLeavemaster paidLeaveEntry = new PaidLeavemaster()
+                    {
+                        UserId = userid,
+                        StartLeaveId = model.StartLeaveId,
+                        EndeaveId = model.EndeaveId,
+                        TypeOfLeaveId = model.TypeOfLeaveId,
+                        StartDate = model.StartDate,
+                        EndDate = model.EndDate,
+                        CreatedDate = DateTime.Now,
+                        CountLeave = remainingLeave, 
+                        Month = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(DateTime.Now.Month),
+                        Reason = model.Reason,
+                        Isapprove = false
+                    };
+
+                    await _context.PaidLeavemasters.AddAsync(paidLeaveEntry);
+                    await _context.SaveChangesAsync();
+
+                    return true;
+                }
+                else
+                {
+                    throw new Exception("Not enough leave balance.");
+                }
             }
             catch (Exception ex)
             {
-
-                throw new Exception("Error Message : e " + ex);
+                throw new Exception("Error Message: " + ex.Message);
             }
         }
+
+
+        //public async Task<bool> ApplyLeave(ApplyLeave model, string userid)
+        //{
+        //    try
+        //    {
+        //        List<Leave> FH = new List<Leave>();
+        //        List<Leave> SH = new List<Leave>();
+        //        List<Leave> FD = new List<Leave>();
+        //        decimal total = (decimal)0.00;
+        //        var TypeOfLeave = _context.Leavemasters.Where(x => x.LeavetypeId == model.TypeOfLeaveId && x.EmpId == userid).FirstOrDefault();
+        //        if (model.EndDate != model.StartDate)
+        //        {
+        //            total = (model.EndDate - model.StartDate).Days;
+        //        }
+        //        if (model.StartLeaveId == 1)
+        //        {
+        //            FH = await _context.Leaves.Where(x => x.Id == model.StartLeaveId).ToListAsync();
+        //        }
+        //        else if (model.StartLeaveId == 2)
+        //        {
+        //            SH = await _context.Leaves.Where(x => x.Id == model.EndeaveId).ToListAsync();
+        //        }
+        //        else
+        //        {
+        //            FD = await _context.Leaves.Where(x => x.Id == model.EndeaveId).ToListAsync();
+        //        }
+        //        if (total == 0)
+        //        {
+        //            decimal TotalLeave = (FH.Count() == 0 ? 0 : (decimal)(FH.Count() * 0.50)) + (SH.Count() == 0 ? 0 : (decimal)(SH.Count() * 0.50)) + (FD.Count() == 0 ? 0 : (decimal)(FD.Count() * 1.00));
+        //            total = TotalLeave;
+        //        }
+        //        else
+        //        {
+        //            decimal TotalLeave = (FH.Count() == 0 ? 0 : (decimal)(FH.Count() * 0.50)) + (SH.Count() == 0 ? 0 : (decimal)(SH.Count() * 0.50));
+        //            total -= TotalLeave;
+        //        }
+        //        int month = DateTime.Now.Month;
+        //        ApplyLeaveNews apply = new ApplyLeaveNews()
+        //        {
+        //            UserId = userid,
+        //            StartLeaveId = model.StartLeaveId,
+        //            EndeaveId = model.EndeaveId,
+        //            TypeOfLeaveId = model.TypeOfLeaveId,
+        //            StartDate = model.StartDate,
+        //            EndDate = model.EndDate,
+        //            CreatedDate = DateTime.Now,
+        //            Reason = model.Reason,
+        //            CountLeave = total,
+        //            Month = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month)
+        //        };
+        //        await _context.ApplyLeaveNews.AddAsync(apply);
+        //        await _context.SaveChangesAsync();
+        //        TypeOfLeave.Value -= total;
+        //        await _context.SaveChangesAsync();
+
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+
+        //        throw new Exception("Error Message : e " + ex);
+        //    }
+        //}
 
         public async Task<List<EmpattendanceDto>> GetAllEmpsalaryslip(string userid)
         {
@@ -566,7 +698,6 @@ namespace CRM.Repository
                 var emp = await _context.EmployeeRegistrations
                     .Where(x => x.Id == model.Userid)
                     .FirstOrDefaultAsync();
-
                 if (emp == null)
                 {
                     throw new Exception("Employee not found.");
@@ -576,18 +707,24 @@ namespace CRM.Repository
                     EmployeeId = emp.EmployeeId,
                     CurrentLat = model.CurrentLat,
                     Currentlong = model.Currentlong,
-                    CheckIn = checkIn,
-                    CheckInTime = DateTime.Now,
-                    CheckOutTime = checkIn ? (DateTime?)null : DateTime.Now,
                     Currentdate = DateTime.Now,
                 };
+                if (!checkIn)
+                {
+                    empcheck.CheckIn = checkIn;
+                    empcheck.CheckOutTime = DateTime.Now;
 
+                }
+                else
+                {
+                    empcheck.CheckInTime = DateTime.Now;
+                    empcheck.CheckIn = checkIn;
+                }
                 await _context.EmployeeCheckIns.AddAsync(empcheck);
                 await _context.SaveChangesAsync();
 
-                // Get the latest check-in for this employee on the current date
                 var fgdfd = await _context.EmployeeCheckIns
-                    .Where(x => x.EmployeeId == emp.EmployeeId && x.CheckInTime.Date == DateTime.Now.Date)
+                    .Where(x => x.EmployeeId == emp.EmployeeId && x.CheckInTime.Value.Date == DateTime.Now.Date)
                     .OrderByDescending(x => x.Id)
                     .FirstOrDefaultAsync();
 
@@ -595,21 +732,18 @@ namespace CRM.Repository
                 {
                     throw new Exception("Check-in record not found.");
                 }
-
-                // Check if this is the first check-in for today
                 var todayCheckInsCount = await _context.EmployeeCheckIns
-                    .CountAsync(x => x.EmployeeId == emp.EmployeeId && x.CheckInTime.Date == DateTime.Now.Date);
+                    .CountAsync(x => x.EmployeeId == emp.EmployeeId && x.CheckInTime.Value.Date == DateTime.Now.Date);
 
                 if (todayCheckInsCount == 1)
                 {
-                    // Add a new EmployeeCheckInRecord for the first check-in of the day
                     EmployeeCheckInRecord empch = new()
                     {
                         EmpId = emp.EmployeeId,
                         CheckIntime = fgdfd.CheckInTime,
                         CurrentDate = DateTime.Now,
                         Isactive = true,
-                        Workinghour = TimeSpan.Zero  // Initially zero, as the user just checked in
+                        Workinghour = TimeSpan.Zero
                     };
                     await _context.EmployeeCheckInRecords.AddAsync(empch);
                     await _context.SaveChangesAsync();
@@ -617,17 +751,13 @@ namespace CRM.Repository
 
                 if (!checkIn)
                 {
-                    // User is checking out; calculate working hours
                     var checkInRecord = await _context.EmployeeCheckInRecords
                         .Where(x => x.EmpId == emp.EmployeeId && x.CheckIntime.Value.Date == DateTime.Now.Date)
                         .FirstOrDefaultAsync();
 
                     if (checkInRecord != null)
                     {
-                        // Calculate working hours based on CheckInTime and current time (CheckOutTime)
-                        TimeSpan workingHours = (fgdfd.CheckInTime - DateTime.Now).Duration();
-
-                        // Update the record with the working hours and save
+                        TimeSpan workingHours = (fgdfd.CheckInTime.Value.Date - DateTime.Now).Duration();
                         checkInRecord.Workinghour = workingHours;
                         await _context.SaveChangesAsync();
                     }
@@ -784,54 +914,54 @@ namespace CRM.Repository
                 {
                     throw new Exception("Employee not found.");
                 }
-                var empCheckInRecord = await _context.EmployeeCheckIns
-                    .Where(x => x.EmployeeId == emp.EmployeeId && x.CheckInTime.Date == DateTime.Now.Date)
-                    .OrderByDescending(x => x.Id)
-                    .FirstOrDefaultAsync();
-
-                if (empCheckInRecord == null)
+                var newEmpCheckInRecord = new EmployeeCheckIn
                 {
-                    empCheckInRecord = new EmployeeCheckIn
-                    {
-                        EmployeeId = emp.EmployeeId,
-                        CurrentLat = model.CurrentLat,
-                        Currentlong = model.Currentlong,
-                        CheckIn = checkIn,
-                        CheckInTime = DateTime.Now,
-                        Currentdate = DateTime.Now
-                    };
-                    _context.EmployeeCheckIns.Add(empCheckInRecord);
-                }
-                else if (!checkIn)
-                {
-                    empCheckInRecord.CheckOutTime = DateTime.Now;
+                    EmployeeId = emp.EmployeeId,
+                    CurrentLat = model.CurrentLat,
+                    Currentlong = model.Currentlong,
+                    CheckIn = checkIn,
+                    Currentdate = DateTime.Now,
+                    CheckInTime = null,
+                    CheckOutTime = DateTime.Now
+                };
 
-                    TimeSpan workingHours = (empCheckInRecord.CheckInTime - DateTime.Now).Duration();
-                    var checkInRecord = await _context.EmployeeCheckInRecords
-                        .Where(x => x.EmpId == emp.EmployeeId && x.CheckIntime.Value.Date == DateTime.Now.Date)
+                _context.EmployeeCheckIns.Add(newEmpCheckInRecord);
+                if (!checkIn)
+                {
+                    var empCheckInRecord = await _context.EmployeeCheckIns
+                        .Where(x => x.EmployeeId == emp.EmployeeId && x.CheckInTime.Value.Date == DateTime.Now.Date)
+                        .OrderByDescending(x => x.Id)
                         .FirstOrDefaultAsync();
 
-                    if (checkInRecord != null)
+                    if (empCheckInRecord != null)
                     {
-                        checkInRecord.Workinghour = workingHours;
-                        checkInRecord.CheckOuttime = DateTime.Now;
-                    }
-                    else
-                    {
-                        EmployeeCheckInRecord newCheckInRecord = new EmployeeCheckInRecord
+                        TimeSpan workingHours = (empCheckInRecord.CheckInTime.Value.Date - DateTime.Now).Duration();
+                        var checkInRecord = await _context.EmployeeCheckInRecords
+                            .Where(x => x.EmpId == emp.EmployeeId && x.CheckIntime.Value.Date == DateTime.Now.Date)
+                            .FirstOrDefaultAsync();
+
+                        if (checkInRecord != null)
                         {
-                            EmpId = emp.EmployeeId,
-                            CheckIntime = empCheckInRecord.CheckInTime,
-                            CheckOuttime = DateTime.Now,
-                            Workinghour = workingHours,
-                            CurrentDate = DateTime.Now,
-                            Isactive = true
-                        };
-                        _context.EmployeeCheckInRecords.Add(newCheckInRecord);
+                            checkInRecord.Workinghour = workingHours;
+                            checkInRecord.CheckOuttime = DateTime.Now;
+                        }
+                        else
+                        {
+                            EmployeeCheckInRecord newCheckInRecord = new EmployeeCheckInRecord
+                            {
+                                EmpId = emp.EmployeeId,
+                                CheckIntime = empCheckInRecord.CheckInTime,
+                                CheckOuttime = DateTime.Now,
+                                Workinghour = workingHours,
+                                CurrentDate = DateTime.Now,
+                                Isactive = true
+                            };
+                            _context.EmployeeCheckInRecords.Add(newCheckInRecord);
+                        }
                     }
                 }
-
-                await _context.SaveChangesAsync(); return empCheckInRecord;
+                await _context.SaveChangesAsync();
+                return newEmpCheckInRecord;
             }
             catch (Exception ex)
             {
@@ -895,30 +1025,39 @@ namespace CRM.Repository
                             {
                                 throw new Exception("Invalid shift end time format.");
                             }
-
                             var checkIns = await _context.EmployeeCheckIns
-                                .Where(g => g.EmployeeId == empAttendanceDetails.EmployeeId && g.CheckInTime.Date == DateTime.Now.Date)
-                                .ToListAsync();
+    .Where(g => g.EmployeeId == empAttendanceDetails.EmployeeId && g.CheckInTime.HasValue && g.CheckInTime.Value.Date == DateTime.Now.Date)
+    .OrderBy(g => g.Id)
+    .ToListAsync();
 
-                            var checkInTime = checkIns.OrderBy(g => g.Id)
-                                .Select(g => g.CheckInTime.ToString("hh:mm tt"))
+                            var checkInTime = checkIns
+                                .Select(g => g.CheckInTime.HasValue ? g.CheckInTime.Value.ToString("hh:mm tt") :"N/A")
                                 .FirstOrDefault();
 
-                            var checkOutTime = checkIns.OrderByDescending(g => g.Id)
-                                .Select(g => g.CheckOutTime)
+                            var currentDate = checkIns
+                                .Select(g => g.Currentdate.HasValue ? g.Currentdate.Value.ToString("dd-MM-yyyy") : "N/A")
                                 .FirstOrDefault();
+                            var checkOutTime = checkIns
+                                .OrderByDescending(g => g.Id)
+                                .Select(g => g.CheckOutTime.HasValue ? g.CheckOutTime.Value.ToString("hh:mm tt") : "N/A")
+                                .FirstOrDefault();
+                            var loginActivities = await GetLoginActivities(empAttendanceDetails.EmployeeId);
+                            var latestLoginStatus = loginActivities.Any()? loginActivities.Last().LoginStatus : "No Activity";
                             var attendanceDetail = new Empattendancedatail
                             {
                                 OfficeHour = $"{officeShift.Starttime} - {officeShift.Endtime}",
                                 CheckInTime = checkInTime,
-                                CheckOutTime = checkOutTime.HasValue ? checkOutTime.Value.ToString("hh:mm tt") : "",
-                                StartOverTime = shiftEndTime.ToString("hh:mm tt"),
+                                CheckOutTime = checkOutTime,
+                                StartOverTime = await CalculateStartOverTime(empAttendanceDetails.EmployeeId, (int)empAttendanceDetails.OfficeShiftId.Value, _context),
                                 FinishOverTime = await CalculateFinishOverTime(empAttendanceDetails.EmployeeId, (int)empAttendanceDetails.OfficeShiftId.Value, _context),
-                                OvertimeWorkingHours = await CalculateOvertimeHours(empAttendanceDetails.EmployeeId, (int)empAttendanceDetails.OfficeShiftId.Value),
+                                OvertimeWorkingHours = await CalculateMonthlyOvertimeHours(empAttendanceDetails.EmployeeId, (int)empAttendanceDetails.OfficeShiftId.Value),
                                 TotalWorkingHours = await CalculateTotalWorkingHours(empAttendanceDetails.EmployeeId),
                                 MonthlyWorkingHours = await CalculateMonthlyWorkingHours(empAttendanceDetails.EmployeeId),
                                 Presencepercentage = await CalculatePresencePercentage(empAttendanceDetails.EmployeeId),
-                                absencepercentage = await CalculateAbsencePercentage(empAttendanceDetails.EmployeeId)
+                                absencepercentage = await CalculateAbsencePercentage(empAttendanceDetails.EmployeeId),
+                                Currentdate = currentDate,
+                                LoginStatus = latestLoginStatus,
+                                loginactivities = await GetLoginActivities(empAttendanceDetails.EmployeeId)
                             };
 
                             return attendanceDetail;
@@ -935,6 +1074,47 @@ namespace CRM.Repository
             {
                 throw new Exception("Error: " + ex.Message);
             }
+        }
+        private async Task<List<Loginactivity>> GetLoginActivities(string employeeId)
+        {
+            var currentDate = DateTime.Now.Date;
+
+            var attendanceRecordsCheckIn = await _context.EmployeeCheckIns
+                .Where(g => g.EmployeeId == employeeId && g.CheckIn == true && g.CheckInTime.HasValue && g.CheckInTime.Value.Date == currentDate)
+                .OrderBy(g => g.CheckInTime) 
+                .ToListAsync();
+            var attendanceRecordsCheckOut = await _context.EmployeeCheckIns
+                .Where(g => g.EmployeeId == employeeId && g.CheckIn == false && g.CheckOutTime.HasValue && g.CheckOutTime.Value.Date == currentDate)
+                .OrderByDescending(g => g.CheckOutTime) 
+                .ToListAsync();
+
+            var loginActivities = new List<Loginactivity>();
+            int index = 0;
+
+            foreach (var CheckInrecord in attendanceRecordsCheckIn)
+            {
+                Loginactivity loginActivity = new Loginactivity
+                {
+                    CheckIN = CheckInrecord.CheckInTime.Value.ToString("hh:mm tt"),
+                    CheckOut = "N/A",
+                    LoginStatus = "Check-In"  ,
+                    loginactivities = null,
+                };
+
+                if (index < attendanceRecordsCheckOut.Count)
+                {
+                    var CheckOutrecord = attendanceRecordsCheckOut[index];
+                    loginActivity.CheckOut = CheckOutrecord.CheckOutTime.HasValue
+                        ? CheckOutrecord.CheckOutTime.Value.ToString("hh:mm tt")
+                        : "N/A";
+                    loginActivity.LoginStatus = "Check-Out";
+                    loginActivity.loginactivities = null;
+                }
+
+                loginActivities.Add(loginActivity);
+                index++;
+            }
+            return loginActivities;
         }
         private async Task<string> CalculatePresencePercentage(string employeeId)
         {
@@ -957,7 +1137,7 @@ namespace CRM.Repository
             }
 
             var totalDaysWorked = await _context.EmployeeCheckInRecords
-                .Where(g => g.EmpId == employeeId && g.CheckIntime.Value.Month == DateTime.Now.Month && g.CheckIntime.Value.Year == DateTime.Now.Year)
+                .Where(g => g.EmpId == employeeId && g.CurrentDate.Value.Month == DateTime.Now.Month && g.CurrentDate.Value.Year == DateTime.Now.Year)
                 .CountAsync();
             decimal presencePercentage = (decimal)totalDaysWorked / totalAttendanceDays * 100;
 
@@ -985,11 +1165,37 @@ namespace CRM.Repository
             }
 
             var totalDaysWorked = await _context.EmployeeCheckInRecords
-                .Where(g => g.EmpId == employeeId && g.CheckIntime.Value.Month == DateTime.Now.Month && g.CheckIntime.Value.Year == DateTime.Now.Year)
+                .Where(g => g.EmpId == employeeId && g.CurrentDate.Value.Month == DateTime.Now.Month && g.CurrentDate.Value.Year == DateTime.Now.Year)
                 .CountAsync();
             decimal presencePercentage = (100 - (decimal)totalDaysWorked / totalAttendanceDays * 100);
 
             return Math.Round(presencePercentage).ToString() + "%";
+        }
+        private static async Task<string> CalculateStartOverTime(string employeeId, int officeShiftId, admin_NDCrMContext context)
+        {
+
+            var checkInData = await context.EmployeeCheckInRecords
+                .Where(g => g.EmpId == employeeId && g.CheckIntime.Value.Date == DateTime.Now.Date)
+                .OrderByDescending(g => g.Id)
+                .FirstOrDefaultAsync();
+
+            var officeHour = await context.Officeshifts
+                .Where(h => h.Id == officeShiftId).FirstOrDefaultAsync();
+
+            TimeSpan timeDifference1 = DateTime.Parse(officeHour.Endtime) - DateTime.Parse(officeHour.Starttime);
+
+            if (checkInData != null && checkInData.CheckIntime.HasValue)
+            {
+               
+                DateTime checkoutHour = checkInData.CheckIntime.Value.Add(timeDifference1);
+
+                
+                return checkoutHour.ToString("hh:mm tt");
+            }
+            else
+            {
+                return "N/A";
+            }
         }
         private static async Task<string> CalculateFinishOverTime(string employeeId, int officeShiftId, admin_NDCrMContext context)
         {
@@ -1000,89 +1206,126 @@ namespace CRM.Repository
 
             if (DateTime.TryParse(officeHour, out DateTime endTime))
             {
-                var checkInData = await context.EmployeeCheckIns
-                    .Where(g => g.EmployeeId == employeeId && g.CheckInTime.Date == DateTime.Now.Date)
+                var checkInData = await context.EmployeeCheckInRecords
+                    .Where(g => g.EmpId == employeeId && g.CheckIntime.Value.Date == DateTime.Now.Date)
                     .OrderByDescending(g => g.Id)
                     .FirstOrDefaultAsync();
 
-                if (checkInData != null && checkInData.CheckOutTime.HasValue)
+                if (checkInData != null && checkInData.CheckOuttime.HasValue)
                 {
-                    var checkOutTime = checkInData.CheckOutTime.Value;
+                    var checkOutTime = checkInData.CheckOuttime.Value;
                     if (checkOutTime > endTime)
                     {
                         return checkOutTime.ToString("hh:mm tt");
                     }
                     else
                     {
-                        return "";
+                        return "N/A";
                     }
                 }
             }
 
-            return "";
+            return "N/A";
         }
         private async Task<string> CalculateTotalWorkingHours(string employeeId)
         {
-            var now = DateTime.Now;
-
             var checkIns = await _context.EmployeeCheckIns
-                .Where(g => g.EmployeeId == employeeId)
+                .Where(g => g.EmployeeId == employeeId && g.Currentdate.HasValue && g.Currentdate.Value.Date == DateTime.Now.Date)
+                .OrderBy(g => g.CheckInTime) 
                 .ToListAsync();
 
-            var totalHours = checkIns
-                .Where(g => g.CheckInTime.Month == now.Month && g.CheckInTime.Year == now.Year)
-                .Sum(g =>
-                {
-                    if (g.CheckOutTime.HasValue)
-                    {
-                        return (g.CheckOutTime.Value - g.CheckInTime).TotalHours;
-                    }
-                    return 0.0;
-                });
+            double totalHours = 0;
 
+            for (int i = 0; i < checkIns.Count; i++)
+            {
+                var checkInRecord = checkIns[i];
+                if (checkInRecord.CheckIn == true && checkInRecord.CheckInTime.HasValue)
+                {
+                    var checkOutRecord = checkIns.FirstOrDefault(g => g.CheckIn == false && g.CheckOutTime.HasValue && g.CheckOutTime > checkInRecord.CheckInTime);
+                    if (checkOutRecord != null)
+                    {
+                        totalHours += (checkOutRecord.CheckOutTime.Value - checkInRecord.CheckInTime.Value).TotalHours;
+                        checkIns.Remove(checkOutRecord);
+                    }
+                }
+            }
             return FormatHours(totalHours);
         }
 
         private async Task<string> CalculateMonthlyWorkingHours(string employeeId)
         {
             var checkIns = await _context.EmployeeCheckIns
-                .Where(g => g.EmployeeId == employeeId && g.CheckInTime.Month == DateTime.Now.Month && g.CheckInTime.Year == DateTime.Now.Year)
+                .Where(g => g.EmployeeId == employeeId && g.Currentdate.HasValue && g.Currentdate.Value.Month == DateTime.Now.Month)
+                .OrderBy(g => g.CheckInTime)
                 .ToListAsync();
 
-            var monthlyHours = checkIns
-                .Sum(g => g.CheckOutTime.HasValue
-                        ? (g.CheckOutTime.Value - g.CheckInTime).TotalHours
-                        : 0.0);
+            double monthlyHours = 0;
+
+            for (int i = 0; i < checkIns.Count; i++)
+            {
+                var checkInRecord = checkIns[i];
+                if (checkInRecord.CheckIn == true && checkInRecord.CheckInTime.HasValue)
+                {
+                    var checkOutRecord = checkIns.FirstOrDefault(g => g.CheckIn == false && g.CheckOutTime.HasValue && g.CheckOutTime > checkInRecord.CheckInTime);
+
+                    if (checkOutRecord != null)
+                    {
+                        monthlyHours += (checkOutRecord.CheckOutTime.Value - checkInRecord.CheckInTime.Value).TotalHours;
+                        checkIns.Remove(checkOutRecord);
+                    }
+                }
+            }
 
             return FormatHours(monthlyHours);
         }
 
-        private async Task<string> CalculateOvertimeHours(string employeeId, int officeShiftId)
+        private async Task<string> CalculateMonthlyOvertimeHours(string employeeId, int officeShiftId)
         {
-            var checkIns = await _context.EmployeeCheckIns
-                .Where(g => g.EmployeeId == employeeId && g.CheckInTime.Date == DateTime.Now.Date)
-                .ToListAsync();
-
-            var shiftEndTime = await _context.Officeshifts
+            var officeHour = await _context.Officeshifts
                 .Where(h => h.Id == officeShiftId)
-                .Select(h => h.Endtime)
                 .FirstOrDefaultAsync();
 
-            if (!DateTime.TryParse(shiftEndTime, out DateTime parsedEndTime))
+            if (officeHour == null || !DateTime.TryParse(officeHour.Starttime, out DateTime startTime) || !DateTime.TryParse(officeHour.Endtime, out DateTime endTime))
+            {
+                return "Invalid shift times";
+            }
+
+
+            TimeSpan workingHours = endTime - startTime; 
+            decimal totalWorkingHours = (decimal)workingHours.TotalHours; 
+            decimal formattedWorkingHours = Math.Round(totalWorkingHours, 2); 
+
+            var checkIns = await _context.EmployeeCheckInRecords
+                .Where(g => g.EmpId == employeeId && g.CheckIntime.HasValue && g.CheckIntime.Value.Month == DateTime.Now.Month)
+                .ToListAsync();
+
+            decimal totalWorkedHours = 0;
+
+            foreach (var checkInRecord in checkIns)
+            {
+                if (checkInRecord.CheckIntime.HasValue && checkInRecord.CheckOuttime.HasValue)
+                {
+                    decimal workedHours = (decimal)(checkInRecord.CheckOuttime.Value - checkInRecord.CheckIntime.Value).TotalHours - (formattedWorkingHours);
+                    totalWorkedHours += workedHours;
+                }
+            }
+            decimal totalOvertimeHours = totalWorkedHours;
+
+            if (totalOvertimeHours > 0)
+            {
+
+                return FormatHoursd(totalOvertimeHours > 0 ? totalOvertimeHours : 0);
+            }
+            else
             {
                 return "N/A";
             }
-
-            double totalOvertimeHours = checkIns.Sum(g =>
-            {
-                if (g.CheckOutTime.HasValue && g.CheckOutTime > parsedEndTime)
-                {
-                    return (g.CheckOutTime.Value.TimeOfDay - parsedEndTime.TimeOfDay).TotalHours;
-                }
-                return 0.0;
-            });
-
-            return FormatHours(Math.Abs(totalOvertimeHours));
+        }
+        private string FormatHoursd(decimal hours)
+        {
+            int wholeHours = (int)hours; 
+            decimal minutes = (hours - wholeHours) * 60; 
+            return $"{wholeHours}h{Math.Round(minutes)}m"; 
         }
 
         private string FormatHours(double totalHours)
@@ -1099,56 +1342,61 @@ namespace CRM.Repository
                 {
                     throw new ArgumentException("User ID cannot be null or empty.");
                 }
+
                 Loginactivity loginactivity = new Loginactivity();
                 var currentDate = DateTime.Now.Date;
                 var attendanceRecords = await _context.EmployeeCheckIns
                     .Where(g => g.EmployeeId == userid &&
-                                (g.CheckInTime.Date == currentDate ||
-                                 g.CheckOutTime.HasValue && g.CheckOutTime.Value.Date == currentDate))
+                                (g.CheckInTime.Value.Date == currentDate ||
+                                 (g.CheckOutTime.HasValue && g.CheckOutTime.Value.Date == currentDate)))
                     .OrderBy(g => g.CheckInTime)
                     .ToListAsync();
 
-                string checkInTime = null;
-                string checkOutTime = null;
-                DateTime? lastBreakOutTime = null;
-                checkInTime = attendanceRecords
+                if (!attendanceRecords.Any())
+                {
+                    return loginactivity;
+                }
+                string checkInTime = attendanceRecords
                     .Where(g => g.CheckIn == true)
                     .OrderBy(g => g.CheckInTime)
-                    .Select(g => g.CheckInTime.ToString("hh:mm tt"))
+                    .Select(g => g.CheckInTime.Value.ToString("hh:mm tt"))
                     .FirstOrDefault() ?? "N/A";
-                checkOutTime = attendanceRecords
+
+                string checkOutTime = attendanceRecords
                     .Where(g => g.CheckOutTime.HasValue)
                     .OrderByDescending(g => g.CheckOutTime)
                     .Select(g => g.CheckOutTime.Value.ToString("hh:mm tt"))
                     .FirstOrDefault() ?? "N/A";
-                attendanceRecords = attendanceRecords.Skip(1).Take(attendanceRecords.Count - 2).ToList();
+
+                DateTime? lastBreakOutTime = null;
                 foreach (var record in attendanceRecords)
                 {
                     Loginactivity dd = new Loginactivity();
+
+                    if (record.CheckIn == false && record.CheckOutTime.HasValue)
                     {
-                        if (record.CheckIn == false && record.CheckOutTime.HasValue)
-                        {
-                            lastBreakOutTime = record.CheckOutTime.Value;
-                            dd.CheckOut = (record.CheckOutTime.Value.ToString("hh:mm tt"));
-                            dd.CheckIN = "N/A";
-                            dd.loginactivities = null;
-                           
-                        }
-                        else if (record.CheckIn == true && (record.CheckInTime > lastBreakOutTime.Value))
-                        {
-                           
-                                dd.CheckIN = (record.CheckInTime.ToString("hh:mm tt"));
-                                dd.CheckOut = "N/A";
-                                dd.loginactivities = null;
-
-                        }
-
+                        lastBreakOutTime = record.CheckOutTime.Value;
+                        dd.CheckOut = lastBreakOutTime.Value.ToString("hh:mm tt");
+                        dd.CheckIN = "N/A";
+                        dd.LoginStatus = "Check-Out";
+                        dd.loginactivities = null;
                     }
+                    else if (record.CheckIn == true)
+                    {
+                        if (!lastBreakOutTime.HasValue || record.CheckInTime > lastBreakOutTime.Value)
+                        {
+                            dd.CheckIN = record.CheckInTime.Value.ToString("hh:mm tt");
+                            dd.CheckOut = "N/A";
+                            dd.LoginStatus = "Check-In";
+                            dd.loginactivities = null;
+                        }
+                    }
+                    loginactivity.CheckIN = checkInTime;
+                    loginactivity.CheckOut = checkOutTime;
+                    loginactivity.LoginStatus = record.CheckIn == true ? "Check-In" : "Check-Out";
                     loginactivity.loginactivities.Add(dd);
                 }
-               
-                loginactivity.CheckIN = checkInTime;
-                loginactivity.CheckOut = checkOutTime;
+
                 return loginactivity;
             }
             catch (Exception ex)
@@ -1156,5 +1404,721 @@ namespace CRM.Repository
                 throw new Exception("Error retrieving employee login activity: " + ex.Message);
             }
         }
+        public async Task<List<TasksassignDto>> GetEmpTasksassign(string userid)
+        {
+            try
+            {
+                var taskassign = await _context.EmployeeTasks.Where(x => x.EmployeeId == userid).Select(x => new TasksassignDto
+                {
+                    Id = x.Id,
+                    TaskName = x.Task,
+                    TaskTittle = x.Tittle,
+                    taskstartdate = x.Startdate.Value.ToString("dd/MM/yyyy"),
+                    taskEnddate = x.Enddate.Value.ToString("dd/MM/yyyy"),
+                    TaskDescription = x.Description,
+                    TaskStatus = _context.TaskStatuses.Where(a => a.Id == x.Status).Select(status => status.StatusName).FirstOrDefault(),
+                }).ToListAsync();
+
+                return taskassign;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error: " + ex.Message);
+            }
+        }
+        public async Task<TasksassignnameDto> GetEmpTasksassignname(string userid, int id)
+        {
+            try
+            {
+                var result = await (from emp in _context.EmployeeTasks
+                                    join status in _context.TaskStatuses on emp.Status equals status.Id
+                                    where emp.Id == id && emp.EmployeeId == userid
+                                    select new
+                                    {
+                                        emp.Id,
+                                        emp.Tittle,
+                                        emp.Description,
+                                        StatusName = status.StatusName
+                                    }).FirstOrDefaultAsync();
+
+                if (result == null)
+                {
+                    throw new Exception("Task not found.");
+                }
+                var taskassign = await (from taskList in _context.EmployeeTasksLists
+                                        join taskStatus in _context.TaskStatuses on taskList.TaskStatus equals taskStatus.Id
+                                        where taskList.EmployeeId == userid && taskList.Emptaskid == id
+                                        select new TasksassignlistDto
+                                        {
+                                            Id = taskList.Id,
+                                            TasksubTittle = taskList.Taskname,
+                                            TaskStatus = result.StatusName == "Completed" ? "Completed" : taskStatus.StatusName
+                                        }).ToListAsync();
+                var tasksAssignNameDto = new TasksassignnameDto
+                {
+                    Id = result.Id,
+                    TaskTittle = result.Tittle,
+                    TaskDescription = result.Description,
+                    Status = result.StatusName,
+                    Empdata = taskassign
+                };
+
+                return tasksAssignNameDto;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error: " + ex.Message, ex);
+            }
+        }
+        public async Task<EmpTasksList> CompletedempTasksassign(EmpTasksListDto model, string userid)
+        {
+            try
+            {
+                var empsubtask = await _context.EmployeeTasks
+                    .FirstOrDefaultAsync(x => x.Id == model.taskid && x.EmployeeId == userid);
+
+                if (empsubtask == null)
+                {
+                    throw new Exception("Subtask not found for the given employee.");
+                }
+
+                var emptyTasks = await _context.EmployeeTasksLists
+                    .Where(x => x.Emptaskid == empsubtask.Id && x.EmployeeId == userid)
+                    .ToListAsync();
+
+                if (!emptyTasks.Any())
+                {
+                    throw new Exception("No empty tasks found for the given employee.");
+                }
+
+                var createdTasksList = new List<EmpTasksList>();
+                foreach (var task in emptyTasks)
+                {
+                    var subtasksList = new EmpTasksList
+                    {
+                        Subtaskid = empsubtask.Id,
+                        Taskid = task.Id,
+                        Taskstatus = 3,
+                        IsApprove = false,
+                        EmployeeId = userid,
+                        Replydate = DateTime.Now.Date,
+                    };
+
+                    _context.EmpTasksLists.Add(subtasksList);
+                    createdTasksList.Add(subtasksList);
+                    task.TaskStatus = 3;
+
+                    var entry1 = _context.Entry(task);
+                    if (entry1.State == EntityState.Detached)
+                    {
+                        _context.EmployeeTasksLists.Attach(task);
+                    }
+                }
+                empsubtask.Status = 3;
+                var entry = _context.Entry(empsubtask);
+                if (entry.State == EntityState.Detached)
+                {
+                    _context.EmployeeTasks.Attach(empsubtask);
+                }
+                await _context.SaveChangesAsync();
+
+                return createdTasksList.FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error: " + ex.Message, ex);
+            }
+        }
+        public async Task<EmpTasksList> UnCompletedempTasksassign(EmpSubTasksListDto model, string userid)
+        {
+            try
+            {
+                var empttask = await _context.EmployeeTasksLists
+                    .FirstOrDefaultAsync(x => x.Id == model.subtaskid && x.EmployeeId == userid);
+
+                if (empttask != null)
+                {
+                    var tasksList = new EmpTasksList
+                    {
+
+                        Subtaskid = empttask.Emptaskid,
+                        Taskid = model.subtaskid,
+                        Taskreason = model.Taskreason,
+                        Taskstatus = 6,
+                        IsApprove = false,
+                        EmployeeId = userid,
+                        Replydate = DateTime.Now.Date,
+                    };
+                    _context.EmpTasksLists.Add(tasksList);
+                    await _context.SaveChangesAsync();
+                    return tasksList;
+                }
+                throw new Exception("Task or subtask not found for the given employee.");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error: " + ex.Message, ex);
+            }
+        }
+        public async Task<EmpTasksList> Tasksassign(TasksListDto model, string userid)
+        {
+            if (model == null)
+            {
+                throw new ArgumentNullException(nameof(model), "TasksListDto cannot be null.");
+            }
+
+            List<EmpTasksList> tasksToAdd = new List<EmpTasksList>();
+
+            try
+            {
+                if (model.taskid != null && model.taskid.Length > 0 && !string.IsNullOrWhiteSpace(model.taskid[0]))
+                {
+                    var taskIds = model.taskid[0]
+                        .Replace("[", string.Empty)
+                        .Replace("]", string.Empty)
+                        .Split(",")
+                        .Select(id => id.Trim())
+                        .Select(id => int.TryParse(id, out var parsedId) ? parsedId : (int?)null)
+                        .Where(id => id.HasValue)
+                        .Select(id => id.Value)
+                        .ToList();
+
+                    if (taskIds.Any())
+                    {
+                        var emptTasks = await _context.EmployeeTasksLists
+                            .Where(x => taskIds.Contains(x.Id) && x.EmployeeId == userid)
+                            .ToListAsync();
+
+                        foreach (var emptTask in emptTasks)
+                        {
+                            var tasksList = new EmpTasksList
+                            {
+                                Subtaskid = emptTask.Emptaskid,
+                                Taskid = emptTask.Id,
+                                Taskreason = model.Taskreason,
+                                Taskstatus = GetTaskStatus(model.Taskstatus),
+                                IsApprove = false,
+                                EmployeeId = userid,
+                                Replydate = DateTime.UtcNow.Date,
+                            };
+
+                            tasksToAdd.Add(tasksList);
+                            emptTask.TaskStatus = GetTaskStatus(model.Taskstatus);
+
+                            var entry = _context.Entry(emptTask);
+                            if (entry.State == EntityState.Detached)
+                            {
+                                _context.EmployeeTasksLists.Attach(emptTask);
+                            }
+                            if (taskIds.Any())
+                            {
+                                foreach (var subtaskid in taskIds)
+                                {
+                                    var empSubtask = await _context.EmployeeTasks
+                                        .FirstOrDefaultAsync(x => x.Id == subtaskid && x.EmployeeId == userid);
+
+                                    if (empSubtask != null)
+                                    {
+                                        var existingTask = await _context.EmployeeTasksLists
+                                            .Where(x => x.Emptaskid == empSubtask.Id && x.EmployeeId == userid && x.TaskStatus == 3)
+                                            .ToListAsync();
+
+                                        empSubtask.Status = existingTask.Count > 0 ? 3 : 1;
+
+                                        var empSubtaskEntry = _context.Entry(empSubtask);
+                                        if (empSubtaskEntry.State == EntityState.Detached)
+                                        {
+                                            _context.EmployeeTasks.Attach(empSubtask);
+                                        }
+                                        empSubtaskEntry.State = EntityState.Modified;
+                                        await _context.SaveChangesAsync();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if (model.subtaskid.HasValue && tasksToAdd.Count == 0)
+                {
+                    var empSubtask = await _context.EmployeeTasks
+                        .FirstOrDefaultAsync(x => x.Id == model.subtaskid.Value && x.EmployeeId == userid);
+
+                    if (empSubtask != null)
+                    {
+                        var emptyTasks = await _context.EmployeeTasksLists
+                            .Where(x => x.Emptaskid == empSubtask.Id && x.EmployeeId == userid)
+                            .ToListAsync();
+
+                        if (emptyTasks.Any())
+                        {
+                            foreach (var task in emptyTasks)
+                            {
+                                var subtasksList = new EmpTasksList
+                                {
+                                    Subtaskid = model.subtaskid.Value,
+                                    Taskid = task.Id,
+                                    Taskreason = model.Taskreason,
+                                    Taskstatus = GetTaskStatus(model.Taskstatus),
+                                    IsApprove = false,
+                                    EmployeeId = userid,
+                                    Replydate = DateTime.UtcNow.Date,
+                                };
+                                tasksToAdd.Add(subtasksList);
+                                task.TaskStatus = GetTaskStatus(model.Taskstatus);
+
+                                var entry = _context.Entry(task);
+                                if (entry.State == EntityState.Detached)
+                                {
+                                    _context.EmployeeTasksLists.Attach(task);
+                                }
+                            }
+                        }
+                    }
+                }
+                if (tasksToAdd.Count > 0)
+                {
+                    await _context.EmpTasksLists.AddRangeAsync(tasksToAdd);
+                }
+
+                await _context.SaveChangesAsync();
+                if (model.subtaskid.HasValue)
+                {
+                    var empSubtask = await _context.EmployeeTasks
+                        .FirstOrDefaultAsync(x => x.Id == model.subtaskid.Value && x.EmployeeId == userid);
+
+                    if (empSubtask != null)
+                    {
+                        var existingTask = await _context.EmpTasksLists
+                            .Where(x => x.Subtaskid == empSubtask.Id && x.EmployeeId == userid && x.Taskstatus == 3)
+                            .ToListAsync();
+
+                        empSubtask.Status = existingTask.Count > 0 ? 3 : 1;
+
+                        var empSubtaskEntry = _context.Entry(empSubtask);
+                        if (empSubtaskEntry.State == EntityState.Detached)
+                        {
+                            _context.EmployeeTasks.Attach(empSubtask);
+                        }
+                        empSubtaskEntry.State = EntityState.Modified;
+                        await _context.SaveChangesAsync();
+                    }
+                }
+                return tasksToAdd.FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        private int GetTaskStatus(string status)
+        {
+            return status switch
+            {
+                "Completed" => 3,
+                "UnCompleted" => 6,
+                _ => 0,
+            };
+        }
+        public async Task<EmpTasksList> SubTaskCompletedempTasksassign(EmpSubTasksDto model, string userid)
+        {
+            try
+            {
+                var empttask = await _context.EmployeeTasksLists
+                    .FirstOrDefaultAsync(x => x.Id == model.subtaskid && x.EmployeeId == userid);
+
+                if (empttask != null)
+                {
+                    var tasksList = new EmpTasksList
+                    {
+
+                        Subtaskid = empttask.Emptaskid,
+                        Taskid = model.subtaskid,
+                        Taskstatus = 3,
+                        IsApprove = false,
+                        EmployeeId = userid,
+                        Replydate = DateTime.Now.Date,
+                    };
+                    _context.EmpTasksLists.Add(tasksList);
+                    await _context.SaveChangesAsync();
+                    return tasksList;
+                }
+                throw new Exception("Task or subtask not found for the given employee.");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error: " + ex.Message, ex);
+            }
+        }
+        public async Task<List<WebLoginactivity>> GetWebEmpLoginactivity(string userid)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(userid))
+                {
+                    throw new ArgumentException("User ID cannot be null or empty.");
+                }
+                var attendanceRecordsCheckIn = await _context.EmployeeCheckIns
+                    .Where(g => g.EmployeeId == userid && g.CheckIn == true)
+                    .OrderBy(g => g.CheckInTime).OrderByDescending(g => g.CheckInTime)
+                    .ToListAsync();
+
+                var attendanceRecordsCheckOut = await _context.EmployeeCheckIns
+                    .Where(g => g.EmployeeId == userid && g.CheckIn == false)
+                    .OrderByDescending(g => g.CheckOutTime)
+                    .ToListAsync();
+
+                if (!attendanceRecordsCheckIn.Any())
+                {
+                    return new List<WebLoginactivity>();
+                }
+
+                List<WebLoginactivity> loginActivities = new List<WebLoginactivity>();
+                int index = 0;
+                foreach (var CheckInrecord in attendanceRecordsCheckIn)
+                {
+                    if (index < attendanceRecordsCheckOut.Count) 
+                    {
+                        var CheckOutrecord = attendanceRecordsCheckOut[index]; 
+
+                        WebLoginactivity loginActivity = new WebLoginactivity
+                        {
+                            CheckIN = CheckInrecord.CheckInTime.Value.ToString("hh:mm tt"),
+                            CheckOut = CheckOutrecord.CheckOutTime.HasValue
+                                                    ? CheckOutrecord.CheckOutTime.Value.ToString("hh:mm tt")
+                                                    : "N/A",
+                            Currentdate = CheckInrecord.Currentdate.HasValue
+                                                    ? CheckInrecord.Currentdate.Value.ToString("dd-MM-yyyy")
+                                                    : "N/A",
+                            LoginStatus = CheckInrecord.CheckIn == true ? "Check-In" : "Check-Out"
+                        };
+
+                        loginActivities.Add(loginActivity);
+                    }
+                    index++; 
+                }
+                return loginActivities;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error retrieving employee login activity: " + ex.Message);
+            }
+        }
+        public async Task<List<officeEventsDto>> GetOfficeEvents(string userid)
+        {
+            try
+            {
+                var empdetail = await _context.EmployeeRegistrations
+                    .Where(x => x.EmployeeId == userid)
+                    .FirstOrDefaultAsync();
+                var taskassign = await _context.OfficeEvents
+                    .Where(x => x.Vendorid == empdetail.Vendorid).Select(x => new officeEventsDto
+                    {
+                        Subtittle = x.Subtittle,
+                        Tittle = x.Tittle,
+                        Date = x.Date.Value.Date,
+                    }).ToListAsync();
+                return taskassign;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error: " + ex.Message);
+            }
+        }
+        public async Task<Empattendancedatail> GetFilterattendance(string userid, DateTime Currentdate)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(userid))
+                {
+                    var empAttendanceDetails = await _context.EmployeeRegistrations
+                        .Where(x => x.EmployeeId == userid)
+                        .Select(x => new
+                        {
+                            OfficeShiftId = x.OfficeshiftTypeid,
+                            EmployeeId = x.EmployeeId
+                        })
+                        .FirstOrDefaultAsync();
+
+                    if (empAttendanceDetails != null && empAttendanceDetails.OfficeShiftId.HasValue)
+                    {
+                        var officeShift = await _context.Officeshifts.FindAsync((int)empAttendanceDetails.OfficeShiftId.Value);
+                        if (officeShift == null)
+                            throw new Exception("Office shift not found.");
+
+                        // Parse the end time only once for the calculations below
+                        if (!DateTime.TryParse(officeShift.Endtime, out DateTime shiftEndTime))
+                            throw new Exception("Invalid shift end time format.");
+
+                        var checkIns = await _context.EmployeeCheckIns
+                            .Where(g => g.EmployeeId == empAttendanceDetails.EmployeeId && g.CheckInTime.HasValue && g.CheckInTime.Value.Date == Currentdate.Date)
+                            .ToListAsync();
+                        var checkInTime = checkIns.OrderBy(g => g.Id).Select(g => g.CheckInTime?.ToString("hh:mm tt") ?? "N/A").FirstOrDefault();
+                        var checkOutTime = checkIns.OrderByDescending(g => g.Id).Select(g => g.CheckOutTime?.ToString("hh:mm tt") ?? "N/A").FirstOrDefault();
+                        var date = checkIns.OrderBy(g => g.Id).Select(g => g.Currentdate?.ToString("dd-MM-yyyy")).FirstOrDefault();
+                        var totalWorkingHours = await FilterCalculateTotalWorkingHours(empAttendanceDetails.EmployeeId, Currentdate);
+                        var monthlyWorkingHours = await FilterCalculateMonthlyWorkingHours(empAttendanceDetails.EmployeeId, Currentdate);
+
+                        var attendanceDetail = new Empattendancedatail
+                        {
+                            OfficeHour = $"{officeShift.Starttime} - {officeShift.Endtime}",
+                            CheckInTime = checkInTime,
+                            CheckOutTime = checkOutTime,
+                            StartOverTime = shiftEndTime.ToString("hh:mm tt"),
+                            FinishOverTime = await FilterCalculateFinishOverTime(empAttendanceDetails.EmployeeId, (int)empAttendanceDetails.OfficeShiftId.Value, Currentdate),
+                            OvertimeWorkingHours = await FilterCalculateOvertimeHours(empAttendanceDetails.EmployeeId, (int)empAttendanceDetails.OfficeShiftId.Value, Currentdate),
+                            TotalWorkingHours = totalWorkingHours,
+                            MonthlyWorkingHours = monthlyWorkingHours,
+                            Presencepercentage = await FilterCalculatePresencePercentage(empAttendanceDetails.EmployeeId, Currentdate),
+                            absencepercentage = await FilterCalculateAbsencePercentage(empAttendanceDetails.EmployeeId, Currentdate),
+                            Currentdate = date,
+                            loginactivities = await FilterGetLoginActivities(empAttendanceDetails.EmployeeId, Currentdate)
+                        };
+
+                        return attendanceDetail;
+                    }
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error: " + ex.Message);
+            }
+        }
+
+        public async Task<string> FilterCalculateTotalWorkingHours(string employeeId, DateTime Currentdate)
+        {
+            var checkIns = await _context.EmployeeCheckIns
+                .Where(g => g.EmployeeId == employeeId && g.Currentdate.Value.Date == Currentdate.Date)
+                .ToListAsync();
+
+            var totalHours = checkIns.Sum(g =>
+            {
+                if (g.CheckOutTime.HasValue && g.CheckInTime.HasValue)
+                {
+                    return (g.CheckOutTime.Value - g.CheckInTime.Value).TotalHours;
+                }
+                return 0.0;
+            });
+
+            return FormatHours1(totalHours);
+        }
+
+        public async Task<string> FilterCalculatePresencePercentage(string employeeId, DateTime Currentdate)
+        {
+            var emp = await _context.EmployeeRegistrations
+                .Where(x => x.EmployeeId == employeeId)
+                .FirstOrDefaultAsync();
+
+            if (emp == null) return "0";
+
+            var attendanceDays = await _context.Attendancedays
+                .Where(x => x.Vendorid == emp.Vendorid)
+                .FirstOrDefaultAsync();
+
+            if (attendanceDays == null || !int.TryParse(attendanceDays.Nodays, out int totalAttendanceDays) || totalAttendanceDays <= 0)
+                return "0";
+
+            var totalDaysWorked = await _context.EmployeeCheckInRecords
+                .Where(g => g.EmpId == employeeId && g.CheckIntime.HasValue && g.CheckIntime.Value.Month == Currentdate.Month && g.CheckIntime.Value.Year == Currentdate.Year)
+                .CountAsync();
+
+            decimal presencePercentage = (decimal)totalDaysWorked / totalAttendanceDays * 100;
+
+            return Math.Round(presencePercentage).ToString() + "%";
+        }
+        public async Task<string> FilterCalculateAbsencePercentage(string employeeId, DateTime Currentdate)
+        {
+            var emp = await _context.EmployeeRegistrations
+                .Where(x => x.EmployeeId == employeeId)
+                .FirstOrDefaultAsync();
+
+            if (emp == null) return "0";
+
+            var attendanceDays = await _context.Attendancedays
+                .Where(x => x.Vendorid == emp.Vendorid)
+                .FirstOrDefaultAsync();
+
+            if (attendanceDays == null || !int.TryParse(attendanceDays.Nodays, out int totalAttendanceDays) || totalAttendanceDays <= 0)
+                return "0";
+
+            var totalDaysWorked = await _context.EmployeeCheckInRecords
+                .Where(g => g.EmpId == employeeId && g.CheckIntime.HasValue && g.CheckIntime.Value.Month == Currentdate.Month && g.CheckIntime.Value.Year == Currentdate.Year)
+                .CountAsync();
+
+            decimal absencePercentage = 100 - (decimal)totalDaysWorked / totalAttendanceDays * 100;
+
+            return Math.Round(absencePercentage).ToString() + "%";
+        }
+        public async Task<List<Loginactivity>> FilterGetLoginActivities(string employeeId, DateTime currentDate)
+        {
+            var attendanceRecords = await _context.EmployeeCheckIns
+                .Where(g => g.EmployeeId == employeeId && g.Currentdate.Value.Date  == currentDate.Date)
+                .ToListAsync();
+
+            var loginActivities = new List<Loginactivity>();
+            HashSet<string> existingCheckOuts = new HashSet<string>(); 
+
+            foreach (var record in attendanceRecords)
+            {
+                if (record.CheckInTime.HasValue)
+                {
+                    loginActivities.Add(new Loginactivity
+                    {
+                        CheckIN = record.CheckInTime.Value.ToString("hh:mm tt"),
+                        CheckOut = "N/A",
+                        LoginStatus = "Check-In",
+                        loginactivities = null // Assuming loginactivities is not needed
+                    });
+                }
+                if (record.CheckOutTime.HasValue)
+                {
+                    string checkOutTime = record.CheckOutTime.Value.ToString("hh:mm tt");
+                    if (!existingCheckOuts.Contains(checkOutTime))
+                    {
+                        loginActivities.Add(new Loginactivity
+                        {
+                            CheckIN = "N/A",
+                            CheckOut = checkOutTime,
+                            LoginStatus = "Check-Out",
+                            loginactivities = null 
+                        });
+
+                        existingCheckOuts.Add(checkOutTime); 
+                    }
+                }
+            }
+
+            return loginActivities;
+        }
+
+        public async Task<string> FilterCalculateFinishOverTime(string employeeId, int officeShiftId, DateTime Currentdate)
+        {
+            var officeHour = await _context.Officeshifts
+                .Where(h => h.Id == officeShiftId)
+                .Select(h => h.Endtime)
+                .FirstOrDefaultAsync();
+
+            if (DateTime.TryParse(officeHour, out DateTime endTime))
+            {
+                var checkInData = await _context.EmployeeCheckIns
+                    .Where(g => g.EmployeeId == employeeId && g.CheckInTime.HasValue && g.CheckInTime.Value.Date == Currentdate.Date)
+                    .OrderByDescending(g => g.Id)
+                    .FirstOrDefaultAsync();
+
+                if (checkInData?.CheckOutTime.HasValue == true && checkInData.CheckOutTime > endTime)
+                    return checkInData.CheckOutTime.Value.ToString("hh:mm tt");
+            }
+
+            return "";
+        }
+
+        public async Task<string> FilterCalculateOvertimeHours(string employeeId, int officeShiftId, DateTime date)
+        {
+            var officeShift = await _context.Officeshifts
+                .Where(x => x.Id == officeShiftId)
+                .Select(x => x.Endtime)
+                .FirstOrDefaultAsync();
+
+            if (DateTime.TryParse(officeShift, out DateTime shiftEndTime))
+            {
+                var checkIns = await _context.EmployeeCheckIns
+                    .Where(x => x.EmployeeId == employeeId && x.Currentdate.HasValue && x.Currentdate.Value.Date == date.Date)
+                    .ToListAsync();
+
+                var overtimeHours = checkIns.Sum(x =>
+                {
+                    if (x.CheckOutTime.HasValue && x.CheckOutTime > shiftEndTime)
+                    {
+                        return (x.CheckOutTime.Value - shiftEndTime).TotalHours;
+                    }
+                    return 0.0;
+                });
+
+                return FormatHours1(overtimeHours);
+            }
+
+            return "";
+        }
+
+        public async Task<string> FilterCalculateMonthlyWorkingHours(string employeeId, DateTime Currentdate)
+        {
+            var checkIns = await _context.EmployeeCheckIns
+                .Where(g => g.EmployeeId == employeeId
+                            && g.CheckInTime.HasValue
+                            && g.CheckInTime.Value.Month == Currentdate.Month
+                            && g.CheckInTime.Value.Year == Currentdate.Year)
+                .ToListAsync();
+
+            var totalMonthlyHours = checkIns.Sum(g =>
+            {
+                if (g.CheckOutTime.HasValue && g.CheckInTime.HasValue)
+                {
+                    return (g.CheckOutTime.Value - g.CheckInTime.Value).TotalHours;
+                }
+                return 0.0;
+            });
+
+            return FormatHours1(totalMonthlyHours);
+        }
+
+        private string FormatHours1(double hours)
+        {
+            TimeSpan t = TimeSpan.FromHours(hours);
+            return string.Format("{0:D2}h:{1:D2}m", t.Hours, t.Minutes);
+        }
+        public async Task<Monthlyattendancedatail> GetMonthAttanceDetails(string userid)
+        {
+            try
+            {
+                var emp = await _context.EmployeeRegistrations
+                    .Where(x => x.EmployeeId == userid)
+                    .FirstOrDefaultAsync();
+
+                if (emp == null)
+                {
+                    return new Monthlyattendancedatail
+                    {
+                        TotalWorkingDays = 0,
+                        TotalPresentDays = 0,
+                        TotalAbsentDays = 0,
+                        Attendance = "0%"
+                    };
+                }
+                var attendancedays = await _context.Attendancedays
+                    .Where(x => x.Vendorid == emp.Vendorid)
+                    .FirstOrDefaultAsync();
+
+                if (attendancedays == null || string.IsNullOrEmpty(attendancedays.Nodays) ||
+                    !int.TryParse(attendancedays.Nodays, out int totalAttendanceDays) || totalAttendanceDays <= 0)
+                {
+                    return new Monthlyattendancedatail
+                    {
+                        TotalWorkingDays = 0,
+                        TotalPresentDays = 0,
+                        TotalAbsentDays = 0,
+                        Attendance = "0%"
+                    };
+                }
+                var totalDaysWorked = await _context.EmployeeCheckInRecords
+                    .Where(g => g.EmpId == userid && g.CurrentDate.Value.Month == DateTime.Now.Month && g.CurrentDate.Value.Year == DateTime.Now.Year)
+                    .CountAsync();
+                decimal presencePercentage = (decimal)totalDaysWorked / totalAttendanceDays * 100;
+                int totalAbsentDays = totalAttendanceDays - totalDaysWorked;
+
+                return new Monthlyattendancedatail
+                {
+                    TotalWorkingDays = totalAttendanceDays,
+                    TotalPresentDays = totalDaysWorked,
+                    TotalAbsentDays = totalAbsentDays,
+                    Attendance = Math.Round(presencePercentage).ToString() + "%"
+                };
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error: " + ex.Message);
+            }
+        }
+
     }
 }

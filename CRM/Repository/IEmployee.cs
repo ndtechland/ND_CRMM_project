@@ -25,6 +25,16 @@ namespace CRM.Repository
         public Task<Empattendancedatail> GetEmpattendance(string userid);
         public Task<EmployeeRegistration> Updateprofilepicture(profilepicture model, string userid);
         public Task<Loginactivity> GetEmpLoginactivity(string userid);
+        public Task<List<TasksassignDto>> GetEmpTasksassign(string userid);
+        public Task<TasksassignnameDto> GetEmpTasksassignname(string userid, int id);
+        public Task<EmpTasksList> CompletedempTasksassign(EmpTasksListDto model, string userid);
+        public Task<EmpTasksList> UnCompletedempTasksassign(EmpSubTasksListDto model, string userid);
+        public Task<EmpTasksList> Tasksassign(TasksListDto model, string userid);
+        public Task<EmpTasksList> SubTaskCompletedempTasksassign(EmpSubTasksDto model, string userid);
+        public Task<List<WebLoginactivity>> GetWebEmpLoginactivity(string userid);
+        public Task<List<officeEventsDto>> GetOfficeEvents(string userid);
+        public Task<Empattendancedatail> GetFilterattendance(string userid,DateTime Currentdate);
+        public Task<Monthlyattendancedatail> GetMonthAttanceDetails(string userid);
 
     }
 }

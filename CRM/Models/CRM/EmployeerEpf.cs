@@ -11,5 +11,6 @@ namespace CRM.Models.Crm
         public string? EmployerContributionRate { get; set; }
         public DateTime CreateDate { get; set; }
         public bool IsActive { get; set; }
+        public int? AdminLoginId { get; set; }
     }
 }
