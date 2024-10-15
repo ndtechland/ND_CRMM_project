@@ -13,7 +13,12 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 
-
+<style>
+    .dataTables_wrapper table.dataTable th {
+        background-color: #00baf2 !important;
+        padding: 24px 0.75rem !important;
+    }
+</style>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         var message = "@TempData["Message"]";
@@ -77,12 +82,12 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-body">
-                                <div class=" table-responsive">
-                                    <table id="datatable" class="table table-responsive">
+                                <div class="table-responsive">
+                                    <table id="datatable" class="table table-hover">
                                         <thead>
                                             <tr style="background-color: #00baf2;">
                                                 <th nowrap>Sl. No.</th>
-                                                <th>Invoice Number</th>
+                                                <th nowrap>Invoice Number</th>
                                                 <th nowrap>
                                                     Company Name
                                                 </th>
@@ -138,7 +143,7 @@
                                                     count++;
                                                     <tr class="table-row">
                                                         <td>@count</td>
-                                                        <td><a href="/Sale/ProductInvoice?InvoiceNumber=@item.InvoiceNumber">@item.InvoiceNumber</a></td>
+                                                        <td nowrap><a href="/Sale/ProductInvoice?InvoiceNumber=@item.InvoiceNumber">@item.InvoiceNumber</a></td>
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.CompanyName)
                                                         </td>
@@ -154,8 +159,8 @@
                                                         <td nowrap>
                                                             @item.OfficeAddress, @item.OfficeCity, @item.OfficeState
                                                         </td>
-                                                        
-                                                        <td>
+
+                                                        <td nowrap>
                                                             @item.BillingAddress, @item.BillingCity, @item.BillingState
                                                         </td>
                                                         @*<td>
@@ -208,9 +213,9 @@
                     </div>
                 </div>
             </div>
-            <div id="pagination-container">
+            @* <div id="pagination-container">
                 <ul id="pagination" class="pagination"></ul>
-            </div>
+            </div> *@
         </div>
 
 
@@ -295,5 +300,10 @@
                 }
             });
         }
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('#datatable').DataTable();
     });
 </script>

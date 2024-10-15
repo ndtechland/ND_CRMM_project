@@ -5,10 +5,12 @@
         public int Id { get; set; }
         public string? Task { get; set; }
         public string? Tittle { get; set; }
+        
         public DateTime? Startdate { get; set; }
         public DateTime? Enddate { get; set; }
         public string? Description { get; set; }
         public string? Status { get; set; }
+        public int? TaskStatusId { get; set; }
         public string? EmployeeId { get; set; }
     }
     public class EmpTasknameDto
@@ -16,7 +18,9 @@
         public int Id { get; set; }
         public string? Emptask { get; set; }
         public string? EmployeeId { get; set; }
+        public int Emptaskid { get; set; }
         public string? TaskStatus { get; set; }
+        public int? TaskStatusId { get; set; }
         public string? Taskname { get; set; }
 
     }

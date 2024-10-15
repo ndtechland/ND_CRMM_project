@@ -3,10 +3,6 @@
     int count = 0;
     DateTime date = DateTime.Now;
     string fordate = date.ToString("dd-MM-yyyy");
-     
-           
-    
-
 }
 
 
@@ -166,7 +162,7 @@
 </head>
 <body>
 
-    <div class="invoice-container">
+    @* <div class="invoice-container">
         <div class="header">
             <img src="~/CompanyImage/@Model.CompanyLogo" alt="Company Logo">
             <div>
@@ -364,6 +360,201 @@
         <div class="footer">
             <p>Authorized Signatory</p>
         </div>
+    </div> *@
+    <div class="invoice-container">
+        <div class="header">
+            <img src="~/CompanyImage/@Model.CompanyLogo" alt="Company Logo">
+            <div>
+                <h3>@Model.VendorCompanyName</h3>
+                <p>
+                    @Model.VendorOfficeAddress<br>
+                    @Model.VendorOfficeCity<br>
+                    @Model.VendorOfficeState<br>
+                    @Model.VendorGstNumber
+                </p>
+            </div>
+        </div>
+
+        <h1>Tax Invoice</h1>
+
+        <div class="invoice-details">
+            <table>
+                <tr>
+                    <td>
+                        <strong>Invoice Number:</strong> @Model.InvoiceNumber<br>
+                        <strong>Invoice Date:</strong> @fordate <br>
+                        <strong>Terms:</strong> Due on Receipt<br>
+                        <strong>Due Date:</strong> @fordate
+                    </td>
+                    <td>
+                        <strong>Place of Supply:</strong> @Model.OfficeState
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="billing-details">
+            <table>
+                <tr>
+                    <td>
+                        <strong>Bill To:</strong><br>
+                        <b>@Model.CompanyName</b><br>
+                        @Model.BillingAddress,<br>
+                        @Model.BillingCity, @Model.BillingState<br>
+                        <strong>GSTIN:</strong> @Model.CustomerGstNumber
+                    </td>
+                    <td>
+                        <strong>Ship To:</strong><br>
+                        <b>@Model.CompanyName</b><br>
+                        @Model.OfficeAddress,<br>
+                        @Model.OfficeCity, @Model.OfficeState<br>
+                        <strong>GSTIN:</strong> @Model.CustomerGstNumber
+                    </td>
+                </tr>
+
+            </table>
+        </div>
+
+        @{
+            decimal? subtotal = 0;
+            decimal? cgstAmount = 0;
+            decimal? sgstAmount = 0;
+            decimal? igstAmount = 0;
+            decimal? igstper = 0;
+            decimal? sgstper = 0;
+            decimal? cgstper = 0;
+            decimal? totalAmount = 0;
+            decimal? rounding = 0;
+            decimal? roundedTotal = 0;
+
+            foreach (var item in Model.ProductDetailLists)
+            {
+                // Calculate subtotal
+                subtotal += item.ProductPrice;
+                igstper = item.IGST;
+                sgstper = item.SGST;
+                cgstper = item.CGST;
+
+                // Calculate CGST and SGST if applicable
+                if (item.CGST != null && item.SGST != null)
+                {
+                    cgstAmount += (item.ProductPrice * item.CGST / 100);
+                    sgstAmount += (item.ProductPrice * item.SGST / 100);
+                }
+
+                // Calculate IGST if applicable
+                if (item.IGST != null)
+                {
+                    igstAmount += (item.ProductPrice * item.IGST / 100);
+                }
+            }
+
+            // Calculate total amount before rounding
+            totalAmount = subtotal + cgstAmount + sgstAmount + igstAmount;
+            // Round the total amount
+            roundedTotal = Math.Round((decimal)totalAmount, 0, MidpointRounding.AwayFromZero);
+            // Calculate rounding difference (absolute value ensures it's always positive)
+            rounding = Math.Abs((decimal)roundedTotal - (decimal)totalAmount);
+            totalAmount = Math.Round((decimal)totalAmount, 2);
+        }
+
+        <table class="invoice-table" border="1" cellpadding="5" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Item & Description</th>
+                    <th>HSN/SAC</th>
+                    @if (igstper == null || igstper == 0)
+                    {
+                        <th>CGST</th>
+                        <th>SGST</th>
+                    }
+                    else
+                    {
+                        <th>IGST</th>
+                    }
+                    <th>Amount</th>
+                </tr>
+            </thead>
+
+            @foreach (var item in Model.ProductDetailLists)
+            {
+                count++;
+                <tbody>
+                    <tr>
+                        <td>@count</td>
+                        <td>@item.ProductName</td>
+                        <td>@item.HsnSacCode</td>
+                        @if (igstper == null || igstper == 0)
+                        {
+                            <td>@(item.CGST != null ? $"{item.CGST}% ₹ {item.ProductPrice * item.CGST / 100}" : "0% ₹ 0.00")</td>
+                            <td>@(item.SGST != null ? $"{item.SGST}% ₹ {item.ProductPrice * item.SGST / 100}" : "0% ₹ 0.00")</td>
+                        }
+                        else
+                        {
+                            <td>@(item.IGST != null ? $"{item.IGST}% ₹ {item.ProductPrice * item.IGST / 100}" : "0% ₹ 0.00")</td>
+                        }
+                        <td>₹ @String.Format("{0:0.00}", item.ProductPrice)</td>
+                    </tr>
+                </tbody>
+            }
+        </table>
+
+        <div class="totals">
+            <table>
+                <tr>
+                    <td><b>Sub Total</b></td>
+                    <td>₹ @String.Format("{0:0.00}", subtotal)</td>
+                </tr>
+                @if (Model.IGST == null)
+                {
+                    <tr>
+                        <td>CGST</td>
+                        <td>₹ @String.Format("{0:0.00}", cgstAmount)</td>
+                    </tr>
+                    <tr>
+                        <td>SGST</td>
+                        <td>₹ @String.Format("{0:0.00}", sgstAmount)</td>
+                    </tr>
+                }
+                else
+                {
+                    <tr>
+                        <td>IGST</td>
+                        <td>₹ @String.Format("{0:0.00}", igstAmount)</td>
+                    </tr>
+                }
+                <tr>
+                    <td>Rounding</td>
+                    <td>₹ @String.Format("{0:0.00}", rounding)</td>
+                </tr>
+                <tr>
+                    <td><strong>Total</strong></td>
+                    <td><strong>₹ @String.Format("{0:0.00}", roundedTotal)</strong></td>
+                </tr>
+                <tr>
+                    <td>Payment Made</td>
+                    <td>₹ @String.Format("{0:0.00}", totalAmount)</td>
+                </tr>
+                <tr>
+                    <td><strong>Balance Due</strong></td>
+                    <td><strong>₹ 0.00</strong></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="bank-details">
+            Bank Account Details<br />
+            A/C Holder Name: @Model.AccountHolderName<br />
+            Bank Name: @Model.BankName<br />
+            Account Number: @Model.AccountNumber<br />
+            IFSC Code: @Model.Ifsc
+        </div>
+
+        <div class="footer">
+            <p>Authorized Signatory</p>
+        </div>
     </div>
+
 </body>
 </html>

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CRM.Models.DTO.EmpTasknameDto>
+﻿@model CRM.Models.DTO.EmployeeTaskModel
 @{
     ViewData["Title"] = "EmpTasks";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
@@ -83,16 +83,16 @@
             <!-- Container-fluid Ends-->
             <!-- Container-fluid starts-->
             <div class="container-fluid">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div class="card">
-                            <div class="card-body">
-                                <form method="post" asp-controller="Vendor" asp-action="EmpTaskslist" autocomplete="off" onsubmit="return validateForm()">
-                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                                    <div class="row">
-                                        <div class="form-group col-lg-6">
-                                            <input type="hidden" name="Id" value="@ViewBag.id" />
-                                            <label for="TxtEmployeeId">Employee Id</label>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method="post" asp-controller="Vendor" asp-action="EmpTaskslist" autocomplete="off" onsubmit="return validateForm()">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="row">
+                            <div class="form-group col-lg-6">
+                                <input type="hidden" name="Id" value="@ViewBag.id" />
+                                <label for="TxtEmployeeId">Employee Id</label>
                                             <select id="TxtEmployeeId" name="EmployeeId" class="form-control select2" required>
                                                 <option value="">-- Select EmployeeId --</option>
                                                 @foreach (var item in ViewBag.EmployeeId)
@@ -100,95 +100,95 @@
                                                     <option value="@item.Value">@item.Text</option>
                                                 }
                                             </select>
-                                        </div>
-                                        <div class="form-group col-lg-6">
-                                            <input type="hidden" name="Id" value="@ViewBag.id" />
-                                            <label for="TxttaskId">Employee Task</label>
-                                            <select id="TxttaskId" name="Emptask" class="form-control" required>
-                                                <option value="">-- Select Task --</option>
-                                            </select>
-                                        </div>
-                                        <div class="form-group col-md-6">
-                                            <label class="control-label" for="Taskname">Task name</label>
-                                            <input id="Taskname" type="text" name="Taskname[]" value="@ViewBag.Taskname" placeholder="Please Enter Task Name" class="form-control" />
-                                        </div>
-                                    </div>
-                                      <div id="additionalTaskFields" class="row"></div>
-                                    <div class="form-group" style="display:flex; justify-content:center;">
-                                     <button type="button" class="btn btn-primary" id="addTaskButton">Add More Task Name</button>
-                                        <input type="submit" value="@ViewBag.btnText" class="btn btn-primary" />
-                                    </div>
-                                </form>
-
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="container-fluid">
-                <div class="row">
+                            <div class="form-group col-lg-6">
+                                <label for="TxttaskId">Employee Task</label>
+                                <select id="TxttaskId" name="Emptask" class="form-control" required>
+                                    <option value="">-- Select Task --</option>
+                                    <!-- Populate tasks if needed -->
+                                </select>
+                            </div>
+                                        @if (ViewBag.id==null)
+{
+                                            <div class="form-group col-md-6">
+                                                <label class="control-label" for="Taskname">Task name</label>
+                                                <input id="Taskname" type="text" name="Taskname[]" value="@Model?.Taskname" placeholder="Please Enter Task Name" class="form-control" />
+                                            </div>
+}
 
-                    <div class="col-sm-12">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class=" table-responsive">
-                                    <table id="datatable" class="table table-responsive">
-                                        <thead>
-                                            <tr style="background-color: #00baf2;">
-                                                <th nowrap>Sl. No.</th>
-                                                <th>
-                                                    Employee Id
-                                                </th>
-                                                <th>
-                                                    Emptask Name
-                                                </th>
-                                                <th>
-                                                    Task Name
-                                                </th>
-                                                <th>
-                                                    Task Status
-                                                </th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @{
-                                                var count = 0;
-                                                @foreach (var item in Model)
-                                                {
-                                                    count++;
-                                                    <tr class="table-row">
-                                                        <td>@count</td>
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => item.EmployeeId)
-                                                        </td>
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => item.Emptask)
-                                                        </td>
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => item.Taskname)
-                                                        </td>
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => item.TaskStatus)
-                                                        </td>
-                                                        <td>
-                                                            <div>
-                                                                <a href="@Url.Action("EmpTaskslist","Vendor",new { id=item.Id})" class="fa fa-edit m-2 font-success"></a>
-                                                                <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteEmpTaskslist", "Vendor", new { id = item.Id })')" class="fa fa-trash font-danger"></a>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                }
+                            
+                        </div>
+                                    <div id="additionalTaskFields" class="row">
+                                        @if (Model?.TasksLists != null)
+                                        {
+                                            foreach (var task in Model.TasksLists)
+                                            {
+                                                <div class="form-group col-md-6">
+                                                    <input type="text" hidden name="TaskStatus[]" value="@task.TaskStatusId" class="form-control" placeholder="Please Enter Additional Task Name" />
+                                                    <input type="text" name="Taskname[]" value="@task.TaskName" class="form-control" placeholder="Please Enter Additional Task Name" />
+                                                    <i class="fas fa-trash-alt text-danger" style="cursor:pointer; margin-left:10px;" onclick="removeTask(this)"></i>
+                                                </div>
                                             }
-                                        </tbody>
-                                    </table>
-                                </div>
-
-                            </div>
+                                        }
+                                    </div>
+                        <div class="form-group" style="display:flex; justify-content:center;">
+                            <button type="button" class="btn btn-primary" id="addTaskButton">Add More Task Name</button> &nbsp;
+                            <input type="submit" value="@ViewBag.btnText" class="btn btn-primary" />
                         </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="datatable" class="table table-responsive">
+                            <thead>
+                                <tr style="background-color: #00baf2;">
+                                    <th nowrap>Sl. No.</th>
+                                    <th>Employee Id</th>
+                                    <th>Emptask Name</th>
+                                    <th>Task Name</th>
+                                    <th>Task Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    var count = 0;
+                                    foreach (var item in Model.EmpTaskList)
+                                    {
+                                        count++;
+                                        <tr class="table-row">
+                                            <td>@count</td>
+                                            <td>@Html.DisplayFor(modelItem => item.EmployeeId)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.Emptask)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.Taskname)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.TaskStatus)</td>
+                                            <td>
+                                                <div>
+                                                    <a href="@Url.Action("EmpTaskslist", "Vendor", new { id = item.Id })" class="fa fa-edit m-2 font-success"></a>
+                                                    <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteEmpTaskslist", "Vendor", new { id = item.Id })')" class="fa fa-trash font-danger"></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
             <div id="pagination-container">
                 <ul id="pagination" class="pagination"></ul>
             </div>
@@ -264,12 +264,12 @@
 <script type="text/javascript">
     var selectedEmpId = '@ViewBag.EmpId';
     if (selectedEmpId) {
-        window.addEventListener('DOMContentLoaded',function () {
-     $("#TxtEmployeeId").val(selectedEmpId);
-        const input = document.getElementById('TxtEmployeeId'); 
-        const changeEvent = new Event('change'); 
-        input.dispatchEvent(changeEvent);
-});
+        window.addEventListener('DOMContentLoaded', function () {
+            $("#TxtEmployeeId").val(selectedEmpId);
+            const input = document.getElementById('TxtEmployeeId');
+            const changeEvent = new Event('change');
+            input.dispatchEvent(changeEvent);
+        });
     }
 </script>
 
@@ -278,7 +278,7 @@
         var employeeId = $(this).val();
         if (employeeId) {
             $.ajax({
-                url: '@Url.Action("GetTasksByEmployeeId", "Vendor")', 
+                url: '@Url.Action("GetTasksByEmployeeId", "Vendor")',
                 type: 'GET',
                 data: { employeeId: employeeId },
                 success: function (data) {
@@ -288,10 +288,10 @@
                     $.each(data, function (index, item) {
                         $('#TxttaskId').append('<option value="' + item.value + '">' + item.text + '</option>');
                     });
-                    var selectedTaskId = '@ViewBag.Emptaskid'; 
-                    console.log("Selected Task ID: ", selectedTaskId); 
+                    var selectedTaskId = '@ViewBag.Emptaskid';
+                    console.log("Selected Task ID: ", selectedTaskId);
                     if (selectedTaskId) {
-                        $('#TxttaskId').val(selectedTaskId).trigger('change'); 
+                        $('#TxttaskId').val(selectedTaskId).trigger('change');
                         console.log("Setting task dropdown to selected task ID: ", selectedTaskId);
                     }
                 },
@@ -305,11 +305,11 @@
             $('#TxttaskId').append('<option value="">-- Select Task --</option>');
         }
     });
-    $(document).ready(function() {
-        $('#TxtEmployeeId').trigger('change'); 
+    $(document).ready(function () {
+        $('#TxtEmployeeId').trigger('change');
     });
 </script>
-<script>
+@* <script>
     document.getElementById('addTaskButton').addEventListener('click', function () {
         const taskFieldContainer = document.createElement('div');
         taskFieldContainer.className = 'form-group col-md-6';
@@ -321,14 +321,42 @@
 
         const taskInput = document.createElement('input');
         taskInput.type = 'text';
-        taskInput.name = 'Taskname[]'; 
+        taskInput.name = 'Taskname[]';
         taskInput.placeholder = 'Please Enter Task Name';
         taskInput.className = 'form-control';
 
         taskFieldContainer.appendChild(taskInput);
         document.getElementById('additionalTaskFields').appendChild(taskFieldContainer);
     });
+</script> *@
+
+
+
+<script>
+    document.getElementById('addTaskButton').addEventListener('click', function () {
+        const taskFieldContainer = document.createElement('div');
+        taskFieldContainer.className = 'form-group col-md-6';
+
+        const taskInput = document.createElement('input');
+        taskInput.type = 'text';
+        taskInput.name = 'Taskname[]';
+        taskInput.placeholder = 'Please Enter Task Name';
+        taskInput.className = 'form-control';
+        taskFieldContainer.appendChild(taskInput);
+
+        const removeIcon = document.createElement('i');
+        removeIcon.className = 'fas fa-trash-alt text-danger';
+        removeIcon.style.cursor = 'pointer';
+        removeIcon.style.marginLeft = '10px';
+        removeIcon.addEventListener('click', function () {
+            taskFieldContainer.remove();
+        });
+        taskFieldContainer.appendChild(removeIcon);
+
+        document.getElementById('additionalTaskFields').appendChild(taskFieldContainer);
+    });
+
+    function removeTask(icon) {
+        icon.parentNode.remove();  // Remove the task input field
+    }
 </script>
-
-
-
