@@ -22,7 +22,7 @@ namespace CRM.Controllers
             _IEmailService = iEmailService;
         }
         [HttpGet]
-        public IActionResult Invoice(int id = 0)
+        public async Task<IActionResult> Invoice(int id = 0)
         {
 			try
 			{
@@ -30,7 +30,7 @@ namespace CRM.Controllers
                 {
                     string AddedBy = HttpContext.Session.GetString("UserName");
                     int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
-
+                    CustomerInvoiceDTO customerInv = new CustomerInvoiceDTO();
                     var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
 
                     ViewBag.checkvendorbillingstateid = _context.VendorRegistrations.Where(v => v.Id == adminlogin.Vendorid).FirstOrDefault().BillingStateId;
@@ -41,8 +41,10 @@ namespace CRM.Controllers
                         ViewBag.UserName = AddedBy;
                         ViewBag.Heading = "Invoice";
                         ViewBag.btnText = "Update";
-                        var data = _context.CustomerInvoices.Where(c=>c.CustomerId==id).FirstOrDefault();
-                        if (data != null)
+                        
+                        customerInv.customerInvoice = await _context.CustomerInvoices.Where(c=>c.CustomerId==id).ToListAsync();
+                        var data = customerInv.customerInvoice.FirstOrDefault();
+                        if (customerInv.customerInvoice != null && customerInv.customerInvoice.Count() > 0)
                         {
 
                             ViewBag.ProductDetails = _context.VendorProductMasters.Where(c => c.IsActive == true)
@@ -52,20 +54,22 @@ namespace CRM.Controllers
                                     Text = p.ProductName,
                                 })
                                 .ToList();
+                           
                             ViewBag.CustomerId = data.CustomerId;
-                            ViewBag.CustomerName = _context.CustomerRegistrations.Where(x =>x.Id == data.CustomerId).First().CompanyName;
-                            ViewBag.ProductId = data.ProductId;
-                            ViewBag.Price = data.ProductPrice;
-                            ViewBag.RenewPrice = data.RenewPrice;
-                            ViewBag.NoOfRenewMonth = data.NoOfRenewMonth;
-                            ViewBag.HsnSacCode = data.Hsncode;
-                            ViewBag.StartDate = data.StartDate;
-                            ViewBag.RenewDate = data.RenewDate;
-                            ViewBag.IGST = data.Igst;
-                            ViewBag.SGST = data.Sgst;
-                            ViewBag.CGST = data.Cgst;
-                            return View();
+                            ViewBag.CustomerName = _context.CustomerRegistrations.Where(x => x.Id == data.CustomerId).First().CompanyName;
+                            //ViewBag.ProductId = data.ProductId;
+                            //ViewBag.Price = data.ProductPrice;
+                            //ViewBag.RenewPrice = data.RenewPrice;
+                            //ViewBag.NoOfRenewMonth = data.NoOfRenewMonth;
+                            //ViewBag.HsnSacCode = data.Hsncode;
+                            //ViewBag.StartDate = data.StartDate;
+                            //ViewBag.RenewDate = data.RenewDate;
+                            //ViewBag.IGST = data.Igst;
+                            //ViewBag.SGST = data.Sgst;
+                            //ViewBag.CGST = data.Cgst;
+                            //return View(customerInv);
                         }
+
                     }
                     ViewBag.UserName = AddedBy;
                     ViewBag.Heading = "Invoice";
@@ -87,7 +91,7 @@ namespace CRM.Controllers
                         Text = p.ProductName,
                     })
                     .ToList();
-                    return View();
+                    return View(customerInv);
                 }
                 else
                 {
