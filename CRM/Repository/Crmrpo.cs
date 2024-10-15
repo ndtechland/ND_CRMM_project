@@ -2478,6 +2478,91 @@ namespace CRM.Repository
                 throw;
             }
         }
+        //public async Task<List<ApprovedLeaveApplyList>> GetLeaveapplydetailList(int Userid)
+        //{
+        //    try
+        //    {
+        //        List<ApprovedLeaveApplyList> PresnolInfo = new List<ApprovedLeaveApplyList>();
+        //        var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+        //        var emplist = await _context.EmployeeRegistrations.Where(x => x.Vendorid == Userid).FirstOrDefaultAsync();
+        //        PresnolInfo = _context.ApplyLeaveNews.Where(x => x.UserId == emplist.EmployeeId).Select(x => new ApprovedLeaveApplyList
+        //        {
+        //            Id = x.Id,
+        //            UserId = x.UserId,
+        //            StartLeaveId = _context.Leaves.Where(s => s.Id == x.StartLeaveId).Select(s => s.Typeofleave).FirstOrDefault(),
+        //            EndeaveId = _context.Leaves.Where(s => s.Id == x.EndeaveId).Select(s => s.Typeofleave).FirstOrDefault(),
+        //            TypeOfLeaveId = _context.LeaveTypes.Where(s => s.Id == x.EndeaveId).Select(s => s.Leavetype1).FirstOrDefault(),
+        //            StartDate = x.StartDate,
+        //            EndDate = x.EndDate,
+        //            CreatedDate = x.CreatedDate,
+        //            UnPaidCountLeave = x.CountLeave,
+        //            Month = x.Month,
+        //            Reason = x.Reason,
+        //            Isapprove = x.Isapprove,
+        //            PaidCountLeave = x.PaidCountLeave,
+        //        }).ToList();
+        //        return PresnolInfo;
+        //    }
+        //    catch (Exception)
+        //    {
+        //        throw;
+        //    }
+        //}
+        public async Task<List<ApprovedLeaveApplyList>> GetLeaveapplydetailList(int? Userid)
+        {
+            try
+            {
+                List<ApprovedLeaveApplyList> PresnolInfo = new List<ApprovedLeaveApplyList>();
+                var adminlogin = await _context.AdminLogins.FindAsync(Userid);
+                if (adminlogin == null) throw new Exception("Admin login not found");
+
+                var emplist = await _context.EmployeeRegistrations
+                    .Where(x => x.Vendorid == Userid)
+                    .ToListAsync();
+                var employeeIds = emplist.Select(emp => emp.EmployeeId).ToList();
+
+                PresnolInfo = await _context.ApplyLeaveNews
+                    .Where(x => employeeIds.Contains(x.UserId)).OrderByDescending(x =>x.Id)
+                    .Select(x => new ApprovedLeaveApplyList
+                    {
+                        Id = x.Id,
+                        UserId = x.UserId,
+                        StartLeaveId = _context.Leaves
+                            .Where(s => s.Id == x.StartLeaveId)
+                            .Select(s => s.Typeofleave)
+                            .FirstOrDefault() ?? "Unknown",
+                        EndeaveId = _context.Leaves
+                            .Where(s => s.Id == x.EndeaveId)
+                            .Select(s => s.Typeofleave)
+                            .FirstOrDefault() ?? "Unknown",
+                        TypeOfLeaveId = _context.LeaveTypes
+                            .Where(s => s.Id == x.TypeOfLeaveId)
+                            .Select(s => s.Leavetype1)
+                            .FirstOrDefault() ?? "Unknown",
+                        StartDate = x.StartDate,
+                        EndDate = x.EndDate,
+                        CreatedDate = x.CreatedDate,
+                        UnPaidCountLeave = x.CountLeave,
+                        Month = x.Month,
+                        Reason = x.Reason,
+                        Isapprove = x.Isapprove,
+                        PaidCountLeave = x.PaidCountLeave,
+                    })
+                    .ToListAsync();
+                if (PresnolInfo.Count > 0)
+                {
+                    return PresnolInfo;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw; 
+            }
+        }
 
     }
 

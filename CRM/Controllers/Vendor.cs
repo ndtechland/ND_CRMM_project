@@ -1873,6 +1873,47 @@ namespace CRM.Controllers
             _context.SaveChanges();
             return Json(new { success = true, message = "Task status updated successfully!" });
         }
+        [HttpGet, Route("Vendor/ApprovedLeaveApply")]
+        public async Task<IActionResult> ApprovedLeaveApply(int? id)
+        {
+            try
+            {
+                int iId = id ?? 0;
+
+                if (HttpContext.Session.GetString("UserName") != null)
+                {
+                    var addedBy = HttpContext.Session.GetString("UserName");
+                    int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                    var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                    ViewBag.UserName = addedBy;
+                   var Approvedbankdetail = await _ICrmrpo.GetLeaveapplydetailList(adminlogin.Vendorid); ;
+                   
+                    return View(Approvedbankdetail);
+                }
+                else
+                {
+                    return RedirectToAction("Login", "Admin");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error Message : " + ex.Message, ex);
+            }
+        }
+        public async Task<IActionResult> UpdateLeaveApplyStatus(int Id)
+        {
+            var leave = await _context.ApplyLeaveNews.FirstOrDefaultAsync(x => x.Id == Id);
+
+            if (leave == null)
+            {
+                TempData["msg"] = "Data not found!";
+                return RedirectToAction("ApprovedLeaveApply");
+            }
+            leave.Isapprove = !leave.Isapprove;
+            await _context.SaveChangesAsync();
+            return RedirectToAction("ApprovedLeaveApply");
+        }
+
     }
 }
 

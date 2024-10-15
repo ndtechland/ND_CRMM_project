@@ -97,5 +97,7 @@ namespace CRM.Repository
         Task<bool> AddVendorBankDeatils(VendorBankDetail model, int VendorId);
         Task<List<VendorBankDetail>> GetVendorBankDetail(int VendorId);
         Task<bool> AddOfficeEvents(OfficeEvent model, int VendorId);
+        public Task<List<ApprovedLeaveApplyList>> GetLeaveapplydetailList(int? Userid);
+
     }
 }
