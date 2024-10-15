@@ -4,19 +4,30 @@
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+ 
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+ 
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
-
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+<script src='https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js'></script>
+<script src='https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js'></script>
+<script src='https://cdn.datatables.net/buttons/1.2.2/js/buttons.colVis.min.js'></script>
+<script src='https://cdn.datatables.net/buttons/1.2.2/js/buttons.html5.min.js'></script>
+<script src='https://cdn.datatables.net/buttons/1.2.2/js/buttons.print.min.js'></script>
+<script src='https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js'></script>
+<script src='https://cdn.datatables.net/buttons/1.2.2/js/buttons.bootstrap.min.js'></script>
+<link rel='stylesheet' href='https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css'>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js'></script>
+<style>
+    .dataTables_wrapper table.dataTable th {
+        background-color: #00baf2 !important;
+        padding: 24px 0.75rem !important;
+    }
+</style>
 <style>
     .select2-container .select2-selection--single {
         height: 34px !important;
@@ -157,25 +168,25 @@
                                         <thead>
                                             <tr style="background-color: #00baf2;">
                                                 <th nowrap>Sl. No.</th>
-                                                <th>
+                                                <th nowrap>
                                                     Employee Id
                                                 </th>
-                                                <th>
+                                                <th nowrap>
                                                     Task Name
                                                 </th>
-                                                <th>
+                                                <th nowrap>
                                                     Task Startdate
                                                 </th>
-                                                <th>
+                                                <th nowrap>
                                                     Task Enddate
                                                 </th>
-                                                <th>
+                                                <th nowrap>
                                                     Task Title
                                                 </th>
-                                                <th>
+                                                <th nowrap>
                                                     Task Description
                                                 </th>
-                                                <th>
+                                                <th nowrap>
                                                     Task Status
                                                 </th>
                                                 <th>Action</th>
@@ -188,27 +199,35 @@
                                                 {
                                                     count++;
                                                     <tr class="table-row">
+                                                        <td class="EmpTaskId" hidden>@item.Id</td>
                                                         <td>@count</td>
-                                                        <td>
+                                                        <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.EmployeeId)
                                                         </td>
-                                                        <td>
+                                                        <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.Task)
                                                         </td>
-                                                        <td>
+                                                        <td nowrap>
                                                             @item.Startdate?.ToString("dd/MM/yyyy")
                                                         </td>
-                                                        <td>
+                                                        <td nowrap>
                                                             @item.Enddate?.ToString("dd/MM/yyyy")
                                                         </td>
-                                                        <td>
+                                                        <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.Tittle)
                                                         </td>
                                                         <td>
                                                             @Html.DisplayFor(modelItem => item.Description)
                                                         </td>
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => item.Status)
+                                                        
+                                                        <td >
+                                                            <select name="StatusName" class="form-control taskstatus-dropdown" id="ddltaskstatusid_@item.Id" style="height: 40px; width: 230px;">
+                                                                <option value="0">-- Select Status --</option>
+                                                                @foreach (var statusitem in ViewBag.TaskStatus)
+                                                                {
+                                                                    <option value="@statusitem.Value">@statusitem.Text</option>
+                                                                }
+                                                            </select>
                                                         </td>
                                                         <td>
                                                             <div>
@@ -321,4 +340,116 @@
     if (selectedEmpId != "") {
         $("#TxtEmployeeId").val(selectedEmpId).trigger('change');
     }
+</script>
+
+
+
+<!--For selected dropdowm in list and update task status-->
+
+<script>
+
+    function bindtaskstatusid(taskstatusid, itemId) {
+        var itemsListfortaskstatusid = @Html.Raw(Json.Serialize(ViewBag.TaskStatus));
+        var dropdownfortaskstatusid = $("#ddltaskstatusid_" + itemId);
+        if (itemId !== "0" && itemId !== "") {
+            dropdownfortaskstatusid.val(taskstatusid);
+        }
+    }
+    $(document).ready(function () {
+    @foreach (var item in Model)
+    {
+        <text>
+                bindtaskstatusid('@item.TaskStatusId', '@item.Id');
+        </text>
+    }
+                    var usertaskstatus = '@ViewBag.TaskStatus';
+
+        if (usertaskstatus != "") {
+            bindtaskstatusid(usertaskstatus);
+        }
+        else {
+            bindtaskstatusid("");
+        }
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        // Store the initial values of the dropdowns
+        $('.taskstatus-dropdown').each(function () {
+            $(this).data('previous', $(this).val());
+        });
+
+        $(document).on("change", ".taskstatus-dropdown", function () {
+            var selectedTaskStatusId = $(this).val();
+            var previousTaskStatusId = $(this).data('previous'); // Get the previously stored value
+
+            // Only make the AJAX call if the value has changed
+            if (selectedTaskStatusId !== previousTaskStatusId) {
+                var selectedId = $(this).closest('tr').find('.EmpTaskId').text().trim();
+
+                $.ajax({
+                    url: '/Vendor/UpdateTaskStatus',
+                    type: 'POST',
+                    data: {
+                        Taskstatusid: selectedTaskStatusId,
+                        Id: selectedId
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            // Show success message using SweetAlert2
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: response.message
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error updating shift type:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'There was an error updating the shift type.'
+                        });
+                    }
+                });
+
+                // Update the stored value
+                $(this).data('previous', selectedTaskStatusId);
+            }
+        });
+    });
+</script>
+
+<!--End code For selected dropdowm in list and update task status-->
+<script>
+    $(document).ready(function () {
+        $('.taskstatus-dropdown').change(function () {
+            // Get the selected option value
+            var selectedText = $(this).find("option:selected").text();
+
+            // Change the text color based on the selected option
+            if (selectedText === "Pending") {
+                $(this).css('color', 'orange');
+            } else if (selectedText === "In Progress") {
+                $(this).css('color', 'blue');
+            } else if (selectedText === "Completed") {
+                $(this).css('color', 'green');
+            } else if (selectedText === "Reassigned") {
+                $(this).css('color', 'purple');
+            } else if (selectedText === "UnCompleted") {
+                $(this).css('color', 'red');
+            } else {
+                $(this).css('color', 'black'); // default color
+            }
+        });
+
+        // Trigger the change event on page load to set the initial color
+        $('.taskstatus-dropdown').trigger('change');
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('#datatable').DataTable();
+    });
 </script>
