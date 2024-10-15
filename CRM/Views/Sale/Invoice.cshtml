@@ -71,144 +71,7 @@
                         <div id="customerSuggestions" class="list-group"></div>
                     </div>
                 </div>
-                
-
-               @*  <div class="row d-none" id="customerDetailsRow">
-                    <div class="col-md-12">
-                        <div class="card">
-                            <div class="card-header">
-                                <h3>Customer Details</h3>
-                            </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-6"> 
-                                        <div class="form-group">
-                                            <label for="officeStateLabel"><b>Office State :</b></label>
-                                            <p id="officeStateLabel" class="form-control-static">N/A</p>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="officeCityLabel"><b>Office City :</b></label>
-                                            <p id="officeCityLabel" class="form-control-static">N/A</p>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="officeAddressLabel"><b>Office Address :</b></label>
-                                            <p id="officeAddressLabel" class="form-control-static">N/A</p>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="officeAddressLabel"><b>Mobile Number :</b></label>
-                                            <p id="mobileNumberLabel" class="form-control-static">N/A</p>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="officeAddressLabel"><b>Mobile Number :</b></label>
-                                            <p id="emailNumberLabel" class="form-control-static">N/A</p>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="officeAddressLabel"><b>GST Number :</b></label>
-                                            <p id="gstNumberLabel" class="form-control-static">N/A</p>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6"> 
-                                        <div class="form-group">
-                                            <label for="billingStateLabel"><b>Billing State :</b></label>
-                                            <input class="billingStateId" type="text" hidden />
-                                            <p id="billingStateLabel" class="form-control-static">N/A</p>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="billingCityLabel"><b>Billing City :</b></label>
-                                            <p id="billingCityLabel" class="form-control-static">N/A</p>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="billingAddressLabel"><b>Billing Address :</b></label>
-                                            <p id="billingAddressLabel" class="form-control-static">N/A</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group" style="display:flex; justify-content:right;">
-                    <button type="button" class="btn btn-success" id="addSection">Add Section +</button>
-                </div>
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div class="card">
-                            <div class="card-body">
-                                <form asp-action="Invoice" method="post" autocomplete="off">
-                                    <div id="customerSections">
-                                        <!-- Initial Customer Section -->
-                                        <div class="customer-section">
-                                            <div class="row">
-                                                
-                                                <div class="form-group col-sm">
-                                                    <label for="ProductDetails">Product Details <span class="text-danger">*</span></label>
-        @Html.DropDownListFor(model => model.ProductId, new SelectList(ViewBag.ProductDetails, "Value", "Text"), "-- Select Product --", new { @class = "form-control ProductDetails", onchange = "updateTaxFields()", required = "required" })
-        <span asp-validation-for="ProductId" class="text-danger"></span>
-                                                </div>
-                                                <div class="form-group col-sm">
-                                                    <label for="Price">Price <span class="text-danger">*</span></label>
-                                                    <input class="form-control Price" placeholder="00.0" name="ProductPrice" id="Price" type="text" readonly>
-                                                    <span asp-validation-for="ProductPrice" class="text-danger"></span>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="form-group col-sm">
-                                                    <label for="RenewPrice">Renew Price <span class="text-danger">*</span></label>
-                                                    <input class="form-control RenewPrice" name="RenewPrice" value="@ViewBag.Renewprice" type="text" onkeydown="validateNumericInput(event)">
-                                                    <span asp-validation-for="RenewPrice" class="text-danger"></span>
-                                                </div>
-                                                <div class="form-group col-sm">
-                                                    <label for="NoOfRenewMonth">Number Of Renew Month <span class="text-danger">*</span></label>
-                                                    <input class="form-control NoOfRenewMonth" name="NoOfRenewMonth" value="@ViewBag.NoOfRenewMonth" required placeholder="1" type="text" onkeydown="validateNumericInput(event)" maxlength="2">
-                                                    <span asp-validation-for="NoOfRenewMonth" class="text-danger"></span>
-                                                </div>
-                                                <div class="form-group col-sm">
-                                                    <label for="hsnSacCode">HSN/SAC Code</label>
-                                                    <input type="text" class="form-control HsnSacCode" placeholder="HsnSacCode" readonly />
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="form-group col-sm">
-                                                    <label for="StartDate">Start Date <span class="text-danger">*</span></label>
-                                                    <input name="StartDate" type="date" class="form-control StartDate" required oninvalid="this.setCustomValidity('Please select StartDate')" oninput="this.setCustomValidity('')" value="@ViewBag.startDate" />
-                                                    <span asp-validation-for="StartDate" class="text-danger"></span>
-                                                </div>
-                                                <div class="form-group col-sm">
-                                                    <label for="RenewDate">Renew Date <span class="text-danger">*</span></label>
-                                                    <input name="RenewDate" type="date" class="form-control RenewDate" required readonly oninvalid="this.setCustomValidity('Please select RenewDate')" oninput="this.setCustomValidity('')" value="@ViewBag.renewDate" />
-                                                    <span asp-validation-for="RenewDate" class="text-danger"></span>
-                                                </div>
-                                            </div>
-
-
-                                            <div class="row">
-                                                <div class="form-group col-sm">
-                                                    <label for="IGST">IGST</label>
-                                                    <input type="text" class="form-control IGST" placeholder="00.0" readonly />
-                                                </div>
-                                                <div class="form-group col-sm">
-                                                    <label for="SGST">SGST</label>
-                                                    <input type="text" class="form-control SGST" placeholder="00.0" readonly />
-                                                </div>
-                                                <div class="form-group col-sm">
-                                                    <label for="CGST">CGST</label>
-                                                    <input type="text" class="form-control CGST" placeholder="00.0" readonly />
-                                                </div>
-                                            </div>
-                                            <!-- Initially hidden remove button -->
-                                            <button type="button" class="btn btn-danger remove-section" style="display:none;">Remove</button>
-                                        </div>
-                                    </div>
-
-                                    
-                                    <div class="form-group" style="display:flex; justify-content:center;">
-                                        <input type="button" value="@ViewBag.btnText" onclick="sendProductDetailsToAPI()" class="btn btn-primary" />
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div> *@
+                <!--Notepad-->
                 <div class="row d-none" id="customerDetailsRow">
                     <div class="col-md-12">
                         <div class="card">
@@ -368,7 +231,12 @@
     <input type="hidden" id="checkvendorbillingstateid" value="@ViewBag.checkvendorbillingstateid" />
 </div>
 <!-- Add this in the head section of your HTML -->
-
+<script>
+    
+    var productdata = '@Html.Raw(Json.Serialize(Model.customerInvoice))';
+    var ProductList = JSON.parse(productdata);
+    debugger
+</script>
 
 <script src="~/js/invoice.js"></script>
 <script>

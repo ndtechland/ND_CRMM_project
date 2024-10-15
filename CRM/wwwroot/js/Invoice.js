@@ -337,3 +337,5 @@ function sendProductDetailsToAPI() {
 
 // Call the function when you want to gather the details and send them to the API
 // sendProductDetailsToAPI(); // Uncomment to call the function when needed
+
+

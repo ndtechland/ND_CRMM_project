@@ -1,4 +1,6 @@
-﻿namespace CRM.Models.DTO
+﻿using CRM.Models.Crm;
+
+namespace CRM.Models.DTO
 {
     public class CustomerInvoiceDTO
     {
@@ -37,6 +39,7 @@
         public decimal? CGST { get; set; }
         public List<ProductDetail> ProductDetails { get; set; }
         public List<ProductDetailList> ProductDetailLists { get; set; }
+        public List<CustomerInvoice> customerInvoice { get; set; }
     }
 
     public class ProductDetail
