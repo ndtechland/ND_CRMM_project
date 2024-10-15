@@ -1477,13 +1477,13 @@ namespace CRM.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> EmpTotalLeaves()
         {
-            var response = new Response<Monthlyattendancedatail>();
+            var response = new Response<List<TotalLeave>>();
             try
             {
                 if (User.Identity.IsAuthenticated)
                 {
                     var userid = User.Claims.FirstOrDefault().Value;
-                    Monthlyattendancedatail isLoginExists = await _apiemp.GetMonthAttanceDetails(userid);
+                    List<TotalLeave> isLoginExists = await _apiemp.Getleavelist(userid);
                     if (isLoginExists != null)
                     {
                         response.Succeeded = true;

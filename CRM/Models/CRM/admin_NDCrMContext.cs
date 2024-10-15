@@ -175,6 +175,8 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.Id).HasColumnName("ID");
 
                 entity.Property(e => e.CountLeave).HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.PaidCountLeave).HasColumnType("decimal(18, 2)");
             });
 
             modelBuilder.Entity<ApprovedPresnolInfo>(entity =>
