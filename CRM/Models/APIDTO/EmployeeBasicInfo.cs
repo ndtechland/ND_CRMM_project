@@ -122,4 +122,10 @@ namespace CRM.Models.APIDTO
         public int? TotalAbsentDays { get; set; }
         public string? Attendance { get; set; }
     }
+    public class Totalattendancedatail
+    {
+        public int? id { get; set; }
+        public DateTime? Leavedate { get; set; }
+        public string? Reason { get; set; }
+    }
 }
