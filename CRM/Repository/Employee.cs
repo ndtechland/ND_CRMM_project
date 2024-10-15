@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.Services.Account;
+using Microsoft.VisualStudio.Services.WebPlatform;
 using MimeKit.Encodings;
 using NuGet.Versioning;
 using Org.BouncyCastle.Asn1.Ocsp;
@@ -2199,31 +2200,23 @@ namespace CRM.Repository
         {
             try
             {
-                var paidLeaveList = await _context.PaidLeavemasters
+                var LeaveList = await _context.ApplyLeaveNews
                     .Where(p => p.UserId == userid)
                     .Select(p => new TotalLeave
                     {
                         id = p.Id,
-                        Leavedate = p.StartDate,
+                        Leavedate = p.CreatedDate,
                         Reason = p.Reason,
-                        LeaveType = (p.StartLeaveId == 1 && p.EndeaveId == 1) ? "First Half (Paid)" :
-                                    (p.StartLeaveId == 2 && p.EndeaveId == 2) ? "Second Half (Paid)" :
-                                    (p.StartLeaveId == 1 && p.EndeaveId == 2) ? "Full Day (Paid)" : "Unknown (Paid)"
+                        LeaveType = (p.StartLeaveId == 1 && p.EndeaveId == 1) ? "First Half" :
+                                    (p.StartLeaveId == 2 && p.EndeaveId == 2) ? "Second Half" :
+                                    (p.StartLeaveId == 1 && p.EndeaveId == 2) ? "Full Day" :
+                                    (p.StartLeaveId == 1 && p.EndeaveId == 3) ? "First Half, Second Half" :
+                                    (p.StartLeaveId == 2 && p.EndeaveId == 1) ? "Second Half, First Half" :
+                                    "Unknown",
                     }).ToListAsync();
-                var unpaidLeaveList = await _context.ApplyLeaveNews
-                    .Where(a => a.UserId == userid)
-                    .Select(a => new TotalLeave
-                    {
-                        id = a.Id,
-                        Leavedate = a.StartDate,
-                        Reason = a.Reason,
-                        LeaveType = (a.StartLeaveId == 1 && a.EndeaveId == 1) ? "First Half (Unpaid)" :
-                                    (a.StartLeaveId == 2 && a.EndeaveId == 2) ? "Second Half (Unpaid)" :
-                                    (a.StartLeaveId == 1 && a.EndeaveId == 2) ? "Full Day (Unpaid)" : "Unknown (Unpaid)"
-                    }).ToListAsync();
-                var empleavelist = paidLeaveList.Concat(unpaidLeaveList).ToList();
 
-                return empleavelist;
+                return LeaveList;
+
             }
             catch (Exception ex)
             {
