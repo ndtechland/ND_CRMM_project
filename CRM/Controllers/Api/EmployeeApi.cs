@@ -1489,7 +1489,7 @@ namespace CRM.Controllers.Api
                         response.Succeeded = true;
                         response.StatusCode = StatusCodes.Status200OK;
                         response.Status = "Success";
-                        response.Message = "Employee Monthly AttanceDetails Here.";
+                        response.Message = "Employee TotalLeaves Here.";
                         response.Data = isLoginExists;
                         return Ok(response);
                     }
