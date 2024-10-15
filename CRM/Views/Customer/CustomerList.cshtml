@@ -4,7 +4,12 @@
     ViewData["Title"] = "CustomerList";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
- 
+<style>
+    .dataTables_wrapper table.dataTable th {
+        background-color: #00baf2 !important;
+        padding: 24px 0.75rem !important;
+    }
+</style>
 <div class="page-wrapper">
     <div class="page-body-wrapper">
         <div class="page-sidebar">
@@ -170,9 +175,9 @@
                     </div>
                 </div>
             </div>
-            <div id="pagination-container">
+           @*  <div id="pagination-container">
                 <ul id="pagination" class="pagination"></ul>
-            </div>
+            </div> *@
         </div>
 
 

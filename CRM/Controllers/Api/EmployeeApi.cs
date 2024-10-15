@@ -1311,13 +1311,13 @@ namespace CRM.Controllers.Api
                         response.Succeeded = true;
                         response.StatusCode = StatusCodes.Status200OK;
                         response.Status = "Success";
-                        response.Message = "Employee LoginActivity Here.";
+                        response.Message = "Employee Login Activity Here.";
                         response.Data = isLoginExists;
                         return Ok(response);
                     }
                     else
                     {
-                        response.StatusCode = StatusCodes.Status401Unauthorized;
+                        response.StatusCode = StatusCodes.Status404NotFound;
                         response.Message = "Data not found.";
                         return Ok(response);
                     }
