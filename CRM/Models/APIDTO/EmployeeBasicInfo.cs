@@ -129,6 +129,9 @@ namespace CRM.Models.APIDTO
         public string? Reason { get; set; }
         public decimal? Nodays { get; set; }
         public string? LeaveType { get; set; }
+        public string? Leaveapplydate { get; set; }
+        public string? LeaveSearchdate { get; set; }
+
     }
     public class TotalLeave
     {

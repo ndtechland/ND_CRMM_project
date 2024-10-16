@@ -2293,14 +2293,16 @@ namespace CRM.Repository
                 decimal totalLeaves = toleave.Sum(x => (decimal)(x.CountLeave + x.PaidCountLeave));
                 fd.TotalLeaves = totalLeaves;
                 fd.Type = await _context.ApplyLeaveNews
-                    .Where(p => p.UserId == userid)
+                    .Where(p => p.UserId == userid && p.Isapprove == true)
                     .Select(p => new TotalLeavelist
                     {
                         id = p.Id,
                         Leavedate = p.CreatedDate,
                         Reason = p.Reason,
                         Nodays = total,
-                        LeaveType = GetLeaveType(p.StartLeaveId, p.EndeaveId, totalFullday)
+                        LeaveType = GetLeaveType(p.StartLeaveId, p.EndeaveId, totalFullday),
+                        Leaveapplydate = p.CreatedDate.ToString("dd MMMM yyyy"),
+                        LeaveSearchdate = p.CreatedDate.ToString("MMM-yy")
                     }).ToListAsync();
                 return fd;
             }

@@ -21,7 +21,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     setTimeout(function () {
-                        window.location.href = '@Url.Action("ApprovedLeaveList", "Leave")';
+                        window.location.href = '@Url.Action("ApprovedLeaveApply", "Vendor")';
                     }, 1000);
                 }
             });
@@ -98,21 +98,22 @@
                                                         <td>@item.PaidCountLeave</td>
                                                         <td>@item.UnPaidCountLeave</td>
                                                         <td>
-                                                            @if ((bool)item.Isapprove)
+                                                            @if (item.Isapprove == true)
                                                             {
-                                                                <a href="/Vendor/UpdateLeaveApplyStatus?Id=@item.Id" class="btn btn-success"
-                                                                   onclick="return confirm('Are you sure you want to inactivate this leave?');">
+                                                                <a href="@Url.Action("UpdateLeaveApplyStatus", "Vendor", new { Id = item.Id })" class="btn btn-success"
+                                                                   onclick="return confirm('Are you sure you want to inactivate @item.UserId?');">
                                                                     Approve
                                                                 </a>
                                                             }
                                                             else
                                                             {
-                                                                <a href="/Vendor/UpdateLeaveApplyStatus?Id=@item.Id" class="btn btn-danger"
-                                                                   onclick="return confirm('Are you sure you want to activate leave for @item.UserId?');">
+                                                                <a href="@Url.Action("UpdateLeaveApplyStatus", "Vendor", new { Id = item.Id })" class="btn btn-danger"
+                                                                   onclick="return confirm('Are you sure you want to activate @item.UserId?');">
                                                                     Disapprove
                                                                 </a>
                                                             }
                                                         </td>
+
                                                     </tr> 
                                                 }
                                             }

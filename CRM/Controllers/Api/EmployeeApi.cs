@@ -1556,5 +1556,56 @@ namespace CRM.Controllers.Api
                 throw new Exception(ex.Message);
             }
         }
+
+        [Route("EmpLeavesGraph")]
+        [HttpGet]
+        public async Task<IActionResult> EmpLeavesGraph()
+        {
+            var response = new Response<List<TasksassignDto>>();
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userid = User.Claims.FirstOrDefault().Value;
+                    List<TasksassignDto> isLoginExists = await _apiemp.GetEmpTasksassign(userid);
+                    if (isLoginExists.Count == 0)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = "Employee does not Task .";
+                        response.Data = isLoginExists;
+                        return Ok(response);
+                    }
+                    else if (isLoginExists.Count != 0)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = "Employee Task Here.";
+                        response.Data = isLoginExists;
+                        return Ok(response);
+                    }
+                    else
+                    {
+                        response.StatusCode = StatusCodes.Status401Unauthorized;
+                        response.Message = "Data not found.";
+                        return Ok(response);
+                    }
+                }
+                else
+                {
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Message = "Token is expired.";
+                    return BadRequest(response);
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }
