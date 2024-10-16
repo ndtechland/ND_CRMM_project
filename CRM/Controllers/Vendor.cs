@@ -1442,8 +1442,7 @@ namespace CRM.Controllers
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.FirstOrDefaultAsync(x => x.Id == Userid);
-
-                // Prepare the model for the list of tasks
+ 
                 EmployeeTaskModel model = new EmployeeTaskModel();
                 model.EmpTaskList = await _context.EmployeeTasksLists.OrderByDescending(x => x.Id)
                     .Select(x => new EmpTasknameDto
@@ -1456,7 +1455,7 @@ namespace CRM.Controllers
                         EmployeeId = x.EmployeeId,
                     }).ToListAsync();
 
-                // Populate employee dropdown
+                
                 ViewBag.EmployeeId = await _context.EmployeeRegistrations
                     .Where(x => x.Vendorid == adminlogin.Vendorid)
                     .Select(D => new SelectListItem
@@ -1465,44 +1464,37 @@ namespace CRM.Controllers
                         Text = D.EmployeeId
                     }).ToListAsync();
 
-                // Set default values for ViewBag
+                 
                 ViewBag.UserName = AddedBy;
-                ViewBag.Heading = "Add TaskName";
+                ViewBag.Heading = "Add Sub Task";
                 ViewBag.BtnText = "SAVE";
 
                 if (id != 0)
                 {
-                    // Fetch the existing detail for the selected task
+                     
                     var existingDetail = await _context.EmployeeTasks.FirstOrDefaultAsync(x => x.Id == id);
                     if (existingDetail == null)
                     {
-                        return NotFound(); // Return a 404 if the task is not found
+                        return NotFound();
                     }
 
-                    // Fetch existing services based on the Emptaskid
+                   
                     var existingServices = await _context.EmployeeTasksLists
                         .Where(s => s.Emptaskid == existingDetail.Id) // Use Emptaskid to fetch related tasks
                         .ToListAsync();
 
                     ViewBag.id = existingDetail.Id;
                     ViewBag.Emptaskid = existingDetail.Id;
-                    ViewBag.EmpId = existingDetail.EmployeeId;
-                    ViewBag.Heading = "Update TaskName";
-                    ViewBag.Heading = "Update TaskName";
+                    ViewBag.EmpId = existingDetail.EmployeeId; 
+                    ViewBag.Heading = "Update Sub Task";
                     ViewBag.BtnText = "UPDATE";
 
-                    // Prepare the model with existing details and tasks
-                    //model = new EmployeeTaskModel
-                    //{
-                    //    Id = existingDetail.Id,
-                    //    EmployeeId = existingDetail.EmployeeId,
-                    //    Emptaskid = existingDetail.Emptaskid,
+                    
                     model.TasksLists = existingServices.Select(s => new TasksList
                     {
-                        TaskName = s.Taskname, // Populate task name from existing services
-                        TaskStatusId = s.TaskStatus // Populate task name from existing services
-                    }).ToList();
-                    //};
+                        TaskName = s.Taskname,  
+                        TaskStatusId = s.TaskStatus  
+                    }).ToList();                    
                 }
 
                 return View(model);
