@@ -1557,23 +1557,23 @@ namespace CRM.Controllers.Api
             }
         }
 
-        [Route("EmpLeavesGraph")]
+        [Route("EmpattendanceGraph")]
         [HttpGet]
-        public async Task<IActionResult> EmpLeavesGraph()
+        public async Task<IActionResult> EmpattendanceGraph()
         {
-            var response = new Response<List<TasksassignDto>>();
+            var response = new Response<List<getattendancegraph>>();
             try
             {
                 if (User.Identity.IsAuthenticated)
                 {
                     var userid = User.Claims.FirstOrDefault().Value;
-                    List<TasksassignDto> isLoginExists = await _apiemp.GetEmpTasksassign(userid);
+                    List<getattendancegraph> isLoginExists = await _apiemp.GetEmpGraph(userid);
                     if (isLoginExists.Count == 0)
                     {
                         response.Succeeded = true;
                         response.StatusCode = StatusCodes.Status200OK;
                         response.Status = "Success";
-                        response.Message = "Employee does not Task .";
+                        response.Message = "Employee does not have Graph detail.";
                         response.Data = isLoginExists;
                         return Ok(response);
                     }
@@ -1582,7 +1582,7 @@ namespace CRM.Controllers.Api
                         response.Succeeded = true;
                         response.StatusCode = StatusCodes.Status200OK;
                         response.Status = "Success";
-                        response.Message = "Employee Task Here.";
+                        response.Message = "Employee Graph detail is available.";
                         response.Data = isLoginExists;
                         return Ok(response);
                     }

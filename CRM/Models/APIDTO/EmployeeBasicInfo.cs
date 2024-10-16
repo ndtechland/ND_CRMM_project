@@ -54,7 +54,7 @@ namespace CRM.Models.APIDTO
         public string? LoginStatus { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public List<Loginactivity> loginactivities { get; set; } 
+        public List<Loginactivity> loginactivities { get; set; }
     }
     public class profilepicture
     {
@@ -144,5 +144,11 @@ namespace CRM.Models.APIDTO
         public decimal? Totaldays { get; set; }
         public decimal? PaidLeave { get; set; }
         public decimal? UnPaidLeave { get; set; }
+    }
+
+    public class getattendancegraph
+    {
+        public string? Month { get; set; }
+        public int? Value { get; set; }
     }
 }

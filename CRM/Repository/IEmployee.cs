@@ -36,7 +36,9 @@ namespace CRM.Repository
         public Task<Empattendancedatail> GetFilterattendance(string userid,DateTime Currentdate);
         public Task<Monthlyattendancedatail> GetMonthAttanceDetails(string userid);
         public Task<TotalLeave> Getleavelist(string userid);
-        public Task<getTotalLeave> GetEmptotalleave(string userid , int id);
+        public Task<getTotalLeave> GetEmptotalleave(string userid, int id);
+        public Task<List<getattendancegraph>> GetEmpGraph(string userid);
+
 
     }
 }
