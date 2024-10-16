@@ -1,0 +1,180 @@
+﻿@model IEnumerable<CRM.Models.DTO.ApprovedLeaveApplyList>
+
+@{
+    ViewData["Title"] = "Approved Leave Applications";
+    Layout = "~/Views/Shared/_adminLayout.cshtml";
+}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var message = "@TempData["msg"]";
+
+        if (message) {
+            Swal.fire({
+                title: 'Success',
+                text: message,
+                icon: 'info',
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    setTimeout(function () {
+                        window.location.href = '@Url.Action("ApprovedLeaveList", "Leave")';
+                    }, 1000);
+                }
+            });
+        }
+    });
+</script>
+
+<div class="page-wrapper">
+    <div class="page-body-wrapper">
+        <div class="page-sidebar">
+        </div>
+
+        <div class="page-body">
+
+            <div class="container-fluid">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="page-header-left">
+                                <h2>
+                                    Approved Leave Applications
+                                </h2>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <ol class="breadcrumb pull-right">
+                                <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
+                                <li class="breadcrumb-item">Leave</li>
+                                <li class="breadcrumb-item active">Approved Leave List</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container-fluid">
+                <div class="row">
+
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table id="datatable" class="table table-responsive">
+                                        <thead>
+                                            <tr style="background-color: #00baf2;">
+                                                <th>Sl. No.</th>
+                                                <th nowrap>Employee ID</th>
+                                                <th nowrap>Start Date</th>
+                                                <th nowrap>End Date</th>
+                                                <th nowrap>Start Type of Leave</th>
+                                                <th nowrap>End Type of Leave</th>
+                                                <th nowrap>Type of Leave</th>
+                                                <th nowrap>Reason</th>
+                                                <th nowrap>Paid Leave Count</th>
+                                                <th nowrap>Unpaid Leave Count</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{
+                                                var count = 0;
+                                                foreach (var item in Model)
+                                                {
+                                                    count++;
+                                                    <tr>
+                                                        <td>@count</td>
+                                                        <td>@item.UserId</td>
+                                                        <td>@item.StartDate.ToString("dd/MM/yyyy")</td>
+                                                        <td>@item.EndDate.ToString("dd/MM/yyyy")</td>
+                                                        <td>@item.StartLeaveId</td>
+                                                        <td>@item.EndeaveId</td>
+                                                        <td>@item.TypeOfLeaveId</td>
+                                                        <td>@item.Reason</td>
+                                                        <td>@item.PaidCountLeave</td>
+                                                        <td>@item.UnPaidCountLeave</td>
+                                                        <td>
+                                                            @if ((bool)item.Isapprove)
+                                                            {
+                                                                <a href="/Vendor/UpdateLeaveApplyStatus?Id=@item.Id" class="btn btn-success"
+                                                                   onclick="return confirm('Are you sure you want to inactivate this leave?');">
+                                                                    Approve
+                                                                </a>
+                                                            }
+                                                            else
+                                                            {
+                                                                <a href="/Vendor/UpdateLeaveApplyStatus?Id=@item.Id" class="btn btn-danger"
+                                                                   onclick="return confirm('Are you sure you want to activate leave for @item.UserId?');">
+                                                                    Disapprove
+                                                                </a>
+                                                            }
+                                                        </td>
+                                                    </tr> 
+                                                }
+                                            }
+                                        </tbody>
+
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="pagination-container">
+                <ul id="pagination" class="pagination"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    var currentPage = 1;
+    var rowsPerPage = 5;
+
+    $(document).ready(function () {
+        function paginateTable() {
+            var table = $('#datatable');
+            var rows = table.find('tbody tr');
+
+            var totalPages = Math.ceil(rows.length / rowsPerPage);
+
+            var pagination = $('#pagination');
+            pagination.empty();
+
+            for (var i = 1; i <= totalPages; i++) {
+                var link = $('<li class="page-item"><a class="page-link" href="#">' + i + '</a></li>');
+
+                if (i === currentPage) {
+                    link.addClass('active');
+                }
+
+                pagination.append(link);
+            }
+
+            var startIndex = (currentPage - 1) * rowsPerPage;
+            var endIndex = startIndex + rowsPerPage;
+
+            rows.hide().slice(startIndex, endIndex).show();
+        }
+
+        paginateTable();
+
+        $(document).on('click', '#pagination li a', function (event) {
+            event.preventDefault();
+
+            var clickedPage = parseInt($(this).text());
+
+            currentPage = clickedPage;
+            paginateTable();
+
+            $('html, body').animate({ scrollTop: $('#datatable').offset().top }, 'slow');
+        });
+    });
+</script>
