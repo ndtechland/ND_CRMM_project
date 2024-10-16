@@ -4,6 +4,8 @@
     {
         public int Id { get; set; }
         public string? UserId { get; set; }
+        public string? EmployeeName { get; set; }
+        public string? EmpMobileNumber { get; set; }
         public string? StartLeaveId { get; set; }
         public string EndeaveId { get; set; }
         public string TypeOfLeaveId { get; set; }

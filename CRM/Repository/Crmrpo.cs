@@ -2493,34 +2493,48 @@ namespace CRM.Repository
                     .ToListAsync();
 
                 var leaveDetails = await _context.ApplyLeaveNews
-                    .Where(x => employeeIds.Contains(x.UserId))
-                    .OrderByDescending(x => x.Id)
-                    .Select(x => new ApprovedLeaveApplyList
-                    {
-                        Id = x.Id,
-                        UserId = x.UserId,
-                        StartLeaveId = _context.Leaves
-                            .Where(s => s.Id == x.StartLeaveId)
-                            .Select(s => s.Typeofleave)
-                            .FirstOrDefault() ?? "Unknown",
-                        EndeaveId = _context.Leaves
-                            .Where(s => s.Id == x.EndeaveId)
-                            .Select(s => s.Typeofleave)
-                            .FirstOrDefault() ?? "Unknown",
-                        TypeOfLeaveId = _context.LeaveTypes
-                            .Where(s => s.Id == x.TypeOfLeaveId)
-                            .Select(s => s.Leavetype1)
-                            .FirstOrDefault() ?? "Unknown",
-                        StartDate = x.StartDate,
-                        EndDate = x.EndDate,
-                        CreatedDate = x.CreatedDate,
-                        UnPaidCountLeave = x.CountLeave,
-                        Month = x.Month,
-                        Reason = x.Reason,
-                        Isapprove = x.Isapprove,
-                        PaidCountLeave = x.PaidCountLeave,
-                    })
-                    .ToListAsync();
+    .Where(x => employeeIds.Contains(x.UserId))
+    .OrderByDescending(x => x.Id)
+    .Select(x => new ApprovedLeaveApplyList
+    {
+        Id = x.Id,
+        UserId = x.UserId,
+        EmployeeName = _context.EmployeeRegistrations
+            .Where(e => e.EmployeeId == x.UserId)
+            .Select(e => new
+            {
+                FullName = $"{e.FirstName} {(e.MiddleName != null ? e.MiddleName + " " : "")}{e.LastName}"
+            })
+            .FirstOrDefault().FullName ?? "Unknown",
+        EmpMobileNumber = _context.EmployeePersonalDetails
+            .Where(e => e.EmpRegId == x.UserId)
+            .Select(e => e.MobileNumber).FirstOrDefault(),
+        StartLeaveId = _context.Leaves
+            .Where(s => s.Id == x.StartLeaveId)
+            .Select(s => s.Typeofleave)
+            .FirstOrDefault() ?? "Unknown",
+
+        EndeaveId = _context.Leaves
+            .Where(s => s.Id == x.EndeaveId)
+            .Select(s => s.Typeofleave)
+            .FirstOrDefault() ?? "Unknown",
+
+        TypeOfLeaveId = _context.LeaveTypes
+            .Where(s => s.Id == x.TypeOfLeaveId)
+            .Select(s => s.Leavetype1)
+            .FirstOrDefault() ?? "Unknown",
+
+        StartDate = x.StartDate,
+        EndDate = x.EndDate,
+        CreatedDate = x.CreatedDate,
+        UnPaidCountLeave = x.CountLeave,
+        Month = x.Month,
+        Reason = x.Reason,
+        Isapprove = x.Isapprove,
+        PaidCountLeave = x.PaidCountLeave,
+    })
+    .ToListAsync();
+
 
                 return leaveDetails; 
             }
