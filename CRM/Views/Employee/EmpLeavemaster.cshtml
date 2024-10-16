@@ -8,18 +8,18 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-
-
-
-
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
-
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css">
+<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js"></script>
 
-
+<style>
+    .dataTables_wrapper table.dataTable th {
+        background-color: #00baf2 !important;
+        padding: 24px 0.75rem !important;
+    }
+</style>
 <style>
     .select2-container .select2-selection--single {
         height: 34px !important;
@@ -105,7 +105,18 @@
                                 <form method="post" asp-controller="Employee" asp-action="EmpLeavemaster" autocomplete="off" onsubmit="return validateForm()">
                                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                                     <div class="row">
-                                        <div class="form-group col-md-4">
+                                        <div class="form-group col-md-6">
+                                            <label for="TxtEmpId">Employee Id</label>
+                                            <select id="TxtEmpId" name="EmpId" class="form-control select2">
+                                                <option value="0">-- Select EmployeeId --</option>
+                                                @foreach (var item in ViewBag.EmployeeId)
+                                                {
+                                                    <option value="@item.Value">@item.Text</option>
+                                                }
+                                            </select>
+                                            <span asp-validation-for="EmpId" class="text-danger"></span>
+                                        </div>
+                                        <div class="form-group col-md-6">
                                             <input type="hidden" value='@ViewBag.id' name="Id" />
                                             <label for="exampleInputEmail1">Leave Type</label>
                                             <select name="LeavetypeId" class="form-control" id="TxtLeavetypeId">
@@ -117,22 +128,15 @@
                                             </select>
                                             <span asp-validation-for="LeavetypeId" class="text-danger"></span>
                                         </div>
-
-                                        <div class="form-group col-md-4">
+                                        <div class="form-group col-md-6">
                                             <label for="exampleInputEmail1">Leave Value</label>
                                             <input type="text" class="form-control" value='@ViewBag.Value' required id="txtJobTtle" placeholder="Leave Value 1.5" name="Value" onkeydown="validateNumericInput(event)">
                                             <span asp-validation-for="Value" class="text-danger"></span>
                                         </div>
-                                        <div class="form-group col-md-4">
-                                            <label for="TxtEmpId">Employee Id</label>
-                                            <select id="TxtEmpId" name="EmpId" class="form-control select2">
-                                                <option value="0">-- Select EmployeeId --</option>
-                                                @foreach (var item in ViewBag.EmployeeId)
-                                                {
-                                                    <option value="@item.Value">@item.Text</option>
-                                                }
-                                            </select>
-                                            <span asp-validation-for="EmpId" class="text-danger"></span>
+                                        <div class="form-group col-md-6">
+                                            <label for="exampleInputEmail1">Leave StartDate</label>
+                                            <input type="date" class="form-control" value='@ViewBag.LeaveStartDate' required id="txtJobTtle" name="LeaveStartDate">
+                                            <span asp-validation-for="LeaveStartDate" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="form-group" style="display:flex; justify-content:center;">
@@ -151,13 +155,14 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class=" table-responsive">
-                                    <table id="datatable" class="table table-responsive">
+                                    <table id="datatable" class="table table-hover">
                                         <thead>
                                             <tr style="background-color: #00baf2;">
                                                 <th nowrap>Sl. No.</th>
-                                                <th nowrap>Leavetype Id</th>
-                                                <th nowrap>Value</th>
                                                 <th nowrap>EmployeeId</th>
+                                                <th nowrap>Leave Type</th>
+                                                <th nowrap>Value</th>
+                                                <th nowrap>Leave StartDate</th>
                                                 <th nowrap>Added On</th>
                                                 <th nowrap>Action</th>
                                             </tr>
@@ -173,9 +178,10 @@
                                                             <tr>
 
                                                                 <th scope="row">@count</th>
+                                                                <td>@item.EmpId</td>
                                                                 <td>@item.LeavetypeId</td>
                                                                 <td>@item.Value</td>
-                                                                <td>@item.EmpId</td>
+                                                            <td style="white-space: nowrap">@item.LeaveStartDate?.ToString("dd/MM/yyyy")</td>
                                                                 <td style="white-space: nowrap">@item.Createddate?.ToString("dd/MM/yyyy")</td>
                                                                 <td>
                                                                     <div>
@@ -184,7 +190,6 @@
 
                                                                     </div>
                                                                 </td>
-
                                                             </tr>
                                                     }
                                                 }
@@ -224,57 +229,6 @@
         $("#TxtLeavetypeId").val(selectedLeavetypeId);
     }
 </script>
-<script>
-    var currentPage = 1;
-    var rowsPerPage = 10;
-    $(document).ready(function () {
-        function paginateTable() {
-            var table = $('#datatable');
-            var rows = table.find('tbody tr');
-
-
-            var totalPages = Math.ceil(rows.length / rowsPerPage);
-
-
-            var pagination = $('#pagination');
-            pagination.empty();
-
-            for (var i = 1; i <= totalPages; i++) {
-                var link = $('<li class="page-item"><a class="page-link" href="#">' + i + '</a></li>');
-
-
-                if (i === currentPage) {
-                    link.addClass('active');
-                }
-
-                pagination.append(link);
-            }
-
-
-            var startIndex = (currentPage - 1) * rowsPerPage;
-            var endIndex = startIndex + rowsPerPage;
-
-            rows.hide().slice(startIndex, endIndex).show();
-        }
-
-
-        paginateTable();
-
-        $(document).on('click', '#pagination li a', function (event) {
-            event.preventDefault();
-
-            var clickedPage = parseInt($(this).text());
-
-
-            currentPage = clickedPage;
-            paginateTable();
-
-
-            $('html, body').animate({ scrollTop: $('#table-container').offset().top }, 'slow');
-        });
-    });
-
-</script>
 <script type="text/javascript">
     function confirmDelete(url) {
         var result = confirm("Are you sure you want to delete..");
@@ -299,3 +253,23 @@
 
 </script>
 
+<script>
+    $(document).ready(function () {
+        document.title = 'Leavemaster';
+        $('#datatable').DataTable(
+            {
+                "dom": '<"dt-buttons"Bf><"clear">lirtp',
+                "paging": true,
+                "autoWidth": true,
+                "buttons": [
+                    'colvis',
+                    'copyHtml5',
+                    'csvHtml5',
+                    'excelHtml5',
+                    'pdfHtml5',
+                    'print'
+                ]
+            }
+        );
+    });
+</script>

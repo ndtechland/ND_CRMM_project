@@ -1985,7 +1985,8 @@ namespace CRM.Repository
                                         Value = lm.Value,
                                         EmpId = lm.EmpId,
                                         Createddate = lm.Createddate,
-                                        IsActive = lm.IsActive
+                                        IsActive = lm.IsActive,
+                                        LeaveStartDate =lm.LeaveStartDate,
                                     }).ToListAsync();
 
                 return result;

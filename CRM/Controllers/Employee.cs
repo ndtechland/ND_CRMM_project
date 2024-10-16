@@ -2359,7 +2359,7 @@ namespace CRM.Controllers
                     }).ToList();
                     ViewBag.id = 0;
                     ViewBag.LeavetypeId = "";
-                    ViewBag.Value = "";
+                    ViewBag.LeaveStartDate = "";
                     ViewBag.EmpId = "";
                     ViewBag.Status = "";
                     ViewBag.heading = "Add Leavemaster :";
@@ -2375,6 +2375,7 @@ namespace CRM.Controllers
                             ViewBag.Value = data.Value;
                             ViewBag.EmpId = data.EmpId;
                             ViewBag.Status = data.IsActive;
+                            ViewBag.LeaveStartDate = data.LeaveStartDate;
                             ViewBag.btnText = "UPDATE";
                             ViewBag.heading = "Update Leavemaster :";
 
@@ -2431,7 +2432,9 @@ namespace CRM.Controllers
                         existingEntity.Value = model.Value;
                         existingEntity.EmpId = model.EmpId;
                         existingEntity.IsActive = model.IsActive;
-                        existingEntity.LeaveUpdateDate = DateTime.Now;
+                        existingEntity.Createddate = DateTime.Now.Date;
+                        existingEntity.LeaveStartDate = DateTime.Now.Date;
+                        existingEntity.LeaveUpdateDate = DateTime.Now.Date;
                         _context.SaveChanges();
                         TempData["Message"] = "Records has Update successfully.";
                     }
@@ -2445,8 +2448,10 @@ namespace CRM.Controllers
                         LeavetypeId = Convert.ToInt16(model.LeavetypeId),
                         EmpId = model.EmpId,
                         Value = model.Value,
-                        IsActive = true,
+                        LeaveStartDate = (DateTime)model.LeaveStartDate,
+                        IsActive = false,
                         Createddate = DateTime.Now.Date,
+                        LeaveUpdateDate = DateTime.Now.Date,
                     };
 
 

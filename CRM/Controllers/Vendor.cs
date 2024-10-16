@@ -1461,9 +1461,6 @@ namespace CRM.Controllers
             }
         }
 
-
-
-
         [HttpPost]
         public async Task<IActionResult> EmpTaskslist(/*EmpTasknameDto*/ EmployeeTaskModel model, string[] Taskname, int[] TaskStatusId)
         {

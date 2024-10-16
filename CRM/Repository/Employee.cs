@@ -389,7 +389,7 @@ namespace CRM.Repository
             leavedto GetleaveList = new leavedto();
             GetleaveList.GetLeaveTypeList = (from lm in _context.Leavemasters
                                              join lty in _context.LeaveTypes on lm.LeavetypeId equals lty.Id
-                                             where lm.EmpId == userid
+                                             where lm.EmpId == userid &&  lm.IsActive == true
                                              select new LeaveTypeValue
                                              {
                                                  Id = lm.LeavetypeId,
@@ -544,9 +544,9 @@ namespace CRM.Repository
                 decimal CountLeave = (decimal)0.00;
                 decimal PaidCountLeave = (decimal)0.00;
                 decimal Balance = (decimal)0.00;
-                
+
                 var TypeOfLeave = _context.Leavemasters.Where(x => x.LeavetypeId == model.TypeOfLeaveId && x.EmpId == userid).FirstOrDefault();
-                
+
                 if (model.EndDate != model.StartDate)
                 {
                     total = (model.EndDate - model.StartDate).Days - 1;
@@ -593,7 +593,7 @@ namespace CRM.Repository
                         FDSecond = await _context.Leaves.Where(x => x.Id == model.EndeaveId).ToListAsync();
                     }
                 }
-                 
+
 
                 if (total == 0)
                 {
@@ -624,7 +624,7 @@ namespace CRM.Repository
 
                     total = Math.Max(0, total + (TotalLeaveFirst + TotalLeaveSecond));
                     decimal currentLeaveValue = TypeOfLeave.Value ?? 0m;
-                    if(currentLeaveValue > 0)
+                    if (currentLeaveValue > 0)
                     {
                         CountLeave = Math.Min(total, currentLeaveValue);
                         TypeOfLeave.Value -= CountLeave;
@@ -638,7 +638,7 @@ namespace CRM.Repository
                         PaidCountLeave = CountLeave;
                         Balance = Math.Min(total, currentLeaveValue);
                     }
-                   
+
                 }
                 int month = DateTime.Now.Month;
                 ApplyLeaveNews apply = new ApplyLeaveNews()
@@ -654,11 +654,11 @@ namespace CRM.Repository
                     CountLeave = Balance,
                     PaidCountLeave = PaidCountLeave,
                     Month = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month),
-                    Isapprove =false
+                    Isapprove = false
                 };
                 await _context.ApplyLeaveNews.AddAsync(apply);
                 await _context.SaveChangesAsync();
-                
+
 
                 return true;
             }
@@ -2219,7 +2219,7 @@ namespace CRM.Repository
                         CountLeave = p.CountLeave,
                         PaidCountLeave = p.PaidCountLeave
                     })
-                    .ToListAsync(); 
+                    .ToListAsync();
                 if (leave == null)
                 {
                     throw new Exception("No leave application found for the specified user.");
@@ -2351,5 +2351,27 @@ namespace CRM.Repository
                 throw new Exception("Error: " + ex.Message, ex);
             }
         }
+
+        public async Task<List<getattendancegraph>> GetEmpGraph(string userid)
+        {
+            try
+            {
+                var graph = await _context.EmployeeCheckInRecords
+                    .Where(x => x.EmpId == userid && x.CurrentDate != null)
+                    .GroupBy(x => x.CurrentDate.Value.Month) 
+                    .Select(g => new getattendancegraph
+                    {
+                        Month = getMonthName(g.Key),
+                        Value = g.Count() 
+                    }).ToListAsync();
+
+                return graph;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error: " + ex.Message);
+            }
+        }
+
     }
 }
