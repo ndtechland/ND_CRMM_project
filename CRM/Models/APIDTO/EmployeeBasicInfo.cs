@@ -122,11 +122,24 @@ namespace CRM.Models.APIDTO
         public int? TotalAbsentDays { get; set; }
         public string? Attendance { get; set; }
     }
-    public class TotalLeave
+    public class TotalLeavelist
     {
         public int? id { get; set; }
         public DateTime? Leavedate { get; set; }
         public string? Reason { get; set; }
+        public decimal? Nodays { get; set; }
         public string? LeaveType { get; set; }
+    }
+    public class TotalLeave
+    {
+        public decimal? TotalLeaves { get; set; }
+        public List<TotalLeavelist> Type { get; set; }
+    }
+    public class getTotalLeave
+    {
+        public string? Reason { get; set; }
+        public decimal? Totaldays { get; set; }
+        public decimal? PaidLeave { get; set; }
+        public decimal? UnPaidLeave { get; set; }
     }
 }

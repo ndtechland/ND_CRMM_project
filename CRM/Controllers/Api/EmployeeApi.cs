@@ -1477,13 +1477,55 @@ namespace CRM.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> EmpTotalLeaves()
         {
-            var response = new Response<List<TotalLeave>>();
+            var response = new Response<TotalLeave>();
             try
             {
                 if (User.Identity.IsAuthenticated)
                 {
                     var userid = User.Claims.FirstOrDefault().Value;
-                    List<TotalLeave> isLoginExists = await _apiemp.Getleavelist(userid);
+                    TotalLeave isLoginExists = await _apiemp.Getleavelist(userid);
+                    if (isLoginExists != null)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = "Employee TotalLeaves Here.";
+                        response.Data = isLoginExists;
+                        return Ok(response);
+                    }
+                    else
+                    {
+                        response.StatusCode = StatusCodes.Status401Unauthorized;
+                        response.Message = "Data not found.";
+                        return Ok(response);
+                    }
+                }
+                else
+                {
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Message = "Token is expired.";
+                    return BadRequest(response);
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        [Route("EmpTotalLeavesbyid")]
+        [HttpGet]
+        public async Task<IActionResult> EmpTotalLeavesbyid(int id)
+        {
+            var response = new Response<getTotalLeave>();
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userid = User.Claims.FirstOrDefault().Value;
+                    getTotalLeave isLoginExists = await _apiemp.GetEmptotalleave(userid, id);
                     if (isLoginExists != null)
                     {
                         response.Succeeded = true;
