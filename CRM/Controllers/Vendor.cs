@@ -1390,51 +1390,7 @@ namespace CRM.Controllers
         }
 
         [HttpGet, Route("Vendor/EmpTaskslist")]
-        //public async Task<IActionResult> EmpTaskslist(int? id = 0)
-        //{
-        //    if (HttpContext.Session.GetString("UserName") != null)
-        //    {
-        //        string AddedBy = HttpContext.Session.GetString("UserName");
-        //        int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
-        //        var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
-        //        var emplist = _context.EmployeeRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).FirstOrDefault();
-        //        List<EmpTasknameDto> response = await _context.EmployeeTasksLists.OrderByDescending(x => x.Id)
-        //       .Select(x => new EmpTasknameDto
-        //       {
-        //           Id = x.Id,
-        //           Emptask = _context.EmployeeTasks.Where(a => a.Id == x.Emptaskid).Select(t => t.Task).FirstOrDefault(),
-        //           Taskname = x.Taskname,
-        //           TaskStatus = _context.TaskStatuses.Where(a => a.Id == x.TaskStatus).Select(status => status.StatusName).FirstOrDefault(),
-        //           EmployeeId = x.EmployeeId,
-        //       }).ToListAsync();
-        //        ViewBag.EmployeeId = _context.EmployeeRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).Select(D => new SelectListItem
-        //        {
-        //            Value = D.EmployeeId.ToString(),
-        //            Text = D.EmployeeId
-        //        }).ToList();
-        //        ViewBag.UserName = AddedBy;
-        //        ViewBag.Taskname = "";
-        //        ViewBag.Emptaskid = "";
-        //        ViewBag.EmpId = "";
-        //        ViewBag.Heading = "Add TaskName";
-        //        ViewBag.BtnText = "SAVE";
-        //        if (id != 0)
-        //        {
-        //            var data = await _context.EmployeeTasksLists.Where(x => x.Id == id).FirstOrDefaultAsync();
-        //            ViewBag.id = data.Id;
-        //            ViewBag.Taskname = data.Taskname;
-        //            ViewBag.Emptaskid = data.Emptaskid;
-        //            ViewBag.EmpId = data.EmployeeId;
-        //            ViewBag.Heading = "Update TaskName";
-        //            ViewBag.BtnText = "UPDATE";
-        //        }
-        //        return View(response);
-        //    }
-        //    else
-        //    {
-        //        return RedirectToAction("Login", "Admin");
-        //    }
-        //}
+        
         public async Task<IActionResult> EmpTaskslist(int? id = 0)
         {
             if (HttpContext.Session.GetString("UserName") != null)
@@ -1573,22 +1529,7 @@ namespace CRM.Controllers
                     await _context.SaveChangesAsync();
                     TempData["Message"] = "Data Update Successfully.";
                     return RedirectToAction("EmpTaskslist", "Vendor");
-                    //var existingData = await _context.EmployeeTasksLists.FindAsync(model.Id);
-                    //if (existingData != null)
-                    //{
-                    //    existingData.Emptaskid = Convert.ToInt16(model.Emptask);
-                    //    existingData.EmployeeId = model.EmployeeId;
-                    //    existingData.Taskname = Taskname.FirstOrDefault(); 
-                    //    await _context.SaveChangesAsync();
-
-                    //    TempData["Message"] = "Data Update Successfully.";
-                    //    return RedirectToAction("EmpTaskslist", "Vendor");
-                    //}
-                    //else
-                    //{
-                    //    ModelState.AddModelError("", "Record not found for update.");
-                    //    return View(model);
-                    //}
+                     
                 }
                 else
                 {
@@ -1892,19 +1833,57 @@ namespace CRM.Controllers
                 throw new Exception("Error Message : " + ex.Message, ex);
             }
         }
+        
         public async Task<IActionResult> UpdateLeaveApplyStatus(int Id)
         {
             var leave = await _context.ApplyLeaveNews.FirstOrDefaultAsync(x => x.Id == Id);
+            var empinfo = await _context.EmployeeRegistrations.FirstOrDefaultAsync(x => x.EmployeeId == leave.UserId);
+            var emppersonalinfo = await _context.EmployeePersonalDetails.FirstOrDefaultAsync(x => x.EmpRegId == leave.UserId);
 
             if (leave == null)
             {
                 TempData["msg"] = "Data not found!";
                 return RedirectToAction("ApprovedLeaveApply");
             }
+
             leave.Isapprove = !leave.Isapprove;
             await _context.SaveChangesAsync();
+
+            string subject;
+            string emailBody;
+
+           
+            if (leave.Isapprove == true)
+            {
+                subject = "Leave Approval Accepted";
+                emailBody = $"Dear {empinfo.FirstName} {empinfo.MiddleName} {empinfo.LastName},\n\nYour leave application has been approved.";
+            }
+            else
+            {
+                subject = "Leave Approval Rejected";
+                emailBody = $"Dear {empinfo.FirstName} {empinfo.MiddleName} {empinfo.LastName},\n\nWe regret to inform you that your leave application has been rejected.";
+            }
+
+            try
+            { 
+                await _emailService.SendEmpLeaveApprovalEmailAsync(emppersonalinfo.PersonalEmailAddress, empinfo.FirstName, empinfo.MiddleName, empinfo.LastName, subject, emailBody);
+
+                TempData["msg"] = (bool)leave.Isapprove
+                    ? "Approval status updated successfully and approval email sent!"
+                    : "Approval status updated successfully and rejection email sent!";
+            }
+            catch (Exception ex) 
+            {
+                TempData["msg"] = (bool)leave.Isapprove
+                    ? "Approval status updated successfully, but failed to send approval email."
+                    : "Approval status updated successfully, but failed to send rejection email.";
+                
+            }
+
             return RedirectToAction("ApprovedLeaveApply");
         }
+
+
 
     }
 }

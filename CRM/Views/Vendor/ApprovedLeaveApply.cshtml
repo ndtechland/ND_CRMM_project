@@ -42,15 +42,17 @@
                         <div class="col-lg-6">
                             <div class="page-header-left">
                                 <h2>
-                                    Approved Leave Applications
+                                    Employee Leave Applied List
                                 </h2>
                             </div>
                         </div>
                         <div class="col-lg-6">
                             <ol class="breadcrumb pull-right">
                                 <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
-                                <li class="breadcrumb-item">Leave</li>
-                                <li class="breadcrumb-item active">Approved Leave List</li>
+                                <li class="breadcrumb-item">Approval</li>
+                                <li class="breadcrumb-item active">
+                                    Leave Applied List
+                                </li>
                             </ol>
                         </div>
                     </div>
@@ -67,8 +69,10 @@
                                     <table id="datatable" class="table table-responsive">
                                         <thead>
                                             <tr style="background-color: #00baf2;">
-                                                <th>Sl. No.</th>
+                                                <th nowrap>Sl. No.</th>
                                                 <th nowrap>Employee ID</th>
+                                                <th nowrap>Employee Name</th>
+                                                <th nowrap>Mobile Number</th>
                                                 <th nowrap>Start Date</th>
                                                 <th nowrap>End Date</th>
                                                 <th nowrap>Start Type of Leave</th>
@@ -88,9 +92,11 @@
                                                     count++;
                                                     <tr>
                                                         <td>@count</td>
-                                                        <td>@item.UserId</td>
-                                                        <td>@item.StartDate.ToString("dd/MM/yyyy")</td>
-                                                        <td>@item.EndDate.ToString("dd/MM/yyyy")</td>
+                                                        <td nowrap>@item.UserId</td>
+                                                        <td nowrap>@item.EmployeeName</td>
+                                                        <td nowrap>@item.EmpMobileNumber</td>
+                                                        <td nowrap>@item.StartDate.ToString("dd/MMM/yyyy")</td>
+                                                        <td nowrap>@item.EndDate.ToString("dd/MMM/yyyy")</td>
                                                         <td>@item.StartLeaveId</td>
                                                         <td>@item.EndeaveId</td>
                                                         <td>@item.TypeOfLeaveId</td>
@@ -101,15 +107,15 @@
                                                             @if (item.Isapprove == true)
                                                             {
                                                                 <a href="@Url.Action("UpdateLeaveApplyStatus", "Vendor", new { Id = item.Id })" class="btn btn-success"
-                                                                   onclick="return confirm('Are you sure you want to inactivate @item.UserId?');">
-                                                                    Approve
+                                                                   onclick="return confirm('Are you sure you want to disapproved leave?');">
+                                                                    Approved
                                                                 </a>
                                                             }
                                                             else
                                                             {
                                                                 <a href="@Url.Action("UpdateLeaveApplyStatus", "Vendor", new { Id = item.Id })" class="btn btn-danger"
-                                                                   onclick="return confirm('Are you sure you want to activate @item.UserId?');">
-                                                                    Disapprove
+                                                                   onclick="return confirm('Are you sure you want to approved leave?');">
+                                                                    Disapproved
                                                                 </a>
                                                             }
                                                         </td>

@@ -14,6 +14,6 @@ namespace CRM.Repository
         Task SendEmailCredentials(string toEmail,string CompanyName, string username, string password);
         Task EmpRandomPasswordSendEmailAsync(ForgotPassword model, string newPassword);
         Task SendInvoicePdfEmail(string toEmail, string body, byte[] filecontent, string filename, string mimetype);
-
+        Task SendEmpLeaveApprovalEmailAsync(string ToEmpEmail, string FirstName, string MiddleName, string LastName, string Subject, string emailBody);
     }
 }
