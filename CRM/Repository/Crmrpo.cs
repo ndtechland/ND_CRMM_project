@@ -183,7 +183,7 @@ namespace CRM.Repository
                             AlternateNumber = rdr["Alternate_number"] == DBNull.Value ? "0" : Convert.ToString(rdr["Alternate_number"]),
                             Email = rdr["Email"] == DBNull.Value ? "0" : Convert.ToString(rdr["Email"]),
                             GstNumber = rdr["GST_Number"] == DBNull.Value ? "0" : Convert.ToString(rdr["GST_Number"]),
-                            BillingAddress = rdr["Billing_Address"] == DBNull.Value ? "0" : Convert.ToString(rdr["Billing_Address"]),                            
+                            BillingAddress = rdr["Billing_Address"] == DBNull.Value ? "0" : Convert.ToString(rdr["Billing_Address"]),
                             OfficeState = rdr["OfficeState"] == DBNull.Value ? null : Convert.ToString(rdr["OfficeState"]),
                             BillingState = rdr["BillingState"] == DBNull.Value ? null : Convert.ToString(rdr["BillingState"]),
                             BillingCity = rdr["BillingCity"] == DBNull.Value ? null : Convert.ToString(rdr["BillingCity"]),
@@ -2053,7 +2053,7 @@ namespace CRM.Repository
                                     ProductPrice = p.ProductPrice,
                                     IsActive = p.IsActive,
                                     CreatedAt = p.CreatedAt
-                                }).OrderByDescending(x=>x.Id).ToListAsync();
+                                }).OrderByDescending(x => x.Id).ToListAsync();
 
             return result;
         }
@@ -2118,7 +2118,7 @@ namespace CRM.Repository
         {
             try
             {
-                var existing= await _context.EmpExperienceletters.FindAsync(model.Id);
+                var existing = await _context.EmpExperienceletters.FindAsync(model.Id);
                 if (existing != null)
                 {
                     existing.CurrDesignationId = model.CurrDesignationId;
@@ -2168,54 +2168,52 @@ namespace CRM.Repository
         {
             try
             {
-                //if (model.Id == 0)
-                //{
-                    foreach (var product in model)  
+
+                var AlreadyInvoiceNo = string.Empty;
+                foreach (var product in model)
+                {
+                    var data = _context.CustomerInvoices.FirstOrDefault(ci => ci.Id == product.Id);
+                    if (product.Id == 0)
                     {
-                    var data = new CustomerInvoice()
-                    {
-                        VendorId = vendorid,
-                        CustomerId = product.CustomerId,
-                        ProductId = product.ProductId,
-                        Description = product.Description,
-                        ProductPrice = product.ProductPrice,
-                        RenewPrice = product.RenewPrice,
-                        NoOfRenewMonth = product.NoOfRenewMonth,
-                        Hsncode = product.HsnSacCode,
-                        StartDate = product.StartDate,
-                        RenewDate = product.RenewDate,
-                        Igst = product.IGST,
-                        Sgst = product.SGST,
-                        Cgst = product.CGST,
-                        InvoiceNumber = InvoiceNo,
+                        var Customerdata = new CustomerInvoice()
+                        {
+                            VendorId = vendorid,
+                            CustomerId = product.CustomerId,
+                            ProductId = product.ProductId,
+                            Description = product.Description,
+                            ProductPrice = product.ProductPrice,
+                            RenewPrice = product.RenewPrice,
+                            NoOfRenewMonth = product.NoOfRenewMonth,
+                            Hsncode = product.HsnSacCode,
+                            StartDate = product.StartDate,
+                            RenewDate = product.RenewDate,
+                            Igst = product.IGST,
+                            Sgst = product.SGST,
+                            Cgst = product.CGST,
+                            InvoiceNumber = string.IsNullOrEmpty(AlreadyInvoiceNo) ? InvoiceNo : AlreadyInvoiceNo,
                             CreatedDate = DateTime.Now
                         };
-                        _context.Add(data);
+                        _context.Add(Customerdata);
+                        _context.SaveChanges();
                     }
-                    _context.SaveChanges();
-                    return true;
-                //}
-                //else
-                //{
-                //    var data = _context.CustomerInvoices.FirstOrDefault(ci => ci.Id == model.Id);
-                //    if (data != null)
-                //    { 
-                //        data.ProductPrice = model.ProductPrice;
-                //        data.RenewPrice = model.RenewPrice;
-                //        data.NoOfRenewMonth = model.NoOfRenewMonth;
-                //        data.Hsncode = model.Hsncode;
-                //        data.StartDate = model.StartDate;
-                //        data.RenewDate = model.RenewDate;
-                //        data.Igst = model.Igst;
-                //        data.Sgst = model.Sgst;
-                //        data.Cgst = model.Cgst;
+                    else
+                    {
+                        
+                        if (data != null)
+                        {
+                            data.ProductPrice = product.ProductPrice;
+                            data.RenewPrice = product.RenewPrice;
+                            data.NoOfRenewMonth = product.NoOfRenewMonth;
+                            data.StartDate = product.StartDate;
+                            data.RenewDate = product.RenewDate;
 
-                //        _context.Update(data);
-                //        _context.SaveChanges();
-                //    }
-                //    return true;
-                //}
-
+                            _context.Update(data);
+                            _context.SaveChanges();
+                        }
+                        AlreadyInvoiceNo = data.InvoiceNumber;
+                    }
+                }
+                return true;
             }
             catch (Exception)
             {
@@ -2260,7 +2258,7 @@ namespace CRM.Repository
                                         IGST = grouped.FirstOrDefault().ci.Igst,
                                         SGST = grouped.FirstOrDefault().ci.Sgst,
                                         CGST = grouped.FirstOrDefault().ci.Cgst
-                                    }).OrderByDescending(o=>o.InvoiceId).ToListAsync();
+                                    }).OrderByDescending(o => o.InvoiceId).ToListAsync();
 
                 return result;
             }
@@ -2385,11 +2383,11 @@ namespace CRM.Repository
                 throw;
             }
         }
-        public async Task<bool> AddVendorBankDeatils(VendorBankDetail model,int VendorId)
+        public async Task<bool> AddVendorBankDeatils(VendorBankDetail model, int VendorId)
         {
             try
             {
-                if(model.Id==0)
+                if (model.Id == 0)
                 {
                     var domainmodel = new VendorBankDetail()
                     {
@@ -2406,7 +2404,7 @@ namespace CRM.Repository
                 }
                 else
                 {
-                    var data = _context.VendorBankDetails.Where(b=>b.Id==model.Id).FirstOrDefault();
+                    var data = _context.VendorBankDetails.Where(b => b.Id == model.Id).FirstOrDefault();
                     if (data != null)
                     {
                         data.AccountNumber = model.AccountNumber;
@@ -2422,7 +2420,7 @@ namespace CRM.Repository
                         return false;
                     }
                 }
-                
+
             }
             catch (Exception)
             {
@@ -2434,7 +2432,7 @@ namespace CRM.Repository
         {
             try
             {
-                var result = _context.VendorBankDetails.Where(x=>x.VendorId==VendorId).ToList();
+                var result = _context.VendorBankDetails.Where(x => x.VendorId == VendorId).ToList();
                 return result;
             }
             catch (Exception)

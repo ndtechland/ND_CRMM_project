@@ -186,7 +186,7 @@
                                                        
                                                         <td>
                                                             <div>
-                                                                <a href="/Sale/Invoice?Id=@item.CustomerId" class="fa fa-edit m-2 font-success"></a>
+                                                                <a href="/Sale/Invoice?InvoiceNumber=@item.InvoiceNumber" class="fa fa-edit m-2 font-success"></a>
 
                                                                 <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteCustomerInvoice", "Sale", new { InvoiceNumber = item.InvoiceNumber })')" class="fa fa-trash font-danger" ></a>
                                                                 <a href="@Url.Action("SendInvoicePDF", "Sale", new { InvoiceNumber = item.InvoiceNumber })"

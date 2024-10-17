@@ -56,6 +56,7 @@
                             </ol>
                         </div>
                     </div>
+                    <a href="/Sale/CustomerInvoiceList" class="btn btn-primary">Back to List</a>
                 </div>
             </div>
             <!-- Container-fluid Ends-->
@@ -140,10 +141,11 @@
                                         <!-- Initial Customer Section -->
                                         <div class="customer-section">
                                             <div class="row">
-
+                                                <input type="text" hidden class="form-control InvoiceNumber" name="InvoiceNumber" id="InvoiceNumber">
+                                                <input type="text" hidden class="form-control Id" name="Id" id="Id">
                                                 <div class="form-group col-sm">
                                                     <label for="ProductDetails">Product <span class="text-danger">*</span></label>
-                                                    @Html.DropDownListFor(model => model.ProductId, new SelectList(ViewBag.ProductDetails, "Value", "Text"), "-- Select Product --", new { @class = "form-control ProductDetails select2", required = "required", onchange = "updateTaxFields()" })
+                                                    @Html.DropDownListFor(model => model.ProductId, new SelectList(ViewBag.ProductDetails, "Value", "Text"), "-- Select Product --", new { @class = "form-control select2 ProductDetails", required = "required", onchange = "updateTaxFields()" })
                                                     <span asp-validation-for="ProductId" class="text-danger"></span>
                                                 </div>
                                                 <div class="form-group col-sm">
@@ -232,13 +234,13 @@
 <script>
     
     var productdata = '@Html.Raw(Json.Serialize(Model.customerInvoice))';
-    var ProductList = JSON.parse(productdata);
-    debugger
+    //var ProductList = JSON.parse(productdata);
 </script>
 
-<script src="~/js/invoice.js"></script>
-<script>
+
+@* <script>
     $('.select2').select2();
-</script>
+</script> *@
+<script src="~/js/invoice.js"></script>
 
  
