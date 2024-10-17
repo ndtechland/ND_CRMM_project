@@ -433,22 +433,25 @@ document.getElementById('customerSections').addEventListener('click', function (
         const sectionIdInput = section.querySelector('.Id'); // Get the hidden input within the section
         const sectionIdValue = sectionIdInput ? sectionIdInput.value : 0;
         if (sections.length > 1) { // Prevent removal if only one section is left
-            e.target.closest('.customer-section').remove();
-            if (sectionIdValue > 0) {
-                $.ajax({
-                    url: '/Sale/DeleteProdbyUpdate',
-                    type: 'POST',
-                    dataType: 'JSON',
-                    data: {
-                        id: sectionIdValue
-                    },
-                    success: function (result) {
-                        //window.location.href = result.path;
-                    },
-                    error: function (result) {
-                        console.log(result)
-                    }
-                })
+            const confirmed = confirm('Are you sure you want to delete this Product?');
+            if (confirmed) {
+                e.target.closest('.customer-section').remove();
+                if (sectionIdValue > 0) {
+                    $.ajax({
+                        url: '/Sale/DeleteProdbyUpdate',
+                        type: 'POST',
+                        dataType: 'JSON',
+                        data: {
+                            id: sectionIdValue
+                        },
+                        success: function (result) {
+                            //window.location.href = result.path;
+                        },
+                        error: function (result) {
+                            console.log(result)
+                        }
+                    })
+                }
             }
         } else {
             alert('At least one section must remain.');
