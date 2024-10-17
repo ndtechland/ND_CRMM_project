@@ -1097,11 +1097,12 @@ namespace CRM.Controllers
         }
         [HttpGet]
         [Route("/Employee/ESCDownloadExcel")]
-        public async Task<IActionResult> ESCDownloadExcel(string customerId, string WorkLocation)
+        public async Task<IActionResult> ESCDownloadExcel()
         {
             try
             {
-                var employeeList = await _ICrmrpo.ESCExcel(customerId, WorkLocation).ConfigureAwait(false);
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var employeeList = await _ICrmrpo.ESCExcel(Userid).ConfigureAwait(false);
                 if (employeeList.Count != 0)
                 {
                     using (var workbook = new XLWorkbook())
@@ -1578,20 +1579,21 @@ namespace CRM.Controllers
             return new JsonResult(result);
         }
 
-        //public IActionResult ImportToExcelAttendance(string customerId, string WorkLocation)
-        //{
-        //    try
-        //    {
-        //        var data = _ICrmrpo.salarydetail(customerId, WorkLocation).Result;
-        //        var response = _ICrmrpo.ImportToExcelAttendance(data);
-        //        return File(response, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Employee_Attandence_List.xlsx");
-        //    }
-        //    catch (Exception Ex)
-        //    {
-        //        throw Ex;
-        //    }
+        public IActionResult ImportToExcelAttendance()
+        {
+            try
+            {
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var data = _ICrmrpo.salarydetail(Userid).Result;
+                var response = _ICrmrpo.ImportToExcelAttendance(data);
+                return File(response, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Employee_Attandence_List.xlsx");
+            }
+            catch (Exception Ex)
+            {
+                throw Ex;
+            }
 
-        //}
+        }
 
         [HttpPost]
         public ActionResult ImportProductionExcel(IFormFile upload)

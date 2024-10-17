@@ -129,6 +129,7 @@ namespace CRM.Models.APIDTO
         public string? Reason { get; set; }
         public decimal? Nodays { get; set; }
         public string? LeaveType { get; set; }
+        public string? TypeofLeave { get; set; }
         public string? Leaveapplydate { get; set; }
         public string? LeaveSearchdate { get; set; }
 
@@ -148,7 +149,32 @@ namespace CRM.Models.APIDTO
 
     public class getattendancegraph
     {
+        public string? Year { get; set; }
         public string? Month { get; set; }
         public int? Value { get; set; }
+    }
+    public class getTasklist
+    {
+        public List<getReassignedTasklist> Reassigned { get; set; }
+        public List<getCompletedTasklist> Completed { get; set; }
+        public List<getUnCompletedTasklist> UnCompleted { get; set; }
+    }
+    public class getReassignedTasklist
+    {
+        public int? id { get; set; }
+        public string? Taskname { get; set; }
+        public string? status { get; set; }
+    }
+    public class getCompletedTasklist
+    {
+        public int? id { get; set; }
+        public string? Taskname { get; set; }
+        public string? status { get; set; }
+    }
+    public class getUnCompletedTasklist
+    {
+        public int? id { get; set; }
+        public string? Taskname { get; set; }
+        public string? status { get; set; }
     }
 }

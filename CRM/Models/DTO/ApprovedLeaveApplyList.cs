@@ -6,8 +6,8 @@
         public string? UserId { get; set; }
         public string? EmployeeName { get; set; }
         public string? EmpMobileNumber { get; set; }
-        public string? StartLeaveId { get; set; }
-        public string EndeaveId { get; set; }
+        public string? LeaveType { get; set; }
+        public decimal? TotalLeaves { get; set; }
         public string TypeOfLeaveId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }

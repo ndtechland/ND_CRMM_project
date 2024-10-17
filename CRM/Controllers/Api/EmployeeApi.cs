@@ -1493,6 +1493,15 @@ namespace CRM.Controllers.Api
                         response.Data = isLoginExists;
                         return Ok(response);
                     }
+                    else if (isLoginExists != null)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = "Employee Leaves has been processed.";
+                        response.Data = isLoginExists;
+                        return Ok(response);
+                    }
                     else
                     {
                         response.StatusCode = StatusCodes.Status401Unauthorized;
@@ -1583,6 +1592,107 @@ namespace CRM.Controllers.Api
                         response.StatusCode = StatusCodes.Status200OK;
                         response.Status = "Success";
                         response.Message = "Employee Graph detail is available.";
+                        response.Data = isLoginExists;
+                        return Ok(response);
+                    }
+                    else
+                    {
+                        response.StatusCode = StatusCodes.Status401Unauthorized;
+                        response.Message = "Data not found.";
+                        return Ok(response);
+                    }
+                }
+                else
+                {
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Message = "Token is expired.";
+                    return BadRequest(response);
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        [Route("EmpTasklist")]
+        [HttpGet]
+        public async Task<IActionResult> EmpTasklist()
+        {
+            var response = new Response<getTasklist>();
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userid = User.Claims.FirstOrDefault().Value;
+                    var isLoginExists = await _apiemp.gettasklist(userid);
+                    if (isLoginExists == null)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = "Employee does not have task detail.";
+                        response.Data = isLoginExists;
+                        return Ok(response);
+                    }
+                    else if (isLoginExists != null)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = "Employee task detail is available.";
+                        response.Data = isLoginExists;
+                        return Ok(response);
+                    }
+                    else
+                    {
+                        response.StatusCode = StatusCodes.Status401Unauthorized;
+                        response.Message = "Data not found.";
+                        return Ok(response);
+                    }
+                }
+                else
+                {
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Message = "Token is expired.";
+                    return BadRequest(response);
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        [Route("EmpSubTasklist")]
+        [HttpGet]
+        public async Task<IActionResult> EmpSubTasklist(int? SubTaskid)
+        {
+            var response = new Response<List<TasksassignlistDto>>();
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userid = User.Claims.FirstOrDefault().Value;
+                    List<TasksassignlistDto> isLoginExists = await _apiemp.getSubtasklist(userid, SubTaskid);
+                    if (isLoginExists.Count == 0)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = "Employee does not have Subtask detail.";
+                        response.Data = isLoginExists;
+                        return Ok(response);
+                    }
+                    else if (isLoginExists.Count != 0)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = "Employee Subtask detail is available.";
                         response.Data = isLoginExists;
                         return Ok(response);
                     }
