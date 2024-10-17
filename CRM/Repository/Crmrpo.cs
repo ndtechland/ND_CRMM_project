@@ -2181,6 +2181,7 @@ namespace CRM.Repository
         {
             try
             {
+
                 //if (model.Id == 0)
                 //{
                 foreach (var product in model)
@@ -2229,6 +2230,52 @@ namespace CRM.Repository
                 //    return true;
                 //}
 
+                var AlreadyInvoiceNo = string.Empty;
+                foreach (var product in model)
+                {
+                    var data = _context.CustomerInvoices.FirstOrDefault(ci => ci.Id == product.Id);
+                    if (product.Id == 0)
+                    {
+                        var Customerdata = new CustomerInvoice()
+                        {
+                            VendorId = vendorid,
+                            CustomerId = product.CustomerId,
+                            ProductId = product.ProductId,
+                            Description = product.Description,
+                            ProductPrice = product.ProductPrice,
+                            RenewPrice = product.RenewPrice,
+                            NoOfRenewMonth = product.NoOfRenewMonth,
+                            Hsncode = product.HsnSacCode,
+                            StartDate = product.StartDate,
+                            RenewDate = product.RenewDate,
+                            Igst = product.IGST,
+                            Sgst = product.SGST,
+                            Cgst = product.CGST,
+                            InvoiceNumber = string.IsNullOrEmpty(AlreadyInvoiceNo) ? InvoiceNo : AlreadyInvoiceNo,
+                            CreatedDate = DateTime.Now
+                        };
+                        _context.Add(Customerdata);
+                        _context.SaveChanges();
+                    }
+                    else
+                    {
+                        
+                        if (data != null)
+                        {
+                            data.ProductPrice = product.ProductPrice;
+                            data.RenewPrice = product.RenewPrice;
+                            data.NoOfRenewMonth = product.NoOfRenewMonth;
+                            data.Description = product.Description;
+                            data.StartDate = product.StartDate;
+                            data.RenewDate = product.RenewDate;
+
+                            _context.Update(data);
+                            _context.SaveChanges();
+                        }
+                        AlreadyInvoiceNo = data.InvoiceNumber;
+                    }
+                }
+                return true;
             }
             catch (Exception)
             {
@@ -2556,6 +2603,26 @@ namespace CRM.Repository
                 throw; 
             }
         }
+        public async Task<bool> AddEmployeeEpf(EmployeeEpfPayrollInfo model,int VendorId)
+        {
+            try
+            {
+                var domainmodel = new EmployeeEpfPayrollInfo()
+                {
+                    Epfnumber = model.Epfnumber,
+                    Epfpercentage = model.Epfpercentage,
+                    EmployeeId = model.EmployeeId,
+                    Vendorid = VendorId,
+                    CreatedDate = DateTime.Now,
+                    EffectiveDate = DateTime.Now,
+                    UpdatedDate = DateTime.Now
+                };
+                await _context.AddAsync(domainmodel);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
 
         private static string? GetLeaveType(int startLeaveId, int endLeaveId, decimal totalFullday)
         {
@@ -2579,6 +2646,10 @@ namespace CRM.Repository
             }
 
             return string.Join(", ", leaveTypes);
+        }
+
+                throw;
+            }
         }
 
     }
