@@ -332,13 +332,19 @@ function sendProductDetailsToAPI() {
     })
 }
     
-function formatDateToMMDDYYYY(dateString) {
+//function formatDateToMMDDYYYY(dateString) {
+//    if (!dateString) return '';
+
+//    const dateParts = dateString.split('-');  
+//    return `${dateParts[1]}/${dateParts[2]}/${dateParts[0]}`;  
+//}
+
+function formatDateToYYYYMMDD(dateString) {
     if (!dateString) return '';
 
-    const dateParts = dateString.split('-'); // Split the string into parts
-    return `${dateParts[1]}/${dateParts[2]}/${dateParts[0]}`; // Return formatted date
+    // Split the date string at 'T' and return the first part (the date)
+    return dateString.split('T')[0];
 }
-
 
 var ProductList = JSON.parse(productdata);
 
@@ -367,8 +373,8 @@ window.onload = function () {
             newSection.querySelector('.NoOfRenewMonth').value = product.noOfRenewMonth;
             newSection.querySelector('.RenewPrice').value = product.renewPrice;
             newSection.querySelector('.HsnSacCode').value = product.hsnSacCode;
-            newSection.querySelector('.StartDate').value = formatDateToMMDDYYYY(product.startDate);
-            newSection.querySelector('.RenewDate').value = formatDateToMMDDYYYY(product.renewDate);
+            newSection.querySelector('.StartDate').value = formatDateToYYYYMMDD(product.startDate);
+            newSection.querySelector('.RenewDate').value = formatDateToYYYYMMDD(product.renewDate);
             newSection.querySelector('.IGST').value = product.iGST;
             newSection.querySelector('.SGST').value = product.sGST;
             newSection.querySelector('.CGST').value = product.cGST;

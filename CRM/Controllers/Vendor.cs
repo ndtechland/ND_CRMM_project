@@ -1879,9 +1879,132 @@ namespace CRM.Controllers
 
             return RedirectToAction("ApprovedLeaveApply");
         }
+        public async Task<IActionResult> EmployeeEpf(int id)
+        {
+            try
+            {
+                if (HttpContext.Session.GetString("UserName") != null)
+                {
+                    string AddedBy = HttpContext.Session.GetString("UserName");
+                    int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                    var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                    var epflist = _context.EmployeeEpfPayrollInfos.Where(e => e.Vendorid == adminlogin.Vendorid).OrderByDescending(e=>e.Id).ToList();
+                     
+                    ViewBag.EmployeeItem = _context.EmployeeRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).Select(D => new SelectListItem
+                    {
+                        Value = D.EmployeeId.ToString(),
+                        Text = D.EmployeeId
+
+                    }).ToList();
+                   
+                    ViewBag.EPFNumber = "";
+                    ViewBag.EPFPercentage = "";
+                    ViewBag.EmployeeId = "";
+                    ViewBag.Heading = "Add Employee EPF";
+                    ViewBag.BtnText = "SAVE";
+                     
+                    return View(epflist);
+                }
+                else
+                {
+                    return RedirectToAction("Login", "Admin");
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> EmployeeEpf(EmployeeEpfPayrollInfo model)
+        {
+            try
+            {
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                var checkexist = _context.EmployeeEpfPayrollInfos.Where(e => e.EmployeeId == model.EmployeeId).FirstOrDefault();
+                if(checkexist!=null)
+                {
+                    TempData["Message"] = $"An EPF record for employee ID {model.EmployeeId} already exists.";
+                    return RedirectToAction("EmployeeEpf");
+                }
+                bool check = await _ICrmrpo.AddEmployeeEpf(model, (int)adminlogin.Vendorid);
+                if(check)
+                {
+                    TempData["Message"] = "EPF added successfully.";
+                    return RedirectToAction("EmployeeEpf");
+                }
+                else
+                {
+                    TempData["Message"] = "Failed.";
+                    return RedirectToAction("EmployeeEpf");
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        [HttpGet]
+        public JsonResult GetEmpEpfNumber(string employeeId)
+        {
+            
+            var employee = _context.EmployeeBankDetails.Where(e => e.EmpId == employeeId)
+                .Select(e => new
+                {
+                    EPFNumber = e.EpfNumber
+                })
+                .FirstOrDefault();
+
+           
+            if (employee != null)
+            {
+                return Json(employee);
+            }
+
+             
+            return Json(null);
+        }
+        public JsonResult GetVendorEfp()
+        {
+           
+            int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+            var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
+            var epf = _context.EmployeerEpfs.Where(e => e.AdminLoginId == adminlogin.Id && e.DeductionCycle== "EPF")
+                .Select(e => new
+                {
+                    EpfPercentage = e.EpfNumber
+                })
+                .FirstOrDefault();
 
 
+            if (epf != null)
+            {
+                return Json(epf);
+            }
 
+
+            return Json(null);
+        }
+        public async Task<IActionResult> DeleteEmpEPF(int id)
+        {
+            try
+            {
+                var dlt = _context.EmployeeEpfPayrollInfos.Find(id);
+                _context.Remove(dlt);
+                _context.SaveChanges();
+                TempData["Message"] = "Deleted Successfully.";
+                return RedirectToAction("EmployeeEpf");
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 }
 

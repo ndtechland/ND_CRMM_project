@@ -2205,6 +2205,7 @@ namespace CRM.Repository
                             data.ProductPrice = product.ProductPrice;
                             data.RenewPrice = product.RenewPrice;
                             data.NoOfRenewMonth = product.NoOfRenewMonth;
+                            data.Description = product.Description;
                             data.StartDate = product.StartDate;
                             data.RenewDate = product.RenewDate;
 
@@ -2542,7 +2543,30 @@ namespace CRM.Repository
                 throw;
             }
         }
+        public async Task<bool> AddEmployeeEpf(EmployeeEpfPayrollInfo model,int VendorId)
+        {
+            try
+            {
+                var domainmodel = new EmployeeEpfPayrollInfo()
+                {
+                    Epfnumber = model.Epfnumber,
+                    Epfpercentage = model.Epfpercentage,
+                    EmployeeId = model.EmployeeId,
+                    Vendorid = VendorId,
+                    CreatedDate = DateTime.Now,
+                    EffectiveDate = DateTime.Now,
+                    UpdatedDate = DateTime.Now
+                };
+                await _context.AddAsync(domainmodel);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
 
+                throw;
+            }
+        }
     }
 
 }

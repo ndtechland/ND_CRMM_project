@@ -43,6 +43,8 @@ namespace CRM.Models.Crm
         public virtual DbSet<EmployeeBankDetail> EmployeeBankDetails { get; set; } = null!;
         public virtual DbSet<EmployeeCheckIn> EmployeeCheckIns { get; set; } = null!;
         public virtual DbSet<EmployeeCheckInRecord> EmployeeCheckInRecords { get; set; } = null!;
+        public virtual DbSet<EmployeeEpfPayrollInfo> EmployeeEpfPayrollInfos { get; set; } = null!;
+        public virtual DbSet<EmployeeEsicPayrollInfo> EmployeeEsicPayrollInfos { get; set; } = null!;
         public virtual DbSet<EmployeeImportExcel> EmployeeImportExcels { get; set; } = null!;
         public virtual DbSet<EmployeeLogin> EmployeeLogins { get; set; } = null!;
         public virtual DbSet<EmployeePersonalDetail> EmployeePersonalDetails { get; set; } = null!;
@@ -695,6 +697,53 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.EmpId).HasMaxLength(200);
 
                 entity.Property(e => e.Workinghour).HasColumnName("workinghour");
+            });
+
+            modelBuilder.Entity<EmployeeEpfPayrollInfo>(entity =>
+            {
+                entity.ToTable("EmployeeEpfPayrollInfo");
+
+                entity.Property(e => e.CreatedDate)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.EffectiveDate).HasColumnType("date");
+
+                entity.Property(e => e.EmployeeId).HasMaxLength(100);
+
+                entity.Property(e => e.Epfnumber)
+                    .HasMaxLength(100)
+                    .HasColumnName("EPFNumber");
+
+                entity.Property(e => e.Epfpercentage).HasColumnName("EPFPercentage");
+
+                entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Vendorid).HasColumnName("vendorid");
+            });
+
+            modelBuilder.Entity<EmployeeEsicPayrollInfo>(entity =>
+            {
+                entity.ToTable("EmployeeEsicPayrollInfo");
+
+                entity.Property(e => e.CreatedDate)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.EffectiveDate).HasColumnType("date");
+
+                entity.Property(e => e.Esicnumber)
+                    .HasMaxLength(20)
+                    .IsUnicode(false)
+                    .HasColumnName("ESICNumber");
+
+                entity.Property(e => e.Esicpercentage)
+                    .HasColumnType("decimal(5, 2)")
+                    .HasColumnName("ESICPercentage");
+
+                entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Vendorid).HasColumnName("vendorid");
             });
 
             modelBuilder.Entity<EmployeeImportExcel>(entity =>
