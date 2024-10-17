@@ -2600,10 +2600,10 @@ namespace CRM.Repository
             }
             catch (Exception ex)
             {
-                throw; 
+                throw;
             }
         }
-        public async Task<bool> AddEmployeeEpf(EmployeeEpfPayrollInfo model,int VendorId)
+        public async Task<bool> AddEmployeeEpf(EmployeeEpfPayrollInfo model, int VendorId)
         {
             try
             {
@@ -2627,6 +2627,7 @@ namespace CRM.Repository
                 throw;
             }
         }
+
         private static string? GetLeaveType(int startLeaveId, int endLeaveId, decimal totalFullday)
         {
             int halfDayCount = 0;
