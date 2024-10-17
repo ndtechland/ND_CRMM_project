@@ -22,7 +22,7 @@ namespace CRM.Controllers
             _IEmailService = iEmailService;
         }
         [HttpGet]
-        public async Task<IActionResult> Invoice(int id = 0)
+        public async Task<IActionResult> Invoice(string InvoiceNumber)
         {
 			try
 			{
@@ -36,13 +36,13 @@ namespace CRM.Controllers
                     ViewBag.checkvendorbillingstateid = _context.VendorRegistrations.Where(v => v.Id == adminlogin.Vendorid).FirstOrDefault().BillingStateId;
                     //var customerData = _context.CustomerInvoices.Where(c => c.CustomerId == id).ToList();
                     
-                    if (id != 0)
+                    if (InvoiceNumber != null)
                     {
                         ViewBag.UserName = AddedBy;
                         ViewBag.Heading = "Invoice";
                         ViewBag.btnText = "Update";
                         
-                        customerInv.customerInvoice = await _context.CustomerInvoices.Where(c=>c.CustomerId==id).ToListAsync();
+                        customerInv.customerInvoice = await _context.CustomerInvoices.Where(c=>c.InvoiceNumber == InvoiceNumber).ToListAsync();
                         var data = customerInv.customerInvoice.FirstOrDefault();
                         if (customerInv.customerInvoice != null && customerInv.customerInvoice.Count() > 0)
                         {

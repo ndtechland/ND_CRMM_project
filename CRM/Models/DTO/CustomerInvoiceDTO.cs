@@ -62,6 +62,7 @@ namespace CRM.Models.DTO
         public decimal? IGST { get; set; }
         public decimal? SGST { get; set; }
         public decimal? CGST { get; set; }
+        public string? InvoiceNumber { get; set; }
     }
 
     public class ProductDetailList
