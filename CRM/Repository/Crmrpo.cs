@@ -2624,6 +2624,9 @@ namespace CRM.Repository
             catch (Exception)
             {
 
+                throw;
+            }
+        }
         private static string? GetLeaveType(int startLeaveId, int endLeaveId, decimal totalFullday)
         {
             int halfDayCount = 0;
@@ -2647,11 +2650,6 @@ namespace CRM.Repository
 
             return string.Join(", ", leaveTypes);
         }
-
-                throw;
-            }
-        }
-
     }
 
 }
