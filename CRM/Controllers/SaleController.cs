@@ -440,6 +440,17 @@ namespace CRM.Controllers
                 throw ex; // Consider logging the exception instead of throwing it directly
             }
         }
+        
+        public JsonResult DeleteProdbyUpdate(int id)
+        {
+            if(id > 0)
+            {
 
+              var result = _context.CustomerInvoices.Where(x => x.Id == id).FirstOrDefault();
+                _context.CustomerInvoices.Remove(result);
+                _context.SaveChanges();
+            }
+            return new JsonResult(true);
+        }
     }
 }
