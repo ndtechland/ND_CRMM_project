@@ -389,7 +389,7 @@ namespace CRM.Repository
             leavedto GetleaveList = new leavedto();
             GetleaveList.GetLeaveTypeList = (from lm in _context.Leavemasters
                                              join lty in _context.LeaveTypes on lm.LeavetypeId equals lty.Id
-                                             where lm.EmpId == userid &&  lm.IsActive == true
+                                             where lm.EmpId == userid && lm.IsActive == true
                                              select new LeaveTypeValue
                                              {
                                                  Id = lm.LeavetypeId,
@@ -2202,108 +2202,54 @@ namespace CRM.Repository
         {
             try
             {
-                List<Leave> FHFirst = new List<Leave>();
-                List<Leave> SHFirst = new List<Leave>();
-                List<Leave> FDFirst = new List<Leave>();
-                List<Leave> FHSecond = new List<Leave>();
-                List<Leave> SHSecond = new List<Leave>();
-                List<Leave> FDSecond = new List<Leave>();
-                decimal total = 0.00m;
                 decimal totalFullday = 0.00m;
-
-                var leave = await _context.ApplyLeaveNews.Where(p => p.UserId == userid).FirstOrDefaultAsync();
                 var toleave = await _context.ApplyLeaveNews
-                    .Where(p => p.UserId == userid)
+                    .Where(p => p.UserId == userid && p.Isapprove == true)
                     .Select(p => new
                     {
+                        Id = p.Id,
                         CountLeave = p.CountLeave,
-                        PaidCountLeave = p.PaidCountLeave
-                    })
-                    .ToListAsync();
-                if (leave == null)
+                        PaidCountLeave = p.PaidCountLeave,
+                        StartDate = p.StartDate,
+                        EndDate = p.EndDate,
+                        StartLeaveId = p.StartLeaveId,
+                        EndeaveId = p.EndeaveId,
+                        Reason = p.Reason,
+                        CreatedDate = p.CreatedDate,
+                        TypeofLeaveid =p.TypeOfLeaveId,
+                    }).ToListAsync();
+
+                if (!toleave.Any())
                 {
                     throw new Exception("No leave application found for the specified user.");
                 }
-                if (leave.EndDate != leave.StartDate)
-                {
-                    totalFullday = (leave.EndDate - leave.StartDate).Days - 1;
-                }
-                totalFullday = (totalFullday > 0) ? totalFullday : 0;
-                if (leave.EndDate != leave.StartDate)
-                {
-                    total = (leave.EndDate - leave.StartDate).Days - 1;
-                }
-                if (leave.EndDate == leave.StartDate)
-                {
-                    if (leave.StartLeaveId == 1)
-                    {
-                        FHFirst = await _context.Leaves.Where(x => x.Id == leave.StartLeaveId).ToListAsync();
-                    }
-                    if (leave.StartLeaveId == 2)
-                    {
-                        SHFirst = await _context.Leaves.Where(x => x.Id == leave.StartLeaveId).ToListAsync();
-                    }
-                    if (leave.StartLeaveId == 3)
-                    {
-                        FDFirst = await _context.Leaves.Where(x => x.Id == leave.StartLeaveId).ToListAsync();
-                    }
-                }
-                else
-                {
-                    if (leave.StartLeaveId == 1)
-                    {
-                        FHFirst = await _context.Leaves.Where(x => x.Id == leave.StartLeaveId).ToListAsync();
-                    }
-                    if (leave.StartLeaveId == 2)
-                    {
-                        SHFirst = await _context.Leaves.Where(x => x.Id == leave.StartLeaveId).ToListAsync();
-                    }
-                    if (leave.StartLeaveId == 3)
-                    {
-                        FDFirst = await _context.Leaves.Where(x => x.Id == leave.StartLeaveId).ToListAsync();
-                    }
-                    if (leave.EndeaveId == 1)
-                    {
-                        FHSecond = await _context.Leaves.Where(x => x.Id == leave.EndeaveId).ToListAsync();
-                    }
-                    if (leave.EndeaveId == 2)
-                    {
-                        SHSecond = await _context.Leaves.Where(x => x.Id == leave.EndeaveId).ToListAsync();
-                    }
-                    if (leave.EndeaveId == 3)
-                    {
-                        FDSecond = await _context.Leaves.Where(x => x.Id == leave.EndeaveId).ToListAsync();
-                    }
-                }
-                if (total == 0)
-                {
-                    decimal TotalLeaveFirst = (FHFirst.Count() == 0 ? 0 : (decimal)(FHFirst.Count() * 0.50)) + (SHFirst.Count() == 0 ? 0 : (decimal)(SHFirst.Count() * 0.50)) + (FDFirst.Count() == 0 ? 0 : (decimal)(FDFirst.Count() * 1.00));
-                    decimal TotalLeaveSecond = (FHSecond.Count() == 0 ? 0 : (decimal)(FHSecond.Count() * 0.50)) + (SHSecond.Count() == 0 ? 0 : (decimal)(SHSecond.Count() * 0.50)) + (FDSecond.Count() == 0 ? 0 : (decimal)(FDSecond.Count() * 1.00));
-                    total = Math.Max(0, total + (TotalLeaveFirst + TotalLeaveSecond));
-                }
-                else
-                {
-                    decimal TotalLeaveFirst = (FHFirst.Count() == 0 ? 0 : (decimal)(FHFirst.Count() * 0.50)) + (SHFirst.Count() == 0 ? 0 : (decimal)(SHFirst.Count() * 0.50)) + (FDFirst.Count() == 0 ? 0 : (decimal)(FDFirst.Count() * 1.00));
-                    decimal TotalLeaveSecond = (FHSecond.Count() == 0 ? 0 : (decimal)(FHSecond.Count() * 0.50)) + (SHSecond.Count() == 0 ? 0 : (decimal)(SHSecond.Count() * 0.50)) + (FDSecond.Count() == 0 ? 0 : (decimal)(FDSecond.Count() * 1.00));
-                    total = Math.Max(0, total + (TotalLeaveFirst + TotalLeaveSecond));
-
-
-                }
                 TotalLeave fd = new TotalLeave();
-                decimal totalLeaves = toleave.Sum(x => (decimal)(x.CountLeave + x.PaidCountLeave));
+                decimal totalLeaves = toleave.Sum(x => (decimal)(x.CountLeave + x.PaidCountLeave)); 
+
                 fd.TotalLeaves = totalLeaves;
-                fd.Type = await _context.ApplyLeaveNews
-                    .Where(p => p.UserId == userid && p.Isapprove == true)
-                    .Select(p => new TotalLeavelist
+                fd.Type = new List<TotalLeavelist>();
+
+                foreach (var l in toleave)
+                {
+                    totalFullday = (l.EndDate - l.StartDate).Days - (l.EndDate != l.StartDate ? 1 : 0);
+                    totalFullday = Math.Max(totalFullday, 0);
+                    var leaveType = GetLeaveType(l.StartLeaveId, l.EndeaveId, totalFullday);
+                    var TypeofLeave = await _context.LeaveTypes.Where(s => s.Id == l.TypeofLeaveid)
+                                .Select(s => s.Leavetype1)
+                                .FirstOrDefaultAsync() ?? "Unknown";
+                    fd.Type.Add(new TotalLeavelist
                     {
-                        id = p.Id,
-                        Leavedate = p.CreatedDate,
-                        Reason = p.Reason,
-                        Nodays = total,
-                        LeaveType = GetLeaveType(p.StartLeaveId, p.EndeaveId, totalFullday),
-                        Leaveapplydate = p.CreatedDate.ToString("dd MMMM yyyy"),
-                        LeaveSearchdate = p.CreatedDate.ToString("MMM-yy")
-                    }).ToListAsync();
+                        id = l.Id,
+                        Leavedate = l.CreatedDate,
+                        Reason = l.Reason,
+                        Nodays = (decimal)(l.CountLeave + l.PaidCountLeave),
+                        LeaveType = leaveType,
+                        Leaveapplydate = l.CreatedDate.ToString("dd MMMM yyyy"),
+                        LeaveSearchdate = l.CreatedDate.ToString("MMM-yy"),
+                        TypeofLeave = TypeofLeave,
+                    });
+                }
+
                 return fd;
             }
             catch (Exception ex)
@@ -2316,11 +2262,13 @@ namespace CRM.Repository
         {
             int halfDayCount = 0;
             int fullDayCount = (int)totalFullday;
+
             if (startLeaveId == 1 || startLeaveId == 2) halfDayCount++;
             if (startLeaveId == 3) fullDayCount++;
 
             if (endLeaveId == 1 || endLeaveId == 2) halfDayCount++;
             if (endLeaveId == 3) fullDayCount++;
+
             List<string> leaveTypes = new List<string>();
             if (halfDayCount > 0)
             {
@@ -2333,6 +2281,7 @@ namespace CRM.Repository
 
             return string.Join(", ", leaveTypes);
         }
+
         public async Task<getTotalLeave> GetEmptotalleave(string userid, int id)
         {
             try
@@ -2351,27 +2300,115 @@ namespace CRM.Repository
                 throw new Exception("Error: " + ex.Message, ex);
             }
         }
-
         public async Task<List<getattendancegraph>> GetEmpGraph(string userid)
         {
             try
             {
+                int currentYear = DateTime.Now.Year;
+
                 var graph = await _context.EmployeeCheckInRecords
-                    .Where(x => x.EmpId == userid && x.CurrentDate != null)
-                    .GroupBy(x => x.CurrentDate.Value.Month) 
+                    .Where(x => x.EmpId == userid && x.CurrentDate.HasValue && x.CurrentDate.Value.Year == currentYear)
+                    .GroupBy(x => new
+                    {
+                        Year = x.CurrentDate.Value.Year,
+                        Month = x.CurrentDate.Value.Month
+                    })
                     .Select(g => new getattendancegraph
                     {
-                        Month = getMonthName(g.Key),
-                        Value = g.Count() 
+                        Year = g.Key.Year.ToString(),
+                        Month = getMonthName(g.Key.Month),
+                        Value = g.Count()
                     }).ToListAsync();
 
                 return graph;
             }
             catch (Exception ex)
             {
-                throw new Exception("Error: " + ex.Message);
+                throw new Exception("Error retrieving employee attendance graph: " + ex.Message, ex);
             }
         }
+        public async Task<getTasklist> gettasklist(string userid)
+        {
+            try
+            {
+                var employeeTasks = await (from task in _context.EmployeeTasks
+                                           join status in _context.TaskStatuses
+                                           on task.Status equals status.Id
+                                           where task.EmployeeId == userid
+                                           select new
+                                           {
+                                               task.Id,
+                                               task.Task,
+                                               StatusName = status.StatusName
+                                           }).ToListAsync();
+                var reassignedTasks = new List<getReassignedTasklist>();
+                var completedTasks = new List<getCompletedTasklist>();
+                var uncompletedTasks = new List<getUnCompletedTasklist>();
 
+                foreach (var task in employeeTasks)
+                {
+                    if (task.StatusName == "Reassigned")
+                    {
+                        reassignedTasks.Add(new getReassignedTasklist
+                        {
+                            id = task.Id,
+                            Taskname = task.Task,
+                            status = task.StatusName
+                        });
+                    }
+                    else if (task.StatusName == "Completed")
+                    {
+                        completedTasks.Add(new getCompletedTasklist
+                        {
+                            id = task.Id,
+                            Taskname = task.Task,
+                            status = task.StatusName
+                        });
+                    }
+                    else if (task.StatusName == "UnCompleted")
+                    {
+                        uncompletedTasks.Add(new getUnCompletedTasklist
+                        {
+                            id = task.Id,
+                            Taskname = task.Task,
+                            status = task.StatusName
+                        });
+                    }
+                }
+
+                return new getTasklist
+                {
+                    Reassigned = reassignedTasks,
+                    Completed = completedTasks,
+                    UnCompleted = uncompletedTasks
+                };
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error retrieving employee tasks: " + ex.Message, ex);
+            }
+        }
+        public async Task<List<TasksassignlistDto>> getSubtasklist(string userid, int? id)
+        {
+            try
+            {
+                var taskassign = await (from taskList in _context.EmployeeTasksLists
+                                        join taskStatus in _context.TaskStatuses on taskList.TaskStatus equals taskStatus.Id
+                                        where taskList.EmployeeId == userid && taskList.Emptaskid == id
+                                        select new TasksassignlistDto
+                                        {
+                                            Id = taskList.Id,
+                                            TasksubTittle = taskList.Taskname,
+                                            TaskStatus = taskStatus.StatusName ,
+                                        }).ToListAsync();
+               
+
+                return taskassign;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error: " + ex.Message, ex);
+            }
+        }
     }
 }

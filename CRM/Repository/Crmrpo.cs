@@ -183,7 +183,7 @@ namespace CRM.Repository
                             AlternateNumber = rdr["Alternate_number"] == DBNull.Value ? "0" : Convert.ToString(rdr["Alternate_number"]),
                             Email = rdr["Email"] == DBNull.Value ? "0" : Convert.ToString(rdr["Email"]),
                             GstNumber = rdr["GST_Number"] == DBNull.Value ? "0" : Convert.ToString(rdr["GST_Number"]),
-                            BillingAddress = rdr["Billing_Address"] == DBNull.Value ? "0" : Convert.ToString(rdr["Billing_Address"]),                            
+                            BillingAddress = rdr["Billing_Address"] == DBNull.Value ? "0" : Convert.ToString(rdr["Billing_Address"]),
                             OfficeState = rdr["OfficeState"] == DBNull.Value ? null : Convert.ToString(rdr["OfficeState"]),
                             BillingState = rdr["BillingState"] == DBNull.Value ? null : Convert.ToString(rdr["BillingState"]),
                             BillingCity = rdr["BillingCity"] == DBNull.Value ? null : Convert.ToString(rdr["BillingCity"]),
@@ -526,13 +526,8 @@ namespace CRM.Repository
             List<salarydetail> emp = new List<salarydetail>();
             try
             {
-                // Initialize the SQL connection
                 SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
                 SqlCommand cmd = new SqlCommand("sp_SalaryDetail", con);
-
-                // Add parameters for stored procedure
-                //cmd.Parameters.Add(new SqlParameter("@CustomerID", SqlDbType.Int) { Value = Convert.ToInt32(customerId) });
-                //cmd.Parameters.Add(new SqlParameter("@WorkLocation", SqlDbType.Int) { Value = Convert.ToInt32(WorkLocation) });
                 cmd.Parameters.Add(new SqlParameter("@id", SqlDbType.Int) { Value = Userid });
 
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -984,40 +979,57 @@ namespace CRM.Repository
                 return result;
             }
         }
-
-        public async Task<List<ECS>> ESCExcel(string customerId, string WorkLocation)
+        public async Task<List<ECS>> ESCExcel(int? Userid)
         {
-            List<ECS> emp = new List<ECS>();
             try
             {
-                SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
-                SqlCommand cmd = new SqlCommand("sp_ECSSalary", con);
-                cmd.Parameters.Add(new SqlParameter("@CustomerID", SqlDbType.Int) { Value = Convert.ToInt32(customerId) });
-                cmd.Parameters.Add(new SqlParameter("@WorkLocation", SqlDbType.Int) { Value = Convert.ToInt32(WorkLocation) });
-                cmd.CommandType = CommandType.StoredProcedure;
-                con.Open();
-                SqlDataReader rdr = cmd.ExecuteReader();
-                while (rdr.Read())
+                using (var con = new SqlConnection(_context.Database.GetConnectionString()))
                 {
-                    var emps = new ECS()
-                    {
-                        FirstName = rdr["FirstName"] == DBNull.Value ? null : Convert.ToString(rdr["FirstName"]),
-                        EmployeeId = rdr["EmployeeId"] == DBNull.Value ? null : Convert.ToString(rdr["EmployeeId"]),
-                        AccountNumber = (int)(rdr["AccountNumber"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["AccountNumber"])),
-                        Ifsc = rdr["Ifsc"] == DBNull.Value ? null : Convert.ToString(rdr["Ifsc"]),
-                        netpayment = rdr["netpayment"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["netpayment"]),
-                    };
+                    string storedProcedure = "sp_ECSSalary";
+                    var parameters = new { id = Userid };
+                    var empList = await con.QueryAsync<ECS>(storedProcedure, parameters, commandType: CommandType.StoredProcedure);
 
-                    emp.Add(emps);
-
+                    return empList.ToList();
                 }
-                return emp;
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw ex; // You can log the exception or handle it more gracefully
             }
         }
+
+        //public async Task<List<ECS>> ESCExcel(int? Userid)
+        //{
+        //    List<ECS> emp = new List<ECS>();
+        //    try
+        //    {
+        //        SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
+        //        SqlCommand cmd = new SqlCommand("sp_ECSSalary", con);
+        //        cmd.Parameters.Add(new SqlParameter("@id", SqlDbType.Int) { Value = Userid });
+        //        cmd.CommandType = CommandType.StoredProcedure;
+        //        con.Open();
+        //        SqlDataReader rdr = cmd.ExecuteReader();
+        //        while (rdr.Read())
+        //        {
+        //            var emps = new ECS()
+        //            {
+        //                FirstName = rdr["FirstName"] == DBNull.Value ? null : Convert.ToString(rdr["FirstName"]),
+        //                EmployeeId = rdr["EmployeeId"] == DBNull.Value ? null : Convert.ToString(rdr["EmployeeId"]),
+        //                AccountNumber = (int)(rdr["AccountNumber"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["AccountNumber"])),
+        //                Ifsc = rdr["Ifsc"] == DBNull.Value ? null : Convert.ToString(rdr["Ifsc"]),
+        //                netpayment = rdr["netpayment"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["netpayment"]),
+        //            };
+
+        //            emp.Add(emps);
+
+        //        }
+        //        return emp;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+        //}
 
         public async Task<List<GenerateSalaryReportDTO>> GenerateSalaryReport(string customerId, int Month, int year, string WorkLocation)
         {
@@ -1986,7 +1998,7 @@ namespace CRM.Repository
                                         EmpId = lm.EmpId,
                                         Createddate = lm.Createddate,
                                         IsActive = lm.IsActive,
-                                        LeaveStartDate =lm.LeaveStartDate,
+                                        LeaveStartDate = lm.LeaveStartDate,
                                     }).ToListAsync();
 
                 return result;
@@ -2054,7 +2066,7 @@ namespace CRM.Repository
                                     ProductPrice = p.ProductPrice,
                                     IsActive = p.IsActive,
                                     CreatedAt = p.CreatedAt
-                                }).OrderByDescending(x=>x.Id).ToListAsync();
+                                }).OrderByDescending(x => x.Id).ToListAsync();
 
             return result;
         }
@@ -2119,7 +2131,7 @@ namespace CRM.Repository
         {
             try
             {
-                var existing= await _context.EmpExperienceletters.FindAsync(model.Id);
+                var existing = await _context.EmpExperienceletters.FindAsync(model.Id);
                 if (existing != null)
                 {
                     existing.CurrDesignationId = model.CurrDesignationId;
@@ -2171,8 +2183,8 @@ namespace CRM.Repository
             {
                 //if (model.Id == 0)
                 //{
-                    foreach (var product in model)  
-                    {
+                foreach (var product in model)
+                {
                     var data = new CustomerInvoice()
                     {
                         VendorId = vendorid,
@@ -2189,12 +2201,12 @@ namespace CRM.Repository
                         Sgst = product.SGST,
                         Cgst = product.CGST,
                         InvoiceNumber = InvoiceNo,
-                            CreatedDate = DateTime.Now
-                        };
-                        _context.Add(data);
-                    }
-                    _context.SaveChanges();
-                    return true;
+                        CreatedDate = DateTime.Now
+                    };
+                    _context.Add(data);
+                }
+                _context.SaveChanges();
+                return true;
                 //}
                 //else
                 //{
@@ -2261,7 +2273,7 @@ namespace CRM.Repository
                                         IGST = grouped.FirstOrDefault().ci.Igst,
                                         SGST = grouped.FirstOrDefault().ci.Sgst,
                                         CGST = grouped.FirstOrDefault().ci.Cgst
-                                    }).OrderByDescending(o=>o.InvoiceId).ToListAsync();
+                                    }).OrderByDescending(o => o.InvoiceId).ToListAsync();
 
                 return result;
             }
@@ -2386,11 +2398,11 @@ namespace CRM.Repository
                 throw;
             }
         }
-        public async Task<bool> AddVendorBankDeatils(VendorBankDetail model,int VendorId)
+        public async Task<bool> AddVendorBankDeatils(VendorBankDetail model, int VendorId)
         {
             try
             {
-                if(model.Id==0)
+                if (model.Id == 0)
                 {
                     var domainmodel = new VendorBankDetail()
                     {
@@ -2407,7 +2419,7 @@ namespace CRM.Repository
                 }
                 else
                 {
-                    var data = _context.VendorBankDetails.Where(b=>b.Id==model.Id).FirstOrDefault();
+                    var data = _context.VendorBankDetails.Where(b => b.Id == model.Id).FirstOrDefault();
                     if (data != null)
                     {
                         data.AccountNumber = model.AccountNumber;
@@ -2423,7 +2435,7 @@ namespace CRM.Repository
                         return false;
                     }
                 }
-                
+
             }
             catch (Exception)
             {
@@ -2435,7 +2447,7 @@ namespace CRM.Repository
         {
             try
             {
-                var result = _context.VendorBankDetails.Where(x=>x.VendorId==VendorId).ToList();
+                var result = _context.VendorBankDetails.Where(x => x.VendorId == VendorId).ToList();
                 return result;
             }
             catch (Exception)
@@ -2487,62 +2499,86 @@ namespace CRM.Repository
             {
                 var adminLogin = await _context.AdminLogins.FindAsync(userId);
                 if (adminLogin == null) throw new InvalidOperationException("Admin login not found");
-
-                var employeeIds = await _context.EmployeeRegistrations
+                var empList = await _context.EmployeeRegistrations
                     .Where(x => x.Vendorid == userId)
-                    .Select(emp => emp.EmployeeId)
                     .ToListAsync();
 
-                var leaveDetails = await _context.ApplyLeaveNews
-    .Where(x => employeeIds.Contains(x.UserId))
-    .OrderByDescending(x => x.Id)
-    .Select(x => new ApprovedLeaveApplyList
-    {
-        Id = x.Id,
-        UserId = x.UserId,
-        EmployeeName = _context.EmployeeRegistrations
-            .Where(e => e.EmployeeId == x.UserId)
-            .Select(e => new
-            {
-                FullName = $"{e.FirstName} {(e.MiddleName != null ? e.MiddleName + " " : "")}{e.LastName}"
-            })
-            .FirstOrDefault().FullName ?? "Unknown",
-        EmpMobileNumber = _context.EmployeePersonalDetails
-            .Where(e => e.EmpRegId == x.UserId)
-            .Select(e => e.MobileNumber).FirstOrDefault(),
-        StartLeaveId = _context.Leaves
-            .Where(s => s.Id == x.StartLeaveId)
-            .Select(s => s.Typeofleave)
-            .FirstOrDefault() ?? "Unknown",
+                if (empList == null || empList.Count == 0)
+                    throw new Exception("No employee found for the specified user.");
 
-        EndeaveId = _context.Leaves
-            .Where(s => s.Id == x.EndeaveId)
-            .Select(s => s.Typeofleave)
-            .FirstOrDefault() ?? "Unknown",
+                var leaveDetails = new List<ApprovedLeaveApplyList>();
 
-        TypeOfLeaveId = _context.LeaveTypes
-            .Where(s => s.Id == x.TypeOfLeaveId)
-            .Select(s => s.Leavetype1)
-            .FirstOrDefault() ?? "Unknown",
+                foreach (var emp in empList)
+                {
+                    var leave = await _context.ApplyLeaveNews
+                        .Where(p => p.UserId == emp.EmployeeId)
+                        .ToListAsync(); 
 
-        StartDate = x.StartDate,
-        EndDate = x.EndDate,
-        CreatedDate = x.CreatedDate,
-        UnPaidCountLeave = x.CountLeave,
-        Month = x.Month,
-        Reason = x.Reason,
-        Isapprove = x.Isapprove,
-        PaidCountLeave = x.PaidCountLeave,
-    })
-    .ToListAsync();
+                    if (leave == null || leave.Count == 0)
+                    {
+                        continue;
+                    }
+                    foreach (var l in leave) 
+                    {
+                        decimal totalFullday = (l.EndDate - l.StartDate).Days - (l.EndDate != l.StartDate ? 1 : 0);
+                        totalFullday = Math.Max(totalFullday, 0);
 
+                        leaveDetails.Add(new ApprovedLeaveApplyList
+                        {
+                            Id = l.Id,
+                            UserId = l.UserId,
+                            EmployeeName = $"{emp.FirstName} {(emp.MiddleName != null ? emp.MiddleName + " " : "")}{emp.LastName}",
+                            EmpMobileNumber = await _context.EmployeePersonalDetails
+                                .Where(e => e.EmpRegId == emp.EmployeeId)
+                                .Select(e => e.MobileNumber)
+                                .FirstOrDefaultAsync(),
+                            LeaveType = GetLeaveType(l.StartLeaveId, l.EndeaveId, totalFullday) + $" (Total Leaves: {(decimal)(l.CountLeave + l.PaidCountLeave)})",
+                            TypeOfLeaveId = await _context.LeaveTypes
+                                .Where(s => s.Id == l.TypeOfLeaveId)
+                                .Select(s => s.Leavetype1)
+                                .FirstOrDefaultAsync() ?? "Unknown",
+                            StartDate = l.StartDate,
+                            EndDate = l.EndDate,
+                            CreatedDate = l.CreatedDate,
+                            UnPaidCountLeave = l.CountLeave,
+                            Month = l.Month,
+                            Reason = l.Reason,
+                            Isapprove = l.Isapprove,
+                            PaidCountLeave = l.PaidCountLeave,
+                        });
+                    }
+                }
 
-                return leaveDetails; 
+                return leaveDetails;
             }
             catch (Exception ex)
             {
-                throw;
+                throw; 
             }
+        }
+
+        private static string? GetLeaveType(int startLeaveId, int endLeaveId, decimal totalFullday)
+        {
+            int halfDayCount = 0;
+            int fullDayCount = (int)totalFullday;
+
+            if (startLeaveId == 1 || startLeaveId == 2) halfDayCount++;
+            if (startLeaveId == 3) fullDayCount++;
+
+            if (endLeaveId == 1 || endLeaveId == 2) halfDayCount++;
+            if (endLeaveId == 3) fullDayCount++;
+
+            List<string> leaveTypes = new List<string>();
+            if (halfDayCount > 0)
+            {
+                leaveTypes.Add($"{halfDayCount} Half Day{(halfDayCount > 1 ? "s" : "")}");
+            }
+            if (fullDayCount > 0)
+            {
+                leaveTypes.Add($"{fullDayCount} Full Day{(fullDayCount > 1 ? "s" : "")}");
+            }
+
+            return string.Join(", ", leaveTypes);
         }
 
     }

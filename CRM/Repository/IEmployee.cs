@@ -38,6 +38,8 @@ namespace CRM.Repository
         public Task<TotalLeave> Getleavelist(string userid);
         public Task<getTotalLeave> GetEmptotalleave(string userid, int id);
         public Task<List<getattendancegraph>> GetEmpGraph(string userid);
+        public Task<getTasklist> gettasklist(string userid);
+        public Task<List<TasksassignlistDto>> getSubtasklist(string userid ,int? id);
 
 
     }

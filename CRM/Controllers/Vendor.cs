@@ -1794,7 +1794,6 @@ namespace CRM.Controllers
                 throw;
             }
         }
-
         [HttpPost]
         public JsonResult UpdateTaskStatus(int Taskstatusid, int Id)
         {
