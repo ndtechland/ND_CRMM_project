@@ -45,7 +45,7 @@ namespace CRM.Repository
         //for excel
          public byte[] EmployeeListForExcel();
         
-         public Task<List<ECS>> ESCExcel(string customerId,string WorkLocation);
+         public Task<List<ECS>> ESCExcel(int ? Userid);
 
         public WorkLocation1 GetWorkLocationById(int id);
         public Task<int> updateWorkLocation(WorkLocation1 model);

@@ -79,35 +79,6 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-body">
-
-                                @*        <form asp-action="salarydetail" autocomplete="off" method="get">
-
-                                <div class="row">
-                                <div class="form-group col-md-3">
-                                <label for="validationCustom0">Company Name</label>
-                                <select class="form-control" id="CustomerID" name="CustomerID" onchange="Locations()">
-                                <option value="">-- Select Company --</option>
-
-                                @foreach (var item in ViewBag.CustomerName)
-                                {
-                                <option value="@item.Value">@item.Text</option>
-                                }
-                                </select>
-                                </div>
-                                <div class="form-group col-md-3">
-                                <label for="validationCustom0">Work Location</label>
-                                <select class="form-control" id="LocationID" name="WorkLocation">
-                                <option value="">--Select WorkLocation--</option>
-
-                                </select>
-                                </div>
-                                <div class="form-button col-md-3" style="display:flex; justify-content:center;">
-                                <input type="submit" value="Search" class="btn btn-primary button" id="sbtn" onclick="return validateForm();" />
-                                </div>
-
-                                </div>
-
-                                </form> *@
                                 <div class=" table-responsive">
                                     @if (Model != null && Model.Any())
                                     {
@@ -121,7 +92,7 @@
                                             <button type="submit" class="btn btn-primary" id="myButton" style="color: black; border: 2px solid black;" onclick="gensal();">
                                                 <i class="fa fa-plus"></i> Generate Salary
                                             </button>
-
+ 
                                         </div>
                                         <div>
                                             <label for="file-upload" class="file-upload-label">
@@ -198,8 +169,6 @@
                                                                     Edit Salary
                                                                 </a>
                                                             </td>
-
-
                                                         </tr>
                                                     }
                                                 }
@@ -245,17 +214,7 @@
 <input hidden type="text" id="locid" value="@Context.Session.GetString("locid")" />
 <script>
     function ESCExcelfn() {
-        var customerId = document.getElementById("CustomerID").value;
-        var workLocation = document.getElementById("LocationID").value;
-        if (customerId === '') {
-            alert("Please select Company.");
-            return false;
-        }
-        if (workLocation === '') {
-            alert("Please select WorkLocation.");
-            return false;
-        }
-        window.location.href = '/Employee/ESCDownloadExcel?customerId=' + customerId + '&WorkLocation=' + workLocation;
+        window.location.href = '/Employee/ESCDownloadExcel';
     }
     function gensal() {
         var check = true;
@@ -608,17 +567,7 @@
 
 
     function ExportExcelfn() {
-        var customerId = document.getElementById("CustomerID").value;
-        var workLocation = document.getElementById("LocationID").value;
-        if (customerId === '') {
-            alert("Please select Company.");
-            return false;
-        }
-        if (workLocation === '') {
-            alert("Please select WorkLocation.");
-            return false;
-        }
-        window.location.href = '/Employee/ImportToExcelAttendance?customerId=' + customerId + '&WorkLocation=' + workLocation;
+window.location.href = '/Employee/ImportToExcelAttendance';
     }
 
 </script>
