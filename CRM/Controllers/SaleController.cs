@@ -39,7 +39,7 @@ namespace CRM.Controllers
                     if (InvoiceNumber != null)
                     {
                         ViewBag.UserName = AddedBy;
-                        ViewBag.Heading = "Invoice";
+                        ViewBag.Heading = "Update Invoice";
                         ViewBag.btnText = "Update";
                         
                         customerInv.customerInvoice = await _context.CustomerInvoices.Where(c=>c.InvoiceNumber == InvoiceNumber).ToListAsync();
@@ -67,12 +67,12 @@ namespace CRM.Controllers
                             //ViewBag.IGST = data.Igst;
                             //ViewBag.SGST = data.Sgst;
                             //ViewBag.CGST = data.Cgst;
-                            //return View(customerInv);
+                            return View(customerInv);
                         }
 
                     }
                     ViewBag.UserName = AddedBy;
-                    ViewBag.Heading = "Invoice";
+                    ViewBag.Heading = "Add Invoice";
                     ViewBag.btnText = "SAVE";
                     ViewBag.ProductId =null;
                     ViewBag.Price = 0;
@@ -116,8 +116,20 @@ namespace CRM.Controllers
                 bool data = await _ICrmrpo.CustomerInvoice(model, InvoiceNo, (int)adminlogin.Vendorid);
                 if (data)
                 {
-                    TempData["Message"] = "Added Successfully.";
-                    TempData.Keep("Message");
+                    foreach (var product in model)
+                    {
+                        if (product.Id == 0)
+                        {
+                            TempData["Message"] = "Added Successfully.";
+                            TempData.Keep("Message");
+                        }
+                        else
+                        {
+                            TempData["Message"] = "Updated Successfully.";
+                            TempData.Keep("Message");
+                        }
+                    }
+                       
                 
                     var model1 =
                         new
