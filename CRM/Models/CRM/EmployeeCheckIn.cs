@@ -13,5 +13,7 @@ namespace CRM.Models.Crm
         public DateTime? CheckOutTime { get; set; }
         public DateTime? Currentdate { get; set; }
         public bool? CheckIn { get; set; }
+        public bool? Breakin { get; set; }
+        public bool? Breakout { get; set; }
     }
 }
