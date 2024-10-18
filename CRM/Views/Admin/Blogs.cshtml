@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CRM.Models.Crm.VendorCategoryMaster>
+﻿@model IEnumerable<CRM.Models.Crm.Blog>
 
 @{
     ViewData["Title"] = "Category";
@@ -20,9 +20,9 @@
                 if (message == "dltok") {
                     alertText = "Deleted successfully.";
                 } else if (message == "updok") {
-                    alertText = "Category updated successfully.";
+                    alertText = "Blog updated successfully.";
                 } else {
-                    alertText = "Category added successfully.";
+                    alertText = "Blog added successfully.";
                 }
 
                 Swal.fire({
@@ -33,7 +33,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         setTimeout(function () {
-                            window.location.href = '@Url.Action("VendorCategory", "Vendor")';
+                            window.location.href = '@Url.Action("Blogs", "Admin")';
                         }, 1000);
                     }
                 });
@@ -49,7 +49,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         setTimeout(function () {
-                            window.location.href = '@Url.Action("VendorCategory", "Vendor")';
+                            window.location.href = '@Url.Action("Blogs", "Admin")';
                         }, 1000);
                     }
                 });
@@ -78,7 +78,7 @@
                             <ol class="breadcrumb pull-right">
                                 <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
                                 <li class="breadcrumb-item">Settings</li>
-                                <li class="breadcrumb-item active">Categories</li>
+                                <li class="breadcrumb-item active">Blogs</li>
                             </ol>
                         </div>
                     </div>
@@ -89,17 +89,28 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-body">
-                                <form asp-action="VendorCategory" autocomplete="off" onsubmit="return validateForm()">
+                                <form asp-action="Blogs" enctype="multipart/form-data" autocomplete="off" onsubmit="return validateForm()">
                                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                                    <div class="form-group col-sm-4">
-                                        <label class="control-label">Category Name</label>
+
+                                    <div class="form-group col-sm-6">
+                                        <label for="Title" class="control-label">Title</label>
                                         <input type="hidden" name="Id" value="@ViewBag.id" />
-                                        <input name="CategoryName" value="@ViewBag.CategoryName" class="form-control" required />
+                                        <input type="text" name="Title" id="Title" value="@ViewBag.BlogTitle" class="form-control" required />
                                     </div>
-                                    <div class="form-group">
+                                    <div class="form-group col-sm-12">
+                                        <label for="Content" class="control-label">Content</label>
+                                        <textarea name="Content" id="Content" class="form-control" rows="5" required>@ViewBag.Content</textarea>
+                                    </div>
+                                    <div class="form-group col-sm-6">
+                                        <label for="ImageFile" class="control-label">Upload Image</label>
+                                        <input type="file" accept=".png,.jpg,.jpeg" id="ImageFile" name="ImageFile" class="form-control" />
+                                        <input type="hidden" value="@ViewBag.FilePath" name="FilePath" />
+                                    </div>
+                                    <div class="form-group col-sm-12">
                                         <input type="submit" value="@ViewBag.btnText" class="btn btn-primary" />
                                     </div>
                                 </form>
+
                             </div>
                         </div>
                     </div>
@@ -110,14 +121,16 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-body">
-                                <div class=" table-responsive">                                    
+                                <div class=" table-responsive">
                                     <table id="datatable" class="table table-responsive">
                                         <thead>
                                             <tr style="background-color: #00baf2;">
                                                 <th nowrap>Sl. No.</th>
                                                 <th>
-                                                    Category Name
+                                                    Blog Image
                                                 </th>
+                                                <th>Title</th>
+                                                <th>Content</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -130,12 +143,18 @@
                                                     <tr class="table-row">
                                                         <td>@count</td>
                                                         <td>
-                                                            @Html.DisplayFor(modelItem => item.CategoryName)
+                                                            <img src="~/image/@item.BlogImage" alt="Blog Image" style="width:100px;" />
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.Title)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.Content)
                                                         </td>
                                                         <td>
                                                             <div>
-                                                                <a href="/Vendor/VendorCategory?Id=@item.Id" class="fa fa-edit m-2 font-success"></a>
-                                                                <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteVendorCategory", "Vendor", new { id = item.Id })')" class="fa fa-trash font-danger"></a>
+                                                                <a href="/Admin/Blogs?Id=@item.Id" class="fa fa-edit m-2 font-success"></a>
+                                                                <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteBlogs", "Admin", new { id = item.Id })')" class="fa fa-trash font-danger"></a>
                                                             </div>
                                                         </td>
                                                     </tr>

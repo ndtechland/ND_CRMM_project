@@ -86,6 +86,7 @@ namespace CRM
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IApiAccount, ApiAccount>();
             services.AddScoped<IEmployee, Employee>();
+            services.AddScoped<IHome, Home>();
             services.AddScoped<Dcrypt>();
             services.AddScoped<Encrypt>();
             services.Configure<URL>(Configuration.GetSection("URL"));

@@ -2127,7 +2127,7 @@ namespace CRM.Repository
             }
         }
 
-        public async Task<int> updateExperienceletterdetail(EmpExperienceletter model)
+        public async Task<bool> updateExperienceletterdetail(EmpExperienceletter model)
         {
             try
             {
@@ -2141,10 +2141,10 @@ namespace CRM.Repository
                     existing.HrDesignation = model.HrDesignation;
                     existing.HrName = model.HrName;
                     existing.EmployeeId = model.EmployeeId;
-                    return await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync();
                 }
 
-                return 1;
+                return true;
             }
             catch (Exception ex)
             {
@@ -2628,6 +2628,28 @@ namespace CRM.Repository
             }
         }
 
+        public async Task<bool> AddEmployeeEsic(EmployeeEsicPayrollInfo model, int VendorId)
+        {
+            try
+            {
+                var domainmodel = new EmployeeEsicPayrollInfo()
+                {
+                    Esicnumber = model.Esicnumber,
+                    Esicpercentage = model.Esicpercentage,
+                    EmployeeId = model.EmployeeId,
+                    Vendorid = VendorId,
+                    CreatedDate = DateTime.Now 
+                };
+                await _context.AddAsync(domainmodel);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
         private static string? GetLeaveType(int startLeaveId, int endLeaveId, decimal totalFullday)
         {
             int halfDayCount = 0;
@@ -2661,6 +2683,35 @@ namespace CRM.Repository
                     {
                         Tittle = model.Tittle,
                         Subtittle = model.Subtittle,
+=======
+
+        public async Task<bool> AddAndUpdateBlog(Blog model)
+        {
+            try
+            {
+                FileOperation fileOperation = new FileOperation(_webHostEnvironment);
+                string[] allowedExtensions = { ".png" };
+                string ImagePath = "";
+                
+                if (model.ImageFile != null)
+                {
+                    var fileExtension = Path.GetExtension(model.ImageFile.FileName).ToLower();
+                    if (!allowedExtensions.Contains(fileExtension))
+                    {
+                        throw new InvalidOperationException("Only  .png files are allowed.");
+                    }
+                    ImagePath = fileOperation.SaveBase64Image("image", model.ImageFile, allowedExtensions);
+                    model.BlogImage = ImagePath;
+                }
+                if (model.Id == 0)
+                {
+                    var data = new Blog()
+                    {
+                        Title = model.Title,
+                        Content = model.Content,
+                        BlogImage = model.BlogImage,
+                        IsPublished = true
+
                     };
                     _context.Add(data);
                     _context.SaveChanges();
@@ -2671,6 +2722,15 @@ namespace CRM.Repository
                     var existdata = _context.AppFaqs.Find(model.Id);
                     existdata.Tittle = model.Tittle;
                     existdata.Subtittle = model.Subtittle;
+                    var existdata = _context.Blogs.Find(model.Id);
+
+                    existdata.Title = model.Title;
+                    existdata.Content = model.Content;
+                    if (model.BlogImage != null)
+                    {
+                        existdata.BlogImage = model.BlogImage;
+                    }
+
                 }
                 _context.SaveChanges();
                 return true;

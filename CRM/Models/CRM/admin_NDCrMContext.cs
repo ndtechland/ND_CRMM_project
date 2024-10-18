@@ -28,6 +28,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<BannerMaster> BannerMasters { get; set; } = null!;
         public virtual DbSet<BillingDetail> BillingDetails { get; set; } = null!;
         public virtual DbSet<BillingHistory> BillingHistories { get; set; } = null!;
+        public virtual DbSet<Blog> Blogs { get; set; } = null!;
         public virtual DbSet<Category> Categories { get; set; } = null!;
         public virtual DbSet<City> Cities { get; set; } = null!;
         public virtual DbSet<Counter> Counters { get; set; } = null!;
@@ -383,6 +384,13 @@ namespace CRM.Models.Crm
                     .HasForeignKey(d => d.ProductDetailsId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Customer_Fact_Table_Product_Details_ID");
+            });
+
+            modelBuilder.Entity<Blog>(entity =>
+            {
+                entity.Property(e => e.IsPublished).HasDefaultValueSql("((0))");
+
+                entity.Property(e => e.Title).HasMaxLength(255);
             });
 
             modelBuilder.Entity<Category>(entity =>

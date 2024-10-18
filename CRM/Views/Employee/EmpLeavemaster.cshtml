@@ -53,19 +53,47 @@
     document.addEventListener("DOMContentLoaded", function () {
         var message = "@TempData["Message"]";
 
-        if (message) {
-            Swal.fire({
-                title: 'Success',
-                text: message,
-                icon: 'info',
-                confirmButtonText: 'OK'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    setTimeout(function () {
-                        window.location.href = '@Url.Action("EmpLeavemaster", "Employee")';
-                    }, 1000);
+        if (message == "ok" || message == "dltok" || message == "updok") {
+            if (message) {
+                let alertText;
+
+                if (message == "dltok") {
+                    alertText = "Deleted successfully.";
+                } else if (message == "updok") {
+                    alertText = "Record updated successfully.";
+                } else {
+                    alertText = "Record added successfully.";
                 }
-            });
+
+                Swal.fire({
+                    title: 'Success',
+                    text: alertText,
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        setTimeout(function () {
+                            window.location.href = '@Url.Action("EmpLeavemaster", "Employee")';
+                        }, 1000);
+                    }
+                });
+            }
+        }
+        else {
+            if (message) {
+                Swal.fire({
+                    title: 'Failed',
+                    text: message,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        setTimeout(function () {
+                            window.location.href = '@Url.Action("EmpLeavemaster", "Employee")';
+                        }, 1000);
+                    }
+                });
+            }
         }
     });
 </script>

@@ -1,32 +1,16 @@
-﻿@model IEnumerable<CRM.Models.Crm.EmployeeEpfPayrollInfo>
+﻿@model IEnumerable<CRM.Models.Crm.EmployeeEsicPayrollInfo>
 @{
-    ViewData["Title"] = "EmployeeEpf";
+    ViewData["Title"] = "EmployeeEsic";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
-
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
-
-<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-
-<style>
-    .dataTables_wrapper table.dataTable th {
-        background-color: #00baf2 !important;
-        padding: 24px 0.75rem !important;
-    }
-</style>
 <style>
     .select2-container .select2-selection--single {
         height: 34px !important;
@@ -45,10 +29,9 @@
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         var message = "@TempData["Message"]";
-
         if (message == "ok" || message == "dltok") {
             if (message) {
-                let alertText = (message == "dltok") ? "Deleted successfully." : "EPF added successfully.";
+                let alertText = (message == "dltok") ? "Deleted successfully." : "ESIC added successfully.";
 
                 Swal.fire({
                     title: 'Success',
@@ -58,13 +41,14 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         setTimeout(function () {
-                            window.location.href = '@Url.Action("EmployeeEpf", "Vendor")';
+                            window.location.href = '@Url.Action("EmployeeEsic", "Vendor")';
                         }, 1000);
                     }
                 });
             }
-        }
-        else {
+        } 
+        else
+        {
             if (message) {
                 Swal.fire({
                     title: 'Failed',
@@ -74,12 +58,13 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         setTimeout(function () {
-                            window.location.href = '@Url.Action("EmployeeEpf", "Vendor")';
+                            window.location.href = '@Url.Action("EmployeeEsic", "Vendor")';
                         }, 1000);
                     }
                 });
             }
         }
+        
     });
 </script>
 <div class="page-wrapper">
@@ -104,7 +89,7 @@
                             <ol class="breadcrumb pull-right">
                                 <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
                                 <li class="breadcrumb-item">Employee </li>
-                                <li class="breadcrumb-item active">Employee EPF</li>
+                                <li class="breadcrumb-item active">Employee ESIC</li>
                             </ol>
                         </div>
                     </div>
@@ -117,13 +102,13 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-body">
-                                <form method="post" asp-controller="Vendor" asp-action="EmployeeEpf" autocomplete="off" onsubmit="return validateForm()">
+                                <form method="post" asp-controller="Vendor" asp-action="EmployeeEsic" autocomplete="off" onsubmit="return validateForm()">
                                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                                     <div class="row">
                                         <div class="form-group col-lg-4">
                                             <input type="hidden" name="Id" value="@ViewBag.id" />
-                                            <label for="empddl">Employee Id</label>
-                                            <select name="EmployeeId" id="empddl" class="form-control select2" required>
+                                            <label for="TxtEmployeeId">Employee Id</label>
+                                            <select name="EmployeeId" class="form-control select2" required>
                                                 <option value="0">-- Select Employee Id --</option>
                                                 @foreach (var item in ViewBag.EmployeeItem)
                                                 {
@@ -132,15 +117,15 @@
                                             </select>
                                         </div>
                                         <div class="form-group col-md-4">
-                                            <label class="control-label" for="epfnumberr">EPF Number</label>
-                                            <input type="text" name="EPFNumber" placeholder="Please Enter EPF Number" value="@ViewBag.EPFNumber" class="form-control" readonly required />
+                                            <label class="control-label" for="epfnumberr">ESIC Number</label>
+                                            <input type="text" name="ESICNumber" placeholder="Please Enter ESIC Number" value="@ViewBag.EPFNumber" class="form-control" required />
                                             <span name="EPFNumber" class="text-danger"></span>
                                         </div>
                                         <div class="form-group col-md-4">
-                                            <label class="control-label" for="epf">EPF %</label>
-                                            <input type="text" id="epf" name="EPFPercentage" value="@ViewBag.EPFPercentage" class="form-control" readonly required />
+                                            <label class="control-label" for="esic">ESIC %</label>
+                                            <input type="text" id="esic" name="ESICPercentage" value="@ViewBag.ESICPercentage" class="form-control" readonly required />
                                             <span name="EPFPercentage" class="text-danger"></span>
-                                        </div> 
+                                        </div>
                                     </div>
 
                                     <div class="form-group" style="display:flex; justify-content:center;">
@@ -168,45 +153,45 @@
                                                     Employee Id
                                                 </th>
                                                 <th nowrap>
-                                                    EPF Number
+                                                    ESIC Number
                                                 </th>
                                                 <th nowrap>
-                                                    EPF
+                                                    ESIC
                                                 </th>
                                                 <th nowrap>
                                                     Created At
                                                 </th>
-                                               
-                                                <th>Action</th>
+
+                                                <th>Delete</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @{
                                                 var count = 0;
-                                                @foreach (var item in Model)
+                                                    @foreach (var item in Model)
                                                 {
                                                     count++;
-                                                    <tr class="table-row">
-                                                        <td class="EmpTaskId" hidden>@item.Id</td>
-                                                        <td>@count</td>
-                                                        <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.EmployeeId)
-                                                        </td>
-                                                        <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.Epfnumber)
-                                                        </td>
-                                                        <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.Epfpercentage)
-                                                        </td>
-                                                        <td nowrap>
-                                                            @item.CreatedDate?.ToString("dd/MM/yyyy")
-                                                        </td>  
-                                                        <td>
-                                                            <div>
-                                                                <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteEmpEPF", "Vendor", new { id = item.Id })')" class="fa fa-trash font-danger"></a>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
+                                                        <tr class="table-row">
+                                                            <td class="EmpTaskId" hidden>@item.Id</td>
+                                                            <td>@count</td>
+                                                            <td nowrap>
+                                                                @Html.DisplayFor(modelItem => item.EmployeeId)
+                                                            </td>
+                                                            <td nowrap>
+                                                                @Html.DisplayFor(modelItem => item.Esicnumber)
+                                                            </td>
+                                                            <td nowrap>
+                                                                @Html.DisplayFor(modelItem => item.Esicpercentage) %
+                                                            </td>
+                                                            <td nowrap>
+                                                                @item.CreatedDate?.ToString("dd/MM/yyyy")
+                                                            </td>
+                                                            <td>
+                                                                <div>
+                                                                    <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteEmpEsic", "Vendor", new { id = item.Id })')" class="fa fa-trash font-danger"></a>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
                                                 }
                                             }
                                         </tbody>
@@ -227,85 +212,50 @@
     </div>
 
 </div>
-<script>
-    $(document).ready(function () {
-        $('#datatable').DataTable({
-            "paging": true,
-            "searching": true,
-            "ordering": true,
-            "info": true,
-            "lengthChange": true,
-            "autoWidth": false,
-            "responsive": true,
-            "dom": '<"dt-buttons"Bf><"clear">lirtp',
-            "buttons": [
-                'copyHtml5',
-                'excelHtml5',
-                'pdfHtml5',
-                'print'
-            ]
-        });
-    });
-    $(document).ready(function () {
-        console.log("Document is ready");
-        // Initialize DataTable here
-    });
-
-</script>
-
-<script>
-    $('.select2').select2();
-</script>
-
 <script type="text/javascript">
-    $('#empddl').change(function () {
-        var employeeId = $(this).val(); 
-        if (employeeId && employeeId !== "0") {
-            $.ajax({
-                url: '@Url.Action("GetEmpEpfNumber", "Vendor")', 
-                type: 'GET',
-                data: { employeeId: employeeId },
-                success: function (data) {
-                    console.log("EPF Number received: ", data);
-                    if (data && data.epfNumber) {
-                        $('input[name="EPFNumber"]').val(data.epfNumber);
-                    } else {
-                        $('input[name="EPFNumber"]').val(''); 
-                    }
+    $(document).ready(function () {
+        $('#empddl').change(function () {
+            // $('#empddl').on('select2:change', function (e) {
+            var employeeId = $(this).val();
 
+            if (employeeId != "0") {
+                $.ajax({
+                    url: '@Url.Action("GetEmpEpfNumber", "Vendor")',
+                    type: 'GET',
+                    data: { employeeId: employeeId },
+                    success: function (data) {
+                        if (data) {
+                            $('input[name="EPFNumber"]').val(data.epfNumber);
+                        } else {
+                            $('input[name="EPFNumber"]').val('');
+                        }
+                    },
+                    error: function () {
+                        alert('Error retrieving EPF details');
+                    }
                 });
             } else {
                 // Clear the fields if no EmployeeId is selected
                 $('input[name="EPFNumber"]').val('');
-                
+                 
             }
         });
-                },
-                error: function (xhr, status, error) {
-                    console.error("Error occurred: " + error);
-                    console.log(xhr.responseText);
-                    $('input[name="EPFNumber"]').val(''); 
-                }
-            });
-        } else {
-            $('input[name="EPFNumber"]').val(''); 
-        }
     });
 </script>
 <script>
     $(document).ready(function () {
-        
+
         $.ajax({
-            url: '@Url.Action("GetVendorEfp")',   
+            url: '@Url.Action("GetVendorEsic")',
             type: 'GET',
             success: function (data) {
-                if (data && data.epfPercentage) {
-                    
-                    $('#epf').val(data.epfPercentage);
+                if (data && data.esicPercentage) {
+
+                    $('#esic').val(data.esicPercentage);
                 }
             },
             error: function () {
-                console.log('Error retrieving EPF data');
+                console.log('Error retrieving ESIC data');
             }
         });
     });
@@ -319,4 +269,41 @@
     }
 </script>
 
+<script>
+    $('.select2').select2();
+</script>
 
+
+<script>
+    $(document).ready(function () {
+        // Check if the table has any rows
+        var table = $('#datatable');
+        var rowCount = table.find('tbody tr').length;
+
+        if (rowCount > 0) {
+            // Initialize DataTables if there are rows
+            table.DataTable();
+        } else {
+            // Initialize DataTables without data
+            table.DataTable({
+                "language": {
+                    "emptyTable": "No data available in table"
+                }
+            });
+        }
+    });
+</script>
+
+
+<script>
+    $('.select2').select2();
+</script>
+
+
+<!--End code For selected dropdowm in list and update task status-->
+
+<script>
+    $(document).ready(function () {
+        $('#datatable').DataTable();
+    });
+</script>
