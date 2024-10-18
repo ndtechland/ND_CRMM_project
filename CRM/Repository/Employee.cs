@@ -2339,7 +2339,9 @@ namespace CRM.Repository
                                            {
                                                task.Id,
                                                task.Task,
-                                               StatusName = status.StatusName
+                                               StatusName = status.StatusName,
+                                               task.Startdate,
+                                               task.Enddate
                                            }).ToListAsync();
                 var reassignedTasks = new List<getReassignedTasklist>();
                 var completedTasks = new List<getCompletedTasklist>();
@@ -2353,6 +2355,7 @@ namespace CRM.Repository
                         {
                             id = task.Id,
                             Taskname = task.Task,
+                            Duration = $"{task.Startdate.Value.ToString("dd/MM/yyyy")} - {task.Enddate.Value.ToString("dd/MM/yyyy")}",
                             status = task.StatusName
                         });
                     }
@@ -2362,6 +2365,7 @@ namespace CRM.Repository
                         {
                             id = task.Id,
                             Taskname = task.Task,
+                            Duration = $"{task.Startdate.Value.ToString("dd/MM/yyyy")} - {task.Enddate.Value.ToString("dd/MM/yyyy")}",
                             status = task.StatusName
                         });
                     }
@@ -2371,6 +2375,7 @@ namespace CRM.Repository
                         {
                             id = task.Id,
                             Taskname = task.Task,
+                            Duration = $"{task.Startdate.Value.ToString("dd/MM/yyyy")} - {task.Enddate.Value.ToString("dd/MM/yyyy")}",
                             status = task.StatusName
                         });
                     }
