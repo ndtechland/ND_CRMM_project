@@ -40,6 +40,7 @@ namespace CRM.Repository
         public Task<List<getattendancegraph>> GetEmpGraph(string userid);
         public Task<getTasklist> gettasklist(string userid);
         public Task<List<TasksassignlistDto>> getSubtasklist(string userid ,int? id);
+        public Task<List<AppFaq>> Getappfaq();
 
 
     }

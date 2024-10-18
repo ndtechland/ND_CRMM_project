@@ -2673,6 +2673,17 @@ namespace CRM.Repository
 
             return string.Join(", ", leaveTypes);
         }
+        public async Task<bool> Addfaq(AppFaq model)
+        {
+            try
+            {
+                if (model.Id == 0)
+                {
+                    var data = new AppFaq()
+                    {
+                        Tittle = model.Tittle,
+                        Subtittle = model.Subtittle,
+=======
 
         public async Task<bool> AddAndUpdateBlog(Blog model)
         {
@@ -2700,6 +2711,7 @@ namespace CRM.Repository
                         Content = model.Content,
                         BlogImage = model.BlogImage,
                         IsPublished = true
+
                     };
                     _context.Add(data);
                     _context.SaveChanges();
@@ -2707,6 +2719,9 @@ namespace CRM.Repository
                 }
                 else
                 {
+                    var existdata = _context.AppFaqs.Find(model.Id);
+                    existdata.Tittle = model.Tittle;
+                    existdata.Subtittle = model.Subtittle;
                     var existdata = _context.Blogs.Find(model.Id);
 
                     existdata.Title = model.Title;
@@ -2715,6 +2730,7 @@ namespace CRM.Repository
                     {
                         existdata.BlogImage = model.BlogImage;
                     }
+
                 }
                 _context.SaveChanges();
                 return true;
