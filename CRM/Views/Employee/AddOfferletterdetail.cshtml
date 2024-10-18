@@ -10,21 +10,49 @@
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         var message = "@TempData["Message"]";
+        if (message == "ok" || message == "dltok" || message == "updok") {
+            if (message) {
+                let alertText;
 
-        if (message) {
-            Swal.fire({
-                 title: 'Success',
-                text: message,
-                icon: 'info',
-                confirmButtonText: 'OK'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    setTimeout(function () {
-                        window.location.href = '@Url.Action("OfferletterList", "Employee")';
-                    }, 1000);
+                if (message == "dltok") {
+                    alertText = "Deleted successfully.";
+                } else if (message == "updok") {
+                    alertText = "Offer latter updated successfully.";
+                } else {
+                    alertText = "Offer latter added successfully.";
                 }
-            });
+
+                Swal.fire({
+                    title: 'Success',
+                    text: alertText,
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        setTimeout(function () {
+                            window.location.href = '@Url.Action("OfferletterList", "Employee")';
+                        }, 1000);
+                    }
+                });
+            }
         }
+        else {
+            if (message) {
+                Swal.fire({
+                    title: 'Failed',
+                    text: message,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        setTimeout(function () {
+                            window.location.href = '@Url.Action("OfferletterList", "Employee")';
+                        }, 1000);
+                    }
+                });
+            }
+        }
+         
     });
 </script>
 <script type="text/javascript">
@@ -185,6 +213,11 @@
                                         </div>
                                         <div class="form-group text-center">
                                             <input type="submit" value="@ViewBag.btnText" class="btn btn-primary" />
+                                            @if(ViewBag.id>0)
+                                            {
+                                                <a href="/Employee/OfferletterList" class="btn btn-danger">Cancel</a>
+                                            }
+                                           
                                         </div>
                                     </div>
                                 </form>

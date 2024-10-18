@@ -18,12 +18,56 @@
 <script src='https://cdn.datatables.net/buttons/1.2.2/js/buttons.bootstrap.min.js'></script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js'></script>
 <script src='https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js'></script>
+ 
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var message = "@TempData["Message"]";
+
+        if (message == "dltok") {
+            if (message) {
+                
+
+                Swal.fire({
+                    title: 'Success',
+                    text: "Deleted successfully.",
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        setTimeout(function () {
+                            window.location.href = '@Url.Action("Employeelist", "Employee")';
+                        }, 1000);
+                    }
+                });
+            }
+        }
+        else {
+            if (message) {
+                Swal.fire({
+                    title: 'Failed',
+                    text: message,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        setTimeout(function () {
+                            window.location.href = '@Url.Action("Employeelist", "Employee")';
+                        }, 1000);
+                    }
+                });
+            }
+        }
+    });
+</script>
 <style>
     .dataTables_wrapper table.dataTable th {
         background-color: #00baf2 !important;
         padding: 24px 0.75rem !important;
     }
 </style>
+
 <div class="page-wrapper">
     <div class="page-body-wrapper">
         <div class="page-sidebar">
