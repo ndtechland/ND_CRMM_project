@@ -730,18 +730,13 @@ namespace CRM.Models.Crm
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.EffectiveDate).HasColumnType("date");
+                entity.Property(e => e.EmployeeId).HasMaxLength(100);
 
                 entity.Property(e => e.Esicnumber)
-                    .HasMaxLength(20)
-                    .IsUnicode(false)
+                    .HasMaxLength(100)
                     .HasColumnName("ESICNumber");
 
-                entity.Property(e => e.Esicpercentage)
-                    .HasColumnType("decimal(5, 2)")
-                    .HasColumnName("ESICPercentage");
-
-                entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
+                entity.Property(e => e.Esicpercentage).HasColumnName("ESICPercentage");
 
                 entity.Property(e => e.Vendorid).HasColumnName("vendorid");
             });

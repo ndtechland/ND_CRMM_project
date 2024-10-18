@@ -291,7 +291,7 @@ namespace CRM.Controllers
                 var Department = await _ICrmrpo.updateDepartment(model);
                 if (Department != null)
                 {
-                    TempData["Message"] = "Data Update Successfully.";
+                    TempData["Message"] = "updok";
                     return RedirectToAction("Department", "Home");
                 }
                 else
@@ -308,7 +308,8 @@ namespace CRM.Controllers
                     AdminLoginId = adminlogin.Id,
                 };
                 _context.DepartmentMasters.Add(master);
-                _context.SaveChanges(); TempData["Message"] = "Data Added Successfully.";
+                _context.SaveChanges(); 
+                TempData["Message"] = "ok";
                 return RedirectToAction("Department", "Home");
             }
         }
@@ -321,11 +322,13 @@ namespace CRM.Controllers
                 {
                     _context.DepartmentMasters.Remove(data);
                     _context.SaveChanges();
+                    TempData["Message"] = "dltok";
                 }
                 return RedirectToAction("Department");
             }
             catch (Exception ex)
             {
+                TempData["Message"] = $"An error occurred while deleting the Department:" + ex.Message;
                 throw new Exception("An error occurred while deleting the DeleteQuationList:" + ex.Message);
             }
         }
@@ -470,7 +473,7 @@ namespace CRM.Controllers
                 var Department = await _ICrmrpo.updateDesignation(model);
                 if (Department != null)
                 {
-                    TempData["Message"] = "Data Update Successfully.";
+                    TempData["Message"] = "updok";
                     return RedirectToAction("Designation", "Home");
                 }
                 else
@@ -487,7 +490,8 @@ namespace CRM.Controllers
                     AdminLoginId = adminlogin.Id,
                 };
                 _context.DesignationMasters.Add(master);
-                _context.SaveChanges(); TempData["Message"] = "Designation Added Successfully.";
+                _context.SaveChanges(); 
+                TempData["Message"] = "ok";
                 return RedirectToAction("Designation", "Home");
             }
         }
@@ -500,6 +504,7 @@ namespace CRM.Controllers
                 {
                     _context.DesignationMasters.Remove(data);
                     _context.SaveChanges();
+                    TempData["Message"] = "dltok";
                 }
                 return RedirectToAction("Designation");
             }

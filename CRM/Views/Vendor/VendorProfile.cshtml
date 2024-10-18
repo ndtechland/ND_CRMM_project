@@ -51,19 +51,40 @@
     document.addEventListener("DOMContentLoaded", function () {
         var message = "@TempData["Message"]";
 
-        if (message) {
-            Swal.fire({
-                title: 'Success',
-                text: message,
-                icon: 'info',
-                confirmButtonText: 'OK'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    setTimeout(function () {
-                        window.location.href = '@Url.Action("VendorProfile", "Vendor")';
-                    }, 1000);
-                }
-            });
+        if (message == "ok") {
+            if (message) {
+                 
+                
+
+                Swal.fire({
+                    title: 'Success',
+                    text: "Profile updated successfully.",
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        setTimeout(function () {
+                            window.location.href = '@Url.Action("VendorProfile", "Vendor")';
+                        }, 1000);
+                    }
+                });
+            }
+        }
+        else {
+            if (message) {
+                Swal.fire({
+                    title: 'Failed',
+                    text: message,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        setTimeout(function () {
+                            window.location.href = '@Url.Action("VendorProfile", "Vendor")';
+                        }, 1000);
+                    }
+                });
+            }
         }
     });
 </script>

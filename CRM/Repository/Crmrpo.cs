@@ -2627,6 +2627,28 @@ namespace CRM.Repository
                 throw;
             }
         }
+        public async Task<bool> AddEmployeeEsic(EmployeeEsicPayrollInfo model, int VendorId)
+        {
+            try
+            {
+                var domainmodel = new EmployeeEsicPayrollInfo()
+                {
+                    Esicnumber = model.Esicnumber,
+                    Esicpercentage = model.Esicpercentage,
+                    EmployeeId = model.EmployeeId,
+                    Vendorid = VendorId,
+                    CreatedDate = DateTime.Now 
+                };
+                await _context.AddAsync(domainmodel);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
         private static string? GetLeaveType(int startLeaveId, int endLeaveId, decimal totalFullday)
         {
             int halfDayCount = 0;

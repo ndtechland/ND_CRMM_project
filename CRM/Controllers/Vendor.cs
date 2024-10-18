@@ -201,7 +201,7 @@ namespace CRM.Controllers
                 if (id != null)
                 {
                     var data = await _ICrmrpo.UpdateVendorProfile(model, id);
-                    TempData["Message"] = "Update Successfully.";
+                    TempData["Message"] = "ok";
                     return RedirectToAction("VendorProfile", "Vendor");
                 }
                 else
@@ -622,7 +622,7 @@ namespace CRM.Controllers
                         existingData.Vendorid = adminlogin.Vendorid;
 
                         await _context.SaveChangesAsync();
-                        TempData["Message"] = "Data Update Successfully.";
+                        TempData["Message"] = "updok";
                         return RedirectToAction("VendorAttendancedays", "Vendor");
                     }
                     else
@@ -642,7 +642,7 @@ namespace CRM.Controllers
 
                     _context.Attendancedays.Add(data);
                     await _context.SaveChangesAsync();
-                    TempData["Message"] = "Data Added Successfully.";
+                    TempData["Message"] = "ok";
                     return RedirectToAction("VendorAttendancedays", "Vendor");
                 }
             }
@@ -666,8 +666,9 @@ namespace CRM.Controllers
                 {
                     _context.Attendancedays.Remove(data);
                     _context.SaveChanges();
+                    TempData["Message"] = "dltok";
                 }
-                return RedirectToAction("VendorAttendancedayslist");
+                return RedirectToAction("VendorAttendancedays");
             }
             catch (Exception ex)
             {
@@ -734,7 +735,7 @@ namespace CRM.Controllers
                         existingData.Vendorid = adminlogin.Vendorid;
 
                         await _context.SaveChangesAsync();
-                        TempData["Message"] = "Data Update Successfully.";
+                        TempData["Message"] = "updok";
                         return RedirectToAction("Officeshift", "Vendor");
                     }
                     else
@@ -756,7 +757,7 @@ namespace CRM.Controllers
 
                     _context.Officeshifts.Add(data);
                     await _context.SaveChangesAsync();
-                    TempData["Message"] = "Data Added Successfully.";
+                    TempData["Message"] = "ok";
                     return RedirectToAction("Officeshift", "Vendor");
                 }
             }
@@ -780,6 +781,7 @@ namespace CRM.Controllers
                 {
                     _context.Officeshifts.Remove(data);
                     _context.SaveChanges();
+                    TempData["Message"] = "dltok";
                 }
                 return RedirectToAction("Officeshift");
             }
@@ -840,12 +842,12 @@ namespace CRM.Controllers
                 {
                     if (model.Id == 0)
                     {
-                        TempData["msg"] = "Category added successfully!";
+                        TempData["msg"] = "ok";
                         return RedirectToAction("VendorCategory");
                     }
                     else
                     {
-                        TempData["msg"] = "Category updated successfully!";
+                        TempData["msg"] = "updok";
                         return RedirectToAction("VendorCategory");
                     }
                 }
@@ -871,7 +873,7 @@ namespace CRM.Controllers
                     _context.VendorCategoryMasters.Remove(dlt);
                     _context.SaveChanges();
                 }
-                TempData["msg"] = "Category deleted successfully!";
+                TempData["msg"] = "dltok";
                 return RedirectToAction("VendorCategory");
 
             }
@@ -1078,7 +1080,7 @@ namespace CRM.Controllers
                         existingData.Vendorid = adminlogin.Vendorid;
 
                         await _context.SaveChangesAsync();
-                        TempData["Message"] = "Data Update Successfully.";
+                        TempData["Message"] = "updok";
                         return RedirectToAction("officeBreak", "Vendor");
                     }
                     else
@@ -1101,7 +1103,7 @@ namespace CRM.Controllers
 
                     _context.OfficeBreaks.Add(data);
                     await _context.SaveChangesAsync();
-                    TempData["Message"] = "Data Added Successfully.";
+                    TempData["Message"] = "ok";
                     return RedirectToAction("officeBreak", "Vendor");
                 }
             }
@@ -1186,7 +1188,7 @@ namespace CRM.Controllers
                         existingData.Vendorid = adminlogin.Vendorid;
 
                         await _context.SaveChangesAsync();
-                        TempData["Message"] = "Data Update Successfully.";
+                        TempData["Message"] = "updok";
                         return RedirectToAction("officeBreakStatus", "Vendor");
                     }
                     else
@@ -1206,7 +1208,7 @@ namespace CRM.Controllers
 
                     _context.OfficeBreakstatuses.Add(data);
                     await _context.SaveChangesAsync();
-                    TempData["Message"] = "Data Added Successfully.";
+                    TempData["Message"] = "ok";
                     return RedirectToAction("officeBreakStatus", "Vendor");
                 }
             }
@@ -1230,6 +1232,7 @@ namespace CRM.Controllers
                 {
                     _context.OfficeBreakstatuses.Remove(data);
                     _context.SaveChanges();
+                    TempData["Message"] = "dltok";
                 }
                 return RedirectToAction("officeBreakStatus");
             }
@@ -1331,7 +1334,7 @@ namespace CRM.Controllers
                         existingData.Vendorid = adminlogin.Vendorid;
 
                         await _context.SaveChangesAsync();
-                        TempData["Message"] = "Data Update Successfully.";
+                        TempData["Message"] = "updok";
                         return RedirectToAction("EmpTasksassignment", "Vendor");
                     }
                     else
@@ -1356,7 +1359,7 @@ namespace CRM.Controllers
 
                     _context.EmployeeTasks.Add(data);
                     await _context.SaveChangesAsync();
-                    TempData["Message"] = "Data Added Successfully.";
+                    TempData["Message"] = "ok";
                     return RedirectToAction("EmpTasksassignment", "Vendor");
                 }
             }
@@ -1380,6 +1383,7 @@ namespace CRM.Controllers
                 {
                     _context.EmployeeTasks.Remove(data);
                     _context.SaveChanges();
+                    TempData["Message"] = "dltok";
                 }
                 return RedirectToAction("EmpTasksassignment");
             }
@@ -1524,7 +1528,7 @@ namespace CRM.Controllers
 
                    
                     await _context.SaveChangesAsync();
-                    TempData["Message"] = "Data Update Successfully.";
+                    TempData["Message"] = "updok";
                     return RedirectToAction("EmpTaskslist", "Vendor");
                      
                 }
@@ -1547,7 +1551,7 @@ namespace CRM.Controllers
                     }
 
                     await _context.SaveChangesAsync();
-                    TempData["Message"] = "Data Added Successfully.";
+                    TempData["Message"] = "ok";
                     return RedirectToAction("EmpTaskslist", "Vendor");
                 }
             }
@@ -1570,6 +1574,7 @@ namespace CRM.Controllers
                 {
                     _context.EmployeeTasksLists.Remove(data);
                     _context.SaveChanges();
+                    TempData["Message"] = "dltok";
                 }
                 return RedirectToAction("EmpTaskslist");
             }
@@ -1664,11 +1669,11 @@ namespace CRM.Controllers
                 {
                     if(model.Id==0)
                     {
-                        TempData["Message"] = "Bank detail added successfully..";
+                        TempData["Message"] = "ok";
                     }
                     else
                     {
-                        TempData["Message"] = "Bank detail updated successfully..";
+                        TempData["Message"] = "updok";
                     }
                     
                     return RedirectToAction("AddBankDetail", "Vendor");
@@ -1691,7 +1696,7 @@ namespace CRM.Controllers
                 var dlt = _context.VendorBankDetails.Find(id);
                 _context.Remove(dlt);
                 _context.SaveChanges();
-                TempData["Message"] = "Deleted successfully!";
+                TempData["Message"] = "dltok";
                 return RedirectToAction("AddBankDetail", "Vendor");
             }
             catch (Exception)
@@ -1758,12 +1763,12 @@ namespace CRM.Controllers
                 {
                     if (model.Id == 0)
                     {
-                        TempData["msg"] = "Event added successfully!";
+                        TempData["msg"] = "ok";
                         return RedirectToAction("Events");
                     }
                     else
                     {
-                        TempData["msg"] = "Event updated successfully!";
+                        TempData["msg"] = "updok";
                         return RedirectToAction("Events");
                     }
                 }
@@ -1785,7 +1790,7 @@ namespace CRM.Controllers
                 var dlt = _context.OfficeEvents.Find(id);
                 _context.Remove(dlt);
                 _context.SaveChanges();
-                TempData["msg"] = "Deleted successfully!";
+                TempData["msg"] = "dltok";
                 return RedirectToAction("Events");
             }
             catch (Exception)
@@ -1931,7 +1936,7 @@ namespace CRM.Controllers
                 bool check = await _ICrmrpo.AddEmployeeEpf(model, (int)adminlogin.Vendorid);
                 if(check)
                 {
-                    TempData["Message"] = "EPF added successfully.";
+                    TempData["Message"] = "ok";
                     return RedirectToAction("EmployeeEpf");
                 }
                 else
@@ -1995,8 +2000,113 @@ namespace CRM.Controllers
                 var dlt = _context.EmployeeEpfPayrollInfos.Find(id);
                 _context.Remove(dlt);
                 _context.SaveChanges();
-                TempData["Message"] = "Deleted Successfully.";
+                TempData["Message"] = "dltok";
                 return RedirectToAction("EmployeeEpf");
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        public async Task<IActionResult> EmployeeEsic()
+        {
+            try
+            {
+                if (HttpContext.Session.GetString("UserName") != null)
+                {
+                    string AddedBy = HttpContext.Session.GetString("UserName");
+                    int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                    var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                    var epflist = _context.EmployeeEsicPayrollInfos.Where(e => e.Vendorid == adminlogin.Vendorid).OrderByDescending(e => e.Id).ToList();
+
+                    ViewBag.EmployeeItem = _context.EmployeeRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).Select(D => new SelectListItem
+                    {
+                        Value = D.EmployeeId.ToString(),
+                        Text = D.EmployeeId
+
+                    }).ToList();
+
+                    ViewBag.ESICNumber = "";
+                    ViewBag.ESICPercentage = "";
+                    ViewBag.EmployeeId = "";
+                    ViewBag.Heading = "Add Employee ESIC";
+                    ViewBag.BtnText = "SAVE";
+
+                    return View(epflist);
+                }
+                else
+                {
+                    return RedirectToAction("Login", "Admin");
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> EmployeeEsic(EmployeeEsicPayrollInfo model)
+        {
+            try
+            {
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                var checkexist = _context.EmployeeEsicPayrollInfos.Where(e => e.EmployeeId == model.EmployeeId).FirstOrDefault();
+                if (checkexist != null)
+                {
+                    TempData["Message"] = $"An ESIC record for employee ID {model.EmployeeId} already exists.";
+                    return RedirectToAction("EmployeeEsic");
+                }
+                bool check = await _ICrmrpo.AddEmployeeEsic(model, (int)adminlogin.Vendorid);
+                if (check)
+                {
+                    TempData["Message"] = "ok";
+                    return RedirectToAction("EmployeeEsic");
+                }
+                else
+                {
+                    TempData["Message"] = "Failed.";
+                    return RedirectToAction("EmployeeEsic");
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        public JsonResult GetVendorEsic()
+        {
+
+            int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+            var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
+            var epf = _context.EmployeerEpfs.Where(e => e.AdminLoginId == adminlogin.Id && e.DeductionCycle == "ESIC")
+                .Select(e => new
+                {
+                    EsicPercentage = e.EpfNumber
+                })
+                .FirstOrDefault();
+
+
+            if (epf != null)
+            {
+                return Json(epf);
+            }
+
+
+            return Json(null);
+        }
+        public async Task<IActionResult> DeleteEmpEsic(int id)
+        {
+            try
+            {
+                var dlt = _context.EmployeeEsicPayrollInfos.Find(id);
+                _context.Remove(dlt);
+                _context.SaveChanges();
+                TempData["Message"] = "dltok";
+                return RedirectToAction("EmployeeEsic");
             }
             catch (Exception)
             {

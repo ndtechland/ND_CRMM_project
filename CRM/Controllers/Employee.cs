@@ -296,14 +296,14 @@ namespace CRM.Controllers
                 {
                     if (Mode == "INS")
                     {
-                        TempData["Message"] = "Employee Registration successful";
+                        TempData["Message"] = "ok";
                         var response = await _ICrmrpo.EmpRegistration(model, Mode, Empid, Userid);
                         ModelState.Clear();
                         return RedirectToAction("EmployeeRegistration");
                     }
                     else if (Mode == "UPD")
                     {
-                        TempData["Message"] = "Employee Data Update successful";
+                        TempData["Message"] = "updok";
                         var response = await _ICrmrpo.EmpRegistration(model, Mode, Empid, Userid);
                         ModelState.Clear();
                         return RedirectToAction("EmployeeRegistration");
@@ -396,7 +396,7 @@ namespace CRM.Controllers
                     data3.IsDeleted = true;
                     _context.SaveChanges();
                 }
-
+                TempData["Message"] = "dltok";
                 return RedirectToAction("Employeelist");
             }
             catch (Exception ex)
@@ -2196,7 +2196,7 @@ namespace CRM.Controllers
                     var data = await _ICrmrpo.updateOfferletterdetail(model);
                     if (data > 0)
                     {
-                        TempData["Message"] = "Data Update Successfully.";
+                        TempData["Message"] = "updok";
                         return RedirectToAction("AddOfferletterdetail", "Employee");
                     }
                     else
@@ -2210,12 +2210,12 @@ namespace CRM.Controllers
                     var response = await _ICrmrpo.AddOfferletterdetail(model, Userid);
                     if (response > 0)
                     {
-                        TempData["Message"] = "Data Add Successfully.";
+                        TempData["Message"] = "ok";
                         return RedirectToAction("AddOfferletterdetail", "Employee");
                     }
                     else
                     {
-                        TempData["Message"] = "Registration Failed.";
+                        TempData["Message"] = "Failed.";
                         ModelState.Clear();
                         return View(model);
                     }
@@ -2256,6 +2256,7 @@ namespace CRM.Controllers
                     data.IsDeleted = true;
                     _context.Offerletters.Remove(data);
                     _context.SaveChanges();
+                    TempData["Message"] = "dltok";
                 }
                 return RedirectToAction("OfferletterList");
             }
@@ -2438,7 +2439,7 @@ namespace CRM.Controllers
                         existingEntity.LeaveStartDate = DateTime.Now.Date;
                         existingEntity.LeaveUpdateDate = DateTime.Now.Date;
                         _context.SaveChanges();
-                        TempData["Message"] = "Records has Update successfully.";
+                        TempData["Message"] = "updok";
                     }
 
                 }
@@ -2459,7 +2460,7 @@ namespace CRM.Controllers
 
                     _context.Leavemasters.Add(newRecord);
                     _context.SaveChanges();
-                    TempData["Message"] = "Records has added successfully.";
+                    TempData["Message"] = "ok";
                 }
 
                 return RedirectToAction("EmpLeavemaster");
@@ -2476,6 +2477,7 @@ namespace CRM.Controllers
             {
                 _context.Leavemasters.Remove(LeavemasterDelete);
                 _context.SaveChanges();
+                TempData["Message"] = "dltok";
                 return RedirectToAction("EmpLeavemaster");
             }
             else

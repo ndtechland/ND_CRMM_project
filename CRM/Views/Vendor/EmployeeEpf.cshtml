@@ -49,19 +49,39 @@
     document.addEventListener("DOMContentLoaded", function () {
         var message = "@TempData["Message"]";
 
-        if (message) {
-            Swal.fire({
-                title: 'Success',
-                text: message,
-                icon: 'info',
-                confirmButtonText: 'OK'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    setTimeout(function () {
-                        window.location.href = '@Url.Action("EmployeeEpf", "Vendor")';
-                    }, 1000);
-                }
-            });
+        if (message == "ok" || message == "dltok") {
+            if (message) {
+                let alertText = (message == "dltok") ? "Deleted successfully." : "EPF added successfully.";
+
+                Swal.fire({
+                    title: 'Success',
+                    text: alertText,
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        setTimeout(function () {
+                            window.location.href = '@Url.Action("EmployeeEpf", "Vendor")';
+                        }, 1000);
+                    }
+                });
+            }
+        }
+        else {
+            if (message) {
+                Swal.fire({
+                    title: 'Failed',
+                    text: message,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        setTimeout(function () {
+                            window.location.href = '@Url.Action("EmployeeEpf", "Vendor")';
+                        }, 1000);
+                    }
+                });
+            }
         }
     });
 </script>
@@ -235,7 +255,7 @@
             } else {
                 // Clear the fields if no EmployeeId is selected
                 $('input[name="EPFNumber"]').val('');
-                $('input[name="EPFPercentage"]').val('');
+                
             }
         });
     });
