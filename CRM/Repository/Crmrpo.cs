@@ -2600,10 +2600,10 @@ namespace CRM.Repository
             }
             catch (Exception ex)
             {
-                throw; 
+                throw;
             }
         }
-        public async Task<bool> AddEmployeeEpf(EmployeeEpfPayrollInfo model,int VendorId)
+        public async Task<bool> AddEmployeeEpf(EmployeeEpfPayrollInfo model, int VendorId)
         {
             try
             {
@@ -2627,6 +2627,7 @@ namespace CRM.Repository
                 throw;
             }
         }
+
         public async Task<bool> AddEmployeeEsic(EmployeeEsicPayrollInfo model, int VendorId)
         {
             try

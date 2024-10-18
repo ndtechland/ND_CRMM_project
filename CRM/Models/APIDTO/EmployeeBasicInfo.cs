@@ -163,18 +163,21 @@ namespace CRM.Models.APIDTO
     {
         public int? id { get; set; }
         public string? Taskname { get; set; }
+        public string? Duration { get; set; }
         public string? status { get; set; }
     }
     public class getCompletedTasklist
     {
         public int? id { get; set; }
         public string? Taskname { get; set; }
+        public string? Duration { get; set; }
         public string? status { get; set; }
     }
     public class getUnCompletedTasklist
     {
         public int? id { get; set; }
         public string? Taskname { get; set; }
+        public string? Duration { get; set; }
         public string? status { get; set; }
     }
 }
