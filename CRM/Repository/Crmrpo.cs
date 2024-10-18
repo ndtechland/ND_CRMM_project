@@ -2127,7 +2127,7 @@ namespace CRM.Repository
             }
         }
 
-        public async Task<int> updateExperienceletterdetail(EmpExperienceletter model)
+        public async Task<bool> updateExperienceletterdetail(EmpExperienceletter model)
         {
             try
             {
@@ -2141,10 +2141,10 @@ namespace CRM.Repository
                     existing.HrDesignation = model.HrDesignation;
                     existing.HrName = model.HrName;
                     existing.EmployeeId = model.EmployeeId;
-                    return await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync();
                 }
 
-                return 1;
+                return true;
             }
             catch (Exception ex)
             {

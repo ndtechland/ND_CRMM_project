@@ -89,7 +89,7 @@ namespace CRM.Repository
         Task<bool> AddVendorCategory(VendorCategoryMaster model, int VendorId);
         Task<List<VendorCategoryMaster>> GetVendorCategoryListByVendorId(int VendorId);
         public Task<EmpExperienceletter> GetExperienceletterbyid(int? id);
-        public Task<int> updateExperienceletterdetail(EmpExperienceletter model);
+        public Task<bool> updateExperienceletterdetail(EmpExperienceletter model);
         public Task<int> AddExperienceletterdetail(EmpExperienceletter model, int Userid);
         Task<bool> CustomerInvoice(List<ProductDetail> model ,string InvoiceNo, int vendorid);
         Task<List<CustomerInvoiceDTO>> GetCustometInvoiceList(int vendorid);
