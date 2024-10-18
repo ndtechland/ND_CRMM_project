@@ -20,6 +20,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<Additonalcontribution> Additonalcontributions { get; set; } = null!;
         public virtual DbSet<AdminLogin> AdminLogins { get; set; } = null!;
         public virtual DbSet<AggregatedCounter> AggregatedCounters { get; set; } = null!;
+        public virtual DbSet<AppFaq> AppFaqs { get; set; } = null!;
         public virtual DbSet<ApplyLeaveNews> ApplyLeaveNews { get; set; } = null!;
         public virtual DbSet<ApprovedPresnolInfo> ApprovedPresnolInfos { get; set; } = null!;
         public virtual DbSet<Approvedbankdetail> Approvedbankdetails { get; set; } = null!;
@@ -27,6 +28,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<BannerMaster> BannerMasters { get; set; } = null!;
         public virtual DbSet<BillingDetail> BillingDetails { get; set; } = null!;
         public virtual DbSet<BillingHistory> BillingHistories { get; set; } = null!;
+        public virtual DbSet<Blog> Blogs { get; set; } = null!;
         public virtual DbSet<Category> Categories { get; set; } = null!;
         public virtual DbSet<City> Cities { get; set; } = null!;
         public virtual DbSet<Counter> Counters { get; set; } = null!;
@@ -170,6 +172,19 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.Key).HasMaxLength(100);
 
                 entity.Property(e => e.ExpireAt).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<AppFaq>(entity =>
+            {
+                entity.ToTable("AppFaq");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Subtittle).HasMaxLength(200);
+
+                entity.Property(e => e.Tittle)
+                    .HasMaxLength(200)
+                    .HasColumnName("tittle");
             });
 
             modelBuilder.Entity<ApplyLeaveNews>(entity =>
@@ -369,6 +384,13 @@ namespace CRM.Models.Crm
                     .HasForeignKey(d => d.ProductDetailsId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Customer_Fact_Table_Product_Details_ID");
+            });
+
+            modelBuilder.Entity<Blog>(entity =>
+            {
+                entity.Property(e => e.IsPublished).HasDefaultValueSql("((0))");
+
+                entity.Property(e => e.Title).HasMaxLength(255);
             });
 
             modelBuilder.Entity<Category>(entity =>

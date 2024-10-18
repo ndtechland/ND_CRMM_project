@@ -2673,6 +2673,58 @@ namespace CRM.Repository
 
             return string.Join(", ", leaveTypes);
         }
+
+        public async Task<bool> AddAndUpdateBlog(Blog model)
+        {
+            try
+            {
+                FileOperation fileOperation = new FileOperation(_webHostEnvironment);
+                string[] allowedExtensions = { ".png" };
+                string ImagePath = "";
+                
+                if (model.ImageFile != null)
+                {
+                    var fileExtension = Path.GetExtension(model.ImageFile.FileName).ToLower();
+                    if (!allowedExtensions.Contains(fileExtension))
+                    {
+                        throw new InvalidOperationException("Only  .png files are allowed.");
+                    }
+                    ImagePath = fileOperation.SaveBase64Image("image", model.ImageFile, allowedExtensions);
+                    model.BlogImage = ImagePath;
+                }
+                if (model.Id == 0)
+                {
+                    var data = new Blog()
+                    {
+                        Title = model.Title,
+                        Content = model.Content,
+                        BlogImage = model.BlogImage,
+                        IsPublished = true
+                    };
+                    _context.Add(data);
+                    _context.SaveChanges();
+                    return true;
+                }
+                else
+                {
+                    var existdata = _context.Blogs.Find(model.Id);
+
+                    existdata.Title = model.Title;
+                    existdata.Content = model.Content;
+                    if (model.BlogImage != null)
+                    {
+                        existdata.BlogImage = model.BlogImage;
+                    }
+                }
+                _context.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 
 }
