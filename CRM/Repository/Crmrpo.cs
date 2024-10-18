@@ -2651,6 +2651,36 @@ namespace CRM.Repository
 
             return string.Join(", ", leaveTypes);
         }
+        public async Task<bool> Addfaq(AppFaq model)
+        {
+            try
+            {
+                if (model.Id == 0)
+                {
+                    var data = new AppFaq()
+                    {
+                        Tittle = model.Tittle,
+                        Subtittle = model.Subtittle,
+                    };
+                    _context.Add(data);
+                    _context.SaveChanges();
+                    return true;
+                }
+                else
+                {
+                    var existdata = _context.AppFaqs.Find(model.Id);
+                    existdata.Tittle = model.Tittle;
+                    existdata.Subtittle = model.Subtittle;
+                }
+                _context.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 
 }

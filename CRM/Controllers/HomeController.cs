@@ -950,6 +950,96 @@ namespace CRM.Controllers
                 throw new Exception();
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> AppFaq(int id)
+        {
+            try
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                int UserId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == UserId).FirstOrDefaultAsync();
+                ViewBag.UserName = AddedBy;
+                List<AppFaq> faq = _context.AppFaqs.OrderBy(x => x.Id).ToList();
+                ;
+                int iId = (int)(id == null ? 0 : id);
+                ViewBag.id = 0;
+                ViewBag.Tittle = "";
+                ViewBag.Subtittle = "";
+                ViewBag.heading = "Add Faq";
+                ViewBag.btnText = "SAVE";
+                if (iId != null && iId != 0)
+                {
+                    var data = _context.AppFaqs.Find(iId);
+                    if (data != null)
+                    {
+                        ViewBag.id = data.Id;
+                        ViewBag.Tittle = data.Tittle;
+                        ViewBag.Subtittle = data.Subtittle;
+                        ViewBag.btnText = "UPDATE";
+                        ViewBag.heading = "Update Faq";
+
+                    }
+                }
+
+                return View(faq);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> AppFaq(AppFaq model)
+        {
+            try
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                int UserId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == UserId).FirstOrDefaultAsync();
+                ViewBag.UserName = AddedBy;
+
+                bool check = await _ICrmrpo.Addfaq(model);
+                if (check)
+                {
+                    if (model.Id == 0)
+                    {
+                        TempData["msg"] = "Event added successfully!";
+                        return RedirectToAction("AppFaq");
+                    }
+                    else
+                    {
+                        TempData["msg"] = "Event updated successfully!";
+                        return RedirectToAction("AppFaq");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("AppFaq");
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        public async Task<IActionResult> DeleteAppfaq(int id)
+        {
+            try
+            {
+                var dlt = await _context.AppFaqs.FindAsync(id);
+                _context.Remove(dlt);
+                _context.SaveChanges();
+                TempData["Message"] = "Deleted Successfully.";
+                return RedirectToAction("AppFaq");
+            }
+            catch (Exception)
+            {
+                TempData["msg"] = "Delete failed: An error occurred.";
+            }
+            return RedirectToAction("AppFaq");
+        }
 
     }
 

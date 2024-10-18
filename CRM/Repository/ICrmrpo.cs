@@ -99,5 +99,7 @@ namespace CRM.Repository
         Task<bool> AddOfficeEvents(OfficeEvent model, int VendorId);
         public Task<List<ApprovedLeaveApplyList>> GetLeaveapplydetailList(int? Userid);
         Task<bool> AddEmployeeEpf(EmployeeEpfPayrollInfo model, int VendorId);
+        Task<bool> Addfaq(AppFaq model);
+
     }
 }

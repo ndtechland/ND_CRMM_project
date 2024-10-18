@@ -7,6 +7,8 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
@@ -135,7 +137,7 @@
                                         </div>
                                         <div class="form-group col-md-6">
                                             <label for="exampleInputEmail1">Leave StartDate</label>
-                                            <input type="date" class="form-control" value='@ViewBag.LeaveStartDate' required id="txtJobTtle" name="LeaveStartDate">
+                                            <input type="date" class="form-control"  required id="txtLeaveStartDate" name="LeaveStartDate">
                                             <span asp-validation-for="LeaveStartDate" class="text-danger"></span>
                                         </div>
                                     </div>
@@ -212,10 +214,16 @@
     </div>
 
 </div>
+<script>
+     var taskEnddate = '@ViewBag.LeaveStartDate';
+        if (taskEnddate != "") {
+            $('#txtLeaveStartDate').val(taskEnddate);
+        }
+</script>
 
 <script>
     $('.select2').select2();
-    </script>
+</script>
 
 <script type="text/javascript">
     var selectedEmpId = '@ViewBag.EmpId'

@@ -20,6 +20,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<Additonalcontribution> Additonalcontributions { get; set; } = null!;
         public virtual DbSet<AdminLogin> AdminLogins { get; set; } = null!;
         public virtual DbSet<AggregatedCounter> AggregatedCounters { get; set; } = null!;
+        public virtual DbSet<AppFaq> AppFaqs { get; set; } = null!;
         public virtual DbSet<ApplyLeaveNews> ApplyLeaveNews { get; set; } = null!;
         public virtual DbSet<ApprovedPresnolInfo> ApprovedPresnolInfos { get; set; } = null!;
         public virtual DbSet<Approvedbankdetail> Approvedbankdetails { get; set; } = null!;
@@ -170,6 +171,19 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.Key).HasMaxLength(100);
 
                 entity.Property(e => e.ExpireAt).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<AppFaq>(entity =>
+            {
+                entity.ToTable("AppFaq");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Subtittle).HasMaxLength(200);
+
+                entity.Property(e => e.Tittle)
+                    .HasMaxLength(200)
+                    .HasColumnName("tittle");
             });
 
             modelBuilder.Entity<ApplyLeaveNews>(entity =>
@@ -730,18 +744,13 @@ namespace CRM.Models.Crm
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.EffectiveDate).HasColumnType("date");
+                entity.Property(e => e.EmployeeId).HasMaxLength(100);
 
                 entity.Property(e => e.Esicnumber)
-                    .HasMaxLength(20)
-                    .IsUnicode(false)
+                    .HasMaxLength(100)
                     .HasColumnName("ESICNumber");
 
-                entity.Property(e => e.Esicpercentage)
-                    .HasColumnType("decimal(5, 2)")
-                    .HasColumnName("ESICPercentage");
-
-                entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
+                entity.Property(e => e.Esicpercentage).HasColumnName("ESICPercentage");
 
                 entity.Property(e => e.Vendorid).HasColumnName("vendorid");
             });

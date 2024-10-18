@@ -2377,7 +2377,7 @@ namespace CRM.Controllers
                             ViewBag.Value = data.Value;
                             ViewBag.EmpId = data.EmpId;
                             ViewBag.Status = data.IsActive;
-                            ViewBag.LeaveStartDate = data.LeaveStartDate;
+                            ViewBag.LeaveStartDate = data.LeaveStartDate.ToString("yyyy-MM-dd");
                             ViewBag.btnText = "UPDATE";
                             ViewBag.heading = "Update Leavemaster :";
 
@@ -2451,7 +2451,7 @@ namespace CRM.Controllers
                         EmpId = model.EmpId,
                         Value = model.Value,
                         LeaveStartDate = (DateTime)model.LeaveStartDate,
-                        IsActive = false,
+                        IsActive = true,
                         Createddate = DateTime.Now.Date,
                         LeaveUpdateDate = DateTime.Now.Date,
                     };

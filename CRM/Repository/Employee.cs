@@ -788,6 +788,9 @@ namespace CRM.Repository
                     Currentlong = model.Currentlong,
                     Currentdate = DateTime.Now,
                 };
+                empcheck.Breakin = model.Breakin;
+                empcheck.Breakout = model.Breakout;
+                checkIn = model.Breakin == true && model.Breakout == false ? false : checkIn;
                 if (!checkIn)
                 {
                     empcheck.CheckIn = checkIn;
@@ -1001,7 +1004,9 @@ namespace CRM.Repository
                     CheckIn = checkIn,
                     Currentdate = DateTime.Now,
                     CheckInTime = null,
-                    CheckOutTime = DateTime.Now
+                    CheckOutTime = DateTime.Now,
+                    Breakin = false,
+                    Breakout = false
                 };
 
                 _context.EmployeeCheckIns.Add(newEmpCheckInRecord);
@@ -1452,7 +1457,7 @@ namespace CRM.Repository
                 {
                     Loginactivity dd = new Loginactivity();
 
-                    if (record.CheckIn == false && record.CheckOutTime.HasValue)
+                    if (record.CheckIn == false )
                     {
                         lastBreakOutTime = record.CheckOutTime.Value;
                         dd.CheckOut = lastBreakOutTime.Value.ToString("hh:mm tt");
@@ -1492,8 +1497,8 @@ namespace CRM.Repository
                     Id = x.Id,
                     TaskName = x.Task,
                     TaskTittle = x.Tittle,
-                    taskstartdate = x.Startdate.Value.ToString("dd/MM/yyyy"),
-                    taskEnddate = x.Enddate.Value.ToString("dd/MM/yyyy"),
+                    taskstartdate = x.Startdate,
+                    taskEnddate = x.Enddate,
                     TaskDescription = x.Description,
                     TaskStatus = _context.TaskStatuses.Where(a => a.Id == x.Status).Select(status => status.StatusName).FirstOrDefault(),
                 }).ToListAsync();
@@ -2404,15 +2409,27 @@ namespace CRM.Repository
                                         {
                                             Id = taskList.Id,
                                             TasksubTittle = taskList.Taskname,
-                                            TaskStatus = taskStatus.StatusName ,
+                                            TaskStatus = taskStatus.StatusName,
                                         }).ToListAsync();
-               
+
 
                 return taskassign;
             }
             catch (Exception ex)
             {
                 throw new Exception("Error: " + ex.Message, ex);
+            }
+        }
+        public async Task<List<AppFaq>> Getappfaq()
+        {
+            try
+            {
+                var faq = await _context.AppFaqs.ToListAsync();
+                return faq;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error: " + ex.Message);
             }
         }
     }

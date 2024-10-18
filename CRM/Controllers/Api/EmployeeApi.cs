@@ -708,6 +708,14 @@ namespace CRM.Controllers.Api
                     if (CheckIn)
                     {
                         CheckIN = false;
+                        if (model.Breakin == true)
+                        {
+                            CheckIN = false;
+                        }
+                        if (model.Breakout == false) 
+                        {
+                            CheckIN = true;
+                        }
                         var CCModel = await _apiemp.Empcheckin(model, CheckIN);
                         response.Succeeded = true;
                         response.StatusCode = StatusCodes.Status200OK;
@@ -1715,6 +1723,27 @@ namespace CRM.Controllers.Api
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
+            }
+        }
+
+        //app GeFaq
+        [HttpGet("GeFaq")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GeFaq()
+        {
+            var response = new Response<List<AppFaq>>();
+            try
+            {
+                List<AppFaq> st = await _apiemp.Getappfaq();
+                response.Data = st;
+                response.Message = "FAQ retrieved successfully.";
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.StatusCode = StatusCodes.Status500InternalServerError;
+                response.Message = "Error: " + ex.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
     }

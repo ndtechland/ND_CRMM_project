@@ -66,6 +66,8 @@ namespace CRM.Models.APIDTO
         public string? CheckIN { get; set; }
         public string? CheckOut { get; set; }
         public string? LoginStatus { get; set; }
+        public bool Breakin { get; set; }
+        public bool Breakout { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<Loginactivity> loginactivities { get; set; } = new List<Loginactivity>();
@@ -82,8 +84,8 @@ namespace CRM.Models.APIDTO
         public int? Id { get; set; }
         public string? TaskName { get; set; }
         public string? TaskTittle { get; set; }
-        public string taskstartdate { get; set; }
-        public string taskEnddate { get; set; }
+        public DateTime? taskstartdate { get; set; }
+        public DateTime? taskEnddate { get; set; }
         public string? TaskDescription { get; set; }
         public string? TaskStatus { get; set; }
     }

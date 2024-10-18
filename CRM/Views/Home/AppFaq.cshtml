@@ -1,0 +1,195 @@
+﻿@model IEnumerable<CRM.Models.Crm.AppFaq>
+
+@{
+    ViewData["Title"] = "Faq";
+    Layout = "~/Views/Shared/_adminLayout.cshtml";
+}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<link rel='stylesheet' href='https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css'>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js'></script>
+<script src='https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js'></script>
+<script src='https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js'></script>
+<script src='https://cdn.datatables.net/buttons/1.2.2/js/buttons.colVis.min.js'></script>
+<script src='https://cdn.datatables.net/buttons/1.2.2/js/buttons.html5.min.js'></script>
+<script src='https://cdn.datatables.net/buttons/1.2.2/js/buttons.print.min.js'></script>
+<script src='https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js'></script>
+<script src='https://cdn.datatables.net/buttons/1.2.2/js/buttons.bootstrap.min.js'></script>
+<style>
+    .dataTables_wrapper table.dataTable th {
+        background-color: #00baf2 !important;
+        padding: 24px 0.75rem !important;
+    }
+</style>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var message = "@TempData["msg"]";
+
+    if (message) {
+        Swal.fire({
+            title: 'Success',
+            text: message,
+            icon: 'info',
+            confirmButtonText: 'OK'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                setTimeout(function () {
+                        window.location.href = '@Url.Action("AppFaq", "Vendor")';
+                }, 1000);
+            }
+        });
+        }
+    });
+</script>
+
+<div class="page-wrapper">
+    <div class="page-body-wrapper">
+        <div class="page-sidebar">
+        </div>
+        <div class="page-body">
+            <div class="container-fluid">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="page-header-left">
+                                <h2>
+                                    @ViewBag.heading
+                                </h2>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <ol class="breadcrumb pull-right">
+                                <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
+                                <li class="breadcrumb-item">Settings</li>
+                                <li class="breadcrumb-item active">Events</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <form asp-action="AppFaq" autocomplete="off" onsubmit="return validateForm()">
+                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                    <div class="row">
+                                        <div class="form-group col-sm">
+                                            <label for="Title">Title<span class="text-danger">*</span></label>
+                                            <input name="Tittle" type="text" value="@ViewBag.Tittle" placeholder="Enter FAQ Title" class="form-control" required="" />
+                                            <input type="hidden" name="Id" value="@ViewBag.id" />
+                                        </div>
+
+                                        <div class="form-group col-sm">
+                                            <label for="SubTitle">Sub Title Number <span class="text-danger">*</span></label>
+                                            <textarea name="Subtittle" type="text" placeholder="Enter FAQ Sub Title" class="form-control">@ViewBag.Subtittle</textarea>
+
+                                        </div>
+
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="submit" value="@ViewBag.btnText" class="btn btn-primary" />
+                                        @if (ViewBag.id > 0)
+                                        {
+                                            <a href="/Vendor/AppFaq" class="btn btn-danger">Cancel</a>
+                                        }
+
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class=" table-responsive">
+                                    <table id="datatable" class="table table-hover">
+                                        <thead>
+                                            <tr style="background-color: #00baf2;">
+                                                <th nowrap>Sl. No.</th>
+                                                <th nowrap>
+                                                    Title
+                                                </th>
+                                                <th nowrap>Sub Title</th>
+                                                <th>Edit</th>
+                                                <th>Delete</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{
+                                                var count = 0;
+                                                foreach (var item in Model)
+                                                {
+                                                    count++;
+                                                    <tr class="table-row">
+                                                        <td>@count</td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.Tittle)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.Subtittle)
+                                                        </td>
+                                                        <td>
+                                                            <div>
+                                                                <a href="/Vendor/AppFaq?Id=@item.Id" class="fa fa-edit m-2 font-success"></a>
+
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteAppfaq", "Vendor", new { id = item.Id })')" class="fa fa-trash font-danger"></a>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>
+<script>
+    function confirmDelete(url) {
+        var result = confirm("Are you sure you want to delete?");
+    if (result) {
+        window.location.href = url;
+        }
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        document.title = 'Faq';
+        $('#datatable').DataTable(
+            {
+                "dom": '<"dt-buttons"Bf><"clear">lirtp',
+                "paging": true,
+                "autoWidth": true,
+                "buttons": [
+                    'colvis',
+                    'copyHtml5',
+                    'csvHtml5',
+                    'excelHtml5',
+                    'pdfHtml5',
+                    'print'
+                ]
+            }
+        );
+    });
+</script>
