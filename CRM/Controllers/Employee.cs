@@ -2669,10 +2669,10 @@ namespace CRM.Controllers
 
                 if (model.Id > 0)
                 {
-                    var data = await _ICrmrpo.updateExperienceletterdetail(model);
-                    if (data > 0)
+                    bool data = await _ICrmrpo.updateExperienceletterdetail(model);
+                    if (data)
                     {
-                        TempData["Message"] = "Data Update Successfully.";
+                        TempData["Message"] = "updok";
                         return RedirectToAction("AddExperienceletteretail", "Employee");
                     }
                     else
@@ -2686,17 +2686,17 @@ namespace CRM.Controllers
                     var response = await _ICrmrpo.AddExperienceletterdetail(model, Userid);
                     if (response > 0)
                     {
-                        TempData["Message"] = "Data Add Successfully.";
+                        TempData["Message"] = "ok";
                         return RedirectToAction("AddExperienceletteretail", "Employee");
                     }
                     else
                     {
-                        TempData["Message"] = "Registration Failed.";
+                        TempData["Message"] = "Failed.";
                         ModelState.Clear();
                         return View(model);
                     }
                 }
-                return View();
+                 
             }
             catch (Exception Ex)
             {
@@ -2757,6 +2757,7 @@ namespace CRM.Controllers
                 {
                     _context.EmpExperienceletters.Remove(data);
                     _context.SaveChanges();
+                    TempData["Message"] = "dltok";
                 }
                 return RedirectToAction("OfferletterList");
             }
