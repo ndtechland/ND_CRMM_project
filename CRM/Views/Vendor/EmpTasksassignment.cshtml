@@ -186,6 +186,7 @@
                                         <thead>
                                             <tr style="background-color: #00baf2;">
                                                 <th nowrap>Sl. No.</th>
+                                                <th hidden> gfgf</th>
                                                 <th nowrap>
                                                     Employee Id
                                                 </th>
@@ -217,8 +218,9 @@
                                                 {
                                                     count++;
                                                     <tr class="table-row">
-                                                        <td class="EmpTaskId" hidden>@item.Id</td>
+                                                        
                                                         <td>@count</td>
+                                                        <td class="EmpTaskId" hidden>@item.Id</td>
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.EmployeeId)
                                                         </td>
