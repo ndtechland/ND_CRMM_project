@@ -197,4 +197,8 @@ namespace CRM.Models.APIDTO
         public string? Duration { get; set; }
         public string? status { get; set; }
     }
+    public class aboutCompanyDto
+    {
+        public string? Companylink { get; set; }
+    }
 }

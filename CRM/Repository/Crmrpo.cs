@@ -2750,6 +2750,36 @@ namespace CRM.Repository
                 throw;
             }
         }
+        public async Task<bool> Addaddcompany(Aboutcompany model, int VendorId)
+        {
+            try
+            {
+                if (model.Id == 0)
+                {
+                    var data = new Aboutcompany()
+                    {
+                        Vendorid = VendorId,
+                        Companylink = model.Companylink,
+
+                    };
+                    _context.Add(data);
+                    _context.SaveChanges();
+                    return true;
+                }
+                else
+                {
+                    var existdata = _context.Aboutcompanies.Find(model.Id);
+                    existdata.Companylink = model.Companylink;
+                }
+                _context.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 
 }

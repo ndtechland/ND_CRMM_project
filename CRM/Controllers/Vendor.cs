@@ -2114,6 +2114,93 @@ namespace CRM.Controllers
                 throw;
             }
         }
+        public async Task<IActionResult> Aboutcompany(int id)
+        {
+            try
+            {
+                ViewBag.UserName = HttpContext.Session.GetString("UserName");
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                int vendorid = (int)adminlogin.Vendorid;
+                List<Aboutcompany> company = _context.Aboutcompanies.Where(e => e.Vendorid == vendorid).OrderBy(x => x.Id).ToList();
+                ;
+                int iId = (int)(id == null ? 0 : id);
+                ViewBag.id = 0;
+                ViewBag.Companylink = "";
+                ViewBag.heading = "Add About Company";
+                ViewBag.btnText = "SAVE";
+                if (iId != null && iId != 0)
+                {
+                    var data = _context.Aboutcompanies.Find(iId);
+                    if (data != null)
+                    {
+                        ViewBag.id = data.Id;
+                        ViewBag.Companylink = data.Companylink;
+                        ViewBag.btnText = "UPDATE";
+                        ViewBag.heading = "Update About Company";
+
+                    }
+                }
+
+                return View(company);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> Aboutcompany(Aboutcompany model)
+        {
+            try
+            {
+                ViewBag.UserName = HttpContext.Session.GetString("UserName");
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                int vendorid = (int)adminlogin.Vendorid;
+
+                bool check = await _ICrmrpo.Addaddcompany(model, vendorid);
+                if (check)
+                {
+                    if (model.Id == 0)
+                    {
+                        TempData["msg"] = "ok";
+                        return RedirectToAction("Aboutcompany");
+                    }
+                    else
+                    {
+                        TempData["msg"] = "updok";
+                        return RedirectToAction("Aboutcompany");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Aboutcompany");
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        public async Task<IActionResult> DeleteAboutcompany(int id)
+        {
+            try
+            {
+                var dlt = _context.Aboutcompanies.Find(id);
+                _context.Remove(dlt);
+                _context.SaveChanges();
+                TempData["msg"] = "dltok";
+                return RedirectToAction("Aboutcompany");
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 }
 
