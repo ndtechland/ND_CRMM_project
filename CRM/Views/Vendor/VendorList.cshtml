@@ -7,6 +7,12 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style>
+    .dataTables_wrapper table.dataTable th {
+        background-color: #00baf2 !important;
+        padding: 24px 0.75rem !important;
+    }
+</style>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         var message = "@TempData["msg"]";
@@ -71,6 +77,7 @@
                                         <thead>
                                             <tr style="background-color: #00baf2;">
                                                 <th nowrap>Sl. No.</th>
+                                                <th hidden></th>
                                                 <th nowrap>
                                                     Company Name
                                                 </th>
@@ -196,57 +203,7 @@
 
 </div>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script>
-    var currentPage = 1;
-    var rowsPerPage = 5;
-    $(document).ready(function () {
-        function paginateTable() {
-            var table = $('#datatable');
-            var rows = table.find('tbody tr');
-
-
-            var totalPages = Math.ceil(rows.length / rowsPerPage);
-
-
-            var pagination = $('#pagination');
-            pagination.empty();
-
-            for (var i = 1; i <= totalPages; i++) {
-                var link = $('<li class="page-item"><a class="page-link" href="#">' + i + '</a></li>');
-
-
-                if (i === currentPage) {
-                    link.addClass('active');
-                }
-
-                pagination.append(link);
-            }
-
-
-            var startIndex = (currentPage - 1) * rowsPerPage;
-            var endIndex = startIndex + rowsPerPage;
-
-            rows.hide().slice(startIndex, endIndex).show();
-        }
-
-
-        paginateTable();
-
-        $(document).on('click', '#pagination li a', function (event) {
-            event.preventDefault();
-
-            var clickedPage = parseInt($(this).text());
-
-
-            currentPage = clickedPage;
-            paginateTable();
-
-
-            $('html, body').animate({ scrollTop: $('#table-container').offset().top }, 'slow');
-        });
-    });
-
-</script>
+ 
 <script>
     function confirmDelete(url) {
         var result = confirm("Are you sure you want to delete?");
@@ -254,5 +211,10 @@
             window.location.href = url;
         }
     }
+</script>
+<script>
+    $(document).ready(function () {
+        $('#datatable').DataTable();
+    });
 </script>
 

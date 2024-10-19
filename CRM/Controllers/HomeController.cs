@@ -916,7 +916,7 @@ namespace CRM.Controllers
                 {
                     ca.CategoryName = model.CategoryName;
                     await _context.SaveChangesAsync();
-                    TempData["Message"] = "Data updated successfully.";
+                    TempData["Message"] = "updok";
                     return RedirectToAction("Categorymaster", "Home");
                 }
                 else
@@ -934,7 +934,7 @@ namespace CRM.Controllers
 
                 await _context.Categories.AddAsync(master);
                 await _context.SaveChangesAsync();
-                TempData["Message"] = "Data added successfully.";
+                TempData["Message"] = "ok";
                 return RedirectToAction("Categorymaster", "Home");
             }
         }
@@ -947,8 +947,9 @@ namespace CRM.Controllers
                 {
                     _context.Categories.Remove(data);
                     _context.SaveChanges();
+                    TempData["Message"] = "dltok";
                 }
-                return RedirectToAction("Gstmasterlist");
+                return RedirectToAction("Categorymaster");
             }
             catch (Exception ex)
             {
@@ -1009,12 +1010,12 @@ namespace CRM.Controllers
                 {
                     if (model.Id == 0)
                     {
-                        TempData["msg"] = "Event added successfully!";
+                        TempData["msg"] = "ok";
                         return RedirectToAction("AppFaq");
                     }
                     else
                     {
-                        TempData["msg"] = "Event updated successfully!";
+                        TempData["msg"] = "updok";
                         return RedirectToAction("AppFaq");
                     }
                 }
@@ -1036,7 +1037,7 @@ namespace CRM.Controllers
                 var dlt = await _context.AppFaqs.FindAsync(id);
                 _context.Remove(dlt);
                 _context.SaveChanges();
-                TempData["Message"] = "Deleted Successfully.";
+                TempData["Message"] = "dltok";
                 return RedirectToAction("AppFaq");
             }
             catch (Exception)

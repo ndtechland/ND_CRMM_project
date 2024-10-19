@@ -228,7 +228,7 @@ namespace CRM.Controllers
                 {                     
                     _context.CustomerInvoices.RemoveRange(dlt);
                     await _context.SaveChangesAsync(); 
-                    TempData["Message"] = "dltok";
+                    TempData["Message"] = "Deleted Successfully.";
                 }
                 else
                 {

@@ -28,19 +28,47 @@
     document.addEventListener("DOMContentLoaded", function () {
         var message = "@TempData["msg"]";
 
-    if (message) {
-        Swal.fire({
-            title: 'Success',
-            text: message,
-            icon: 'info',
-            confirmButtonText: 'OK'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                setTimeout(function () {
-                        window.location.href = '@Url.Action("AppFaq", "Vendor")';
-                }, 1000);
+    if (message == "ok" || message == "dltok" || message == "updok") {
+            if (message) {
+                let alertText;
+
+                if (message == "dltok") {
+                    alertText = "Deleted successfully.";
+                } else if (message == "updok") {
+                    alertText = "FAQ updated successfully.";
+                } else {
+                    alertText = "FAQ added successfully.";
+                }
+
+                Swal.fire({
+                    title: 'Success',
+                    text: alertText,
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        setTimeout(function () {
+                            window.location.href = '@Url.Action("AppFaq", "Home")';
+                        }, 1000);
+                    }
+                });
             }
-        });
+        }
+        else {
+            if (message) {
+                Swal.fire({
+                    title: 'Failed',
+                    text: message,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        setTimeout(function () {
+                            window.location.href = '@Url.Action("AppFaq", "Home")';
+                        }, 1000);
+                    }
+                });
+            }
         }
     });
 </script>
@@ -95,7 +123,7 @@
                                         <input type="submit" value="@ViewBag.btnText" class="btn btn-primary" />
                                         @if (ViewBag.id > 0)
                                         {
-                                            <a href="/Vendor/AppFaq" class="btn btn-danger">Cancel</a>
+                                            <a href="/Home/AppFaq" class="btn btn-danger">Cancel</a>
                                         }
 
                                     </div>
@@ -139,12 +167,12 @@
                                                         </td>
                                                         <td>
                                                             <div>
-                                                                <a href="/Vendor/AppFaq?Id=@item.Id" class="fa fa-edit m-2 font-success"></a>
+                                                                <a href="/Home/AppFaq?Id=@item.Id" class="fa fa-edit m-2 font-success"></a>
 
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteAppfaq", "Vendor", new { id = item.Id })')" class="fa fa-trash font-danger"></a>
+                                                            <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteAppfaq", "Home", new { id = item.Id })')" class="fa fa-trash font-danger"></a>
                                                         </td>
                                                     </tr>
                                                 }
