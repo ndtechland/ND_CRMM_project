@@ -1126,7 +1126,7 @@ namespace CRM.Repository
                                 .Select(g => g.CheckOutTime.HasValue ? g.CheckOutTime.Value.ToString("hh:mm tt") : "N/A")
                                 .FirstOrDefault();
                             var loginActivities = await GetLoginBreakActivities(empAttendanceDetails.EmployeeId);
-                            var latestLoginStatus = loginActivities.Any() ? loginActivities.Last().LoginStatus : "No Activity";
+                            var latestLoginStatus = loginActivities.Any() ? loginActivities.Last().LoginStatus : "Check-In";
                             var attendanceDetail = new Empattendancedatail
                             {
                                 OfficeHour = $"{officeShift.Starttime} - {officeShift.Endtime}",
@@ -1206,16 +1206,14 @@ namespace CRM.Repository
         {
             var currentDate = DateTime.Now.Date;
 
-            // Fetch break-in records (Check-Out for BreakIn)
             var breakRecordsIn = await _context.EmployeeCheckIns
                 .Where(g => g.EmployeeId == employeeId && g.Breakin == true && g.CheckOutTime.HasValue && g.CheckOutTime.Value.Date == currentDate)
-                .OrderByDescending(g => g.CheckOutTime)
+                .OrderBy(g => g.CheckOutTime)
                 .ToListAsync();
 
-            // Fetch break-out records (Check-In for BreakOut)
             var breakRecordsOut = await _context.EmployeeCheckIns
                 .Where(g => g.EmployeeId == employeeId && g.Breakout == true && g.CheckInTime.HasValue && g.CheckInTime.Value.Date == currentDate)
-                .OrderByDescending(g => g.CheckInTime)
+                .OrderBy(g => g.CheckInTime)
                 .ToListAsync();
 
             var loginActivities = new List<Breakactivity>();
@@ -1228,11 +1226,12 @@ namespace CRM.Repository
                     BreakIN = breakInRecord.CheckOutTime.HasValue
                         ? breakInRecord.CheckOutTime.Value.ToString("hh:mm tt")
                         : "N/A",
-                    BreakOut = "N/A",  
-                    LoginStatus = "Check-Out", 
-                    loginactivities = null
+                    BreakOut = "N/A",
+                    LoginStatus = "Check-In", // Default to "Check-In"
+                    loginactivities = null // Adjust based on your needs
                 };
 
+                // Check for corresponding BreakOut record
                 if (index < breakRecordsOut.Count)
                 {
                     var breakOutRecord = breakRecordsOut[index];
@@ -1242,6 +1241,16 @@ namespace CRM.Repository
                         loginActivity.BreakOut = breakOutRecord.CheckInTime.HasValue
                             ? breakOutRecord.CheckInTime.Value.ToString("hh:mm tt")
                             : "N/A";
+
+                        // Set LoginStatus based on CheckIn
+                        if (breakOutRecord.CheckIn == false)
+                        {
+                            loginActivity.LoginStatus = "Check-Out"; // Set to "Check-Out"
+                        }
+                        else
+                        {
+                            loginActivity.LoginStatus = "Check-In"; // Set to "Check-In"
+                        }
                     }
                 }
 
@@ -1249,10 +1258,18 @@ namespace CRM.Repository
                 index++;
             }
 
+            // Adjust the last activity's LoginStatus if needed
+            if (loginActivities.Any())
+            {
+                var lastActivity = loginActivities.Last();
+                if (lastActivity.BreakOut == "N/A" && breakRecordsIn.Last().CheckOutTime == null)
+                {
+                    lastActivity.LoginStatus = "Check-In"; // Last record shows Check-In if no BreakOut exists
+                }
+            }
+
             return loginActivities;
         }
-
-
         private async Task<string> CalculatePresencePercentage(string employeeId)
         {
             var emp = await _context.EmployeeRegistrations
@@ -2387,12 +2404,16 @@ namespace CRM.Repository
             {
                 var taskassign = await (from taskList in _context.EmployeeTasksLists
                                         join taskStatus in _context.TaskStatuses on taskList.TaskStatus equals taskStatus.Id
+                                        join task in _context.EmployeeTasks on taskList.Emptaskid equals task.Id
                                         where taskList.EmployeeId == userid && taskList.Emptaskid == id
                                         select new TasksassignlistDto
                                         {
                                             Id = taskList.Id,
+                                            TaskTittle = task.Tittle,
                                             TasksubTittle = taskList.Taskname,
                                             TaskStatus = taskStatus.StatusName,
+                                            TaskDescription = task.Description,
+                                            Duration = $"{task.Startdate.Value.ToString("dd/MM/yyyy")} - {task.Enddate.Value.ToString("dd/MM/yyyy")}"
                                         }).ToListAsync();
 
 
