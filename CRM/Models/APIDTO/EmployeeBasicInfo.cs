@@ -54,20 +54,31 @@ namespace CRM.Models.APIDTO
         public string? LoginStatus { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public List<Loginactivity> loginactivities { get; set; }
+        public List<Breakactivity> loginactivities { get; set; }
+       
     }
     public class profilepicture
     {
         public string? EmpProfiles { get; set; }
         public IFormFile Empprofile { get; set; }
     }
+    public class Breakactivity
+    {
+        //public string? CheckIN { get; set; }
+        //public string? CheckOut { get; set; }
+
+        public string? BreakIN { get; set; }
+        public string? BreakOut { get; set; }
+        public string? LoginStatus { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<Breakactivity> loginactivities { get; set; } = new List<Breakactivity>();
+    }
     public class Loginactivity
     {
         public string? CheckIN { get; set; }
         public string? CheckOut { get; set; }
         public string? LoginStatus { get; set; }
-        public bool Breakin { get; set; }
-        public bool Breakout { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<Loginactivity> loginactivities { get; set; } = new List<Loginactivity>();

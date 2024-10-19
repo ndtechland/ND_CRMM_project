@@ -24,7 +24,6 @@ namespace CRM.Repository
         public Task<EmployeeCheckIn> Empcheckout(EmpCheckIn model, bool CheckIN);
         public Task<Empattendancedatail> GetEmpattendance(string userid);
         public Task<EmployeeRegistration> Updateprofilepicture(profilepicture model, string userid);
-        public Task<Loginactivity> GetEmpLoginactivity(string userid);
         public Task<List<TasksassignDto>> GetEmpTasksassign(string userid);
         public Task<TasksassignnameDto> GetEmpTasksassignname(string userid, int id);
         public Task<EmpTasksList> CompletedempTasksassign(EmpTasksListDto model, string userid);

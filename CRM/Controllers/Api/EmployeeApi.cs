@@ -1008,47 +1008,6 @@ namespace CRM.Controllers.Api
                 throw new Exception(ex.Message);
             }
         }
-        [Route("EmpLoginactivity")]
-        [HttpGet]
-        public async Task<IActionResult> EmpLoginactivity()
-        {
-            var response = new Response<Loginactivity>();
-            try
-            {
-                if (User.Identity.IsAuthenticated)
-                {
-                    var userid = User.Claims.FirstOrDefault().Value;
-                    Loginactivity isLoginExists = await _apiemp.GetEmpLoginactivity(userid);
-                    if (isLoginExists != null)
-                    {
-                        response.Succeeded = true;
-                        response.StatusCode = StatusCodes.Status200OK;
-                        response.Status = "Success";
-                        response.Message = "Employee LoginActivity Here.";
-                        response.Data = isLoginExists;
-                        return Ok(response);
-                    }
-                    else
-                    {
-                        response.StatusCode = StatusCodes.Status401Unauthorized;
-                        response.Message = "Data not found.";
-                        return Ok(response);
-                    }
-                }
-                else
-                {
-                    response.StatusCode = StatusCodes.Status401Unauthorized;
-                    response.Message = "Token is expired.";
-                    return BadRequest(response);
-                }
-
-
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-        }
         [Route("EmpTasksassign")]
         [HttpGet]
         public async Task<IActionResult> EmpTasksassign()

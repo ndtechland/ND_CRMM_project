@@ -27,6 +27,7 @@ using System.Linq;
 using DocumentFormat.OpenXml.Wordprocessing;
 using CRM.Models.APIDTO;
 using Dapper;
+using CRM.Controllers;
 
 
 namespace CRM.Repository
@@ -2675,24 +2676,35 @@ namespace CRM.Repository
         }
         public async Task<bool> Addfaq(AppFaq model)
         {
-            try
+            if (model.Id == 0)
             {
-                if (model.Id == 0)
+                var data = new AppFaq()
                 {
-                    var data = new AppFaq()
-                    {
-                        Tittle = model.Tittle,
-                        Subtittle = model.Subtittle,
-=======
+                    Tittle = model.Tittle,
+                    Subtittle = model.Subtittle,
 
-        public async Task<bool> AddAndUpdateBlog(Blog model)
+                };
+                _context.Add(data);
+                _context.SaveChanges();
+                return true;
+            }
+            else
+            {
+                var existdata = _context.AppFaqs.Find(model.Id);
+                existdata.Tittle = model.Tittle;
+                existdata.Subtittle = model.Subtittle;
+            }
+            _context.SaveChanges();
+            return true;
+        }
+        public async Task<bool> AddAndUpdateBlog(BlogDto model)
         {
             try
             {
                 FileOperation fileOperation = new FileOperation(_webHostEnvironment);
                 string[] allowedExtensions = { ".png" };
                 string ImagePath = "";
-                
+
                 if (model.ImageFile != null)
                 {
                     var fileExtension = Path.GetExtension(model.ImageFile.FileName).ToLower();
@@ -2719,9 +2731,6 @@ namespace CRM.Repository
                 }
                 else
                 {
-                    var existdata = _context.AppFaqs.Find(model.Id);
-                    existdata.Tittle = model.Tittle;
-                    existdata.Subtittle = model.Subtittle;
                     var existdata = _context.Blogs.Find(model.Id);
 
                     existdata.Title = model.Title;
