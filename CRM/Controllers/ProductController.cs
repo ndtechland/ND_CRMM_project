@@ -219,7 +219,7 @@ namespace CRM.Controllers
                     var response = await _ICrmrpo.AddVendorProduct(model, vendorid);
                     if (response != null)
                     {
-                        TempData["Message"] = "Product Updated Successfully.";
+                        TempData["Message"] = "updok";
                         return RedirectToAction("VendorProduct", "Product");
                     }
                     else
@@ -231,7 +231,7 @@ namespace CRM.Controllers
                 else
                 {
                     var product = await _ICrmrpo.AddVendorProduct(model, vendorid);
-                    TempData["Message"] = "Product Added Successfully.";
+                    TempData["Message"] = "ok";
                     return RedirectToAction("VendorProduct", "Product");
                 }
             }
@@ -266,6 +266,7 @@ namespace CRM.Controllers
                 {
                     data.IsActive = false;
                     _context.SaveChanges();
+                    TempData["Message"] = "dltok";
 
                 }
                 return RedirectToAction("VendorProductList", "Product");

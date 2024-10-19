@@ -19,7 +19,7 @@
         padding: 24px 0.75rem !important;
     }
 </style>
-<script>
+@* <script>
     document.addEventListener("DOMContentLoaded", function () {
         var message = "@TempData["Message"]";
 
@@ -27,18 +27,18 @@
             Swal.fire({
                 title: 'Not Found',
                 text: message,
-                icon: 'info',
+                icon: 'success',
                 confirmButtonText: 'OK'
             }).then((result) => {
                 if (result.isConfirmed) {
                     setTimeout(function () {
-                        window.location.href = '@Url.Action("GenerateSalary", "Employee")';
+                        window.location.href = '@Url.Action("CustomerInvoiceList", "Sale")';
                     }, 1000);
                 }
             });
         }
     });
-</script>
+</script> *@
 <div class="page-wrapper">
     <div class="page-body-wrapper">
         <div class="page-sidebar">
