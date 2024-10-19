@@ -112,8 +112,12 @@ namespace CRM.Models.APIDTO
     public class TasksassignlistDto
     {
         public int? Id { get; set; }
+        public string? TaskTittle { get; set; }
         public string? TasksubTittle { get; set; }
         public string? TaskStatus { get; set; }
+        public string? TaskDescription { get; set; }
+        public string? Duration { get; set; }
+
     }
     public class updateTasksassignDto
     {
