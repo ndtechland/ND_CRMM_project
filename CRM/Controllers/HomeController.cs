@@ -1045,7 +1045,99 @@ namespace CRM.Controllers
             }
             return RedirectToAction("AppFaq");
         }
+        [HttpGet]
+        public async Task<IActionResult> Blogs(int id)
+        {
+            try
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                int UserId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == UserId).FirstOrDefaultAsync();
+                ViewBag.UserName = AddedBy;
+                BlogDto model = new BlogDto();
+                model.Blogs = _context.Blogs.Where(b => b.IsPublished == true).OrderByDescending(b => b.Id).ToList();
+                ;
+                int iId = (int)(id == null ? 0 : id);
+                ViewBag.id = 0;
+                ViewBag.BlogTitle = "";
+                ViewBag.Content = "";
+                ViewBag.BlogImage = "";
+                ViewBag.heading = "Add Blog";
+                ViewBag.btnText = "SAVE";
+                if (iId != null && iId != 0)
+                {
+                    var data = _context.Blogs.Find(iId);
+                    if (data != null)
+                    {
+                        ViewBag.id = data.Id;
+                        ViewBag.BlogTitle = data.Title;
+                        ViewBag.Content = data.Content;
+                        ViewBag.BlogImage = data.BlogImage;
+                        ViewBag.btnText = "UPDATE";
+                        ViewBag.heading = "Update Blog";
 
+                    }
+                }
+
+                return View(model);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> Blogs(BlogDto model)
+        {
+            try
+            {
+                bool check = await _ICrmrpo.AddAndUpdateBlog(model);
+                if (check)
+                {
+                    if (model.Id == 0)
+                    {
+                        TempData["msg"] = "ok";
+                        return RedirectToAction("Blogs");
+                    }
+                    else
+                    {
+                        TempData["msg"] = "updok";
+                        return RedirectToAction("Blogs");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Blogs");
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public async Task<IActionResult> DeleteBlogs(int id)
+        {
+            try
+            {
+                var dlt = _context.Blogs.Find(id);
+                if (dlt != null)
+                {
+                    _context.Blogs.Remove(dlt);
+                    _context.SaveChanges();
+                }
+                TempData["msg"] = "dltok";
+                return RedirectToAction("Blogs");
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 
 }

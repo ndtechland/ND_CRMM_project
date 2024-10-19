@@ -101,7 +101,7 @@ namespace CRM.Repository
         Task<bool> AddEmployeeEpf(EmployeeEpfPayrollInfo model, int VendorId);
         Task<bool> Addfaq(AppFaq model);
         Task<bool> AddEmployeeEsic(EmployeeEsicPayrollInfo model, int VendorId);
-        Task<bool> AddAndUpdateBlog(Blog model);
+        Task<bool> AddAndUpdateBlog(BlogDto model);
 
     }
 }
