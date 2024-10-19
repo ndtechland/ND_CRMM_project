@@ -104,7 +104,7 @@ namespace CRM.Controllers
                     var data = await _ICrmrpo.updateCustomerReg(model);
                     if (data > 0)
                     {
-                        TempData["Message"] = "Update Successfully.";
+                        TempData["Message"] = "updok";
                         return RedirectToAction("Customer", "Customer");
                     }
                     else
@@ -118,12 +118,12 @@ namespace CRM.Controllers
                     var response = await _ICrmrpo.Customer(model,(int)adminlogin.Vendorid);
                     if (response > 0)
                     {
-                        TempData["Message"] = "Registration Successfully.";
+                        TempData["Message"] = "ok";
                         return RedirectToAction("Customer", "Customer");
                     }
                     else
                     {
-                        TempData["Message"] = "Registration Failed.";
+                        TempData["Message"] = "Failed.";
                         ModelState.Clear();
                         return View(model);
                     }
@@ -162,6 +162,7 @@ namespace CRM.Controllers
                 {
                     _context.CustomerRegistrations.Remove(data);
                     _context.SaveChanges();
+                    TempData["Message"] = "dltok";
                 }
                 return RedirectToAction("CustomerList");
             }

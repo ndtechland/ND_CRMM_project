@@ -120,12 +120,12 @@ namespace CRM.Controllers
                     {
                         if (product.Id == 0)
                         {
-                            TempData["Message"] = "Added Successfully.";
+                            TempData["Message"] = "ok";
                             TempData.Keep("Message");
                         }
                         else
                         {
-                            TempData["Message"] = "Updated Successfully.";
+                            TempData["Message"] = "updok";
                             TempData.Keep("Message");
                         }
                     }
@@ -134,7 +134,7 @@ namespace CRM.Controllers
                     var model1 =
                         new
                         {
-                            path = "/Sale/CustomerInvoiceList"
+                            path = "/Sale/Invoice"
                         };
                     return Ok(model1);
                         //return RedirectToAction("CustomerInvoiceList", "Sale");
@@ -226,9 +226,9 @@ namespace CRM.Controllers
                  
                 if (dlt.Any())
                 {                     
-                    _context.CustomerInvoices.RemoveRange(dlt); // Use RemoveRange for multiple deletions
+                    _context.CustomerInvoices.RemoveRange(dlt);
                     await _context.SaveChangesAsync(); 
-                    TempData["Message"] = "Deleted Successfully.";
+                    TempData["Message"] = "dltok";
                 }
                 else
                 {

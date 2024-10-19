@@ -57,7 +57,12 @@
         }
     });
 </script>
-
+<style>
+    .dataTables_wrapper table.dataTable th {
+        background-color: #00baf2 !important;
+        padding: 24px 0.75rem !important;
+    }
+</style>
 
 <div class="page-wrapper">
     <div class="page-body-wrapper">
@@ -219,4 +224,9 @@
             window.location.href = url;
         }
     }
+</script>
+<script>
+    $(document).ready(function () {
+        $('#datatable').DataTable();
+    });
 </script>
