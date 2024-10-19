@@ -700,22 +700,30 @@ namespace CRM.Controllers.Api
                     double.Parse(model.CurrentLat),
                     double.Parse(model.Currentlong)
                 );
-
                 if (distance > radiusInMeters)
                 {
-                    bool CheckIn = await _context.EmployeeCheckIns.Where(x => x.EmployeeId == employee.EmployeeId && x.Currentdate.Value.Date == DateTime.Now.Date).OrderByDescending(x => x.Id)
-                    .AnyAsync();
+                    bool CheckIn = await _context.EmployeeCheckIns
+                        .Where(x => x.EmployeeId == employee.EmployeeId && x.Currentdate.Value.Date == DateTime.Now.Date)
+                        .OrderByDescending(x => x.Id)
+                        .AnyAsync();
+
                     if (CheckIn)
                     {
+                        var recentCheckIn = await _context.EmployeeCheckIns
+                            .Where(x => x.EmployeeId == employee.EmployeeId && x.Currentdate.Value.Date == DateTime.Now.Date)
+                            .OrderByDescending(x => x.Id)
+                            .FirstOrDefaultAsync();
+
+                        if (recentCheckIn != null && recentCheckIn.Breakin == true)
+                        {
+                            response.Succeeded = true;
+                            response.StatusCode = StatusCodes.Status200OK;
+                            response.Status = "Success";
+                            response.Message = "Check-Out successful.";
+                            return Ok(response);
+                        }
+
                         CheckIN = false;
-                        if (model.Breakin == true)
-                        {
-                            CheckIN = false;
-                        }
-                        if (model.Breakout == false) 
-                        {
-                            CheckIN = true;
-                        }
                         var CCModel = await _apiemp.Empcheckin(model, CheckIN);
                         response.Succeeded = true;
                         response.StatusCode = StatusCodes.Status200OK;
@@ -724,11 +732,11 @@ namespace CRM.Controllers.Api
                         response.Data = CCModel;
                         return Ok(response);
                     }
+
                     response.StatusCode = StatusCodes.Status404NotFound;
                     response.Message = $"Employee is not within the {radiusInMeters} meter radius of the company's location.";
                     return BadRequest(response);
                 }
-
                 var apiModel = await _apiemp.Empcheckin(model, CheckIN);
                 if (apiModel != null)
                 {
@@ -1705,5 +1713,6 @@ namespace CRM.Controllers.Api
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
+     
     }
 }

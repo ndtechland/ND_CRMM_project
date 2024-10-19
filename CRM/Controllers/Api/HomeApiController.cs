@@ -1,5 +1,7 @@
-﻿using CRM.Models.Crm;
+﻿using CRM.Models.APIDTO;
+using CRM.Models.Crm;
 using CRM.Repository;
+using CRM.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,20 +25,60 @@ namespace CRM.Controllers.Api
             try
             {
                 List<Blog> blogs = await _home.GetBlogs();
-                if(blogs!=null)
+                if (blogs != null)
                 {
-                    return Ok(new { Status = 200, Message = "Blogs retrieved successfully.",data=blogs });
+                    return Ok(new { Status = 200, Message = "Blogs retrieved successfully.", data = blogs });
                 }
                 else
                 {
                     return NotFound(new { Status = 404, Message = "No any blog available." });
                 }
-                
+
             }
             catch (Exception)
             {
 
                 throw;
+            }
+        }
+        [HttpGet("Getaboutcompany")]
+        public async Task<IActionResult> Getaboutcompany()
+        {
+            var response = new Response<aboutCompanyDto>();
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userid = User.Claims.FirstOrDefault().Value;
+                    var isLoginExists = await _home.Getaboutcompany(userid);
+                    if (isLoginExists != null)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = "Aboutcompany retrieved successfully.";
+                        response.Data = isLoginExists;
+                        return Ok(response);
+                    }
+                    else
+                    {
+                        response.StatusCode = StatusCodes.Status401Unauthorized;
+                        response.Message = "Data not found.";
+                        return Ok(response);
+                    }
+                }
+                else
+                {
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Message = "Token is expired.";
+                    return BadRequest(response);
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
             }
         }
     }

@@ -16,6 +16,7 @@ namespace CRM.Models.Crm
         {
         }
 
+        public virtual DbSet<Aboutcompany> Aboutcompanies { get; set; } = null!;
         public virtual DbSet<AccountTypeMaster> AccountTypeMasters { get; set; } = null!;
         public virtual DbSet<Additonalcontribution> Additonalcontributions { get; set; } = null!;
         public virtual DbSet<AdminLogin> AdminLogins { get; set; } = null!;
@@ -110,6 +111,17 @@ namespace CRM.Models.Crm
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasDefaultSchema("admin_NDCrM");
+
+            modelBuilder.Entity<Aboutcompany>(entity =>
+            {
+                entity.ToTable("aboutcompany");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Companylink).HasMaxLength(200);
+
+                entity.Property(e => e.Vendorid).HasColumnName("vendorid");
+            });
 
             modelBuilder.Entity<AccountTypeMaster>(entity =>
             {

@@ -790,7 +790,7 @@ namespace CRM.Repository
                 };
                 empcheck.Breakin = model.Breakin;
                 empcheck.Breakout = model.Breakout;
-                checkIn = model.Breakin == true && model.Breakout == false ? false : checkIn;
+                checkIn = model.Breakin == true && model.Breakout == false ? true : checkIn;
                 if (!checkIn)
                 {
                     empcheck.CheckIn = checkIn;
@@ -1110,9 +1110,9 @@ namespace CRM.Repository
                                 throw new Exception("Invalid shift end time format.");
                             }
                             var checkIns = await _context.EmployeeCheckIns
-    .Where(g => g.EmployeeId == empAttendanceDetails.EmployeeId && g.CheckInTime.HasValue && g.CheckInTime.Value.Date == DateTime.Now.Date)
-    .OrderBy(g => g.Id)
-    .ToListAsync();
+                            .Where(g => g.EmployeeId == empAttendanceDetails.EmployeeId && g.CheckInTime.HasValue && g.CheckInTime.Value.Date == DateTime.Now.Date)
+                            .OrderBy(g => g.Id)
+                            .ToListAsync();
 
                             var checkInTime = checkIns
                                 .Select(g => g.CheckInTime.HasValue ? g.CheckInTime.Value.ToString("hh:mm tt") : "N/A")
@@ -1126,12 +1126,21 @@ namespace CRM.Repository
                                 .Select(g => g.CheckOutTime.HasValue ? g.CheckOutTime.Value.ToString("hh:mm tt") : "N/A")
                                 .FirstOrDefault();
                             var loginActivities = await GetLoginBreakActivities(empAttendanceDetails.EmployeeId);
-                            var latestLoginStatus = loginActivities.Any() ? loginActivities.Last().LoginStatus : "Check-In";
+                            var latestLoginStatus = (string?)null;
+                            if (checkIns.Count > 0)
+                            {
+                                 latestLoginStatus = loginActivities.Any() ? loginActivities.Last().LoginStatus : "Check-In";
+                            }
+                            else
+                            {
+                                 latestLoginStatus = loginActivities.Any() ? loginActivities.Last().LoginStatus : "Not logged in today";
+
+                            }
                             var attendanceDetail = new Empattendancedatail
                             {
                                 OfficeHour = $"{officeShift.Starttime} - {officeShift.Endtime}",
-                                CheckInTime = checkInTime,
-                                CheckOutTime = checkOutTime,
+                                CheckInTime = checkInTime == null ? "N/A" : checkInTime,
+                                CheckOutTime = checkOutTime == null ? "N/A" : checkOutTime,
                                 StartOverTime = await CalculateStartOverTime(empAttendanceDetails.EmployeeId, (int)empAttendanceDetails.OfficeShiftId.Value, _context),
                                 FinishOverTime = await CalculateFinishOverTime(empAttendanceDetails.EmployeeId, (int)empAttendanceDetails.OfficeShiftId.Value, _context),
                                 OvertimeWorkingHours = await CalculateMonthlyOvertimeHours(empAttendanceDetails.EmployeeId, (int)empAttendanceDetails.OfficeShiftId.Value),
@@ -1139,7 +1148,7 @@ namespace CRM.Repository
                                 MonthlyWorkingHours = await CalculateMonthlyWorkingHours(empAttendanceDetails.EmployeeId),
                                 Presencepercentage = await CalculatePresencePercentage(empAttendanceDetails.EmployeeId),
                                 absencepercentage = await CalculateAbsencePercentage(empAttendanceDetails.EmployeeId),
-                                Currentdate = currentDate,
+                                Currentdate = currentDate == null ? "N/A" : checkInTime,
                                 LoginStatus = latestLoginStatus,
                                 //loginactivities = await GetLoginActivities(empAttendanceDetails.EmployeeId)
                                 loginactivities = await GetLoginBreakActivities(empAttendanceDetails.EmployeeId)
@@ -1207,8 +1216,8 @@ namespace CRM.Repository
             var currentDate = DateTime.Now.Date;
 
             var breakRecordsIn = await _context.EmployeeCheckIns
-                .Where(g => g.EmployeeId == employeeId && g.Breakin == true && g.CheckOutTime.HasValue && g.CheckOutTime.Value.Date == currentDate)
-                .OrderBy(g => g.CheckOutTime)
+                .Where(g => g.EmployeeId == employeeId && g.Breakin == true && g.CheckInTime.HasValue && g.CheckInTime.Value.Date == currentDate)
+                .OrderBy(g => g.CheckInTime)
                 .ToListAsync();
 
             var breakRecordsOut = await _context.EmployeeCheckIns
@@ -1223,15 +1232,13 @@ namespace CRM.Repository
             {
                 var loginActivity = new Breakactivity
                 {
-                    BreakIN = breakInRecord.CheckOutTime.HasValue
-                        ? breakInRecord.CheckOutTime.Value.ToString("hh:mm tt")
+                    BreakIN = breakInRecord.CheckInTime.HasValue
+                        ? breakInRecord.CheckInTime.Value.ToString("hh:mm tt")
                         : "N/A",
                     BreakOut = "N/A",
-                    LoginStatus = "Check-In", // Default to "Check-In"
-                    loginactivities = null // Adjust based on your needs
+                    LoginStatus = "Check-In",
+                    loginactivities = null
                 };
-
-                // Check for corresponding BreakOut record
                 if (index < breakRecordsOut.Count)
                 {
                     var breakOutRecord = breakRecordsOut[index];
@@ -1241,15 +1248,13 @@ namespace CRM.Repository
                         loginActivity.BreakOut = breakOutRecord.CheckInTime.HasValue
                             ? breakOutRecord.CheckInTime.Value.ToString("hh:mm tt")
                             : "N/A";
-
-                        // Set LoginStatus based on CheckIn
                         if (breakOutRecord.CheckIn == false)
                         {
-                            loginActivity.LoginStatus = "Check-Out"; // Set to "Check-Out"
+                            loginActivity.LoginStatus = "Check-Out";
                         }
                         else
                         {
-                            loginActivity.LoginStatus = "Check-In"; // Set to "Check-In"
+                            loginActivity.LoginStatus = "Check-In";
                         }
                     }
                 }
@@ -1257,14 +1262,12 @@ namespace CRM.Repository
                 loginActivities.Add(loginActivity);
                 index++;
             }
-
-            // Adjust the last activity's LoginStatus if needed
             if (loginActivities.Any())
             {
                 var lastActivity = loginActivities.Last();
                 if (lastActivity.BreakOut == "N/A" && breakRecordsIn.Last().CheckOutTime == null)
                 {
-                    lastActivity.LoginStatus = "Check-In"; // Last record shows Check-In if no BreakOut exists
+                    lastActivity.LoginStatus = "Check-In";
                 }
             }
 
@@ -2436,5 +2439,6 @@ namespace CRM.Repository
                 throw new Exception("Error: " + ex.Message);
             }
         }
+      
     }
 }
