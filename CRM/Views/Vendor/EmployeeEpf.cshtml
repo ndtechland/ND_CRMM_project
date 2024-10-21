@@ -46,9 +46,17 @@
     document.addEventListener("DOMContentLoaded", function () {
         var message = "@TempData["Message"]";
 
-        if (message == "ok" || message == "dltok") {
+        if (message == "ok" || message == "dltok" || message == "updok") {
             if (message) {
-                let alertText = (message == "dltok") ? "Deleted successfully." : "EPF added successfully.";
+                let alertText;
+
+                if (message == "dltok") {
+                    alertText = "Deleted successfully.";
+                } else if (message == "updok") {
+                    alertText = "EPF updated successfully.";
+                } else {
+                    alertText = "EPF added successfully.";
+                }
 
                 Swal.fire({
                     title: 'Success',
@@ -204,6 +212,8 @@
                                                         </td>
                                                         <td>
                                                             <div>
+                                                                <a href="/Vendor/EmployeeEpf?Id=@item.Id" class="fa fa-edit m-2 font-success"></a>
+
                                                                 <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteEmpEPF", "Vendor", new { id = item.Id })')" class="fa fa-trash font-danger"></a>
                                                             </div>
                                                         </td>
@@ -232,7 +242,14 @@
 <script>
    $('.select2').select2();
 </script>
-
+ 
+ 
+<script type="text/javascript">
+    var selectedEmpId = '@ViewBag.SelectedEmployeeId'
+    if (selectedEmpId != "") {
+        $("#empddl").val(selectedEmpId).trigger('change');
+    }
+</script>
 <script type="text/javascript">
     $('#empddl').change(function () {
         var employeeId = $(this).val(); 
