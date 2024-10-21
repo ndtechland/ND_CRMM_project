@@ -22,7 +22,7 @@ namespace CRM.Repository
         public Task<EmployeeCheckIn> Empcheckin(EmpCheckIn model, bool CheckIN);
         public Task<ApprovedPresnolInfo> webPersonalDetail(webPersonalDetail model, string userid);
         public Task<EmployeeCheckIn> Empcheckout(EmpCheckIn model, bool CheckIN);
-        public Task<Empattendancedatail> GetEmpattendance(string userid);
+        public Task<Empattendancedatail> GetEmpattendance(string userid, DateTime Currentdate);
         public Task<EmployeeRegistration> Updateprofilepicture(profilepicture model, string userid);
         public Task<List<TasksassignDto>> GetEmpTasksassign(string userid);
         public Task<TasksassignnameDto> GetEmpTasksassignname(string userid, int id);
@@ -32,7 +32,6 @@ namespace CRM.Repository
         public Task<EmpTasksList> SubTaskCompletedempTasksassign(EmpSubTasksDto model, string userid);
         public Task<List<WebLoginactivity>> GetWebEmpLoginactivity(string userid);
         public Task<List<officeEventsDto>> GetOfficeEvents(string userid);
-        public Task<Empattendancedatail> GetFilterattendance(string userid,DateTime Currentdate);
         public Task<Monthlyattendancedatail> GetMonthAttanceDetails(string userid);
         public Task<TotalLeave> Getleavelist(string userid);
         public Task<getTotalLeave> GetEmptotalleave(string userid, int id);
