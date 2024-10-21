@@ -901,7 +901,7 @@ namespace CRM.Controllers.Api
 
         [Route("Empattendancedatail")]
         [HttpGet]
-        public async Task<IActionResult> Empattendancedatail()
+        public async Task<IActionResult> Empattendancedatail(DateTime Currentdate)
         {
             var response = new Response<Empattendancedatail>();
             try
@@ -909,7 +909,7 @@ namespace CRM.Controllers.Api
                 if (User.Identity.IsAuthenticated)
                 {
                     var userid = User.Claims.FirstOrDefault().Value;
-                    Empattendancedatail isExists = await _apiemp.GetEmpattendance(userid);
+                    Empattendancedatail isExists = await _apiemp.GetEmpattendance(userid,Currentdate);
                     if (isExists != null)
                     {
                         response.Succeeded = true;
@@ -1342,48 +1342,6 @@ namespace CRM.Controllers.Api
                         return Ok(response);
                     }
 
-                    else
-                    {
-                        response.StatusCode = StatusCodes.Status401Unauthorized;
-                        response.Message = "Data not found.";
-                        return Ok(response);
-                    }
-                }
-                else
-                {
-                    response.StatusCode = StatusCodes.Status401Unauthorized;
-                    response.Message = "Token is expired.";
-                    return BadRequest(response);
-                }
-
-
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-        }
-
-        [Route("GetEmpattendancedatail")]
-        [HttpGet]
-        public async Task<IActionResult> GetEmpattendancedatail(DateTime Currentdate)
-        {
-            var response = new Response<Empattendancedatail>();
-            try
-            {
-                if (User.Identity.IsAuthenticated)
-                {
-                    var userid = User.Claims.FirstOrDefault().Value;
-                    Empattendancedatail isExists = await _apiemp.GetFilterattendance(userid, Currentdate);
-                    if (isExists != null)
-                    {
-                        response.Succeeded = true;
-                        response.StatusCode = StatusCodes.Status200OK;
-                        response.Status = "Success";
-                        response.Message = "Employee Attendancedatail Here.";
-                        response.Data = isExists;
-                        return Ok(response);
-                    }
                     else
                     {
                         response.StatusCode = StatusCodes.Status401Unauthorized;
