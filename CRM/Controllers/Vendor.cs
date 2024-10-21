@@ -1971,27 +1971,27 @@ namespace CRM.Controllers
              
             return Json(null);
         }
-        public JsonResult GetVendorEfp()
-        {
+        //public JsonResult GetVendorEfp()
+        //{
            
-            int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
-            var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
-            var epf = _context.EmployeerEpfs.Where(e => e.AdminLoginId == adminlogin.Id && e.DeductionCycle== "EPF")
-                .Select(e => new
-                {
-                    EpfPercentage = e.EpfNumber
-                })
-                .FirstOrDefault();
+        //    int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+        //    var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
+        //    var epf = _context.EmployeerEpfs.Where(e => e.AdminLoginId == adminlogin.Id && e.DeductionCycle== "EPF")
+        //        .Select(e => new
+        //        {
+        //            EpfPercentage = e.EpfNumber
+        //        })
+        //        .FirstOrDefault();
 
 
-            if (epf != null)
-            {
-                return Json(epf);
-            }
+        //    if (epf != null)
+        //    {
+        //        return Json(epf);
+        //    }
 
 
-            return Json(null);
-        }
+        //    return Json(null);
+        //}
         public async Task<IActionResult> DeleteEmpEPF(int id)
         {
             try

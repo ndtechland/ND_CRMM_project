@@ -212,37 +212,8 @@
     </div>
 
 </div>
-<script type="text/javascript">
-    $(document).ready(function () {
-        $('#empddl').change(function () {
-            // $('#empddl').on('select2:change', function (e) {
-            var employeeId = $(this).val();
-
-            if (employeeId != "0") {
-                $.ajax({
-                    url: '@Url.Action("GetEmpEpfNumber", "Vendor")',
-                    type: 'GET',
-                    data: { employeeId: employeeId },
-                    success: function (data) {
-                        if (data) {
-                            $('input[name="EPFNumber"]').val(data.epfNumber);
-                        } else {
-                            $('input[name="EPFNumber"]').val('');
-                        }
-                    },
-                    error: function () {
-                        alert('Error retrieving EPF details');
-                    }
-                });
-            } else {
-                // Clear the fields if no EmployeeId is selected
-                $('input[name="EPFNumber"]').val('');
-                 
-            }
-        });
-    });
-</script>
-<script>
+ 
+@* <script>
     $(document).ready(function () {
 
         $.ajax({
@@ -259,7 +230,7 @@
             }
         });
     });
-</script>
+</script> *@
 <script>
     function confirmDelete(url) {
         var result = confirm("Are you sure you want to delete?");
