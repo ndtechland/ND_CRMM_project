@@ -2608,19 +2608,34 @@ namespace CRM.Repository
         {
             try
             {
-                var domainmodel = new EmployeeEpfPayrollInfo()
+                if(model.Id==0)
                 {
-                    Epfnumber = model.Epfnumber,
-                    Epfpercentage = model.Epfpercentage,
-                    EmployeeId = model.EmployeeId,
-                    Vendorid = VendorId,
-                    CreatedDate = DateTime.Now,
-                    EffectiveDate = DateTime.Now,
-                    UpdatedDate = DateTime.Now
-                };
-                await _context.AddAsync(domainmodel);
-                await _context.SaveChangesAsync();
-                return true;
+                    var domainmodel = new EmployeeEpfPayrollInfo()
+                    {
+                        Epfnumber = model.Epfnumber,
+                        Epfpercentage = model.Epfpercentage,
+                        EmployeeId = model.EmployeeId,
+                        Vendorid = VendorId,
+                        CreatedDate = DateTime.Now,
+                        EffectiveDate = DateTime.Now,
+                        UpdatedDate = DateTime.Now
+                    };
+                    await _context.AddAsync(domainmodel);
+                    await _context.SaveChangesAsync();
+                    return true;
+                }
+                else
+                {
+                    var existdata = _context.EmployeeEpfPayrollInfos.Find(model.Id);
+                    existdata.Epfnumber = model.Epfnumber;
+                    existdata.Epfpercentage = model.Epfpercentage;
+                    existdata.EmployeeId = model.EmployeeId;
+                    existdata.UpdatedDate = DateTime.Now;
+
+                    await _context.SaveChangesAsync();
+                    return true;
+                }
+                
             }
             catch (Exception)
             {
@@ -2633,7 +2648,9 @@ namespace CRM.Repository
         {
             try
             {
-                var domainmodel = new EmployeeEsicPayrollInfo()
+                if(model.Id==0)
+                {
+var domainmodel = new EmployeeEsicPayrollInfo()
                 {
                     Esicnumber = model.Esicnumber,
                     Esicpercentage = model.Esicpercentage,
@@ -2644,6 +2661,18 @@ namespace CRM.Repository
                 await _context.AddAsync(domainmodel);
                 await _context.SaveChangesAsync();
                 return true;
+                }
+                else
+                {
+                    var existdata = _context.EmployeeEsicPayrollInfos.Find(model.Id);
+                    existdata.Esicnumber = model.Esicnumber;
+                    existdata.Esicpercentage = model.Esicpercentage;
+                    existdata.EmployeeId = model.EmployeeId;
+
+                    await _context.SaveChangesAsync();
+                    return true;
+                }
+                
             }
             catch (Exception)
             {
