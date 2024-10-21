@@ -89,7 +89,7 @@ namespace CRM.Controllers
                     var response = await _ICrmrpo.updateproduct(model);
                     if (response != null)
                     {
-                        TempData["Message"] = "Data Update Successfully.";
+                        TempData["msg"] = "updok";
                         return RedirectToAction("Product", "Product");
                     }
                     else
@@ -101,7 +101,7 @@ namespace CRM.Controllers
                 else
                 {
                     var product = await _ICrmrpo.Product(model);
-                    TempData["Message"] = "Data Added Successfully.";
+                    TempData["msg"] = "ok";
                     return RedirectToAction("Product", "Product");
                 }
             }
@@ -137,7 +137,8 @@ namespace CRM.Controllers
                     _context.SaveChanges();
 
                 }
-                return RedirectToAction("ProductList", "Product");
+                TempData["msg"] = "dltok";
+                return RedirectToAction("Product", "Product");
             }
             catch (Exception ex)
             {
@@ -158,7 +159,7 @@ namespace CRM.Controllers
                 ViewBag.Gst = await _context.GstMasters.Select(w => new SelectListItem
                 {
                     Value = w.Id.ToString(),
-                    Text = w.GstPercentagen
+                    Text = w.GstPercentagen + "%"
                 }).ToListAsync();
                 ViewBag.Category = await _context.VendorCategoryMasters.Select(w => new SelectListItem
                 {
