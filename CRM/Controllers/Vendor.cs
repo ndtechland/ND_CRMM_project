@@ -1525,12 +1525,11 @@ namespace CRM.Controllers
                             await _context.EmployeeTasksLists.AddAsync(task);
                         }
                     }
-
-                   
+                                      
                     await _context.SaveChangesAsync();
                     TempData["Message"] = "updok";
                     return RedirectToAction("EmpTaskslist", "Vendor");
-                     
+                    
                 }
                 else
                 {
