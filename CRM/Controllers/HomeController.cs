@@ -1043,8 +1043,8 @@ namespace CRM.Controllers
             catch (Exception)
             {
                 TempData["msg"] = "Delete failed: An error occurred.";
-            }
-            return RedirectToAction("AppFaq");
+                return RedirectToAction("AppFaq");
+            }           
         }
         [HttpGet]
         public async Task<IActionResult> Blogs(int id)

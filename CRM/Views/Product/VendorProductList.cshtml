@@ -4,14 +4,18 @@
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-
+<style>
+    .dataTables_wrapper table.dataTable th {
+        background-color: #00baf2 !important;
+        padding: 24px 0.75rem !important;
+    }
+</style>
 <div class="page-wrapper">
     <div class="page-body-wrapper">
         <div class="page-sidebar">
         </div>
 
         <div class="page-body">
-
             <!-- Container-fluid starts-->
             <div class="container-fluid">
                 <div class="page-header">
@@ -104,12 +108,7 @@
                     </div>
                 </div>
             </div>
-            <div id="pagination-container">
-                <ul id="pagination" class="pagination"></ul>
-            </div>
-
-
-
+            
         </div>
 
 
@@ -178,3 +177,8 @@
     }
 </script>
 
+<script>
+    $(document).ready(function () {
+        $('#datatable').DataTable();
+    });
+</script>
