@@ -1394,7 +1394,7 @@ namespace CRM.Controllers
         }
 
         [HttpGet, Route("Vendor/EmpTaskslist")]
-        
+
         public async Task<IActionResult> EmpTaskslist(int? id = 0)
         {
             if (HttpContext.Session.GetString("UserName") != null)
@@ -1402,7 +1402,7 @@ namespace CRM.Controllers
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.FirstOrDefaultAsync(x => x.Id == Userid);
- 
+
                 EmployeeTaskModel model = new EmployeeTaskModel();
                 model.EmpTaskList = await _context.EmployeeTasksLists.OrderByDescending(x => x.Id)
                     .Select(x => new EmpTasknameDto
@@ -1413,9 +1413,14 @@ namespace CRM.Controllers
                         TaskStatusId = x.TaskStatus,
                         TaskStatus = _context.TaskStatuses.Where(a => a.Id == x.TaskStatus).Select(status => status.StatusName).FirstOrDefault(),
                         EmployeeId = x.EmployeeId,
+                        SubtaskId = x.Id
                     }).ToListAsync();
 
-                
+                ViewBag.SubTaskStatus = await _context.TaskStatuses.Select(w => new SelectListItem
+                {
+                    Value = w.Id.ToString(),
+                    Text = w.StatusName,
+                }).ToListAsync();
                 ViewBag.EmployeeId = await _context.EmployeeRegistrations
                     .Where(x => x.Vendorid == adminlogin.Vendorid)
                     .Select(D => new SelectListItem
@@ -1424,37 +1429,38 @@ namespace CRM.Controllers
                         Text = D.EmployeeId
                     }).ToListAsync();
 
-                 
+
                 ViewBag.UserName = AddedBy;
                 ViewBag.Heading = "Add Sub Task";
                 ViewBag.BtnText = "SAVE";
 
                 if (id != 0)
                 {
-                     
+
                     var existingDetail = await _context.EmployeeTasks.FirstOrDefaultAsync(x => x.Id == id);
                     if (existingDetail == null)
                     {
                         return NotFound();
                     }
 
-                   
+
                     var existingServices = await _context.EmployeeTasksLists
                         .Where(s => s.Emptaskid == existingDetail.Id) // Use Emptaskid to fetch related tasks
                         .ToListAsync();
 
                     ViewBag.id = existingDetail.Id;
                     ViewBag.Emptaskid = existingDetail.Id;
-                    ViewBag.EmpId = existingDetail.EmployeeId; 
+                    ViewBag.EmpId = existingDetail.EmployeeId;
+                    ViewBag.Status = existingDetail.Status;
                     ViewBag.Heading = "Update Sub Task";
                     ViewBag.BtnText = "UPDATE";
 
-                    
+
                     model.TasksLists = existingServices.Select(s => new TasksList
                     {
-                        TaskName = s.Taskname,  
-                        TaskStatusId = s.TaskStatus  
-                    }).ToList();                    
+                        TaskName = s.Taskname,
+                        TaskStatusId = s.TaskStatus
+                    }).ToList();
                 }
 
                 return View(model);
@@ -1483,7 +1489,7 @@ namespace CRM.Controllers
 
                 if (model.Id != 0)
                 {
-                     
+
 
                     // Remove existing services
                     var existingServices = await _context.EmployeeTasksLists
@@ -1512,7 +1518,7 @@ namespace CRM.Controllers
                     //}
                     foreach (var taskName in Taskname)
                     {
-                        
+
                         if (!string.IsNullOrWhiteSpace(taskName))
                         {
                             EmployeeTasksList task = new EmployeeTasksList()
@@ -1525,17 +1531,17 @@ namespace CRM.Controllers
                             await _context.EmployeeTasksLists.AddAsync(task);
                         }
                     }
-                                      
+
                     await _context.SaveChangesAsync();
                     TempData["Message"] = "updok";
                     return RedirectToAction("EmpTaskslist", "Vendor");
-                    
+
                 }
                 else
                 {
                     foreach (var taskName in Taskname)
                     {
-                        if (!string.IsNullOrWhiteSpace(taskName)) 
+                        if (!string.IsNullOrWhiteSpace(taskName))
                         {
                             var data = new EmployeeTasksList()
                             {
@@ -1654,7 +1660,7 @@ namespace CRM.Controllers
                 var existingBankDetail = await _context.VendorBankDetails
             .Where(b => b.VendorId == vendorid)
             .FirstOrDefaultAsync();
-                if(model.Id==0)
+                if (model.Id == 0)
                 {
                     if (existingBankDetail != null)
                     {
@@ -1662,11 +1668,11 @@ namespace CRM.Controllers
                         return RedirectToAction("AddBankDetail", "Vendor");
                     }
                 }
-                
+
                 bool check = await _ICrmrpo.AddVendorBankDeatils(model, vendorid);
                 if (check)
                 {
-                    if(model.Id==0)
+                    if (model.Id == 0)
                     {
                         TempData["Message"] = "ok";
                     }
@@ -1674,7 +1680,7 @@ namespace CRM.Controllers
                     {
                         TempData["Message"] = "updok";
                     }
-                    
+
                     return RedirectToAction("AddBankDetail", "Vendor");
                 }
                 else
@@ -1713,8 +1719,8 @@ namespace CRM.Controllers
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 int vendorid = (int)adminlogin.Vendorid;
-                List<OfficeEvent> events = _context.OfficeEvents.Where(e => e.Vendorid == vendorid).OrderBy(x=>x.Date).ToList();        
-;
+                List<OfficeEvent> events = _context.OfficeEvents.Where(e => e.Vendorid == vendorid).OrderBy(x => x.Date).ToList();
+                ;
                 int iId = (int)(id == null ? 0 : id);
                 ViewBag.id = 0;
                 ViewBag.Tittle = "";
@@ -1819,8 +1825,8 @@ namespace CRM.Controllers
                     int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                     var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                     ViewBag.UserName = addedBy;
-                   var Approvedbankdetail = await _ICrmrpo.GetLeaveapplydetailList(adminlogin.Vendorid); ;
-                   
+                    var Approvedbankdetail = await _ICrmrpo.GetLeaveapplydetailList(adminlogin.Vendorid); ;
+
                     return View(Approvedbankdetail);
                 }
                 else
@@ -1833,7 +1839,7 @@ namespace CRM.Controllers
                 throw new Exception("Error Message : " + ex.Message, ex);
             }
         }
-        
+
         public async Task<IActionResult> UpdateLeaveApplyStatus(int Id)
         {
             var leave = await _context.ApplyLeaveNews.FirstOrDefaultAsync(x => x.Id == Id);
@@ -1852,7 +1858,7 @@ namespace CRM.Controllers
             string subject;
             string emailBody;
 
-           
+
             if (leave.Isapprove == true)
             {
                 subject = "Leave Approval Accepted";
@@ -1865,19 +1871,19 @@ namespace CRM.Controllers
             }
 
             try
-            { 
+            {
                 await _emailService.SendEmpLeaveApprovalEmailAsync(emppersonalinfo.PersonalEmailAddress, empinfo.FirstName, empinfo.MiddleName, empinfo.LastName, subject, emailBody);
 
                 TempData["msg"] = (bool)leave.Isapprove
                     ? "Approval status updated successfully and approval email sent!"
                     : "Approval status updated successfully and rejection email sent!";
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 TempData["msg"] = (bool)leave.Isapprove
                     ? "Approval status updated successfully, but failed to send approval email."
                     : "Approval status updated successfully, but failed to send rejection email.";
-                
+
             }
 
             return RedirectToAction("ApprovedLeaveApply");
@@ -1891,8 +1897,9 @@ namespace CRM.Controllers
                     string AddedBy = HttpContext.Session.GetString("UserName");
                     int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                     var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                    var epflist = _context.EmployeeEpfPayrollInfos.Where(e => e.Vendorid == adminlogin.Vendorid).OrderByDescending(e => e.Id).ToList();
+
                     var epflist = _context.EmployeeEpfPayrollInfos.Where(e => e.Vendorid == adminlogin.Vendorid).OrderByDescending(e=>e.Id).ToList();
-                      
                     ViewBag.EmployeeItem = _context.EmployeeRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).Select(D => new SelectListItem
                     {
                         Value = D.EmployeeId.ToString(),
@@ -1900,6 +1907,7 @@ namespace CRM.Controllers
 
                     }).ToList();
                     int iId = (int)(id == null ? 0 : id);
+
                     ViewBag.EPFNumber = "";
                     ViewBag.EPFPercentage = "";
                     ViewBag.EmployeeId = "";
@@ -1941,9 +1949,13 @@ namespace CRM.Controllers
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 var checkexist = _context.EmployeeEpfPayrollInfos.Where(e => e.EmployeeId == model.EmployeeId).FirstOrDefault();
-                
+                if (checkexist != null)
+                {
+                    TempData["Message"] = $"An EPF record for employee ID {model.EmployeeId} already exists.";
+                    return RedirectToAction("EmployeeEpf");
+                }
                 bool check = await _ICrmrpo.AddEmployeeEpf(model, (int)adminlogin.Vendorid);
-                if(check)
+                if (check)
                 {
                     if (model.Id == 0)
                     {
@@ -1977,7 +1989,7 @@ namespace CRM.Controllers
         [HttpGet]
         public JsonResult GetEmpEpfNumber(string employeeId)
         {
-            
+
             var employee = _context.EmployeeBankDetails.Where(e => e.EmpId == employeeId)
                 .Select(e => new
                 {
@@ -1985,18 +1997,18 @@ namespace CRM.Controllers
                 })
                 .FirstOrDefault();
 
-           
+
             if (employee != null)
             {
                 return Json(employee);
             }
 
-             
+
             return Json(null);
         }
         //public JsonResult GetVendorEfp()
         //{
-           
+
         //    int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
         //    var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
         //    var epf = _context.EmployeerEpfs.Where(e => e.AdminLoginId == adminlogin.Id && e.DeductionCycle== "EPF")
@@ -2247,6 +2259,36 @@ namespace CRM.Controllers
                 throw;
             }
         }
+
+        [HttpGet]
+        public async Task<JsonResult> GetSubTasksByEmployeeId(string employeeId)
+        {
+            var tasks = await _context.EmployeeTasksLists
+                .Where(x => x.EmployeeId == employeeId)
+                .Select(x => new SelectListItem
+                {
+                    Value = x.Id.ToString(),
+                    Text = x.Taskname
+                }).ToListAsync();
+
+            return Json(tasks);
+        }
+        [HttpPost]
+        public JsonResult UpdateSubTaskStatus(int Taskstatusid, int Id)
+        {
+            var emp = _context.EmployeeTasksLists.FirstOrDefault(x => x.Id == Id);
+
+            if (emp == null)
+            {
+                return Json(new { success = false, message = "Task not found!" });
+            }
+
+            emp.TaskStatus = Taskstatusid;
+            _context.SaveChanges();
+
+            return Json(new { success = true, message = "Task status updated successfully!" });
+        }
+
     }
 }
 

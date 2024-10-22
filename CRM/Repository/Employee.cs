@@ -1148,7 +1148,7 @@ namespace CRM.Repository
                                 MonthlyWorkingHours = await CalculateMonthlyWorkingHours(empAttendanceDetails.EmployeeId , Currentdate),
                                 Presencepercentage = await CalculatePresencePercentage(empAttendanceDetails.EmployeeId, Currentdate),
                                 absencepercentage = await CalculateAbsencePercentage(empAttendanceDetails.EmployeeId, Currentdate),
-                                Currentdate = Date == null ? "N/A" : checkInTime,
+                                Currentdate = Date == null ? "N/A" : Date,
                                 LoginStatus = latestLoginStatus,
                                 //loginactivities = await GetLoginActivities(empAttendanceDetails.EmployeeId)
                                 loginactivities = await GetLoginBreakActivities(empAttendanceDetails.EmployeeId, Currentdate),
@@ -1525,7 +1525,8 @@ namespace CRM.Repository
                                         emp.Id,
                                         emp.Tittle,
                                         emp.Description,
-                                        StatusName = status.StatusName
+                                        StatusName = status.StatusName,
+                                        Duration = $"{emp.Startdate.Value.ToString("dd/MM/yyyy")} - {emp.Enddate.Value.ToString("dd/MM/yyyy")}"
                                     }).FirstOrDefaultAsync();
 
                 if (result == null)
@@ -1547,6 +1548,7 @@ namespace CRM.Repository
                     TaskTittle = result.Tittle,
                     TaskDescription = result.Description,
                     Status = result.StatusName,
+                    Duration = result.Duration,
                     Empdata = taskassign
                 };
 

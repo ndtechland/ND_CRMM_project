@@ -106,6 +106,7 @@ namespace CRM.Models.APIDTO
         public string? TaskTittle { get; set; }
         public string? TaskDescription { get; set; }
         public string? Status { get; set; }
+        public string? Duration { get; set; }
         public List<TasksassignlistDto>? Empdata { get; set; }
     }
 
