@@ -190,9 +190,10 @@
                                         <thead>
                                             <tr style="background-color: #00baf2;">
                                                 <th nowrap>Sl. No.</th>
+                                                <th hidden> gfgf</th>
                                                 <th>Employee Id</th>
-                                                <th>Emptask Name</th>
                                                 <th>Task Name</th>
+                                                <th>Sub Task Name</th>
                                                 <th>Task Status</th>
                                                 <th>Action</th>
                                             </tr>
@@ -205,10 +206,20 @@
                                                     count++;
                                                     <tr class="table-row">
                                                         <td>@count</td>
+                                                        <td class="SubEmpTaskId" hidden>@item.SubtaskId</td>
                                                         <td>@Html.DisplayFor(modelItem => item.EmployeeId)</td>
                                                         <td>@Html.DisplayFor(modelItem => item.Emptask)</td>
                                                         <td>@Html.DisplayFor(modelItem => item.Taskname)</td>
-                                                        <td>@Html.DisplayFor(modelItem => item.TaskStatus)</td>
+                                                        <td>
+                                                            <select name="Status" class="form-control taskstatus-dropdown" id="ddltaskstatusid_@item.SubtaskId" style="height: 40px; width: 230px;">
+                                                                <option value="0">-- Select Status --</option>
+                                                                @foreach (var statusitem in ViewBag.SubTaskStatus)
+                                                                {
+                                                                    <option value="@statusitem.Value">@statusitem.Text</option>
+                                                                }
+                                                            </select>
+                                                        </td>
+
                                                         <td>
                                                             <div>
                                                                 <a href="@Url.Action("EmpTaskslist", "Vendor", new { id = item.Id })" class="fa fa-edit m-2 font-success"></a>
@@ -342,6 +353,119 @@
     });
 
     function removeTask(icon) {
-        icon.parentNode.remove();  
+        icon.parentNode.remove();
     }
 </script>
+
+@* <script>
+    $(document).ready(function () {
+        var taskstatus = '@ViewBag.Status';
+        if (taskstatus) {
+            $('#taskStatusID').val(taskstatus);
+        } 
+    });
+</script> *@
+
+<script>
+
+    function bindtaskstatusid(taskstatusid, itemId) {
+        var itemsListfortaskstatusid = @Html.Raw(Json.Serialize(ViewBag.SubTaskStatus));
+        var dropdownfortaskstatusid = $("#ddltaskstatusid_" + itemId);
+        if (itemId !== "0" && itemId !== "") {
+            dropdownfortaskstatusid.val(taskstatusid);
+        }
+    }
+    $(document).ready(function () {
+    @foreach (var item in Model.EmpTaskList)
+    {
+        <text>
+                    bindtaskstatusid('@item.TaskStatusId', '@item.SubtaskId');
+        </text>
+    }
+        //                             var usertaskstatus = '@ViewBag.SubTaskStatus';
+
+        // if (usertaskstatus != "") {
+        //     bindtaskstatusid(usertaskstatus);
+        // }
+        // else {
+        //     bindtaskstatusid("");
+        // }
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        // Store the initial values of the dropdowns
+        $('.taskstatus-dropdown').each(function () {
+            $(this).data('previous', $(this).val());
+        });
+
+        $(document).on("change", ".taskstatus-dropdown", function () {
+            var selectedTaskStatusId = $(this).val();
+            var previousTaskStatusId = $(this).data('previous'); // Get the previously stored value
+
+            // Only make the AJAX call if the value has changed
+            if (selectedTaskStatusId !== previousTaskStatusId) {
+                var selectedId = $(this).closest('tr').find('.SubEmpTaskId').text().trim();
+
+                $.ajax({
+                    url: '/Vendor/UpdateSubTaskStatus',
+                    type: 'POST',
+                    data: {
+                        Taskstatusid: selectedTaskStatusId,
+                        Id: selectedId
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            // Show success message using SweetAlert2
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: response.message
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error updating shift type:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'There was an error updating the shift type.'
+                        });
+                    }
+                });
+
+                // Update the stored value
+                $(this).data('previous', selectedTaskStatusId);
+            }
+        });
+    });
+</script>
+
+
+<script>
+    $(document).ready(function () {
+        $('.taskstatus-dropdown').change(function () {
+            // Get the selected option value
+            var selectedText = $(this).find("option:selected").text();
+
+            // Change the text color based on the selected option
+            if (selectedText === "Pending") {
+                $(this).css('color', 'orange');
+            } else if (selectedText === "In Progress") {
+                $(this).css('color', 'blue');
+            } else if (selectedText === "Completed") {
+                $(this).css('color', 'green');
+            } else if (selectedText === "Reassigned") {
+                $(this).css('color', 'purple');
+            } else if (selectedText === "UnCompleted") {
+                $(this).css('color', 'red');
+            } else {
+                $(this).css('color', 'black'); // default color
+            }
+        });
+
+        // Trigger the change event on page load to set the initial color
+        $('.taskstatus-dropdown').trigger('change');
+    });
+</script>
+

@@ -30,8 +30,8 @@
     }
 </style>
 
- 
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script> 
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src='https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js'></script>
 <script src='https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js'></script>
 <script src='https://cdn.datatables.net/buttons/1.2.2/js/buttons.colVis.min.js'></script>
@@ -203,7 +203,7 @@
                     </div>
                 </div>
             </div>
-           <div class="container-fluid">
+            <div class="container-fluid">
                 <div class="row">
 
                     <div class="col-sm-12">
@@ -246,7 +246,7 @@
                                                 {
                                                     count++;
                                                     <tr class="table-row">
-                                                        
+
                                                         <td>@count</td>
                                                         <td class="EmpTaskId" hidden>@item.Id</td>
                                                         <td nowrap>
@@ -267,8 +267,8 @@
                                                         <td>
                                                             @Html.DisplayFor(modelItem => item.Description)
                                                         </td>
-                                                        
-                                                        <td >
+
+                                                        <td>
                                                             <select name="StatusName" class="form-control taskstatus-dropdown" id="ddltaskstatusid_@item.Id" style="height: 40px; width: 230px;">
                                                                 <option value="0">-- Select Status --</option>
                                                                 @foreach (var statusitem in ViewBag.TaskStatus)
@@ -294,7 +294,7 @@
                         </div>
                     </div>
                 </div>
-            </div> 
+            </div>
             <div id="pagination-container">
                 <ul id="pagination" class="pagination"></ul>
             </div>
@@ -357,10 +357,10 @@
     @foreach (var item in Model)
     {
         <text>
-                bindtaskstatusid('@item.TaskStatusId', '@item.Id');
+                    bindtaskstatusid('@item.TaskStatusId', '@item.Id');
         </text>
     }
-                    var usertaskstatus = '@ViewBag.TaskStatus';
+                        var usertaskstatus = '@ViewBag.TaskStatus';
 
         if (usertaskstatus != "") {
             bindtaskstatusid(usertaskstatus);

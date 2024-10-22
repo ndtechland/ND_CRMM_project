@@ -22,6 +22,7 @@
         public string? TaskStatus { get; set; }
         public int? TaskStatusId { get; set; }
         public string? Taskname { get; set; }
+        public int SubtaskId { get; set; }
 
     }
     public class EmpTasksListDto
