@@ -103,6 +103,6 @@ namespace CRM.Repository
         Task<bool> AddEmployeeEsic(EmployeeEsicPayrollInfo model, int VendorId);
         Task<bool> AddAndUpdateBlog(BlogDto model);
         Task<bool> Addaddcompany(Aboutcompany model, int VendorId);
-
+        Task<List<EmpTasknameDto>> GetSubTasks(int vendorid);
     }
 }
