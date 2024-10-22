@@ -55,7 +55,7 @@
                             <ol class="breadcrumb pull-right">
                                 <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
                                 <li class="breadcrumb-item">Settings</li>
-                                <li class="breadcrumb-item active">Designation</li>
+                                <li class="breadcrumb-item active">GST</li>
                             </ol>
                         </div>
                     </div>
@@ -78,6 +78,10 @@
                                     </div>
                                     <div class="form-group">
                                         <input type="submit" value="@ViewBag.btnText" class="btn btn-primary" />
+                                        @if (ViewBag.id > 0)
+                                        {
+                                            <a href="/Home/Gstmaster" class="btn btn-danger">Cancel</a>
+                                        }
                                     </div>
                                 </form>
                             </div>

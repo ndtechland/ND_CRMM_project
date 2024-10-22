@@ -249,7 +249,7 @@ namespace CRM.Controllers
                 List<DepartmentMaster> response = _context.DepartmentMasters.Where(x => x.AdminLoginId == adminlogin.Id).OrderByDescending(d=>d.Id).ToList();
 
                 ViewBag.UserName = AddedBy;
-                ViewBag.id = "";
+                ViewBag.id = 0;
                 ViewBag.DepartmentName = "";
                 ViewBag.Heading = "Add Department";
                 ViewBag.btnText = "SAVE";
@@ -757,7 +757,7 @@ namespace CRM.Controllers
                 var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
                 List<GstMaster> response = _context.GstMasters.ToList();
                 ViewBag.UserName = AddedBy;
-                ViewBag.id = "";
+                ViewBag.id = 0;
                 ViewBag.GstPercentagen = "";
                 ViewBag.Scgst = "";
                 ViewBag.Cgst = "";

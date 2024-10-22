@@ -1486,26 +1486,8 @@ namespace CRM.Controllers
                 //        .Where(s => s.Emptaskid == model.Id)
                 //        .ToListAsync();
                 //    _context.EmployeeTasksLists.RemoveRange(existingServices);
-
-                //    // Add new 
-                //    //foreach (var taskName in Taskname)
-                //    //{
-                //    //    foreach (var status in TaskStatusId)
-                //    //    {
-                //    //        if (!string.IsNullOrWhiteSpace(taskName))
-                //    //        {
-                //    //            EmployeeTasksList task = new EmployeeTasksList()
-                //    //            {
-                //    //                Taskname = taskName,
-                //    //                Emptaskid = Convert.ToInt16(model.Emptask),
-                //    //                EmployeeId = model.EmployeeId,
-                //    //                TaskStatus = status,
-                //    //            };
-                //    //            await _context.EmployeeTasksLists.AddAsync(task);
-                //    //        }
-                //    //        break;
-                //    //    }
-                //    //}
+                
+                
                 //    foreach (var taskName in Taskname)
                 //    {
 
