@@ -2731,7 +2731,7 @@ var domainmodel = new EmployeeEsicPayrollInfo()
             try
             {
                 FileOperation fileOperation = new FileOperation(_webHostEnvironment);
-                string[] allowedExtensions = { ".png" };
+                string[] allowedExtensions = { ".png", ".jpg", ".jpeg" };
                 string ImagePath = "";
 
                 if (model.ImageFile != null)
@@ -2739,11 +2739,12 @@ var domainmodel = new EmployeeEsicPayrollInfo()
                     var fileExtension = Path.GetExtension(model.ImageFile.FileName).ToLower();
                     if (!allowedExtensions.Contains(fileExtension))
                     {
-                        throw new InvalidOperationException("Only  .png files are allowed.");
+                        throw new InvalidOperationException("Only .png, .jpg, and .jpeg files are allowed.");
                     }
                     ImagePath = fileOperation.SaveBase64Image("image", model.ImageFile, allowedExtensions);
                     model.BlogImage = ImagePath;
                 }
+
                 if (model.Id == 0)
                 {
                     var data = new Blog()
