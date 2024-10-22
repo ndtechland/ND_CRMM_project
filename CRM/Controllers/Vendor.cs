@@ -1404,18 +1404,8 @@ namespace CRM.Controllers
                 var adminlogin = await _context.AdminLogins.FirstOrDefaultAsync(x => x.Id == Userid);
 
                 EmployeeTaskModel model = new EmployeeTaskModel();
-                model.EmpTaskList = await _context.EmployeeTasksLists.OrderByDescending(x => x.Id)
-                    .Select(x => new EmpTasknameDto
-                    {
-                        Id = _context.EmployeeTasks.Where(a => a.Id == x.Emptaskid).Select(t => t.Id).FirstOrDefault(),
-                        Emptask = _context.EmployeeTasks.Where(a => a.Id == x.Emptaskid).Select(t => t.Task).FirstOrDefault(),
-                        Taskname = x.Taskname,
-                        TaskStatusId = x.TaskStatus,
-                        TaskStatus = _context.TaskStatuses.Where(a => a.Id == x.TaskStatus).Select(status => status.StatusName).FirstOrDefault(),
-                        EmployeeId = x.EmployeeId,
-                        SubtaskId = x.Id
-                    }).ToListAsync();
-
+                model.EmpTaskList = await _ICrmrpo.GetSubTasks((int)adminlogin.Vendorid);
+               
                 ViewBag.SubTaskStatus = await _context.TaskStatuses.Select(w => new SelectListItem
                 {
                     Value = w.Id.ToString(),
@@ -1487,55 +1477,101 @@ namespace CRM.Controllers
                     return View();
                 }
 
+                //if (model.Id != 0)
+                //{
+
+
+                //    // Remove existing services
+                //    var existingServices = await _context.EmployeeTasksLists
+                //        .Where(s => s.Emptaskid == model.Id)
+                //        .ToListAsync();
+                //    _context.EmployeeTasksLists.RemoveRange(existingServices);
+
+                //    // Add new 
+                //    //foreach (var taskName in Taskname)
+                //    //{
+                //    //    foreach (var status in TaskStatusId)
+                //    //    {
+                //    //        if (!string.IsNullOrWhiteSpace(taskName))
+                //    //        {
+                //    //            EmployeeTasksList task = new EmployeeTasksList()
+                //    //            {
+                //    //                Taskname = taskName,
+                //    //                Emptaskid = Convert.ToInt16(model.Emptask),
+                //    //                EmployeeId = model.EmployeeId,
+                //    //                TaskStatus = status,
+                //    //            };
+                //    //            await _context.EmployeeTasksLists.AddAsync(task);
+                //    //        }
+                //    //        break;
+                //    //    }
+                //    //}
+                //    foreach (var taskName in Taskname)
+                //    {
+
+                //        if (!string.IsNullOrWhiteSpace(taskName))
+                //        {
+                //            EmployeeTasksList task = new EmployeeTasksList()
+                //            {
+                //                Taskname = taskName,
+                //                Emptaskid = Convert.ToInt16(model.Emptask),
+                //                EmployeeId = model.EmployeeId,
+                //                TaskStatus = 1,
+                //            };
+                //            await _context.EmployeeTasksLists.AddAsync(task);
+                //        }
+                //    }
+
+                //    await _context.SaveChangesAsync();
+                //    TempData["Message"] = "updok";
+                //    return RedirectToAction("EmpTaskslist", "Vendor");
+
+                //}
                 if (model.Id != 0)
                 {
-
-
-                    // Remove existing services
-                    var existingServices = await _context.EmployeeTasksLists
+                     
+                    var existingTasks = await _context.EmployeeTasksLists
                         .Where(s => s.Emptaskid == model.Id)
                         .ToListAsync();
-                    _context.EmployeeTasksLists.RemoveRange(existingServices);
 
-                    // Add new 
-                    //foreach (var taskName in Taskname)
-                    //{
-                    //    foreach (var status in TaskStatusId)
-                    //    {
-                    //        if (!string.IsNullOrWhiteSpace(taskName))
-                    //        {
-                    //            EmployeeTasksList task = new EmployeeTasksList()
-                    //            {
-                    //                Taskname = taskName,
-                    //                Emptaskid = Convert.ToInt16(model.Emptask),
-                    //                EmployeeId = model.EmployeeId,
-                    //                TaskStatus = status,
-                    //            };
-                    //            await _context.EmployeeTasksLists.AddAsync(task);
-                    //        }
-                    //        break;
-                    //    }
-                    //}
+                   
+                    var tasksToRemove = existingTasks
+                        .Where(t => !Taskname.Contains(t.Taskname))
+                        .ToList();
+                    _context.EmployeeTasksLists.RemoveRange(tasksToRemove);
+
+                   
                     foreach (var taskName in Taskname)
                     {
-
                         if (!string.IsNullOrWhiteSpace(taskName))
                         {
-                            EmployeeTasksList task = new EmployeeTasksList()
+                          
+                            var existingTask = existingTasks.FirstOrDefault(t => t.Taskname == taskName);
+
+                            if (existingTask != null)
                             {
-                                Taskname = taskName,
-                                Emptaskid = Convert.ToInt16(model.Emptask),
-                                EmployeeId = model.EmployeeId,
-                                TaskStatus = 1,
-                            };
-                            await _context.EmployeeTasksLists.AddAsync(task);
+                                
+                                existingTask.Taskname = taskName;
+                                existingTask.EmployeeId = model.EmployeeId;
+                                _context.EmployeeTasksLists.Update(existingTask);
+                            }
+                            else
+                            {                                
+                                EmployeeTasksList newTask = new EmployeeTasksList()
+                                {
+                                    Taskname = taskName,
+                                    Emptaskid = Convert.ToInt16(model.Emptask),
+                                    EmployeeId = model.EmployeeId,
+                                    TaskStatus = 1, //pending
+                                };
+                                await _context.EmployeeTasksLists.AddAsync(newTask);
+                            }
                         }
                     }
 
                     await _context.SaveChangesAsync();
                     TempData["Message"] = "updok";
                     return RedirectToAction("EmpTaskslist", "Vendor");
-
                 }
                 else
                 {
@@ -2272,18 +2308,25 @@ namespace CRM.Controllers
             return Json(tasks);
         }
         [HttpPost]
+        //public JsonResult UpdateSubTaskStatus(int Taskstatusid, int Id)
+        //{
+        //    var emp = _context.EmployeeTasksLists.FirstOrDefault(x => x.Id == Id);
+
+        //    if (emp == null)
+        //    {
+        //        return Json(new { success = false, message = "Task not found!" });
+        //    }
+
+        //    emp.TaskStatus = Taskstatusid;
+        //    _context.SaveChanges();
+
+        //    return Json(new { success = true, message = "Task status updated successfully!" });
+        //}
         public JsonResult UpdateSubTaskStatus(int Taskstatusid, int Id)
         {
-            var emp = _context.EmployeeTasksLists.FirstOrDefault(x => x.Id == Id);
-
-            if (emp == null)
-            {
-                return Json(new { success = false, message = "Task not found!" });
-            }
-
+            var emp = _context.EmployeeTasksLists.Where(x => x.Id == Id).FirstOrDefault();
             emp.TaskStatus = Taskstatusid;
             _context.SaveChanges();
-
             return Json(new { success = true, message = "Task status updated successfully!" });
         }
 
