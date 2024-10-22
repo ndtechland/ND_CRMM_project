@@ -1899,12 +1899,14 @@ namespace CRM.Controllers
                     var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                     var epflist = _context.EmployeeEpfPayrollInfos.Where(e => e.Vendorid == adminlogin.Vendorid).OrderByDescending(e => e.Id).ToList();
 
+                    var epflist = _context.EmployeeEpfPayrollInfos.Where(e => e.Vendorid == adminlogin.Vendorid).OrderByDescending(e=>e.Id).ToList();
                     ViewBag.EmployeeItem = _context.EmployeeRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).Select(D => new SelectListItem
                     {
                         Value = D.EmployeeId.ToString(),
                         Text = D.EmployeeId
 
                     }).ToList();
+                    int iId = (int)(id == null ? 0 : id);
 
                     ViewBag.EPFNumber = "";
                     ViewBag.EPFPercentage = "";
@@ -1912,6 +1914,20 @@ namespace CRM.Controllers
                     ViewBag.Heading = "Add Employee EPF";
                     ViewBag.BtnText = "SAVE";
 
+                    if (iId != null && iId != 0)
+                    {
+                        var data = _context.EmployeeEpfPayrollInfos.Find(iId);
+                        if (data != null)
+                        {
+                            ViewBag.id = data.Id;
+                            ViewBag.EPFNumber = data.Epfnumber;
+                            ViewBag.EPFPercentage = data.Epfpercentage;
+                            ViewBag.SelectedEmployeeId = data.EmployeeId; 
+                            ViewBag.BtnText = "UPDATE";
+                            ViewBag.Heading = "Update EPF";
+
+                        }
+                    }
                     return View(epflist);
                 }
                 else
@@ -1941,7 +1957,20 @@ namespace CRM.Controllers
                 bool check = await _ICrmrpo.AddEmployeeEpf(model, (int)adminlogin.Vendorid);
                 if (check)
                 {
-                    TempData["Message"] = "ok";
+                    if (model.Id == 0)
+                    {
+                        if (checkexist != null)
+                        {
+                            TempData["Message"] = $"An EPF record for employee ID {model.EmployeeId} already exists.";
+                            return RedirectToAction("EmployeeEpf");
+                        }
+                        TempData["Message"] = "ok";
+                    }
+                    else
+                    {
+                        TempData["Message"] = "updok";
+                    }
+                        
                     return RedirectToAction("EmployeeEpf");
                 }
                 else
@@ -2014,7 +2043,7 @@ namespace CRM.Controllers
                 throw;
             }
         }
-        public async Task<IActionResult> EmployeeEsic()
+        public async Task<IActionResult> EmployeeEsic(int id)
         {
             try
             {
@@ -2031,12 +2060,27 @@ namespace CRM.Controllers
                         Text = D.EmployeeId
 
                     }).ToList();
-
+                    int iId = (int)(id == null ? 0 : id);
                     ViewBag.ESICNumber = "";
                     ViewBag.ESICPercentage = "";
                     ViewBag.EmployeeId = "";
                     ViewBag.Heading = "Add Employee ESIC";
                     ViewBag.BtnText = "SAVE";
+                    if (iId != null && iId != 0)
+                    {
+                        var data = _context.EmployeeEsicPayrollInfos.Find(iId);
+                        if (data != null)
+                        {
+                            ViewBag.id = data.Id;
+                            ViewBag.ESICNumber = data.Esicnumber;
+                            ViewBag.ESICPercentage = data.Esicpercentage;
+                            ViewBag.SelectedEmployeeId = data.EmployeeId;
+                            ViewBag.BtnText = "UPDATE";
+                            ViewBag.Heading = "Update ESIC";
+
+                        }
+                    }
+
 
                     return View(epflist);
                 }
@@ -2059,15 +2103,24 @@ namespace CRM.Controllers
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 var checkexist = _context.EmployeeEsicPayrollInfos.Where(e => e.EmployeeId == model.EmployeeId).FirstOrDefault();
-                if (checkexist != null)
-                {
-                    TempData["Message"] = $"An ESIC record for employee ID {model.EmployeeId} already exists.";
-                    return RedirectToAction("EmployeeEsic");
-                }
+                
                 bool check = await _ICrmrpo.AddEmployeeEsic(model, (int)adminlogin.Vendorid);
                 if (check)
                 {
-                    TempData["Message"] = "ok";
+                    if(model.Id==0)
+                    {
+                        if (checkexist != null)
+                        {
+                            TempData["Message"] = $"An ESIC record for employee ID {model.EmployeeId} already exists.";
+                            return RedirectToAction("EmployeeEsic");
+                        }
+                        TempData["Message"] = "ok";
+                    }
+                    else
+                    {
+                        TempData["Message"] = "updok";
+                    }
+                    
                     return RedirectToAction("EmployeeEsic");
                 }
                 else
