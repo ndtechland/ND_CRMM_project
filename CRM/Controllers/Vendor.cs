@@ -1898,8 +1898,6 @@ namespace CRM.Controllers
                     int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                     var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                     var epflist = _context.EmployeeEpfPayrollInfos.Where(e => e.Vendorid == adminlogin.Vendorid).OrderByDescending(e => e.Id).ToList();
-
-                    var epflist = _context.EmployeeEpfPayrollInfos.Where(e => e.Vendorid == adminlogin.Vendorid).OrderByDescending(e=>e.Id).ToList();
                     ViewBag.EmployeeItem = _context.EmployeeRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).Select(D => new SelectListItem
                     {
                         Value = D.EmployeeId.ToString(),
