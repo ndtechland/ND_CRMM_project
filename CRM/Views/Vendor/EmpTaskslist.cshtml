@@ -186,7 +186,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="table-responsive">
-                                    <table id="datatable" class="table table-hover">
+                                    <table id="myTable" class="table table-hover">
                                         <thead>
                                             <tr style="background-color: #00baf2;">
                                                 <th nowrap>Sl. No.</th>
@@ -206,12 +206,12 @@
                                                     count++;
                                                     <tr class="table-row">
                                                         <td>@count</td>
-                                                        <td class="SubEmpTaskId" hidden>@item.SubtaskId</td>
+                                                        <td class="EmpTaskId" hidden>@item.SubtaskId</td>
                                                         <td>@Html.DisplayFor(modelItem => item.EmployeeId)</td>
                                                         <td>@Html.DisplayFor(modelItem => item.Emptask)</td>
                                                         <td>@Html.DisplayFor(modelItem => item.Taskname)</td>
                                                         <td>
-                                                            <select name="Status" class="form-control taskstatus-dropdown" id="ddltaskstatusid_@item.SubtaskId" style="height: 40px; width: 230px;">
+                                                            <select name="StatusName" class="form-control taskstatus-dropdown" id="ddltaskstatusid_@item.SubtaskId" style="height: 40px; width: 230px;">
                                                                 <option value="0">-- Select Status --</option>
                                                                 @foreach (var statusitem in ViewBag.SubTaskStatus)
                                                                 {
@@ -223,7 +223,7 @@
                                                         <td>
                                                             <div>
                                                                 <a href="@Url.Action("EmpTaskslist", "Vendor", new { id = item.Id })" class="fa fa-edit m-2 font-success"></a>
-                                                                <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteEmpTaskslist", "Vendor", new { id = item.Id })')" class="fa fa-trash font-danger"></a>
+                                                                <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteEmpTaskslist", "Vendor", new { id = item.SubtaskId })')" class="fa fa-trash font-danger"></a>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -247,6 +247,7 @@
     </div>
 
 </div>
+ 
 <script>
     $(document).ready(function () {
         document.title = 'SubTaskDetail';
@@ -356,22 +357,16 @@
         icon.parentNode.remove();
     }
 </script>
+ 
 
-@* <script>
-    $(document).ready(function () {
-        var taskstatus = '@ViewBag.Status';
-        if (taskstatus) {
-            $('#taskStatusID').val(taskstatus);
-        } 
-    });
-</script> *@
+<!--For selected dropdowm in list and update task status-->
 
 <script>
 
-    function bindtaskstatusid(taskstatusid, itemId) {
+    function bindtaskstatusid(taskstatusid, itemsubtaskId) {
         var itemsListfortaskstatusid = @Html.Raw(Json.Serialize(ViewBag.SubTaskStatus));
-        var dropdownfortaskstatusid = $("#ddltaskstatusid_" + itemId);
-        if (itemId !== "0" && itemId !== "") {
+        var dropdownfortaskstatusid = $("#ddltaskstatusid_" + itemsubtaskId);
+        if (itemsubtaskId !== "0" && itemsubtaskId !== "") {
             dropdownfortaskstatusid.val(taskstatusid);
         }
     }
@@ -379,17 +374,17 @@
     @foreach (var item in Model.EmpTaskList)
     {
         <text>
-                    bindtaskstatusid('@item.TaskStatusId', '@item.SubtaskId');
+                bindtaskstatusid('@item.TaskStatusId', '@item.SubtaskId');
         </text>
     }
-        //                             var usertaskstatus = '@ViewBag.SubTaskStatus';
+                                    var usertaskstatus = '@ViewBag.SubTaskStatus';
 
-        // if (usertaskstatus != "") {
-        //     bindtaskstatusid(usertaskstatus);
-        // }
-        // else {
-        //     bindtaskstatusid("");
-        // }
+        if (usertaskstatus != "") {
+            bindtaskstatusid(usertaskstatus);
+        }
+        else {
+            bindtaskstatusid("");
+        }
     });
 </script>
 <script>
@@ -405,7 +400,7 @@
 
             // Only make the AJAX call if the value has changed
             if (selectedTaskStatusId !== previousTaskStatusId) {
-                var selectedId = $(this).closest('tr').find('.SubEmpTaskId').text().trim();
+                var selectedId = $(this).closest('tr').find('.EmpTaskId').text().trim();
 
                 $.ajax({
                     url: '/Vendor/UpdateSubTaskStatus',
@@ -441,6 +436,7 @@
     });
 </script>
 
+<!--End code For selected dropdowm in list and update task status-->
 
 <script>
     $(document).ready(function () {
@@ -468,4 +464,8 @@
         $('.taskstatus-dropdown').trigger('change');
     });
 </script>
-
+<script>
+    $(document).ready(function () {
+        $('#myTable').DataTable();
+    });
+</script>

@@ -104,6 +104,7 @@ namespace CRM.Repository
         Task<bool> AddAndUpdateBlog(BlogDto model);
         Task<bool> Addaddcompany(Aboutcompany model, int VendorId);
         Task<bool> AddEventsScheduler(EventsmeetSchedulerDto model, int VendorId);
+        Task<List<EmpTasknameDto>> GetSubTasks(int vendorid);
 
     }
 }

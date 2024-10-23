@@ -2742,7 +2742,7 @@ var domainmodel = new EmployeeEsicPayrollInfo()
             try
             {
                 FileOperation fileOperation = new FileOperation(_webHostEnvironment);
-                string[] allowedExtensions = { ".png" };
+                string[] allowedExtensions = { ".png", ".jpg", ".jpeg" };
                 string ImagePath = "";
 
                 if (model.ImageFile != null)
@@ -2750,11 +2750,12 @@ var domainmodel = new EmployeeEsicPayrollInfo()
                     var fileExtension = Path.GetExtension(model.ImageFile.FileName).ToLower();
                     if (!allowedExtensions.Contains(fileExtension))
                     {
-                        throw new InvalidOperationException("Only  .png files are allowed.");
+                        throw new InvalidOperationException("Only .png, .jpg, and .jpeg files are allowed.");
                     }
                     ImagePath = fileOperation.SaveBase64Image("image", model.ImageFile, allowedExtensions);
                     model.BlogImage = ImagePath;
                 }
+
                 if (model.Id == 0)
                 {
                     var data = new Blog()
@@ -2820,6 +2821,7 @@ var domainmodel = new EmployeeEsicPayrollInfo()
                 throw;
             }
         }
+
         public async Task<bool> AddEventsScheduler(EventsmeetSchedulerDto model, int VendorId)
         {
             try
@@ -2860,6 +2862,36 @@ var domainmodel = new EmployeeEsicPayrollInfo()
             catch (Exception ex)
             {
                 throw; 
+            }
+        }
+
+        public async Task<List<EmpTasknameDto>> GetSubTasks(int vendorid)
+        {
+            try
+            {
+               // EmployeeTaskModel model = new EmployeeTaskModel();
+                var result = await (from taskList in _context.EmployeeTasksLists
+                                           join empTask in _context.EmployeeTasks on taskList.Emptaskid equals empTask.Id
+                                           join taskStatus in _context.TaskStatuses on taskList.TaskStatus equals taskStatus.Id
+                                           where (empTask.Vendorid== vendorid)
+                                           orderby taskList.Id descending
+                                           select new EmpTasknameDto
+                                           {
+                                               Id = empTask.Id,
+                                               Emptask = empTask.Task,
+                                               Taskname = taskList.Taskname,
+                                               TaskStatusId = taskList.TaskStatus,
+                                               TaskStatus = taskStatus.StatusName,
+                                               EmployeeId = taskList.EmployeeId,
+                                               SubtaskId = taskList.Id
+                                           }).ToListAsync();
+                return result;
+
+            }
+            catch (Exception)
+            {
+
+                throw;
             }
         }
 
