@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.Services.Account;
+using Microsoft.VisualStudio.Services.CircuitBreaker;
 using Microsoft.VisualStudio.Services.Common;
 using Microsoft.VisualStudio.Services.WebPlatform;
 using MimeKit.Encodings;
@@ -1856,21 +1857,30 @@ namespace CRM.Repository
                 throw new Exception("Error retrieving employee login activity: " + ex.Message);
             }
         }
-        public async Task<List<officeEventsDto>> GetOfficeEvents(string userid)
+        public async Task<MeetEventsAndHolidayDto> GetOfficeEvents(string userid)
         {
             try
             {
+                MeetEventsAndHolidayDto meetEventsAndHoliday = new MeetEventsAndHolidayDto();
                 var empdetail = await _context.EmployeeRegistrations
                     .Where(x => x.EmployeeId == userid)
                     .FirstOrDefaultAsync();
-                var taskassign = await _context.OfficeEvents
+                meetEventsAndHoliday.officeEventsDtos = await _context.OfficeEvents
                     .Where(x => x.Vendorid == empdetail.Vendorid).Select(x => new officeEventsDto
                     {
                         Subtittle = x.Subtittle,
                         Tittle = x.Tittle,
                         Date = x.Date.Value.Date,
                     }).ToListAsync();
-                return taskassign;
+                meetEventsAndHoliday.meetEventsDtos = await _context.EventsmeetSchedulers
+                    .Where(x => x.Vendorid == empdetail.Vendorid).Select(x => new MeetEventsDto
+                    {
+                        EventTittle = x.Tittle,
+                        Eventdate = x.Createddate.Value.Date,
+                        EventType = x.IsEventsmeet == true ? "Meet" : "Event",
+                       // EventTime = x.
+                    }).ToListAsync();
+                return meetEventsAndHoliday;
             }
             catch (Exception ex)
             {

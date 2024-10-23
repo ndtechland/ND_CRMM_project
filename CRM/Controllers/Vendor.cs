@@ -2394,7 +2394,10 @@ namespace CRM.Controllers
                                 string emailBody = $"<p>Dear {employee.FirstName} {employee.LastName},</p>" +
                                               $"<p><strong>Title:</strong> {model.Tittle}</p>" +
                                               $"{model.Description}" +
+                                              $"<p><strong>Scheduled On:</strong> {model.Createddate?.ToString("dd MMM yyyy")}</p>" +
+
                                               $"<p><strong>Scheduled On:</strong> {model.ScheduleDate?.ToString("dd MMM yyyy")}</p>" +
+
                                               $"<p>Thank you.</p>";
 
 
@@ -2420,6 +2423,11 @@ namespace CRM.Controllers
             }
             catch (Exception ex)
             {
+
+                throw;
+            }
+        }
+
                 // Log the exception if necessary
                  throw new Exception("Error while scheduling event", ex);
                  
@@ -2460,6 +2468,7 @@ namespace CRM.Controllers
         //        throw;
         //    }
         //}
+
         public async Task<IActionResult> DeleteEventScheduler(int id)
         {
             try
@@ -2495,9 +2504,6 @@ namespace CRM.Controllers
                 throw;
             }
         }
-
-        
-
 
     }
 }
