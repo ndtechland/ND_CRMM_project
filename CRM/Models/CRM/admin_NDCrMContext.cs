@@ -50,6 +50,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<EmployeeEsicPayrollInfo> EmployeeEsicPayrollInfos { get; set; } = null!;
         public virtual DbSet<EmployeeImportExcel> EmployeeImportExcels { get; set; } = null!;
         public virtual DbSet<EmployeeLogin> EmployeeLogins { get; set; } = null!;
+        public virtual DbSet<EmployeeOvertime> EmployeeOvertimes { get; set; } = null!;
         public virtual DbSet<EmployeePersonalDetail> EmployeePersonalDetails { get; set; } = null!;
         public virtual DbSet<EmployeeRegistration> EmployeeRegistrations { get; set; } = null!;
         public virtual DbSet<EmployeeRole> EmployeeRoles { get; set; } = null!;
@@ -947,6 +948,25 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.Password).HasMaxLength(120);
             });
 
+            modelBuilder.Entity<EmployeeOvertime>(entity =>
+            {
+                entity.ToTable("EmployeeOvertime");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.ApprovalDate).HasColumnType("date");
+
+                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.EmployeeId).HasMaxLength(200);
+
+                entity.Property(e => e.EndTime).HasColumnType("datetime");
+
+                entity.Property(e => e.OvertimeDate).HasColumnType("datetime");
+
+                entity.Property(e => e.StartTime).HasColumnType("datetime");
+            });
+
             modelBuilder.Entity<EmployeePersonalDetail>(entity =>
             {
                 entity.ToTable("Employee_Personal_Details");
@@ -1230,7 +1250,7 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Createddate).HasColumnType("datetime");
 
-                entity.Property(e => e.Description).HasMaxLength(200);
+                entity.Property(e => e.Description).HasMaxLength(250);
 
                 entity.Property(e => e.EmployeeId)
                     .HasMaxLength(200)
