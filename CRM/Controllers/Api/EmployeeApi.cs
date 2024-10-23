@@ -311,7 +311,6 @@ namespace CRM.Controllers.Api
             }
         }
         [HttpGet("EmployeeDashboard")]
-        [HttpGet("EmployeeDashboard")]
         public async Task<IActionResult> EmployeeDashboard()
         {
             var response = new Utilities.Response<dynamic>();

@@ -263,7 +263,7 @@ namespace CRM.Repository
                 throw ex;
             }
         }
-        public async Task SendEmpLeaveApprovalEmailAsync(string ToEmpEmail, string FirstName, string MiddleName, string LastName,string Subject, string emailBody)
+        public async Task SendEmpLeaveApprovalEmailAsync(string ToEmpEmail, string FirstName, string MiddleName, string LastName, string Subject, string emailBody)
         {
             var emailMessage = new MimeMessage();
 
@@ -280,7 +280,37 @@ namespace CRM.Repository
             {
                 try
                 {
-                    
+
+                    await client.ConnectAsync("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
+                    await client.AuthenticateAsync("aastrolense@gmail.com", "efpbsimjkzxeoxnv");
+
+                    await client.SendAsync(emailMessage);
+                }
+                finally
+                {
+                    await client.DisconnectAsync(true);
+                    client.Dispose();
+                }
+            }
+        }
+        public async Task SendMeetEmailAsync(string ToEmpEmail, string FirstName, string MiddleName, string LastName, string emailBody)
+        {
+            var emailMessage = new MimeMessage();
+
+            emailMessage.From.Add(new MailboxAddress("N D Techland Private Limited", "aastrolense@gmail.com"));
+            emailMessage.To.Add(new MailboxAddress("", ToEmpEmail));
+            emailMessage.Subject = "Join Our Meeting";
+
+            emailMessage.Body = new TextPart("html")
+            {
+                Text = emailBody
+            };
+
+            using (var client = new SmtpClient())
+            {
+                try
+                {
+
                     await client.ConnectAsync("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
                     await client.AuthenticateAsync("aastrolense@gmail.com", "efpbsimjkzxeoxnv");
 

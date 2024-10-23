@@ -34,7 +34,7 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                
+
                 var items = _context.States.ToList();
                 ViewBag.StateItems = new SelectList(items, "Id", "SName");
                 if (id != 0)
@@ -42,7 +42,7 @@ namespace CRM.Controllers
                     ViewBag.Heading = "Vendor Registration";
                     ViewBag.btnText = "Update";
                     var vendor = _context.VendorRegistrations.Where(x => x.Id == id).FirstOrDefault();
-    
+
                     var data = _ICrmrpo.GetVendorById(id);
 
                     if (data != null)
@@ -136,7 +136,7 @@ namespace CRM.Controllers
             if (HttpContext.Session.GetString("UserName") != null)
             {
                 var response = await _ICrmrpo.VendorList();
-                
+
 
                 return View(response);
 
@@ -170,7 +170,7 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                
+
                 string id = Convert.ToString(HttpContext.Session.GetString("UserId"));
                 var items = _context.States.ToList();
                 ViewBag.StateItems = new SelectList(items, "Id", "SName");
@@ -195,7 +195,7 @@ namespace CRM.Controllers
         {
             try
             {
-                
+
                 int id = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
 
                 if (id != null)
@@ -312,8 +312,8 @@ namespace CRM.Controllers
                 if (HttpContext.Session.GetString("UserName") != null)
                 {
                     int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
-                    
-    
+
+
                     if (model.Panbase64 != null)
                     {
                         var panImageName = fileOperation.SaveBase64Image("img1", model.Panbase64, allowedExtensions);
@@ -470,8 +470,8 @@ namespace CRM.Controllers
                 if (HttpContext.Session.GetString("UserName") != null)
                 {
                     int AddedByid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
-                    
-    
+
+
                     if (model.Chequebase64 != null)
                     {
                         var chequeImageName = fileOperation.SaveBase64Image("ChequeImage", model.Chequebase64, allowedExtensions); ;
@@ -569,7 +569,7 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                
+
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 List<Attendanceday> response = _context.Attendancedays.Where(x => x.Vendorid == adminlogin.Vendorid).ToList();
@@ -598,7 +598,7 @@ namespace CRM.Controllers
         {
             try
             {
-                
+
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
 
@@ -676,7 +676,7 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                
+
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 List<Officeshift> response = await _context.Officeshifts.Where(x => x.Vendorid == adminlogin.Vendorid).ToListAsync();
@@ -709,7 +709,7 @@ namespace CRM.Controllers
         {
             try
             {
-                
+
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
 
@@ -1000,7 +1000,7 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                
+
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 List<OfficeBreakDto> response = await _context.OfficeBreaks.Where(x => x.Vendorid == adminlogin.Vendorid)
@@ -1053,7 +1053,7 @@ namespace CRM.Controllers
         {
             try
             {
-                
+
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
 
@@ -1136,7 +1136,7 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                
+
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 List<OfficeBreakstatus> response = await _context.OfficeBreakstatuses.Where(x => x.Vendorid == adminlogin.Vendorid).ToListAsync();
@@ -1164,7 +1164,7 @@ namespace CRM.Controllers
         {
             try
             {
-                
+
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
 
@@ -1242,7 +1242,7 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                
+
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 List<EmpTasksassignDto> response = await _context.EmployeeTasks.Where(x => x.Vendorid == adminlogin.Vendorid).OrderByDescending(x => x.Id)
@@ -1305,7 +1305,7 @@ namespace CRM.Controllers
         {
             try
             {
-                
+
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
 
@@ -1395,13 +1395,13 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                
+
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.FirstOrDefaultAsync(x => x.Id == Userid);
 
                 EmployeeTaskModel model = new EmployeeTaskModel();
                 model.EmpTaskList = await _ICrmrpo.GetSubTasks((int)adminlogin.Vendorid);
-               
+
                 ViewBag.SubTaskStatus = await _context.TaskStatuses.Select(w => new SelectListItem
                 {
                     Value = w.Id.ToString(),
@@ -1462,7 +1462,7 @@ namespace CRM.Controllers
         {
             try
             {
-                
+
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
 
@@ -1482,8 +1482,8 @@ namespace CRM.Controllers
                 //        .Where(s => s.Emptaskid == model.Id)
                 //        .ToListAsync();
                 //    _context.EmployeeTasksLists.RemoveRange(existingServices);
-                
-                
+
+
                 //    foreach (var taskName in Taskname)
                 //    {
 
@@ -1507,34 +1507,34 @@ namespace CRM.Controllers
                 //}
                 if (model.Id != 0)
                 {
-                     
+
                     var existingTasks = await _context.EmployeeTasksLists
                         .Where(s => s.Emptaskid == model.Id)
                         .ToListAsync();
 
-                   
+
                     var tasksToRemove = existingTasks
                         .Where(t => !Taskname.Contains(t.Taskname))
                         .ToList();
                     _context.EmployeeTasksLists.RemoveRange(tasksToRemove);
 
-                   
+
                     foreach (var taskName in Taskname)
                     {
                         if (!string.IsNullOrWhiteSpace(taskName))
                         {
-                          
+
                             var existingTask = existingTasks.FirstOrDefault(t => t.Taskname == taskName);
 
                             if (existingTask != null)
                             {
-                                
+
                                 existingTask.Taskname = taskName;
                                 existingTask.EmployeeId = model.EmployeeId;
                                 _context.EmployeeTasksLists.Update(existingTask);
                             }
                             else
-                            {                                
+                            {
                                 EmployeeTasksList newTask = new EmployeeTasksList()
                                 {
                                     Taskname = taskName,
@@ -1828,14 +1828,14 @@ namespace CRM.Controllers
                 return Json(new { success = false, message = "Task not found." });
             }
             emp.Status = Taskstatusid;
-            if(Taskstatusid == 3)
+            if (Taskstatusid == 3)
             {
                 foreach (var sub in emptaslist)
                 {
                     sub.TaskStatus = Taskstatusid;
                 }
             }
-            
+
             await _context.SaveChangesAsync();
 
             return Json(new { success = true, message = "Task status updated successfully!" });
@@ -1929,7 +1929,7 @@ namespace CRM.Controllers
             {
                 if (HttpContext.Session.GetString("UserName") != null)
                 {
-                    
+
                     int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                     var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                     var epflist = _context.EmployeeEpfPayrollInfos.Where(e => e.Vendorid == adminlogin.Vendorid).OrderByDescending(e => e.Id).ToList();
@@ -1955,7 +1955,7 @@ namespace CRM.Controllers
                             ViewBag.id = data.Id;
                             ViewBag.EPFNumber = data.Epfnumber;
                             ViewBag.EPFPercentage = data.Epfpercentage;
-                            ViewBag.SelectedEmployeeId = data.EmployeeId; 
+                            ViewBag.SelectedEmployeeId = data.EmployeeId;
                             ViewBag.BtnText = "UPDATE";
                             ViewBag.Heading = "Update EPF";
 
@@ -2003,7 +2003,7 @@ namespace CRM.Controllers
                     {
                         TempData["Message"] = "updok";
                     }
-                        
+
                     return RedirectToAction("EmployeeEpf");
                 }
                 else
@@ -2082,7 +2082,7 @@ namespace CRM.Controllers
             {
                 if (HttpContext.Session.GetString("UserName") != null)
                 {
-                    
+
                     int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                     var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                     var epflist = _context.EmployeeEsicPayrollInfos.Where(e => e.Vendorid == adminlogin.Vendorid).OrderByDescending(e => e.Id).ToList();
@@ -2136,11 +2136,11 @@ namespace CRM.Controllers
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 var checkexist = _context.EmployeeEsicPayrollInfos.Where(e => e.EmployeeId == model.EmployeeId).FirstOrDefault();
-                
+
                 bool check = await _ICrmrpo.AddEmployeeEsic(model, (int)adminlogin.Vendorid);
                 if (check)
                 {
-                    if(model.Id==0)
+                    if (model.Id == 0)
                     {
                         if (checkexist != null)
                         {
@@ -2153,7 +2153,7 @@ namespace CRM.Controllers
                     {
                         TempData["Message"] = "updok";
                     }
-                    
+
                     return RedirectToAction("EmployeeEsic");
                 }
                 else
@@ -2307,20 +2307,6 @@ namespace CRM.Controllers
             return Json(tasks);
         }
         [HttpPost]
-        //public JsonResult UpdateSubTaskStatus(int Taskstatusid, int Id)
-        //{
-        //    var emp = _context.EmployeeTasksLists.FirstOrDefault(x => x.Id == Id);
-
-        //    if (emp == null)
-        //    {
-        //        return Json(new { success = false, message = "Task not found!" });
-        //    }
-
-        //    emp.TaskStatus = Taskstatusid;
-        //    _context.SaveChanges();
-
-        //    return Json(new { success = true, message = "Task status updated successfully!" });
-        //}
         public JsonResult UpdateSubTaskStatus(int Taskstatusid, int Id)
         {
             var emp = _context.EmployeeTasksLists.Where(x => x.Id == Id).FirstOrDefault();
@@ -2381,41 +2367,41 @@ namespace CRM.Controllers
                 throw;
             }
         }
-        [HttpPost]
-        public async Task<IActionResult> EventsScheduler(EventsmeetSchedulerDto model)
-        {
-            try
-            {
+        //[HttpPost]
+        //public async Task<IActionResult> EventsScheduler(EventsmeetSchedulerDto model)
+        //{
+        //    try
+        //    {
 
-                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
-                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
-                int vendorid = (int)adminlogin.Vendorid;
+        //        int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+        //        var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+        //        int vendorid = (int)adminlogin.Vendorid;
 
-                bool check = await _ICrmrpo.AddEventsScheduler(model, vendorid);
-                if (check)
-                {
-                    if (model.Id == 0)
-                    {
-                        TempData["msg"] = "ok";
-                        return RedirectToAction("EventsScheduleList");
-                    }
-                    else
-                    {
-                        TempData["msg"] = "updok";
-                        return RedirectToAction("EventsScheduleList");
-                    }
-                }
-                else
-                {
-                    return RedirectToAction("EventsScheduler");
-                }
-            }
-            catch (Exception)
-            {
+        //        bool check = await _ICrmrpo.AddEventsScheduler(model, vendorid);
+        //        if (check)
+        //        {
+        //            if (model.Id == 0)
+        //            {
+        //                TempData["msg"] = "ok";
+        //                return RedirectToAction("EventsScheduleList");
+        //            }
+        //            else
+        //            {
+        //                TempData["msg"] = "updok";
+        //                return RedirectToAction("EventsScheduleList");
+        //            }
+        //        }
+        //        else
+        //        {
+        //            return RedirectToAction("EventsScheduler");
+        //        }
+        //    }
+        //    catch (Exception)
+        //    {
 
-                throw;
-            }
-        }
+        //        throw;
+        //    }
+        //}
         public async Task<IActionResult> DeleteEventScheduler(int id)
         {
             try
@@ -2442,7 +2428,7 @@ namespace CRM.Controllers
                 int vendorid = (int)adminlogin.Vendorid;
                 EventsmeetSchedulerDto es = new EventsmeetSchedulerDto();
                 es.Scheduler = _context.EventsmeetSchedulers.Where(e => e.Vendorid == vendorid).OrderBy(x => x.Createddate).ToList();
-                  
+
                 return View(es);
             }
             catch (Exception)
@@ -2451,6 +2437,62 @@ namespace CRM.Controllers
                 throw;
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> EventsScheduler(EventsmeetSchedulerDto model)
+        {
+            try
+            {
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                int vendorid = (int)adminlogin.Vendorid;
+
+                bool check = await _ICrmrpo.AddEventsScheduler(model, vendorid);
+                if (check)
+                {
+                    if (model.EmployeeId != null && model.EmployeeId.Length > 0)
+                    {
+                        foreach (var empId in model.EmployeeId)
+                        {
+                            var employee = await _context.EmployeeRegistrations.Where(e => e.EmployeeId == empId && e.Vendorid == vendorid).FirstOrDefaultAsync();
+                            if (employee != null)
+                            {
+                                string emailBody = $"<p>Dear {employee.FirstName} {employee.LastName},</p>" +
+                                              $"<p><strong>Title:</strong> {model.Tittle}</p>" +
+                                              $"{model.Description}" +
+                                              $"<p><strong>Scheduled On:</strong> {model.Createddate?.ToString("dd MMM yyyy")}</p>" +
+                                              $"<p>Thank you.</p>";
+
+
+                                await _emailService.SendMeetEmailAsync(employee.WorkEmail, employee.FirstName, employee.MiddleName, employee.LastName, emailBody);
+                            }
+                        }
+                    }
+                    if (model.Id == 0)
+                    {
+                        TempData["msg"] = "ok";
+                        return RedirectToAction("EventsScheduleList");
+                    }
+                    else
+                    {
+                        TempData["msg"] = "updok";
+                        return RedirectToAction("EventsScheduleList");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("EventsScheduler");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception if necessary
+                // throw new Exception("Error while scheduling event", ex);
+                throw;
+            }
+        }
+
+
     }
 }
 
