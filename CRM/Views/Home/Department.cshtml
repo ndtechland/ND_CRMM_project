@@ -108,10 +108,11 @@
                                     </div>
                                     <div class="form-group">
                                         <input type="submit" value="@ViewBag.btnText" class="btn btn-primary" />
-                                        @if (ViewBag.id > 0)
+                                        @if (int.TryParse(ViewBag.id?.ToString(), out int id) && id > 0)
                                         {
                                             <a href="/Home/Department" class="btn btn-danger">Cancel</a>
                                         }
+
                                     </div>
                                 </form>
                             </div>
