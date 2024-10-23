@@ -2826,6 +2826,7 @@ var domainmodel = new EmployeeEsicPayrollInfo()
         {
             try
             {
+                
                 if (model.Id == 0) 
                 {
                     var data = new EventsmeetScheduler()
@@ -2834,9 +2835,11 @@ var domainmodel = new EmployeeEsicPayrollInfo()
                         Tittle = model.Tittle,
                         Description = model.Description,
                         EmployeeId = model.EmployeeId != null ? string.Join(",", model.EmployeeId) : string.Empty,
-                        Createddate = model.Createddate,
+                        ScheduleDate = model.ScheduleDate,
+                        Createddate = DateTime.Now,
                         IsEventsmeet = model.IsEventsmeet,
                         IsActive = model.IsActive,
+                        Time = model.Time,
                     };
                     _context.Add(data);
                 }
@@ -2850,9 +2853,10 @@ var domainmodel = new EmployeeEsicPayrollInfo()
                     existdata.Tittle = model.Tittle;
                     existdata.EmployeeId = model.EmployeeId != null ? string.Join(",", model.EmployeeId) : string.Empty;
                     existdata.Description = model.Description;
-                    existdata.Createddate = model.Createddate;
+                    existdata.ScheduleDate = model.ScheduleDate;
                     existdata.IsEventsmeet = model.IsEventsmeet;
                     existdata.IsActive = model.IsActive;
+                    existdata.Time = model.Time;
                     existdata.Vendorid = VendorId; 
                 }
 

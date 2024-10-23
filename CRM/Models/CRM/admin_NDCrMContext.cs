@@ -1250,11 +1250,13 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Createddate).HasColumnType("datetime");
 
-                entity.Property(e => e.Description).HasMaxLength(250);
-
                 entity.Property(e => e.EmployeeId)
                     .HasMaxLength(200)
                     .HasColumnName("Employee_ID");
+
+                entity.Property(e => e.ScheduleDate).HasColumnType("date");
+
+                entity.Property(e => e.Time).HasMaxLength(200);
 
                 entity.Property(e => e.Tittle).HasMaxLength(200);
 
