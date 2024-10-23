@@ -1,0 +1,468 @@
+﻿@model CRM.Models.DTO.EventsmeetSchedulerDto
+
+@{
+    ViewData["Title"] = "EventsmeetScheduler";
+    Layout = "~/Views/Shared/_adminLayout.cshtml";
+}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+
+<style>
+    .dataTables_wrapper table.dataTable th {
+        background-color: #00baf2 !important;
+        padding: 24px 0.75rem !important;
+    }
+</style>
+
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/css/select2.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/js/select2.min.js" defer></script>
+    <style>
+
+        .select2-results__option {
+            padding-right: 20px;
+            vertical-align: middle;
+        }
+
+            .select2-results__option:before {
+                content: "";
+                display: inline-block;
+                position: relative;
+                height: 20px;
+                width: 20px;
+                border: 2px solid #e9e9e9;
+                border-radius: 4px;
+                background-color: #fff;
+                margin-right: 20px;
+                vertical-align: middle;
+            }
+
+            .select2-results__option[aria-selected=true]:before {
+                font-family: fontAwesome;
+                content: "\f00c";
+                color: #fff;
+                background-color: #0096ff;
+                border: 0;
+                padding-left: 3px;
+            }
+
+        .select2-container--default .select2-results__option[aria-selected=true] {
+            background-color: #fff;
+        }
+
+        .select2-container--default .select2-results__option--highlighted[aria-selected] {
+            background-color: #eaeaeb;
+            color: #272727;
+        }
+
+        .select2-container--default .select2-selection--multiple {
+            margin-bottom: 10px;
+        }
+
+        .select2-container--default.select2-container--open.select2-container--below .select2-selection--multiple {
+            border-radius: 4px;
+        }
+
+        .select2-container--default.select2-container--focus .select2-selection--multiple {
+            border-color: #272727;
+            border-width: 2px;
+        }
+
+        .select2-container--default .select2-selection--multiple {
+            border-width: 2px;
+        }
+
+        .select2-container--open .select2-dropdown--below {
+            border-radius: 6px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        .select2-selection .select2-selection--multiple:after {
+            content: 'hhghgh';
+        }
+        /* select with icons badges single*/
+        .select-icon .select2-selection__placeholder .badge {
+            display: none;
+        }
+
+        .select-icon .placeholder {
+            /* 	display: none; */
+        }
+
+        .select-icon .select2-results__option:before,
+        .select-icon .select2-results__option[aria-selected=true]:before {
+            display: none !important;
+            /* content: "" !important; */
+        }
+
+        .select-icon .select2-search--dropdown {
+            display: none;
+        }
+
+        .select2-results__options {
+            display: grid !important;
+        }
+    </style>
+</head>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var message = "@TempData["msg"]";
+
+        if (message == "ok" || message == "dltok" || message == "updok") {
+            if (message) {
+                let alertText;
+
+                if (message == "dltok") {
+                    alertText = "Deleted successfully.";
+                } else if (message == "updok") {
+                    alertText = "Event Schedule updated successfully.";
+                } else {
+                    alertText = "Event Schedule added successfully.";
+                }
+
+                Swal.fire({
+                    title: 'Success',
+                    text: alertText,
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        setTimeout(function () {
+                            window.location.href = '@Url.Action("EventsScheduler", "Vendor")';
+                        }, 1000);
+                    }
+                });
+            }
+        }
+        else {
+            if (message) {
+                Swal.fire({
+                    title: 'Failed',
+                    text: message,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        setTimeout(function () {
+                            window.location.href = '@Url.Action("EventsScheduler", "Vendor")';
+                        }, 1000);
+                    }
+                });
+            }
+        }
+    });
+</script>
+
+
+<div class="page-wrapper">
+    <div class="page-body-wrapper">
+        <div class="page-sidebar">
+        </div>
+        <div class="page-body">
+            <div class="container-fluid">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="page-header-left">
+                                <h2>
+                                    @ViewBag.heading
+                                </h2>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <ol class="breadcrumb pull-right">
+                                <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
+                                <li class="breadcrumb-item">Settings</li>
+                                <li class="breadcrumb-item active">Events Schedule</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <form asp-action="EventsScheduler" asp-controller="Vendor" autocomplete="off" onsubmit="return validateForm()">
+                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                                    <div class="row">
+                                        <div class="form-group col-sm">
+                                            <input type="hidden" name="Id" value="@ViewBag.id" />
+                                            <label for="IsEventsmeet">Is Events / Meeting</label>
+                                            <div>
+                                                <input type="radio" name="IsEventsmeet" id="eventsMeetYes" value="true" onchange="toggleEmployeeDropdown(true)" />
+                                                <label for="eventsMeetYes">Meet</label>
+                                                <input type="radio" name="IsEventsmeet" id="eventsMeetNo" value="false" onchange="toggleEmployeeDropdown(false)" checked />
+                                                <label for="eventsMeetNo">Event</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="form-group col-sm" id="employeeDropdownContainer">
+                                            <label for="validationCustom0">Employee Id</label>
+                                            <select name="EmployeeId" class="form-control js-select2" multiple="multiple" id="empidddl">
+                                                <option value="">-- Select Employee Id --</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-sm-6">
+                                            <label for="Title">Title<span class="text-danger">*</span></label>
+                                            <input name="Tittle" type="text" value="@ViewBag.Tittle" placeholder="Enter Event Title" class="form-control" required />
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="form-group col-sm">
+                                            <label for="Createddate">Event Schedule Date <span class="text-danger">*</span></label>
+                                            <input name="Createddate" type="date" value="@ViewBag.Createddate" class="form-control" required />
+                                        </div>
+                                        <div class="form-group col-sm">
+                                            <label for="Description">Description <span class="text-danger">*</span></label>
+                                            <textarea name="description" placeholder="Enter Event Description" class="form-control">@ViewBag.description</textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="form-group col-sm">
+                                            <label for="IsActive">Is Active</label>
+                                            <div>
+                                                <input type="radio" name="IsActive" id="isActiveYes" value="true" />
+                                                <label for="isActiveYes">Active</label>
+                                                <input type="radio" name="IsActive" id="isActiveNo" value="false" checked />
+                                                <label for="isActiveNo">Inactive</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <input type="submit" value="@ViewBag.btnText" class="btn btn-primary" />
+                                        @if (ViewBag.id > 0)
+                                        {
+                                            <a href="/Vendor/EventsScheduler" class="btn btn-danger">Cancel</a>
+                                        }
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class=" table-responsive">
+                                    <table id="datatable" class="table table-hover">
+                                        <thead>
+                                            <tr style="background-color: #00baf2;">
+                                                <th nowrap>Sl. No.</th>
+                                                <th nowrap>
+                                                    Employee Id
+                                                </th>
+                                                <th nowrap>
+                                                    Title
+                                                </th>
+                                                <th nowrap>Event Schedule Date</th>
+                                                <th>Description</th>
+                                                <th>IsActive</th>
+                                                <th>Is Events / Meeting</th>
+                                                <th>Edit</th>
+                                                <th>Delete</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{
+                                                var count = 0;
+                                                foreach (var item in Model.Scheduler)
+                                                {
+                                                    count++;
+                                                    <tr class="table-row">
+                                                        <td>@count</td>
+                                                        <td nowrap>
+                                                            @string.Join(", ", item.EmployeeId)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.Tittle)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @item.Createddate.Value.ToString("dd-MMM-yyyy")
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.Description)
+                                                        </td>
+                                                        <td>
+                                                            @(item.IsActive == true ? "Active" : "Inactive")
+                                                        </td>
+                                                        <td>
+                                                            @(item.IsEventsmeet == true ? "Meet" : "Event")
+                                                        </td>
+                                                        <td>
+                                                            <div>
+                                                                <a href="/Vendor/EventsScheduler?Id=@item.Id" class="fa fa-edit m-2 font-success"></a>
+
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteEventScheduler", "Vendor", new { id = item.Id })')" class="fa fa-trash font-danger"></a>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+@* <script type="text/javascript">
+    function bindEmployeeId(EmployeeId) {
+        var itemsListforEmployeeId = @Json.Serialize(ViewBag.EmployeeItem);
+        var dropdownforEmployeeId = $("#empidddl");
+        dropdownforEmployeeId.empty();
+        $.each(itemsListforEmployeeId, function (index, item) {
+            dropdownforEmployeeId.append($('<option></option>').val(item.value).text(item.text));
+        });
+
+        if (EmployeeId && EmployeeId.length > 0) {
+            dropdownforEmployeeId.val(EmployeeId.split(','));
+        }
+        dropdownforEmployeeId.select2({
+            placeholder: "-- Select Employee --",
+            allowClear: true,
+            tags: true,
+            closeOnSelect: false
+        });
+    }
+
+    var empid = '@ViewBag.EmployeeId';
+    $(document).ready(function () {
+        if (empid != "") {
+            bindEmployeeId(empid);
+        } else {
+            bindEmployeeId("");
+        }
+    });
+</script> *@
+<script>
+    function confirmDelete(url) {
+        var result = confirm("Are you sure you want to delete?");
+        if (result) {
+            window.location.href = url;
+        }
+    }
+
+    var eventmeet = '@ViewBag.IsEventsmeet'.toLowerCase(); 
+    if (eventmeet !== "") {
+        if (eventmeet === "true") {
+            $("#eventsMeetYes").prop("checked", true);
+            $("#eventsMeetNo").prop("checked", false);
+        }
+        if (eventmeet === "false") {
+            $("#eventsMeetYes").prop("checked", false);
+            $("#eventsMeetNo").prop("checked", true);
+        }
+    }
+    var isactive = '@ViewBag.IsActive'.toLowerCase();
+    if (isactive !== "") {
+        if (isactive === "true") {
+            $("#isActiveYes").prop("checked", true);
+            $("#isActiveNo").prop("checked", false);
+        }
+        if (isactive === "false") {
+            $("#isActiveYes").prop("checked", false);
+            $("#isActiveNo").prop("checked", true);
+        }
+    }
+
+</script>
+<script>
+    $(document).ready(function () {
+        document.title = 'EventsScheduler ';
+        $('#datatable').DataTable(
+            {
+                "dom": '<"dt-buttons"Bf><"clear">lirtp',
+                "paging": true,
+                "autoWidth": true,
+                "buttons": [
+                    'colvis',
+                    'copyHtml5',
+                    'csvHtml5',
+                    'excelHtml5',
+                    'pdfHtml5',
+                    'print'
+                ]
+            }
+        );
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        function bindEmployeeId(EmployeeId) {
+            var itemsListforEmployeeId = @Html.Raw(Json.Serialize(ViewBag.EmployeeItem));
+            var dropdownforEmployeeId = $("#empidddl");
+            dropdownforEmployeeId.empty();
+            $.each(itemsListforEmployeeId, function (index, item) {
+                dropdownforEmployeeId.append($('<option></option>').val(item.value).text(item.text));
+            });
+
+            if (EmployeeId && EmployeeId.length > 0) {
+                dropdownforEmployeeId.val(EmployeeId.split(','));
+            }
+
+            dropdownforEmployeeId.select2({
+                placeholder: "-- Select Employee Id --",
+                allowClear: true,
+                tags: true,
+                closeOnSelect: false
+            });
+        }
+
+        var empid = '@ViewBag.EmployeeId';
+        bindEmployeeId(empid);
+
+        $('input[name="IsEventsmeet"]').change(function () {
+            const isEventsMeet = this.value === "true";
+            toggleEmployeeDropdown(isEventsMeet);
+        });
+
+        const isEventsMeetChecked = $('input[name="IsEventsmeet"]:checked').val() === "true";
+        toggleEmployeeDropdown(isEventsMeetChecked);
+    });
+
+    function toggleEmployeeDropdown(isEventsMeet) {
+        const employeeDropdownContainer = $('#employeeDropdownContainer');
+        employeeDropdownContainer.toggle(isEventsMeet);
+    }
+</script>
+
+
+

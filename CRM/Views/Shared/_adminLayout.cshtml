@@ -1,5 +1,17 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var addedBy = Context.Session.GetString("UserName");
+    if (!string.IsNullOrEmpty(addedBy))
+    {
+        ViewBag.UserName = addedBy;
+    }
+    else
+    {
+        ViewBag.UserName = ""; 
+    }
+}
 
+
+<!DOCTYPE html>
 <html>
 <head>
     <meta name="title" content="N D Connect - Streamline Business Operations with All-in-One Software">
@@ -346,6 +358,7 @@
                                     <li><a href="/Vendor/Aboutcompany"><i class="fa fa-circle"></i>About Company</a></li>
                                     <li><a href="/Employee/Employer"><i class="fa fa-circle"></i>Add Emp EPF & ESIC</a></li>
                                     <li><a href="/Employee/Employee_list"><i class="fa fa-circle"></i>Emp EPF & ESIC List</a></li>
+                                    <li><a href="/Vendor/EventsScheduler" title="Schedule events"><i class="fa fa-circle"></i>Event Schedule</a></li>
 
                                 </ul>
                             </li>

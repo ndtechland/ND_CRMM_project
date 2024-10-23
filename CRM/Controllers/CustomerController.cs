@@ -23,7 +23,7 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                string AddedBy = HttpContext.Session.GetString("UserName");
+                
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
 
                 var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
@@ -41,7 +41,7 @@ namespace CRM.Controllers
                 ViewBag.StateItems = new SelectList(items, "Id", "SName");
                 if (id != 0)
                 {
-                    ViewBag.UserName = AddedBy;
+    
                     ViewBag.Heading = "Customer Registration";
                     ViewBag.btnText = "Update";
                     var data = _ICrmrpo.GetCustomerById(id);
@@ -67,7 +67,7 @@ namespace CRM.Controllers
                         return View(data);
                     }
                 }
-                ViewBag.UserName = AddedBy;
+
                 ViewBag.Heading = "Customer Registration";
                 ViewBag.btnText = "SAVE";
                 ViewBag.SelectedStateId = null;
@@ -139,11 +139,11 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                string AddedBy = HttpContext.Session.GetString("UserName");
+                
                 int Adminid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Adminid).FirstOrDefaultAsync();
                 var response = await _ICrmrpo.CustomerList((int)adminlogin.Vendorid);
-                ViewBag.UserName = AddedBy;
+
                 return View(response);
 
             }
@@ -177,9 +177,9 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                string AddedBy = HttpContext.Session.GetString("UserName");
+                
                 string id = Convert.ToString(HttpContext.Session.GetString("UserId")); ;
-                ViewBag.UserName = AddedBy;
+
                 ViewBag.id = id;
                 var data = await _ICrmrpo.GetCustomerProfile(id);
                 return View(data);
@@ -194,12 +194,12 @@ namespace CRM.Controllers
         {
             try
             {
-                string AddedBy = HttpContext.Session.GetString("UserName");
+                
                 int id = Convert.ToInt32(HttpContext.Session.GetString("UserId")); ;
-                ViewBag.UserName = AddedBy;
+
                 if (id != null)
                 {
-                    var data = await _ICrmrpo.UpdateCustomerProfile(model, AddedBy);
+                    var data = await _ICrmrpo.UpdateCustomerProfile(model, id);
                     TempData["Message"] = "Update Successfully.";
                     return RedirectToAction("CustomerProfile");
                 }

@@ -28,7 +28,7 @@ namespace CRM.Controllers
 			{
                 if (HttpContext.Session.GetString("UserName") != null)
                 {
-                    string AddedBy = HttpContext.Session.GetString("UserName");
+                    
                     int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                     CustomerInvoiceDTO customerInv = new CustomerInvoiceDTO();
                     var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
@@ -38,7 +38,7 @@ namespace CRM.Controllers
                     
                     if (InvoiceNumber != null)
                     {
-                        ViewBag.UserName = AddedBy;
+        
                         ViewBag.Heading = "Update Invoice";
                         ViewBag.btnText = "Update";
                         
@@ -71,7 +71,7 @@ namespace CRM.Controllers
                         }
 
                     }
-                    ViewBag.UserName = AddedBy;
+    
                     ViewBag.Heading = "Add Invoice";
                     ViewBag.btnText = "SAVE";
                     ViewBag.ProductId =null;

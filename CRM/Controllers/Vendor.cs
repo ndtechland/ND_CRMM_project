@@ -34,7 +34,7 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                string AddedBy = HttpContext.Session.GetString("UserName");
+                
                 var items = _context.States.ToList();
                 ViewBag.StateItems = new SelectList(items, "Id", "SName");
                 if (id != 0)
@@ -42,7 +42,7 @@ namespace CRM.Controllers
                     ViewBag.Heading = "Vendor Registration";
                     ViewBag.btnText = "Update";
                     var vendor = _context.VendorRegistrations.Where(x => x.Id == id).FirstOrDefault();
-                    ViewBag.UserName = AddedBy;
+    
                     var data = _ICrmrpo.GetVendorById(id);
 
                     if (data != null)
@@ -70,7 +70,7 @@ namespace CRM.Controllers
                 }
                 ViewBag.Heading = "Vendor Registration";
                 ViewBag.btnText = "SAVE";
-                ViewBag.UserName = AddedBy;
+
                 ViewBag.SelectedStateId = null;
                 ViewBag.SelectedCityId = null;
                 ViewBag.ProductDetails = _context.ProductMasters.Where(x => x.IsDeleted == false)
@@ -136,8 +136,8 @@ namespace CRM.Controllers
             if (HttpContext.Session.GetString("UserName") != null)
             {
                 var response = await _ICrmrpo.VendorList();
-                string AddedBy = HttpContext.Session.GetString("UserName");
-                ViewBag.UserName = AddedBy;
+                
+
                 return View(response);
 
             }
@@ -170,11 +170,11 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                string AddedBy = HttpContext.Session.GetString("UserName");
+                
                 string id = Convert.ToString(HttpContext.Session.GetString("UserId"));
                 var items = _context.States.ToList();
                 ViewBag.StateItems = new SelectList(items, "Id", "SName");
-                ViewBag.UserName = AddedBy;
+
                 var data = await _ICrmrpo.GetVendorProfile(id);
                 ViewBag.vendorid = data.Id;
                 ViewBag.SelectedCityId = data.CityId;
@@ -195,9 +195,9 @@ namespace CRM.Controllers
         {
             try
             {
-                string AddedBy = HttpContext.Session.GetString("UserName");
+                
                 int id = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
-                ViewBag.UserName = AddedBy;
+
                 if (id != null)
                 {
                     var data = await _ICrmrpo.UpdateVendorProfile(model, id);
@@ -237,9 +237,7 @@ namespace CRM.Controllers
 
                 if (HttpContext.Session.GetString("UserName") != null)
                 {
-                    var addedBy = HttpContext.Session.GetString("UserName");
                     int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
-                    ViewBag.UserName = addedBy;
                     ViewBag.id = 0;
                     ViewBag.FullName = "";
                     ViewBag.Personal_Email_Address = "";
@@ -314,8 +312,8 @@ namespace CRM.Controllers
                 if (HttpContext.Session.GetString("UserName") != null)
                 {
                     int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
-                    string AddedBy = HttpContext.Session.GetString("UserName");
-                    ViewBag.UserName = AddedBy;
+                    
+    
                     if (model.Panbase64 != null)
                     {
                         var panImageName = fileOperation.SaveBase64Image("img1", model.Panbase64, allowedExtensions);
@@ -412,9 +410,7 @@ namespace CRM.Controllers
 
                 if (HttpContext.Session.GetString("UserName") != null)
                 {
-                    var addedBy = HttpContext.Session.GetString("UserName");
                     int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
-                    ViewBag.UserName = addedBy;
                     ViewBag.id = 0;
                     ViewBag.Account_Holder_Name = "";
                     ViewBag.Bank_Name = "";
@@ -474,8 +470,8 @@ namespace CRM.Controllers
                 if (HttpContext.Session.GetString("UserName") != null)
                 {
                     int AddedByid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
-                    string AddedBy = HttpContext.Session.GetString("UserName");
-                    ViewBag.UserName = AddedBy;
+                    
+    
                     if (model.Chequebase64 != null)
                     {
                         var chequeImageName = fileOperation.SaveBase64Image("ChequeImage", model.Chequebase64, allowedExtensions); ;
@@ -573,11 +569,11 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                string AddedBy = HttpContext.Session.GetString("UserName");
+                
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 List<Attendanceday> response = _context.Attendancedays.Where(x => x.Vendorid == adminlogin.Vendorid).ToList();
-                ViewBag.UserName = AddedBy;
+
                 ViewBag.id = 0;
                 ViewBag.Nodays = "";
                 ViewBag.Heading = "Add Days";
@@ -602,10 +598,10 @@ namespace CRM.Controllers
         {
             try
             {
-                string AddedBy = HttpContext.Session.GetString("UserName");
+                
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
-                ViewBag.UserName = AddedBy;
+
 
                 if (model == null)
                 {
@@ -680,12 +676,12 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                string AddedBy = HttpContext.Session.GetString("UserName");
+                
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 List<Officeshift> response = await _context.Officeshifts.Where(x => x.Vendorid == adminlogin.Vendorid).ToListAsync();
 
-                ViewBag.UserName = AddedBy;
+
                 ViewBag.Starttime = "";
                 ViewBag.Endtime = "";
                 ViewBag.ShiftTypeid = "";
@@ -713,10 +709,10 @@ namespace CRM.Controllers
         {
             try
             {
-                string AddedBy = HttpContext.Session.GetString("UserName");
+                
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
-                ViewBag.UserName = AddedBy;
+
 
                 if (model == null)
                 {
@@ -795,7 +791,7 @@ namespace CRM.Controllers
         {
             try
             {
-                ViewBag.UserName = HttpContext.Session.GetString("UserName");
+
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 int vendorid = (int)adminlogin.Vendorid;
@@ -832,7 +828,7 @@ namespace CRM.Controllers
         {
             try
             {
-                ViewBag.UserName = HttpContext.Session.GetString("UserName");
+
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 int vendorid = (int)adminlogin.Vendorid;
@@ -1004,7 +1000,7 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                string AddedBy = HttpContext.Session.GetString("UserName");
+                
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 List<OfficeBreakDto> response = await _context.OfficeBreaks.Where(x => x.Vendorid == adminlogin.Vendorid)
@@ -1027,7 +1023,7 @@ namespace CRM.Controllers
                     Value = w.Id.ToString(),
                     Text = w.ShiftTypeid
                 }).ToListAsync();
-                ViewBag.UserName = AddedBy;
+
                 ViewBag.Starttime = "";
                 ViewBag.Endtime = "";
                 ViewBag.ShiftTypeid = "";
@@ -1057,10 +1053,10 @@ namespace CRM.Controllers
         {
             try
             {
-                string AddedBy = HttpContext.Session.GetString("UserName");
+                
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
-                ViewBag.UserName = AddedBy;
+
 
                 if (model == null)
                 {
@@ -1140,11 +1136,11 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                string AddedBy = HttpContext.Session.GetString("UserName");
+                
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 List<OfficeBreakstatus> response = await _context.OfficeBreakstatuses.Where(x => x.Vendorid == adminlogin.Vendorid).ToListAsync();
-                ViewBag.UserName = AddedBy;
+
                 ViewBag.Breakstatus = "";
                 ViewBag.Heading = "Add Office BreakStatus";
                 ViewBag.BtnText = "SAVE";
@@ -1168,10 +1164,10 @@ namespace CRM.Controllers
         {
             try
             {
-                string AddedBy = HttpContext.Session.GetString("UserName");
+                
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
-                ViewBag.UserName = AddedBy;
+
 
                 if (model == null)
                 {
@@ -1246,7 +1242,7 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                string AddedBy = HttpContext.Session.GetString("UserName");
+                
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 List<EmpTasksassignDto> response = await _context.EmployeeTasks.Where(x => x.Vendorid == adminlogin.Vendorid).OrderByDescending(x => x.Id)
@@ -1273,7 +1269,7 @@ namespace CRM.Controllers
                     Text = D.EmployeeId
 
                 }).ToList();
-                ViewBag.UserName = AddedBy;
+
                 ViewBag.Task = "";
                 ViewBag.Tittle = "";
                 ViewBag.Startdate = "";
@@ -1309,10 +1305,10 @@ namespace CRM.Controllers
         {
             try
             {
-                string AddedBy = HttpContext.Session.GetString("UserName");
+                
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
-                ViewBag.UserName = AddedBy;
+
 
                 if (model == null)
                 {
@@ -1399,7 +1395,7 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                string AddedBy = HttpContext.Session.GetString("UserName");
+                
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.FirstOrDefaultAsync(x => x.Id == Userid);
 
@@ -1430,7 +1426,7 @@ namespace CRM.Controllers
                     }).ToListAsync();
 
 
-                ViewBag.UserName = AddedBy;
+
                 ViewBag.Heading = "Add Sub Task";
                 ViewBag.BtnText = "SAVE";
 
@@ -1476,10 +1472,10 @@ namespace CRM.Controllers
         {
             try
             {
-                string AddedBy = HttpContext.Session.GetString("UserName");
+                
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
-                ViewBag.UserName = AddedBy;
+
 
                 if (model == null)
                 {
@@ -1607,7 +1603,7 @@ namespace CRM.Controllers
         {
             try
             {
-                ViewBag.UserName = HttpContext.Session.GetString("UserName");
+
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 int vendorid = (int)adminlogin.Vendorid;
@@ -1653,7 +1649,7 @@ namespace CRM.Controllers
         {
             try
             {
-                ViewBag.UserName = HttpContext.Session.GetString("UserName");
+
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 int vendorid = (int)adminlogin.Vendorid;
@@ -1715,7 +1711,7 @@ namespace CRM.Controllers
         {
             try
             {
-                ViewBag.UserName = HttpContext.Session.GetString("UserName");
+
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 int vendorid = (int)adminlogin.Vendorid;
@@ -1758,7 +1754,7 @@ namespace CRM.Controllers
         {
             try
             {
-                ViewBag.UserName = HttpContext.Session.GetString("UserName");
+
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 int vendorid = (int)adminlogin.Vendorid;
@@ -1805,13 +1801,28 @@ namespace CRM.Controllers
             }
         }
         [HttpPost]
-        public JsonResult UpdateTaskStatus(int Taskstatusid, int Id)
+        public async Task<JsonResult> UpdateTaskStatus(int Taskstatusid, int Id)
         {
+            var emptaslist = await _context.EmployeeTasksLists.Where(x => x.Emptaskid == Id).ToListAsync();
             var emp = _context.EmployeeTasks.Where(x => x.Id == Id).FirstOrDefault();
+            if (emp == null)
+            {
+                return Json(new { success = false, message = "Task not found." });
+            }
             emp.Status = Taskstatusid;
-            _context.SaveChanges();
+            if(Taskstatusid == 3)
+            {
+                foreach (var sub in emptaslist)
+                {
+                    sub.TaskStatus = Taskstatusid;
+                }
+            }
+            
+            await _context.SaveChangesAsync();
+
             return Json(new { success = true, message = "Task status updated successfully!" });
         }
+
         [HttpGet, Route("Vendor/ApprovedLeaveApply")]
         public async Task<IActionResult> ApprovedLeaveApply(int? id)
         {
@@ -1821,13 +1832,19 @@ namespace CRM.Controllers
 
                 if (HttpContext.Session.GetString("UserName") != null)
                 {
-                    var addedBy = HttpContext.Session.GetString("UserName");
                     int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                     var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
-                    ViewBag.UserName = addedBy;
                     var Approvedbankdetail = await _ICrmrpo.GetLeaveapplydetailList(adminlogin.Vendorid); ;
+                    if (Approvedbankdetail != null)
+                    {
+                        return View(Approvedbankdetail);
 
-                    return View(Approvedbankdetail);
+                    }
+                    else
+                    {
+                        return View();
+
+                    }
                 }
                 else
                 {
@@ -1894,7 +1911,7 @@ namespace CRM.Controllers
             {
                 if (HttpContext.Session.GetString("UserName") != null)
                 {
-                    string AddedBy = HttpContext.Session.GetString("UserName");
+                    
                     int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                     var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                     var epflist = _context.EmployeeEpfPayrollInfos.Where(e => e.Vendorid == adminlogin.Vendorid).OrderByDescending(e => e.Id).ToList();
@@ -2047,7 +2064,7 @@ namespace CRM.Controllers
             {
                 if (HttpContext.Session.GetString("UserName") != null)
                 {
-                    string AddedBy = HttpContext.Session.GetString("UserName");
+                    
                     int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                     var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                     var epflist = _context.EmployeeEsicPayrollInfos.Where(e => e.Vendorid == adminlogin.Vendorid).OrderByDescending(e => e.Id).ToList();
@@ -2174,7 +2191,7 @@ namespace CRM.Controllers
         {
             try
             {
-                ViewBag.UserName = HttpContext.Session.GetString("UserName");
+
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 int vendorid = (int)adminlogin.Vendorid;
@@ -2211,7 +2228,7 @@ namespace CRM.Controllers
         {
             try
             {
-                ViewBag.UserName = HttpContext.Session.GetString("UserName");
+
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 int vendorid = (int)adminlogin.Vendorid;
@@ -2286,7 +2303,110 @@ namespace CRM.Controllers
 
             return Json(new { success = true, message = "Task status updated successfully!" });
         }
+        [HttpGet]
+        public async Task<IActionResult> EventsScheduler(int id)
+        {
+            try
+            {
 
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                int vendorid = (int)adminlogin.Vendorid;
+                EventsmeetSchedulerDto es = new EventsmeetSchedulerDto();
+                es.Scheduler = _context.EventsmeetSchedulers.Where(e => e.Vendorid == vendorid).OrderBy(x => x.Createddate).ToList();
+                ViewBag.EmployeeItem = _context.EmployeeRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).Select(D => new SelectListItem
+                {
+                    Value = D.EmployeeId.ToString(),
+                    Text = D.EmployeeId
+
+                }).ToList();
+                int iId = (int)(id == null ? 0 : id);
+                ViewBag.id = 0;
+                ViewBag.Tittle = "";
+                ViewBag.description = "";
+                ViewBag.Createddate = "";
+                ViewBag.EmployeeId = "";
+                ViewBag.IsEventsmeet = "";
+                ViewBag.IsActive = "";
+                ViewBag.heading = "Add Event Schedule";
+                ViewBag.btnText = "SAVE";
+                if (iId != null && iId != 0)
+                {
+                    var data = _context.EventsmeetSchedulers.Find(iId);
+                    if (data != null)
+                    {
+                        ViewBag.id = data.Id;
+                        ViewBag.Tittle = data.Tittle;
+                        ViewBag.EmployeeId = data.EmployeeId;
+                        ViewBag.description = data.Description;
+                        ViewBag.IsEventsmeet = data.IsEventsmeet;
+                        ViewBag.IsActive = data.IsActive;
+                        ViewBag.Createddate = data.Createddate.Value.ToString("yyyy-MM-dd");
+                        ViewBag.btnText = "UPDATE";
+                        ViewBag.heading = "Update Event Schedule";
+
+                    }
+                }
+
+                return View(es);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> EventsScheduler(EventsmeetSchedulerDto model)
+        {
+            try
+            {
+
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                int vendorid = (int)adminlogin.Vendorid;
+
+                bool check = await _ICrmrpo.AddEventsScheduler(model, vendorid);
+                if (check)
+                {
+                    if (model.Id == 0)
+                    {
+                        TempData["msg"] = "ok";
+                        return RedirectToAction("EventsScheduler");
+                    }
+                    else
+                    {
+                        TempData["msg"] = "updok";
+                        return RedirectToAction("EventsScheduler");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("EventsScheduler");
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        public async Task<IActionResult> DeleteEventScheduler(int id)
+        {
+            try
+            {
+                var dlt = _context.EventsmeetSchedulers.Find(id);
+                _context.Remove(dlt);
+                _context.SaveChanges();
+                TempData["msg"] = "dltok";
+                return RedirectToAction("EventsScheduler");
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 }
 

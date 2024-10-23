@@ -58,6 +58,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<EmployeeTasksList> EmployeeTasksLists { get; set; } = null!;
         public virtual DbSet<EmployeerEpf> EmployeerEpfs { get; set; } = null!;
         public virtual DbSet<EmployeerTd> EmployeerTds { get; set; } = null!;
+        public virtual DbSet<EventsmeetScheduler> EventsmeetSchedulers { get; set; } = null!;
         public virtual DbSet<GenderMaster> GenderMasters { get; set; } = null!;
         public virtual DbSet<GstMaster> GstMasters { get; set; } = null!;
         public virtual DbSet<Hash> Hashes { get; set; } = null!;
@@ -1219,6 +1220,25 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.WorkLocationId)
                     .HasMaxLength(120)
                     .HasColumnName("Work_Location_ID");
+            });
+
+            modelBuilder.Entity<EventsmeetScheduler>(entity =>
+            {
+                entity.ToTable("EventsmeetScheduler");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Createddate).HasColumnType("datetime");
+
+                entity.Property(e => e.Description).HasMaxLength(200);
+
+                entity.Property(e => e.EmployeeId)
+                    .HasMaxLength(200)
+                    .HasColumnName("Employee_ID");
+
+                entity.Property(e => e.Tittle).HasMaxLength(200);
+
+                entity.Property(e => e.Vendorid).HasColumnName("vendorid");
             });
 
             modelBuilder.Entity<GenderMaster>(entity =>

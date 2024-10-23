@@ -141,7 +141,7 @@ namespace CRM.Controllers
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 string id = Convert.ToString(HttpContext.Session.GetString("UserId"));
                 int adid = Convert.ToInt32(HttpContext.Session.GetString("AdminId"));
-                ViewBag.UserName = AddedBy;
+    
                 ViewBag.id = id;
                 ViewBag.adid = adid;
                 return View();
@@ -205,7 +205,7 @@ namespace CRM.Controllers
 
             if (!string.IsNullOrEmpty(addedBy))
             {
-                ViewBag.UserName = addedBy;
+    
             }
             return RedirectToAction("Login", "Admin");
 
