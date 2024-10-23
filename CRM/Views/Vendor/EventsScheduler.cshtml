@@ -232,9 +232,23 @@
                                     </div>
                                     <div class="row mb-3">
                                         <div class="form-group col-sm-6">
-                                            <label for="Createddate" class="form-label">Event Schedule Date <span class="text-danger">*</span></label>
-                                            <input name="Createddate" type="date" value="@ViewBag.Createddate" class="form-control" required />
+                                            <label for="ScheduleDate" class="form-label">Event Schedule Date <span class="text-danger">*</span></label>
+                                            <input name="ScheduleDate" type="date" value="@ViewBag.ScheduleDate" class="form-control" required />
                                         </div>
+                                        <div class="form-group col-sm-6">
+                                           @*  <label for="EventTime" class="form-label">Event Time <span class="text-danger">*</span></label>
+                                            <input name="EventTime" type="time" value="@ViewBag.EventTime" class="form-control" required /> *@
+                                            <label for="EventTime" class="form-label">Event Time <span class="text-danger">*</span></label>
+                                            <div class="input-group">
+                                                <input name="Time" id="EventTimeInput" value="@ViewBag.Time" type="time" class="form-control" required />
+                                                <select name="Period" id="EventPeriod" class="form-control" style="max-width: 80px;" required>
+                                                    <option value="AM">AM</option>
+                                                    <option value="PM">PM</option>
+                                                </select>
+                                            </div>
+
+
+                                        </div> 
                                         <div class="form-group col-sm-6">
                                             <label for="IsActive" class="form-label">Is Active</label>
                                             <div>
@@ -415,3 +429,44 @@
     });
 </script>
 
+<script> 
+    document.getElementById('EventTimeInput').addEventListener('input', function () {
+        let timeInput = document.getElementById('EventTimeInput').value;
+        let periodSelect = document.getElementById('EventPeriod');
+
+        if (timeInput) {
+            let [hour, minute] = timeInput.split(':');
+            let hourNum = parseInt(hour);
+
+            
+            if (hourNum >= 12) {
+                periodSelect.value = 'PM';
+                if (hourNum > 12) hourNum -= 12;
+            } else {
+                periodSelect.value = 'AM';
+                if (hourNum === 0) hourNum = 12;
+            } 
+            let formattedHour = hourNum.toString().padStart(2, '0');
+            document.getElementById('EventTimeInput').value = `${formattedHour}:${minute}`;
+        }
+    });
+</script> 
+<script>
+    $(document).ready(function () {
+        
+        var time = "@ViewBag.Time";
+
+        if (time) {
+            
+            var timeParts = time.split(' ');
+            var timeValue = timeParts[0]; // "02:30"
+            var period = timeParts[1]; // "AM" or "PM"
+
+            // Set the value of the time input
+            $("#EventTimeInput").val(timeValue);
+
+            // Select the correct period in the dropdown
+            $("#EventPeriod").val(period);
+        }
+    });
+</script>

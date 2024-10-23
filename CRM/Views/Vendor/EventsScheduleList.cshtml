@@ -105,6 +105,7 @@
                                                     Title
                                                 </th>
                                                 <th nowrap>Event Schedule Date</th>
+                                                <th nowrap>Schedule Time</th>
                                                 <th>Description</th>
                                                 <th>IsActive</th>
                                                 <th nowrap>Schedule Type</th>
@@ -127,8 +128,10 @@
                                                             @Html.DisplayFor(modelItem => item.Tittle)
                                                         </td>
                                                         <td nowrap>
-                                                            @item.Createddate.Value.ToString("dd-MMM-yyyy")
+                                                            @item.ScheduleDate.Value.ToString("dd-MMM-yyyy")
                                                         </td>
+                                                        <td>
+                                                        @item.Time</td>
                                                         <td>
                                                             @Html.Raw(item.Description)
                                                         </td>
