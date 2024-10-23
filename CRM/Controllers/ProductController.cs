@@ -21,10 +21,10 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                string AddedBy = HttpContext.Session.GetString("UserName");
+                
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
-                ViewBag.UserName = AddedBy;
+
 
                 ViewBag.Gst = await _context.GstMasters.Select(w => new SelectListItem
                 {
@@ -74,10 +74,10 @@ namespace CRM.Controllers
         {
             try
             {
-                string AddedBy = HttpContext.Session.GetString("UserName");
+                
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
-                ViewBag.UserName = AddedBy;
+
 
                 if (model == null)
                 {
@@ -114,11 +114,11 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {             
-                string AddedBy = HttpContext.Session.GetString("UserName");
+                
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 var response = await _ICrmrpo.ProductList();
-                ViewBag.UserName = AddedBy;
+
                 return View(response);
             }
             else
@@ -151,10 +151,10 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                string AddedBy = HttpContext.Session.GetString("UserName");
+                
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
-                ViewBag.UserName = AddedBy;
+
 
                 ViewBag.Gst = await _context.GstMasters.Select(w => new SelectListItem
                 {
@@ -204,11 +204,11 @@ namespace CRM.Controllers
         {
             try
             {
-                string AddedBy = HttpContext.Session.GetString("UserName");
+                
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
-                ViewBag.UserName = AddedBy;
+
                 int vendorid = (int)adminlogin.Vendorid;
                 if (model == null)
                 {
@@ -245,12 +245,12 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                string AddedBy = HttpContext.Session.GetString("UserName");
+                
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                
                 var response = await _ICrmrpo.GetVendorProductList((int)adminlogin.Vendorid);
-                ViewBag.UserName = AddedBy;
+
                 return View(response);
             }
             else

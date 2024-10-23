@@ -1125,17 +1125,21 @@ namespace CRM.Repository
                                 .OrderByDescending(g => g.Id)
                                 .Select(g => g.CheckOutTime.HasValue ? g.CheckOutTime.Value.ToString("hh:mm tt") : "N/A")
                                 .FirstOrDefault();
-                            var loginActivities = await GetLoginBreakActivities(empAttendanceDetails.EmployeeId , Currentdate);
                             var latestLoginStatus = (string?)null;
-                            if (checkIns.Count > 0)
+                            var loginActivities = await _context.EmployeeCheckIns
+                                .Where(g => g.EmployeeId == empAttendanceDetails.EmployeeId && g.Currentdate.HasValue && g.Currentdate.Value.Date == DateTime.Now.Date)
+                                .OrderBy(g => g.Id)
+                                .ToListAsync();
+
+                            if (loginActivities.Count > 0)
                             {
-                                 latestLoginStatus = loginActivities.Any() ? loginActivities.Last().LoginStatus : "Check-In";
+                                latestLoginStatus = loginActivities.Last().CheckIn == true ? "Check-In" : "Check-Out";
                             }
                             else
                             {
-                                 latestLoginStatus = loginActivities.Any() ? loginActivities.Last().LoginStatus : "Not logged in today";
-
+                                latestLoginStatus = "Check-Out"; 
                             }
+
                             var attendanceDetail = new Empattendancedatail
                             {
                                 OfficeHour = $"{officeShift.Starttime} - {officeShift.Endtime}",
@@ -1143,9 +1147,9 @@ namespace CRM.Repository
                                 CheckOutTime = checkOutTime == null ? "N/A" : checkOutTime,
                                 StartOverTime = await CalculateStartOverTime(empAttendanceDetails.EmployeeId, (int)empAttendanceDetails.OfficeShiftId.Value, _context, Currentdate),
                                 FinishOverTime = await CalculateFinishOverTime(empAttendanceDetails.EmployeeId, (int)empAttendanceDetails.OfficeShiftId.Value, _context, Currentdate),
-                                OvertimeWorkingHours = await CalculateMonthlyOvertimeHours(empAttendanceDetails.EmployeeId, (int)empAttendanceDetails.OfficeShiftId.Value , Currentdate),
-                                TotalWorkingHours = await CalculateTotalWorkingHours(empAttendanceDetails.EmployeeId , Currentdate),
-                                MonthlyWorkingHours = await CalculateMonthlyWorkingHours(empAttendanceDetails.EmployeeId , Currentdate),
+                                OvertimeWorkingHours = await CalculateMonthlyOvertimeHours(empAttendanceDetails.EmployeeId, (int)empAttendanceDetails.OfficeShiftId.Value, Currentdate),
+                                TotalWorkingHours = await CalculateTotalWorkingHours(empAttendanceDetails.EmployeeId, Currentdate),
+                                MonthlyWorkingHours = await CalculateMonthlyWorkingHours(empAttendanceDetails.EmployeeId, Currentdate),
                                 Presencepercentage = await CalculatePresencePercentage(empAttendanceDetails.EmployeeId, Currentdate),
                                 absencepercentage = await CalculateAbsencePercentage(empAttendanceDetails.EmployeeId, Currentdate),
                                 Currentdate = Date == null ? "N/A" : Date,
@@ -1169,48 +1173,7 @@ namespace CRM.Repository
                 throw new Exception("Error: " + ex.Message);
             }
         }
-        //check in activity
-        //private async Task<List<Loginactivity>> GetLoginActivities(string employeeId)
-        //{
-        //    var currentDate = DateTime.Now.Date;
 
-        //    var attendanceRecordsCheckIn = await _context.EmployeeCheckIns
-        //        .Where(g => g.EmployeeId == employeeId && g.CheckIn == true && g.CheckInTime.HasValue && g.CheckInTime.Value.Date == currentDate)
-        //        .OrderBy(g => g.CheckInTime)
-        //        .ToListAsync();
-        //    var attendanceRecordsCheckOut = await _context.EmployeeCheckIns
-        //        .Where(g => g.EmployeeId == employeeId && g.CheckIn == false && g.CheckOutTime.HasValue && g.CheckOutTime.Value.Date == currentDate)
-        //        .OrderByDescending(g => g.CheckOutTime)
-        //        .ToListAsync();
-
-        //    var loginActivities = new List<Loginactivity>();
-        //    int index = 0;
-
-        //    foreach (var CheckInrecord in attendanceRecordsCheckIn)
-        //    {
-        //        Loginactivity loginActivity = new Loginactivity
-        //        {
-        //            CheckIN = CheckInrecord.CheckInTime.Value.ToString("hh:mm tt"),
-        //            CheckOut = "N/A",
-        //            LoginStatus = "Check-In",
-        //            loginactivities = null,
-        //        };
-
-        //        if (index < attendanceRecordsCheckOut.Count)
-        //        {
-        //            var CheckOutrecord = attendanceRecordsCheckOut[index];
-        //            loginActivity.CheckOut = CheckOutrecord.CheckOutTime.HasValue
-        //                ? CheckOutrecord.CheckOutTime.Value.ToString("hh:mm tt")
-        //                : "N/A";
-        //            loginActivity.LoginStatus = "Check-Out";
-        //            loginActivity.loginactivities = null;
-        //        }
-
-        //        loginActivities.Add(loginActivity);
-        //        index++;
-        //    }
-        //    return loginActivities;
-        //}
 
         private async Task<List<Breakactivity>> GetLoginBreakActivities(string employeeId, DateTime Currentdate)
         {

@@ -1360,10 +1360,10 @@ namespace CRM.Repository
                 throw ex;
             }
         }
-        public async Task<int> UpdateCustomerProfile(CustomerRegistration model, string AddedBy)
+        public async Task<int> UpdateCustomerProfile(CustomerRegistration model, int? id)
         {
             var customer = await _context.CustomerRegistrations.FirstOrDefaultAsync(x => x.Id == model.Id);
-            var adminusername = await _context.AdminLogins.FirstOrDefaultAsync(x => x.UserName == AddedBy);
+            var adminusername = await _context.AdminLogins.FirstOrDefaultAsync(x => x.Id == id);
             if (customer == null)
             {
                 return 0;
@@ -2541,36 +2541,43 @@ namespace CRM.Repository
         }
         public async Task<List<ApprovedLeaveApplyList>> GetLeaveapplydetailList(int? userId)
         {
-            if (!userId.HasValue) throw new ArgumentNullException(nameof(userId));
+            if (!userId.HasValue)
+                throw new ArgumentNullException(nameof(userId), "UserId cannot be null");
 
             try
             {
+                // Fetch AdminLogin, if needed for validation or extra processing
                 var adminLogin = await _context.AdminLogins.FindAsync(userId);
-                if (adminLogin == null) throw new InvalidOperationException("Admin login not found");
+
+                // Fetch list of employees based on VendorId
                 var empList = await _context.EmployeeRegistrations
                     .Where(x => x.Vendorid == userId)
                     .ToListAsync();
 
                 if (empList == null || empList.Count == 0)
-                    throw new Exception("No employee found for the specified user.");
+                    throw new Exception("No employees found for the specified user.");
 
                 var leaveDetails = new List<ApprovedLeaveApplyList>();
 
+                // Iterate through each employee and fetch their leave details
                 foreach (var emp in empList)
                 {
                     var leave = await _context.ApplyLeaveNews
                         .Where(p => p.UserId == emp.EmployeeId)
-                        .ToListAsync(); 
+                        .ToListAsync();
 
                     if (leave == null || leave.Count == 0)
                     {
-                        continue;
+                        continue; // Skip if no leave is found for this employee
                     }
-                    foreach (var l in leave) 
-                    {
-                        decimal totalFullday = (l.EndDate - l.StartDate).Days - (l.EndDate != l.StartDate ? 1 : 0);
-                        totalFullday = Math.Max(totalFullday, 0);
 
+                    foreach (var l in leave)
+                    {
+                        // Calculate total full day leave
+                        decimal totalFullday = (l.EndDate - l.StartDate).Days - (l.EndDate != l.StartDate ? 1 : 0);
+                        totalFullday = Math.Max(totalFullday, 0); // Ensure non-negative value
+
+                        // Add leave details to the result list
                         leaveDetails.Add(new ApprovedLeaveApplyList
                         {
                             Id = l.Id,
@@ -2579,31 +2586,35 @@ namespace CRM.Repository
                             EmpMobileNumber = await _context.EmployeePersonalDetails
                                 .Where(e => e.EmpRegId == emp.EmployeeId)
                                 .Select(e => e.MobileNumber)
-                                .FirstOrDefaultAsync(),
-                            LeaveType = GetLeaveType(l.StartLeaveId, l.EndeaveId, totalFullday) + $" (Total Leaves: {(decimal)(l.CountLeave + l.PaidCountLeave)})",
+                                .FirstOrDefaultAsync() ?? "Unknown", // Handle null mobile number
+                            LeaveType = GetLeaveType(l.StartLeaveId, l.EndeaveId, totalFullday) +
+                                        $" (Total Leaves: {(decimal)(l.CountLeave + l.PaidCountLeave)})",
                             TypeOfLeaveId = await _context.LeaveTypes
                                 .Where(s => s.Id == l.TypeOfLeaveId)
                                 .Select(s => s.Leavetype1)
-                                .FirstOrDefaultAsync() ?? "Unknown",
+                                .FirstOrDefaultAsync() ?? "Unknown", // Handle unknown leave type
                             StartDate = l.StartDate,
                             EndDate = l.EndDate,
                             CreatedDate = l.CreatedDate,
                             UnPaidCountLeave = l.CountLeave,
                             Month = l.Month,
-                            Reason = l.Reason,
+                            Reason = l.Reason ?? "No reason provided", // Handle null reason
                             Isapprove = l.Isapprove,
                             PaidCountLeave = l.PaidCountLeave,
                         });
                     }
                 }
 
-                return leaveDetails;
+                // Return the leave details or an empty list if none were found
+                return leaveDetails.Any() ? leaveDetails : new List<ApprovedLeaveApplyList>();
             }
             catch (Exception ex)
             {
-                throw;
+                // Log the exception (if logging is implemented)
+                throw new Exception("An error occurred while retrieving leave details.", ex);
             }
         }
+
         public async Task<bool> AddEmployeeEpf(EmployeeEpfPayrollInfo model, int VendorId)
         {
             try
@@ -2810,6 +2821,50 @@ var domainmodel = new EmployeeEsicPayrollInfo()
                 throw;
             }
         }
+
+        public async Task<bool> AddEventsScheduler(EventsmeetSchedulerDto model, int VendorId)
+        {
+            try
+            {
+                if (model.Id == 0) 
+                {
+                    var data = new EventsmeetScheduler()
+                    {
+                        Vendorid = VendorId,
+                        Tittle = model.Tittle,
+                        Description = model.Description,
+                        EmployeeId = model.EmployeeId != null ? string.Join(",", model.EmployeeId) : string.Empty,
+                        Createddate = model.Createddate,
+                        IsEventsmeet = model.IsEventsmeet,
+                        IsActive = model.IsActive,
+                    };
+                    _context.Add(data);
+                }
+                else 
+                {
+                    var existdata = await _context.EventsmeetSchedulers.FindAsync(model.Id);
+                    if (existdata == null)
+                    {
+                        return false; 
+                    }
+                    existdata.Tittle = model.Tittle;
+                    existdata.EmployeeId = model.EmployeeId != null ? string.Join(",", model.EmployeeId) : string.Empty;
+                    existdata.Description = model.Description;
+                    existdata.Createddate = model.Createddate;
+                    existdata.IsEventsmeet = model.IsEventsmeet;
+                    existdata.IsActive = model.IsActive;
+                    existdata.Vendorid = VendorId; 
+                }
+
+                await _context.SaveChangesAsync(); 
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw; 
+            }
+        }
+
         public async Task<List<EmpTasknameDto>> GetSubTasks(int vendorid)
         {
             try
@@ -2839,6 +2894,7 @@ var domainmodel = new EmployeeEsicPayrollInfo()
                 throw;
             }
         }
+
     }
 
 }

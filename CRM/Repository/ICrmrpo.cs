@@ -66,7 +66,7 @@ namespace CRM.Repository
         public List<City> BindCity(int stateId);
         public Task<List<monthlysalaryExcel>> monthlysalaryReport(string customerId, int Month, int year, string WorkLocation);
         public Task<CustomerRegistration> GetCustomerProfile(string? id);
-        public Task<int> UpdateCustomerProfile(CustomerRegistration model, string AddedBy);
+        public Task<int> UpdateCustomerProfile(CustomerRegistration model, int? id);
         public Task<int> UpdateChangepassword(ChangePassworddto model, string AddedBy, int id);
         public Task<List<EmployeeImportExcel>> CustomerEmployeeList(int id);
         public VendorDto GetVendorById(int id);
@@ -103,6 +103,8 @@ namespace CRM.Repository
         Task<bool> AddEmployeeEsic(EmployeeEsicPayrollInfo model, int VendorId);
         Task<bool> AddAndUpdateBlog(BlogDto model);
         Task<bool> Addaddcompany(Aboutcompany model, int VendorId);
+        Task<bool> AddEventsScheduler(EventsmeetSchedulerDto model, int VendorId);
         Task<List<EmpTasknameDto>> GetSubTasks(int vendorid);
+
     }
 }
