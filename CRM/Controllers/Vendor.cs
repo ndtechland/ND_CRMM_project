@@ -2335,10 +2335,11 @@ namespace CRM.Controllers
                 ViewBag.id = 0;
                 ViewBag.Tittle = "";
                 ViewBag.description = "";
-                ViewBag.Createddate = "";
+                ViewBag.ScheduleDate = "";
                 ViewBag.EmployeeId = "";
                 ViewBag.IsEventsmeet = "";
                 ViewBag.IsActive = "";
+                ViewBag.Time = "";
                 ViewBag.heading = "Add Event Schedule";
                 ViewBag.btnText = "SAVE";
                 if (iId != null && iId != 0)
@@ -2352,7 +2353,8 @@ namespace CRM.Controllers
                         ViewBag.description = data.Description;
                         ViewBag.IsEventsmeet = data.IsEventsmeet;
                         ViewBag.IsActive = data.IsActive;
-                        ViewBag.Createddate = data.Createddate.Value.ToString("yyyy-MM-dd");
+                        ViewBag.Time = data.Time;
+                        ViewBag.ScheduleDate = data.ScheduleDate.Value.ToString("yyyy-MM-dd");
                         ViewBag.btnText = "UPDATE";
                         ViewBag.heading = "Update Event Schedule";
 
@@ -2365,6 +2367,62 @@ namespace CRM.Controllers
             {
 
                 throw;
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> EventsScheduler(EventsmeetSchedulerDto model)
+        {
+            try
+            {
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                int vendorid = (int)adminlogin.Vendorid;
+                string time = Request.Form["Time"];  // Get the time (e.g., "10:30")
+                string period = Request.Form["Period"];  // Get the period (e.g., "AM")
+
+                model.Time = time + " " + period;
+                bool check = await _ICrmrpo.AddEventsScheduler(model, vendorid);
+                if (check)
+                {
+                    if (model.EmployeeId != null && model.EmployeeId.Length > 0)
+                    {
+                        foreach (var empId in model.EmployeeId)
+                        {
+                            var employee = await _context.EmployeeRegistrations.Where(e => e.EmployeeId == empId && e.Vendorid == vendorid).FirstOrDefaultAsync();
+                            if (employee != null)
+                            {
+                                string emailBody = $"<p>Dear {employee.FirstName} {employee.LastName},</p>" +
+                                              $"<p><strong>Title:</strong> {model.Tittle}</p>" +
+                                              $"{model.Description}" +
+                                              $"<p><strong>Scheduled On:</strong> {model.ScheduleDate?.ToString("dd MMM yyyy")}</p>" +
+                                              $"<p>Thank you.</p>";
+
+
+                                await _emailService.SendMeetEmailAsync(employee.WorkEmail, employee.FirstName, employee.MiddleName, employee.LastName, emailBody);
+                            }
+                        }
+                    }
+                    if (model.Id == 0)
+                    {
+                        TempData["msg"] = "ok";
+                        return RedirectToAction("EventsScheduleList");
+                    }
+                    else
+                    {
+                        TempData["msg"] = "updok";
+                        return RedirectToAction("EventsScheduleList");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("EventsScheduler");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception if necessary
+                 throw new Exception("Error while scheduling event", ex);
+                 
             }
         }
         //[HttpPost]
@@ -2438,59 +2496,7 @@ namespace CRM.Controllers
             }
         }
 
-        [HttpPost]
-        public async Task<IActionResult> EventsScheduler(EventsmeetSchedulerDto model)
-        {
-            try
-            {
-                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
-                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
-                int vendorid = (int)adminlogin.Vendorid;
-
-                bool check = await _ICrmrpo.AddEventsScheduler(model, vendorid);
-                if (check)
-                {
-                    if (model.EmployeeId != null && model.EmployeeId.Length > 0)
-                    {
-                        foreach (var empId in model.EmployeeId)
-                        {
-                            var employee = await _context.EmployeeRegistrations.Where(e => e.EmployeeId == empId && e.Vendorid == vendorid).FirstOrDefaultAsync();
-                            if (employee != null)
-                            {
-                                string emailBody = $"<p>Dear {employee.FirstName} {employee.LastName},</p>" +
-                                              $"<p><strong>Title:</strong> {model.Tittle}</p>" +
-                                              $"{model.Description}" +
-                                              $"<p><strong>Scheduled On:</strong> {model.Createddate?.ToString("dd MMM yyyy")}</p>" +
-                                              $"<p>Thank you.</p>";
-
-
-                                await _emailService.SendMeetEmailAsync(employee.WorkEmail, employee.FirstName, employee.MiddleName, employee.LastName, emailBody);
-                            }
-                        }
-                    }
-                    if (model.Id == 0)
-                    {
-                        TempData["msg"] = "ok";
-                        return RedirectToAction("EventsScheduleList");
-                    }
-                    else
-                    {
-                        TempData["msg"] = "updok";
-                        return RedirectToAction("EventsScheduleList");
-                    }
-                }
-                else
-                {
-                    return RedirectToAction("EventsScheduler");
-                }
-            }
-            catch (Exception ex)
-            {
-                // Log the exception if necessary
-                // throw new Exception("Error while scheduling event", ex);
-                throw;
-            }
-        }
+        
 
 
     }

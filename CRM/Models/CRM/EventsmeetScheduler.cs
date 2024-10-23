@@ -13,5 +13,7 @@ namespace CRM.Models.Crm
         public int? Vendorid { get; set; }
         public bool? IsActive { get; set; }
         public bool? IsEventsmeet { get; set; }
+        public string? Time { get; set; }
+        public DateTime? ScheduleDate { get; set; }
     }
 }
