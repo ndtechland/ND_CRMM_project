@@ -280,35 +280,6 @@
 </div>
 
 
-@* <script type="text/javascript">
-    function bindEmployeeId(EmployeeId) {
-        var itemsListforEmployeeId = @Json.Serialize(ViewBag.EmployeeItem);
-        var dropdownforEmployeeId = $("#empidddl");
-        dropdownforEmployeeId.empty();
-        $.each(itemsListforEmployeeId, function (index, item) {
-            dropdownforEmployeeId.append($('<option></option>').val(item.value).text(item.text));
-        });
-
-        if (EmployeeId && EmployeeId.length > 0) {
-            dropdownforEmployeeId.val(EmployeeId.split(','));
-        }
-        dropdownforEmployeeId.select2({
-            placeholder: "-- Select Employee --",
-            allowClear: true,
-            tags: true,
-            closeOnSelect: false
-        });
-    }
-
-    var empid = '@ViewBag.EmployeeId';
-    $(document).ready(function () {
-        if (empid != "") {
-            bindEmployeeId(empid);
-        } else {
-            bindEmployeeId("");
-        }
-    });
-</script> *@
 <script>
     
 

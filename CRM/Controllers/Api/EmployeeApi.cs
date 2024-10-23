@@ -1336,32 +1336,22 @@ namespace CRM.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> GetofficeEvents()
         {
-            var response = new Response<List<officeEventsDto>>();
+            var response = new Response<MeetEventsAndHolidayDto>();
             try
             {
                 if (User.Identity.IsAuthenticated)
                 {
                     var userid = User.Claims.FirstOrDefault().Value;
-                    List<officeEventsDto> isLoginExists = await _apiemp.GetOfficeEvents(userid);
-                    if (isLoginExists.Count == 0)
+                    var isLoginExists = await _apiemp.GetOfficeEvents(userid);
+                    if (isLoginExists != null)
                     {
                         response.Succeeded = true;
                         response.StatusCode = StatusCodes.Status200OK;
                         response.Status = "Success";
-                        response.Message = "No upcoming or past events found.";
+                        response.Message = "upcoming or past events found.";
                         response.Data = isLoginExists;
                         return Ok(response);
                     }
-                    else if (isLoginExists.Count != 0)
-                    {
-                        response.Succeeded = true;
-                        response.StatusCode = StatusCodes.Status200OK;
-                        response.Status = "Success";
-                        response.Message = $"{isLoginExists.Count} upcoming event(s) scheduled soon.";
-                        response.Data = isLoginExists;
-                        return Ok(response);
-                    }
-
                     else
                     {
                         response.StatusCode = StatusCodes.Status401Unauthorized;

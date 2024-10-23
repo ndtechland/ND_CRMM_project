@@ -31,7 +31,7 @@ namespace CRM.Repository
         public Task<EmpTasksList> Tasksassign(TasksListDto model, string userid);
         public Task<EmpTasksList> SubTaskCompletedempTasksassign(EmpSubTasksDto model, string userid);
         public Task<List<WebLoginactivity>> GetWebEmpLoginactivity(string userid);
-        public Task<List<officeEventsDto>> GetOfficeEvents(string userid);
+        public Task<MeetEventsAndHolidayDto> GetOfficeEvents(string userid);
         public Task<Monthlyattendancedatail> GetMonthAttanceDetails(string userid);
         public Task<TotalLeave> Getleavelist(string userid);
         public Task<getTotalLeave> GetEmptotalleave(string userid, int id);

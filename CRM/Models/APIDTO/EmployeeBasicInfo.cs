@@ -133,6 +133,19 @@ namespace CRM.Models.APIDTO
         public DateTime? Date { get; set; }
 
     }
+    public class MeetEventsDto
+    {
+        public string? EventTittle { get; set; }
+        public DateTime? Eventdate { get; set; }
+        public string? EventType { get; set; }
+        public string? EventTime { get; set; }
+
+    }
+    public class MeetEventsAndHolidayDto
+    {
+        public List<officeEventsDto> officeEventsDtos { get; set; }
+        public List<MeetEventsDto> meetEventsDtos { get; set; }
+    }
     public class Monthlyattendancedatail
     {
         public int? TotalWorkingDays { get; set; }
