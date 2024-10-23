@@ -2397,12 +2397,12 @@ namespace CRM.Controllers
                     if (model.Id == 0)
                     {
                         TempData["msg"] = "ok";
-                        return RedirectToAction("EventsScheduler");
+                        return RedirectToAction("EventsScheduleList");
                     }
                     else
                     {
                         TempData["msg"] = "updok";
-                        return RedirectToAction("EventsScheduler");
+                        return RedirectToAction("EventsScheduleList");
                     }
                 }
                 else
@@ -2424,7 +2424,26 @@ namespace CRM.Controllers
                 _context.Remove(dlt);
                 _context.SaveChanges();
                 TempData["msg"] = "dltok";
-                return RedirectToAction("EventsScheduler");
+                return RedirectToAction("EventsScheduleList");
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        public async Task<IActionResult> EventsScheduleList()
+        {
+            try
+            {
+
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                int vendorid = (int)adminlogin.Vendorid;
+                EventsmeetSchedulerDto es = new EventsmeetSchedulerDto();
+                es.Scheduler = _context.EventsmeetSchedulers.Where(e => e.Vendorid == vendorid).OrderBy(x => x.Createddate).ToList();
+                  
+                return View(es);
             }
             catch (Exception)
             {
