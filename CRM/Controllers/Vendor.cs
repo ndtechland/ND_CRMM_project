@@ -2394,8 +2394,6 @@ namespace CRM.Controllers
                                 string emailBody = $"<p>Dear {employee.FirstName} {employee.LastName},</p>" +
                                               $"<p><strong>Title:</strong> {model.Tittle}</p>" +
                                               $"{model.Description}" +
-                                              $"<p><strong>Scheduled On:</strong> {model.Createddate?.ToString("dd MMM yyyy")}</p>" +
-
                                               $"<p><strong>Scheduled On:</strong> {model.ScheduleDate?.ToString("dd MMM yyyy")}</p>" +
 
                                               $"<p>Thank you.</p>";
@@ -2427,48 +2425,6 @@ namespace CRM.Controllers
                 throw;
             }
         }
-
-                // Log the exception if necessary
-                 throw new Exception("Error while scheduling event", ex);
-                 
-            }
-        }
-        //[HttpPost]
-        //public async Task<IActionResult> EventsScheduler(EventsmeetSchedulerDto model)
-        //{
-        //    try
-        //    {
-
-        //        int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
-        //        var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
-        //        int vendorid = (int)adminlogin.Vendorid;
-
-        //        bool check = await _ICrmrpo.AddEventsScheduler(model, vendorid);
-        //        if (check)
-        //        {
-        //            if (model.Id == 0)
-        //            {
-        //                TempData["msg"] = "ok";
-        //                return RedirectToAction("EventsScheduleList");
-        //            }
-        //            else
-        //            {
-        //                TempData["msg"] = "updok";
-        //                return RedirectToAction("EventsScheduleList");
-        //            }
-        //        }
-        //        else
-        //        {
-        //            return RedirectToAction("EventsScheduler");
-        //        }
-        //    }
-        //    catch (Exception)
-        //    {
-
-        //        throw;
-        //    }
-        //}
-
         public async Task<IActionResult> DeleteEventScheduler(int id)
         {
             try
