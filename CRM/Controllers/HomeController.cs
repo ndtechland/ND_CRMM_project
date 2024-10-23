@@ -246,6 +246,7 @@ namespace CRM.Controllers
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
                 List<DepartmentMaster> response = _context.DepartmentMasters.Where(x => x.AdminLoginId == adminlogin.Id).OrderByDescending(d=>d.Id).ToList();
+                ViewBag.id = 0;
                 ViewBag.id = "";
                 ViewBag.DepartmentName = "";
                 ViewBag.Heading = "Add Department";
