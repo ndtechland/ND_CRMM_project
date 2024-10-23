@@ -159,10 +159,10 @@
                                                     count++;
                                                     <tr class="table-row">
                                                         <td>@count</td>
-                                                        <td>
+                                                        <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.Tittle)
                                                         </td>
-                                                        <td nowrap>
+                                                        <td>
                                                             @Html.DisplayFor(modelItem => item.Subtittle)
                                                         </td>
                                                         <td>
@@ -186,12 +186,8 @@
                     </div>
                 </div>
             </div>
-
         </div>
-
-
     </div>
-
 </div>
 <script>
     function confirmDelete(url) {
