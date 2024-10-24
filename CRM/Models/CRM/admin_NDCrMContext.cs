@@ -60,6 +60,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<EmployeerEpf> EmployeerEpfs { get; set; } = null!;
         public virtual DbSet<EmployeerTd> EmployeerTds { get; set; } = null!;
         public virtual DbSet<EventsmeetScheduler> EventsmeetSchedulers { get; set; } = null!;
+        public virtual DbSet<Featurebenifit> Featurebenifits { get; set; } = null!;
         public virtual DbSet<GenderMaster> GenderMasters { get; set; } = null!;
         public virtual DbSet<GstMaster> GstMasters { get; set; } = null!;
         public virtual DbSet<Hash> Hashes { get; set; } = null!;
@@ -79,13 +80,16 @@ namespace CRM.Models.Crm
         public virtual DbSet<Officeshift> Officeshifts { get; set; } = null!;
         public virtual DbSet<OrganisationProfile> OrganisationProfiles { get; set; } = null!;
         public virtual DbSet<OrganisationTaxDetail> OrganisationTaxDetails { get; set; } = null!;
+        public virtual DbSet<OurCoreValue> OurCoreValues { get; set; } = null!;
         public virtual DbSet<OurExpertise> OurExpertises { get; set; } = null!;
         public virtual DbSet<OurStory> OurStories { get; set; } = null!;
+        public virtual DbSet<OurTutorial> OurTutorials { get; set; } = null!;
         public virtual DbSet<PaidLeavemaster> PaidLeavemasters { get; set; } = null!;
         public virtual DbSet<PayMethodMaster> PayMethodMasters { get; set; } = null!;
         public virtual DbSet<Payroll> Payrolls { get; set; } = null!;
         public virtual DbSet<ProductMaster> ProductMasters { get; set; } = null!;
         public virtual DbSet<Quation> Quations { get; set; } = null!;
+        public virtual DbSet<RequestDemo> RequestDemos { get; set; } = null!;
         public virtual DbSet<Schema> Schemas { get; set; } = null!;
         public virtual DbSet<Server> Servers { get; set; } = null!;
         public virtual DbSet<Set> Sets { get; set; } = null!;
@@ -1265,6 +1269,15 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.Vendorid).HasColumnName("vendorid");
             });
 
+            modelBuilder.Entity<Featurebenifit>(entity =>
+            {
+                entity.Property(e => e.Author).HasMaxLength(100);
+
+                entity.Property(e => e.PublishedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Title).HasMaxLength(150);
+            });
+
             modelBuilder.Entity<GenderMaster>(entity =>
             {
                 entity.ToTable("Gender_Master", "dbo");
@@ -1661,6 +1674,15 @@ namespace CRM.Models.Crm
                     .HasConstraintName("FK_Organisation_Tax_Details_Tax_Deductor_ID");
             });
 
+            modelBuilder.Entity<OurCoreValue>(entity =>
+            {
+                entity.Property(e => e.Author).HasMaxLength(100);
+
+                entity.Property(e => e.PublishedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Title).HasMaxLength(150);
+            });
+
             modelBuilder.Entity<OurExpertise>(entity =>
             {
                 entity.ToTable("OurExpertise");
@@ -1685,6 +1707,23 @@ namespace CRM.Models.Crm
                     .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.Title).HasMaxLength(150);
+            });
+
+            modelBuilder.Entity<OurTutorial>(entity =>
+            {
+                entity.ToTable("OurTutorial");
+
+                entity.Property(e => e.Author).HasMaxLength(100);
+
+                entity.Property(e => e.IsActive).HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.PublishedDate)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.Title).HasMaxLength(150);
+
+                entity.Property(e => e.VedioUrl).HasColumnName("VedioURL");
             });
 
             modelBuilder.Entity<PaidLeavemaster>(entity =>
@@ -1778,6 +1817,17 @@ namespace CRM.Models.Crm
                     .HasColumnName("Sales_Person_Name");
 
                 entity.Property(e => e.Subject).HasMaxLength(255);
+            });
+
+            modelBuilder.Entity<RequestDemo>(entity =>
+            {
+                entity.ToTable("RequestDemo");
+
+                entity.Property(e => e.Author).HasMaxLength(100);
+
+                entity.Property(e => e.PublishedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Title).HasMaxLength(150);
             });
 
             modelBuilder.Entity<Schema>(entity =>
