@@ -79,6 +79,8 @@ namespace CRM.Models.Crm
         public virtual DbSet<Officeshift> Officeshifts { get; set; } = null!;
         public virtual DbSet<OrganisationProfile> OrganisationProfiles { get; set; } = null!;
         public virtual DbSet<OrganisationTaxDetail> OrganisationTaxDetails { get; set; } = null!;
+        public virtual DbSet<OurExpertise> OurExpertises { get; set; } = null!;
+        public virtual DbSet<OurStory> OurStories { get; set; } = null!;
         public virtual DbSet<PaidLeavemaster> PaidLeavemasters { get; set; } = null!;
         public virtual DbSet<PayMethodMaster> PayMethodMasters { get; set; } = null!;
         public virtual DbSet<Payroll> Payrolls { get; set; } = null!;
@@ -960,13 +962,9 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.ApprovalDate).HasColumnType("date");
 
-                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
                 entity.Property(e => e.EmployeeId).HasMaxLength(200);
 
                 entity.Property(e => e.EndTime).HasColumnType("datetime");
-
-                entity.Property(e => e.OvertimeDate).HasColumnType("datetime");
 
                 entity.Property(e => e.StartTime).HasColumnType("datetime");
             });
@@ -1661,6 +1659,32 @@ namespace CRM.Models.Crm
                     .HasForeignKey(d => d.TaxDeductorId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Organisation_Tax_Details_Tax_Deductor_ID");
+            });
+
+            modelBuilder.Entity<OurExpertise>(entity =>
+            {
+                entity.ToTable("OurExpertise");
+
+                entity.Property(e => e.CreatedDate)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.ExpertiseName).HasMaxLength(200);
+            });
+
+            modelBuilder.Entity<OurStory>(entity =>
+            {
+                entity.ToTable("OurStory");
+
+                entity.Property(e => e.Author).HasMaxLength(100);
+
+                entity.Property(e => e.IsActive).HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.PublishedDate)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.Title).HasMaxLength(150);
             });
 
             modelBuilder.Entity<PaidLeavemaster>(entity =>

@@ -105,5 +105,51 @@ namespace CRM.Controllers.Api
                 throw new Exception(ex.Message);
             }
         }
+        [HttpGet]
+        [Route("GetOurStory")]
+        public async Task<IActionResult> GetOurStory()
+        {
+            try
+            {
+                List<OurStory> stories = _context.OurStories.Where(x => x.IsActive == true).ToList();
+                if (stories != null)
+                {
+                    return Ok(new { Status = 200, Message = "Our Story retrieved successfully.", data = stories });
+                }
+                else
+                {
+                    return NotFound(new { Status = 404, Message = "No any OurStory available." });
+                }
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        [HttpGet]
+        [Route("GetOurExpertise")]
+        public async Task<IActionResult> GetOurExpertise()
+        {
+            try
+            {
+                List<OurExpertise> expertise = _context.OurExpertises.ToList();
+                if (expertise != null)
+                {
+                    return Ok(new { Status = 200, Message = "Our Expertise retrieved successfully.", data = expertise });
+                }
+                else
+                {
+                    return NotFound(new { Status = 404, Message = "No any OurExpertise available." });
+                }
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 }

@@ -1,7 +1,7 @@
-﻿@model CRM.Models.DTO.BlogDto
+﻿@model CRM.Models.DTO.OurStoryDTO
 
 @{
-    ViewData["Title"] = "Blogs";
+    ViewData["Title"] = "OurStory";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -9,9 +9,8 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 
-@* <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css'> *@
 <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs5.min.css'>
- 
+
 <style>
     .dataTables_wrapper table.dataTable th {
         background-color: #00baf2 !important;
@@ -29,9 +28,9 @@
                 if (message == "dltok") {
                     alertText = "Deleted successfully.";
                 } else if (message == "updok") {
-                    alertText = "Blog updated successfully.";
+                    alertText = "Our Story updated successfully.";
                 } else {
-                    alertText = "Blog added successfully.";
+                    alertText = "Our Story added successfully.";
                 }
 
                 Swal.fire({
@@ -42,7 +41,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         setTimeout(function () {
-                            window.location.href = '@Url.Action("Blogs", "Home")';
+                            window.location.href = '@Url.Action("OurStory", "Home")';
                         }, 1000);
                     }
                 });
@@ -58,7 +57,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         setTimeout(function () {
-                            window.location.href = '@Url.Action("Blogs", "Home")';
+                            window.location.href = '@Url.Action("OurStory", "Home")';
                         }, 1000);
                     }
                 });
@@ -87,7 +86,7 @@
                             <ol class="breadcrumb pull-right">
                                 <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
                                 <li class="breadcrumb-item">Settings</li>
-                                <li class="breadcrumb-item active">Blogs</li>
+                                <li class="breadcrumb-item active">Our Story</li>
                             </ol>
                         </div>
                     </div>
@@ -98,13 +97,13 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-body">
-                                <form asp-action="Blogs" enctype="multipart/form-data" autocomplete="off" onsubmit="return validateForm()">
+                                <form asp-action="OurStory" enctype="multipart/form-data" autocomplete="off" onsubmit="return validateForm()">
                                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                                     <div class="form-group col-sm-6">
                                         <label for="Title" class="control-label">Title</label>
                                         <input type="hidden" name="Id" value="@ViewBag.id" />
-                                        <input type="text" name="Title" id="Title" value="@ViewBag.BlogTitle" class="form-control" required />
+                                        <input type="text" name="Title" id="Title" value="@ViewBag.Tittle" placeholder="Enter Title" class="form-control" required />
                                     </div>
                                     <div class="form-group col-sm-6">
                                         <label for="ImageFile" class="control-label">Upload Image</label>
@@ -112,16 +111,16 @@
                                         <input type="hidden" value="@ViewBag.FilePath" name="FilePath" />
                                     </div>
                                     <div class="form-group col-sm-12">
-                                        <label for="Content" class="control-label">Content</label>
+                                        <label for="Content" class="control-label">Description</label>
                                         <textarea rows="10" name="Content" id="makeMeSummernote" cols="5" class="form-control"
                                                   placeholder="Default textarea">@ViewBag.Content</textarea>
                                     </div>
-                                    
+
                                     <div class="form-group">
                                         <input type="submit" value="@ViewBag.btnText" class="btn btn-primary" />
-                                        @if(ViewBag.id>0)
+                                        @if (ViewBag.id > 0)
                                         {
-                                            <a href="/Home/Blogs" class="btn btn-danger">Cancel</a>
+                                            <a href="/Home/OurStory" class="btn btn-danger">Cancel</a>
                                         }
                                     </div>
                                 </form>
@@ -142,10 +141,10 @@
                                             <tr>
                                                 <th nowrap>Sl. No.</th>
                                                 <th nowrap>
-                                                    Blog Image
+                                                    Image
                                                 </th>
                                                 <th>Title</th>
-                                                <th>Content</th>
+                                                <th>Description</th>
                                                 <th>Created At</th>
                                                 <th>Edit</th>
                                                 <th>Delete</th>
@@ -154,13 +153,13 @@
                                         <tbody>
                                             @{
                                                 var count = 0;
-                                                foreach (var item in Model.Blogs)
+                                                foreach (var item in Model.OurStoryList)
                                                 {
                                                     count++;
                                                     <tr class="table-row">
                                                         <td>@count</td>
                                                         <td>
-                                                            <a href="~/image/@item.BlogImage"><img src="~/image/@item.BlogImage" alt="Blog Image" style="width:100px;" /></a>
+                                                            <a href="~/image/@item.Image"><img src="~/image/@item.Image" alt="Expertise Image" style="width:100px;" /></a>
                                                         </td>
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.Title)
@@ -169,13 +168,13 @@
                                                             @Html.Raw(@item.Content)
                                                         </td>
                                                         <td>
-                                                            @item.CreatedAt
+                                                            @item.PublishedDate
                                                         </td>
                                                         <td>
-                                                            <a href="/Home/Blogs?Id=@item.Id" class="fa fa-edit m-2 font-success"></a>
+                                                            <a href="/Home/OurStory?Id=@item.Id" class="fa fa-edit m-2 font-success"></a>
                                                         </td>
                                                         <td>
-                                                            <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteBlogs", "Home", new { id = item.Id })')" class="fa fa-trash font-danger"></a>
+                                                            <a href="/Home/DeleteOurStory?Id=@item.Id" onclick="return confirm('Are you sure want to delete?')" class="fa fa-trash m-2 font-danger"></a>
                                                         </td>
                                                     </tr>
                                                 }
@@ -189,9 +188,6 @@
                     </div>
                 </div>
             </div>
-            <div id="pagination-container">
-                <ul id="pagination" class="pagination"></ul>
-            </div>
         </div>
 
 
@@ -199,21 +195,16 @@
 
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+
  
-<script>
-    function confirmDelete(url) {
-        var result = confirm("Are you sure you want to delete?");
-        if (result) {
-            window.location.href = url;
-        }
-    }
-</script>
 <script>
     $(document).ready(function () {
         $('#datatable').DataTable();
     });
 </script>
+
+
 <script>
     $(document).ready(function () {
         $('#makeMeSummernote').summernote({
@@ -231,6 +222,3 @@
         });
     });
 </script>
-
-  
- 

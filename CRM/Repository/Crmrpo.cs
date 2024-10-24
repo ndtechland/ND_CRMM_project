@@ -2900,7 +2900,116 @@ var domainmodel = new EmployeeEsicPayrollInfo()
                 throw;
             }
         }
+        public async Task<bool> AddAndUpdateOurExpertise(ExperiseDTO model)
+        {
+            try
+            {
 
+                FileOperation fileOperation = new FileOperation(_webHostEnvironment);
+                string[] allowedExtensions = { ".png", ".jpg", ".jpeg" };
+                string ImagePath = "";
+
+                if (model.ImageFile != null)
+                {
+                    var fileExtension = Path.GetExtension(model.ImageFile.FileName).ToLower();
+                    if (!allowedExtensions.Contains(fileExtension))
+                    {
+                        throw new InvalidOperationException("Only .png, .jpg, and .jpeg files are allowed.");
+                    }
+                    ImagePath = fileOperation.SaveBase64Image("image", model.ImageFile, allowedExtensions);
+                    model.ExperiseImage = ImagePath;
+                }
+
+                if (model.Id == 0)
+                {
+                    var data = new OurExpertise()
+                    {
+                        ExpertiseName = model.ExpertiseName,
+                        Description = model.Description,
+                        ExperiseImage = model.ExperiseImage
+
+                    };
+                    _context.Add(data);
+                    _context.SaveChanges();
+                    return true;
+                }
+                else
+                {
+                    var existdata = _context.OurExpertises.Find(model.Id);
+
+                    existdata.ExpertiseName = model.ExpertiseName;
+                    existdata.Description = model.Description;
+                    if (model.ExperiseImage != null)
+                    {
+                        existdata.ExperiseImage = model.ExperiseImage;
+                    }
+
+                }
+                _context.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        public async Task<bool> AddAndUpdateOurStory(OurStoryDTO model, string AddedBy)
+        {
+            try
+            {
+
+                FileOperation fileOperation = new FileOperation(_webHostEnvironment);
+                string[] allowedExtensions = { ".png", ".jpg", ".jpeg" };
+                string ImagePath = "";
+
+                if (model.ImageFile != null)
+                {
+                    var fileExtension = Path.GetExtension(model.ImageFile.FileName).ToLower();
+                    if (!allowedExtensions.Contains(fileExtension))
+                    {
+                        throw new InvalidOperationException("Only .png, .jpg, and .jpeg files are allowed.");
+                    }
+                    ImagePath = fileOperation.SaveBase64Image("image", model.ImageFile, allowedExtensions);
+                    model.Image = ImagePath;
+                }
+
+                if (model.Id == 0)
+                {
+                    var data = new OurStory()
+                    {
+                        Title = model.Title,
+                        Content = model.Content,
+                        Author = AddedBy,
+                        Image = model.Image
+
+                    };
+                    _context.Add(data);
+                    _context.SaveChanges();
+                    return true;
+                }
+                else
+                {
+                    var existdata = _context.OurStories.Find(model.Id);
+
+                    existdata.Title = model.Title;
+                    existdata.Content = model.Content;
+                    existdata.IsActive = model.IsActive;
+                    if (model.Image != null)
+                    {
+                        existdata.Image = model.Image;
+                    }
+
+                }
+                _context.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 
 }

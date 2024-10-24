@@ -1137,6 +1137,192 @@ namespace CRM.Controllers
                 throw;
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> OurExpirtise(int id)
+        {
+            try
+            {
+
+                int UserId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == UserId).FirstOrDefaultAsync();
+
+                ExperiseDTO model = new ExperiseDTO();
+                model.OurExperties = _context.OurExpertises.OrderByDescending(x => x.Id).ToList();
+                ;
+                int iId = (int)(id == null ? 0 : id);
+                ViewBag.id = 0;
+                ViewBag.ExpertiseName = "";
+                ViewBag.Description = "";
+                ViewBag.ExperiseImage = "";
+                ViewBag.heading = "Add Our Expertise";
+                ViewBag.btnText = "SAVE";
+                if (iId != null && iId != 0)
+                {
+                    var data = _context.OurExpertises.Find(iId);
+                    if (data != null)
+                    {
+                        ViewBag.id = data.Id;
+                        ViewBag.ExpertiseName = data.ExpertiseName;
+                        ViewBag.Description = data.Description;
+                        ViewBag.ExperiseImage = data.ExperiseImage;
+                        ViewBag.btnText = "UPDATE";
+                        ViewBag.heading = "Update Our Expertise";
+
+                    }
+                }
+
+                return View(model);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> OurExpirtise(ExperiseDTO model)
+        {
+            try
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                bool check = await _ICrmrpo.AddAndUpdateOurExpertise(model);
+                if (check)
+                {
+                    if (model.Id == 0)
+                    {
+                        TempData["msg"] = "ok";
+                        return RedirectToAction("OurExpirtise");
+                    }
+                    else
+                    {
+                        TempData["msg"] = "updok";
+                        return RedirectToAction("OurExpirtise");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("OurExpirtise");
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public async Task<IActionResult> DeleteOurExpirtise(int id)
+        {
+            try
+            {
+                var dlt = _context.OurExpertises.Find(id);
+                if (dlt != null)
+                {
+                    _context.OurExpertises.Remove(dlt);
+                    _context.SaveChanges();
+                }
+                TempData["msg"] = "dltok";
+                return RedirectToAction("OurExpirtise");
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> OurStory(int id)
+        {
+            try
+            {
+                OurStoryDTO model = new OurStoryDTO();
+                model.OurStoryList = _context.OurStories.OrderByDescending(x => x.Id).ToList();
+                ;
+                int iId = (int)(id == null ? 0 : id);
+                ViewBag.id = 0;
+                ViewBag.Tittle = "";
+                ViewBag.Content = "";
+                ViewBag.IsActive = "";
+                ViewBag.Image = "";
+                ViewBag.heading = "Add Our Story";
+                ViewBag.btnText = "SAVE";
+                if (iId != null && iId != 0)
+                {
+                    var data = _context.OurStories.Find(iId);
+                    if (data != null)
+                    {
+                        ViewBag.id = data.Id;
+                        ViewBag.Tittle = data.Title;
+                        ViewBag.Content = data.Content;
+                        ViewBag.Image = data.Image;
+                        ViewBag.IsActive = data.IsActive;
+                        ViewBag.btnText = "UPDATE";
+                        ViewBag.heading = "Update Our Story";
+
+                    }
+                }
+
+                return View(model);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> OurStory(OurStoryDTO model)
+        {
+            try
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                bool check = await _ICrmrpo.AddAndUpdateOurStory(model, AddedBy);
+                if (check)
+                {
+                    if (model.Id == 0)
+                    {
+                        TempData["msg"] = "ok";
+                        return RedirectToAction("OurStory");
+                    }
+                    else
+                    {
+                        TempData["msg"] = "updok";
+                        return RedirectToAction("OurStory");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("OurStory");
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public async Task<IActionResult> DeleteOurStory(int id)
+        {
+            try
+            {
+                var dlt = _context.OurStories.Find(id);
+                if (dlt != null)
+                {
+                    _context.OurStories.Remove(dlt);
+                    _context.SaveChanges();
+                }
+                TempData["msg"] = "dltok";
+                return RedirectToAction("OurStory");
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 
 }
