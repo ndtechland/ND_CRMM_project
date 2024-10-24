@@ -402,6 +402,10 @@ namespace CRM.Models.Crm
 
             modelBuilder.Entity<Blog>(entity =>
             {
+                entity.Property(e => e.AddedBy).HasMaxLength(100);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
                 entity.Property(e => e.IsPublished).HasDefaultValueSql("((0))");
 
                 entity.Property(e => e.Title).HasMaxLength(255);

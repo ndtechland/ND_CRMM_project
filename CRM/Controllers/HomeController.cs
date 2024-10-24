@@ -1090,7 +1090,8 @@ namespace CRM.Controllers
         {
             try
             {
-                bool check = await _ICrmrpo.AddAndUpdateBlog(model);
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                bool check = await _ICrmrpo.AddAndUpdateBlog(model, AddedBy);
                 if (check)
                 {
                     if (model.Id == 0)

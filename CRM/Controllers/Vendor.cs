@@ -2357,10 +2357,8 @@ namespace CRM.Controllers
                         ViewBag.ScheduleDate = data.ScheduleDate.Value.ToString("yyyy-MM-dd");
                         ViewBag.btnText = "UPDATE";
                         ViewBag.heading = "Update Event Schedule";
-
                     }
                 }
-
                 return View(es);
             }
             catch (Exception)
