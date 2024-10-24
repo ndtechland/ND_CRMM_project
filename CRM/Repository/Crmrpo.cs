@@ -2737,10 +2737,11 @@ var domainmodel = new EmployeeEsicPayrollInfo()
             _context.SaveChanges();
             return true;
         }
-        public async Task<bool> AddAndUpdateBlog(BlogDto model)
+        public async Task<bool> AddAndUpdateBlog(BlogDto model ,string AddedBy)
         {
             try
             {
+
                 FileOperation fileOperation = new FileOperation(_webHostEnvironment);
                 string[] allowedExtensions = { ".png", ".jpg", ".jpeg" };
                 string ImagePath = "";
@@ -2763,6 +2764,8 @@ var domainmodel = new EmployeeEsicPayrollInfo()
                         Title = model.Title,
                         Content = model.Content,
                         BlogImage = model.BlogImage,
+                        AddedBy = AddedBy,
+                        CreatedAt = DateTime.Now,
                         IsPublished = true
 
                     };
@@ -2873,7 +2876,6 @@ var domainmodel = new EmployeeEsicPayrollInfo()
         {
             try
             {
-               // EmployeeTaskModel model = new EmployeeTaskModel();
                 var result = await (from taskList in _context.EmployeeTasksLists
                                            join empTask in _context.EmployeeTasks on taskList.Emptaskid equals empTask.Id
                                            join taskStatus in _context.TaskStatuses on taskList.TaskStatus equals taskStatus.Id

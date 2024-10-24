@@ -41,6 +41,30 @@ namespace CRM.Controllers.Api
                 throw;
             }
         }
+        [HttpGet]
+        [Route("GetBlogById")]
+        public async Task<IActionResult> GetBlogById(int Id)
+        {
+            try
+            {
+                var data = _context.Blogs.Where(b => b.IsPublished == true && Id == Id).FirstOrDefault();
+                 
+                if (data != null)
+                {
+                    return Ok(new { Status = 200, Message = "Blog detail retrieved successfully.", data = data });
+                }
+                else
+                {
+                    return NotFound(new { Status = 404, Message = "Blog detail not found." });
+                }
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
         [HttpGet("Getaboutcompany")]
         public async Task<IActionResult> Getaboutcompany()
         {
