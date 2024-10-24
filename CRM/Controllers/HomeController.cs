@@ -1424,10 +1424,19 @@ namespace CRM.Controllers
             {
                 OurCoreValuesDto model = new OurCoreValuesDto();
                 model.OurCoreValueList = _context.OurCoreValues.OrderByDescending(x => x.Id).ToList();
+=======
+        public async Task<IActionResult> OurTutorial(int id)
+        {
+            try
+            {
+                TutorialDTO model = new TutorialDTO();
+                model.OurTutorials = _context.OurTutorials.OrderByDescending(x => x.Id).ToList();
+
                 ;
                 int iId = (int)(id == null ? 0 : id);
                 ViewBag.id = 0;
                 ViewBag.Tittle = "";
+
                 ViewBag.Content = "";
                 ViewBag.IsActive = "";
                 ViewBag.Image = "";
@@ -1436,15 +1445,32 @@ namespace CRM.Controllers
                 if (iId != null && iId != 0)
                 {
                     var data = _context.OurCoreValues.Find(iId);
+
+                ViewBag.Description = "";
+                ViewBag.VedioURL = "";
+                ViewBag.IsActive = ""; 
+                ViewBag.heading = "Add Our Tutorial";
+                ViewBag.btnText = "SAVE";
+                if (iId != null && iId != 0)
+                {
+                    var data = _context.OurTutorials.Find(iId);
+
                     if (data != null)
                     {
                         ViewBag.id = data.Id;
                         ViewBag.Tittle = data.Title;
+
                         ViewBag.Content = data.Content;
                         ViewBag.Image = data.Image;
                         ViewBag.IsActive = data.IsActive;
                         ViewBag.btnText = "UPDATE";
                         ViewBag.heading = "Update OurCore Value";
+                        ViewBag.Description = data.Description;
+                        ViewBag.VedioURL = data.VedioUrl; 
+                        ViewBag.IsActive = data.IsActive;
+                        ViewBag.btnText = "UPDATE";
+                        ViewBag.heading = "Update Our Tutorial";
+
 
                     }
                 }
@@ -1458,28 +1484,48 @@ namespace CRM.Controllers
             }
         }
         [HttpPost]
+
         public async Task<IActionResult> OurCoreValues(OurCoreValuesDto model)
+
+        public async Task<IActionResult> OurTutorial(TutorialDTO model)
+
         {
             try
             {
                 string AddedBy = HttpContext.Session.GetString("UserName");
+
                 bool check = await _ICrmrpo.AddAndUpdateOurCoreValues(model, AddedBy);
+
+                bool check = await _ICrmrpo.AddAndUpdateOurTutorial(model, AddedBy);
+
                 if (check)
                 {
                     if (model.Id == 0)
                     {
                         TempData["msg"] = "ok";
+
                         return RedirectToAction("OurCoreValues");
+
+                        return RedirectToAction("OurTutorial");
+
                     }
                     else
                     {
                         TempData["msg"] = "updok";
+
                         return RedirectToAction("OurCoreValues");
+
+                        return RedirectToAction("OurTutorial");
+
                     }
                 }
                 else
                 {
+
                     return RedirectToAction("OurCoreValues");
+
+                    return RedirectToAction("OurStory");
+
                 }
             }
             catch (Exception)
@@ -1488,6 +1534,7 @@ namespace CRM.Controllers
                 throw;
             }
         }
+
 
         public async Task<IActionResult> DeleteOurCoreValues(int id)
         {
@@ -1502,6 +1549,20 @@ namespace CRM.Controllers
                 TempData["msg"] = "dltok";
                 return RedirectToAction("OurCoreValues");
 
+        public async Task<IActionResult> DeleteOurTutorial(int id)
+        {
+            try
+            {
+                var dlt = _context.OurTutorials.Find(id);
+                if (dlt != null)
+                {
+                    _context.OurTutorials.Remove(dlt);
+                    _context.SaveChanges();
+                }
+                TempData["msg"] = "dltok";
+                return RedirectToAction("OurTutorial");
+
+
             }
             catch (Exception)
             {
@@ -1509,6 +1570,7 @@ namespace CRM.Controllers
                 throw;
             }
         }
+
 
         [HttpGet]
         public async Task<IActionResult> Featurebenifits(int id)
@@ -1602,6 +1664,7 @@ namespace CRM.Controllers
                 throw;
             }
         }
+
 
     }
 

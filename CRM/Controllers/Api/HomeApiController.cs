@@ -152,6 +152,7 @@ namespace CRM.Controllers.Api
             }
         }
 
+
         [HttpGet]
         [Route("GetRequestDemo")]
         public async Task<IActionResult> GetRequestDemo()
@@ -214,6 +215,22 @@ namespace CRM.Controllers.Api
                 else
                 {
                     return NotFound(new { Status = 404, Message = "No any Features & Benefits available." });
+
+        [HttpGet]
+        [Route("GetOurTutorials")]
+        public async Task<IActionResult> GetOurTutorials()
+        {
+            try
+            {
+                List<OurTutorial> tutorials = _context.OurTutorials.Where(x=>x.IsActive==true).ToList();
+                if (tutorials != null)
+                {
+                    return Ok(new { Status = 200, Message = "Our Tutorials retrieved successfully.", data = tutorials });
+                }
+                else
+                {
+                    return NotFound(new { Status = 404, Message = "No any tutorial available." });
+
                 }
 
             }

@@ -3010,6 +3010,7 @@ namespace CRM.Repository
                 throw;
             }
         }
+
         public async Task<bool> AddAndUpdateRequestDemo(RequestDemoDto model, string AddedBy)
         {
             try
@@ -3160,6 +3161,34 @@ namespace CRM.Repository
                         IsActive = true,
                         PublishedDate = DateTime.Now
 
+        public async Task<bool> AddAndUpdateOurTutorial(TutorialDTO model, string AddedBy)
+        {
+            try
+            {
+                FileOperation fileOperation = new FileOperation(_webHostEnvironment);
+                string[] allowedExtensions = { ".mp4" };
+                string ImagePath = "";
+
+                if (model.VideoFile != null)
+                {
+                    var fileExtension = Path.GetExtension(model.VideoFile.FileName).ToLower();
+                    if (!allowedExtensions.Contains(fileExtension))
+                    {
+                        throw new InvalidOperationException("Only .mp4 files are allowed.");
+                    }
+                    ImagePath = fileOperation.SaveBase64Image("TutorialVideos", model.VideoFile, allowedExtensions);
+                    model.VedioUrl = ImagePath;
+                }
+                if (model.Id == 0)
+                {
+                    var data = new OurTutorial()
+                    {
+                        Title = model.Title,
+                        Description = model.Description,
+                        VedioUrl = model.VedioUrl,
+                        Author = AddedBy
+
+
                     };
                     _context.Add(data);
                     _context.SaveChanges();
@@ -3167,6 +3196,7 @@ namespace CRM.Repository
                 }
                 else
                 {
+
                     var existdata = _context.Featurebenifits.Find(model.Id);
 
                     existdata.Title = model.Title;
@@ -3176,6 +3206,17 @@ namespace CRM.Repository
                     if (model.Image != null)
                     {
                         existdata.Image = model.Image;
+                    }
+
+
+                    var existdata = _context.OurTutorials.Find(model.Id);
+
+                    existdata.Title = model.Title;
+                    existdata.Description = model.Description;
+                    existdata.IsActive = model.IsActive;
+                    if (model.VedioUrl != null)
+                    {
+                        existdata.VedioUrl = model.VedioUrl;
                     }
 
                 }
