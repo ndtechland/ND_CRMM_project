@@ -1323,6 +1323,97 @@ namespace CRM.Controllers
                 throw;
             }
         }
+        public async Task<IActionResult> OurTutorial(int id)
+        {
+            try
+            {
+                TutorialDTO model = new TutorialDTO();
+                model.OurTutorials = _context.OurTutorials.OrderByDescending(x => x.Id).ToList();
+                ;
+                int iId = (int)(id == null ? 0 : id);
+                ViewBag.id = 0;
+                ViewBag.Tittle = "";
+                ViewBag.Description = "";
+                ViewBag.VedioURL = "";
+                ViewBag.IsActive = ""; 
+                ViewBag.heading = "Add Our Tutorial";
+                ViewBag.btnText = "SAVE";
+                if (iId != null && iId != 0)
+                {
+                    var data = _context.OurTutorials.Find(iId);
+                    if (data != null)
+                    {
+                        ViewBag.id = data.Id;
+                        ViewBag.Tittle = data.Title;
+                        ViewBag.Description = data.Description;
+                        ViewBag.VedioURL = data.VedioUrl; 
+                        ViewBag.IsActive = data.IsActive;
+                        ViewBag.btnText = "UPDATE";
+                        ViewBag.heading = "Update Our Tutorial";
+
+                    }
+                }
+
+                return View(model);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> OurTutorial(TutorialDTO model)
+        {
+            try
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                bool check = await _ICrmrpo.AddAndUpdateOurTutorial(model, AddedBy);
+                if (check)
+                {
+                    if (model.Id == 0)
+                    {
+                        TempData["msg"] = "ok";
+                        return RedirectToAction("OurTutorial");
+                    }
+                    else
+                    {
+                        TempData["msg"] = "updok";
+                        return RedirectToAction("OurTutorial");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("OurStory");
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public async Task<IActionResult> DeleteOurTutorial(int id)
+        {
+            try
+            {
+                var dlt = _context.OurTutorials.Find(id);
+                if (dlt != null)
+                {
+                    _context.OurTutorials.Remove(dlt);
+                    _context.SaveChanges();
+                }
+                TempData["msg"] = "dltok";
+                return RedirectToAction("OurTutorial");
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 
 }
