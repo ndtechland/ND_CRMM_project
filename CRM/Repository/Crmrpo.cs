@@ -3161,6 +3161,34 @@ namespace CRM.Repository
                         IsActive = true,
                         PublishedDate = DateTime.Now
 
+                    };
+                    _context.Add(data);
+                    _context.SaveChanges();
+                    return true;
+                }
+                else
+                {
+                    var existdata = _context.Featurebenifits.Find(model.Id);
+
+                    existdata.Title = model.Title;
+                    existdata.Content = model.Content;
+                    existdata.IsActive = model.IsActive ?? false;
+                    existdata.PublishedDate = DateTime.Now;
+                    if (model.Image != null)
+                    {
+                        existdata.Image = model.Image;
+                    }
+
+                }
+                _context.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
         public async Task<bool> AddAndUpdateOurTutorial(TutorialDTO model, string AddedBy)
         {
             try
@@ -3196,18 +3224,6 @@ namespace CRM.Repository
                 }
                 else
                 {
-
-                    var existdata = _context.Featurebenifits.Find(model.Id);
-
-                    existdata.Title = model.Title;
-                    existdata.Content = model.Content;
-                    existdata.IsActive = model.IsActive ?? false;
-                    existdata.PublishedDate = DateTime.Now;
-                    if (model.Image != null)
-                    {
-                        existdata.Image = model.Image;
-                    }
-
 
                     var existdata = _context.OurTutorials.Find(model.Id);
 
