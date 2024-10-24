@@ -139,6 +139,7 @@ namespace CRM.Models.APIDTO
         public DateTime? Eventdate { get; set; }
         public string? EventType { get; set; }
         public string? EventTime { get; set; }
+        public string? EventDescription { get; set; }
 
     }
     public class MeetEventsAndHolidayDto

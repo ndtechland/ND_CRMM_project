@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CRM.Repository
 {
-    public class Home:IHome
+    public class Home : IHome
     {
         private readonly admin_NDCrMContext _context;
         public Home(admin_NDCrMContext context)
@@ -30,11 +30,29 @@ namespace CRM.Repository
             {
                 if (userid != null)
                 {
-                    var empid = await _context.EmployeeRegistrations.Where(x => x.EmployeeId == userid && x.IsDeleted == false).Select(x => new aboutCompanyDto
+                    var empid = await _context.EmployeeRegistrations
+     .Where(x => x.EmployeeId == userid && x.IsDeleted == false)
+     .Select(x => new
+     {
+         VendorId = x.Vendorid
+     })
+     .FirstOrDefaultAsync();
+
+                    if (empid != null)
                     {
-                        Companylink = _context.Aboutcompanies.Where(g => g.Id == x.Vendorid).Select(g => g.Companylink).First(),
-                    }).FirstOrDefaultAsync();
-                    return empid;
+                        var companyLink = await _context.Aboutcompanies
+                            .Where(g => g.Vendorid == empid.VendorId)
+                            .Select(g => g.Companylink)
+                            .FirstOrDefaultAsync();
+
+                        return new aboutCompanyDto
+                        {
+                            Companylink = companyLink
+                        };
+                    }
+
+                    return null;
+
                 }
                 return null;
             }

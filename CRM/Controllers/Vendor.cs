@@ -2377,8 +2377,8 @@ namespace CRM.Controllers
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 int vendorid = (int)adminlogin.Vendorid;
-                string time = Request.Form["Time"];  // Get the time (e.g., "10:30")
-                string period = Request.Form["Period"];  // Get the period (e.g., "AM")
+                string time = Request.Form["Time"];  
+                string period = Request.Form["Period"]; 
 
                 model.Time = time + " " + period;
                 bool check = await _ICrmrpo.AddEventsScheduler(model, vendorid);
@@ -2395,7 +2395,6 @@ namespace CRM.Controllers
                                               $"<p><strong>Title:</strong> {model.Tittle}</p>" +
                                               $"{model.Description}" +
                                               $"<p><strong>Scheduled On:</strong> {model.ScheduleDate?.ToString("dd MMM yyyy")}</p>" +
-
                                               $"<p>Thank you.</p>";
 
 

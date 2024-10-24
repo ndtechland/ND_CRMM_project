@@ -341,8 +341,7 @@ namespace CRM.Controllers.Api
 
                     // Fetch total attendance days based on Vendor ID
                     var totalAttendanceDays = _context.Attendancedays
-                        .Where(x => x.Id == employee.Vendorid)
-                        .OrderByDescending(ad => ad.Id)
+                        .Where(x => x.Vendorid == employee.Vendorid)
                         .FirstOrDefault();
 
                     // Calculate current month attendance
@@ -1332,17 +1331,58 @@ namespace CRM.Controllers.Api
             }
         }
 
+        //[Route("GetofficeEvents")]
+        //[HttpGet]
+        //public async Task<IActionResult> GetofficeEvents()
+        //{
+        //    var response = new Response<MeetEventsAndHolidayDto>();
+        //    try
+        //    {
+        //        if (User.Identity.IsAuthenticated)
+        //        {
+        //            var userid = User.Claims.FirstOrDefault().Value;
+        //            var isLoginExists = await _apiemp.GetOfficeEvents(userid);
+        //            if (isLoginExists != null)
+        //            {
+        //                response.Succeeded = true;
+        //                response.StatusCode = StatusCodes.Status200OK;
+        //                response.Status = "Success";
+        //                response.Message = "upcoming or past events found.";
+        //                response.Data = isLoginExists;
+        //                return Ok(response);
+        //            }
+        //            else
+        //            {
+        //                response.StatusCode = StatusCodes.Status401Unauthorized;
+        //                response.Message = "Data not found.";
+        //                return Ok(response);
+        //            }
+        //        }
+        //        else
+        //        {
+        //            response.StatusCode = StatusCodes.Status401Unauthorized;
+        //            response.Message = "Token is expired.";
+        //            return BadRequest(response);
+        //        }
+
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception(ex.Message);
+        //    }
+        //}
         [Route("GetofficeEvents")]
         [HttpGet]
         public async Task<IActionResult> GetofficeEvents()
         {
-            var response = new Response<MeetEventsAndHolidayDto>();
+            var response = new Response<List<officeEventsDto>>();
             try
             {
                 if (User.Identity.IsAuthenticated)
                 {
                     var userid = User.Claims.FirstOrDefault().Value;
-                    var isLoginExists = await _apiemp.GetOfficeEvents(userid);
+                    List<officeEventsDto> isLoginExists = await _apiemp.GetOfficeEvents(userid);
                     if (isLoginExists != null)
                     {
                         response.Succeeded = true;
@@ -1373,7 +1413,6 @@ namespace CRM.Controllers.Api
                 throw new Exception(ex.Message);
             }
         }
-
         // Web
         [Route("EmpMonthlyattendanceDetails")]
         [HttpGet]
