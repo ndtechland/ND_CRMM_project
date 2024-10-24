@@ -2260,7 +2260,7 @@ namespace CRM.Repository
                     }
                     else
                     {
-                        
+
                         if (data != null)
                         {
                             data.ProductPrice = product.ProductPrice;
@@ -2619,7 +2619,7 @@ namespace CRM.Repository
         {
             try
             {
-                if(model.Id==0)
+                if (model.Id == 0)
                 {
                     var domainmodel = new EmployeeEpfPayrollInfo()
                     {
@@ -2646,7 +2646,7 @@ namespace CRM.Repository
                     await _context.SaveChangesAsync();
                     return true;
                 }
-                
+
             }
             catch (Exception)
             {
@@ -2659,19 +2659,19 @@ namespace CRM.Repository
         {
             try
             {
-                if(model.Id==0)
+                if (model.Id == 0)
                 {
-var domainmodel = new EmployeeEsicPayrollInfo()
-                {
-                    Esicnumber = model.Esicnumber,
-                    Esicpercentage = model.Esicpercentage,
-                    EmployeeId = model.EmployeeId,
-                    Vendorid = VendorId,
-                    CreatedDate = DateTime.Now 
-                };
-                await _context.AddAsync(domainmodel);
-                await _context.SaveChangesAsync();
-                return true;
+                    var domainmodel = new EmployeeEsicPayrollInfo()
+                    {
+                        Esicnumber = model.Esicnumber,
+                        Esicpercentage = model.Esicpercentage,
+                        EmployeeId = model.EmployeeId,
+                        Vendorid = VendorId,
+                        CreatedDate = DateTime.Now
+                    };
+                    await _context.AddAsync(domainmodel);
+                    await _context.SaveChangesAsync();
+                    return true;
                 }
                 else
                 {
@@ -2683,7 +2683,7 @@ var domainmodel = new EmployeeEsicPayrollInfo()
                     await _context.SaveChangesAsync();
                     return true;
                 }
-                
+
             }
             catch (Exception)
             {
@@ -2737,7 +2737,7 @@ var domainmodel = new EmployeeEsicPayrollInfo()
             _context.SaveChanges();
             return true;
         }
-        public async Task<bool> AddAndUpdateBlog(BlogDto model ,string AddedBy)
+        public async Task<bool> AddAndUpdateBlog(BlogDto model, string AddedBy)
         {
             try
             {
@@ -2829,8 +2829,8 @@ var domainmodel = new EmployeeEsicPayrollInfo()
         {
             try
             {
-                
-                if (model.Id == 0) 
+
+                if (model.Id == 0)
                 {
                     var data = new EventsmeetScheduler()
                     {
@@ -2846,12 +2846,12 @@ var domainmodel = new EmployeeEsicPayrollInfo()
                     };
                     _context.Add(data);
                 }
-                else 
+                else
                 {
                     var existdata = await _context.EventsmeetSchedulers.FindAsync(model.Id);
                     if (existdata == null)
                     {
-                        return false; 
+                        return false;
                     }
                     existdata.Tittle = model.Tittle;
                     existdata.EmployeeId = model.EmployeeId != null ? string.Join(",", model.EmployeeId) : string.Empty;
@@ -2860,15 +2860,15 @@ var domainmodel = new EmployeeEsicPayrollInfo()
                     existdata.IsEventsmeet = model.IsEventsmeet;
                     existdata.IsActive = model.IsActive;
                     existdata.Time = model.Time;
-                    existdata.Vendorid = VendorId; 
+                    existdata.Vendorid = VendorId;
                 }
 
-                await _context.SaveChangesAsync(); 
+                await _context.SaveChangesAsync();
                 return true;
             }
             catch (Exception ex)
             {
-                throw; 
+                throw;
             }
         }
 
@@ -2877,20 +2877,20 @@ var domainmodel = new EmployeeEsicPayrollInfo()
             try
             {
                 var result = await (from taskList in _context.EmployeeTasksLists
-                                           join empTask in _context.EmployeeTasks on taskList.Emptaskid equals empTask.Id
-                                           join taskStatus in _context.TaskStatuses on taskList.TaskStatus equals taskStatus.Id
-                                           where (empTask.Vendorid== vendorid)
-                                           orderby taskList.Id descending
-                                           select new EmpTasknameDto
-                                           {
-                                               Id = empTask.Id,
-                                               Emptask = empTask.Task,
-                                               Taskname = taskList.Taskname,
-                                               TaskStatusId = taskList.TaskStatus,
-                                               TaskStatus = taskStatus.StatusName,
-                                               EmployeeId = taskList.EmployeeId,
-                                               SubtaskId = taskList.Id
-                                           }).ToListAsync();
+                                    join empTask in _context.EmployeeTasks on taskList.Emptaskid equals empTask.Id
+                                    join taskStatus in _context.TaskStatuses on taskList.TaskStatus equals taskStatus.Id
+                                    where (empTask.Vendorid == vendorid)
+                                    orderby taskList.Id descending
+                                    select new EmpTasknameDto
+                                    {
+                                        Id = empTask.Id,
+                                        Emptask = empTask.Task,
+                                        Taskname = taskList.Taskname,
+                                        TaskStatusId = taskList.TaskStatus,
+                                        TaskStatus = taskStatus.StatusName,
+                                        EmployeeId = taskList.EmployeeId,
+                                        SubtaskId = taskList.Id
+                                    }).ToListAsync();
                 return result;
 
             }
@@ -3010,6 +3010,157 @@ var domainmodel = new EmployeeEsicPayrollInfo()
                 throw;
             }
         }
+
+        public async Task<bool> AddAndUpdateRequestDemo(RequestDemoDto model, string AddedBy)
+        {
+            try
+            {
+
+                FileOperation fileOperation = new FileOperation(_webHostEnvironment);
+                string[] allowedExtensions = { ".png", ".jpg", ".jpeg" };
+                string ImagePath = "";
+
+                if (model.ImageFile != null)
+                {
+                    var fileExtension = Path.GetExtension(model.ImageFile.FileName).ToLower();
+                    if (!allowedExtensions.Contains(fileExtension))
+                    {
+                        throw new InvalidOperationException("Only .png, .jpg, and .jpeg files are allowed.");
+                    }
+                    ImagePath = fileOperation.SaveBase64Image("image", model.ImageFile, allowedExtensions);
+                    model.Image = ImagePath;
+                }
+
+                if (model.Id == 0)
+                {
+                    var data = new RequestDemo()
+                    {
+                        Title = model.Title,
+                        Content = model.Content,
+                        Author = AddedBy,
+                        Image = model.Image,
+                        IsActive = true,
+                        PublishedDate = DateTime.Now
+
+                    };
+                    _context.Add(data);
+                    _context.SaveChanges();
+                    return true;
+                }
+                else
+                {
+                    var existdata = _context.RequestDemos.Find(model.Id);
+
+                    existdata.Title = model.Title;
+                    existdata.Content = model.Content;
+                    existdata.IsActive = model.IsActive ?? false;
+                    existdata.PublishedDate = DateTime.Now;
+                    if (model.Image != null)
+                    {
+                        existdata.Image = model.Image;
+                    }
+
+                }
+                _context.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        public async Task<bool> AddAndUpdateOurCoreValues(OurCoreValuesDto model, string AddedBy)
+        {
+            try
+            {
+
+                FileOperation fileOperation = new FileOperation(_webHostEnvironment);
+                string[] allowedExtensions = { ".png", ".jpg", ".jpeg" };
+                string ImagePath = "";
+
+                if (model.ImageFile != null)
+                {
+                    var fileExtension = Path.GetExtension(model.ImageFile.FileName).ToLower();
+                    if (!allowedExtensions.Contains(fileExtension))
+                    {
+                        throw new InvalidOperationException("Only .png, .jpg, and .jpeg files are allowed.");
+                    }
+                    ImagePath = fileOperation.SaveBase64Image("image", model.ImageFile, allowedExtensions);
+                    model.Image = ImagePath;
+                }
+
+                if (model.Id == 0)
+                {
+                    var data = new OurCoreValue()
+                    {
+                        Title = model.Title,
+                        Content = model.Content,
+                        Author = AddedBy,
+                        Image = model.Image,
+                        IsActive = true,
+                        PublishedDate = DateTime.Now
+
+                    };
+                    _context.Add(data);
+                    _context.SaveChanges();
+                    return true;
+                }
+                else
+                {
+                    var existdata = _context.OurCoreValues.Find(model.Id);
+
+                    existdata.Title = model.Title;
+                    existdata.Content = model.Content;
+                    existdata.IsActive = model.IsActive ?? false;
+                    existdata.PublishedDate = DateTime.Now;
+                    if (model.Image != null)
+                    {
+                        existdata.Image = model.Image;
+                    }
+
+                }
+                _context.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public async Task<bool> AddAndUpdateFeaturebenifits(FeaturebenifitsDto model, string AddedBy)
+        {
+            try
+            {
+
+                FileOperation fileOperation = new FileOperation(_webHostEnvironment);
+                string[] allowedExtensions = { ".png", ".jpg", ".jpeg" };
+                string ImagePath = "";
+
+                if (model.ImageFile != null)
+                {
+                    var fileExtension = Path.GetExtension(model.ImageFile.FileName).ToLower();
+                    if (!allowedExtensions.Contains(fileExtension))
+                    {
+                        throw new InvalidOperationException("Only .png, .jpg, and .jpeg files are allowed.");
+                    }
+                    ImagePath = fileOperation.SaveBase64Image("image", model.ImageFile, allowedExtensions);
+                    model.Image = ImagePath;
+                }
+
+                if (model.Id == 0)
+                {
+                    var data = new Featurebenifit()
+                    {
+                        Title = model.Title,
+                        Content = model.Content,
+                        Author = AddedBy,
+                        Image = model.Image,
+                        IsActive = true,
+                        PublishedDate = DateTime.Now
+
         public async Task<bool> AddAndUpdateOurTutorial(TutorialDTO model, string AddedBy)
         {
             try
@@ -3037,6 +3188,7 @@ var domainmodel = new EmployeeEsicPayrollInfo()
                         VedioUrl = model.VedioUrl,
                         Author = AddedBy
 
+
                     };
                     _context.Add(data);
                     _context.SaveChanges();
@@ -3044,6 +3196,19 @@ var domainmodel = new EmployeeEsicPayrollInfo()
                 }
                 else
                 {
+
+                    var existdata = _context.Featurebenifits.Find(model.Id);
+
+                    existdata.Title = model.Title;
+                    existdata.Content = model.Content;
+                    existdata.IsActive = model.IsActive ?? false;
+                    existdata.PublishedDate = DateTime.Now;
+                    if (model.Image != null)
+                    {
+                        existdata.Image = model.Image;
+                    }
+
+
                     var existdata = _context.OurTutorials.Find(model.Id);
 
                     existdata.Title = model.Title;
@@ -3053,6 +3218,7 @@ var domainmodel = new EmployeeEsicPayrollInfo()
                     {
                         existdata.VedioUrl = model.VedioUrl;
                     }
+
                 }
                 _context.SaveChanges();
                 return true;

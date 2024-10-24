@@ -33,7 +33,7 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                
+
 
                 return View();
             }
@@ -50,7 +50,7 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                
+
 
                 return View();
             }
@@ -78,7 +78,7 @@ namespace CRM.Controllers
                 await file.CopyToAsync(stream);
             }
             //save in db
-            
+
             banerm.Imagepath = filePath;
             banerm.BannerImage = fileName;
             var response = await _ICrmrpo.Banner(banerm);
@@ -93,7 +93,7 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                
+
 
                 return View();
             }
@@ -109,7 +109,7 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                
+
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
 
@@ -163,7 +163,7 @@ namespace CRM.Controllers
         {
             try
             {
-                
+
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
 
@@ -205,7 +205,7 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                
+
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 var response = await _ICrmrpo.QuationList();
@@ -242,10 +242,10 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                
+
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
-                List<DepartmentMaster> response = _context.DepartmentMasters.Where(x => x.AdminLoginId == adminlogin.Id).OrderByDescending(d=>d.Id).ToList();
+                List<DepartmentMaster> response = _context.DepartmentMasters.Where(x => x.AdminLoginId == adminlogin.Id).OrderByDescending(d => d.Id).ToList();
 
                 ViewBag.id = "";
                 ViewBag.DepartmentName = "";
@@ -253,7 +253,7 @@ namespace CRM.Controllers
                 ViewBag.btnText = "SAVE";
                 if (id != 0)
                 {
-                    var data =  _context.DepartmentMasters.Where(x => x.Id == id && x.AdminLoginId == Userid).FirstOrDefault();
+                    var data = _context.DepartmentMasters.Where(x => x.Id == id && x.AdminLoginId == Userid).FirstOrDefault();
                     if (data != null)
                     {
                         ViewBag.id = data.Id;
@@ -274,7 +274,7 @@ namespace CRM.Controllers
         [HttpPost]
         public async Task<IActionResult> Department(DepartmentMaster model)
         {
-            
+
             int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
             var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
 
@@ -306,7 +306,7 @@ namespace CRM.Controllers
                     AdminLoginId = adminlogin.Id,
                 };
                 _context.DepartmentMasters.Add(master);
-                _context.SaveChanges(); 
+                _context.SaveChanges();
                 TempData["Message"] = "ok";
                 return RedirectToAction("Department", "Home");
             }
@@ -335,7 +335,7 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                
+
 
                 return View();
 
@@ -388,7 +388,7 @@ namespace CRM.Controllers
                                  Commissoninpercentage = Convert.ToInt32(wl.Commissoninpercentage)
                              };
 
-                
+
 
                 return View(result);
 
@@ -422,10 +422,10 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                
+
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
-                List<DesignationMaster > response = _context.DesignationMasters.OrderByDescending(d => d.Id).Where(x =>x.AdminLoginId  == adminlogin.Id).ToList();
+                List<DesignationMaster> response = _context.DesignationMasters.OrderByDescending(d => d.Id).Where(x => x.AdminLoginId == adminlogin.Id).ToList();
 
 
 
@@ -456,7 +456,7 @@ namespace CRM.Controllers
         [HttpPost]
         public async Task<IActionResult> Designation(DesignationMaster model)
         {
-            
+
             int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
             var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
 
@@ -488,7 +488,7 @@ namespace CRM.Controllers
                     AdminLoginId = adminlogin.Id,
                 };
                 _context.DesignationMasters.Add(master);
-                _context.SaveChanges(); 
+                _context.SaveChanges();
                 TempData["Message"] = "ok";
                 return RedirectToAction("Designation", "Home");
             }
@@ -579,7 +579,7 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                
+
 
                 ViewBag.CustomerName = _context.CustomerRegistrations
                     .Select(x => new SelectListItem
@@ -696,7 +696,7 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                
+
 
                 ViewBag.CustomerName = _context.CustomerRegistrations
                     .Select(x => new SelectListItem
@@ -750,7 +750,7 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                
+
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
                 List<GstMaster> response = _context.GstMasters.ToList();
@@ -786,7 +786,7 @@ namespace CRM.Controllers
         [HttpPost]
         public async Task<IActionResult> Gstmaster(GstMaster model)
         {
-            
+
             int UserId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
             var adminlogin = await _context.AdminLogins.Where(x => x.Id == UserId).FirstOrDefaultAsync();
 
@@ -802,17 +802,17 @@ namespace CRM.Controllers
                 return View(model);
             }
 
-            decimal halfGst = gstPercentage / 2; 
+            decimal halfGst = gstPercentage / 2;
 
-            if (model.Id != 0)  
+            if (model.Id != 0)
             {
                 var gst = await _context.GstMasters.FirstOrDefaultAsync(x => x.Id == model.Id);
                 if (gst != null)
                 {
-                    gst.GstPercentagen = gstPercentage.ToString();  
-                    gst.Scgst = halfGst.ToString();  
-                    gst.Cgst = halfGst.ToString();  
-                    gst.Igst = gstPercentage.ToString();  
+                    gst.GstPercentagen = gstPercentage.ToString();
+                    gst.Scgst = halfGst.ToString();
+                    gst.Cgst = halfGst.ToString();
+                    gst.Igst = gstPercentage.ToString();
 
                     await _context.SaveChangesAsync();
                     TempData["Message"] = "Data updated successfully.";
@@ -824,14 +824,14 @@ namespace CRM.Controllers
                     return View(model);
                 }
             }
-            else  
+            else
             {
                 GstMaster master = new GstMaster
                 {
-                    GstPercentagen = gstPercentage.ToString(),  
-                    Scgst = halfGst.ToString(), 
-                    Cgst = halfGst.ToString(),  
-                    Igst = gstPercentage.ToString(), 
+                    GstPercentagen = gstPercentage.ToString(),
+                    Scgst = halfGst.ToString(),
+                    Cgst = halfGst.ToString(),
+                    Igst = gstPercentage.ToString(),
                 };
 
                 await _context.GstMasters.AddAsync(master);
@@ -863,7 +863,7 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                
+
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
                 List<Models.Crm.Category> response = _context.Categories.ToList();
@@ -895,7 +895,7 @@ namespace CRM.Controllers
         [HttpPost]
         public async Task<IActionResult> Categorymaster(Models.Crm.Category model)
         {
-            
+
             int UserId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
             var adminlogin = await _context.AdminLogins.Where(x => x.Id == UserId).FirstOrDefaultAsync();
 
@@ -905,7 +905,7 @@ namespace CRM.Controllers
                 ModelState.AddModelError("", "Model cannot be null.");
                 return View(model);
             }
-          
+
             if (model.Id != 0)
             {
                 var ca = await _context.Categories.FirstOrDefaultAsync(x => x.Id == model.Id);
@@ -958,7 +958,7 @@ namespace CRM.Controllers
         {
             try
             {
-                
+
                 int UserId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == UserId).FirstOrDefaultAsync();
 
@@ -997,7 +997,7 @@ namespace CRM.Controllers
         {
             try
             {
-                
+
                 int UserId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == UserId).FirstOrDefaultAsync();
 
@@ -1041,14 +1041,14 @@ namespace CRM.Controllers
             {
                 TempData["msg"] = "Delete failed: An error occurred.";
                 return RedirectToAction("AppFaq");
-            }           
+            }
         }
         [HttpGet]
         public async Task<IActionResult> Blogs(int id)
         {
             try
             {
-                
+
                 int UserId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == UserId).FirstOrDefaultAsync();
 
@@ -1323,33 +1323,35 @@ namespace CRM.Controllers
                 throw;
             }
         }
-        public async Task<IActionResult> OurTutorial(int id)
+
+        [HttpGet]
+        public async Task<IActionResult> RequestDemo(int id)
         {
             try
             {
-                TutorialDTO model = new TutorialDTO();
-                model.OurTutorials = _context.OurTutorials.OrderByDescending(x => x.Id).ToList();
+                RequestDemoDto model = new RequestDemoDto();
+                model.RequestDemoList = _context.RequestDemos.OrderByDescending(x => x.Id).ToList();
                 ;
                 int iId = (int)(id == null ? 0 : id);
                 ViewBag.id = 0;
                 ViewBag.Tittle = "";
-                ViewBag.Description = "";
-                ViewBag.VedioURL = "";
-                ViewBag.IsActive = ""; 
-                ViewBag.heading = "Add Our Tutorial";
+                ViewBag.Content = "";
+                ViewBag.IsActive = "";
+                ViewBag.Image = "";
+                ViewBag.heading = "Add Request Demo";
                 ViewBag.btnText = "SAVE";
                 if (iId != null && iId != 0)
                 {
-                    var data = _context.OurTutorials.Find(iId);
+                    var data = _context.RequestDemos.Find(iId);
                     if (data != null)
                     {
                         ViewBag.id = data.Id;
                         ViewBag.Tittle = data.Title;
-                        ViewBag.Description = data.Description;
-                        ViewBag.VedioURL = data.VedioUrl; 
+                        ViewBag.Content = data.Content;
+                        ViewBag.Image = data.Image;
                         ViewBag.IsActive = data.IsActive;
                         ViewBag.btnText = "UPDATE";
-                        ViewBag.heading = "Update Our Tutorial";
+                        ViewBag.heading = "Update Request Demo";
 
                     }
                 }
@@ -1363,28 +1365,28 @@ namespace CRM.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> OurTutorial(TutorialDTO model)
+        public async Task<IActionResult> RequestDemo(RequestDemoDto model)
         {
             try
             {
                 string AddedBy = HttpContext.Session.GetString("UserName");
-                bool check = await _ICrmrpo.AddAndUpdateOurTutorial(model, AddedBy);
+                bool check = await _ICrmrpo.AddAndUpdateRequestDemo(model, AddedBy);
                 if (check)
                 {
                     if (model.Id == 0)
                     {
                         TempData["msg"] = "ok";
-                        return RedirectToAction("OurTutorial");
+                        return RedirectToAction("RequestDemo");
                     }
                     else
                     {
                         TempData["msg"] = "updok";
-                        return RedirectToAction("OurTutorial");
+                        return RedirectToAction("RequestDemo");
                     }
                 }
                 else
                 {
-                    return RedirectToAction("OurStory");
+                    return RedirectToAction("RequestDemo");
                 }
             }
             catch (Exception)
@@ -1393,6 +1395,159 @@ namespace CRM.Controllers
                 throw;
             }
         }
+
+        public async Task<IActionResult> DeleteRequestDemo(int id)
+        {
+            try
+            {
+                var dlt = _context.RequestDemos.Find(id);
+                if (dlt != null)
+                {
+                    _context.RequestDemos.Remove(dlt);
+                    _context.SaveChanges();
+                }
+                TempData["msg"] = "dltok";
+                return RedirectToAction("RequestDemo");
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> OurCoreValues(int id)
+        {
+            try
+            {
+                OurCoreValuesDto model = new OurCoreValuesDto();
+                model.OurCoreValueList = _context.OurCoreValues.OrderByDescending(x => x.Id).ToList();
+=======
+        public async Task<IActionResult> OurTutorial(int id)
+        {
+            try
+            {
+                TutorialDTO model = new TutorialDTO();
+                model.OurTutorials = _context.OurTutorials.OrderByDescending(x => x.Id).ToList();
+
+                ;
+                int iId = (int)(id == null ? 0 : id);
+                ViewBag.id = 0;
+                ViewBag.Tittle = "";
+
+                ViewBag.Content = "";
+                ViewBag.IsActive = "";
+                ViewBag.Image = "";
+                ViewBag.heading = "Add OurCore Value";
+                ViewBag.btnText = "SAVE";
+                if (iId != null && iId != 0)
+                {
+                    var data = _context.OurCoreValues.Find(iId);
+
+                ViewBag.Description = "";
+                ViewBag.VedioURL = "";
+                ViewBag.IsActive = ""; 
+                ViewBag.heading = "Add Our Tutorial";
+                ViewBag.btnText = "SAVE";
+                if (iId != null && iId != 0)
+                {
+                    var data = _context.OurTutorials.Find(iId);
+
+                    if (data != null)
+                    {
+                        ViewBag.id = data.Id;
+                        ViewBag.Tittle = data.Title;
+
+                        ViewBag.Content = data.Content;
+                        ViewBag.Image = data.Image;
+                        ViewBag.IsActive = data.IsActive;
+                        ViewBag.btnText = "UPDATE";
+                        ViewBag.heading = "Update OurCore Value";
+                        ViewBag.Description = data.Description;
+                        ViewBag.VedioURL = data.VedioUrl; 
+                        ViewBag.IsActive = data.IsActive;
+                        ViewBag.btnText = "UPDATE";
+                        ViewBag.heading = "Update Our Tutorial";
+
+
+                    }
+                }
+
+                return View(model);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        [HttpPost]
+
+        public async Task<IActionResult> OurCoreValues(OurCoreValuesDto model)
+
+        public async Task<IActionResult> OurTutorial(TutorialDTO model)
+
+        {
+            try
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+
+                bool check = await _ICrmrpo.AddAndUpdateOurCoreValues(model, AddedBy);
+
+                bool check = await _ICrmrpo.AddAndUpdateOurTutorial(model, AddedBy);
+
+                if (check)
+                {
+                    if (model.Id == 0)
+                    {
+                        TempData["msg"] = "ok";
+
+                        return RedirectToAction("OurCoreValues");
+
+                        return RedirectToAction("OurTutorial");
+
+                    }
+                    else
+                    {
+                        TempData["msg"] = "updok";
+
+                        return RedirectToAction("OurCoreValues");
+
+                        return RedirectToAction("OurTutorial");
+
+                    }
+                }
+                else
+                {
+
+                    return RedirectToAction("OurCoreValues");
+
+                    return RedirectToAction("OurStory");
+
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+
+        public async Task<IActionResult> DeleteOurCoreValues(int id)
+        {
+            try
+            {
+                var dlt = _context.OurCoreValues.Find(id);
+                if (dlt != null)
+                {
+                    _context.OurCoreValues.Remove(dlt);
+                    _context.SaveChanges();
+                }
+                TempData["msg"] = "dltok";
+                return RedirectToAction("OurCoreValues");
 
         public async Task<IActionResult> DeleteOurTutorial(int id)
         {
@@ -1407,6 +1562,7 @@ namespace CRM.Controllers
                 TempData["msg"] = "dltok";
                 return RedirectToAction("OurTutorial");
 
+
             }
             catch (Exception)
             {
@@ -1414,6 +1570,102 @@ namespace CRM.Controllers
                 throw;
             }
         }
+
+
+        [HttpGet]
+        public async Task<IActionResult> Featurebenifits(int id)
+        {
+            try
+            {
+                FeaturebenifitsDto model = new FeaturebenifitsDto();
+                model.FeaturebenifitList = _context.Featurebenifits.OrderByDescending(x => x.Id).ToList();
+                ;
+                int iId = (int)(id == null ? 0 : id);
+                ViewBag.id = 0;
+                ViewBag.Tittle = "";
+                ViewBag.Content = "";
+                ViewBag.IsActive = "";
+                ViewBag.Image = "";
+                ViewBag.heading = "Add Features & Benefits";
+                ViewBag.btnText = "SAVE";
+                if (iId != null && iId != 0)
+                {
+                    var data = _context.Featurebenifits.Find(iId);
+                    if (data != null)
+                    {
+                        ViewBag.id = data.Id;
+                        ViewBag.Tittle = data.Title;
+                        ViewBag.Content = data.Content;
+                        ViewBag.Image = data.Image;
+                        ViewBag.IsActive = data.IsActive;
+                        ViewBag.btnText = "UPDATE";
+                        ViewBag.heading = "Update Features & Benefits";
+
+                    }
+                }
+
+                return View(model);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> Featurebenifits(FeaturebenifitsDto model)
+        {
+            try
+            {
+                string AddedBy = HttpContext.Session.GetString("UserName");
+                bool check = await _ICrmrpo.AddAndUpdateFeaturebenifits(model, AddedBy);
+                if (check)
+                {
+                    if (model.Id == 0)
+                    {
+                        TempData["msg"] = "ok";
+                        return RedirectToAction("Featurebenifits");
+                    }
+                    else
+                    {
+                        TempData["msg"] = "updok";
+                        return RedirectToAction("Featurebenifits");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Featurebenifits");
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public async Task<IActionResult> DeleteFeaturebenifits(int id)
+        {
+            try
+            {
+                var dlt = _context.Featurebenifits.Find(id);
+                if (dlt != null)
+                {
+                    _context.Featurebenifits.Remove(dlt);
+                    _context.SaveChanges();
+                }
+                TempData["msg"] = "dltok";
+                return RedirectToAction("Featurebenifits");
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+
     }
 
 }

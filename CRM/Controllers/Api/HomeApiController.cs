@@ -47,8 +47,8 @@ namespace CRM.Controllers.Api
         {
             try
             {
-                var data = _context.Blogs.Where(b => b.IsPublished == true && Id == Id).FirstOrDefault();
-                 
+                var data = _context.Blogs.Where(b => b.IsPublished == true && b.Id == Id).FirstOrDefault();
+
                 if (data != null)
                 {
                     return Ok(new { Status = 200, Message = "Blog detail retrieved successfully.", data = data });
@@ -151,6 +151,71 @@ namespace CRM.Controllers.Api
                 throw;
             }
         }
+
+
+        [HttpGet]
+        [Route("GetRequestDemo")]
+        public async Task<IActionResult> GetRequestDemo()
+        {
+            try
+            {
+                List<RequestDemo> RequestDemo = _context.RequestDemos.Where(x => x.IsActive == true).ToList();
+                if (RequestDemo != null)
+                {
+                    return Ok(new { Status = 200, Message = "Request Demo retrieved successfully.", data = RequestDemo });
+                }
+                else
+                {
+                    return NotFound(new { Status = 404, Message = "No any RequestDemo available." });
+                }
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        [HttpGet]
+        [Route("GetOurCoreValues")]
+        public async Task<IActionResult> GetOurCoreValues()
+        {
+            try
+            {
+                List<OurCoreValue> OurCoreValues = _context.OurCoreValues.Where(x => x.IsActive == true).ToList();
+                if (OurCoreValues != null)
+                {
+                    return Ok(new { Status = 200, Message = "OurCore Values retrieved successfully.", data = OurCoreValues });
+                }
+                else
+                {
+                    return NotFound(new { Status = 404, Message = "No any OurCoreValues available." });
+                }
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        [HttpGet]
+        [Route("GetFeaturesandBenefits")]
+        public async Task<IActionResult> GetFeaturesandBenefits()
+        {
+            try
+            {
+                List<Featurebenifit> FeaturesBenefits = _context.Featurebenifits.Where(x => x.IsActive == true).ToList();
+                if (FeaturesBenefits != null)
+                {
+                    return Ok(new { Status = 200, Message = "Features & Benefits retrieved successfully.", data = FeaturesBenefits });
+                }
+                else
+                {
+                    return NotFound(new { Status = 404, Message = "No any Features & Benefits available." });
+
         [HttpGet]
         [Route("GetOurTutorials")]
         public async Task<IActionResult> GetOurTutorials()
@@ -165,6 +230,7 @@ namespace CRM.Controllers.Api
                 else
                 {
                     return NotFound(new { Status = 404, Message = "No any tutorial available." });
+
                 }
 
             }

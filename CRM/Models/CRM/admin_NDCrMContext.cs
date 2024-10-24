@@ -60,6 +60,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<EmployeerEpf> EmployeerEpfs { get; set; } = null!;
         public virtual DbSet<EmployeerTd> EmployeerTds { get; set; } = null!;
         public virtual DbSet<EventsmeetScheduler> EventsmeetSchedulers { get; set; } = null!;
+        public virtual DbSet<Featurebenifit> Featurebenifits { get; set; } = null!;
         public virtual DbSet<GenderMaster> GenderMasters { get; set; } = null!;
         public virtual DbSet<GstMaster> GstMasters { get; set; } = null!;
         public virtual DbSet<Hash> Hashes { get; set; } = null!;
@@ -1266,6 +1267,15 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.Tittle).HasMaxLength(200);
 
                 entity.Property(e => e.Vendorid).HasColumnName("vendorid");
+            });
+
+            modelBuilder.Entity<Featurebenifit>(entity =>
+            {
+                entity.Property(e => e.Author).HasMaxLength(100);
+
+                entity.Property(e => e.PublishedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Title).HasMaxLength(150);
             });
 
             modelBuilder.Entity<GenderMaster>(entity =>
