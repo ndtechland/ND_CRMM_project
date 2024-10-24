@@ -107,5 +107,6 @@ namespace CRM.Repository
         Task<List<EmpTasknameDto>> GetSubTasks(int vendorid);
         Task<bool> AddAndUpdateOurExpertise(ExperiseDTO model);
         Task<bool> AddAndUpdateOurStory(OurStoryDTO model, string AddedBy);
+        Task<bool> AddAndUpdateOurTutorial(TutorialDTO model, string AddedBy);
     }
 }
