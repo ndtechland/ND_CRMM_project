@@ -7,12 +7,10 @@ namespace CRM.Models.Crm
     {
         public int Id { get; set; }
         public string? EmployeeId { get; set; }
-        public DateTime? OvertimeDate { get; set; }
         public DateTime? StartTime { get; set; }
         public DateTime? EndTime { get; set; }
         public TimeSpan? TotalOvertimeHours { get; set; }
         public bool? Approved { get; set; }
         public DateTime? ApprovalDate { get; set; }
-        public DateTime? CreatedDate { get; set; }
     }
 }
