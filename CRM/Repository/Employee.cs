@@ -25,7 +25,9 @@ using Syncfusion.Pdf.Graphics;
 using System;
 using System.Globalization;
 using System.Net.WebSockets;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using HtmlAgilityPack;
 
 namespace CRM.Repository
 {
@@ -1857,30 +1859,53 @@ namespace CRM.Repository
                 throw new Exception("Error retrieving employee login activity: " + ex.Message);
             }
         }
-        public async Task<MeetEventsAndHolidayDto> GetOfficeEvents(string userid)
+        //public async Task<MeetEventsAndHolidayDto> GetOfficeEvents(string userid)
+        //{
+        //    try
+        //    {
+        //        MeetEventsAndHolidayDto meetEventsAndHoliday = new MeetEventsAndHolidayDto();
+        //        var empdetail = await _context.EmployeeRegistrations
+        //            .Where(x => x.EmployeeId == userid)
+        //            .FirstOrDefaultAsync();
+        //        meetEventsAndHoliday.officeEventsDtos = await _context.OfficeEvents
+        //            .Where(x => x.Vendorid == empdetail.Vendorid).Select(x => new officeEventsDto
+        //            {
+        //                Subtittle = x.Subtittle,
+        //                Tittle = x.Tittle,
+        //                Date = x.Date.Value.Date,
+        //            }).ToListAsync();
+        //        meetEventsAndHoliday.meetEventsDtos = await _context.EventsmeetSchedulers
+        //            .Where(x => x.Vendorid == empdetail.Vendorid).Select(x => new MeetEventsDto
+        //            {
+        //                EventTittle = x.Tittle,
+        //                Eventdate = x.ScheduleDate.Value.Date,
+        //                EventType = x.IsEventsmeet == true ? "Meet" : "Event",
+        //                EventTime = x.Time,
+        //                EventDescription = ExtractMeetingLink(x.Description)/*x.Description*/,
+        //            }).ToListAsync();
+        //        return meetEventsAndHoliday;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception("Error: " + ex.Message);
+        //    }
+        //}
+        public async Task<List<officeEventsDto>> GetOfficeEvents(string userid)
         {
             try
             {
-                MeetEventsAndHolidayDto meetEventsAndHoliday = new MeetEventsAndHolidayDto();
                 var empdetail = await _context.EmployeeRegistrations
                     .Where(x => x.EmployeeId == userid)
                     .FirstOrDefaultAsync();
-                meetEventsAndHoliday.officeEventsDtos = await _context.OfficeEvents
+                var officeEventsDtos = await _context.OfficeEvents
                     .Where(x => x.Vendorid == empdetail.Vendorid).Select(x => new officeEventsDto
                     {
                         Subtittle = x.Subtittle,
                         Tittle = x.Tittle,
                         Date = x.Date.Value.Date,
                     }).ToListAsync();
-                meetEventsAndHoliday.meetEventsDtos = await _context.EventsmeetSchedulers
-                    .Where(x => x.Vendorid == empdetail.Vendorid).Select(x => new MeetEventsDto
-                    {
-                        EventTittle = x.Tittle,
-                        Eventdate = x.Createddate.Value.Date,
-                        EventType = x.IsEventsmeet == true ? "Meet" : "Event",
-                       // EventTime = x.
-                    }).ToListAsync();
-                return meetEventsAndHoliday;
+               
+                return officeEventsDtos;
             }
             catch (Exception ex)
             {
@@ -2172,6 +2197,12 @@ namespace CRM.Repository
                 throw new Exception("Error: " + ex.Message);
             }
         }
-      
+        private static string ExtractMeetingLink(string htmlDescription)
+        {
+            var doc = new HtmlDocument();
+            doc.LoadHtml(htmlDescription);
+            var linkNode = doc.DocumentNode.SelectSingleNode("//a[@href]");
+            return linkNode?.GetAttributeValue("href", null) ?? string.Empty; 
+        }
     }
 }
