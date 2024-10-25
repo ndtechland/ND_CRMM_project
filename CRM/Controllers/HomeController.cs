@@ -33,8 +33,7 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-
-
+                ViewBag.ContactCount = _context.ContactUs.Count();
                 return View();
             }
             else
@@ -1854,6 +1853,7 @@ namespace CRM.Controllers
                 ViewBag.PlanName = "";
                 ViewBag.Price = "";
                 ViewBag.Description = "";
+                ViewBag.IsActive = "";
                 ViewBag.Image = "";
                 ViewBag.heading = "Add Pricing Plan";
                 ViewBag.btnText = "SAVE";
@@ -1866,6 +1866,7 @@ namespace CRM.Controllers
                         ViewBag.PlanName = data.PlanName;
                         ViewBag.Price = data.Price;
                         ViewBag.Description = data.Description;
+                        ViewBag.IsActive = data.IsActive;
                         ViewBag.Image = data.Image;
                         ViewBag.btnText = "UPDATE";
                         ViewBag.heading = "Update Pricing Plan";
@@ -1925,6 +1926,108 @@ namespace CRM.Controllers
                 TempData["msg"] = "dltok";
                 return RedirectToAction("PricingPlan");
 
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> OtherServices(int id)
+        {
+            try
+            {
+                List<OtherService> model = _context.OtherServices.OrderByDescending(x => x.Id).ToList();
+                
+                int iId = (int)(id == null ? 0 : id);
+                ViewBag.id = 0;
+                ViewBag.ServiceName = "";
+                ViewBag.Description = "";
+                ViewBag.IsActive = "";
+                ViewBag.heading = "Add Other Services";
+                ViewBag.btnText = "SAVE";
+                if (iId != null && iId != 0)
+                {
+                    var data = _context.OtherServices.Find(iId);
+                    if (data != null)
+                    {
+                        ViewBag.id = data.Id;
+                        ViewBag.ServiceName = data.ServiceName;
+                        ViewBag.Description = data.Description;
+                        ViewBag.IsActive = data.IsActive;
+                        ViewBag.btnText = "UPDATE";
+                        ViewBag.heading = "Update Other Services";
+
+                    }
+                }
+
+                return View(model);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> OtherServices(OtherService model)
+        {
+            try
+            {
+                bool check = await _ICrmrpo.AddAndUpdateOtherService(model);
+                if (check)
+                {
+                    if (model.Id == 0)
+                    {
+                        TempData["msg"] = "ok";
+                        return RedirectToAction("OtherServices");
+                    }
+                    else
+                    {
+                        TempData["msg"] = "updok";
+                        return RedirectToAction("OtherServices");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("OtherServices");
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public async Task<IActionResult> DeleteOtherServices(int id)
+        {
+            try
+            {
+                var dlt = _context.OtherServices.Find(id);
+                if (dlt != null)
+                {
+                    _context.OtherServices.Remove(dlt);
+                    _context.SaveChanges();
+                }
+                TempData["msg"] = "dltok";
+                return RedirectToAction("OtherServices");
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetContacts()
+        {
+            try
+            {
+                List<ContactU> model = _context.ContactUs.OrderByDescending(x => x.Id).ToList();
+                return View(model);
             }
             catch (Exception)
             {
