@@ -1,7 +1,7 @@
-﻿@model CRM.Models.DTO.OurStoryDTO
+﻿@model CRM.Models.DTO.CaseStudiesDTO
 
 @{
-    ViewData["Title"] = "OurStory";
+    ViewData["Title"] = "CaseStudies";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -28,9 +28,9 @@
                 if (message == "dltok") {
                     alertText = "Deleted successfully.";
                 } else if (message == "updok") {
-                    alertText = "Our Story updated successfully.";
+                    alertText = "Case Studies updated successfully.";
                 } else {
-                    alertText = "Our Story added successfully.";
+                    alertText = "Case Studies added successfully.";
                 }
 
                 Swal.fire({
@@ -41,7 +41,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         setTimeout(function () {
-                            window.location.href = '@Url.Action("OurStory", "Home")';
+                            window.location.href = '@Url.Action("CaseStudies", "Home")';
                         }, 1000);
                     }
                 });
@@ -57,7 +57,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         setTimeout(function () {
-                            window.location.href = '@Url.Action("OurStory", "Home")';
+                            window.location.href = '@Url.Action("CaseStudies", "Home")';
                         }, 1000);
                     }
                 });
@@ -86,7 +86,7 @@
                             <ol class="breadcrumb pull-right">
                                 <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
                                 <li class="breadcrumb-item">Settings</li>
-                                <li class="breadcrumb-item active">Our Story</li>
+                                <li class="breadcrumb-item active">Case Studies</li>
                             </ol>
                         </div>
                     </div>
@@ -97,7 +97,7 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-body">
-                                <form asp-action="OurStory" enctype="multipart/form-data" autocomplete="off" onsubmit="return validateForm()">
+                                <form asp-action="CaseStudies" enctype="multipart/form-data" autocomplete="off" onsubmit="return validateForm()">
                                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                                     <div class="row">
                                         <div class="form-group col-sm-6">
@@ -111,24 +111,24 @@
                                             <input type="hidden" value="@ViewBag.FilePath" name="FilePath" />
                                         </div>
                                     </div>
-                                    
+
                                     <div class="form-group col-sm-12">
                                         <label for="Content" class="control-label">Content</label>
-                                        <textarea rows="10" name="Content" id="makeMeSummernote" cols="5" class="form-control"
-                                                  placeholder="Default textarea">@ViewBag.Content</textarea>
+                                        <textarea rows="10" name="Description" id="makeMeSummernote" cols="5" class="form-control"
+                                                  placeholder="Default textarea">@ViewBag.Description</textarea>
                                     </div>
                                     @if (ViewBag.id > 0)
-                                        {
-                                    <div class="form-group col-sm-6">
+                                    {
+                                        <div class="form-group col-sm-6">
                                             <label for="IsActive" class="control-label">Is Active</label>
-                                        <input name="IsActive" zoom="1.5;" value="true" type="checkbox" class="chkBox Activechecked" />
-                                    </div>
-                                        }
+                                            <input name="IsActive" zoom="1.5;" value="true" type="checkbox" class="chkBox Activechecked" />
+                                        </div>
+                                    }
                                     <div class="form-group">
                                         <input type="submit" value="@ViewBag.btnText" class="btn btn-primary" />
                                         @if (ViewBag.id > 0)
                                         {
-                                            <a href="/Home/OurStory" class="btn btn-danger">Cancel</a>
+                                            <a href="/Home/CaseStudies" class="btn btn-danger">Cancel</a>
                                         }
                                     </div>
                                 </form>
@@ -152,7 +152,7 @@
                                                     Image
                                                 </th>
                                                 <th>Title</th>
-                                                <th>Content</th>
+                                                <th>Description</th>
                                                 <th>Created At</th>
                                                 <th>Edit</th>
                                                 <th>Delete</th>
@@ -161,7 +161,7 @@
                                         <tbody>
                                             @{
                                                 var count = 0;
-                                                foreach (var item in Model.OurStoryList)
+                                                foreach (var item in Model.CaseStudyList)
                                                 {
                                                     count++;
                                                     <tr class="table-row">
@@ -173,16 +173,16 @@
                                                             @Html.DisplayFor(modelItem => item.Title)
                                                         </td>
                                                         <td>
-                                                            @Html.Raw(@item.Content)
+                                                            @Html.Raw(@item.Description)
                                                         </td>
                                                         <td>
-                                                            @item.PublishedDate
+                                                            @item.CreatedAt
                                                         </td>
                                                         <td>
-                                                            <a href="/Home/OurStory?Id=@item.Id" class="fa fa-edit m-2 font-success"></a>
+                                                            <a href="/Home/CaseStudies?Id=@item.Id" class="fa fa-edit m-2 font-success"></a>
                                                         </td>
                                                         <td>
-                                                            <a href="/Home/DeleteOurStory?Id=@item.Id" onclick="return confirm('Are you sure want to delete?')" class="fa fa-trash m-2 font-danger"></a>
+                                                            <a href="/Home/DeleteCaseStudies?Id=@item.Id" onclick="return confirm('Are you sure want to delete?')" class="fa fa-trash m-2 font-danger"></a>
                                                         </td>
                                                     </tr>
                                                 }

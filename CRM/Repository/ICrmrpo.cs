@@ -113,5 +113,8 @@ namespace CRM.Repository
         Task<bool> AddAndUpdateOurTutorial(TutorialDTO model, string AddedBy);
         Task<bool> AddAndUpdateProfessionaltax(Professionaltax model);
 
+        Task<bool> AddAndUpdateCaseStudies(CaseStudiesDTO model);
+
+
     }
 }

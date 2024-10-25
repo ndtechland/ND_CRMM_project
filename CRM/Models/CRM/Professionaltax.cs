@@ -12,5 +12,6 @@ namespace CRM.Models.Crm
         public DateTime? CreateDate { get; set; }
         public bool? Iactive { get; set; }
         public int? Finyear { get; set; }
+
     }
 }

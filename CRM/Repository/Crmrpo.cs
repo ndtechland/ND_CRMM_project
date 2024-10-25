@@ -3250,6 +3250,35 @@ namespace CRM.Repository
                         CreateDate = DateTime.Now,
                         Finyear = model.Finyear
 
+        public async Task<bool> AddAndUpdateCaseStudies(CaseStudiesDTO model)
+        {
+            try
+            {
+
+                FileOperation fileOperation = new FileOperation(_webHostEnvironment);
+                string[] allowedExtensions = { ".png", ".jpg", ".jpeg" };
+                string ImagePath = "";
+
+                if (model.ImageFile != null)
+                {
+                    var fileExtension = Path.GetExtension(model.ImageFile.FileName).ToLower();
+                    if (!allowedExtensions.Contains(fileExtension))
+                    {
+                        throw new InvalidOperationException("Only .png, .jpg, and .jpeg files are allowed.");
+                    }
+                    ImagePath = fileOperation.SaveBase64Image("image", model.ImageFile, allowedExtensions);
+                    model.Image = ImagePath;
+                }
+
+                if (model.Id == 0)
+                {
+                    var data = new CaseStudy()
+                    {
+                        Title = model.Title,
+                        Description = model.Description,
+                        Image = model.Image
+
+
                     };
                     _context.Add(data);
                     _context.SaveChanges();
@@ -3266,6 +3295,17 @@ namespace CRM.Repository
                     existdata.Iactive = model.Iactive;
                     existdata.CreateDate = DateTime.Now;
                     existdata.Finyear = model.Finyear;
+
+                    var existdata = _context.CaseStudies.Find(model.Id);
+
+                    existdata.Title = model.Title;
+                    existdata.Description = model.Description;
+                    existdata.IsActive = model.IsActive;
+                    if (model.Image != null)
+                    {
+                        existdata.Image = model.Image;
+                    }
+
                 }
                 _context.SaveChanges();
                 return true;

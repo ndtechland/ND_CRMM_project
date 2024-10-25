@@ -26,7 +26,8 @@ namespace CRM.Models.Crm
         public virtual DbSet<ApprovedPresnolInfo> ApprovedPresnolInfos { get; set; } = null!;
         public virtual DbSet<Approvedbankdetail> Approvedbankdetails { get; set; } = null!;
         public virtual DbSet<Attendanceday> Attendancedays { get; set; } = null!;
-        public virtual DbSet<BannerMaster> BannerMasters { get; set; } = null!;
+        public virtual DbSet<BannerMaster> BannerMasters { get; set; } = null!;=
+        public virtual DbSet<BillingDetail> BillingDetails { get; set; } = null!;
         public virtual DbSet<Blog> Blogs { get; set; } = null!;
         public virtual DbSet<CaseStudy> CaseStudies { get; set; } = null!;
         public virtual DbSet<Category> Categories { get; set; } = null!;
@@ -75,6 +76,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<OfficeBreakstatus> OfficeBreakstatuses { get; set; } = null!;
         public virtual DbSet<OfficeEvent> OfficeEvents { get; set; } = null!;
         public virtual DbSet<Officeshift> Officeshifts { get; set; } = null!;
+        public virtual DbSet<OrganisationProfile> OrganisationProfiles { get; set; } = null!;
         public virtual DbSet<OurCoreValue> OurCoreValues { get; set; } = null!;
         public virtual DbSet<OurExpertise> OurExpertises { get; set; } = null!;
         public virtual DbSet<OurStory> OurStories { get; set; } = null!;
@@ -342,6 +344,39 @@ namespace CRM.Models.Crm
                     .IsUnicode(false)
                     .HasColumnName("IMAGEPATH");
             });
+
+
+            modelBuilder.Entity<BillingDetail>(entity =>
+            {
+                entity.ToTable("Billing_Details", "dbo");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.AddressLine1)
+                    .HasMaxLength(255)
+                    .HasColumnName("Address_Line_1");
+
+                entity.Property(e => e.AddressLine2)
+                    .HasMaxLength(255)
+                    .HasColumnName("Address_Line_2");
+
+                entity.Property(e => e.City).HasMaxLength(120);
+
+                entity.Property(e => e.Date).HasColumnType("date");
+
+                entity.Property(e => e.StateId).HasColumnName("State_ID");
+
+                entity.Property(e => e.Status)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
+
+                entity.HasOne(d => d.State)
+                    .WithMany(p => p.BillingDetails)
+                    .HasForeignKey(d => d.StateId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Customer_Billing_Details_State_ID");
+            });
+
 
             modelBuilder.Entity<Blog>(entity =>
             {
@@ -1241,6 +1276,26 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.Field).HasMaxLength(100);
             });
 
+
+            modelBuilder.Entity<HeadOfficeAddress>(entity =>
+            {
+                entity.ToTable("Head_Office_Address", "dbo");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.AddressLine1)
+                    .HasMaxLength(255)
+                    .HasColumnName("Address_Line_1");
+
+                entity.Property(e => e.AddressLine2)
+                    .HasMaxLength(255)
+                    .HasColumnName("Address_Line_2");
+
+                entity.Property(e => e.City).HasMaxLength(120);
+
+                entity.Property(e => e.StateId).HasColumnName("State_ID");
+            });
+
             modelBuilder.Entity<IndustryMaster>(entity =>
             {
                 entity.ToTable("Industry_Master", "dbo");
@@ -1476,6 +1531,67 @@ namespace CRM.Models.Crm
                     .HasColumnName("starttime");
             });
 
+
+            modelBuilder.Entity<OrganisationProfile>(entity =>
+            {
+                entity.ToTable("Organisation_Profile", "dbo");
+
+                entity.Property(e => e.Id)
+                    .ValueGeneratedNever()
+                    .HasColumnName("ID");
+
+                entity.Property(e => e.AddressLine1)
+                    .HasMaxLength(120)
+                    .HasColumnName("Address_Line_1");
+
+                entity.Property(e => e.AddressLine2)
+                    .HasMaxLength(120)
+                    .HasColumnName("Address_Line_2");
+
+                entity.Property(e => e.BusinessLocation)
+                    .HasMaxLength(255)
+                    .HasColumnName("Business_Location")
+                    .HasDefaultValueSql("(N'INDIA')");
+
+                entity.Property(e => e.City).HasMaxLength(120);
+
+                entity.Property(e => e.DateFormatId).HasColumnName("Date_Format_ID");
+
+                entity.Property(e => e.HeadOfficeAddressId).HasColumnName("Head_Office_Address_ID");
+
+                entity.Property(e => e.IndustryId).HasColumnName("Industry_ID");
+
+                entity.Property(e => e.OrganizationName)
+                    .HasMaxLength(255)
+                    .HasColumnName("Organization_Name");
+
+                entity.Property(e => e.StateId).HasColumnName("State_ID");
+
+                entity.HasOne(d => d.DateFormat)
+                    .WithMany(p => p.OrganisationProfiles)
+                    .HasForeignKey(d => d.DateFormatId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Organisation_Profile_Date_Format_ID");
+
+                entity.HasOne(d => d.HeadOfficeAddress)
+                    .WithMany(p => p.OrganisationProfiles)
+                    .HasForeignKey(d => d.HeadOfficeAddressId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Organisation_Profile_Head_Office_Address_ID");
+
+                entity.HasOne(d => d.Industry)
+                    .WithMany(p => p.OrganisationProfiles)
+                    .HasForeignKey(d => d.IndustryId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Organisation_Profile_Industry_ID");
+
+                entity.HasOne(d => d.State)
+                    .WithMany(p => p.OrganisationProfiles)
+                    .HasForeignKey(d => d.StateId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Organisation_Profile_State_ID");
+            });
+
             modelBuilder.Entity<OurCoreValue>(entity =>
             {
                 entity.Property(e => e.Author).HasMaxLength(100);
@@ -1599,7 +1715,9 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
+
                 entity.Property(e => e.Finyear).HasColumnName("finyear");
+
 
                 entity.Property(e => e.Maxamount).HasColumnType("decimal(18, 0)");
 
