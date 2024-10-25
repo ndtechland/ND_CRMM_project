@@ -13,8 +13,6 @@ namespace CRM.Models.Crm
             BillingDetails = new HashSet<BillingDetail>();
             OrganisationProfiles = new HashSet<OrganisationProfile>();
         }
-        public int Id { get; set; }
-        public string StateName { get; set; } = null!;
         public virtual ICollection<BillingDetail> BillingDetails { get; set; }
         public virtual ICollection<OrganisationProfile> OrganisationProfiles { get; set; }
 

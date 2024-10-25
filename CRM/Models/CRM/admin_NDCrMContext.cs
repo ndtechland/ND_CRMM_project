@@ -26,7 +26,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<ApprovedPresnolInfo> ApprovedPresnolInfos { get; set; } = null!;
         public virtual DbSet<Approvedbankdetail> Approvedbankdetails { get; set; } = null!;
         public virtual DbSet<Attendanceday> Attendancedays { get; set; } = null!;
-        public virtual DbSet<BannerMaster> BannerMasters { get; set; } = null!;=
+        public virtual DbSet<BannerMaster> BannerMasters { get; set; } = null!;
         public virtual DbSet<BillingDetail> BillingDetails { get; set; } = null!;
         public virtual DbSet<Blog> Blogs { get; set; } = null!;
         public virtual DbSet<CaseStudy> CaseStudies { get; set; } = null!;
@@ -1567,23 +1567,11 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.StateId).HasColumnName("State_ID");
 
-                entity.HasOne(d => d.DateFormat)
-                    .WithMany(p => p.OrganisationProfiles)
-                    .HasForeignKey(d => d.DateFormatId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Organisation_Profile_Date_Format_ID");
-
                 entity.HasOne(d => d.HeadOfficeAddress)
                     .WithMany(p => p.OrganisationProfiles)
                     .HasForeignKey(d => d.HeadOfficeAddressId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Organisation_Profile_Head_Office_Address_ID");
-
-                entity.HasOne(d => d.Industry)
-                    .WithMany(p => p.OrganisationProfiles)
-                    .HasForeignKey(d => d.IndustryId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Organisation_Profile_Industry_ID");
 
                 entity.HasOne(d => d.State)
                     .WithMany(p => p.OrganisationProfiles)
