@@ -457,7 +457,8 @@
                                     </select>
                                     <span id="DepartmentError" class="text-danger" style="display:none;">Please select Department</span>
                                 </div>
-
+                                </div>
+                                <div class="row">
                                 <div class="col-md-3">
                                     <label>Designation<span class="text-danger">*</span></label>
                                     <select name="DesignationID" class="form-control" id="ddDesignationID">
@@ -620,11 +621,11 @@
                             </div>
 
                             <div class="row">
-                                <div class="col">
+                                <div class="col" style="display:none">
                                     <label>Employee Contribution Rate</label>
                                     <input class="form-control" value='@ViewBag.Employee_Contribution_Rate' name="Employee_Contribution_Rate" placeholder="Enter Employee Contribution Rate" id="Employee_Contribution_Rate" type="text">
                                 </div>
-                                <div class="col">
+                                <div class="col" style="display:none">
                                     <label>Deduction Cycle</label>
                                     <select id="ddlDeductionTime" name="Deduction_Cycle" class="form-control">
                                         <option value="0">-- Select Deduction --</option>
@@ -632,7 +633,7 @@
                                         <option value="Y">Yearly</option>
                                     </select>
                                 </div>
-                                <div class="col">
+                                <div class="col-4">
                                     <label>Nominee's Name</label>
                                     <input class="form-control" value='@ViewBag.nominee' name="nominee" id="nominee" placeholder="Enter nominee name" type="text">
                                 </div>
@@ -695,24 +696,24 @@
 
                             <br>
 
-                            <h4 class="text-danger">Employee Contribution</h4>
+                            <h4 class="text-danger EmployeeContribution">Employee Contribution</h4>
                             <div class="row">
                                 <div class="col">
-                                    <label>EPF</label>
-                                    <input class="form-control" value='@ViewBag.EPF' name="EPF" placeholder="00.0" id="txtEPF" type="text" readonly>
-                                </div>
-                                <div class="col">
-                                    <label>Professional Tax</label>
+                                    <label id="ProfessionaltaxLabel">Professional Tax</label>
                                     <input class="form-control" value='@ViewBag.Professionaltax' name="Professionaltax" placeholder="Enter Professional Tax" id="Professionaltax" type="text" readonly>
                                 </div>
                                 <div class="col">
-                                    <label>ESIC</label>
+                                    <label id="ESICLabel">ESIC</label>
                                     <input class="form-control" value='@ViewBag.ESIC' name="ESIC" id="ESIC" type="text" readonly>
                                 </div>
-                                <div class="col">
+                                <div class="col" style="display:none">
                                     <label>TDS (<span id="displayTdsPercentage">@ViewBag.Tdspercentage</span>%)</label>
                                     <input class="form-control" value='@ViewBag.Amount' name="Amount" placeholder="00.0" id="txtAmount" type="text" readonly>
                                     <input class="form-control" name="TdsPercentage" value='@ViewBag.Tdspercentage' placeholder="00.0" id="txtTdspercentage" type="hidden">
+                                </div>
+                                <div class="col">
+                                    <label id="txtLabelEPF">EPF</label>
+                                    <input class="form-control" value='@ViewBag.EPF' name="EPF" placeholder="00.0" id="txtEPF" type="text" readonly>
                                 </div>
                             </div>
 
@@ -744,404 +745,30 @@
         </div>
     </div>
 </div>
-@* <script>
-    const navigateToFormStep = (stepNumber) => {
-        document.querySelectorAll(".form-step").forEach((formStepElement) => {
-            formStepElement.classList.add("d-none");
-        });
-        document.querySelectorAll(".form-stepper-list").forEach((formStepHeader) => {
-            formStepHeader.classList.add("form-stepper-unfinished");
-            formStepHeader.classList.remove("form-stepper-active", "form-stepper-completed");
-        });
-        document.querySelector("#step-" + stepNumber).classList.remove("d-none");
-        const formStepCircle = document.querySelector('li[step="' + stepNumber + '"]');
-        formStepCircle.classList.remove("form-stepper-unfinished", "form-stepper-completed");
-        formStepCircle.classList.add("form-stepper-active");
-        for (let index = 0; index < stepNumber; index++) {
-            const formStepCircle = document.querySelector('li[step="' + index + '"]');
-            if (formStepCircle) {
-                formStepCircle.classList.remove("form-stepper-unfinished", "form-stepper-active");
-                formStepCircle.classList.add("form-stepper-completed");
-            }
-        }
-    };
-    document.querySelectorAll(".btn-navigate-form-step").forEach((formNavigationBtn) => {
-        formNavigationBtn.addEventListener("click", () => {
-            const stepNumber = parseInt(formNavigationBtn.getAttribute("step_number"));
-            navigateToFormStep(stepNumber);
-        });
-    });
-</script> *@
-
-
-
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="~/js/multiformvalidation.js"></script>
-
-@* <script>
-    var currentStep = 1;
-    var updateProgressBar;
-    var errormessage = '';
-
-    function displayStep(stepNumber) {
-        if (stepNumber >= 1 && stepNumber <= 4) {
-            if (validateStep(currentStep)) {
-                $(".step-" + currentStep).hide();
-                $(".step-" + stepNumber).show();
-                currentStep = stepNumber;
-                updateProgressBar();
-            }
-        }
+<script>
+   $(".EmployeeContribution").hide(); 
+    if ($("#txtEPF").val() == 0)
+    {
+        $("#txtEPF").hide();
+        $("#txtLabelEPF").hide();
+        $(".EmployeeContribution").show();
+    } 
+    if ($("#ESIC").val() == 0) {
+        $("#ESIC").hide();
+        $("#ESICLabel").hide();
+        $(".EmployeeContribution").show();
     }
-    function fnValidate() {
-        var errormessage = '';
-
-        var MonthlyCTC = $("#txtMonthlyCTC").val();
-        var ctcRegex = /^\d+(\.\d{1,2})?$/;
-
-        if (!ctcRegex.test(MonthlyCTC)) {
-            errormessage += 'Please Enter valid Monthly CTC,'
-
-        }
-        if ($("#SpecialAllowance").val().trim() == '') {
-
-            errormessage += 'Please Enter Special Allowance,'
-        }
-        if ($("#Professionaltax").val().trim() == '') {
-
-            errormessage += 'Please Enter  Professionaltax,'
-        }
-
-        if (errormessage !== '') {
-            $(".next-step").off("click");
-            openErrorPopUp(errormessage);
-            return false;
-        }
+    if ($("#Professionaltax").val() == 0) {
+        $("#Professionaltax").hide();
+        $("#ProfessionaltaxLabel").hide();
+        $(".EmployeeContribution").show();
     }
-
-
-    function validateStep(stepNumber) {
-        errormessage = '';
-        if (stepNumber === 1) {
-            if ($("#FirstName").val().trim() == '') {
-                errormessage += 'Please Enter First Name,'
-            }
-            if ($("#MiddleName").val().trim() == '') {
-                errormessage += 'Please Enter Middle Name,'
-            }
-            if ($("#LastName").val().trim() == '') {
-
-                errormessage += 'Please Enter Last Name,'
-            }
-            if ($("#WorkEmail").val().trim() == '') {
-
-                errormessage += 'Please Enter Work Email,'
-            } else {
-                var email = $("#WorkEmail").val();
-                var emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
-                if (!emailRegex.test(email)) {
-                    errormessage += 'Invalid Work Email,';
-
-                }
-            }
-
-
-
-            var dateOfJoining = $("#DateOfJoining").val();
-            var dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-            if (!dateRegex.test(dateOfJoining)) {
-                errormessage += 'Please enter a valid date in the format mm/dd/yyyy,';
-
-            }
-            var parts = dateOfJoining.split("/");
-            var selectedDate = new Date(parts[2], parts[0] - 1, parts[1]);
-            var currentDate = new Date();
-            if (selectedDate > currentDate) {
-                errormessage += 'Date of Joining cannot be in the future,';
-            }
-            if ($("#ddlGender").val().trim() == '0') {
-
-                errormessage += 'Please Select Gender,'
-            }
-            // if ($("#ddCustomerID").val().trim() == '0') {
-
-            //     errormessage += 'Please Select Company,'
-            // }
-            if ($("#ddlCity").val().trim() == '0') {
-
-                errormessage += 'Please Select Work Location,'
-            }
-            if ($("#ddDesignationID").val().trim() == '0') {
-
-                errormessage += 'Please Select Designation,'
-            }
-            if ($("#ddDepartmentID").val().trim() == '0') {
-
-                errormessage += 'Please Select Department,'
-            }
-            if ($("#ddlStates").val().trim() == '0') {
-
-                errormessage += 'Please Select State,'
-            }
-            if (errormessage !== '') {
-                $(".next-step").off("click");
-                openErrorPopUp(errormessage);
-                return false;
-            }
-            else {
-                document.getElementById('btnFirstTab').addEventListener('click', function () {
-                    displayStep(2);
-                });
-                return true;
-            }
-        }
-        if (stepNumber === 2) {
-            if ($("#PersonalEmailAddress").val().trim() == '') {
-                errormessage += 'Please Enter Personal Email Address,'
-            }
-            var email = $("#PersonalEmailAddress").val();
-            var emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
-            if (!emailRegex.test(email) && email.trim() != '') {
-                errormessage += 'Invalid Personal Email Address,';
-
-            }
-
-            var mobileNumber = $("#MobileNumber").val();
-
-
-            var mobileRegex = /^[0-9]{10}$/;
-
-            if (!mobileRegex.test(mobileNumber)) {
-                errormessage += 'Please enter a valid 10-digit mobile number,'
-
-            }
-            var dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-
-            var inputValue = $("#dobInput").val();
-
-            if (!dateRegex.test(inputValue)) {
-                errormessage += 'Please enter a valid date of birth in the format dd/mm/yyyy,'
-
-            }
-            if ($("#FatherName").val().trim() == '') {
-
-                errormessage += 'Please Enter Father Name,'
-            }
-
-            if ($("#PAN").val().trim() == '') {
-
-                errormessage += 'Please Enter Pan,'
-            }
-
-
-            var panNumber = $('#PAN').val().trim();
-
-
-            var panRegex = /^([A-Z]){5}([0-9]){4}([A-Z]){1}?$/;
-
-            if (!panRegex.test(panNumber)) {
-                errormessage += 'PAN Card is not valid,'
-            }
-
-            if ($("#AddressLine1").val().trim() == '') {
-
-                errormessage += 'Please Enter First AddressLine,'
-            }
-            if ($("#AddressLine2").val().trim() == '') {
-
-                errormessage += 'Please Enter second AddressLine,'
-            }
-            if ($("#City").val().trim() == '') {
-
-                errormessage += 'Please Select City,'
-            }
-            if ($("#ddlState").val().trim() == '0') {
-
-                errormessage += 'Please Select State,'
-            }
-            if ($("#Pincode").val().trim() == '') {
-
-                errormessage += 'Please Enter Pincode'
-            }
-            if (errormessage !== '') {
-                $(".next-step").off("click");
-                openErrorPopUp(errormessage);
-                return false;
-            }
-            else {
-                document.getElementById('btnSecondTab').addEventListener('click', function () {
-                    displayStep(3);
-                });
-                return true;
-            }
-        }
-        if (stepNumber === 3) {
-            if ($("#AccountHolderName").val().trim() == '') {
-                errormessage += 'Please Enter Account Holder Name,'
-            }
-            if ($("#nominee").val().trim() == '') {
-                errormessage += 'Please Enter Nominee Name,'
-            }
-
-            if ($("#BankName").val().trim() == '') {
-
-                errormessage += 'Please Enter BankName,'
-            }
-
-            var accountNumber = $("#AccountNumber").val();
-
-            var accountNumberRegex = /^\d+$/;
-
-            if (!accountNumberRegex.test(accountNumber)) {
-                errormessage += 'Account Number is not valid,'
-            }
-
-            var reEnterAccountNumber = $("#ReEnterAccountNumber").val();
-
-            var ReEnterAccountNumberRegex = /^\d+$/;
-
-            if (!ReEnterAccountNumberRegex.test(reEnterAccountNumber)) {
-                errormessage += 'Re-EnterAccountNumber Number is not valid,'
-            }
-            if (accountNumber !== reEnterAccountNumber) {
-                errormessage += 'Account Number and Re-Enter Account Number should not match,';
-            }
-            var ifsc = $("#IFSC").val();
-            var ifscRegex = /^[A-Z]{4}[0][A-Z0-9]{6}$/;
-
-            // if (!ifscRegex.test(ifsc)) {
-            //     errormessage += 'IFSC Code is  not valid,'
-            // }
-
-
-            //var EPF = $("#EPF_Number").val();
-            //var epfRegex = /^[A-Z]{3}\/[A-Z]{3}\/\d{6}\/\d{2}$/;
-
-            //if (!epfRegex.test(EPF)) {
-            //    errormessage += 'EPF Number is not valid,'
-            //}
-
-            if ($("#Employee_Contribution_Rate").val().trim() == '') {
-
-                errormessage += 'Please Enter Employee Contribution Rate,'
-            }
-
-
-
-            if ($("#ddlDeductionTime").val().trim() == '0') {
-
-                errormessage += 'Please Select Deduction Cycle,'
-            }
-
-
-            var selectedAccountType = $("input[name='AccountTypeID']:checked").val();
-
-            if (!selectedAccountType) {
-                errormessage += 'Please choose Account'
-
-            }
-            if (errormessage !== '') {
-                $(".next-step").off("click");
-                openErrorPopUp(errormessage);
-                return false;
-            }
-            else {
-                document.getElementById('btnThirdTab').addEventListener('click', function () {
-                    displayStep(4);
-                });
-                return true;
-            }
-        }
-    }
-
-
-    function openErrorPopUp(errorMessage) {
-        var arryMessage;
-        var message = '';
-        if (errorMessage == undefined) {
-            document.location.reload(true);
-        }
-        arryMessage = errorMessage.split(",");
-        var length = arryMessage.length;
-
-        if (arryMessage[arryMessage.length - 1] == "") {
-            length = length - 1;
-        }
-        errorMessage = "";
-        for (var i = 0; i < length; i++) {
-            if (arryMessage[i] != '') {
-                errorMessage = errorMessage + (parseInt(i) + 1) + "." + arryMessage[i] + "<br/>";
-            }
-        }
-
-        message = errorMessage;
-        $('#errorMessage').html(message);
-        $('#errorMessage1').html(message);
-        errorPopUp('error');
-    }
-    function errorPopUp(Type) {
-        if (Type == 'success') {
-            $('#closemodal').removeClass('btn-danger');
-            $('#closemodal').addClass('btn-success');
-            $('#myModal').modal('show');
-            setTimeout(function () {
-                $("#myModal").modal('hide');
-            }, 10000);
-        }
-        else if (Type == 'error') {
-            $('#closemodal').removeClass('btn-success');
-            $('#closemodal').addClass('btn-danger');
-            $('#myModal').modal('show');
-        }
-    }
-    $(document).ready(function () {
-        $('#multi-step-form').find('.step').slice(1).hide();
-
-        $(".next-step").click(function () {
-            debugger;
-            if (currentStep < 4) {
-                $(".step-" + currentStep).addClass("animate__animated animate__fadeOutLeft");
-                currentStep++;
-                setTimeout(function () {
-                    $(".step").removeClass("animate__animated animate__fadeOutLeft").hide();
-                    $(".step-" + currentStep).show().addClass("animate__animated animate__fadeInRight");
-                    updateProgressBar();
-                }, 500);
-            }
-        });
-
-        $(".prev-step").click(function () {
-            if (currentStep > 1) {
-                $(".step-" + currentStep).addClass("animate__animated animate__fadeOutRight");
-                currentStep--;
-                setTimeout(function () {
-                    $(".step").removeClass("animate__animated animate__fadeOutRight").hide();
-                    $(".step-" + currentStep).show().addClass("animate__animated animate__fadeInLeft");
-                    updateProgressBar();
-                }, 500);
-            }
-        });
-
-        updateProgressBar = function () {
-            var progressPercentage = ((currentStep - 1) / 3) * 100;
-            $(".progress-bar").css("width", progressPercentage + "%");
-        }
-    });
-
-
-</script> *@
+</script>
  <script>
-    // function bindcustomer(customerid) {
-    //     var itemsList = @Html.Raw(Json.Serialize(ViewBag.CustomerName));
-    //     var dropdown1 = $("#ddCustomerID");
-    //     $.each(itemsList, function (index, item) {
-    //         dropdown1.append($('<option></option>').val(item.value).text(item.text));
-    //     });
-    //     if (customerid !== "") {
-    //         $("#ddCustomerID").val(customerid);
-    //     }
-    // }
+   
     function bindshifttypeid(OfficeshiftTypeid) {
         var itemsListforshifttypeid = @Json.Serialize(ViewBag.officeshift);
         debugger
@@ -1241,15 +868,15 @@
         var monthlySalaryInput = $('#txtMonthlyCTC');
         var basicSalaryInput = $('#txtBasicSalary');
         var HouseRentAllowanceInput = $('#txtHouseRentAllowance');
-        var EPFInput = $('#txtEPF');
+        var EPFInput = $('#txtEPF');///---
         var MonthlyGrossPayInput = $('#txtMonthlyGrossPay');
-        var ESICInput = $('#ESIC');
-        var ProfessionaltaxInput = $('#Professionaltax');
+        var ESICInput = $('#ESIC');///
+        var ProfessionaltaxInput = $('#Professionaltax');///
         var servicechargeInput = $('#Servicecharge');
         var specialallowanceInput = $('#SpecialAllowance');
         var grossInput = $('#txtgross');
-        var AmountInput = $('#txtAmount');
-        var TdspercentageInput = $('#txtTdspercentage');
+        var AmountInput = $('#txtAmount');///
+        var TdspercentageInput = $('#txtTdspercentage');///
         specialallowanceInput.on('input', function () {
             var inputEvent = new Event('input');
             document.getElementById('txtgross').dispatchEvent(inputEvent);
@@ -1265,7 +892,7 @@
                 var annualSalary = monthlySalary * 12;
                 var basicSalary = monthlySalary / 2;
                 var houseRent = basicSalary / 2;
-                var EPFCalculation = monthlySalary * 12 / 100;
+                var EPFCalculation = 0;//monthlySalary * 12 / 100;
                 var MonthlyGross = monthlySalary - EPFCalculation;
                 if (specialallowance == undefined || specialallowance == "") {
                     var Gross = basicSalary + houseRent + 0;
@@ -1273,37 +900,37 @@
                     var Gross = basicSalary + houseRent + parseInt(specialallowance);
                 }
 
-                var ESIC;
+                var ESIC = 0;
 
-                if (Gross < 21000) {
-                    ESIC = 0;
-                } else {
-                    ESIC = monthlySalary * 0.75 / 100;
-                }
-                var professionaltax;
-                switch (true) {
-                    case monthlySalary < 2001:
-                        professionaltax = 200;
-                        break;
-                    case monthlySalary < 15001:
-                        professionaltax = 0;
-                        break;
-                    case monthlySalary > 15000:
-                        professionaltax = 150;
-                        break;
-                    default:
-                        professionaltax = 0;
-                }
-                var servicecharge;
+                // if (Gross < 21000) {
+                //     ESIC = 0;
+                // } else {
+                //     ESIC = monthlySalary * 0.75 / 100;
+                // }
+                var professionaltax = 0;
+                // switch (true) {
+                //     case monthlySalary < 2001:
+                //         professionaltax = 200;
+                //         break;
+                //     case monthlySalary < 15001:
+                //         professionaltax = 0;
+                //         break;
+                //     case monthlySalary > 15000:
+                //         professionaltax = 150;
+                //         break;
+                //     default:
+                //         professionaltax = 0;
+                // }
+                var servicecharge = 0;
 
-                switch (true) {
-                    case monthlySalary <= 40000:
-                        servicecharge = monthlySalary * 0.0118; // 1.18% of monthlySalary
-                        break;
-                    case monthlySalary > 40000:
-                        servicecharge = monthlySalary * 0.035; // 3.5% of monthlySalary
-                        break;
-                }
+                // switch (true) {
+                //     case monthlySalary <= 40000:
+                //         servicecharge = monthlySalary * 0.0118; // 1.18% of monthlySalary
+                //         break;
+                //     case monthlySalary > 40000:
+                //         servicecharge = monthlySalary * 0.035; // 3.5% of monthlySalary
+                //         break;
+                // }
                 annualSalaryInput.val(annualSalary.toFixed(2));
                 monthlySalaryInput.val(monthlySalary);
                 basicSalaryInput.val(basicSalary.toFixed(2));
