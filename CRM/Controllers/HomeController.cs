@@ -1827,6 +1827,96 @@ namespace CRM.Controllers
                 throw;
             }
         }
-    }
+        [HttpGet]
+        public async Task<IActionResult> PricingPlan(int id)
+        {
+            try
+            {
+                PricingPlanDTO model = new PricingPlanDTO();
+                model.PricingPlans = _context.PricingPlans.OrderByDescending(x => x.Id).ToList();
+                ;
+                int iId = (int)(id == null ? 0 : id);
+                ViewBag.id = 0;
+                ViewBag.PlanName = "";
+                ViewBag.Price = "";
+                ViewBag.Description = "";
+                ViewBag.Image = "";
+                ViewBag.heading = "Add Pricing Plan";
+                ViewBag.btnText = "SAVE";
+                if (iId != null && iId != 0)
+                {
+                    var data = _context.PricingPlans.Find(iId);
+                    if (data != null)
+                    {
+                        ViewBag.id = data.Id;
+                        ViewBag.PlanName = data.PlanName;
+                        ViewBag.Price = data.Price;
+                        ViewBag.Description = data.Description;
+                        ViewBag.Image = data.Image;
+                        ViewBag.btnText = "UPDATE";
+                        ViewBag.heading = "Update Pricing Plan";
 
+                    }
+                }
+
+                return View(model);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> PricingPlan(PricingPlanDTO model)
+        {
+            try
+            {
+                bool check = await _ICrmrpo.AddAndUpdatePricingPlan(model);
+                if (check)
+                {
+                    if (model.Id == 0)
+                    {
+                        TempData["msg"] = "ok";
+                        return RedirectToAction("PricingPlan");
+                    }
+                    else
+                    {
+                        TempData["msg"] = "updok";
+                        return RedirectToAction("PricingPlan");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("PricingPlan");
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public async Task<IActionResult> DeletePricingPlan(int id)
+        {
+            try
+            {
+                var dlt = _context.PricingPlans.Find(id);
+                if (dlt != null)
+                {
+                    _context.PricingPlans.Remove(dlt);
+                    _context.SaveChanges();
+                }
+                TempData["msg"] = "dltok";
+                return RedirectToAction("PricingPlan");
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+    }
 }

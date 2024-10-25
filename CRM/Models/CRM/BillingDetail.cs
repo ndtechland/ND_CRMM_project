@@ -14,6 +14,8 @@ namespace CRM.Models.Crm
         public DateTime Date { get; set; }
         public double Cost { get; set; }
         public bool? Status { get; set; }
+
         public virtual StateMaster State { get; set; } = null!;
+
     }
 }

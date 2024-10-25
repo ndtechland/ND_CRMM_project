@@ -369,12 +369,6 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.Status)
                     .IsRequired()
                     .HasDefaultValueSql("((1))");
-
-                entity.HasOne(d => d.State)
-                    .WithMany(p => p.BillingDetails)
-                    .HasForeignKey(d => d.StateId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Customer_Billing_Details_State_ID");
             });
 
 

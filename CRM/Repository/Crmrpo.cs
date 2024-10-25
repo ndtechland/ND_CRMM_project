@@ -1,4 +1,4 @@
-﻿using CRM.Models.Crm;
+using CRM.Models.Crm;
 using CRM.Models.CRM;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using CRM.Models.DTO;
@@ -67,7 +67,7 @@ namespace CRM.Repository
                         }
                         else
                         {
-                            return -1;
+                            return -1; // or handle accordingly
                         }
                     }
                 }
@@ -1162,10 +1162,10 @@ namespace CRM.Repository
 
             return result;
         }
-        //public EmployeerTd tdsDetails(int CustomerId)
-        //{
-        //    return _context.EmployeerTds.Where(x => x.CustomerId == CustomerId).FirstOrDefault();
-        //}
+        public EmployeerTd tdsDetails(int CustomerId)
+        {
+            return _context.EmployeerTds.Where(x => x.CustomerId == CustomerId).FirstOrDefault();
+        }
 
         public byte[] ImportToExcelAttendance(List<salarydetail> data)
         {
@@ -2546,7 +2546,10 @@ namespace CRM.Repository
 
             try
             {
+                // Fetch AdminLogin, if needed for validation or extra processing
                 var adminLogin = await _context.AdminLogins.FindAsync(userId);
+
+                // Fetch list of employees based on VendorId
                 var empList = await _context.EmployeeRegistrations
                     .Where(x => x.Vendorid == userId)
                     .ToListAsync();
@@ -2555,6 +2558,8 @@ namespace CRM.Repository
                     throw new Exception("No employees found for the specified user.");
 
                 var leaveDetails = new List<ApprovedLeaveApplyList>();
+
+                // Iterate through each employee and fetch their leave details
                 foreach (var emp in empList)
                 {
                     var leave = await _context.ApplyLeaveNews
@@ -2563,13 +2568,16 @@ namespace CRM.Repository
 
                     if (leave == null || leave.Count == 0)
                     {
-                        continue;
+                        continue; // Skip if no leave is found for this employee
                     }
 
                     foreach (var l in leave)
                     {
+                        // Calculate total full day leave
                         decimal totalFullday = (l.EndDate - l.StartDate).Days - (l.EndDate != l.StartDate ? 1 : 0);
-                        totalFullday = Math.Max(totalFullday, 0);
+                        totalFullday = Math.Max(totalFullday, 0); // Ensure non-negative value
+
+                        // Add leave details to the result list
                         leaveDetails.Add(new ApprovedLeaveApplyList
                         {
                             Id = l.Id,
@@ -2578,28 +2586,31 @@ namespace CRM.Repository
                             EmpMobileNumber = await _context.EmployeePersonalDetails
                                 .Where(e => e.EmpRegId == emp.EmployeeId)
                                 .Select(e => e.MobileNumber)
-                                .FirstOrDefaultAsync() ?? "Unknown",
+                                .FirstOrDefaultAsync() ?? "Unknown", // Handle null mobile number
                             LeaveType = GetLeaveType(l.StartLeaveId, l.EndeaveId, totalFullday) +
                                         $" (Total Leaves: {(decimal)(l.CountLeave + l.PaidCountLeave)})",
                             TypeOfLeaveId = await _context.LeaveTypes
                                 .Where(s => s.Id == l.TypeOfLeaveId)
                                 .Select(s => s.Leavetype1)
-                                .FirstOrDefaultAsync() ?? "Unknown",
+                                .FirstOrDefaultAsync() ?? "Unknown", // Handle unknown leave type
                             StartDate = l.StartDate,
                             EndDate = l.EndDate,
                             CreatedDate = l.CreatedDate,
                             UnPaidCountLeave = l.CountLeave,
                             Month = l.Month,
-                            Reason = l.Reason ?? "No reason provided",
+                            Reason = l.Reason ?? "No reason provided", // Handle null reason
                             Isapprove = l.Isapprove,
                             PaidCountLeave = l.PaidCountLeave,
                         });
                     }
                 }
+
+                // Return the leave details or an empty list if none were found
                 return leaveDetails.Any() ? leaveDetails : new List<ApprovedLeaveApplyList>();
             }
             catch (Exception ex)
             {
+                // Log the exception (if logging is implemented)
                 throw new Exception("An error occurred while retrieving leave details.", ex);
             }
         }
@@ -3260,8 +3271,8 @@ namespace CRM.Repository
                     {
                         Title = model.Title,
                         Description = model.Description,
+                        IsActive = true,
                         Image = model.Image
-
 
                     };
                     _context.Add(data);
@@ -3270,9 +3281,6 @@ namespace CRM.Repository
                 }
                 else
                 {
-
-
-
                     var existdata = _context.CaseStudies.Find(model.Id);
 
                     existdata.Title = model.Title;
@@ -3293,21 +3301,34 @@ namespace CRM.Repository
                 throw;
             }
         }
-        public async Task<bool> AddAndUpdateProfessionaltax(Professionaltax model)
+        public async Task<bool> AddAndUpdatePricingPlan(PricingPlanDTO model)
         {
             try
             {
 
+                FileOperation fileOperation = new FileOperation(_webHostEnvironment);
+                string[] allowedExtensions = { ".png", ".jpg", ".jpeg" };
+                string ImagePath = "";
+
+                if (model.ImageFile != null)
+                {
+                    var fileExtension = Path.GetExtension(model.ImageFile.FileName).ToLower();
+                    if (!allowedExtensions.Contains(fileExtension))
+                    {
+                        throw new InvalidOperationException("Only .png, .jpg, and .jpeg files are allowed.");
+                    }
+                    ImagePath = fileOperation.SaveBase64Image("image", model.ImageFile, allowedExtensions);
+                    model.Image = ImagePath;
+                }
+
                 if (model.Id == 0)
                 {
-                    var data = new Professionaltax()
+                    var data = new PricingPlan()
                     {
-                        Minamount = model.Minamount,
-                        Maxamount = model.Maxamount,
-                        Amountpercentage = model.Amountpercentage,
-                        Iactive = true,
-                        Finyear = model.Finyear,
-                        CreateDate = DateTime.Now
+                        PlanName = model.PlanName,
+                        Price = model.Price,
+                        Description = model.Description,
+                        Image = model.Image
 
                     };
                     _context.Add(data);
@@ -3316,17 +3337,16 @@ namespace CRM.Repository
                 }
                 else
                 {
+                    var existdata = _context.PricingPlans.Find(model.Id);
 
-
-
-                    var existdata = _context.Professionaltaxes.Find(model.Id);
-
-                    existdata.Minamount = model.Minamount;
-                    existdata.Maxamount = model.Maxamount;
-                    existdata.Amountpercentage = model.Amountpercentage;
-                    existdata.Iactive = model.Iactive;
-                    existdata.CreateDate = DateTime.Now;
-                    existdata.Finyear = model.Finyear;
+                    existdata.PlanName = model.PlanName;
+                    existdata.Price = model.Price;
+                    existdata.Description = model.Description;
+                    existdata.IsActive = model.IsActive;
+                    if (model.Image != null)
+                    {
+                        existdata.Image = model.Image;
+                    }
 
                 }
                 _context.SaveChanges();
@@ -3338,8 +3358,6 @@ namespace CRM.Repository
                 throw;
             }
         }
-
-        
-    
     }
+
 }

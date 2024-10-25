@@ -114,6 +114,7 @@ namespace CRM.Repository
         Task<bool> AddAndUpdateProfessionaltax(Professionaltax model);
 
         Task<bool> AddAndUpdateCaseStudies(CaseStudiesDTO model);
+        Task<bool> AddAndUpdatePricingPlan(PricingPlanDTO model);
 
 
     }
