@@ -112,6 +112,7 @@ namespace CRM.Repository
         Task<bool> AddAndUpdateFeaturebenifits(FeaturebenifitsDto model, string AddedBy);
         Task<bool> AddAndUpdateOurTutorial(TutorialDTO model, string AddedBy);
         Task<bool> AddAndUpdateCaseStudies(CaseStudiesDTO model);
+        Task<bool> AddAndUpdatePricingPlan(PricingPlanDTO model);
 
     }
 }

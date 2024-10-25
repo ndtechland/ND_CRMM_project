@@ -85,6 +85,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<OurStory> OurStories { get; set; } = null!;
         public virtual DbSet<OurTutorial> OurTutorials { get; set; } = null!;
         public virtual DbSet<Payroll> Payrolls { get; set; } = null!;
+        public virtual DbSet<PricingPlan> PricingPlans { get; set; } = null!;
         public virtual DbSet<ProductMaster> ProductMasters { get; set; } = null!;
         public virtual DbSet<Professionaltax> Professionaltaxes { get; set; } = null!;
         public virtual DbSet<Quation> Quations { get; set; } = null!;
@@ -370,12 +371,6 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.Status)
                     .IsRequired()
                     .HasDefaultValueSql("((1))");
-
-                entity.HasOne(d => d.State)
-                    .WithMany(p => p.BillingDetails)
-                    .HasForeignKey(d => d.StateId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Customer_Billing_Details_State_ID");
             });
 
             modelBuilder.Entity<Blog>(entity =>
@@ -1689,6 +1684,23 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.SalaryId).HasColumnName("Salary_ID");
 
                 entity.Property(e => e.TotalAmount).HasColumnName("Total_Amount");
+            });
+
+            modelBuilder.Entity<PricingPlan>(entity =>
+            {
+                entity.ToTable("PricingPlan");
+
+                entity.Property(e => e.CreatedDate)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.IsActive)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.PlanName).HasMaxLength(100);
+
+                entity.Property(e => e.Price).HasColumnType("decimal(10, 2)");
             });
 
             modelBuilder.Entity<ProductMaster>(entity =>

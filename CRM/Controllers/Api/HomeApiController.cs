@@ -292,5 +292,28 @@ namespace CRM.Controllers.Api
                 throw;
             }
         }
+        [HttpGet]
+        [Route("GetPricingPlan")]
+        public async Task<IActionResult> GetPricingPlan()
+        {
+            try
+            {
+                List<PricingPlan> plans = _context.PricingPlans.ToList();
+                if (plans != null)
+                {
+                    return Ok(new { Status = 200, Message = "Pricing Plan retrieved successfully.", data = plans });
+                }
+                else
+                {
+                    return NotFound(new { Status = 404, Message = "No any Pricing Plan available." });
+                }
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 }

@@ -3271,6 +3271,7 @@ namespace CRM.Repository
                     {
                         Title = model.Title,
                         Description = model.Description,
+                        IsActive = true,
                         Image = model.Image
 
                     };
@@ -3283,6 +3284,63 @@ namespace CRM.Repository
                     var existdata = _context.CaseStudies.Find(model.Id);
 
                     existdata.Title = model.Title;
+                    existdata.Description = model.Description;
+                    existdata.IsActive = model.IsActive;
+                    if (model.Image != null)
+                    {
+                        existdata.Image = model.Image;
+                    }
+
+                }
+                _context.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        public async Task<bool> AddAndUpdatePricingPlan(PricingPlanDTO model)
+        {
+            try
+            {
+
+                FileOperation fileOperation = new FileOperation(_webHostEnvironment);
+                string[] allowedExtensions = { ".png", ".jpg", ".jpeg" };
+                string ImagePath = "";
+
+                if (model.ImageFile != null)
+                {
+                    var fileExtension = Path.GetExtension(model.ImageFile.FileName).ToLower();
+                    if (!allowedExtensions.Contains(fileExtension))
+                    {
+                        throw new InvalidOperationException("Only .png, .jpg, and .jpeg files are allowed.");
+                    }
+                    ImagePath = fileOperation.SaveBase64Image("image", model.ImageFile, allowedExtensions);
+                    model.Image = ImagePath;
+                }
+
+                if (model.Id == 0)
+                {
+                    var data = new PricingPlan()
+                    {
+                        PlanName = model.PlanName,
+                        Price = model.Price,
+                        Description = model.Description,
+                        Image = model.Image
+
+                    };
+                    _context.Add(data);
+                    _context.SaveChanges();
+                    return true;
+                }
+                else
+                {
+                    var existdata = _context.PricingPlans.Find(model.Id);
+
+                    existdata.PlanName = model.PlanName;
+                    existdata.Price = model.Price;
                     existdata.Description = model.Description;
                     existdata.IsActive = model.IsActive;
                     if (model.Image != null)
