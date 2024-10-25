@@ -1162,10 +1162,10 @@ namespace CRM.Repository
 
             return result;
         }
-        public EmployeerTd tdsDetails(int CustomerId)
-        {
-            return _context.EmployeerTds.Where(x => x.CustomerId == CustomerId).FirstOrDefault();
-        }
+        //public EmployeerTd tdsDetails(int CustomerId)
+        //{
+        //    return _context.EmployeerTds.Where(x => x.CustomerId == CustomerId).FirstOrDefault();
+        //}
 
         public byte[] ImportToExcelAttendance(List<salarydetail> data)
         {
@@ -3358,6 +3358,52 @@ namespace CRM.Repository
                 throw;
             }
         }
+        public async Task<bool> AddAndUpdateProfessionaltax(Professionaltax model)
+        {
+            try
+            {
+
+                if (model.Id == 0)
+                {
+                    var data = new Professionaltax()
+                    {
+                        Minamount = model.Minamount,
+                        Maxamount = model.Maxamount,
+                        Amountpercentage = model.Amountpercentage,
+                        Iactive = true,
+                        Finyear = model.Finyear,
+                        CreateDate = DateTime.Now
+
+                    };
+                    _context.Add(data);
+                    _context.SaveChanges();
+                    return true;
+                }
+                else
+                {
+
+
+
+                    var existdata = _context.Professionaltaxes.Find(model.Id);
+
+                    existdata.Minamount = model.Minamount;
+                    existdata.Maxamount = model.Maxamount;
+                    existdata.Amountpercentage = model.Amountpercentage;
+                    existdata.Iactive = model.Iactive;
+                    existdata.CreateDate = DateTime.Now;
+                    existdata.Finyear = model.Finyear;
+
+                }
+                _context.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
     }
 
 }
