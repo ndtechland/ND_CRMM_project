@@ -152,7 +152,6 @@ namespace CRM.Controllers.Api
             }
         }
 
-
         [HttpGet]
         [Route("GetRequestDemo")]
         public async Task<IActionResult> GetRequestDemo()
@@ -275,7 +274,7 @@ namespace CRM.Controllers.Api
         {
             try
             {
-                List<CaseStudy> cases = _context.CaseStudies.ToList();
+                List<CaseStudy> cases = _context.CaseStudies.Where(x=>x.IsActive==true).ToList();
                 if (cases != null)
                 {
                     return Ok(new { Status = 200, Message = "Case Studies retrieved successfully.", data = cases });
@@ -298,7 +297,7 @@ namespace CRM.Controllers.Api
         {
             try
             {
-                List<PricingPlan> plans = _context.PricingPlans.ToList();
+                List<PricingPlan> plans = _context.PricingPlans.Where(x=>x.IsActive==true).ToList();
                 if (plans != null)
                 {
                     return Ok(new { Status = 200, Message = "Pricing Plan retrieved successfully.", data = plans });
@@ -306,6 +305,29 @@ namespace CRM.Controllers.Api
                 else
                 {
                     return NotFound(new { Status = 404, Message = "No any Pricing Plan available." });
+                }
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        [HttpGet]
+        [Route("GetOtherServices")]
+        public async Task<IActionResult> GetOtherServices()
+        {
+            try
+            {
+                List<OtherService> plans = _context.OtherServices.Where(x => x.IsActive == true).ToList();
+                if (plans != null)
+                {
+                    return Ok(new { Status = 200, Message = "Other Services retrieved successfully.", data = plans });
+                }
+                else
+                {
+                    return NotFound(new { Status = 404, Message = "No any Other Services available." });
                 }
 
             }

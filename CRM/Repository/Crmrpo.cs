@@ -3403,6 +3403,37 @@ namespace CRM.Repository
                 throw;
             }
         }
+        public async Task<bool> AddAndUpdateOtherService(OtherService model)
+        {
+            try
+            {
+                if(model.Id==0)
+                {
+                    var domainmodel = new OtherService()
+                    {
+                        ServiceName = model.ServiceName,
+                        Description = model.Description
+                    };
+                    _context.Add(domainmodel);
+                    _context.SaveChanges();
+                    return true;
+                }
+                else
+                {
+                    var existdata = _context.OtherServices.Find(model.Id);
+                    existdata.ServiceName = model.ServiceName;
+                    existdata.Description = model.Description;
+                    existdata.IsActive = model.IsActive;
+                    _context.SaveChanges();
+                    return true;
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
 
     }
 

@@ -1,0 +1,104 @@
+﻿@model IEnumerable<CRM.Models.Crm.ContactU>
+
+@{
+    ViewData["Title"] = "GetContacts";
+    Layout = "~/Views/Shared/_adminLayout.cshtml";
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<style>
+    .dataTables_wrapper table.dataTable th {
+        background-color: #00baf2 !important;
+        padding: 24px 0.75rem !important;
+    }
+</style>
+ 
+<div class="page-wrapper">
+    <div class="page-body-wrapper">
+        <div class="page-sidebar">
+        </div>
+        <div class="page-body">
+            <div class="container-fluid">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="page-header-left">
+                                <h2>
+                                    Contact Us List
+                                </h2>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <ol class="breadcrumb pull-right">
+                                <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
+                               @*  <li class="breadcrumb-item">Settings</li> *@
+                                <li class="breadcrumb-item active">Contact Us List</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class=" table-responsive">
+                                    <table id="datatable" class="table table-hover">
+                                        <thead>
+                                            <tr style="background-color: #00baf2;">
+                                                <th nowrap>Sl. No.</th>
+                                                <th nowrap>
+                                                    Name
+                                                </th>
+                                                <th nowrap>
+                                                    Email
+                                                </th>
+                                                <th nowrap>Message</th>
+                                                <th nowrap>Contact Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{
+                                                var count = 0;
+                                                foreach (var item in Model)
+                                                {
+                                                    count++;
+                                                    <tr class="table-row">
+                                                        <td>@count</td>
+                                                        <td nowrap>
+                                                            @item.Name
+                                                        </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.Email)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @item.Message
+                                                        </td>
+                                                        <td nowrap>
+                                                            @item.ContactDate.Value.ToString("dd-MMM-yyyy")
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+ 
+<script>
+    $(document).ready(function () {
+        $('#datatable').DataTable();
+    });
+</script>
