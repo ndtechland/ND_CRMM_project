@@ -238,8 +238,8 @@ namespace CRM.Controllers
                             ViewBag.servicecharge = row["servicecharge"].ToString();
                             ViewBag.specialallowance = row["SpecialAllowance"].ToString();
                             ViewBag.gross = row["gross"].ToString();
-                            ViewBag.Amount = row["Amount"].ToString();
-                            ViewBag.Tdspercentage = row["tdspercentage"].ToString();
+                            ViewBag.Amount = 0;//row["Amount"].ToString();
+                            ViewBag.Tdspercentage = 0;//row["tdspercentage"].ToString();
                             ViewBag.Offerletters = row["offerletterid"].ToString();
                             ViewBag.statesy = row["stateId"].ToString();
                             ViewBag.shifttype = row["officeshiftTypeid"].ToString();
