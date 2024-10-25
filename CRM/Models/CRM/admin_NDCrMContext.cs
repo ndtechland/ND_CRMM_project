@@ -26,7 +26,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<ApprovedPresnolInfo> ApprovedPresnolInfos { get; set; } = null!;
         public virtual DbSet<Approvedbankdetail> Approvedbankdetails { get; set; } = null!;
         public virtual DbSet<Attendanceday> Attendancedays { get; set; } = null!;
-        public virtual DbSet<BannerMaster> BannerMasters { get; set; } = null!;
+        public virtual DbSet<BannerMaster> BannerMasters { get; set; } = null!;=
         public virtual DbSet<BillingDetail> BillingDetails { get; set; } = null!;
         public virtual DbSet<Blog> Blogs { get; set; } = null!;
         public virtual DbSet<CaseStudy> CaseStudies { get; set; } = null!;
@@ -37,8 +37,6 @@ namespace CRM.Models.Crm
         public virtual DbSet<CustomerInvoice> CustomerInvoices { get; set; } = null!;
         public virtual DbSet<CustomerRegistration> CustomerRegistrations { get; set; } = null!;
         public virtual DbSet<DateFormatMaster> DateFormatMasters { get; set; } = null!;
-        public virtual DbSet<DeductorNameMaster> DeductorNameMasters { get; set; } = null!;
-        public virtual DbSet<DeductorTypeMaster> DeductorTypeMasters { get; set; } = null!;
         public virtual DbSet<DepartmentMaster> DepartmentMasters { get; set; } = null!;
         public virtual DbSet<DesignationMaster> DesignationMasters { get; set; } = null!;
         public virtual DbSet<EmpExperienceletter> EmpExperienceletters { get; set; } = null!;
@@ -59,13 +57,11 @@ namespace CRM.Models.Crm
         public virtual DbSet<EmployeeTask> EmployeeTasks { get; set; } = null!;
         public virtual DbSet<EmployeeTasksList> EmployeeTasksLists { get; set; } = null!;
         public virtual DbSet<EmployeerEpf> EmployeerEpfs { get; set; } = null!;
-        public virtual DbSet<EmployeerTd> EmployeerTds { get; set; } = null!;
         public virtual DbSet<EventsmeetScheduler> EventsmeetSchedulers { get; set; } = null!;
         public virtual DbSet<Featurebenifit> Featurebenifits { get; set; } = null!;
         public virtual DbSet<GenderMaster> GenderMasters { get; set; } = null!;
         public virtual DbSet<GstMaster> GstMasters { get; set; } = null!;
         public virtual DbSet<Hash> Hashes { get; set; } = null!;
-        public virtual DbSet<HeadOfficeAddress> HeadOfficeAddresses { get; set; } = null!;
         public virtual DbSet<IndustryMaster> IndustryMasters { get; set; } = null!;
         public virtual DbSet<Job> Jobs { get; set; } = null!;
         public virtual DbSet<JobParameter> JobParameters { get; set; } = null!;
@@ -74,6 +70,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<LeaveType> LeaveTypes { get; set; } = null!;
         public virtual DbSet<Leavemaster> Leavemasters { get; set; } = null!;
         public virtual DbSet<List> Lists { get; set; } = null!;
+        public virtual DbSet<MFinancialYear> MFinancialYears { get; set; } = null!;
         public virtual DbSet<Offerletter> Offerletters { get; set; } = null!;
         public virtual DbSet<OfficeBreak> OfficeBreaks { get; set; } = null!;
         public virtual DbSet<OfficeBreakstatus> OfficeBreakstatuses { get; set; } = null!;
@@ -85,6 +82,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<OurStory> OurStories { get; set; } = null!;
         public virtual DbSet<OurTutorial> OurTutorials { get; set; } = null!;
         public virtual DbSet<Payroll> Payrolls { get; set; } = null!;
+        public virtual DbSet<PricingPlan> PricingPlans { get; set; } = null!;
         public virtual DbSet<ProductMaster> ProductMasters { get; set; } = null!;
         public virtual DbSet<Professionaltax> Professionaltaxes { get; set; } = null!;
         public virtual DbSet<Quation> Quations { get; set; } = null!;
@@ -347,6 +345,7 @@ namespace CRM.Models.Crm
                     .HasColumnName("IMAGEPATH");
             });
 
+
             modelBuilder.Entity<BillingDetail>(entity =>
             {
                 entity.ToTable("Billing_Details", "dbo");
@@ -377,6 +376,7 @@ namespace CRM.Models.Crm
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Customer_Billing_Details_State_ID");
             });
+
 
             modelBuilder.Entity<Blog>(entity =>
             {
@@ -517,28 +517,6 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.DateFormat)
                     .HasMaxLength(120)
                     .HasColumnName("Date_Format");
-            });
-
-            modelBuilder.Entity<DeductorNameMaster>(entity =>
-            {
-                entity.ToTable("Deductor_Name_Master", "dbo");
-
-                entity.Property(e => e.Id).HasColumnName("ID");
-
-                entity.Property(e => e.DeductorName)
-                    .HasMaxLength(120)
-                    .HasColumnName("Deductor_Name");
-            });
-
-            modelBuilder.Entity<DeductorTypeMaster>(entity =>
-            {
-                entity.ToTable("Deductor_Type_Master", "dbo");
-
-                entity.Property(e => e.Id).HasColumnName("ID");
-
-                entity.Property(e => e.DeductorTypeName)
-                    .HasMaxLength(120)
-                    .HasColumnName("Deductor_Type_Name");
             });
 
             modelBuilder.Entity<DepartmentMaster>(entity =>
@@ -1215,31 +1193,6 @@ namespace CRM.Models.Crm
                     .HasColumnName("EPF_Number");
             });
 
-            modelBuilder.Entity<EmployeerTd>(entity =>
-            {
-                entity.ToTable("EmployeerTDS");
-
-                entity.Property(e => e.Id).HasColumnName("id");
-
-                entity.Property(e => e.Amount)
-                    .HasColumnType("decimal(18, 0)")
-                    .HasColumnName("amount");
-
-                entity.Property(e => e.CreateDate).HasColumnType("datetime");
-
-                entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
-
-                entity.Property(e => e.Isactive).HasColumnName("ISactive");
-
-                entity.Property(e => e.Tdspercentage)
-                    .HasColumnType("decimal(18, 2)")
-                    .HasColumnName("tdspercentage");
-
-                entity.Property(e => e.WorkLocationId)
-                    .HasMaxLength(120)
-                    .HasColumnName("Work_Location_ID");
-            });
-
             modelBuilder.Entity<EventsmeetScheduler>(entity =>
             {
                 entity.ToTable("EventsmeetScheduler");
@@ -1322,6 +1275,7 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Field).HasMaxLength(100);
             });
+
 
             modelBuilder.Entity<HeadOfficeAddress>(entity =>
             {
@@ -1441,6 +1395,25 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.ExpireAt).HasColumnType("datetime");
             });
 
+            modelBuilder.Entity<MFinancialYear>(entity =>
+            {
+                entity.HasKey(e => e.FyearCode);
+
+                entity.ToTable("M_Financial_Year");
+
+                entity.Property(e => e.FyearCode).HasColumnName("Fyear_Code");
+
+                entity.Property(e => e.FyearIsdelete)
+                    .HasMaxLength(1)
+                    .IsUnicode(false)
+                    .HasColumnName("Fyear_ISDelete")
+                    .IsFixedLength();
+
+                entity.Property(e => e.FyearName)
+                    .HasMaxLength(50)
+                    .HasColumnName("Fyear_Name");
+            });
+
             modelBuilder.Entity<Offerletter>(entity =>
             {
                 entity.ToTable("Offerletter");
@@ -1557,6 +1530,7 @@ namespace CRM.Models.Crm
                     .HasMaxLength(200)
                     .HasColumnName("starttime");
             });
+
 
             modelBuilder.Entity<OrganisationProfile>(entity =>
             {
@@ -1691,6 +1665,23 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.TotalAmount).HasColumnName("Total_Amount");
             });
 
+            modelBuilder.Entity<PricingPlan>(entity =>
+            {
+                entity.ToTable("PricingPlan");
+
+                entity.Property(e => e.CreatedDate)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.IsActive)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.PlanName).HasMaxLength(100);
+
+                entity.Property(e => e.Price).HasColumnType("decimal(10, 2)");
+            });
+
             modelBuilder.Entity<ProductMaster>(entity =>
             {
                 entity.ToTable("Product_Master", "dbo");
@@ -1723,6 +1714,10 @@ namespace CRM.Models.Crm
                     .HasColumnName("amountpercentage");
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
+
+
+                entity.Property(e => e.Finyear).HasColumnName("finyear");
+
 
                 entity.Property(e => e.Maxamount).HasColumnType("decimal(18, 0)");
 

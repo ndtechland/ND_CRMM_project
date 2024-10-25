@@ -575,57 +575,100 @@ namespace CRM.Controllers
                 throw new Exception("Error:" + Ex.Message);
             }
         }
-        public IActionResult employeerTDS()
-        {
-            if (HttpContext.Session.GetString("UserName") != null)
-            {
-
-
-                ViewBag.CustomerName = _context.CustomerRegistrations
-                    .Select(x => new SelectListItem
-                    {
-                        Value = x.Id.ToString(),
-                        Text = x.CompanyName
-                    }).ToList();
-                ViewBag.Message = TempData["ErrorMessage"];
-                return View();
-            }
-            else
-            {
-                return RedirectToAction("Login", "Admin");
-            }
-        }
-        [HttpPost]
-        public async Task<IActionResult> employeerTDS(EmployeerTd model)
+        public IActionResult ProfessionalTDStax(int id)
         {
             try
             {
-                if (model != null)
+               List<Professionaltax> professionaltaxes  = _context.Professionaltaxes.OrderByDescending(x => x.Id).ToList();
+
+                int iId = (int)(id == null ? 0 : id);
+                ViewBag.FinancialYear = _context.MFinancialYears.Where(x => x.FyearIsdelete == "N").Select(p => new SelectListItem
                 {
-                    EmployeerTd master = new EmployeerTd
+                    Value = p.FyearCode.ToString(),
+                    Text = p.FyearName
+                }).ToList();
+                ViewBag.id = 0;
+                ViewBag.Minamount = "";
+                ViewBag.Maxamount = "";
+                ViewBag.Amountpercentage = "";
+                ViewBag.IsActive = "";
+                ViewBag.Finy = "";
+                ViewBag.heading = "Add Professional Tax";
+                ViewBag.btnText = "SAVE";
+               
+                if (iId != null && iId != 0)
+                {
+                    var data = _context.Professionaltaxes.Find(iId);
+                    if (data != null)
                     {
-                        Amount = model.Amount,
-                        CustomerId = model.CustomerId,
-                        WorkLocationId = model.WorkLocationId,
-                        CreateDate = DateTime.Now.Date,
-                        Isactive = true,
-                        Tdspercentage = model.Tdspercentage,
-                    };
-                    _context.EmployeerTds.Add(master);
-                    _context.SaveChanges();
-                    TempData["ErrorMessage"] = "Employeer TDS Add";
-                    return RedirectToAction("employeerTDS");
+                        ViewBag.id = data.Id;
+                        ViewBag.Minamount = data.Minamount;
+                        ViewBag.Maxamount = data.Maxamount;
+                        ViewBag.Amountpercentage = data.Amountpercentage;
+                        ViewBag.IsActive = data.Iactive;
+                        ViewBag.Finy = data.Finyear;
+                        ViewBag.btnText = "UPDATE";
+                        ViewBag.heading = "Update Professional Tax";
+
+                    }
+                }
+
+                return View(professionaltaxes);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> ProfessionalTDStax(Professionaltax model)
+        {
+            try
+            {
+                bool check = await _ICrmrpo.AddAndUpdateProfessionaltax(model);
+                if (check)
+                {
+                    if (model.Id == 0)
+                    {
+                        TempData["msg"] = "ok";
+                        return RedirectToAction("ProfessionalTDStax");
+                    }
+                    else
+                    {
+                        TempData["msg"] = "updok";
+                        return RedirectToAction("ProfessionalTDStax");
+                    }
                 }
                 else
                 {
-                    TempData["ErrorMessage"] = "data not save";
-                    ModelState.Clear();
-                    return View();
+                    return RedirectToAction("ProfessionalTDStax");
                 }
             }
-            catch (Exception Ex)
+            catch (Exception)
             {
-                throw new Exception("Error:" + Ex.Message);
+
+                throw;
+            }
+        }
+        public async Task<IActionResult> DeleteProfessionaltax(int id)
+        {
+            try
+            {
+                var dlt = _context.Professionaltaxes.Find(id);
+                if (dlt != null)
+                {
+                    _context.Professionaltaxes.Remove(dlt);
+                    _context.SaveChanges();
+                }
+                TempData["msg"] = "dltok";
+                return RedirectToAction("ProfessionalTDStax");
+
+            }
+            catch (Exception)
+            {
+
+                throw;
             }
         }
         //[HttpPost]

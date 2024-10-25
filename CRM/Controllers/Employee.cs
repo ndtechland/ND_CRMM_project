@@ -757,8 +757,8 @@ namespace CRM.Controllers
                                     from worklocation in worklocationGroup.DefaultIfEmpty()
                                     join designation in _context.DesignationMasters on emp.DesignationId equals designation.Id.ToString() into designationGroup
                                     from designation in designationGroup.DefaultIfEmpty()
-                                    join tds in _context.EmployeerTds on emp.Vendorid equals tds.CustomerId into tdsGroup
-                                    from tds in tdsGroup.DefaultIfEmpty()
+                                   // join tds in _context.Professionaltaxes on emp.Vendorid equals tds.CustomerId into tdsGroup
+                                   // from tds in tdsGroup.DefaultIfEmpty()
                                     join vrs in _context.VendorRegistrations on emp.Vendorid equals (int?)vrs.Id into vrsGroup
                                     from vrs in vrsGroup.DefaultIfEmpty()
                                     where emp.Id == id
@@ -782,7 +782,7 @@ namespace CRM.Controllers
                                         TravellingAllowance = empatt.TravellingAllowance,
                                         SpecialAllowance = empsalary.SpecialAllowance,
                                         Esic = empsalary.Esic,
-                                        Amount = tds.Amount,
+                                        //Amount = tds.Amount,
                                         CompanyName = vrs.CompanyName,
                                         CompanyImage = vrs.CompanyImage
                                     }).FirstOrDefaultAsync();
@@ -1544,29 +1544,29 @@ namespace CRM.Controllers
             }
             //}
         }
-        public JsonResult tdsDetails(int CustomerId)
-        {
-            var employeerTd = new EmployeerTd();
-            if (CustomerId > 0)
-            {
-                var data = _ICrmrpo.tdsDetails(CustomerId);
-                if (data != null)
-                {
-                    employeerTd.Tdspercentage = data.Tdspercentage;
-                    employeerTd.Amount = data.Amount;
-                }
-                var result = new
-                {
-                    employeerTd = employeerTd,
-                };
-                return new JsonResult(result);
-            }
-            var errorResult = new JsonResult(new
-            {
-                error = "Invalid CustomerId. CustomerId must be greater than 0."
-            });
-            return errorResult;
-        }
+        //public JsonResult tdsDetails(int CustomerId)
+        //{
+        //    var employeerTd = new EmployeerTd();
+        //    if (CustomerId > 0)
+        //    {
+        //        var data = _ICrmrpo.tdsDetails(CustomerId);
+        //        if (data != null)
+        //        {
+        //            employeerTd.Tdspercentage = data.Tdspercentage;
+        //            employeerTd.Amount = data.Amount;
+        //        }
+        //        var result = new
+        //        {
+        //            employeerTd = employeerTd,
+        //        };
+        //        return new JsonResult(result);
+        //    }
+        //    var errorResult = new JsonResult(new
+        //    {
+        //        error = "Invalid CustomerId. CustomerId must be greater than 0."
+        //    });
+        //    return errorResult;
+        //}
         public JsonResult Epfesilist()
         {
             int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
