@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CRM.Models.Crm.Professionaltax>
+﻿@model IEnumerable<CRM.Models.DTO.ProfessionaltaxDto>
 
 @{
     ViewData["Title"] = "Professional Tax";
@@ -137,7 +137,7 @@
                                     {
                                         <div class="form-group col-md-3">
                                             <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" id="IsActive" name="IsActive" value="true" @(ViewBag.IsActive ? "checked" : "") />
+                                                <input class="form-check-input" type="checkbox" id="IsActive" name="Iactive" value="true" @(ViewBag.IsActive ? "checked" : "") />
                                                 <label class="form-check-label" for="IsActive">Is Active</label>
                                             </div>
                                         </div>
@@ -171,6 +171,7 @@
                                                 </th> 
                                                 <th>Max Amount</th>
                                                 <th>Amount Percentage</th>
+                                                <th>Financial Year</th>
                                                 <th>Created At</th>
                                                 <th>Edit</th>
                                                 <th>Delete</th>
@@ -193,6 +194,9 @@
                                                         <td>
                                                             @String.Format("{0:0}%", item.Amountpercentage)
 
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.Finyear)
                                                         </td>
                                                         <td>
                                                             @item.CreateDate.Value.ToString("dd-MMM-yyyy")
@@ -237,7 +241,10 @@
     } else {
         $("#IsActive").prop("checked", false);
     }
-
+    var fy = '@ViewBag.Finy';
+    if (fy) {
+        $('#ddFinyearId').val(fy);
+    }
 </script>
 <script>
     function validateNumericInput(event) {

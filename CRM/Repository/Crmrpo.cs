@@ -3358,7 +3358,7 @@ namespace CRM.Repository
                 throw;
             }
         }
-        public async Task<bool> AddAndUpdateProfessionaltax(Professionaltax model)
+        public async Task<bool> AddAndUpdateProfessionaltax(ProfessionaltaxDto model)
         {
             try
             {
@@ -3371,7 +3371,7 @@ namespace CRM.Repository
                         Maxamount = model.Maxamount,
                         Amountpercentage = model.Amountpercentage,
                         Iactive = true,
-                        Finyear = model.Finyear,
+                        Finyear = Convert.ToInt32(model.Finyear),
                         CreateDate = DateTime.Now
 
                     };
@@ -3391,7 +3391,7 @@ namespace CRM.Repository
                     existdata.Amountpercentage = model.Amountpercentage;
                     existdata.Iactive = model.Iactive;
                     existdata.CreateDate = DateTime.Now;
-                    existdata.Finyear = model.Finyear;
+                    existdata.Finyear =Convert.ToInt32(model.Finyear);
 
                 }
                 _context.SaveChanges();
