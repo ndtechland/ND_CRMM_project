@@ -2457,6 +2457,60 @@ namespace CRM.Controllers
                 throw;
             }
         }
+        public async Task<IActionResult> EmployeeAttendanceList()
+        {
+            try
+            {
+                int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+
+                var adminLogin = await _context.AdminLogins.FirstOrDefaultAsync(x => x.Id == userId);
+                var employeeList = await _context.EmployeeRegistrations
+                                                  .Where(e => e.Vendorid == adminLogin.Vendorid).OrderByDescending(x => x.EmployeeId)
+                                                  .ToListAsync();
+
+                EmployeeAttendanceDto attendanceDto = new EmployeeAttendanceDto
+                {
+                    detail = new List<EmployeeAttendanceDto>()
+                };
+
+                foreach (var employee in employeeList)
+                {
+                    var attendanceRecords = await _context.EmployeeCheckInRecords
+                                                          .Where(e => e.EmpId == employee.EmployeeId)
+                                                          .OrderByDescending(x => x.EmpId)
+                                                          .ToListAsync();
+
+                    foreach (var record in attendanceRecords)
+                    {
+                        attendanceDto.detail.Add(new EmployeeAttendanceDto
+                        {
+                            EmpId = record.EmpId,
+                            EmployeeName = $"{employee.FirstName} " +
+                                           (!string.IsNullOrEmpty(employee.MiddleName) ? employee.MiddleName + " " : "") +
+                                           employee.LastName,
+                            CheckIntime = record.CheckIntime.HasValue
+                                ? record.CheckIntime.Value.ToString("dd-MMM-yyyy")
+                                : "N/A",  
+                            CheckOuttime = record.CheckOuttime.HasValue
+                                ? record.CheckOuttime.Value.ToString("dd-MMM-yyyy")
+                                : "N/A",  
+                            CurrentDate = record.CurrentDate.HasValue
+                                ? record.CurrentDate.Value.ToString("dd-MMM-yyyy")
+                                : "N/A",
+                            Workinghour = record.Workinghour.HasValue
+                                ? record.Workinghour.Value.ToString(@"hh\:mm\:ss")
+                                : "N/A",  
+                        });
+                    }
+                }
+
+                return View(attendanceDto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
 
     }
 }

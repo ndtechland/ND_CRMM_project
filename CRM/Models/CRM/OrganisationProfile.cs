@@ -5,11 +5,6 @@ namespace CRM.Models.Crm
 {
     public partial class OrganisationProfile
     {
-        public OrganisationProfile()
-        {
-            OrganisationTaxDetails = new HashSet<OrganisationTaxDetail>();
-        }
-
         public int Id { get; set; }
         public string OrganizationName { get; set; } = null!;
         public string BusinessLocation { get; set; } = null!;
@@ -26,6 +21,5 @@ namespace CRM.Models.Crm
         public virtual HeadOfficeAddress HeadOfficeAddress { get; set; } = null!;
         public virtual IndustryMaster Industry { get; set; } = null!;
         public virtual StateMaster State { get; set; } = null!;
-        public virtual ICollection<OrganisationTaxDetail> OrganisationTaxDetails { get; set; }
     }
 }

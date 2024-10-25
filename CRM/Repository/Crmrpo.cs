@@ -67,7 +67,7 @@ namespace CRM.Repository
                         }
                         else
                         {
-                            return -1; // or handle accordingly
+                            return -1;
                         }
                     }
                 }
@@ -1162,10 +1162,10 @@ namespace CRM.Repository
 
             return result;
         }
-        public EmployeerTd tdsDetails(int CustomerId)
-        {
-            return _context.EmployeerTds.Where(x => x.CustomerId == CustomerId).FirstOrDefault();
-        }
+        //public EmployeerTd tdsDetails(int CustomerId)
+        //{
+        //    return _context.EmployeerTds.Where(x => x.CustomerId == CustomerId).FirstOrDefault();
+        //}
 
         public byte[] ImportToExcelAttendance(List<salarydetail> data)
         {
@@ -2546,10 +2546,7 @@ namespace CRM.Repository
 
             try
             {
-                // Fetch AdminLogin, if needed for validation or extra processing
                 var adminLogin = await _context.AdminLogins.FindAsync(userId);
-
-                // Fetch list of employees based on VendorId
                 var empList = await _context.EmployeeRegistrations
                     .Where(x => x.Vendorid == userId)
                     .ToListAsync();
@@ -2558,8 +2555,6 @@ namespace CRM.Repository
                     throw new Exception("No employees found for the specified user.");
 
                 var leaveDetails = new List<ApprovedLeaveApplyList>();
-
-                // Iterate through each employee and fetch their leave details
                 foreach (var emp in empList)
                 {
                     var leave = await _context.ApplyLeaveNews
@@ -2568,16 +2563,13 @@ namespace CRM.Repository
 
                     if (leave == null || leave.Count == 0)
                     {
-                        continue; // Skip if no leave is found for this employee
+                        continue;
                     }
 
                     foreach (var l in leave)
                     {
-                        // Calculate total full day leave
                         decimal totalFullday = (l.EndDate - l.StartDate).Days - (l.EndDate != l.StartDate ? 1 : 0);
-                        totalFullday = Math.Max(totalFullday, 0); // Ensure non-negative value
-
-                        // Add leave details to the result list
+                        totalFullday = Math.Max(totalFullday, 0);
                         leaveDetails.Add(new ApprovedLeaveApplyList
                         {
                             Id = l.Id,
@@ -2586,31 +2578,28 @@ namespace CRM.Repository
                             EmpMobileNumber = await _context.EmployeePersonalDetails
                                 .Where(e => e.EmpRegId == emp.EmployeeId)
                                 .Select(e => e.MobileNumber)
-                                .FirstOrDefaultAsync() ?? "Unknown", // Handle null mobile number
+                                .FirstOrDefaultAsync() ?? "Unknown",
                             LeaveType = GetLeaveType(l.StartLeaveId, l.EndeaveId, totalFullday) +
                                         $" (Total Leaves: {(decimal)(l.CountLeave + l.PaidCountLeave)})",
                             TypeOfLeaveId = await _context.LeaveTypes
                                 .Where(s => s.Id == l.TypeOfLeaveId)
                                 .Select(s => s.Leavetype1)
-                                .FirstOrDefaultAsync() ?? "Unknown", // Handle unknown leave type
+                                .FirstOrDefaultAsync() ?? "Unknown",
                             StartDate = l.StartDate,
                             EndDate = l.EndDate,
                             CreatedDate = l.CreatedDate,
                             UnPaidCountLeave = l.CountLeave,
                             Month = l.Month,
-                            Reason = l.Reason ?? "No reason provided", // Handle null reason
+                            Reason = l.Reason ?? "No reason provided",
                             Isapprove = l.Isapprove,
                             PaidCountLeave = l.PaidCountLeave,
                         });
                     }
                 }
-
-                // Return the leave details or an empty list if none were found
                 return leaveDetails.Any() ? leaveDetails : new List<ApprovedLeaveApplyList>();
             }
             catch (Exception ex)
             {
-                // Log the exception (if logging is implemented)
                 throw new Exception("An error occurred while retrieving leave details.", ex);
             }
         }
@@ -3235,6 +3224,48 @@ namespace CRM.Repository
                         existdata.VedioUrl = model.VedioUrl;
                     }
 
+                }
+                _context.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public async Task<bool> AddAndUpdateProfessionaltax(Professionaltax model)
+        {
+            try
+            {
+                if (model.Id == 0)
+                {
+                    var data = new Professionaltax()
+                    {
+                        Minamount = model.Minamount,
+                        Maxamount = model.Maxamount,
+                        Amountpercentage = model.Amountpercentage,
+                        Iactive = true,
+                        CreateDate = DateTime.Now,
+                        Finyear = model.Finyear
+
+                    };
+                    _context.Add(data);
+                    _context.SaveChanges();
+                    return true;
+                }
+                else
+                {
+
+                    var existdata = _context.Professionaltaxes.Find(model.Id);
+
+                    existdata.Minamount = model.Minamount;
+                    existdata.Maxamount = model.Maxamount;
+                    existdata.Amountpercentage = model.Amountpercentage;
+                    existdata.Iactive = model.Iactive;
+                    existdata.CreateDate = DateTime.Now;
+                    existdata.Finyear = model.Finyear;
                 }
                 _context.SaveChanges();
                 return true;
