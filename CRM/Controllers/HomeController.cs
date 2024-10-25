@@ -589,7 +589,8 @@ namespace CRM.Controllers
                                              Maxamount = pt.Maxamount,
                                              Amountpercentage = pt.Amountpercentage,
                                              Iactive = pt.Iactive,
-                                             Finyear = mfy.FyearName 
+                                             Finyear = mfy.FyearName,
+                                             CreateDate = pt.CreateDate
                                          })
                            .OrderByDescending(x => x.Id)
                            .ToList();

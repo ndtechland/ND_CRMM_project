@@ -199,8 +199,9 @@
                                                             @Html.DisplayFor(modelItem => item.Finyear)
                                                         </td>
                                                         <td>
-                                                            @item.CreateDate.Value.ToString("dd-MMM-yyyy")
+                                                            @item.CreateDate?.ToString("dd-MMM-yyyy")
                                                         </td>
+
                                                         <td>
                                                             <a href="/Home/ProfessionalTDStax?Id=@item.Id" class="fa fa-edit m-2 font-success"></a>
                                                         </td>
