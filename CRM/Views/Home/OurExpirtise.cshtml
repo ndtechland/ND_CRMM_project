@@ -97,7 +97,7 @@
                             <div class="card-body">
                                 <form asp-action="OurExpirtise" enctype="multipart/form-data" autocomplete="off" onsubmit="return validateForm()">
                                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
+                                    <div class="row">
                                     <div class="form-group col-sm-6">
                                         <label for="Title" class="control-label">Expertise Name</label>
                                         <input type="hidden" name="Id" value="@ViewBag.id" />
@@ -107,6 +107,7 @@
                                         <label for="ImageFile" class="control-label">Upload Image</label>
                                         <input type="file" accept=".png,.jpg,.jpeg" id="ImageFile" name="ImageFile" class="form-control" />
                                         <input type="hidden" value="@ViewBag.FilePath" name="FilePath" />
+                                    </div>
                                     </div>
                                     <div class="form-group col-sm-12">
                                         <label for="Content" class="control-label">Description</label>

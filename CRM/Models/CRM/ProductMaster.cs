@@ -5,11 +5,6 @@ namespace CRM.Models.Crm
 {
     public partial class ProductMaster
     {
-        public ProductMaster()
-        {
-            BillingHistories = new HashSet<BillingHistory>();
-        }
-
         public int Id { get; set; }
         public string ProductName { get; set; } = null!;
         public string Category { get; set; } = null!;
@@ -17,7 +12,5 @@ namespace CRM.Models.Crm
         public string HsnSacCode { get; set; } = null!;
         public double Price { get; set; }
         public bool? IsDeleted { get; set; }
-
-        public virtual ICollection<BillingHistory> BillingHistories { get; set; }
     }
 }
