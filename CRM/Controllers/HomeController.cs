@@ -579,7 +579,21 @@ namespace CRM.Controllers
         {
             try
             {
-               List<Professionaltax> professionaltaxes  = _context.Professionaltaxes.OrderByDescending(x => x.Id).ToList();
+                var professionaltaxes = (from pt in _context.Professionaltaxes
+                                         join mfy in _context.MFinancialYears on pt.Finyear equals (int?)mfy.FyearCode into mfyGroup
+                                         from mfy in mfyGroup.DefaultIfEmpty()
+                                         select new ProfessionaltaxDto
+                                         {
+                                             Id = pt.Id,
+                                             Minamount = pt.Minamount,
+                                             Maxamount = pt.Maxamount,
+                                             Amountpercentage = pt.Amountpercentage,
+                                             Iactive = pt.Iactive,
+                                             Finyear = mfy.FyearName 
+                                         })
+                           .OrderByDescending(x => x.Id)
+                           .ToList();
+
 
                 int iId = (int)(id == null ? 0 : id);
                 ViewBag.FinancialYear = _context.MFinancialYears.Where(x => x.FyearIsdelete == "N").Select(p => new SelectListItem
@@ -595,7 +609,7 @@ namespace CRM.Controllers
                 ViewBag.Finy = "";
                 ViewBag.heading = "Add Professional Tax";
                 ViewBag.btnText = "SAVE";
-               
+
                 if (iId != null && iId != 0)
                 {
                     var data = _context.Professionaltaxes.Find(iId);
@@ -622,7 +636,7 @@ namespace CRM.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> ProfessionalTDStax(Professionaltax model)
+        public async Task<IActionResult> ProfessionalTDStax(ProfessionaltaxDto model)
         {
             try
             {
