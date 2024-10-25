@@ -11,5 +11,7 @@ namespace CRM.Models.Crm
         public decimal? Amountpercentage { get; set; }
         public DateTime? CreateDate { get; set; }
         public bool? Iactive { get; set; }
+        public int? Finyear { get; set; }
+
     }
 }

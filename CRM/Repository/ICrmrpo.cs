@@ -60,7 +60,7 @@ namespace CRM.Repository
         public Task<List<EPFReportDTO>> ESIReport(string customerId, int Month, int year, string WorkLocation);
         public EmployeerEpf GetEmployer(int id);
         public Task<int> updateEmployer(EmployeerEpf model);
-        public EmployeerTd tdsDetails(int CustomerId);
+        //public EmployeerTd tdsDetails(int CustomerId);
         public byte[] ImportToExcelAttendance(List<salarydetail> data);
         public List<State> BindState();
         public List<City> BindCity(int stateId);
@@ -111,8 +111,11 @@ namespace CRM.Repository
         Task<bool> AddAndUpdateOurCoreValues(OurCoreValuesDto model, string AddedBy);
         Task<bool> AddAndUpdateFeaturebenifits(FeaturebenifitsDto model, string AddedBy);
         Task<bool> AddAndUpdateOurTutorial(TutorialDTO model, string AddedBy);
+        Task<bool> AddAndUpdateProfessionaltax(Professionaltax model);
+
         Task<bool> AddAndUpdateCaseStudies(CaseStudiesDTO model);
         Task<bool> AddAndUpdatePricingPlan(PricingPlanDTO model);
+
 
     }
 }

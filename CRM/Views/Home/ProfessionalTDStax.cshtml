@@ -1,0 +1,254 @@
+﻿@model IEnumerable<CRM.Models.Crm.Professionaltax>
+
+@{
+    ViewData["Title"] = "Professional Tax";
+    Layout = "~/Views/Shared/_adminLayout.cshtml";
+}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs5.min.css'>
+
+<style>
+    .dataTables_wrapper table.dataTable th {
+        background-color: #00baf2 !important;
+        padding: 24px 0.75rem !important;
+    }
+</style>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var message = "@TempData["msg"]";
+
+        if (message == "ok" || message == "dltok" || message == "updok") {
+            if (message) {
+                let alertText;
+
+                if (message == "dltok") {
+                    alertText = "Deleted successfully.";
+                } else if (message == "updok") {
+                    alertText = "Professional Tax updated successfully.";
+                } else {
+                    alertText = "Professional Tax added successfully.";
+                }
+
+                Swal.fire({
+                    title: 'Success',
+                    text: alertText,
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        setTimeout(function () {
+                            window.location.href = '@Url.Action("ProfessionalTDStax", "Home")';
+                        }, 1000);
+                    }
+                });
+            }
+        }
+        else {
+            if (message) {
+                Swal.fire({
+                    title: 'Failed',
+                    text: message,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        setTimeout(function () {
+                            window.location.href = '@Url.Action("ProfessionalTDStax", "Home")';
+                        }, 1000);
+                    }
+                });
+            }
+        }
+    });
+</script>
+
+
+<div class="page-wrapper">
+    <div class="page-body-wrapper">
+        <div class="page-sidebar">
+        </div>
+        <div class="page-body">
+            <div class="container-fluid">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="page-header-left">
+                                <h2>
+                                    @ViewBag.heading
+                                </h2>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <ol class="breadcrumb pull-right">
+                                <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
+                                <li class="breadcrumb-item">Settings</li>
+                                <li class="breadcrumb-item active">Professional Tax</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <form asp-action="ProfessionalTDStax" enctype="multipart/form-data" autocomplete="off" onsubmit="return validateForm()">
+                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                    <div class="row gx-3 mb-3">
+                                        <div class="form-group col-md-3">
+                                            <label for="Minamount" class="control-label">Minimum Amount</label>
+                                            <input type="hidden" name="Id" value="@ViewBag.id" />
+                                            <input type="text" step="0.01" name="Minamount" id="Minamount" placeholder="Enter Minimum Amount" class="form-control" value="@ViewBag.Minamount" onkeydown="validateNumericInput(event)" required />
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label for="Maxamount" class="control-label">Maximum Amount</label>
+                                            <input type="text" step="0.01" name="Maxamount" id="Maxamount" placeholder="Enter Maximum Amount" class="form-control" value="@ViewBag.Maxamount" onkeydown="validateNumericInput(event)" required />
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label for="validationCustom0">Financial Year</label>
+                                            <select name="Finyear" class="form-control" id="ddFinyearId" required="required">
+                                                <option value="">-- Select FinancialYear --</option>
+                                                @foreach (var item in (IEnumerable<SelectListItem>)ViewBag.FinancialYear)
+                                                {
+                                                    <option value="@item.Value">@item.Text</option>
+                                                }
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group col-md-3">
+                                            <label for="Amountpercentage" class="control-label">Amount Percentage</label>
+                                            <div class="input-group">
+                                                <input type="text" step="0.01" name="Amountpercentage" id="Amountpercentage" placeholder="0.00" class="form-control" value="@ViewBag.Amountpercentage" onkeydown="validateNumericInput(event)" required />
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">%</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                               
+
+                                   
+                                    @if (ViewBag.id > 0)
+                                    {
+                                        <div class="form-group col-md-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="IsActive" name="IsActive" value="true" @(ViewBag.IsActive ? "checked" : "") />
+                                                <label class="form-check-label" for="IsActive">Is Active</label>
+                                            </div>
+                                        </div>
+                                    }
+                                    <div class="form-group mt-3">
+                                        <input type="submit" value="@ViewBag.btnText" class="btn btn-primary" />
+                                        @if (ViewBag.id > 0)
+                                        {
+                                            <a href="/Home/ProfessionalTDStax" class="btn btn-danger">Cancel</a>
+                                        }
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class=" table-responsive">
+                                    <table id="datatable" class="table table-responsive">
+                                        <thead>
+                                            <tr>
+                                                <th nowrap>Sl. No.</th>
+                                                <th nowrap>
+                                                    Min Amount
+                                                </th> 
+                                                <th>Max Amount</th>
+                                                <th>Amount Percentage</th>
+                                                <th>Created At</th>
+                                                <th>Edit</th>
+                                                <th>Delete</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{
+                                                var count = 0;
+                                                foreach (var item in Model)
+                                                {
+                                                    count++;
+                                                    <tr class="table-row">
+                                                        <td>@count</td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.Minamount)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.Maxamount)
+                                                        </td>
+                                                        <td>
+                                                            @String.Format("{0:0}%", item.Amountpercentage)
+
+                                                        </td>
+                                                        <td>
+                                                            @item.CreateDate.Value.ToString("dd-MMM-yyyy")
+                                                        </td>
+                                                        <td>
+                                                            <a href="/Home/ProfessionalTDStax?Id=@item.Id" class="fa fa-edit m-2 font-success"></a>
+                                                        </td>
+                                                        <td>
+                                                            <a href="/Home/DeleteProfessionaltax?Id=@item.Id" onclick="return confirm('Are you sure want to delete?')" class="fa fa-trash m-2 font-danger"></a>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+
+<script>
+    $(document).ready(function () {
+        $('#datatable').DataTable();
+    });
+
+    var isactive = '@(ViewBag.IsActive?.ToString().ToLower() ?? "false")';
+
+    if (isactive === "true") {
+        $("#IsActive").prop("checked", true);
+    } else {
+        $("#IsActive").prop("checked", false);
+    }
+
+</script>
+<script>
+    function validateNumericInput(event) {
+        if ([46, 8, 9, 27, 13].indexOf(event.keyCode) !== -1 ||
+            (event.keyCode == 65 && event.ctrlKey === true) ||
+            (event.keyCode >= 35 && event.keyCode <= 39)) {
+            return;
+        }
+        if ((event.shiftKey || (event.keyCode < 48 || event.keyCode > 57)) && (event.keyCode < 96 || event.keyCode > 105)) {
+            event.preventDefault();
+        }
+
+    }
+</script>
