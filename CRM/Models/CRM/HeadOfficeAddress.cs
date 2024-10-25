@@ -17,7 +17,6 @@ namespace CRM.Models.Crm
         public int StateId { get; set; }
         public int Pincode { get; set; }
 
-        public virtual StateMaster State { get; set; } = null!;
         public virtual ICollection<OrganisationProfile> OrganisationProfiles { get; set; }
     }
 }

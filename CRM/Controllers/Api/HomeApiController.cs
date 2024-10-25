@@ -247,5 +247,50 @@ namespace CRM.Controllers.Api
                 throw;
             }
         }
+        [HttpPost]
+        [Route("Contactus")]
+        public async Task<IActionResult> Contactus(ContactU model)
+        {
+            try
+            {
+                var domainmodel = new ContactU()
+                {
+                    Name=model.Name,
+                    Email=model.Email,
+                    Message=model.Message
+                };
+                _context.Add(domainmodel);
+                _context.SaveChanges();
+                return Ok(new { Status = 200, Message = "Contact added successfully." });
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        [HttpGet]
+        [Route("GetCaseStudies")]
+        public async Task<IActionResult> GetCaseStudies()
+        {
+            try
+            {
+                List<CaseStudy> cases = _context.CaseStudies.ToList();
+                if (cases != null)
+                {
+                    return Ok(new { Status = 200, Message = "Case Studies retrieved successfully.", data = cases });
+                }
+                else
+                {
+                    return NotFound(new { Status = 404, Message = "No any Case Studies available." });
+                }
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 }

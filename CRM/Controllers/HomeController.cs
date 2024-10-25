@@ -1693,6 +1693,97 @@ namespace CRM.Controllers
                 throw;
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> CaseStudies(int id)
+        {
+            try
+            {
+                CaseStudiesDTO model = new CaseStudiesDTO();
+                model.CaseStudyList = _context.CaseStudies.OrderByDescending(x => x.Id).ToList();
+                ;
+                int iId = (int)(id == null ? 0 : id);
+                ViewBag.id = 0;
+                ViewBag.Tittle = "";
+                ViewBag.Description = "";
+                ViewBag.IsActive = "";
+                ViewBag.Image = "";
+                ViewBag.heading = "Add Case Studies";
+                ViewBag.btnText = "SAVE";
+                if (iId != null && iId != 0)
+                {
+                    var data = _context.CaseStudies.Find(iId);
+                    if (data != null)
+                    {
+                        ViewBag.id = data.Id;
+                        ViewBag.Tittle = data.Title;
+                        ViewBag.Description = data.Description;
+                        ViewBag.Image = data.Image;
+                        ViewBag.IsActive = data.IsActive;
+                        ViewBag.btnText = "UPDATE";
+                        ViewBag.heading = "Update Case Studies";
+
+                    }
+                }
+
+                return View(model);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> CaseStudies(CaseStudiesDTO model)
+        {
+            try
+            {
+                bool check = await _ICrmrpo.AddAndUpdateCaseStudies(model);
+                if (check)
+                {
+                    if (model.Id == 0)
+                    {
+                        TempData["msg"] = "ok";
+                        return RedirectToAction("CaseStudies");
+                    }
+                    else
+                    {
+                        TempData["msg"] = "updok";
+                        return RedirectToAction("CaseStudies");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("CaseStudies");
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public async Task<IActionResult> DeleteCaseStudies(int id)
+        {
+            try
+            {
+                var dlt = _context.CaseStudies.Find(id);
+                if (dlt != null)
+                {
+                    _context.CaseStudies.Remove(dlt);
+                    _context.SaveChanges();
+                }
+                TempData["msg"] = "dltok";
+                return RedirectToAction("CaseStudies");
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 
 }

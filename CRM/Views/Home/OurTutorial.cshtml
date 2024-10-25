@@ -99,7 +99,7 @@
                             <div class="card-body">
                                 <form asp-action="OurTutorial" enctype="multipart/form-data" autocomplete="off" onsubmit="return validateForm()">
                                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
+                                    <div class="row">
                                     <div class="form-group col-sm-6">
                                         <label for="Title" class="control-label">Title</label>
                                         <input type="hidden" name="Id" value="@ViewBag.id" />
@@ -109,6 +109,7 @@
                                         <label for="VedioUrl" class="control-label">Upload Video</label>
                                         <input type="file" accept="video/*" name="VideoFile" class="form-control" />
                                         <input type="hidden" value="@ViewBag.VedioURL" name="VideoFile" />
+                                    </div>
                                     </div>
                                     <div class="form-group col-sm-12">
                                         <label for="Content" class="control-label">Description</label>
