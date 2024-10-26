@@ -337,5 +337,29 @@ namespace CRM.Controllers.Api
                 throw;
             }
         }
+        [HttpPost]
+        [Route("AddRequestDemo")]
+        public async Task<IActionResult> AddRequestDemo(DemoRequest model)
+        {
+            try
+            {
+                var domainmodel = new DemoRequest()
+                {
+                    Name = model.Name,
+                    Email = model.Email,
+                    Mobile = model.Mobile,
+                    CompanyName = model.CompanyName,
+                    Description = model.Description
+                };
+                _context.Add(domainmodel);
+                _context.SaveChanges();
+                return Ok(new { Status = 200, Message = "Request Demo added successfully." });
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 }

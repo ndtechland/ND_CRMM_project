@@ -36,6 +36,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<CustomerInvoice> CustomerInvoices { get; set; } = null!;
         public virtual DbSet<CustomerRegistration> CustomerRegistrations { get; set; } = null!;
         public virtual DbSet<DateFormatMaster> DateFormatMasters { get; set; } = null!;
+        public virtual DbSet<DemoRequest> DemoRequests { get; set; } = null!;
         public virtual DbSet<DepartmentMaster> DepartmentMasters { get; set; } = null!;
         public virtual DbSet<DesignationMaster> DesignationMasters { get; set; } = null!;
         public virtual DbSet<EmpExperienceletter> EmpExperienceletters { get; set; } = null!;
@@ -483,6 +484,23 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.DateFormat)
                     .HasMaxLength(120)
                     .HasColumnName("Date_Format");
+            });
+
+            modelBuilder.Entity<DemoRequest>(entity =>
+            {
+                entity.ToTable("DemoRequest");
+
+                entity.Property(e => e.CompanyName).HasMaxLength(100);
+
+                entity.Property(e => e.Email).HasMaxLength(100);
+
+                entity.Property(e => e.Mobile).HasMaxLength(100);
+
+                entity.Property(e => e.Name).HasMaxLength(100);
+
+                entity.Property(e => e.RequestDate)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
             });
 
             modelBuilder.Entity<DepartmentMaster>(entity =>
