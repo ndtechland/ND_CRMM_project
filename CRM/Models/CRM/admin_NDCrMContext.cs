@@ -1587,6 +1587,10 @@ namespace CRM.Models.Crm
             {
                 entity.ToTable("PricingPlan");
 
+                entity.Property(e => e.AnnulPrice).HasColumnType("decimal(18, 9)");
+
+                entity.Property(e => e.AnnulPriceInPercentage).HasColumnType("decimal(18, 9)");
+
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");

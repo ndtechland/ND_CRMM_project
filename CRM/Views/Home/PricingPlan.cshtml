@@ -111,11 +111,25 @@
                                             <input type="hidden" value="@ViewBag.FilePath" name="FilePath" />
                                         </div>
                                     </div>
+                                    <div class="row">
                                     <div class="form-group col-sm-6">
                                         <label for="Price" class="control-label">Price</label>
+
+                                            <input type="text" name="Price" id="Price" value="@ViewBag.Price" placeholder="Enter Plan Price" class="form-control" required />
+                                    </div>
+
+                                    <div class="form-group col-sm-6">
+                                        <label for="Price" class="control-label">Annual Discount %</label>
+                                            <input type="text" name="AnnulPriceInPercentage" value="@ViewBag.AnnulPriceInPercentage" id="AnnulPriceInPercentage" placeholder="00.0" class="form-control" onkeydown="validateNumericInput(event);" required />
+                                    </div>
+                                    </div>
+                                    <div class="form-group col-sm-6">
+                                        <label for="Price" class="control-label">Annual Discounted Price </label>
+                                        <input type="text" name="AnnulPrice" value="@ViewBag.AnnulPrice" id="AnnulPrice" placeholder="00.0" class="form-control" readonly />
+
                                         <input type="text" name="Price" value="@ViewBag.Price" placeholder="Enter Plan Price" class="form-control" required onkeydown="validateNumericInput(event)" />
                                     </div>
-                                    
+
                                     <div class="form-group col-sm-12">
                                         <label for="Description" class="control-label">Description</label>
                                         <textarea rows="10" name="Description" id="makeMeSummernote" cols="5" class="form-control"
@@ -169,6 +183,33 @@
                                                 foreach (var item in Model.PricingPlans)
                                                 {
                                                     count++;
+
+                                                                <tr class="table-row">
+                                                                    <td>@count</td>
+                                                                    <td>
+                                                                        <a href="~/image/@item.Image"><img src="~/image/@item.Image" alt="Expertise Image" style="width:100px;" /></a>
+                                                                    </td>
+                                                                    <td nowrap>
+                                                                        @Html.DisplayFor(modelItem => item.PlanName)
+                                                                    </td>
+                                                                    <td>
+                                                                        @item.Price
+                                                                    </td>
+
+                                                                    <td>
+                                                                        @Html.Raw(@item.Description)
+                                                                    </td>
+                                                                    <td>
+                                                                        @item.CreatedDate
+                                                                    </td>
+                                                                    <td>
+                                                                        <a href="/Home/PricingPlan?Id=@item.Id" class="fa fa-edit m-2 font-success"></a>
+                                                                    </td>
+                                                                    <td>
+                                                                        <a href="/Home/DeletePricingPlan?Id=@item.Id" onclick="return confirm('Are you sure want to delete?')" class="fa fa-trash m-2 font-danger"></a>
+                                                                    </td>
+                                                                </tr>
+
                                                     <tr class="table-row">
                                                         <td>@count</td>
                                                         <td>
@@ -194,6 +235,7 @@
                                                             <a href="/Home/DeletePricingPlan?Id=@item.Id" onclick="return confirm('Are you sure want to delete?')" class="fa fa-trash m-2 font-danger"></a>
                                                         </td>
                                                     </tr>
+
                                                 }
                                             }
                                         </tbody>
@@ -223,6 +265,23 @@
         });
     }
 
+
+    $(document).on("keyup", "#AnnulPriceInPercentage", function () {
+        var annulprice = $("#Price").val() * 12;
+        var per = document.getElementById("AnnulPriceInPercentage").value;
+        var discountedprice = annulprice * per / 100;
+        var finelAmt = annulprice - discountedprice;
+        if (per == null || per == "") {
+            finelAmt = 0;
+
+            $("#AnnulPrice").val();
+        }
+       
+$("#AnnulPrice").val(finelAmt);
+        
+        
+    })
+
     function validateNumericInput(event) {
         if ([46, 8, 9, 27, 13].indexOf(event.keyCode) !== -1 ||
             (event.keyCode == 65 && event.ctrlKey === true) ||
@@ -233,6 +292,7 @@
             event.preventDefault();
         }
     }
+
 </script>
 <script>
     $(document).ready(function () {

@@ -3330,8 +3330,9 @@ namespace CRM.Repository
                         PlanName = model.PlanName,
                         Price = model.Price,
                         Description = model.Description,
-                        Image = model.Image
-
+                        Image = model.Image,
+                        AnnulPrice = model.AnnulPrice,
+                        AnnulPriceInPercentage = model.AnnulPriceInPercentage
                     };
                     _context.Add(data);
                     _context.SaveChanges();
@@ -3345,6 +3346,8 @@ namespace CRM.Repository
                     existdata.Price = model.Price;
                     existdata.Description = model.Description;
                     existdata.IsActive = model.IsActive;
+                    existdata.AnnulPrice = model.AnnulPrice;
+                    existdata.AnnulPriceInPercentage = model.AnnulPriceInPercentage;
                     if (model.Image != null)
                     {
                         existdata.Image = model.Image;
