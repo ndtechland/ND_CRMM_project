@@ -4,6 +4,17 @@
     ViewData["Title"] = "Professional Tax";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
+@{
+    var addedBy = Context.Session.GetString("UserName");
+    if (!string.IsNullOrEmpty(addedBy))
+    {
+        ViewBag.UserName = addedBy;
+    }
+    else
+    {
+        ViewBag.UserName = "";
+    }
+}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -130,9 +141,9 @@
                                             </div>
                                         </div>
                                     </div>
-                               
 
-                                   
+
+
                                     @if (ViewBag.id > 0)
                                     {
                                         <div class="form-group col-md-3">
@@ -168,13 +179,16 @@
                                                 <th nowrap>Sl. No.</th>
                                                 <th nowrap>
                                                     Min Amount
-                                                </th> 
+                                                </th>
                                                 <th>Max Amount</th>
                                                 <th>Amount Percentage</th>
                                                 <th>Financial Year</th>
                                                 <th>Created At</th>
-                                                <th>Edit</th>
-                                                <th>Delete</th>
+                                                @if (@ViewBag.UserName == "admin")
+                                                {
+                                                    <th>Edit</th>
+                                                    <th>Delete</th>
+                                                }
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -201,13 +215,15 @@
                                                         <td>
                                                             @item.CreateDate?.ToString("dd-MMM-yyyy")
                                                         </td>
-
-                                                        <td>
-                                                            <a href="/Home/ProfessionalTDStax?Id=@item.Id" class="fa fa-edit m-2 font-success"></a>
-                                                        </td>
-                                                        <td>
-                                                            <a href="/Home/DeleteProfessionaltax?Id=@item.Id" onclick="return confirm('Are you sure want to delete?')" class="fa fa-trash m-2 font-danger"></a>
-                                                        </td>
+                                                        @if (@ViewBag.UserName == "admin")
+                                                        {
+                                                            <td>
+                                                                <a href="/Home/ProfessionalTDStax?Id=@item.Id" class="fa fa-edit m-2 font-success"></a>
+                                                            </td>
+                                                            <td>
+                                                                <a href="/Home/DeleteProfessionaltax?Id=@item.Id" onclick="return confirm('Are you sure want to delete?')" class="fa fa-trash m-2 font-danger"></a>
+                                                            </td>
+                                                        }
                                                     </tr>
                                                 }
                                             }

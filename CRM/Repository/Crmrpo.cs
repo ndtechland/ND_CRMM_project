@@ -1631,7 +1631,8 @@ namespace CRM.Repository
                                        BillingCityId = v.BillingCityId,
                                        BillingStateId = v.BillingStateId,
                                        OfficeCityId = v.CityId,
-                                       OfficeStateId = v.StateId
+                                       OfficeStateId = v.StateId,
+                                       Isprofessionaltax = v.Isprofessionaltax
                                    }).FirstOrDefaultAsync();
                 return query;
             }
@@ -1678,6 +1679,7 @@ namespace CRM.Repository
             customer.BillingCityId = model.BillingCityId;
             customer.StateId = model.OfficeStateId;
             customer.CityId = model.OfficeCityId;
+            customer.Isprofessionaltax = model.Isprofessionaltax;
             _context.VendorRegistrations.Update(customer);
             await _context.SaveChangesAsync();
 
