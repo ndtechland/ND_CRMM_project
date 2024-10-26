@@ -9,9 +9,11 @@ namespace CRM.Models.DTO
         public decimal Price { get; set; }
         public decimal AnnulPrice { get; set; }
         public decimal AnnulPriceInPercentage { get; set; }
+        public string? Title { get; set; }
         public string? Description { get; set; }
         public string? Image { get; set; }
         public bool? IsActive { get; set; }
+        public string? SavePrice { get; set; }
         public IFormFile ImageFile { get; set; }
         public DateTime? CreatedDate { get; set; }
         public List<PricingPlan> PricingPlans { get; set; }

@@ -1861,6 +1861,9 @@ namespace CRM.Controllers
                 ViewBag.id = 0;
                 ViewBag.PlanName = "";
                 ViewBag.Price = "";
+                ViewBag.tittle = "";
+                ViewBag.AnnulPrice = "";
+                ViewBag.AnnulPriceInPercentage = "";
                 ViewBag.Description = "";
                 ViewBag.IsActive = "";
                 ViewBag.Image = "";
@@ -1876,6 +1879,9 @@ namespace CRM.Controllers
                         ViewBag.id = data.Id;
                         ViewBag.PlanName = data.PlanName;
                         ViewBag.Price = data.Price;
+                        ViewBag.tittle = data.Title;
+                        ViewBag.AnnulPrice = data.AnnulPrice;
+                        ViewBag.AnnulPriceInPercentage = data.AnnulPriceInPercentage;
                         ViewBag.Description = data.Description;
                         ViewBag.IsActive = data.IsActive;
                         ViewBag.Image = data.Image;

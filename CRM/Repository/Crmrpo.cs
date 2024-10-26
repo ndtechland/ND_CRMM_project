@@ -3372,6 +3372,7 @@ namespace CRM.Repository
                     {
                         PlanName = model.PlanName,
                         Price = model.Price,
+                        Title = model.Title,
                         Description = model.Description,
                         Image = model.Image,
                         AnnulPrice = model.AnnulPrice,
@@ -3387,6 +3388,7 @@ namespace CRM.Repository
 
                     existdata.PlanName = model.PlanName;
                     existdata.Price = model.Price;
+                    existdata.Title = model.Title;
                     existdata.Description = model.Description;
                     existdata.IsActive = model.IsActive;
                     existdata.AnnulPrice = model.AnnulPrice;

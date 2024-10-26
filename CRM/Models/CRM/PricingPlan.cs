@@ -14,5 +14,6 @@ namespace CRM.Models.Crm
         public DateTime? CreatedDate { get; set; }
         public decimal? AnnulPrice { get; set; }
         public decimal? AnnulPriceInPercentage { get; set; }
+        public string? Title { get; set; }
     }
 }
