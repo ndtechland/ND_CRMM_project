@@ -1602,6 +1602,8 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.PlanName).HasMaxLength(100);
 
                 entity.Property(e => e.Price).HasColumnType("decimal(10, 2)");
+
+                entity.Property(e => e.Title).HasMaxLength(250);
             });
 
             modelBuilder.Entity<ProductMaster>(entity =>
