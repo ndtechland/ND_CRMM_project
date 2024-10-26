@@ -43,7 +43,6 @@ namespace CRM.Controllers
         [HttpGet]
         public IActionResult Login()
         {
-
             return View();
         }
         [HttpPost]

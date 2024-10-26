@@ -33,7 +33,7 @@
     #map {
         height: 400px;
         width: 100%;
-    } 
+    }
 </style>
 <script type="text/javascript">
     function confirmDelete(url) {
@@ -53,8 +53,8 @@
 
         if (message == "ok") {
             if (message) {
-                 
-                
+
+
 
                 Swal.fire({
                     title: 'Success',
@@ -163,15 +163,15 @@
         margin-left: 1rem;
         margin-right: 1rem;
     }
-    
-@@media (min-width: 1200px) {
-    .col-xl-6 {
-        -webkit-box-flex: 0;
-        -ms-flex: 0 0 auto;
-        flex: 0 0 auto;
-        width: 63%;
+
+    @@media (min-width: 1200px) {
+        .col-xl-6 {
+            -webkit-box-flex: 0;
+            -ms-flex: 0 0 auto;
+            flex: 0 0 auto;
+            width: 63%;
+        }
     }
-}
 </style>
 <div class="page-wrapper">
     <div class="page-body-wrapper">
@@ -237,13 +237,13 @@
                                             <span asp-validation-for="MobileNumber" class="text-danger"></span>
                                         </div>
                                     </div>
-                                     <div class="row gx-3 mb-3">
+                                    <div class="row gx-3 mb-3">
                                         <div class="col-md-6">
                                             <label for="validationCustom0">Office Location</label>
                                             <input asp-for="Location" placeholder="Enter Location" id="location-input" class="form-control" required="" oninvalid="this.setCustomValidity('Please Enter Location')" oninput="this.setCustomValidity('')" />
                                             <span asp-validation-for="Location" class="text-danger"></span>
-                                        </div> 
-                                         <div class="col-md-6">
+                                        </div>
+                                        <div class="col-md-6">
                                             <label for="validationCustom0">User Name</label>
                                             <input asp-for="UserName" placeholder="Enter UserName" class="form-control" required="" oninvalid="this.setCustomValidity('Please Enter UserName')" oninput="this.setCustomValidity('')" />
                                             <span asp-validation-for="UserName" class="text-danger"></span>
@@ -262,7 +262,7 @@
                                                 <option value="">-- Select City --</option>
                                             </select>
                                         </div>
-                                       
+
                                     </div>
                                     <div class="row gx-3 mb-3">
                                         <div class="col-md-6">
@@ -278,7 +278,7 @@
                                         </div>
                                     </div>
                                     <div class="row gx-3 mb-3">
-                                        
+
                                         <div class="col-md-6">
                                             <label for="validationCustom0">Billing City <span class="text-danger">*</span></label>
                                             <select asp-for="BillingCityId" class="form-control" id="billingcityid" required>
@@ -293,9 +293,9 @@
                                     </div>
                                     @if (ViewBag.FilePathDetail != "")
                                     {
-                                        <div class="row gx-3 mb-3">
-                                          
-                                            <div class="col-md-3">
+                                        <div class="row gx-4 mb-4">
+
+                                            <div class="col-md-4">
                                                 <label for="validationCustom0">Radius</label>
                                                 <input type="text" id="radius-input" asp-for="radious" placeholder="Enter radius" class="form-control" onkeydown="validateNumericInput(event)">
                                                 <span asp-validation-for="radious" class="text-danger"></span>
@@ -303,44 +303,70 @@
                                                 <input type="hidden" id="longitude" asp-for="maplong">
 
                                             </div>
-                                            <div class="col-md-3">
+                                            <div class="col-md-4">
                                                 <label for="exampleInputFile">Company Image</label>
                                                 <input type="hidden" value='@ViewBag.vendorid' name="Id" />
-                                                <input type="file" class="form-control"  accept=".jpg, .jpeg, .png, .gif, .mp4, .avi, .mkv" id="ImageFile" name="ImageFile">
-                                             <br />
+                                                <input type="file" class="form-control" accept=".jpg, .jpeg, .png, .gif, .mp4, .avi, .mkv" id="ImageFile" name="ImageFile">
+                                                <br />
                                                 <img src='../CompanyImage/@ViewBag.FilePathDetail' id="ImageDetails" style="height:100px;width:100px" />
                                                 <i class="fas fa-trash-alt" id="filedelete" onclick="DeleteCompanyImageFile('@Html.Raw(ViewBag.FilePathDetail)', @ViewBag.vendorid)" style="color:red"></i>
                                                 <input type="hidden" value='@ViewBag.FilePathDetail' id="hdnFilePath" name="FilePath" />
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="Isprofessionaltax" class="form-label">Would you like the system to automatically determine payroll tax deductions using the latest tax rate?</label>
+                                                <div>
+                                                    <div class="form-check form-check-inline" style="margin-top: 15px;">
+                                                        <input class="form-check-input" type="radio" name="Isprofessionaltax" id="ProfessionalNo" value="true" onchange="toggleEmployeeDropdown(true)" />
+                                                        <label class="form-check-label" for="ProfessionalYes">Yes</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline" style="margin-top: 15px;">
+                                                        <input class="form-check-input" type="radio" name="Isprofessionaltax" id="ProfessionalNo" value="false" onchange="toggleEmployeeDropdown(false)" checked />
+                                                        <label class="form-check-label" for="ProfessionalNo">No</label>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
 
                                     }
                                     else
                                     {
-                                        <div class="row gx-3 mb-3">
-                                            <div class="col-md-3">
+                                        <div class="row gx-4 mb-4">
+                                            <div class="col-md-4">
                                                 <label for="validationCustom0">Radius</label>
                                                 <input type="text" id="radius-input" asp-for="radious" class="form-control" placeholder="Enter radius" onkeydown="validateNumericInput(event)">
                                                 <span asp-validation-for="radious" class="text-danger"></span>
-                                                <input type="hidden" id="latitude"  asp-for="maplat">
-                                                <input type="hidden" id="longitude"  asp-for="maplong">
+                                                <input type="hidden" id="latitude" asp-for="maplat">
+                                                <input type="hidden" id="longitude" asp-for="maplong">
 
                                             </div>
-                                            <div class="col-md-3">
+                                            <div class="col-md-4">
                                                 <label for="exampleInputFile">Company Image</label>
                                                 <input type="hidden" value='@ViewBag.vendorid' name="Id" />
                                                 <input type="file" class="form-control" accept=".jpg, .jpeg, .png, .gif, .mp4, .avi, .mkv" id="ImageFile" name="ImageFile">
                                                 <input type="hidden" value='@ViewBag.FilePathDetail' name="FilePath" />
                                             </div>
-                                           
-                                        </div>                                
+                                            <div class="col-md-4">
+                                                <label for="Isprofessionaltax" class="form-label">Would you like the system to automatically determine payroll tax deductions using the latest tax rate?</label>
+                                                <div>
+                                                    <div class="form-check form-check-inline" style="margin-top: 15px;">
+                                                        <input class="form-check-input" type="radio" name="Isprofessionaltax" id="ProfessionalYes" value="true" onchange="toggleEmployeeDropdown(true)" />
+                                                        <label class="form-check-label" for="ProfessionalYes">Yes</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline" style="margin-top: 15px;">
+                                                        <input class="form-check-input" type="radio" name="Isprofessionaltax" id="ProfessionalNo" value="false" onchange="toggleEmployeeDropdown(false)" checked />
+                                                        <label class="form-check-label" for="ProfessionalNo">No</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     }
+
                                     <div class="row gx-3 mb-3">
                                         <div class="col-md-12">
                                             <div id="map"></div>
                                         </div>
                                     </div>
-                                   
+
                                     <div class="form-group d-flex justify-content-center">
                                         <input type="submit" value="@ViewBag.btnText" class="btn btn-primary" />
                                     </div>
@@ -357,7 +383,19 @@
 
 
 </div>
-
+<script>
+    var eventmeet = '@ViewBag.professionaltax'.toLowerCase();
+    if (eventmeet !== "") {
+        if (eventmeet === "true") {
+            $("#ProfessionalYes").prop("checked", false);
+            $("#ProfessionalNo").prop("checked", true);
+        }
+        if (eventmeet === "false") {
+            $("#ProfessionalYes").prop("checked", true);
+            $("#ProfessionalNo").prop("checked", false);
+        }
+    }
+</script>
 <script type="text/javascript">
     $(document).ready(function () {
         var selectedDistrictId = '@Html.Raw(ViewBag.SelectedBillingCityId ?? "null")';
@@ -365,13 +403,13 @@
         $("#stateid").trigger('change');
         $("#location-input").trigger('keyup');
         if (stateId) {
-            loadDistricts(stateId, selectedDistrictId); 
+            loadDistricts(stateId, selectedDistrictId);
         }
 
         $('#stateid').change(function () {
             var stateId = $(this).val();
             if (stateId) {
-                loadDistricts(stateId); 
+                loadDistricts(stateId);
             } else {
                 $('#billingcityid').empty();
                 $('#billingcityid').append('<option value="">--Select City--</option>');
@@ -496,7 +534,7 @@
 
         circle = new google.maps.Circle({
             map: map,
-            radius: 0, 
+            radius: 0,
             fillColor: "#FF0000",
             fillOpacity: 0.35,
             strokeColor: "#FF0000",
@@ -508,7 +546,7 @@
     }
 
     function updateCircle() {
-        const radiusInput = parseInt(document.getElementById("radius-input").value, 10); 
+        const radiusInput = parseInt(document.getElementById("radius-input").value, 10);
 
         const position = marker.getPosition();
         circle.setCenter(position);
@@ -523,7 +561,7 @@
         // alert(`Latitude: ${lat}, Longitude: ${lng}, Radius: ${radiusInput} meters`);
     }
 
-   
+
 
     window.onload = initMap;
     document.getElementById("location-input").addEventListener('keyup', function () {
@@ -538,7 +576,7 @@
                 marker.setPosition(results[0].geometry.location);
                 updateCircle();
             } else {
-               // alert("Geocode was not successful for the following reason: " + status);
+                // alert("Geocode was not successful for the following reason: " + status);
             }
         });
     });

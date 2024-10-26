@@ -34,6 +34,10 @@ namespace CRM.Controllers
             if (HttpContext.Session.GetString("UserName") != null)
             {
                 ViewBag.ContactCount = _context.ContactUs.Count();
+                int UserId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin =  _context.AdminLogins.Where(x => x.Id == UserId).FirstOrDefault();
+                ViewBag.Professional = _context.VendorRegistrations.Where(x => x.Id == adminlogin.Vendorid).Select(x =>x.Isprofessionaltax).FirstOrDefault();
+
                 return View();
             }
             else
@@ -578,6 +582,9 @@ namespace CRM.Controllers
         {
             try
             {
+                var addedby = HttpContext.Session.GetString("UserName");
+                ViewBag.UserName = addedby;
+
                 var professionaltaxes = (from pt in _context.Professionaltaxes
                                          join mfy in _context.MFinancialYears on pt.Finyear equals (int?)mfy.FyearCode into mfyGroup
                                          from mfy in mfyGroup.DefaultIfEmpty()
@@ -591,16 +598,18 @@ namespace CRM.Controllers
                                              Finyear = mfy.FyearName,
                                              CreateDate = pt.CreateDate
                                          })
-                           .OrderByDescending(x => x.Id)
-                           .ToList();
+                                         .OrderByDescending(x => x.Id)
+                                         .ToList();
 
+                ViewBag.FinancialYear = _context.MFinancialYears
+                    .Where(x => x.FyearIsdelete == "N")
+                    .Select(p => new SelectListItem
+                    {
+                        Value = p.FyearCode.ToString(),
+                        Text = p.FyearName
+                    })
+                    .ToList();
 
-                int iId = (int)(id == null ? 0 : id);
-                ViewBag.FinancialYear = _context.MFinancialYears.Where(x => x.FyearIsdelete == "N").Select(p => new SelectListItem
-                {
-                    Value = p.FyearCode.ToString(),
-                    Text = p.FyearName
-                }).ToList();
                 ViewBag.id = 0;
                 ViewBag.Minamount = "";
                 ViewBag.Maxamount = "";
@@ -610,9 +619,9 @@ namespace CRM.Controllers
                 ViewBag.heading = "Add Professional Tax";
                 ViewBag.btnText = "SAVE";
 
-                if (iId != null && iId != 0)
+                if (id != 0)
                 {
-                    var data = _context.Professionaltaxes.Find(iId);
+                    var data = _context.Professionaltaxes.Find(id);
                     if (data != null)
                     {
                         ViewBag.id = data.Id;
@@ -623,7 +632,6 @@ namespace CRM.Controllers
                         ViewBag.Finy = data.Finyear;
                         ViewBag.btnText = "UPDATE";
                         ViewBag.heading = "Update Professional Tax";
-
                     }
                 }
 
@@ -631,10 +639,10 @@ namespace CRM.Controllers
             }
             catch (Exception)
             {
-
                 throw;
             }
         }
+
         [HttpPost]
         public async Task<IActionResult> ProfessionalTDStax(ProfessionaltaxDto model)
         {
@@ -1944,7 +1952,7 @@ namespace CRM.Controllers
             try
             {
                 List<OtherService> model = _context.OtherServices.OrderByDescending(x => x.Id).ToList();
-                
+
                 int iId = (int)(id == null ? 0 : id);
                 ViewBag.id = 0;
                 ViewBag.ServiceName = "";

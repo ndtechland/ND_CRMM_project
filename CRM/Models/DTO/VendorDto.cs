@@ -62,6 +62,7 @@ namespace CRM.Models.DTO
         public int? BillingCityId { get; set; }
         public int? OfficeStateId { get; set; }
         public int? OfficeCityId { get; set; }
+        public bool? Isprofessionaltax { get; set; }
 
         public IFormFile ImageFile { get; set; }
         public string UserName { get; set; } = null!;

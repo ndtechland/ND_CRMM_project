@@ -182,6 +182,7 @@ namespace CRM.Controllers
                 ViewBag.SelectedBillingStateId = data.BillingStateId;
                 ViewBag.FilePathDetail = data.CompanyImage;
                 ViewBag.id = id;
+                ViewBag.professionaltax = data.Isprofessionaltax;
                 ViewBag.btnText = "Update";
                 return View(data);
             }

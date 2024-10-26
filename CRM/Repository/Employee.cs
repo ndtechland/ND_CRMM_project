@@ -1132,7 +1132,7 @@ namespace CRM.Repository
                                 throw new Exception("Invalid shift end time format.");
                             }
                             var checkIns = await _context.EmployeeCheckIns
-                            .Where(g => g.EmployeeId == empAttendanceDetails.EmployeeId && g.CheckInTime.HasValue && g.CheckInTime.Value.Date == Currentdate)
+                            .Where(g => g.EmployeeId == empAttendanceDetails.EmployeeId && g.Currentdate.HasValue && g.Currentdate.Value.Date == Currentdate )
                             .OrderBy(g => g.Id)
                             .ToListAsync();
 
@@ -1394,9 +1394,8 @@ namespace CRM.Repository
 
         private async Task<string> CalculateMonthlyWorkingHours(string employeeId, DateTime Currentdate)
         {
-            var checkIns = await _context.EmployeeCheckIns
-                .Where(g => g.EmployeeId == employeeId && g.Currentdate.HasValue && g.Currentdate.Value.Month == Currentdate.Month)
-                .OrderBy(g => g.CheckInTime)
+            var checkIns = await _context.EmployeeCheckInRecords
+                .Where(g => g.EmpId == employeeId  && g.CurrentDate.Value.Month == Currentdate.Month)
                 .ToListAsync();
 
             double monthlyHours = 0;
@@ -1404,13 +1403,13 @@ namespace CRM.Repository
             for (int i = 0; i < checkIns.Count; i++)
             {
                 var checkInRecord = checkIns[i];
-                if (checkInRecord.CheckIn == true && checkInRecord.CheckInTime.HasValue)
+                if (checkInRecord.CheckIntime.HasValue)
                 {
-                    var checkOutRecord = checkIns.FirstOrDefault(g => g.CheckIn == false && g.CheckOutTime.HasValue && g.CheckOutTime > checkInRecord.CheckInTime);
+                    var checkOutRecord = checkIns.FirstOrDefault(g => g.CheckIntime == checkInRecord.CheckIntime && g.CheckOuttime.HasValue && g.CheckOuttime > checkInRecord.CheckIntime);
 
                     if (checkOutRecord != null)
                     {
-                        monthlyHours += (checkOutRecord.CheckOutTime.Value - checkInRecord.CheckInTime.Value).TotalHours;
+                        monthlyHours += (checkOutRecord.CheckOuttime.Value - checkInRecord.CheckIntime.Value).TotalHours;
                         checkIns.Remove(checkOutRecord);
                     }
                 }
