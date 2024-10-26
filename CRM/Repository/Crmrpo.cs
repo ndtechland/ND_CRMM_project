@@ -2548,10 +2548,8 @@ namespace CRM.Repository
 
             try
             {
-                // Fetch AdminLogin, if needed for validation or extra processing
                 var adminLogin = await _context.AdminLogins.FindAsync(userId);
 
-                // Fetch list of employees based on VendorId
                 var empList = await _context.EmployeeRegistrations
                     .Where(x => x.Vendorid == userId)
                     .ToListAsync();
@@ -2561,7 +2559,6 @@ namespace CRM.Repository
 
                 var leaveDetails = new List<ApprovedLeaveApplyList>();
 
-                // Iterate through each employee and fetch their leave details
                 foreach (var emp in empList)
                 {
                     var leave = await _context.ApplyLeaveNews
@@ -2570,16 +2567,13 @@ namespace CRM.Repository
 
                     if (leave == null || leave.Count == 0)
                     {
-                        continue; // Skip if no leave is found for this employee
+                        continue; 
                     }
 
                     foreach (var l in leave)
                     {
-                        // Calculate total full day leave
                         decimal totalFullday = (l.EndDate - l.StartDate).Days - (l.EndDate != l.StartDate ? 1 : 0);
-                        totalFullday = Math.Max(totalFullday, 0); // Ensure non-negative value
-
-                        // Add leave details to the result list
+                        totalFullday = Math.Max(totalFullday, 0); 
                         leaveDetails.Add(new ApprovedLeaveApplyList
                         {
                             Id = l.Id,
@@ -2588,31 +2582,29 @@ namespace CRM.Repository
                             EmpMobileNumber = await _context.EmployeePersonalDetails
                                 .Where(e => e.EmpRegId == emp.EmployeeId)
                                 .Select(e => e.MobileNumber)
-                                .FirstOrDefaultAsync() ?? "Unknown", // Handle null mobile number
+                                .FirstOrDefaultAsync() ?? "Unknown", 
                             LeaveType = GetLeaveType(l.StartLeaveId, l.EndeaveId, totalFullday) +
                                         $" (Total Leaves: {(decimal)(l.CountLeave + l.PaidCountLeave)})",
                             TypeOfLeaveId = await _context.LeaveTypes
                                 .Where(s => s.Id == l.TypeOfLeaveId)
                                 .Select(s => s.Leavetype1)
-                                .FirstOrDefaultAsync() ?? "Unknown", // Handle unknown leave type
+                                .FirstOrDefaultAsync() ?? "Unknown",
                             StartDate = l.StartDate,
                             EndDate = l.EndDate,
                             CreatedDate = l.CreatedDate,
                             UnPaidCountLeave = l.CountLeave,
                             Month = l.Month,
-                            Reason = l.Reason ?? "No reason provided", // Handle null reason
+                            Reason = l.Reason ?? "No reason provided", 
                             Isapprove = l.Isapprove,
                             PaidCountLeave = l.PaidCountLeave,
                         });
                     }
                 }
+                return leaveDetails.OrderByDescending(l => l.CreatedDate).ToList();
 
-                // Return the leave details or an empty list if none were found
-                return leaveDetails.Any() ? leaveDetails : new List<ApprovedLeaveApplyList>();
             }
             catch (Exception ex)
             {
-                // Log the exception (if logging is implemented)
                 throw new Exception("An error occurred while retrieving leave details.", ex);
             }
         }
@@ -2623,6 +2615,7 @@ namespace CRM.Repository
             {
                 if (model.Id == 0)
                 {
+
                     var domainmodel = new EmployeeEpfPayrollInfo()
                     {
                         Epfnumber = model.Epfnumber,
@@ -2634,6 +2627,19 @@ namespace CRM.Repository
                         UpdatedDate = DateTime.Now
                     };
                     await _context.AddAsync(domainmodel);
+                    if (model.EmployeeId != null && model.EmployeeId.Length > 0)
+                    {
+                        var employee = await _context.EmployeeSalaryDetails.Where(e => e.EmployeeId == model.EmployeeId).FirstOrDefaultAsync();
+                        if (employee != null)
+                        {
+                            var Epfamount = employee.Gross * model.Epfpercentage / 100;
+                            var totalGross = employee.Gross - Epfamount;
+                            employee.Gross = totalGross;
+                            employee.Epf = (decimal)Epfamount;
+
+                        }
+
+                    }
                     await _context.SaveChangesAsync();
                     return true;
                 }
@@ -2644,7 +2650,19 @@ namespace CRM.Repository
                     existdata.Epfpercentage = model.Epfpercentage;
                     existdata.EmployeeId = model.EmployeeId;
                     existdata.UpdatedDate = DateTime.Now;
+                    if (model.EmployeeId != null && model.EmployeeId.Length > 0)
+                    {
+                        var employee = await _context.EmployeeSalaryDetails.Where(e => e.EmployeeId == model.EmployeeId).FirstOrDefaultAsync();
+                        if (employee != null)
+                        {
+                            var Epfamount = employee.Gross * model.Epfpercentage / 100;
+                            var totalGross = employee.Gross - Epfamount;
+                            employee.Gross = totalGross;
+                            employee.Epf = (decimal)Epfamount;
 
+                        }
+
+                    }
                     await _context.SaveChangesAsync();
                     return true;
                 }
@@ -2672,6 +2690,19 @@ namespace CRM.Repository
                         CreatedDate = DateTime.Now
                     };
                     await _context.AddAsync(domainmodel);
+                    if (model.EmployeeId != null && model.EmployeeId.Length > 0)
+                    {
+                        var employee = await _context.EmployeeSalaryDetails.Where(e => e.EmployeeId == model.EmployeeId).FirstOrDefaultAsync();
+                        if (employee != null)
+                        {
+                            var Esiamount = employee.Gross * model.Esicpercentage / 100;
+                            var totalGross = employee.Gross - Esiamount;
+                            employee.Gross = totalGross;
+                            employee.Esic = (decimal)Esiamount;
+
+                        }
+
+                    }
                     await _context.SaveChangesAsync();
                     return true;
                 }
@@ -2681,7 +2712,19 @@ namespace CRM.Repository
                     existdata.Esicnumber = model.Esicnumber;
                     existdata.Esicpercentage = model.Esicpercentage;
                     existdata.EmployeeId = model.EmployeeId;
+                    if (model.EmployeeId != null && model.EmployeeId.Length > 0)
+                    {
+                        var employee = await _context.EmployeeSalaryDetails.Where(e => e.EmployeeId == model.EmployeeId).FirstOrDefaultAsync();
+                        if (employee != null)
+                        {
+                            var Esiamount = employee.Gross * model.Esicpercentage / 100;
+                            var totalGross = employee.Gross - Esiamount;
+                            employee.Gross = totalGross;
+                            employee.Esic = (decimal)Esiamount;
 
+                        }
+
+                    }
                     await _context.SaveChangesAsync();
                     return true;
                 }

@@ -1853,7 +1853,7 @@ namespace CRM.Controllers
                 {
                     int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                     var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
-                    var Approvedbankdetail = await _ICrmrpo.GetLeaveapplydetailList(adminlogin.Vendorid); ;
+                    var Approvedbankdetail = await _ICrmrpo.GetLeaveapplydetailList(adminlogin.Vendorid); 
                     if (Approvedbankdetail != null)
                     {
                         return View(Approvedbankdetail);
@@ -1983,11 +1983,6 @@ namespace CRM.Controllers
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 var checkexist = _context.EmployeeEpfPayrollInfos.Where(e => e.EmployeeId == model.EmployeeId).FirstOrDefault();
-                if (checkexist != null)
-                {
-                    TempData["Message"] = $"An EPF record for employee ID {model.EmployeeId} already exists.";
-                    return RedirectToAction("EmployeeEpf");
-                }
                 bool check = await _ICrmrpo.AddEmployeeEpf(model, (int)adminlogin.Vendorid);
                 if (check)
                 {
@@ -1998,6 +1993,7 @@ namespace CRM.Controllers
                             TempData["Message"] = $"An EPF record for employee ID {model.EmployeeId} already exists.";
                             return RedirectToAction("EmployeeEpf");
                         }
+
                         TempData["Message"] = "ok";
                     }
                     else
@@ -2024,6 +2020,7 @@ namespace CRM.Controllers
         public JsonResult GetEmpEpfNumber(string employeeId)
         {
 
+            var epflist = _context.EmployeeEpfPayrollInfos.Where(x => x.EmployeeId == employeeId).FirstOrDefault();
             var employee = _context.EmployeeBankDetails.Where(e => e.EmpId == employeeId)
                 .Select(e => new
                 {
@@ -2466,7 +2463,8 @@ namespace CRM.Controllers
 
                 var adminLogin = await _context.AdminLogins.FirstOrDefaultAsync(x => x.Id == userId);
                 var employeeList = await _context.EmployeeRegistrations
-                                                  .Where(e => e.Vendorid == adminLogin.Vendorid).OrderByDescending(x => x.EmployeeId)
+                                                  .Where(e => e.Vendorid == adminLogin.Vendorid)
+                                                  .OrderByDescending(x => x.EmployeeId)
                                                   .ToListAsync();
 
                 EmployeeAttendanceDto attendanceDto = new EmployeeAttendanceDto
@@ -2474,16 +2472,17 @@ namespace CRM.Controllers
                     detail = new List<EmployeeAttendanceDto>()
                 };
 
+                List<EmployeeAttendanceDto> attendanceRecords = new List<EmployeeAttendanceDto>();
+
                 foreach (var employee in employeeList)
                 {
-                    var attendanceRecords = await _context.EmployeeCheckInRecords
+                    var attendanceEntries = await _context.EmployeeCheckInRecords
                                                           .Where(e => e.EmpId == employee.EmployeeId)
-                                                          .OrderByDescending(x => x.EmpId)
                                                           .ToListAsync();
 
-                    foreach (var record in attendanceRecords)
+                    foreach (var record in attendanceEntries)
                     {
-                        attendanceDto.detail.Add(new EmployeeAttendanceDto
+                        attendanceRecords.Add(new EmployeeAttendanceDto
                         {
                             EmpId = record.EmpId,
                             EmployeeName = $"{employee.FirstName} " +
@@ -2491,19 +2490,22 @@ namespace CRM.Controllers
                                            employee.LastName,
                             CheckIntime = record.CheckIntime.HasValue
                                 ? record.CheckIntime.Value.ToString("dd-MMM-yyyy")
-                                : "N/A",  
+                                : "N/A",
                             CheckOuttime = record.CheckOuttime.HasValue
                                 ? record.CheckOuttime.Value.ToString("dd-MMM-yyyy")
-                                : "N/A",  
+                                : "N/A",
                             CurrentDate = record.CurrentDate.HasValue
                                 ? record.CurrentDate.Value.ToString("dd-MMM-yyyy")
                                 : "N/A",
                             Workinghour = record.Workinghour.HasValue
                                 ? record.Workinghour.Value.ToString(@"hh\:mm\:ss")
-                                : "N/A",  
+                                : "N/A",
                         });
                     }
                 }
+                attendanceDto.detail = attendanceRecords
+                    .OrderByDescending(r => r.CurrentDate)
+                    .ToList();
 
                 return View(attendanceDto);
             }
@@ -2512,6 +2514,30 @@ namespace CRM.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+        [HttpGet]
+        public JsonResult CheckEmployeeExists(string employeeId)
+        {
+            var epfInfo = _context.EmployeeEpfPayrollInfos.FirstOrDefault(x => x.EmployeeId == employeeId);
+            if (epfInfo != null)
+            {
+                return Json(new { exists = true, message = "This Employee already has an EPF record." });
+            }
+
+            return Json(new { exists = false });
+        }
+        [HttpGet]
+        public JsonResult CheckEmployeeEsicExists(string employeeId)
+        {
+            var epfInfo = _context.EmployeeEsicPayrollInfos.FirstOrDefault(x => x.EmployeeId == employeeId);
+            if (epfInfo != null)
+            {
+                return Json(new { exists = true, message = "This Employee already has an Esic record." });
+            }
+
+            return Json(new { exists = false });
+        }
+
+
 
     }
 }
