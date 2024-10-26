@@ -715,7 +715,9 @@ namespace CRM.Models.Crm
                     .HasMaxLength(100)
                     .HasColumnName("EPFNumber");
 
-                entity.Property(e => e.Epfpercentage).HasColumnName("EPFPercentage");
+                entity.Property(e => e.Epfpercentage)
+                    .HasColumnType("decimal(18, 0)")
+                    .HasColumnName("EPFPercentage");
 
                 entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
 
@@ -736,7 +738,9 @@ namespace CRM.Models.Crm
                     .HasMaxLength(100)
                     .HasColumnName("ESICNumber");
 
-                entity.Property(e => e.Esicpercentage).HasColumnName("ESICPercentage");
+                entity.Property(e => e.Esicpercentage)
+                    .HasColumnType("decimal(18, 0)")
+                    .HasColumnName("ESICPercentage");
 
                 entity.Property(e => e.Vendorid).HasColumnName("vendorid");
             });
@@ -1602,6 +1606,8 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.PlanName).HasMaxLength(100);
 
                 entity.Property(e => e.Price).HasColumnType("decimal(10, 2)");
+
+                entity.Property(e => e.Title).HasMaxLength(250);
             });
 
             modelBuilder.Entity<ProductMaster>(entity =>

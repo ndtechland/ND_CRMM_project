@@ -125,8 +125,8 @@
                             <div class="card-body">
                                 <form method="post" asp-controller="Vendor" asp-action="EmployeeEsic" autocomplete="off" onsubmit="return validateForm()">
                                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                                    <div class="row">
-                                        <div class="form-group col-lg-4">
+                                    <div class="row gx-3 mb-3">
+                                        <div class="form-group col-lg-3">
                                             <input type="hidden" name="Id" value="@ViewBag.id" />
                                             <label for="TxtEmployeeId">Employee Id</label>
                                             <select name="EmployeeId" id="empddl" class="form-control select2" required>
@@ -137,16 +137,21 @@
                                                 }
                                             </select>
                                         </div>
-                                        <div class="form-group col-md-4">
+                                        <div class="form-group col-md-3">
                                             <label class="control-label" for="epfnumberr">ESIC Number</label>
                                             <input type="text" name="ESICNumber" placeholder="Please Enter ESIC Number" value="@ViewBag.ESICNumber" class="form-control" required />
                                             <span name="EPFNumber" class="text-danger"></span>
                                         </div>
-                                        <div class="form-group col-md-4">
+                                        <div class="form-group col-md-3">
                                             <label class="control-label" for="esic">ESIC %</label>
                                             <input type="text" id="esic" name="ESICPercentage" value="@ViewBag.ESICPercentage" class="form-control" required />
                                             <span name="EPFPercentage" class="text-danger"></span>
                                         </div>
+                                       <div class="form-group col-md-3">
+                                                <label class="control-label" for="esic">ESIC Value</label>
+                                                <input type="text" id="esicvalue"  value="21000" placeholder="" class="form-control" readonly required />
+                                                <span name="EPFPercentage" class="text-danger"></span>
+                                         </div>
                                     </div>
 
                                     <div class="form-group" style="display:flex; justify-content:center;">

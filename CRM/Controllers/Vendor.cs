@@ -2084,13 +2084,26 @@ namespace CRM.Controllers
                     int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                     var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                     var epflist = _context.EmployeeEsicPayrollInfos.Where(e => e.Vendorid == adminlogin.Vendorid).OrderByDescending(e => e.Id).ToList();
+                    var epfEmployeeList = (from salary in _context.EmployeeSalaryDetails
+                                           join employee in _context.EmployeeRegistrations
+                                           on salary.EmployeeId equals employee.EmployeeId
+                                           where employee.Vendorid == adminlogin.Vendorid && salary.Gross < 21000
+                                           orderby salary.Id descending
+                                           select new
+                                           {
+                                               Value = employee.EmployeeId.ToString(),
+                                               Text = employee.EmployeeId
+                                           }).ToList();
 
-                    ViewBag.EmployeeItem = _context.EmployeeRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).Select(D => new SelectListItem
-                    {
-                        Value = D.EmployeeId.ToString(),
-                        Text = D.EmployeeId
 
-                    }).ToList();
+                    ViewBag.EmployeeItem = epfEmployeeList;
+
+                    //ViewBag.EmployeeItem = _context.EmployeeRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).Select(D => new SelectListItem
+                    //{
+                    //    Value = D.EmployeeId.ToString(),
+                    //    Text = D.EmployeeId
+
+                    //}).ToList();
                     int iId = (int)(id == null ? 0 : id);
                     ViewBag.ESICNumber = "";
                     ViewBag.ESICPercentage = "";

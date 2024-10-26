@@ -8,7 +8,7 @@ namespace CRM.Models.Crm
         public int Id { get; set; }
         public string? EmployeeId { get; set; }
         public string? Epfnumber { get; set; }
-        public int? Epfpercentage { get; set; }
+        public decimal? Epfpercentage { get; set; }
         public DateTime? EffectiveDate { get; set; }
         public DateTime? CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
