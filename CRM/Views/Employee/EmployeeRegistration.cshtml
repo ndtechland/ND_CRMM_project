@@ -698,11 +698,11 @@
 
                             <h4 class="text-danger EmployeeContribution">Employee Contribution</h4>
                             <div class="row">
-                                <div class="col">
+                                <div class="col ProfessionaltaxLabel">
                                     <label id="ProfessionaltaxLabel">Professional Tax</label>
                                     <input class="form-control" value='@ViewBag.Professionaltax' name="Professionaltax" placeholder="Enter Professional Tax" id="Professionaltax" type="text" readonly>
                                 </div>
-                                <div class="col">
+                                <div class="col ESICLabel">
                                     <label id="ESICLabel">ESIC</label>
                                     <input class="form-control" value='@ViewBag.ESIC' name="ESIC" id="ESIC" type="text" readonly>
                                 </div>
@@ -711,7 +711,7 @@
                                     <input class="form-control" value='@ViewBag.Amount' name="Amount" placeholder="00.0" id="txtAmount" type="text" readonly>
                                     <input class="form-control" name="TdsPercentage" value='@ViewBag.Tdspercentage' placeholder="00.0" id="txtTdspercentage" type="hidden">
                                 </div>
-                                <div class="col">
+                                <div class="col txtLabelEPF">
                                     <label id="txtLabelEPF">EPF</label>
                                     <input class="form-control" value='@ViewBag.EPF' name="EPF" placeholder="00.0" id="txtEPF" type="text" readonly>
                                 </div>
@@ -749,22 +749,22 @@
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="~/js/multiformvalidation.js"></script>
 <script>
-   //$(".EmployeeContribution").hide(); 
     if ($("#txtEPF").val() == 0)
     {
-        $("#txtEPF").hide();
-        $("#txtLabelEPF").hide();
+        document.querySelectorAll('.txtLabelEPF').forEach(el => el.style.display = 'none'); 
         $(".EmployeeContribution").hide();
     } 
     if ($("#ESIC").val() == 0) {
-        $("#ESIC").hide();
-        $("#ESICLabel").hide();
+        document.querySelectorAll('.ESICLabel').forEach(el => el.style.display = 'none');
         $(".EmployeeContribution").hide();
     }
     if ($("#Professionaltax").val() == 0) {
-        $("#Professionaltax").hide();
-        $("#ProfessionaltaxLabel").hide();
+
+        document.querySelectorAll('.ProfessionaltaxLabel').forEach(el => el.style.display = 'none');
         $(".EmployeeContribution").hide();
+    }
+    if ($("#txtEPF").val() != 0 || $("#ESIC").val() != 0 || $("#Professionaltax").val() != 0){
+        $(".EmployeeContribution").show();
     }
 </script>
  <script>
