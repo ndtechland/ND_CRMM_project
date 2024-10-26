@@ -1,9 +1,11 @@
 ﻿using CRM.Models.APIDTO;
 using CRM.Models.Crm;
+using CRM.Models.DTO;
 using CRM.Repository;
 using CRM.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualStudio.Services.WebApi.Jwt;
 
 namespace CRM.Controllers.Api
 {
@@ -296,8 +298,21 @@ namespace CRM.Controllers.Api
         public async Task<IActionResult> GetPricingPlan()
         {
             try
-            {
-                List<PricingPlan> plans = _context.PricingPlans.Where(x=>x.IsActive==true).ToList();
+            { 
+                var result = _context.PricingPlans.Where(x=>x.IsActive==true).ToList();
+
+                List<PricingPlanDTO> plans = result.Select(x => new PricingPlanDTO
+                {
+                    Id = x.Id,
+                    PlanName = x.PlanName,
+                    Price = x.Price,
+                    AnnulPrice = x.AnnulPrice,
+                    AnnulPriceInPercentage = x.AnnulPriceInPercentage,
+                    Description = x.Description,
+                    Image = x.Image,
+                    CreatedDate = x.CreatedDate,
+                    SavePrice = SavePrice(x.Price, (decimal)x.AnnulPriceInPercentage)
+                }).ToList();
                 if (plans != null)
                 {
                     return Ok(new { Status = 200, Message = "Pricing Plan retrieved successfully.", data = plans });
@@ -314,6 +329,21 @@ namespace CRM.Controllers.Api
                 throw;
             }
         }
+
+        public decimal SavePrice(decimal price,decimal per)
+        {
+            try
+            {
+                decimal annulprice = price * 12;
+                decimal discountedprice = annulprice * per / 100;
+                return discountedprice;
+            }
+            catch(Exception ex)
+            {
+                throw new Exception("Server Error : " + ex.Message);
+            }
+        }
+
         [HttpGet]
         [Route("GetOtherServices")]
         public async Task<IActionResult> GetOtherServices()

@@ -1854,9 +1854,8 @@ namespace CRM.Controllers
         {
             try
             {
-                PricingPlanDTO model = new PricingPlanDTO();
-                model.PricingPlans = _context.PricingPlans.OrderByDescending(x => x.Id).ToList();
-                ;
+                List<PricingPlan> model = _context.PricingPlans.OrderByDescending(x => x.Id).ToList();
+                 
                 int iId = (int)(id == null ? 0 : id);
                 ViewBag.id = 0;
                 ViewBag.PlanName = "";
@@ -1902,7 +1901,7 @@ namespace CRM.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> PricingPlan(PricingPlanDTO model)
+        public async Task<IActionResult> AddPricingPlans(PricingPlanDTO model)
         {
             try
             {

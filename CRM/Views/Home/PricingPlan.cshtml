@@ -1,4 +1,4 @@
-﻿@model CRM.Models.DTO.PricingPlanDTO
+﻿@model IEnumerable<CRM.Models.Crm.PricingPlan>
 
 @{
     ViewData["Title"] = "PricingPlan";
@@ -97,7 +97,7 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-body">
-                                <form asp-action="PricingPlan" enctype="multipart/form-data" autocomplete="off" onsubmit="return validateForm()">
+                                <form asp-action="AddPricingPlans" enctype="multipart/form-data" autocomplete="off" onsubmit="return validateForm()">
                                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                                     <div class="row">
                                         <div class="form-group col-sm-6">
@@ -187,7 +187,7 @@
                                         <tbody>
                                             @{
                                                 var count = 0;
-                                                foreach (var item in Model.PricingPlans)
+                                                foreach (var item in Model)
                                                 {
                                                     count++;
 
