@@ -106,6 +106,11 @@
                                             <input type="text" name="PlanName" value="@ViewBag.PlanName" placeholder="Enter Plan Name" class="form-control" required />
                                         </div>
                                         <div class="form-group col-sm-6">
+                                            <label for="PlanName" class="control-label">Title</label>
+                                            <input type="hidden" name="Id" value="@ViewBag.id" />
+                                            <input type="text" name="Title" value="@ViewBag.Tittle" placeholder="Enter Plan Title" class="form-control" required />
+                                        </div>
+                                        <div class="form-group col-sm-6">
                                             <label for="ImageFile" class="control-label">Upload Image</label>
                                             <input type="file" accept=".png,.jpg,.jpeg" id="ImageFile" name="ImageFile" class="form-control" />
                                             <input type="hidden" value="@ViewBag.FilePath" name="FilePath" />
@@ -127,7 +132,6 @@
                                         <label for="Price" class="control-label">Annual Discounted Price </label>
                                         <input type="text" name="AnnulPrice" value="@ViewBag.AnnulPrice" id="AnnulPrice" placeholder="00.0" class="form-control" readonly />
 
-                                        <input type="text" name="Price" value="@ViewBag.Price" placeholder="Enter Plan Price" class="form-control" required onkeydown="validateNumericInput(event)" />
                                     </div>
 
                                     <div class="form-group col-sm-12">
@@ -170,9 +174,12 @@
                                                     Image
                                                 </th>
                                                 <th nowrap>Plan Name</th>
+                                                <th nowrap>Plan Title</th>
                                                 <th nowrap>Plan Price</th>
+                                                <th nowrap>Annual Price</th>
+                                                <th nowrap>Annual %</th>
                                                 <th>Description</th>
-                                                <th>Created At</th>
+                                                <th nowrap>Created At</th>
                                                 <th>Edit</th>
                                                 <th>Delete</th>
                                             </tr>
@@ -187,19 +194,28 @@
                                                                 <tr class="table-row">
                                                                     <td>@count</td>
                                                                     <td>
-                                                                        <a href="~/image/@item.Image"><img src="~/image/@item.Image" alt="Expertise Image" style="width:100px;" /></a>
+                                                                        <a href="~/image/@item.Image"><img src="~/image/@item.Image" alt="Plan Image" style="width:100px;" /></a>
                                                                     </td>
                                                                     <td nowrap>
                                                                         @Html.DisplayFor(modelItem => item.PlanName)
                                                                     </td>
+                                                                    <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.Title)
+                                                                    </td>
                                                                     <td>
                                                                         @item.Price
                                                                     </td>
+                                                                    <td>
+                                                                        @item.AnnulPrice
+                                                                    </td>
+                                                        <td>
+                                                            @item.AnnulPriceInPercentage
+                                                        </td>
 
                                                                     <td>
                                                                         @Html.Raw(@item.Description)
                                                                     </td>
-                                                                    <td>
+                                                        <td nowrap>
                                                                         @item.CreatedDate
                                                                     </td>
                                                                     <td>
@@ -210,31 +226,7 @@
                                                                     </td>
                                                                 </tr>
 
-                                                    <tr class="table-row">
-                                                        <td>@count</td>
-                                                        <td>
-                                                            <a href="~/image/@item.Image"><img src="~/image/@item.Image" alt="Plan Image" style="width:100px;" /></a>
-                                                        </td>
-                                                        <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.PlanName)
-                                                        </td>
-                                                        <td>
-                                                            @item.Price
-                                                        </td>
-
-                                                        <td>
-                                                            @Html.Raw(@item.Description)
-                                                        </td>
-                                                        <td>
-                                                            @item.CreatedDate
-                                                        </td>
-                                                        <td>
-                                                            <a href="/Home/PricingPlan?Id=@item.Id" class="fa fa-edit m-2 font-success"></a>
-                                                        </td>
-                                                        <td>
-                                                            <a href="/Home/DeletePricingPlan?Id=@item.Id" onclick="return confirm('Are you sure want to delete?')" class="fa fa-trash m-2 font-danger"></a>
-                                                        </td>
-                                                    </tr>
+                                                    
 
                                                 }
                                             }
