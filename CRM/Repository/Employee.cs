@@ -1367,28 +1367,51 @@ namespace CRM.Repository
 
             return "N/A";
         }
-        private async Task<string> CalculateTotalWorkingHours(string employeeId , DateTime Currentdate)
+        private async Task<string> CalculateTotalWorkingHours(string employeeId, DateTime currentdate)
         {
-            var checkIns = await _context.EmployeeCheckIns
-                .Where(g => g.EmployeeId == employeeId && g.Currentdate.HasValue && g.Currentdate.Value.Date == Currentdate.Date)
-                .OrderBy(g => g.CheckInTime)
+            var checkIns = await _context.EmployeeCheckInRecords
+                .Where(g => g.EmpId == employeeId && g.CurrentDate.HasValue && g.CurrentDate.Value.Date == currentdate.Date)
                 .ToListAsync();
 
             double totalHours = 0;
 
-            for (int i = 0; i < checkIns.Count; i++)
+            foreach (var checkInRecord in checkIns.ToList())
             {
-                var checkInRecord = checkIns[i];
-                if (checkInRecord.CheckIn == true && checkInRecord.CheckInTime.HasValue)
+                if (checkInRecord.CheckIntime.HasValue)
                 {
-                    var checkOutRecord = checkIns.FirstOrDefault(g => g.CheckIn == false && g.CheckOutTime.HasValue && g.CheckOutTime > checkInRecord.CheckInTime);
-                    if (checkOutRecord != null)
+                    if (currentdate.Date != DateTime.Now.Date)
                     {
-                        totalHours += (checkOutRecord.CheckOutTime.Value - checkInRecord.CheckInTime.Value).TotalHours;
-                        checkIns.Remove(checkOutRecord);
+                        var checkOutRecord = checkIns.FirstOrDefault(g => g.CheckOuttime.HasValue && g.CheckOuttime > checkInRecord.CheckIntime);
+                        if (checkOutRecord != null)
+                        {
+                            totalHours += (checkOutRecord.CheckOuttime.Value - checkInRecord.CheckIntime.Value).TotalHours;
+                            checkIns.Remove(checkOutRecord);
+                        }
+                    }
+                    else
+                    {
+                        var checkRecord = await _context.EmployeeCheckIns
+                            .Where(x =>x.EmployeeId == employeeId && x.Currentdate.Value.Date == DateTime.Now.Date)
+                            .OrderByDescending(x => x.CheckIn)
+                            .LastOrDefaultAsync();
+
+                        if (checkRecord.CheckIn == true)
+                        {
+                            totalHours += (DateTime.Now - checkInRecord.CheckIntime.Value).TotalHours;
+                        }
+                        else
+                        {
+                            var checkOutRecord = checkIns.FirstOrDefault(g => g.CheckOuttime.HasValue && g.CheckOuttime > checkInRecord.CheckIntime);
+                            if (checkOutRecord != null)
+                            {
+                                totalHours += (checkOutRecord.CheckOuttime.Value - checkInRecord.CheckIntime.Value).TotalHours;
+                                checkIns.Remove(checkOutRecord);
+                            }
+                        }
                     }
                 }
             }
+
             return FormatHours(totalHours);
         }
 

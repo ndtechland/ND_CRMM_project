@@ -250,7 +250,7 @@
         $("#empddl").val(selectedEmpId).trigger('change');
     }
 </script>
-<script type="text/javascript">
+@* <script type="text/javascript">
     $('#empddl').change(function () {
         var employeeId = $(this).val(); 
         if (employeeId && employeeId !== "0") {
@@ -278,7 +278,7 @@
         }
     });
 </script>
-
+ *@
 @* <script>
     $(document).ready(function () {
         
@@ -306,7 +306,7 @@
     }
 </script>
 
-<script>
+<script >
 
      $(document).ready(function () {
        
@@ -325,5 +325,53 @@
                 ]
             }
         );
+    });
+</script>
+<script type="text/javascript">
+    $('#empddl').change(function () {
+        var employeeId = $(this).val();
+        if (employeeId && employeeId !== "0") {
+            $.ajax({
+                url: '@Url.Action("CheckEmployeeExists", "Vendor")',
+                type: 'GET',
+                data: { employeeId: employeeId },
+                success: function (response) {
+                    if (response.exists) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Warning',
+                            text: response.message,
+                            confirmButtonText: 'OK'
+                        });
+                        $('input[name="EPFNumber"]').val('');
+                    } else {
+                        $.ajax({
+                            url: '@Url.Action("GetEmpEpfNumber", "Vendor")',
+                            type: 'GET',
+                            data: { employeeId: employeeId },
+                            success: function (data) {
+                                console.log("EPF Number received: ", data);
+                                if (data && data.epfNumber) {
+                                    $('input[name="EPFNumber"]').val(data.epfNumber);
+                                } else {
+                                    $('input[name="EPFNumber"]').val('');
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                console.error("Error occurred: " + error);
+                                console.log(xhr.responseText);
+                                $('input[name="EPFNumber"]').val('');
+                            }
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error checking employee existence: " + error);
+                    $('input[name="EPFNumber"]').val('');
+                }
+            });
+        } else {
+            $('input[name="EPFNumber"]').val('');
+        }
     });
 </script>

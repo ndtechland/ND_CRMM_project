@@ -68,9 +68,8 @@
                     }
                 });
             }
-        } 
-        else
-        {
+        }
+        else {
             if (message) {
                 Swal.fire({
                     title: 'Failed',
@@ -86,7 +85,7 @@
                 });
             }
         }
-        
+
     });
 </script>
 <div class="page-wrapper">
@@ -190,31 +189,31 @@
                                         <tbody>
                                             @{
                                                 var count = 0;
-                                                    @foreach (var item in Model)
+                                                @foreach (var item in Model)
                                                 {
                                                     count++;
-                                                        <tr class="table-row">
-                                                            <td>@count</td>
-                                                            <td nowrap>
-                                                                @Html.DisplayFor(modelItem => item.EmployeeId)
-                                                            </td>
-                                                            <td nowrap>
-                                                                @Html.DisplayFor(modelItem => item.Esicnumber)
-                                                            </td>
-                                                            <td nowrap>
-                                                                @Html.DisplayFor(modelItem => item.Esicpercentage) %
-                                                            </td>
-                                                            <td nowrap>
-                                                                @item.CreatedDate?.ToString("dd/MM/yyyy")
-                                                            </td>
-                                                            <td>
-                                                                <div>
+                                                    <tr class="table-row">
+                                                        <td>@count</td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.EmployeeId)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.Esicnumber)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.Esicpercentage) %
+                                                        </td>
+                                                        <td nowrap>
+                                                            @item.CreatedDate?.ToString("dd/MM/yyyy")
+                                                        </td>
+                                                        <td>
+                                                            <div>
                                                                 <a href="/Vendor/EmployeeEsic?Id=@item.Id" class="fa fa-edit m-2 font-success"></a>
 
-                                                                    <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteEmpEsic", "Vendor", new { id = item.Id })')" class="fa fa-trash font-danger"></a>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
+                                                                <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteEmpEsic", "Vendor", new { id = item.Id })')" class="fa fa-trash font-danger"></a>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
                                                 }
                                             }
                                         </tbody>
@@ -235,7 +234,7 @@
     </div>
 
 </div>
- 
+
 <script type="text/javascript">
     var selectedEmpId = '@ViewBag.SelectedEmployeeId'
     if (selectedEmpId != "") {
@@ -273,5 +272,39 @@
                 ]
             }
         );
+    });
+</script>
+
+
+<script type="text/javascript">
+    $('#empddl').change(function () {
+        var employeeId = $(this).val();
+        if (employeeId != "0") {
+            $.ajax({
+                url: '@Url.Action("CheckEmployeeEsicExists", "Vendor")',
+                type: 'GET',
+                data: { employeeId: employeeId },
+                   success: function (response) {
+                    if (response.exists) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Warning',
+                            text: response.message,
+                            confirmButtonText: 'OK'
+                        });
+                        $('#empddl').val('0');
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.error("Error: " + textStatus, errorThrown);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Error checking ESIC record.',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            });
+        }
     });
 </script>
