@@ -12,5 +12,7 @@ namespace CRM.Models.Crm
         public string? Image { get; set; }
         public bool? IsActive { get; set; }
         public DateTime? CreatedDate { get; set; }
+        public decimal? AnnulPrice { get; set; }
+        public decimal? AnnulPriceInPercentage { get; set; }
     }
 }

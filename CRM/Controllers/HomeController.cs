@@ -1856,6 +1856,8 @@ namespace CRM.Controllers
                 ViewBag.Description = "";
                 ViewBag.IsActive = "";
                 ViewBag.Image = "";
+                ViewBag.AnnulPriceInPercentage = "";
+                ViewBag.AnnulPrice = "";
                 ViewBag.heading = "Add Pricing Plan";
                 ViewBag.btnText = "SAVE";
                 if (iId != null && iId != 0)
@@ -1869,6 +1871,8 @@ namespace CRM.Controllers
                         ViewBag.Description = data.Description;
                         ViewBag.IsActive = data.IsActive;
                         ViewBag.Image = data.Image;
+                        ViewBag.AnnulPriceInPercentage = data.AnnulPriceInPercentage;
+                        ViewBag.AnnulPrice = data.AnnulPrice;
                         ViewBag.btnText = "UPDATE";
                         ViewBag.heading = "Update Pricing Plan";
 
