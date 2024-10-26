@@ -305,6 +305,7 @@ namespace CRM.Controllers.Api
                 {
                     Id = x.Id,
                     PlanName = x.PlanName,
+                    Title = x.Title,
                     Price = x.Price,
                     AnnulPrice = x.AnnulPrice,
                     AnnulPriceInPercentage = x.AnnulPriceInPercentage,
