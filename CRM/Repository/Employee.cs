@@ -1392,8 +1392,8 @@ namespace CRM.Repository
                     {
                         var checkRecord = await _context.EmployeeCheckIns
                             .Where(x =>x.EmployeeId == employeeId && x.Currentdate.Value.Date == DateTime.Now.Date)
-                            .OrderByDescending(x => x.CheckIn)
-                            .LastOrDefaultAsync();
+                            .OrderByDescending(x => x.Id)
+                            .FirstOrDefaultAsync();
 
                         if (checkRecord.CheckIn == true)
                         {

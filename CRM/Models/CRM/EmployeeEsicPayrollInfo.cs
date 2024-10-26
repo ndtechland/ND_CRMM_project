@@ -8,7 +8,7 @@ namespace CRM.Models.Crm
         public int Id { get; set; }
         public string? EmployeeId { get; set; }
         public string? Esicnumber { get; set; }
-        public int? Esicpercentage { get; set; }
+        public decimal? Esicpercentage { get; set; }
         public DateTime? CreatedDate { get; set; }
         public int? Vendorid { get; set; }
     }
