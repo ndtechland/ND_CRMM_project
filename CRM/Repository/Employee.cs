@@ -1256,7 +1256,8 @@ namespace CRM.Repository
 
             return loginActivities;
         }
-        private async Task<string> CalculatePresencePercentage(string employeeId, DateTime Currentdate)
+       
+        private async Task<string> CalculatePresencePercentage(string employeeId, DateTime currentDate)
         {
             var emp = await _context.EmployeeRegistrations
                 .Where(x => x.EmployeeId == employeeId)
@@ -1264,27 +1265,30 @@ namespace CRM.Repository
 
             if (emp == null)
             {
-                return "0";
+                return "0%";
             }
 
-            var Attendancedays = await _context.Attendancedays
+            var attendanceDays = await _context.Attendancedays
                 .Where(x => x.Vendorid == emp.Vendorid)
                 .FirstOrDefaultAsync();
 
-            if (Attendancedays == null || string.IsNullOrEmpty(Attendancedays.Nodays) || !int.TryParse(Attendancedays.Nodays, out int totalAttendanceDays) || totalAttendanceDays <= 0)
+            if (attendanceDays == null || string.IsNullOrEmpty(attendanceDays.Nodays)
+                || !int.TryParse(attendanceDays.Nodays, out int totalAttendanceDays) || totalAttendanceDays <= 0)
             {
-                return "0";
+                return "0%";
             }
 
-            var totalDaysWorked = await _context.EmployeeCheckInRecords
-                .Where(g => g.EmpId == employeeId && g.CurrentDate.Value.Month == Currentdate.Month && g.CurrentDate.Value.Year == Currentdate.Year)
+            int totalDaysWorked = await _context.EmployeeCheckInRecords
+                .Where(g => g.EmpId == employeeId
+                            && g.CurrentDate.Value.Month == currentDate.Month
+                            && g.CurrentDate.Value.Year == currentDate.Year)
                 .CountAsync();
+
             decimal presencePercentage = (decimal)totalDaysWorked / totalAttendanceDays * 100;
-
             return Math.Round(presencePercentage).ToString() + "%";
         }
 
-        private async Task<string> CalculateAbsencePercentage(string employeeId, DateTime Currentdate)
+        private async Task<string> CalculateAbsencePercentage(string employeeId, DateTime currentDate)
         {
             var emp = await _context.EmployeeRegistrations
                 .Where(x => x.EmployeeId == employeeId)
@@ -1292,25 +1296,30 @@ namespace CRM.Repository
 
             if (emp == null)
             {
-                return "0";
+                return "0%";
             }
 
-            var Attendancedays = await _context.Attendancedays
+            var attendanceDays = await _context.Attendancedays
                 .Where(x => x.Vendorid == emp.Vendorid)
                 .FirstOrDefaultAsync();
 
-            if (Attendancedays == null || string.IsNullOrEmpty(Attendancedays.Nodays) || !int.TryParse(Attendancedays.Nodays, out int totalAttendanceDays) || totalAttendanceDays <= 0)
+            if (attendanceDays == null || string.IsNullOrEmpty(attendanceDays.Nodays)
+                || !int.TryParse(attendanceDays.Nodays, out int totalAttendanceDays) || totalAttendanceDays <= 0)
             {
-                return "0";
+                return "0%";
             }
 
-            var totalDaysWorked = await _context.EmployeeCheckInRecords
-                .Where(g => g.EmpId == employeeId && g.CurrentDate.Value.Month == Currentdate.Month && g.CurrentDate.Value.Year == Currentdate.Year)
+            int totalDaysWorked = await _context.EmployeeCheckInRecords
+                .Where(g => g.EmpId == employeeId
+                            && g.CurrentDate.Value.Month == currentDate.Month
+                            && g.CurrentDate.Value.Year == currentDate.Year)
                 .CountAsync();
-            decimal presencePercentage = (100 - (decimal)totalDaysWorked / totalAttendanceDays * 100);
 
-            return Math.Round(presencePercentage).ToString() + "%";
+            int daysMissed = totalAttendanceDays - totalDaysWorked;
+            decimal absencePercentage = (decimal)daysMissed / totalAttendanceDays * 100;
+            return Math.Round(absencePercentage).ToString() + "%";
         }
+
         private static async Task<string> CalculateStartOverTime(string employeeId, int officeShiftId, admin_NDCrMContext context, DateTime Currentdate)
         {
 
