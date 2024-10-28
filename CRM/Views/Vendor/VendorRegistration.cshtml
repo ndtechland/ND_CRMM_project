@@ -162,6 +162,18 @@
                                     <input type="hidden" asp-for="Id" />
                                     <div class="row">
                                         <div class="form-group col-sm">
+                                            <label class="control-label">Choose Plan<span class="text-danger">*</span></label>
+                                            <div>
+                                                <select class="form-control" name="StateId" id="PlanPrice">
+                                                    <option value="">-- Select Plan --</option>
+                                                    @foreach (var state in ViewBag.PlanPrice as IEnumerable<SelectListItem>)
+                                                {
+                                                <option value="@state.Value">@state.Text</option>
+                                                }
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-sm">
                                             <label for="validationCustom0">Company Name <span class="text-danger">*</span></label>
                                             <input asp-for="CompanyName" id="CompanyName" placeholder="Enter CompanyName" class="form-control" required="" oninvalid="this.setCustomValidity('Please Enter CompanyName')" oninput="this.setCustomValidity('')" />
                                             <span asp-validation-for="CompanyName" class="text-danger"></span>

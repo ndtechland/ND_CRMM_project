@@ -54,6 +54,13 @@ namespace CRM.Controllers
                                 Text = p.ProductName,
                             })
                             .ToList();
+                        ViewBag.PlanPrice = _context.PricingPlans.Where(x => x.IsActive == true)
+                .Select(p => new SelectListItem
+                {
+                    Value = p.Id.ToString(),
+                    Text = $"{p.PlanName } {' '} {p.Price}" ,
+                })
+                .ToList();
                         ViewBag.SelectedStateId = data.StateId;
                         ViewBag.Price = vendor.Productprice;
                         ViewBag.Renewprice = data.Renewprice;
@@ -80,6 +87,13 @@ namespace CRM.Controllers
                         Text = p.ProductName,
                     })
                     .ToList();
+                ViewBag.PlanPrice = _context.PricingPlans.Where(x => x.IsActive == true)
+                  .Select(p => new SelectListItem
+                  {
+                      Value = p.Id.ToString(),
+                      Text = $"{p.PlanName} {' '} {p.Price}",
+                  })
+                  .ToList();
                 return View();
             }
             else
@@ -2495,6 +2509,13 @@ namespace CRM.Controllers
 
                     foreach (var record in attendanceEntries)
                     {
+                        string workingHours = "N/A";
+                        if (record.CheckIntime.HasValue && record.CheckOuttime.HasValue)
+                        {
+                            TimeSpan duration = record.CheckOuttime.Value - record.CheckIntime.Value;
+                            workingHours = $"{(int)duration.TotalHours}h{duration.Minutes}m";
+                        }
+
                         attendanceRecords.Add(new EmployeeAttendanceDto
                         {
                             EmpId = record.EmpId,
@@ -2502,20 +2523,19 @@ namespace CRM.Controllers
                                            (!string.IsNullOrEmpty(employee.MiddleName) ? employee.MiddleName + " " : "") +
                                            employee.LastName,
                             CheckIntime = record.CheckIntime.HasValue
-                                ? record.CheckIntime.Value.ToString("dd-MMM-yyyy")
+                                ? record.CheckIntime.Value.ToString("dd-MMM-yyyy HH:mm")
                                 : "N/A",
                             CheckOuttime = record.CheckOuttime.HasValue
-                                ? record.CheckOuttime.Value.ToString("dd-MMM-yyyy")
+                                ? record.CheckOuttime.Value.ToString("dd-MMM-yyyy HH:mm")
                                 : "N/A",
                             CurrentDate = record.CurrentDate.HasValue
                                 ? record.CurrentDate.Value.ToString("dd-MMM-yyyy")
                                 : "N/A",
-                            Workinghour = record.Workinghour.HasValue
-                                ? record.Workinghour.Value.ToString(@"hh\:mm\:ss")
-                                : "N/A",
+                            Workinghour = workingHours,
                         });
                     }
                 }
+
                 attendanceDto.detail = attendanceRecords
                     .OrderByDescending(r => r.CurrentDate)
                     .ToList();
@@ -2527,6 +2547,7 @@ namespace CRM.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
         [HttpGet]
         public JsonResult CheckEmployeeExists(string employeeId)
         {
