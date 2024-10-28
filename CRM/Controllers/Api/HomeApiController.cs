@@ -3,8 +3,10 @@ using CRM.Models.Crm;
 using CRM.Models.DTO;
 using CRM.Repository;
 using CRM.Utilities;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Services.WebApi.Jwt;
 
 namespace CRM.Controllers.Api
@@ -392,7 +394,27 @@ namespace CRM.Controllers.Api
                 throw;
             }
         }
-        [HttpGet]
+
+        [Route("GetCaseStudyById")]
+        public async Task<IActionResult> GetCaseStudyById(int Id)
+        {
+            try
+            {
+                CaseStudy cases = await _context.CaseStudies.Where(x => x.IsActive == true && x.Id == Id).FirstOrDefaultAsync();
+                if (cases != null)
+                {
+                    return Ok(new { Status = 200, Message = "Case Studies retrieved successfully.", data = cases });
+                }
+                else
+                {
+                    return NotFound(new { Status = 404, Message = "No any Case Studies available." });
+                   }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
         [Route("GetMissionVisions")]
         public async Task<IActionResult> GetMissionVisions()
         {
@@ -406,6 +428,7 @@ namespace CRM.Controllers.Api
                 else
                 {
                     return NotFound(new { Status = 404, Message = "No any Mission & Vision available." });
+
                 }
 
             }

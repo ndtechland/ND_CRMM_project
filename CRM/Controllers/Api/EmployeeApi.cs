@@ -395,7 +395,7 @@ namespace CRM.Controllers.Api
                     response.Data = new
                     {
                         TotalAttendance = $"{finalYearlyAttendanceDays} / {yearlyTotalAttendanceDays}",
-                        Attendance = $"{presentDaysCount} / {daysInMonth}", 
+                        Attendance = $"{presentDaysCount} / {daysInMonth}",
                         LeaveLeft = totalLeaveLeft,
                         Leave = totalLeave,
                         offerletter = offerLetterPath,
@@ -717,7 +717,7 @@ namespace CRM.Controllers.Api
                     double.Parse(model.Currentlong)
                 );
                 if (!isTest)
-                {                   
+                {
                     if (distance > radiusInMeters)
                     {
                         bool CheckIn = await _context.EmployeeCheckIns
@@ -928,7 +928,7 @@ namespace CRM.Controllers.Api
                 if (User.Identity.IsAuthenticated)
                 {
                     var userid = User.Claims.FirstOrDefault().Value;
-                    Empattendancedatail isExists = await _apiemp.GetEmpattendance(userid,Currentdate);
+                    Empattendancedatail isExists = await _apiemp.GetEmpattendance(userid, Currentdate);
                     if (isExists != null)
                     {
                         response.Succeeded = true;
@@ -1720,6 +1720,114 @@ namespace CRM.Controllers.Api
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
-     
+        //[Route("EmployeeOvertime")]
+        //[HttpPost]
+        //public async Task<IActionResult> EmployeeOvertime()
+        //{
+        //    var response = new Response<EmpApplyovertimeDto>();
+        //    try
+        //    {
+        //        if (User.Identity.IsAuthenticated)
+        //        {
+        //            var userid = User.Claims.FirstOrDefault()?.Value;
+        //            bool apiModel = await _apiemp.Overtimeapply(userid);
+        //            if (apiModel)
+        //            {
+        //                var empAttendanceDetails = await _context.EmployeeRegistrations
+        //                    .Where(x => x.EmployeeId == userid)
+        //                    .Select(x => new
+        //                    {
+        //                        OfficeShiftId = x.OfficeshiftTypeid,
+        //                        EmployeeId = x.EmployeeId
+        //                    })
+        //                    .FirstOrDefaultAsync();
+
+        //                if (empAttendanceDetails?.OfficeShiftId != null)
+        //                {
+        //                    var officeShift = await _context.Officeshifts.FindAsync((int)empAttendanceDetails.OfficeShiftId.Value);
+        //                    if (officeShift == null)
+        //                    {
+        //                        throw new Exception("Office shift not found.");
+        //                    }
+
+        //                    if (!DateTime.TryParse(officeShift.Endtime, out DateTime shiftEndTime))
+        //                    {
+        //                        throw new Exception("Invalid shift end time format.");
+        //                    }
+        //                    DateTime currentDate=(DateTime) DateTime.Now.Date;
+        //                    var employeeOvertime = new EmpApplyovertimeDto
+        //                    {
+        //                        EmployeeId = _context.EmployeeOvertimes
+        //                                             .Where(x => x.ApprovalDate.HasValue && x.ApprovalDate.Value.Date == DateTime.Now.Date)
+        //                                             .Select(x => x.EmployeeId)
+        //                                             .FirstOrDefault(),
+        //                        StartTime = await StartOverTime(empAttendanceDetails.EmployeeId, (int)empAttendanceDetails.OfficeShiftId.Value, _context, currentDate)
+        //                    };
+
+        //                    response.Succeeded = true;
+        //                    response.StatusCode = StatusCodes.Status200OK;
+        //                    response.Status = "Success";
+        //                    response.Message = "Overtime Apply successfully.";
+        //                    response.Data = employeeOvertime;
+        //                    return Ok(response);
+        //                }
+        //                else
+        //                {
+        //                    response.StatusCode = StatusCodes.Status404NotFound;
+        //                    response.Message = "Office shift not found for employee.";
+        //                    return Ok(response);
+        //                }
+        //            }
+        //            else
+        //            {
+        //                response.StatusCode = StatusCodes.Status401Unauthorized;
+        //                response.Message = "Data not found.";
+        //                return Ok(response);
+        //            }
+        //        }
+        //        else
+        //        {
+        //            response.StatusCode = StatusCodes.Status401Unauthorized;
+        //            response.Message = "Token is expired.";
+        //            return Ok(response);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        response.StatusCode = StatusCodes.Status500InternalServerError;
+        //        response.Message = ex.Message;
+        //        return StatusCode(StatusCodes.Status500InternalServerError, response);
+        //    }
+        //}
+
+        //private static async Task<string> StartOverTime(string employeeId, int officeShiftId, admin_NDCrMContext context, DateTime currentDate)
+        //{
+        //    var checkInData = await context.EmployeeCheckInRecords
+        //        .Where(g => g.EmpId == employeeId && g.CheckIntime.HasValue && g.CheckIntime.Value.Date == currentDate.Date)
+        //        .OrderByDescending(g => g.Id)
+        //        .FirstOrDefaultAsync();
+
+        //    var officeHour = await context.Officeshifts
+        //        .Where(h => h.Id == officeShiftId)
+        //        .FirstOrDefaultAsync();
+
+        //    if (officeHour == null)
+        //    {
+        //        return "N/A";
+        //    }
+
+        //    TimeSpan timeDifference1 = DateTime.Parse(officeHour.Endtime) - DateTime.Parse(officeHour.Starttime);
+
+        //    if (checkInData != null && checkInData.CheckIntime.HasValue)
+        //    {
+        //        DateTime checkoutHour = checkInData.CheckIntime.Value.Add(timeDifference1);
+        //        return checkoutHour.ToString("hh:mm tt");
+        //    }
+        //    else
+        //    {
+        //        return "N/A";
+        //    }
+        //}
+
     }
 }
