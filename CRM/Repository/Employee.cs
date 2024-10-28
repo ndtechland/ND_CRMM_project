@@ -820,7 +820,7 @@ namespace CRM.Repository
 
                 var todayCheckInsCount = await _context.EmployeeCheckIns
                 .CountAsync(x => x.EmployeeId == emp.EmployeeId && x.CheckInTime.Value.Date == DateTime.Now.Date);
-                if (todayCheckInsCount > 0 )
+                if (todayCheckInsCount > 0)
                 {
                     var existingCheckInRecord = await _context.EmployeeCheckInRecords
                         .Where(x => x.EmpId == emp.EmployeeId && x.CheckIntime.Value.Date == DateTime.Now.Date)
@@ -1132,7 +1132,7 @@ namespace CRM.Repository
                                 throw new Exception("Invalid shift end time format.");
                             }
                             var checkIns = await _context.EmployeeCheckIns
-                            .Where(g => g.EmployeeId == empAttendanceDetails.EmployeeId && g.Currentdate.HasValue && g.Currentdate.Value.Date == Currentdate )
+                            .Where(g => g.EmployeeId == empAttendanceDetails.EmployeeId && g.Currentdate.HasValue && g.Currentdate.Value.Date == Currentdate)
                             .OrderBy(g => g.Id)
                             .ToListAsync();
 
@@ -1159,7 +1159,7 @@ namespace CRM.Repository
                             }
                             else
                             {
-                                latestLoginStatus = "Check-Out"; 
+                                latestLoginStatus = "Check-Out";
                             }
 
                             var attendanceDetail = new Empattendancedatail
@@ -1256,7 +1256,7 @@ namespace CRM.Repository
 
             return loginActivities;
         }
-       
+
         private async Task<string> CalculatePresencePercentage(string employeeId, DateTime currentDate)
         {
             var emp = await _context.EmployeeRegistrations
@@ -1346,7 +1346,7 @@ namespace CRM.Repository
                 return "N/A";
             }
         }
-        private static async Task<string> CalculateFinishOverTime(string employeeId, int officeShiftId, admin_NDCrMContext context , DateTime Currentdate)
+        private static async Task<string> CalculateFinishOverTime(string employeeId, int officeShiftId, admin_NDCrMContext context, DateTime Currentdate)
         {
             var officeHour = await context.Officeshifts
                 .Where(h => h.Id == officeShiftId)
@@ -1400,7 +1400,7 @@ namespace CRM.Repository
                     else
                     {
                         var checkRecord = await _context.EmployeeCheckIns
-                            .Where(x =>x.EmployeeId == employeeId && x.Currentdate.Value.Date == DateTime.Now.Date)
+                            .Where(x => x.EmployeeId == employeeId && x.Currentdate.Value.Date == DateTime.Now.Date)
                             .OrderByDescending(x => x.Id)
                             .FirstOrDefaultAsync();
 
@@ -1427,7 +1427,7 @@ namespace CRM.Repository
         private async Task<string> CalculateMonthlyWorkingHours(string employeeId, DateTime Currentdate)
         {
             var checkIns = await _context.EmployeeCheckInRecords
-                .Where(g => g.EmpId == employeeId  && g.CurrentDate.Value.Month == Currentdate.Month)
+                .Where(g => g.EmpId == employeeId && g.CurrentDate.Value.Month == Currentdate.Month)
                 .ToListAsync();
 
             double monthlyHours = 0;
@@ -1952,7 +1952,7 @@ namespace CRM.Repository
                         Tittle = x.Tittle,
                         Date = x.Date.Value.Date,
                     }).ToListAsync();
-               
+
                 return officeEventsDtos;
             }
             catch (Exception ex)
@@ -2030,7 +2030,7 @@ namespace CRM.Repository
                         EndeaveId = p.EndeaveId,
                         Reason = p.Reason,
                         CreatedDate = p.CreatedDate,
-                        TypeofLeaveid =p.TypeOfLeaveId,
+                        TypeofLeaveid = p.TypeOfLeaveId,
                     }).ToListAsync();
 
                 if (!toleave.Any())
@@ -2038,7 +2038,7 @@ namespace CRM.Repository
                     throw new Exception("No leave application found for the specified user.");
                 }
                 TotalLeave fd = new TotalLeave();
-                decimal totalLeaves = toleave.Sum(x => (decimal)(x.CountLeave + x.PaidCountLeave)); 
+                decimal totalLeaves = toleave.Sum(x => (decimal)(x.CountLeave + x.PaidCountLeave));
 
                 fd.TotalLeaves = totalLeaves;
                 fd.Type = new List<TotalLeavelist>();
@@ -2250,7 +2250,27 @@ namespace CRM.Repository
             var doc = new HtmlDocument();
             doc.LoadHtml(htmlDescription);
             var linkNode = doc.DocumentNode.SelectSingleNode("//a[@href]");
-            return linkNode?.GetAttributeValue("href", null) ?? string.Empty; 
+            return linkNode?.GetAttributeValue("href", null) ?? string.Empty;
+        }
+
+        public async Task<bool> Overtimeapply(string userid)
+        {
+            try
+            {
+                var employeeOvertime = new EmployeeOvertime()
+                {
+                    EmployeeId = userid,
+                    ApprovalDate =DateTime.Now,
+                    Approved   = true
+                };
+                _context.Add(employeeOvertime);
+                _context.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error: " + ex.Message);
+            }
         }
     }
 }
