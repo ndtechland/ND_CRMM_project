@@ -392,5 +392,28 @@ namespace CRM.Controllers.Api
                 throw;
             }
         }
+        [HttpGet]
+        [Route("GetMissionVisions")]
+        public async Task<IActionResult> GetMissionVisions()
+        {
+            try
+            {
+                List<MissionVision> cases = _context.MissionVisions.Where(x => x.IsActive == true).ToList();
+                if (cases != null)
+                {
+                    return Ok(new { Status = 200, Message = "Mission & Vision retrieved successfully.", data = cases });
+                }
+                else
+                {
+                    return NotFound(new { Status = 404, Message = "No any Mission & Vision available." });
+                }
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 }

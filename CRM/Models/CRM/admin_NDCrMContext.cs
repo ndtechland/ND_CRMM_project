@@ -71,6 +71,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<Leavemaster> Leavemasters { get; set; } = null!;
         public virtual DbSet<List> Lists { get; set; } = null!;
         public virtual DbSet<MFinancialYear> MFinancialYears { get; set; } = null!;
+        public virtual DbSet<MissionVision> MissionVisions { get; set; } = null!;
         public virtual DbSet<Offerletter> Offerletters { get; set; } = null!;
         public virtual DbSet<OfficeBreak> OfficeBreaks { get; set; } = null!;
         public virtual DbSet<OfficeBreakstatus> OfficeBreakstatuses { get; set; } = null!;
@@ -716,7 +717,7 @@ namespace CRM.Models.Crm
                     .HasColumnName("EPFNumber");
 
                 entity.Property(e => e.Epfpercentage)
-                    .HasColumnType("decimal(18, 0)")
+                    .HasColumnType("decimal(18, 2)")
                     .HasColumnName("EPFPercentage");
 
                 entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
@@ -739,7 +740,7 @@ namespace CRM.Models.Crm
                     .HasColumnName("ESICNumber");
 
                 entity.Property(e => e.Esicpercentage)
-                    .HasColumnType("decimal(18, 0)")
+                    .HasColumnType("decimal(18, 2)")
                     .HasColumnName("ESICPercentage");
 
                 entity.Property(e => e.Vendorid).HasColumnName("vendorid");
@@ -1380,6 +1381,19 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.FyearName)
                     .HasMaxLength(50)
                     .HasColumnName("Fyear_Name");
+            });
+
+            modelBuilder.Entity<MissionVision>(entity =>
+            {
+                entity.ToTable("MissionVision");
+
+                entity.Property(e => e.CreatedDate)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.IsActive).HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.MissionVisionName).HasMaxLength(200);
             });
 
             modelBuilder.Entity<Offerletter>(entity =>
