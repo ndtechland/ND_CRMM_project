@@ -116,6 +116,7 @@ namespace CRM.Repository
         Task<bool> AddAndUpdateCaseStudies(CaseStudiesDTO model);
         Task<bool> AddAndUpdatePricingPlan(PricingPlanDTO model);
         Task<bool> AddAndUpdateOtherService(OtherService model);
+        Task<bool> AddAndUpdateMissionVisions(MissionVisionDTO model);
 
 
     }

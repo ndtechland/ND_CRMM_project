@@ -12,5 +12,6 @@ namespace CRM.Models.Crm
         public DateTime? CheckOuttime { get; set; }
         public DateTime? CurrentDate { get; set; }
         public TimeSpan? Workinghour { get; set; }
+        public int? ShiftId { get; set; }
     }
 }

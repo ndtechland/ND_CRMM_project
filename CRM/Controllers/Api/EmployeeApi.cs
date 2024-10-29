@@ -5,6 +5,7 @@ using CRM.Models.DTO;
 using CRM.Repository;
 using CRM.Utilities;
 using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.InkML;
 using DocumentFormat.OpenXml.Vml;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -395,7 +396,7 @@ namespace CRM.Controllers.Api
                     response.Data = new
                     {
                         TotalAttendance = $"{finalYearlyAttendanceDays} / {yearlyTotalAttendanceDays}",
-                        Attendance = $"{presentDaysCount} / {daysInMonth}", 
+                        Attendance = $"{presentDaysCount} / {daysInMonth}",
                         LeaveLeft = totalLeaveLeft,
                         Leave = totalLeave,
                         offerletter = offerLetterPath,
@@ -717,7 +718,7 @@ namespace CRM.Controllers.Api
                     double.Parse(model.Currentlong)
                 );
                 if (!isTest)
-                {                   
+                {
                     if (distance > radiusInMeters)
                     {
                         bool CheckIn = await _context.EmployeeCheckIns
@@ -928,7 +929,7 @@ namespace CRM.Controllers.Api
                 if (User.Identity.IsAuthenticated)
                 {
                     var userid = User.Claims.FirstOrDefault().Value;
-                    Empattendancedatail isExists = await _apiemp.GetEmpattendance(userid,Currentdate);
+                    Empattendancedatail isExists = await _apiemp.GetEmpattendance(userid, Currentdate);
                     if (isExists != null)
                     {
                         response.Succeeded = true;
@@ -1720,6 +1721,145 @@ namespace CRM.Controllers.Api
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
-     
+        [Route("EmployeeOvertime")]
+        [HttpPost]
+        public async Task<IActionResult> EmployeeOvertime()
+        {
+            var response = new Response<EmpApplyovertimeDto>();
+
+            try
+            {
+                if (!User.Identity.IsAuthenticated)
+                {
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Message = "Authentication failed. Token is expired.";
+                    return Ok(response);
+                }
+
+                var userid = User.Claims.FirstOrDefault()?.Value;
+                if (string.IsNullOrEmpty(userid))
+                {
+                    response.StatusCode = StatusCodes.Status400BadRequest;
+                    response.Message = "User ID is missing in claims.";
+                    return Ok(response);
+                }
+                var checkcheckin = await _context.EmployeeCheckInRecords
+     .Where(x => x.EmpId == userid && x.CheckIntime.Value.Date == DateTime.Now.Date && x.CurrentDate.Value.Date == DateTime.Now.Date).FirstOrDefaultAsync();
+
+
+                if (checkcheckin == null)
+                {
+                    response.StatusCode = StatusCodes.Status404NotFound;
+                    response.Message = "No check-in record found for this employee today.";
+                    return Ok(response);
+                }
+                var alreadyexist = await _context.EmployeeOvertimes
+                   .Where(x => x.EmployeeId == userid && x.ApprovalDate.Value.Date == DateTime.Now.Date)
+                   .FirstOrDefaultAsync();
+
+                if (alreadyexist != null)
+                {
+                    response.StatusCode = StatusCodes.Status404NotFound;
+                    response.Message = "You have already applied for overtime today.";
+                    return Ok(response);
+                }
+
+                bool apiModel = await _apiemp.Overtimeapply(userid);
+                if (!apiModel)
+                {
+                    response.StatusCode = StatusCodes.Status404NotFound;
+                    response.Message = "Overtime application data not found.";
+                    return Ok(response);
+                }
+
+                var empAttendanceDetails = await _context.EmployeeRegistrations
+                    .Where(x => x.EmployeeId == userid)
+                    .Select(x => new
+                    {
+                        OfficeShiftId = (int)x.OfficeshiftTypeid,
+                        EmployeeId = x.EmployeeId
+                    })
+                    .FirstOrDefaultAsync();
+
+                if (empAttendanceDetails?.OfficeShiftId == null)
+                {
+                    response.StatusCode = StatusCodes.Status404NotFound;
+                    response.Message = "Employee office shift not found.";
+                    return Ok(response);
+                }
+
+
+
+                var officeShift = await _context.Officeshifts.FindAsync(empAttendanceDetails.OfficeShiftId);
+                if (officeShift == null)
+                {
+                    throw new Exception("Employee office shift details not found.");
+                }
+
+                if (!DateTime.TryParse(officeShift.Endtime, out DateTime shiftEndTime))
+                {
+                    throw new Exception("Invalid shift end time format.");
+                }
+
+                if (!DateTime.TryParse(officeShift.Starttime, out DateTime shiftStartTime))
+                {
+                    throw new Exception("Invalid shift start time format.");
+                }
+
+                var currentDate = DateTime.Now.Date;
+                var startTime = await StartOverTime(empAttendanceDetails.EmployeeId, empAttendanceDetails.OfficeShiftId, currentDate);
+
+                var employeeOvertime = new EmpApplyovertimeDto
+                {
+                    EmployeeId = await _context.EmployeeOvertimes
+                        .Where(x => x.ApprovalDate.HasValue && x.ApprovalDate.Value.Date == currentDate)
+                        .Select(x => x.EmployeeId)
+                        .FirstOrDefaultAsync(),
+                    StartTime = startTime
+                };
+
+                response.Succeeded = true;
+                response.StatusCode = StatusCodes.Status200OK;
+                response.Status = "Success";
+                response.Message = "Overtime applied successfully.";
+                response.Data = employeeOvertime;
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.StatusCode = StatusCodes.Status500InternalServerError;
+                response.Message = $"Error: {ex.Message}";
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
+        }
+
+
+        private async Task<string> StartOverTime(string employeeId, int officeShiftId, DateTime currentDate)
+        {
+            var checkInData = await _context.EmployeeCheckInRecords
+                .Where(g => g.EmpId == employeeId && g.CheckIntime.Value.Date == currentDate.Date)
+                .OrderByDescending(g => g.Id)
+            .FirstOrDefaultAsync();
+            var officeHour = await _context.Officeshifts
+                 .Where(h => h.Id == officeShiftId).FirstOrDefaultAsync();
+
+            TimeSpan timeDifference1 = DateTime.Parse(officeHour.Endtime) - DateTime.Parse(officeHour.Starttime);
+
+            if (checkInData != null && checkInData.CheckIntime.HasValue)
+            {
+
+                DateTime checkoutHour = checkInData.CheckIntime.Value.Add(timeDifference1);
+
+
+                return checkoutHour.ToString("hh:mm tt");
+            }
+            else
+            {
+                return "N/A";
+            }
+        }
+
+
     }
 }

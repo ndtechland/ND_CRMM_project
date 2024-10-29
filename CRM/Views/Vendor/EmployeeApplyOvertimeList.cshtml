@@ -1,7 +1,7 @@
-﻿@model IEnumerable<CRM.Models.Crm.ContactU>
+﻿@model List<CRM.Models.DTO.EmployeeOvertimeDto>
 
 @{
-    ViewData["Title"] = "GetContacts";
+    ViewData["Title"] = "EmployeeOvertime";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
 
@@ -15,7 +15,26 @@
         padding: 24px 0.75rem !important;
     }
 </style>
- 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var message = "@TempData["msg"]";
+
+        if (message) {
+            Swal.fire({
+                title: 'Success',
+                text: message,
+                icon: 'info',
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    setTimeout(function () {
+                        window.location.href = '@Url.Action("EmployeeApplyOvertimeList", "Vendor")';
+                    }, 1000);
+                }
+            });
+        }
+    });
+</script>
 <div class="page-wrapper">
     <div class="page-body-wrapper">
         <div class="page-sidebar">
@@ -27,15 +46,15 @@
                         <div class="col-lg-6">
                             <div class="page-header-left">
                                 <h2>
-                                    Contact Us List
+                                    @ViewBag.heading
                                 </h2>
                             </div>
                         </div>
                         <div class="col-lg-6">
                             <ol class="breadcrumb pull-right">
                                 <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
-                                <li class="breadcrumb-item">Help Desk</li>
-                                <li class="breadcrumb-item active">Contact Us</li>
+                                <li class="breadcrumb-item">Report</li>
+                                <li class="breadcrumb-item active">Overtime Applied List</li>
                             </ol>
                         </div>
                     </div>
@@ -52,13 +71,20 @@
                                             <tr style="background-color: #00baf2;">
                                                 <th nowrap>Sl. No.</th>
                                                 <th nowrap>
-                                                    Name
+                                                    Employee Id
                                                 </th>
                                                 <th nowrap>
-                                                    Email
+                                                    Employee Name
                                                 </th>
-                                                <th nowrap>Message</th>
-                                                <th nowrap>Contact Date</th>
+                                                <th nowrap>
+                                                    Start Time
+                                                </th>
+                                                <th nowrap>
+                                                    End Time
+                                                </th>
+                                                <th nowrap>TotalOvertime Hours</th>
+                                                <th nowrap>Status</th>
+                                                <th nowrap>Approved Date</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -70,16 +96,38 @@
                                                     <tr class="table-row">
                                                         <td>@count</td>
                                                         <td nowrap>
-                                                            @item.Name
+                                                            @Html.DisplayFor(modelItem => item.EmployeeId)
                                                         </td>
                                                         <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.Email)
+                                                            @Html.DisplayFor(modelItem => item.EmployeeName)
                                                         </td>
                                                         <td nowrap>
-                                                            @item.Message
+                                                            @item.StartTime
                                                         </td>
                                                         <td nowrap>
-                                                            @item.ContactDate.Value.ToString("dd-MMM-yyyy")
+                                                            @item.EndTime
+                                                        </td>
+                                                        <td>
+                                                            @item.TotalOvertimeHours
+                                                        </td>
+                                                        <td>
+                                                            @if (item.Approved == true)
+                                                            {
+                                                                <a href="@Url.Action("UpdateApplyOvertimeStatus", "Vendor", new { Id = item.Id })" class="btn btn-success"
+                                                                   onclick="return confirm('Are you sure you want to disapproved Overtime?');">
+                                                                    Approved
+                                                                </a>
+                                                            }
+                                                            else
+                                                            {
+                                                                <a href="@Url.Action("UpdateApplyOvertimeStatus", "Vendor", new { Id = item.Id })" class="btn btn-danger"
+                                                                   onclick="return confirm('Are you sure you want to approved Overtime?');">
+                                                                    Disapproved
+                                                                </a>
+                                                            }
+                                                        </td>
+                                                        <td nowrap>
+                                                            @item.ApprovalDate
                                                         </td>
                                                     </tr>
                                                 }
@@ -96,7 +144,6 @@
         </div>
     </div>
 </div>
- 
 <script>
     $(document).ready(function () {
         $('#datatable').DataTable();

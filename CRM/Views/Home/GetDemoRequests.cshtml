@@ -1,7 +1,7 @@
-﻿@model IEnumerable<CRM.Models.Crm.ContactU>
+﻿@model IEnumerable<CRM.Models.Crm.DemoRequest>
 
 @{
-    ViewData["Title"] = "GetContacts";
+    ViewData["Title"] = "GetDemoRequests";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
 
@@ -27,7 +27,7 @@
                         <div class="col-lg-6">
                             <div class="page-header-left">
                                 <h2>
-                                    Contact Us List
+                                    Demo Requests List
                                 </h2>
                             </div>
                         </div>
@@ -35,7 +35,7 @@
                             <ol class="breadcrumb pull-right">
                                 <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
                                 <li class="breadcrumb-item">Help Desk</li>
-                                <li class="breadcrumb-item active">Contact Us</li>
+                                <li class="breadcrumb-item active">Demo Requests</li>
                             </ol>
                         </div>
                     </div>
@@ -57,8 +57,10 @@
                                                 <th nowrap>
                                                     Email
                                                 </th>
-                                                <th nowrap>Message</th>
-                                                <th nowrap>Contact Date</th>
+                                                <th>Mobile</th>
+                                                <th nowrap>Company Name</th>
+                                                <th nowrap>Description</th>
+                                                <th nowrap>Request Date</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -76,10 +78,16 @@
                                                             @Html.DisplayFor(modelItem => item.Email)
                                                         </td>
                                                         <td nowrap>
-                                                            @item.Message
+                                                            @item.Mobile
                                                         </td>
                                                         <td nowrap>
-                                                            @item.ContactDate.Value.ToString("dd-MMM-yyyy")
+                                                            @item.CompanyName
+                                                        </td>
+                                                        <td nowrap>
+                                                            @item.Description
+                                                        </td>
+                                                        <td nowrap>
+                                                            @item.RequestDate.Value.ToString("dd-MMM-yyyy")
                                                         </td>
                                                     </tr>
                                                 }

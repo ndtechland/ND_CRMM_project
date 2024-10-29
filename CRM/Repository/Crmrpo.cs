@@ -3373,13 +3373,24 @@ namespace CRM.Repository
                         PlanName = model.PlanName,
                         Price = model.Price,
                         Title = model.Title,
-                        Description = model.Description,
+                        Support = model.Support,
                         Image = model.Image,
                         AnnulPrice = model.AnnulPrice,
                         AnnulPriceInPercentage = model.AnnulPriceInPercentage
                     };
                     _context.Add(data);
                     _context.SaveChanges();
+                    foreach (var item in model.PlanFeatures)
+                    {
+                        PricingPlanFeature features = new()
+                        {
+                            PricingPlanId = data.Id,
+                            Feature = item.Feature,
+                        };
+                        await _context.PricingPlanFeatures.AddAsync(features);
+                        await _context.SaveChangesAsync();
+
+                    }
                     return true;
                 }
                 else
@@ -3389,7 +3400,7 @@ namespace CRM.Repository
                     existdata.PlanName = model.PlanName;
                     existdata.Price = model.Price;
                     existdata.Title = model.Title;
-                    existdata.Description = model.Description;
+                    existdata.Support = model.Support;
                     existdata.IsActive = model.IsActive;
                     existdata.AnnulPrice = model.AnnulPrice;
                     existdata.AnnulPriceInPercentage = model.AnnulPriceInPercentage;
@@ -3397,6 +3408,23 @@ namespace CRM.Repository
                     {
                         existdata.Image = model.Image;
                     }
+                    // Remove existing feature
+                    var existingFeature = await _context.PricingPlanFeatures
+                        .Where(s => s.PricingPlanId == existdata.Id)
+                        .ToListAsync();
+                    _context.PricingPlanFeatures.RemoveRange(existingFeature);
+
+                    // Add new feature
+                    foreach (var item in model.PlanFeatures)
+                    {
+                        PricingPlanFeature feature = new PricingPlanFeature
+                        {
+                            PricingPlanId = existdata.Id,
+                            Feature = item.Feature,
+                        };
+                        await _context.PricingPlanFeatures.AddAsync(feature);
+                    }
+
 
                 }
                 _context.SaveChanges();
@@ -3477,6 +3505,61 @@ namespace CRM.Repository
                     _context.SaveChanges();
                     return true;
                 }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        public async Task<bool> AddAndUpdateMissionVisions(MissionVisionDTO model)
+        {
+            try
+            {
+
+                FileOperation fileOperation = new FileOperation(_webHostEnvironment);
+                string[] allowedExtensions = { ".png", ".jpg", ".jpeg" };
+                string ImagePath = "";
+
+                if (model.ImageFile != null)
+                {
+                    var fileExtension = Path.GetExtension(model.ImageFile.FileName).ToLower();
+                    if (!allowedExtensions.Contains(fileExtension))
+                    {
+                        throw new InvalidOperationException("Only .png, .jpg, and .jpeg files are allowed.");
+                    }
+                    ImagePath = fileOperation.SaveBase64Image("image", model.ImageFile, allowedExtensions);
+                    model.Image = ImagePath;
+                }
+
+                if (model.Id == 0)
+                {
+                    var data = new MissionVision()
+                    {
+                        MissionVisionName = model.MissionVisionName,
+                        Description = model.Description,
+                        Image = model.Image
+
+                    };
+                    _context.Add(data);
+                    _context.SaveChanges();
+                    return true;
+                }
+                else
+                {
+                    var existdata = _context.MissionVisions.Find(model.Id);
+
+                    existdata.MissionVisionName = model.MissionVisionName;
+                    existdata.Description = model.Description;
+                    existdata.IsActive = model.IsActive;
+                    if (model.Image != null)
+                    {
+                        existdata.Image = model.Image;
+                    }
+
+                }
+                _context.SaveChanges();
+                return true;
             }
             catch (Exception)
             {

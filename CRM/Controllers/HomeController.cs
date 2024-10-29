@@ -1854,13 +1854,15 @@ namespace CRM.Controllers
         {
             try
             {
-                List<PricingPlan> model = _context.PricingPlans.OrderByDescending(x => x.Id).ToList();
-                 
+                //List<PricingPlan> model = _context.PricingPlans.OrderByDescending(x => x.Id).ToList();
+                PricingPlanDTO model = new PricingPlanDTO();
+                model.PricingPlansList = _context.PricingPlans.OrderByDescending(x => x.Id).ToList();
                 int iId = (int)(id == null ? 0 : id);
                 ViewBag.id = 0;
                 ViewBag.PlanName = "";
                 ViewBag.Price = "";
                 ViewBag.tittle = "";
+                ViewBag.Support = "";
                 ViewBag.AnnulPrice = "";
                 ViewBag.AnnulPriceInPercentage = "";
                 ViewBag.Description = "";
@@ -1873,15 +1875,19 @@ namespace CRM.Controllers
                 if (iId != null && iId != 0)
                 {
                     var data = _context.PricingPlans.Find(iId);
+
+                    var existingfeatures = await _context.PricingPlanFeatures
+                        .Where(s => s.PricingPlanId == data.Id)  
+                        .ToListAsync();
                     if (data != null)
                     {
                         ViewBag.id = data.Id;
                         ViewBag.PlanName = data.PlanName;
                         ViewBag.Price = data.Price;
                         ViewBag.tittle = data.Title;
+                        ViewBag.Support = data.Support;
                         ViewBag.AnnulPrice = data.AnnulPrice;
-                        ViewBag.AnnulPriceInPercentage = data.AnnulPriceInPercentage;
-                        ViewBag.Description = data.Description;
+                        ViewBag.AnnulPriceInPercentage = data.AnnulPriceInPercentage; 
                         ViewBag.IsActive = data.IsActive;
                         ViewBag.Image = data.Image;
                         ViewBag.AnnulPriceInPercentage = data.AnnulPriceInPercentage;
@@ -1889,6 +1895,10 @@ namespace CRM.Controllers
                         ViewBag.btnText = "UPDATE";
                         ViewBag.heading = "Update Pricing Plan";
 
+                        model.PlanFeatures = existingfeatures.Select(s => new PlanFeature
+                        {
+                            Feature = s.Feature
+                        }).ToList();
                     }
                 }
 
@@ -2045,6 +2055,110 @@ namespace CRM.Controllers
             try
             {
                 List<ContactU> model = _context.ContactUs.OrderByDescending(x => x.Id).ToList();
+                return View(model);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> MissionVisions(int id)
+        {
+            try
+            {
+                MissionVisionDTO model = new MissionVisionDTO();
+                model.MissionVisions = _context.MissionVisions.OrderByDescending(x => x.Id).ToList();
+                ;
+                int iId = (int)(id == null ? 0 : id);
+                ViewBag.id = 0;
+                ViewBag.MissionVisionName = "";
+                ViewBag.Description = "";
+                ViewBag.IsActive = "";
+                ViewBag.Image = "";
+                ViewBag.heading = "Add Mission & Vision";
+                ViewBag.btnText = "SAVE";
+                if (iId != null && iId != 0)
+                {
+                    var data = _context.MissionVisions.Find(iId);
+                    if (data != null)
+                    {
+                        ViewBag.id = data.Id;
+                        ViewBag.MissionVisionName = data.MissionVisionName;
+                        ViewBag.Description = data.Description;
+                        ViewBag.Image = data.Image;
+                        ViewBag.IsActive = data.IsActive;
+                        ViewBag.btnText = "UPDATE";
+                        ViewBag.heading = "Update Mission & Vision";
+
+                    }
+                }
+
+                return View(model);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> MissionVisions(MissionVisionDTO model)
+        {
+            try
+            {
+                bool check = await _ICrmrpo.AddAndUpdateMissionVisions(model);
+                if (check)
+                {
+                    if (model.Id == 0)
+                    {
+                        TempData["msg"] = "ok";
+                        return RedirectToAction("MissionVisions");
+                    }
+                    else
+                    {
+                        TempData["msg"] = "updok";
+                        return RedirectToAction("MissionVisions");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("MissionVisions");
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        public async Task<IActionResult> DeleteMissionVisions(int id)
+        {
+            try
+            {
+                var dlt = _context.MissionVisions.Find(id);
+                if (dlt != null)
+                {
+                    _context.MissionVisions.Remove(dlt);
+                    _context.SaveChanges();
+                }
+                TempData["msg"] = "dltok";
+                return RedirectToAction("MissionVisions");
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetDemoRequests()
+        {
+            try
+            {
+                List<DemoRequest> model = _context.DemoRequests.OrderByDescending(x => x.Id).ToList();
                 return View(model);
             }
             catch (Exception)

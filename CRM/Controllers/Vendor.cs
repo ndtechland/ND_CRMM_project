@@ -1,4 +1,5 @@
 using CRM.IUtilities;
+using CRM.Models.APIDTO;
 using CRM.Models.Crm;
 using CRM.Models.DTO;
 using CRM.Repository;
@@ -54,6 +55,13 @@ namespace CRM.Controllers
                                 Text = p.ProductName,
                             })
                             .ToList();
+                        ViewBag.PlanPrice = _context.PricingPlans.Where(x => x.IsActive == true)
+                .Select(p => new SelectListItem
+                {
+                    Value = p.Id.ToString(),
+                    Text = $"{p.PlanName} {' '} {p.Price}",
+                })
+                .ToList();
                         ViewBag.SelectedStateId = data.StateId;
                         ViewBag.Price = vendor.Productprice;
                         ViewBag.Renewprice = data.Renewprice;
@@ -80,6 +88,13 @@ namespace CRM.Controllers
                         Text = p.ProductName,
                     })
                     .ToList();
+                ViewBag.PlanPrice = _context.PricingPlans.Where(x => x.IsActive == true)
+                  .Select(p => new SelectListItem
+                  {
+                      Value = p.Id.ToString(),
+                      Text = $"{p.PlanName} {' '} {p.Price}",
+                  })
+                  .ToList();
                 return View();
             }
             else
@@ -1853,7 +1868,7 @@ namespace CRM.Controllers
                 {
                     int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                     var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
-                    var Approvedbankdetail = await _ICrmrpo.GetLeaveapplydetailList(adminlogin.Vendorid); 
+                    var Approvedbankdetail = await _ICrmrpo.GetLeaveapplydetailList(adminlogin.Vendorid);
                     if (Approvedbankdetail != null)
                     {
                         return View(Approvedbankdetail);
@@ -2386,8 +2401,8 @@ namespace CRM.Controllers
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 int vendorid = (int)adminlogin.Vendorid;
-                string time = Request.Form["Time"];  
-                string period = Request.Form["Period"]; 
+                string time = Request.Form["Time"];
+                string period = Request.Form["Period"];
 
                 model.Time = time + " " + period;
                 bool check = await _ICrmrpo.AddEventsScheduler(model, vendorid);
@@ -2495,6 +2510,13 @@ namespace CRM.Controllers
 
                     foreach (var record in attendanceEntries)
                     {
+                        string workingHours = "N/A";
+                        if (record.CheckIntime.HasValue && record.CheckOuttime.HasValue)
+                        {
+                            TimeSpan duration = record.CheckOuttime.Value - record.CheckIntime.Value;
+                            workingHours = $"{(int)duration.TotalHours}h{duration.Minutes}m";
+                        }
+
                         attendanceRecords.Add(new EmployeeAttendanceDto
                         {
                             EmpId = record.EmpId,
@@ -2502,20 +2524,19 @@ namespace CRM.Controllers
                                            (!string.IsNullOrEmpty(employee.MiddleName) ? employee.MiddleName + " " : "") +
                                            employee.LastName,
                             CheckIntime = record.CheckIntime.HasValue
-                                ? record.CheckIntime.Value.ToString("dd-MMM-yyyy")
+                                ? record.CheckIntime.Value.ToString("dd-MMM-yyyy HH:mm")
                                 : "N/A",
                             CheckOuttime = record.CheckOuttime.HasValue
-                                ? record.CheckOuttime.Value.ToString("dd-MMM-yyyy")
+                                ? record.CheckOuttime.Value.ToString("dd-MMM-yyyy HH:mm")
                                 : "N/A",
                             CurrentDate = record.CurrentDate.HasValue
                                 ? record.CurrentDate.Value.ToString("dd-MMM-yyyy")
                                 : "N/A",
-                            Workinghour = record.Workinghour.HasValue
-                                ? record.Workinghour.Value.ToString(@"hh\:mm\:ss")
-                                : "N/A",
+                            Workinghour = workingHours,
                         });
                     }
                 }
+
                 attendanceDto.detail = attendanceRecords
                     .OrderByDescending(r => r.CurrentDate)
                     .ToList();
@@ -2527,6 +2548,7 @@ namespace CRM.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
         [HttpGet]
         public JsonResult CheckEmployeeExists(string employeeId)
         {
@@ -2550,7 +2572,165 @@ namespace CRM.Controllers
             return Json(new { exists = false });
         }
 
+        public async Task<IActionResult> EmployeeApplyOvertimeList()
+        {
+            try
+            {
+                int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminLogin = await _context.AdminLogins.FirstOrDefaultAsync(x => x.Id == userId);
 
+                if (adminLogin == null)
+                    return StatusCode(404, "Admin login not found");
+
+                var employeeList = await _context.EmployeeRegistrations
+                                                 .Where(e => e.Vendorid == adminLogin.Vendorid)
+                                                 .OrderByDescending(x => x.EmployeeId)
+                                                 .ToListAsync();
+
+                var employeeIds = employeeList.Select(e => e.EmployeeId).ToList();
+                var attendanceEntries = await _context.EmployeeOvertimes
+                                                      .Where(e => employeeIds.Contains(e.EmployeeId))
+                                                      .ToListAsync();
+
+                var overtimeRecords = new List<EmployeeOvertimeDto>();
+
+                foreach (var record in attendanceEntries)
+                {
+                    var employee = employeeList.FirstOrDefault(e => e.EmployeeId == record.EmployeeId);
+                    if (employee == null) continue;
+
+                    string overtimeHours = "N/A";
+                    if (record.StartTime.HasValue && record.EndTime.HasValue)
+                    {
+                        var duration = record.EndTime.Value - record.StartTime.Value;
+                        overtimeHours = $"{(int)duration.TotalHours}h{duration.Minutes}m";
+                    }
+                    var currentDate = DateTime.Now.Date;
+
+                    string startOverTime = "N/A";
+                   
+                    overtimeRecords.Add(new EmployeeOvertimeDto
+                    {
+                        Id = record.Id,
+                        EmployeeId = record.EmployeeId,
+                        EmployeeName = $"{employee.FirstName} " +
+                                       (!string.IsNullOrEmpty(employee.MiddleName) ? employee.MiddleName + " " : "") +
+                                       employee.LastName,
+                        EndTime = record.EndTime?.ToString("dd-MMM-yyyy HH:mm") ?? "N/A",
+                        ApprovalDate = record.ApprovalDate?.ToString("dd-MMM-yyyy") ?? "N/A",
+                        TotalOvertimeHours = overtimeHours,
+                        StartTime = await StartOverTime(employee.EmployeeId, (int)employee.OfficeshiftTypeid, currentDate), 
+                        Approved = record.Approved
+                    });
+                }
+
+                return View(overtimeRecords.OrderByDescending(r => r.ApprovalDate).ToList());
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+
+        public async Task<IActionResult> UpdateApplyOvertimeStatus(int Id)
+        {
+            var Overtimes = await _context.EmployeeOvertimes.FirstOrDefaultAsync(x => x.Id == Id);
+            if (Overtimes == null)
+            {
+                TempData["msg"] = "Data not found!";
+                return RedirectToAction("EmployeeApplyOvertimeList");
+            }
+
+            var empinfo = await _context.EmployeeRegistrations.FirstOrDefaultAsync(x => x.EmployeeId == Overtimes.EmployeeId);
+            if (empinfo == null)
+            {
+                TempData["msg"] = "Employee information not found!";
+                return RedirectToAction("EmployeeApplyOvertimeList");
+            }
+
+            var emppersonalinfo = await _context.EmployeePersonalDetails.FirstOrDefaultAsync(x => x.EmpRegId == Overtimes.EmployeeId);
+            if (emppersonalinfo == null)
+            {
+                TempData["msg"] = "Employee personal information not found!";
+                return RedirectToAction("EmployeeApplyOvertimeList");
+            }
+
+            var currentDate = DateTime.Now.Date;
+            var checkInData = await _context.EmployeeCheckInRecords
+                .Where(g => g.EmpId == empinfo.EmployeeId && g.CheckIntime.Value.Date == currentDate)
+                .OrderByDescending(g => g.Id)
+                .FirstOrDefaultAsync();
+
+            if (checkInData == null)
+            {
+                TempData["msg"] = "Check-in data not found for today!";
+                return RedirectToAction("EmployeeApplyOvertimeList");
+            }
+
+            var officeHour = await _context.Officeshifts
+                .Where(h => h.Id == (int)empinfo.OfficeshiftTypeid)
+                .FirstOrDefaultAsync();
+
+            if (officeHour == null)
+            {
+                TempData["msg"] = "Office shift data not found!";
+                return RedirectToAction("EmployeeApplyOvertimeList");
+            }
+
+            TimeSpan timeDifference1 = DateTime.Parse(officeHour.Endtime) - DateTime.Parse(officeHour.Starttime);
+            DateTime checkoutHour = checkInData.CheckIntime.Value.Add(timeDifference1);
+
+            Overtimes.StartTime = checkoutHour;
+            Overtimes.Approved = !Overtimes.Approved;
+            await _context.SaveChangesAsync();
+
+            string subject = (bool)Overtimes.Approved ? "Overtime Application Approved" : "Overtime Application Rejected";
+            string emailBody = (bool)Overtimes.Approved
+                ? $"Dear {empinfo.FirstName} {empinfo.MiddleName} {empinfo.LastName},\n\nCongratulations! Your overtime application has been approved. Thank you for your dedication and hard work."
+                : $"Dear {empinfo.FirstName} {empinfo.MiddleName} {empinfo.LastName},\n\nUnfortunately, your overtime application has been rejected. For more information, please reach out to your supervisor or HR department.";
+
+            try
+            {
+                await _emailService.SendEmpLeaveApprovalEmailAsync(emppersonalinfo.PersonalEmailAddress, empinfo.FirstName, empinfo.MiddleName, empinfo.LastName, subject, emailBody);
+                TempData["msg"] = (bool)Overtimes.Approved
+                    ? "Approval status updated successfully, and approval email sent!"
+                    : "Approval status updated successfully, and rejection email sent!";
+            }
+            catch (Exception ex)
+            {
+                TempData["msg"] = (bool)Overtimes.Approved
+                    ? "Approval status updated successfully, but failed to send approval email."
+                    : "Approval status updated successfully, but failed to send rejection email.";
+            }
+
+            return RedirectToAction("EmployeeApplyOvertimeList");
+        }
+
+        private async Task<string> StartOverTime(string employeeId, int officeShiftId, DateTime currentDate)
+        {
+            var checkInData = await _context.EmployeeCheckInRecords
+                .Where(g => g.EmpId == employeeId && g.CheckIntime.Value.Date == currentDate.Date)
+                .OrderByDescending(g => g.Id)
+            .FirstOrDefaultAsync();
+            var officeHour = await _context.Officeshifts
+                 .Where(h => h.Id == officeShiftId).FirstOrDefaultAsync();
+
+            TimeSpan timeDifference1 = DateTime.Parse(officeHour.Endtime) - DateTime.Parse(officeHour.Starttime);
+
+            if (checkInData != null && checkInData.CheckIntime.HasValue)
+            {
+
+                DateTime checkoutHour = checkInData.CheckIntime.Value.Add(timeDifference1);
+
+
+                return checkoutHour.ToString("hh:mm tt");
+            }
+            else
+            {
+                return "N/A";
+            }
+        }
 
     }
 }

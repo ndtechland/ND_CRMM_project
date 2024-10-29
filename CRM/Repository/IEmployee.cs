@@ -40,6 +40,7 @@ namespace CRM.Repository
         public Task<getTasklist> gettasklist(string userid);
         public Task<List<TasksassignlistDto>> getSubtasklist(string userid ,int? id);
         public Task<List<AppFaq>> Getappfaq();
+        public Task<bool> Overtimeapply(string userid);
 
 
     }

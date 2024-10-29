@@ -45,5 +45,10 @@
         public string? Taskreason { get; set; }
         public string? Taskstatus { get; set; }
     }
+    public class EmpApplyovertimeDto
+    {
+        public string? EmployeeId { get; set; }
+        public string? StartTime { get; set; }
 
+    }
 }
