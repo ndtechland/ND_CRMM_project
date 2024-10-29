@@ -12,5 +12,6 @@ namespace CRM.Models.Crm
         public TimeSpan? TotalOvertimeHours { get; set; }
         public bool? Approved { get; set; }
         public DateTime? ApprovalDate { get; set; }
+        public bool? IsOvertime { get; set; }
     }
 }
