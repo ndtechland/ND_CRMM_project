@@ -662,13 +662,14 @@
                             <div class="row">
                                 <input class="form-control" value='@ViewBag.AnnualCTC' name="AnnualCTC" id="txtAnnualCTC" type="hidden">
                                 <div class="col">
+                                    <label>Annual CTC <span class="text-danger">*</span></label>
+                                    <input class="form-control" value='@ViewBag.AnnualCTC' name="AnnualCTC" placeholder="Enter Annual CTC" id="txtAnnualCTC" type="text">
+                                    <span id="AnnualCTCError" class="text-danger" style="display:none;">Annual CTC is required and must contain a decimal point.</span>
+                                </div>
+                                <div class="col">
                                     <label>Monthly CTC <span class="text-danger">*</span></label>
                                     <input class="form-control" value='@ViewBag.MonthlyCTC' name="MonthlyCTC" placeholder="Enter Monthly CTC" id="txtMonthlyCTC" type="text">
                                     <span id="MonthlyCTCError" class="text-danger" style="display:none;">Monthly CTC is required and must contain a decimal point.</span>
-                                </div>
-                                <div class="col">
-                                    <label>Special Allowance</label>
-                                    <input class="form-control" value='@ViewBag.specialallowance' name="SpecialAllowance" id="SpecialAllowance" placeholder="Enter Special Allowance" type="text">
                                 </div>
                                 <div class="col">
                                     <label>Basic</label>
@@ -684,16 +685,37 @@
                                     <input class="form-control" value='@ViewBag.HouseRentAllowance' name="HouseRentAllowance" placeholder="00.0" id="txtHouseRentAllowance" type="text" readonly>
                                 </div>
                                 <div class="col">
+                                    <label>Special Allowance</label>
+                                    <input class="form-control" value='@ViewBag.specialallowance' name="SpecialAllowance" id="SpecialAllowance" placeholder="Enter Special Allowance" type="text">
+                                </div>
+                                @* <div class="col">
                                     <label>Gross</label>
                                     <input class="form-control" value='@ViewBag.gross' name="gross" id="txtgross" type="text" readonly>
-                                </div>
+                                </div> *@
                                 <div class="col">
                                     <label>Monthly Gross Pay</label>
                                     <input class="form-control" value='@ViewBag.MonthlyGrossPay' name="MonthlyGrossPay" placeholder="00.0" id="txtMonthlyGrossPay" type="text" readonly>
                                 </div>
                                 <input class="form-control" value='@ViewBag.servicecharge' name="servicecharge" id="Servicecharge" type="hidden">
+                            
+                                
                             </div>
+                            <div class="row">
+                                <div class="col">
+                                    <label>Travel Allowance </label>
+                                    <input class="form-control" value='@ViewBag.MonthlyGrossPay' name="MonthlyGrossPay" placeholder="00.0" id="txtMonthlyGrossPay" type="text" readonly>
+                                </div>
 
+                                <div class="col">
+                                    <label>Convence Allowance</label>
+                                    <input class="form-control" value='@ViewBag.MonthlyGrossPay' name="MonthlyGrossPay" placeholder="00.0" id="txtMonthlyGrossPay" type="text" readonly>
+                                </div>
+
+                                <div class="col">
+                                    <label>Fixed Allowance</label>
+                                    <input class="form-control" value='@ViewBag.MonthlyGrossPay' name="MonthlyGrossPay" placeholder="00.0" id="txtMonthlyGrossPay" type="text" readonly>
+                                </div>
+                            </div>
                             <br>
 
                             <h4 class="text-danger EmployeeContribution">Employee Contribution</h4>
