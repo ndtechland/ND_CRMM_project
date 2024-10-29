@@ -48,7 +48,7 @@
     public class EmpApplyovertimeDto
     {
         public string? EmployeeId { get; set; }
-        public DateTime? StartTime { get; set; }
+        public string? StartTime { get; set; }
 
     }
 }

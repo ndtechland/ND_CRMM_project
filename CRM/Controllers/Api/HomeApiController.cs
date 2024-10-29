@@ -258,9 +258,9 @@ namespace CRM.Controllers.Api
             {
                 var domainmodel = new ContactU()
                 {
-                    Name=model.Name,
-                    Email=model.Email,
-                    Message=model.Message
+                    Name = model.Name,
+                    Email = model.Email,
+                    Message = model.Message
                 };
                 _context.Add(domainmodel);
                 _context.SaveChanges();
@@ -278,7 +278,7 @@ namespace CRM.Controllers.Api
         {
             try
             {
-                List<CaseStudy> cases = _context.CaseStudies.Where(x=>x.IsActive==true).ToList();
+                List<CaseStudy> cases = _context.CaseStudies.Where(x => x.IsActive == true).ToList();
                 if (cases != null)
                 {
                     return Ok(new { Status = 200, Message = "Case Studies retrieved successfully.", data = cases });
@@ -300,8 +300,8 @@ namespace CRM.Controllers.Api
         public async Task<IActionResult> GetPricingPlan()
         {
             try
-            { 
-                var result = _context.PricingPlans.Where(x=>x.IsActive==true).ToList();
+            {
+                var result = _context.PricingPlans.Where(x => x.IsActive == true).ToList();
 
                 List<PricingPlanDTO> plans = result.Select(x => new PricingPlanDTO
                 {
@@ -333,7 +333,7 @@ namespace CRM.Controllers.Api
             }
         }
 
-        public decimal SavePrice(decimal price,decimal per)
+        public decimal SavePrice(decimal price, decimal per)
         {
             try
             {
@@ -341,7 +341,7 @@ namespace CRM.Controllers.Api
                 decimal discountedprice = annulprice * per / 100;
                 return discountedprice;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new Exception("Server Error : " + ex.Message);
             }
@@ -408,7 +408,8 @@ namespace CRM.Controllers.Api
                 else
                 {
                     return NotFound(new { Status = 404, Message = "No any Case Studies available." });
-                   }
+                }
+            }
             catch (Exception)
             {
 
