@@ -1744,17 +1744,25 @@ namespace CRM.Controllers.Api
                     return Ok(response);
                 }
                 var checkcheckin = await _context.EmployeeCheckInRecords
-     .Where(x => x.EmpId == userid)
-     .Select(x => new { CurrentDate = x.CurrentDate })
-     .FirstOrDefaultAsync();
+     .Where(x => x.EmpId == userid && x.CheckIntime.Value.Date == DateTime.Now.Date && x.CurrentDate.Value.Date == DateTime.Now.Date).FirstOrDefaultAsync();
 
-                if (checkcheckin == null || checkcheckin.CurrentDate?.Date != DateTime.Today)
+
+                if (checkcheckin == null)
                 {
                     response.StatusCode = StatusCodes.Status404NotFound;
                     response.Message = "No check-in record found for this employee today.";
                     return Ok(response);
                 }
+                var alreadyexist = await _context.EmployeeOvertimes
+                   .Where(x => x.EmployeeId == userid && x.ApprovalDate.Value.Date == DateTime.Now.Date)
+                   .FirstOrDefaultAsync();
 
+                if (alreadyexist != null)
+                {
+                    response.StatusCode = StatusCodes.Status404NotFound;
+                    response.Message = "You have already applied for overtime today.";
+                    return Ok(response);
+                }
 
                 bool apiModel = await _apiemp.Overtimeapply(userid);
                 if (!apiModel)
