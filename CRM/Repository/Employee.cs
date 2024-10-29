@@ -2260,8 +2260,8 @@ namespace CRM.Repository
                 var employeeOvertime = new EmployeeOvertime()
                 {
                     EmployeeId = userid,
-                    ApprovalDate =DateTime.Now,
-                    Approved   = true
+                    ApprovalDate = DateTime.Now,
+                    Approved = false
                 };
                 _context.Add(employeeOvertime);
                 _context.SaveChanges();
