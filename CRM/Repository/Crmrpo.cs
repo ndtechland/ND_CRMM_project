@@ -3373,6 +3373,7 @@ namespace CRM.Repository
                         PlanName = model.PlanName,
                         Price = model.Price,
                         Title = model.Title,
+                        Support = model.Support,
                         Description = model.Description,
                         Image = model.Image,
                         AnnulPrice = model.AnnulPrice,
@@ -3380,6 +3381,17 @@ namespace CRM.Repository
                     };
                     _context.Add(data);
                     _context.SaveChanges();
+                    foreach (var item in model.PlanFeatures)
+                    {
+                        PricingPlanFeature features = new()
+                        {
+                            PricingPlanId = data.Id,
+                            Feature = item.Feature,
+                        };
+                        await _context.PricingPlanFeatures.AddAsync(features);
+                        await _context.SaveChangesAsync();
+
+                    }
                     return true;
                 }
                 else
@@ -3389,6 +3401,7 @@ namespace CRM.Repository
                     existdata.PlanName = model.PlanName;
                     existdata.Price = model.Price;
                     existdata.Title = model.Title;
+                    existdata.Support = model.Support;
                     existdata.Description = model.Description;
                     existdata.IsActive = model.IsActive;
                     existdata.AnnulPrice = model.AnnulPrice;
@@ -3397,6 +3410,23 @@ namespace CRM.Repository
                     {
                         existdata.Image = model.Image;
                     }
+                    // Remove existing feature
+                    var existingFeature = await _context.PricingPlanFeatures
+                        .Where(s => s.PricingPlanId == existdata.Id)
+                        .ToListAsync();
+                    _context.PricingPlanFeatures.RemoveRange(existingFeature);
+
+                    // Add new feature
+                    foreach (var item in model.PlanFeatures)
+                    {
+                        PricingPlanFeature feature = new PricingPlanFeature
+                        {
+                            PricingPlanId = existdata.Id,
+                            Feature = item.Feature,
+                        };
+                        await _context.PricingPlanFeatures.AddAsync(feature);
+                    }
+
 
                 }
                 _context.SaveChanges();

@@ -84,6 +84,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<OurTutorial> OurTutorials { get; set; } = null!;
         public virtual DbSet<Payroll> Payrolls { get; set; } = null!;
         public virtual DbSet<PricingPlan> PricingPlans { get; set; } = null!;
+        public virtual DbSet<PricingPlanFeature> PricingPlanFeatures { get; set; } = null!;
         public virtual DbSet<ProductMaster> ProductMasters { get; set; } = null!;
         public virtual DbSet<Professionaltax> Professionaltaxes { get; set; } = null!;
         public virtual DbSet<Quation> Quations { get; set; } = null!;
@@ -1621,7 +1622,14 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Price).HasColumnType("decimal(10, 2)");
 
+                entity.Property(e => e.Support).HasMaxLength(200);
+
                 entity.Property(e => e.Title).HasMaxLength(250);
+            });
+
+            modelBuilder.Entity<PricingPlanFeature>(entity =>
+            {
+                entity.Property(e => e.Feature).HasMaxLength(250);
             });
 
             modelBuilder.Entity<ProductMaster>(entity =>
