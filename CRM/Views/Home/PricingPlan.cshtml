@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CRM.Models.Crm.PricingPlan>
+﻿@model CRM.Models.DTO.PricingPlanDTO
 
 @{
     ViewData["Title"] = "PricingPlan";
@@ -148,31 +148,17 @@
                                         </div>
                                        
                                     </div>
-                                    <div class="row">
-
+                                    @* <div class="row">
                                         <div class="form-group col-md-3">
                                             <div id="serviceContainer">
-                                                <div class="service-container" id="row_0">
-                                                    <div class="input-group m-3">
-                                                        <input type="text" name="PlanFeatures[0].Feature" class="form-control m-input" id="exampleInputName1" required>
-                                                        <div class="input-group-prepend">
-                                                            <button class="btn btn-danger deleteRow" id="DeleteRow_0" type="button">
-                                                                <i class="bi bi-trash"></i>
-                                                                Delete
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            @* <div id="serviceContainer">
-                                                @if (ViewBag.PlanFeatures != null)
+                                                @if (Model?.PlanFeatures != null)
                                                 {
                                                     int featureIndex = 0;
-                                                    foreach (var feature in ViewBag.PlanFeatures)
+                                                    foreach (var feature in Model.PlanFeatures)
                                                     {
                                                         <div class="service-container" id="row_@featureIndex">
                                                             <div class="input-group m-3">
-                                                                <input type="text" name="PlanFeatures[@featureIndex].Feature" value="@feature" class="form-control m-input" required />
+                                                                <input type="text" name="PlanFeatures[@featureIndex].Feature" value="@feature.Feature" class="form-control m-input" required />
                                                                 <div class="input-group-prepend">
                                                                     <button class="btn btn-danger deleteRow" id="DeleteRow_@featureIndex" type="button">
                                                                         <i class="bi bi-trash"></i> Delete
@@ -183,14 +169,40 @@
                                                         featureIndex++;
                                                     }
                                                 }
-                                            </div> *@
-
-                                            <div id="newinput"></div>
+                                            </div>
+                                            <button id="rowAdder" type="button" class="btn btn-dark">
+                                                <span class="bi bi-plus-square-dotted"></span> Add Features
+                                            </button>
+                                        </div>
+                                    </div> *@
+                                    <div class="row">
+                                        <div class="form-group col-md-3">
+                                            <div id="serviceContainer">
+                                                @if (Model?.PlanFeatures != null)
+                                                {
+                                                    int featureIndex = 0;
+                                                    foreach (var feature in Model.PlanFeatures)
+                                                    {
+                                                        <div class="service-container" id="row_@featureIndex">
+                                                            <div class="input-group m-3">
+                                                                <input type="text" name="PlanFeatures[@featureIndex].Feature" value="@feature.Feature" class="form-control m-input" required />
+                                                                <div class="input-group-prepend">
+                                                                    <button class="btn btn-danger deleteRow" data-index="@featureIndex" type="button">
+                                                                        <i class="bi bi-trash"></i> Delete
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        featureIndex++;
+                                                    }
+                                                }
+                                            </div>
                                             <button id="rowAdder" type="button" class="btn btn-dark">
                                                 <span class="bi bi-plus-square-dotted"></span> Add Features
                                             </button>
                                         </div>
                                     </div>
+
                                     @if (ViewBag.id > 0)
                                         {
                                     <div class="form-group col-sm-6">
@@ -229,8 +241,7 @@
                                                 <th nowrap>Plan Title</th>
                                                 <th nowrap>Plan Price</th>
                                                 <th nowrap>Annual Price</th>
-                                                <th nowrap>Annual %</th>
-                                                <th>Description</th>
+                                                <th nowrap>Annual %</th> 
                                                 <th nowrap>Created At</th>
                                                 <th>Edit</th>
                                                 <th>Delete</th>
@@ -239,7 +250,7 @@
                                         <tbody>
                                             @{
                                                 var count = 0;
-                                                foreach (var item in Model)
+                                                foreach (var item in Model.PricingPlansList)
                                                 {
                                                     count++;
 
@@ -264,9 +275,7 @@
                                                             @item.AnnulPriceInPercentage
                                                         </td>
 
-                                                                    <td>
-                                                                        @Html.Raw(@item.Description)
-                                                                    </td>
+                                                                    
                                                         <td nowrap>
                                                                         @item.CreatedDate
                                                                     </td>
@@ -292,11 +301,9 @@
                 </div>
             </div>
         </div>
-
-
     </div>
-
 </div>
+
 <script>
     if ('@ViewBag.IsActive' == 'True') {
         document.addEventListener("DOMContentLoaded", function (event) {
@@ -343,8 +350,6 @@ $("#AnnulPrice").val(finelAmt);
         $('#datatable').DataTable();
     });
 </script>
-
-
 <script>
     $(document).ready(function () {
         $('#makeMeSummernote').summernote({
@@ -364,7 +369,79 @@ $("#AnnulPrice").val(finelAmt);
 </script>
 <script>
     $(document).ready(function () {
-        var serviceIndex = 1;
+        // Select the serviceContainer element
+        const serviceContainer = document.getElementById('serviceContainer');
+
+        // Select all children with class 'service-container'
+        const serviceRows = serviceContainer.getElementsByClassName('service-container');
+
+        // Initialize an array to store the numeric parts of the IDs
+        let indices = [];
+
+        // Loop through serviceRows and push their numeric index into the array
+        for (let i = 0; i < serviceRows.length; i++) {
+            const id = serviceRows[i].id; // Get the ID
+            const index = parseInt(id.split('_')[1], 10); // Extract the numeric index
+
+            if (!isNaN(index)) {
+                indices.push(index); // Add to the array if it's a valid number
+            }
+        }
+
+        // Get the maximum index
+        const maxIndex = indices.length > 0 ? Math.max(...indices) : -1; // -1 if no valid indices found
+
+        // Calculate the next index
+        const nextIndex = maxIndex + 1;
+
+        // Output the next index
+        console.log(nextIndex); // This will be the next index to use
+
+        // Initialize serviceIndex based on the existing count of PlanFeatures
+        var serviceIndex = nextIndex;
+
+        // Add a new feature row
+        $("#rowAdder").click(function () {
+            var newServiceTextbox = $("<div>")
+                .addClass("service-container")
+                .attr("id", "row_" + serviceIndex);
+
+            var inputTextbox = $("<input>")
+                .attr("type", "text")
+                .attr("name", "PlanFeatures[" + serviceIndex + "].Feature")
+                .attr("class", "form-control m-input")
+                .attr("required", true);
+
+            var removeButton = $("<button>")
+                .addClass("btn btn-danger deleteRow")
+                .attr("type", "button")
+                .attr("data-index", serviceIndex) // Use data attribute to track the index
+                .html('<i class="bi bi-trash"></i> Delete')
+                .click(function () {
+                    $(this).closest(".service-container").remove();
+                });
+
+            newServiceTextbox.append(
+                $("<div>").addClass("input-group m-3")
+                .append(inputTextbox)
+                .append(removeButton)
+            );
+
+            $("#serviceContainer").append(newServiceTextbox);
+
+            // Increment serviceIndex for the next new feature
+            serviceIndex++;
+        });
+
+        // Delete a feature row
+        $("body").on("click", ".deleteRow", function () {
+            $(this).closest(".service-container").remove();
+        });
+    });
+</script>
+@* <script>
+    $(document).ready(function () {
+        var serviceIndex = 0;
 
         // Function to add a new row
         $("#rowAdder").click(function () {
@@ -396,4 +473,4 @@ $("#AnnulPrice").val(finelAmt);
             $(this).closest(".service-container").remove();
         });
     });
-</script>
+</script> *@
