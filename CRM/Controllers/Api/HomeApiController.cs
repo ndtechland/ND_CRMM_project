@@ -3,6 +3,7 @@ using CRM.Models.Crm;
 using CRM.Models.DTO;
 using CRM.Repository;
 using CRM.Utilities;
+using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -297,11 +298,63 @@ namespace CRM.Controllers.Api
         }
         [HttpGet]
         [Route("GetPricingPlan")]
+        //public async Task<IActionResult> GetPricingPlan()
+        //{
+        //    try
+        //    {
+        //        var result = _context.PricingPlans.Where(x => x.IsActive == true).ToList(); 
+
+        //        List<PricingPlanDTO> plans = result.Select(x => new PricingPlanDTO
+        //        {
+        //            Id = x.Id,
+        //            PlanName = x.PlanName,
+        //            Title = x.Title,
+        //            Price = x.Price,
+        //            AnnulPrice = x.AnnulPrice,
+        //            AnnulPriceInPercentage = x.AnnulPriceInPercentage,
+        //            Description = x.Description,
+        //            Image = x.Image,
+        //            CreatedDate = x.CreatedDate,
+        //            SavePrice = SavePrice(x.Price, (decimal)x.AnnulPriceInPercentage)
+        //        }).ToList();
+        //        if (plans != null)
+        //        {
+        //            var result1 = new
+        //            {
+        //                id = plans[0], // Assuming Id is a property in YourBusinessDetailsClass
+
+        //                PricingPlanFeature = plans.Select(q => new
+        //                {
+        //                    Service = q.PlanFeatures
+        //                }).ToList()
+        //            };
+        //            return Ok(new { Status = 200, Message = "Pricing Plan retrieved successfully.", data = plans });
+        //        }
+        //        else
+        //        {
+        //            return NotFound(new { Status = 404, Message = "No any Pricing Plan available." });
+        //        }
+
+        //    }
+        //    catch (Exception)
+        //    {
+
+        //        throw;
+        //    }
+        //}
         public async Task<IActionResult> GetPricingPlan()
         {
             try
             {
-                var result = _context.PricingPlans.Where(x => x.IsActive == true).ToList();
+                var result = await _context.PricingPlans
+                     
+                    .Where(x => x.IsActive==true)
+                    .ToListAsync();
+
+                if (result == null || !result.Any())
+                {
+                    return NotFound(new { Status = 404, Message = "No Pricing Plan available." });
+                }
 
                 List<PricingPlanDTO> plans = result.Select(x => new PricingPlanDTO
                 {
@@ -311,27 +364,27 @@ namespace CRM.Controllers.Api
                     Price = x.Price,
                     AnnulPrice = x.AnnulPrice,
                     AnnulPriceInPercentage = x.AnnulPriceInPercentage,
-                    Description = x.Description,
+                    Support = x.Support,
                     Image = x.Image,
                     CreatedDate = x.CreatedDate,
-                    SavePrice = SavePrice(x.Price, (decimal)x.AnnulPriceInPercentage)
+                    IsActive = x.IsActive,
+                    SavePrice = SavePrice(x.Price, (decimal)x.AnnulPriceInPercentage),
+                    PlanFeatures = _context.PricingPlanFeatures.Where(f=>f.PricingPlanId==x.Id).Select(f => new PlanFeature
+                    {
+                        Feature = f.Feature,
+                        Id = f.Id
+                    }).ToList() 
                 }).ToList();
-                if (plans != null)
-                {
-                    return Ok(new { Status = 200, Message = "Pricing Plan retrieved successfully.", data = plans });
-                }
-                else
-                {
-                    return NotFound(new { Status = 404, Message = "No any Pricing Plan available." });
-                }
 
+                return Ok(new { Status = 200, Message = "Pricing Plan retrieved successfully.", data = plans });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                // Log exception here (consider using a logging framework)
+                return StatusCode(500, new { Status = 500, Message = "An error occurred.", Error = ex.Message });
             }
         }
+
 
         public decimal SavePrice(decimal price, decimal per)
         {

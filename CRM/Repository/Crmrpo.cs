@@ -3374,7 +3374,6 @@ namespace CRM.Repository
                         Price = model.Price,
                         Title = model.Title,
                         Support = model.Support,
-                        Description = model.Description,
                         Image = model.Image,
                         AnnulPrice = model.AnnulPrice,
                         AnnulPriceInPercentage = model.AnnulPriceInPercentage
@@ -3402,7 +3401,6 @@ namespace CRM.Repository
                     existdata.Price = model.Price;
                     existdata.Title = model.Title;
                     existdata.Support = model.Support;
-                    existdata.Description = model.Description;
                     existdata.IsActive = model.IsActive;
                     existdata.AnnulPrice = model.AnnulPrice;
                     existdata.AnnulPriceInPercentage = model.AnnulPriceInPercentage;

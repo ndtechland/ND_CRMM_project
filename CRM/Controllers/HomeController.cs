@@ -1854,8 +1854,9 @@ namespace CRM.Controllers
         {
             try
             {
-                List<PricingPlan> model = _context.PricingPlans.OrderByDescending(x => x.Id).ToList();
-                 
+                //List<PricingPlan> model = _context.PricingPlans.OrderByDescending(x => x.Id).ToList();
+                PricingPlanDTO model = new PricingPlanDTO();
+                model.PricingPlansList = _context.PricingPlans.OrderByDescending(x => x.Id).ToList();
                 int iId = (int)(id == null ? 0 : id);
                 ViewBag.id = 0;
                 ViewBag.PlanName = "";
@@ -1874,6 +1875,10 @@ namespace CRM.Controllers
                 if (iId != null && iId != 0)
                 {
                     var data = _context.PricingPlans.Find(iId);
+
+                    var existingfeatures = await _context.PricingPlanFeatures
+                        .Where(s => s.PricingPlanId == data.Id)  
+                        .ToListAsync();
                     if (data != null)
                     {
                         ViewBag.id = data.Id;
@@ -1882,8 +1887,7 @@ namespace CRM.Controllers
                         ViewBag.tittle = data.Title;
                         ViewBag.Support = data.Support;
                         ViewBag.AnnulPrice = data.AnnulPrice;
-                        ViewBag.AnnulPriceInPercentage = data.AnnulPriceInPercentage;
-                        ViewBag.Description = data.Description;
+                        ViewBag.AnnulPriceInPercentage = data.AnnulPriceInPercentage; 
                         ViewBag.IsActive = data.IsActive;
                         ViewBag.Image = data.Image;
                         ViewBag.AnnulPriceInPercentage = data.AnnulPriceInPercentage;
@@ -1891,6 +1895,10 @@ namespace CRM.Controllers
                         ViewBag.btnText = "UPDATE";
                         ViewBag.heading = "Update Pricing Plan";
 
+                        model.PlanFeatures = existingfeatures.Select(s => new PlanFeature
+                        {
+                            Feature = s.Feature
+                        }).ToList();
                     }
                 }
 
