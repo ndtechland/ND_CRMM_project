@@ -1861,6 +1861,7 @@ namespace CRM.Controllers
                 ViewBag.PlanName = "";
                 ViewBag.Price = "";
                 ViewBag.tittle = "";
+                ViewBag.Support = "";
                 ViewBag.AnnulPrice = "";
                 ViewBag.AnnulPriceInPercentage = "";
                 ViewBag.Description = "";
@@ -1879,6 +1880,7 @@ namespace CRM.Controllers
                         ViewBag.PlanName = data.PlanName;
                         ViewBag.Price = data.Price;
                         ViewBag.tittle = data.Title;
+                        ViewBag.Support = data.Support;
                         ViewBag.AnnulPrice = data.AnnulPrice;
                         ViewBag.AnnulPriceInPercentage = data.AnnulPriceInPercentage;
                         ViewBag.Description = data.Description;
@@ -2136,6 +2138,20 @@ namespace CRM.Controllers
                 TempData["msg"] = "dltok";
                 return RedirectToAction("MissionVisions");
 
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetDemoRequests()
+        {
+            try
+            {
+                List<DemoRequest> model = _context.DemoRequests.OrderByDescending(x => x.Id).ToList();
+                return View(model);
             }
             catch (Exception)
             {

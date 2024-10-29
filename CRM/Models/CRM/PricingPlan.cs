@@ -15,5 +15,6 @@ namespace CRM.Models.Crm
         public decimal? AnnulPrice { get; set; }
         public decimal? AnnulPriceInPercentage { get; set; }
         public string? Title { get; set; }
+        public string? Support { get; set; }
     }
 }

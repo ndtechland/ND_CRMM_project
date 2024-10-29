@@ -408,7 +408,8 @@ namespace CRM.Controllers.Api
                 else
                 {
                     return NotFound(new { Status = 404, Message = "No any Case Studies available." });
-                   }
+                }
+            }
             catch (Exception)
             {
 
