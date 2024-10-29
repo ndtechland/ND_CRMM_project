@@ -120,7 +120,7 @@
                                     <div class="form-group col-sm-4">
                                         <label for="Price" class="control-label">Price</label>
 
-                                            <input type="text" name="Price" id="Price" value="@ViewBag.Price" placeholder="Enter Plan Price" class="form-control" required />
+                                            <input type="text" name="Price" id="Price" value="@ViewBag.Price" placeholder="Enter Plan Price" class="form-control" onkeydown="validateNumericInput(event);" required />
                                     </div>
 
                                     <div class="form-group col-sm-4">
@@ -188,7 +188,7 @@
                                                                 <input type="text" name="PlanFeatures[@featureIndex].Feature" value="@feature.Feature" class="form-control m-input" required />
                                                                 <div class="input-group-prepend">
                                                                     <button class="btn btn-danger deleteRow" data-index="@featureIndex" type="button">
-                                                                        <i class="bi bi-trash"></i> Delete
+                                                                        <i class="fa fa-trash"></i>
                                                                     </button>
                                                                 </div>
                                                             </div>
@@ -416,7 +416,7 @@ $("#AnnulPrice").val(finelAmt);
                 .addClass("btn btn-danger deleteRow")
                 .attr("type", "button")
                 .attr("data-index", serviceIndex) // Use data attribute to track the index
-                .html('<i class="bi bi-trash"></i> Delete')
+                .html('<i class="fa fa-trash"></i>')
                 .click(function () {
                     $(this).closest(".service-container").remove();
                 });
