@@ -62,6 +62,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<GenderMaster> GenderMasters { get; set; } = null!;
         public virtual DbSet<GstMaster> GstMasters { get; set; } = null!;
         public virtual DbSet<Hash> Hashes { get; set; } = null!;
+        public virtual DbSet<HelpCenter> HelpCenters { get; set; } = null!;
         public virtual DbSet<IndustryMaster> IndustryMasters { get; set; } = null!;
         public virtual DbSet<Job> Jobs { get; set; } = null!;
         public virtual DbSet<JobParameter> JobParameters { get; set; } = null!;
@@ -1264,6 +1265,19 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.Key).HasMaxLength(100);
 
                 entity.Property(e => e.Field).HasMaxLength(100);
+            });
+
+            modelBuilder.Entity<HelpCenter>(entity =>
+            {
+                entity.ToTable("HelpCenter");
+
+                entity.Property(e => e.Email).HasMaxLength(100);
+
+                entity.Property(e => e.Name).HasMaxLength(200);
+
+                entity.Property(e => e.SubmissionDate)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
             });
 
             modelBuilder.Entity<IndustryMaster>(entity =>

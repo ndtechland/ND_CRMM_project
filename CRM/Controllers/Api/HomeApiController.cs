@@ -492,5 +492,27 @@ namespace CRM.Controllers.Api
                 throw;
             }
         }
+        [HttpPost]
+        [Route("AddHelpCenter")]
+        public async Task<IActionResult> AddHelpCenter(HelpCenter model)
+        {
+            try
+            {
+                var domainmodel = new HelpCenter()
+                {
+                    Name = model.Name,
+                    Email = model.Email,
+                    Message = model.Message
+                };
+                _context.Add(domainmodel);
+                _context.SaveChanges();
+                return Ok(new { Status = 200, Message = "Help Center added successfully." });
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 }
