@@ -2167,5 +2167,19 @@ namespace CRM.Controllers
                 throw;
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> GetHelpCenters()
+        {
+            try
+            {
+                List<HelpCenter> model = _context.HelpCenters.OrderByDescending(x => x.Id).ToList();
+                return View(model);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 }
