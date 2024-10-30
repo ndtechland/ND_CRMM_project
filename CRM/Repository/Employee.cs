@@ -1205,7 +1205,7 @@ namespace CRM.Repository
                                 StartOverTime = await CalculateStartOverTime(empAttendanceDetails.EmployeeId, (int)empAttendanceDetails.OfficeShiftId.Value, _context, Currentdate),
                                 FinishOverTime = await CalculateFinishOverTime(empAttendanceDetails.EmployeeId, (int)empAttendanceDetails.OfficeShiftId.Value, _context, Currentdate),
                                 OvertimeWorkingHours = await CalculateMonthlyOvertimeHours(empAttendanceDetails.EmployeeId, (int)empAttendanceDetails.OfficeShiftId.Value, Currentdate),
-                                TotalWorkingHours = await CalculateTotalWorkingHours(empAttendanceDetails.EmployeeId, (int)empAttendanceDetails.OfficeShiftId.Value, Currentdate),
+                                TotalWorkingHours = await CalculateTotalWorkingHours(empAttendanceDetails.EmployeeId, Currentdate),
                                 MonthlyWorkingHours = await CalculateMonthlyWorkingHours(empAttendanceDetails.EmployeeId, Currentdate),
                                 Presencepercentage = await CalculatePresencePercentage(empAttendanceDetails.EmployeeId, Currentdate),
                                 absencepercentage = await CalculateAbsencePercentage(empAttendanceDetails.EmployeeId, Currentdate),
@@ -1411,76 +1411,7 @@ namespace CRM.Repository
 
             return "N/A";
         }
-        //private async Task<string> CalculateTotalWorkingHours(string employeeId, int officeShiftId, DateTime currentDate)
-        //{
-        //    var officeShift = await _context.Officeshifts
-        //        .Where(h => h.Id == officeShiftId)
-        //        .Select(h => new { h.Starttime, h.Endtime })
-        //        .FirstOrDefaultAsync();
-
-        //    if (officeShift == null)
-        //        return "Office shift not found.";
-
-        //    // Parse shift start and end times from 12-hour format (with AM/PM) to TimeSpan
-        //    var shiftStartTime = DateTime.Parse(officeShift.Starttime).TimeOfDay;
-        //    var shiftEndTime = DateTime.Parse(officeShift.Endtime).TimeOfDay;
-
-        //    var checkIns = await _context.EmployeeCheckInRecords
-        //        .Where(g => g.EmpId == employeeId && g.CurrentDate.HasValue && g.CurrentDate.Value.Date == currentDate.Date)
-        //        .ToListAsync();
-
-        //    double totalHours = 0;
-
-        //    foreach (var checkInRecord in checkIns.ToList())
-        //    {
-        //        if (checkInRecord.CheckIntime.HasValue)
-        //        {
-        //            var checkInTime = checkInRecord.CheckIntime.Value.TimeOfDay;
-        //            var applicableCheckIn = checkInTime > shiftStartTime ? checkInTime : shiftStartTime;
-
-        //            if (currentDate.Date != DateTime.Now.Date)
-        //            {
-        //                var checkOutRecord = checkIns.FirstOrDefault(g => g.CheckOuttime.HasValue && g.CheckOuttime > checkInRecord.CheckIntime);
-        //                if (checkOutRecord != null)
-        //                {
-        //                    var checkOutTime = checkOutRecord.CheckOuttime.Value.TimeOfDay;
-        //                    var applicableCheckOut = checkOutTime < shiftEndTime ? checkOutTime : shiftEndTime;
-
-        //                    totalHours += (applicableCheckOut - applicableCheckIn).TotalHours;
-        //                    checkIns.Remove(checkOutRecord);
-        //                }
-        //            }
-        //            else
-        //            {
-        //                var checkRecord = await _context.EmployeeCheckIns
-        //                    .Where(x => x.EmployeeId == employeeId && x.Currentdate.Value.Date == DateTime.Now.Date)
-        //                    .OrderByDescending(x => x.Id)
-        //                    .FirstOrDefaultAsync();
-
-        //                if (checkRecord?.CheckIn == true)
-        //                {
-        //                    totalHours += (DateTime.Now - checkInRecord.CheckIntime.Value).TotalHours;
-        //                }
-        //                else
-        //                {
-        //                    var checkOutRecord = checkIns.FirstOrDefault(g => g.CheckOuttime.HasValue && g.CheckOuttime > checkInRecord.CheckIntime);
-        //                    if (checkOutRecord != null)
-        //                    {
-        //                        var checkOutTime = checkOutRecord.CheckOuttime.Value.TimeOfDay;
-        //                        var applicableCheckOut = checkOutTime < shiftEndTime ? checkOutTime : shiftEndTime;
-
-        //                        totalHours += (applicableCheckOut - applicableCheckIn).TotalHours;
-        //                        checkIns.Remove(checkOutRecord);
-        //                    }
-        //                }
-        //            }
-        //        }
-        //    }
-
-        //    return FormatHours(totalHours);
-        //}
-
-        private async Task<string> CalculateTotalWorkingHours(string employeeId, int officeShiftId, DateTime currentdate)
+        private async Task<string> CalculateTotalWorkingHours(string employeeId,DateTime currentdate)
         {
             var checkIns = await _context.EmployeeCheckInRecords
                 .Where(g => g.EmpId == employeeId && g.CurrentDate.HasValue && g.CurrentDate.Value.Date == currentdate.Date)
@@ -1527,6 +1458,55 @@ namespace CRM.Repository
 
             return FormatHours(totalHours);
         }
+
+
+        //private async Task<string> CalculateTotalWorkingHours(string employeeId, int officeShiftId, DateTime currentdate)
+        //{
+        //    var checkIns = await _context.EmployeeCheckInRecords
+        //        .Where(g => g.EmpId == employeeId && g.CurrentDate.HasValue && g.CurrentDate.Value.Date == currentdate.Date)
+        //        .ToListAsync();
+
+        //    double totalHours = 0;
+
+        //    foreach (var checkInRecord in checkIns.ToList())
+        //    {
+        //        if (checkInRecord.CheckIntime.HasValue)
+        //        {
+        //            if (currentdate.Date != DateTime.Now.Date)
+        //            {
+        //                var checkOutRecord = checkIns.FirstOrDefault(g => g.CheckOuttime.HasValue && g.CheckOuttime > checkInRecord.CheckIntime);
+        //                if (checkOutRecord != null)
+        //                {
+        //                    totalHours += (checkOutRecord.CheckOuttime.Value - checkInRecord.CheckIntime.Value).TotalHours;
+        //                    checkIns.Remove(checkOutRecord);
+        //                }
+        //            }
+        //            else
+        //            {
+        //                var checkRecord = await _context.EmployeeCheckIns
+        //                    .Where(x => x.EmployeeId == employeeId && x.Currentdate.Value.Date == DateTime.Now.Date)
+        //                    .OrderByDescending(x => x.Id)
+        //                    .FirstOrDefaultAsync();
+
+        //                if (checkRecord.CheckIn == true)
+        //                {
+        //                    totalHours += (DateTime.Now - checkInRecord.CheckIntime.Value).TotalHours;
+        //                }
+        //                else
+        //                {
+        //                    var checkOutRecord = checkIns.FirstOrDefault(g => g.CheckOuttime.HasValue && g.CheckOuttime > checkInRecord.CheckIntime);
+        //                    if (checkOutRecord != null)
+        //                    {
+        //                        totalHours += (checkOutRecord.CheckOuttime.Value - checkInRecord.CheckIntime.Value).TotalHours;
+        //                        checkIns.Remove(checkOutRecord);
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+
+        //    return FormatHours(totalHours);
+        //}
 
         private async Task<string> CalculateMonthlyWorkingHours(string employeeId, DateTime Currentdate)
         {
