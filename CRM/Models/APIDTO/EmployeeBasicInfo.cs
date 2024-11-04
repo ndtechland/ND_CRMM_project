@@ -52,6 +52,7 @@ namespace CRM.Models.APIDTO
         public string? OvertimeWorkingHours { get; set; }
         public string? Currentdate { get; set; }
         public string? LoginStatus { get; set; }
+        public string? Ontime { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<Breakactivity> loginactivities { get; set; }
@@ -182,6 +183,11 @@ namespace CRM.Models.APIDTO
     public class getattendancegraph
     {
         public string? Year { get; set; }
+        public List<getattendancegraphlist> graphlist { get; set; }
+
+    }
+    public class getattendancegraphlist
+    {
         public string? Month { get; set; }
         public int? Value { get; set; }
     }

@@ -1351,6 +1351,8 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.Createddate).HasColumnName("createddate");
 
                 entity.Property(e => e.Leavetype1).HasColumnName("leavetype");
+
+                entity.Property(e => e.Vendorid).HasColumnName("vendorid");
             });
 
             modelBuilder.Entity<Leavemaster>(entity =>
