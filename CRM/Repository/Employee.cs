@@ -607,8 +607,8 @@ namespace CRM.Repository
                     if (currentLeaveValue > 0)
                     {
                         CountLeave = Math.Min(total, currentLeaveValue);
-                        TypeOfLeave.Value -= CountLeave;
-                        await _context.SaveChangesAsync();
+                        //TypeOfLeave.Value -= CountLeave;
+                        //await _context.SaveChangesAsync();
                         Balance = CountLeave;
                         PaidCountLeave = total - CountLeave;
                     }
@@ -630,8 +630,8 @@ namespace CRM.Repository
                     if (currentLeaveValue > 0)
                     {
                         CountLeave = Math.Min(total, currentLeaveValue);
-                        TypeOfLeave.Value -= CountLeave;
-                        await _context.SaveChangesAsync();
+                        //TypeOfLeave.Value -= CountLeave;
+                        //await _context.SaveChangesAsync();
                         Balance = CountLeave;
                         PaidCountLeave = total - CountLeave;
                     }
@@ -1107,8 +1107,6 @@ namespace CRM.Repository
                 throw new Exception("Error: " + ex.Message);
             }
         }
-
-
         public async Task<EmployeeRegistration> Updateprofilepicture(profilepicture model, string userid)
         {
             try
@@ -1152,76 +1150,81 @@ namespace CRM.Repository
                             EmployeeId = x.EmployeeId
                         })
                         .FirstOrDefaultAsync();
+                    var checkIns = await _context.EmployeeCheckInRecords
+                        .Where(g => g.EmpId == userid && g.CurrentDate.HasValue && g.CurrentDate.Value.Date == Currentdate)
+                        .OrderBy(g => g.Id)
+                        .ToListAsync();
 
-                    if (empAttendanceDetails != null)
+                    if (!checkIns.Any())
                     {
-                        if (empAttendanceDetails.OfficeShiftId.HasValue)
+                        return null; 
+                    }
+
+                    var firstCheckIn = checkIns.First();
+                    var shiftId = firstCheckIn.ShiftId;
+                    var currentofficeShift = await _context.Officeshifts.FindAsync((int)empAttendanceDetails.OfficeShiftId.Value);
+
+                    var officeShift = await _context.Officeshifts.FindAsync(shiftId);
+                    if (officeShift == null)
+                    {
+                        throw new Exception("Office shift not found.");
+                    }
+                    if (!DateTime.TryParse(officeShift.Endtime, out DateTime shiftEndTime))
+                    {
+                        throw new Exception("Invalid shift end time format.");
+                    }
+
+                    var checkInTime = firstCheckIn.CheckIntime.HasValue ? firstCheckIn.CheckIntime.Value.ToString("hh:mm tt") : "N/A";
+                    var checkOutTime = checkIns.OrderByDescending(g => g.Id).FirstOrDefault()?.CheckOuttime.HasValue == true
+                                       ? checkIns.OrderByDescending(g => g.Id).FirstOrDefault().CheckOuttime.Value.ToString("hh:mm tt")
+                                       : "N/A";
+
+                    var latestLoginStatus = (string?)null;
+                    var loginActivities = await _context.EmployeeCheckIns
+                        .Where(g => g.EmployeeId == userid && g.Currentdate.HasValue && g.Currentdate.Value.Date == DateTime.Now.Date)
+                        .OrderBy(g => g.Id)
+                        .ToListAsync();
+
+                    if (loginActivities.Count > 0)
+                    {
+                        latestLoginStatus = loginActivities.Last().CheckIn == true ? "Check-In" : "Check-Out";
+                    }
+                    else
+                    {
+                        latestLoginStatus = "Check-Out";
+                    }
+
+                    string lateness = "On Time"; 
+                    if (checkIns.Any() && checkInTime != "N/A")
+                    {
+                        DateTime scheduledStartTime = DateTime.Parse(officeShift.Starttime);
+                        DateTime actualCheckInTime = DateTime.Parse(checkInTime);
+                        if (actualCheckInTime > scheduledStartTime)
                         {
-                            var officeShift = await _context.Officeshifts.FindAsync((int)empAttendanceDetails.OfficeShiftId.Value);
-                            if (officeShift == null)
-                            {
-                                throw new Exception("Office shift not found.");
-                            }
-                            if (!DateTime.TryParse(officeShift.Endtime, out DateTime shiftEndTime))
-                            {
-                                throw new Exception("Invalid shift end time format.");
-                            }
-                            var checkIns = await _context.EmployeeCheckIns
-                            .Where(g => g.EmployeeId == empAttendanceDetails.EmployeeId && g.Currentdate.HasValue && g.Currentdate.Value.Date == Currentdate)
-                            .OrderBy(g => g.Id)
-                            .ToListAsync();
-
-                            var checkInTime = checkIns
-                                .Select(g => g.CheckInTime.HasValue ? g.CheckInTime.Value.ToString("hh:mm tt") : "N/A")
-                                .FirstOrDefault();
-
-                            var Date = checkIns
-                                .Select(g => g.Currentdate.HasValue ? g.Currentdate.Value.ToString("dd-MM-yyyy") : "N/A")
-                                .FirstOrDefault();
-                            var checkOutTime = checkIns
-                                .OrderByDescending(g => g.Id)
-                                .Select(g => g.CheckOutTime.HasValue ? g.CheckOutTime.Value.ToString("hh:mm tt") : "N/A")
-                                .FirstOrDefault();
-                            var latestLoginStatus = (string?)null;
-                            var loginActivities = await _context.EmployeeCheckIns
-                                .Where(g => g.EmployeeId == empAttendanceDetails.EmployeeId && g.Currentdate.HasValue && g.Currentdate.Value.Date == DateTime.Now.Date)
-                                .OrderBy(g => g.Id)
-                                .ToListAsync();
-
-                            if (loginActivities.Count > 0)
-                            {
-                                latestLoginStatus = loginActivities.Last().CheckIn == true ? "Check-In" : "Check-Out";
-                            }
-                            else
-                            {
-                                latestLoginStatus = "Check-Out";
-                            }
-
-                            var attendanceDetail = new Empattendancedatail
-                            {
-                                OfficeHour = $"{officeShift.Starttime} - {officeShift.Endtime}",
-                                CheckInTime = checkInTime == null ? "N/A" : checkInTime,
-                                CheckOutTime = checkOutTime == null ? "N/A" : checkOutTime,
-                                StartOverTime = await CalculateStartOverTime(empAttendanceDetails.EmployeeId, (int)empAttendanceDetails.OfficeShiftId.Value, _context, Currentdate),
-                                FinishOverTime = await CalculateFinishOverTime(empAttendanceDetails.EmployeeId, (int)empAttendanceDetails.OfficeShiftId.Value, _context, Currentdate),
-                                OvertimeWorkingHours = await CalculateMonthlyOvertimeHours(empAttendanceDetails.EmployeeId, (int)empAttendanceDetails.OfficeShiftId.Value, Currentdate),
-                                TotalWorkingHours = await CalculateTotalWorkingHours(empAttendanceDetails.EmployeeId, Currentdate),
-                                MonthlyWorkingHours = await CalculateMonthlyWorkingHours(empAttendanceDetails.EmployeeId, Currentdate),
-                                Presencepercentage = await CalculatePresencePercentage(empAttendanceDetails.EmployeeId, Currentdate),
-                                absencepercentage = await CalculateAbsencePercentage(empAttendanceDetails.EmployeeId, Currentdate),
-                                Currentdate = Date == null ? "N/A" : Date,
-                                LoginStatus = latestLoginStatus,
-                                //loginactivities = await GetLoginActivities(empAttendanceDetails.EmployeeId)
-                                loginactivities = await GetLoginBreakActivities(empAttendanceDetails.EmployeeId, Currentdate),
-                            };
-
-                            return attendanceDetail;
-                        }
-                        else
-                        {
-                            throw new Exception("Office shift ID is missing.");
+                            TimeSpan delay = actualCheckInTime - scheduledStartTime;
+                            lateness = $"{delay.Hours}h{delay.Minutes}m Late";
                         }
                     }
+
+                    var attendanceDetail = new Empattendancedatail
+                    {
+                        OfficeHour = $"{currentofficeShift.Starttime} - {currentofficeShift.Endtime}",
+                        CheckInTime = checkInTime,
+                        CheckOutTime = checkOutTime,
+                        StartOverTime = await CalculateStartOverTime(userid, (int)shiftId, _context, Currentdate),
+                        FinishOverTime = await CalculateFinishOverTime(userid, (int)shiftId, _context, Currentdate),
+                        OvertimeWorkingHours = await CalculateMonthlyOvertimeHours(userid, (int)shiftId, Currentdate),
+                        TotalWorkingHours = await CalculateTotalWorkingHours(userid, Currentdate),
+                        MonthlyWorkingHours = await CalculateMonthlyWorkingHours(userid, Currentdate),
+                        Presencepercentage = await CalculatePresencePercentage(userid, Currentdate),
+                        absencepercentage = await CalculateAbsencePercentage(userid, Currentdate),
+                        Currentdate = checkIns.First().CurrentDate.Value.ToString("dd-MM-yyyy"),
+                        LoginStatus = latestLoginStatus,
+                        loginactivities = await GetLoginBreakActivities(userid, Currentdate),
+                        Ontime = lateness 
+                    };
+
+                    return attendanceDetail;
                 }
                 return null;
             }
@@ -1230,6 +1233,7 @@ namespace CRM.Repository
                 throw new Exception("Error: " + ex.Message);
             }
         }
+
         private async Task<List<Breakactivity>> GetLoginBreakActivities(string employeeId, DateTime Currentdate)
         {
 
@@ -2062,12 +2066,13 @@ namespace CRM.Repository
                         Attendance = "0%"
                     };
                 }
+
                 var attendancedays = await _context.Attendancedays
                     .Where(x => x.Vendorid == emp.Vendorid)
                     .FirstOrDefaultAsync();
 
                 if (attendancedays == null || string.IsNullOrEmpty(attendancedays.Nodays) ||
-                    !int.TryParse(attendancedays.Nodays, out int totalAttendanceDays) || totalAttendanceDays <= 0)
+                    !int.TryParse(attendancedays.Nodays, out int monthlyWorkingDays) || monthlyWorkingDays <= 0)
                 {
                     return new Monthlyattendancedatail
                     {
@@ -2077,15 +2082,19 @@ namespace CRM.Repository
                         Attendance = "0%"
                     };
                 }
+                int daysPassedInMonth = DateTime.Now.Day;
+                int totalAttendanceDays = Math.Min(daysPassedInMonth, monthlyWorkingDays);
+
                 var totalDaysWorked = await _context.EmployeeCheckInRecords
                     .Where(g => g.EmpId == userid && g.CurrentDate.Value.Month == DateTime.Now.Month && g.CurrentDate.Value.Year == DateTime.Now.Year)
                     .CountAsync();
-                decimal presencePercentage = (decimal)totalDaysWorked / totalAttendanceDays * 100;
+
+                decimal presencePercentage = (decimal)totalDaysWorked / monthlyWorkingDays * 100;
                 int totalAbsentDays = totalAttendanceDays - totalDaysWorked;
 
                 return new Monthlyattendancedatail
                 {
-                    TotalWorkingDays = totalAttendanceDays,
+                    TotalWorkingDays = monthlyWorkingDays,
                     TotalPresentDays = totalDaysWorked,
                     TotalAbsentDays = totalAbsentDays,
                     Attendance = Math.Round(presencePercentage).ToString() + "%"
@@ -2096,6 +2105,7 @@ namespace CRM.Repository
                 throw new Exception("Error: " + ex.Message);
             }
         }
+
         public async Task<TotalLeave> Getleavelist(string userid)
         {
             try
@@ -2198,25 +2208,30 @@ namespace CRM.Repository
                 throw new Exception("Error: " + ex.Message, ex);
             }
         }
-        public async Task<List<getattendancegraph>> GetEmpGraph(string userid)
+        public async Task<getattendancegraph> GetEmpGraph(string userid)
         {
             try
             {
                 int currentYear = DateTime.Now.Year;
 
-                var graph = await _context.EmployeeCheckInRecords
+                var monthlyData = await _context.EmployeeCheckInRecords
                     .Where(x => x.EmpId == userid && x.CurrentDate.HasValue && x.CurrentDate.Value.Year == currentYear)
                     .GroupBy(x => new
                     {
                         Year = x.CurrentDate.Value.Year,
                         Month = x.CurrentDate.Value.Month
                     })
-                    .Select(g => new getattendancegraph
+                    .Select(g => new getattendancegraphlist
                     {
-                        Year = g.Key.Year.ToString(),
                         Month = getMonthName(g.Key.Month),
                         Value = g.Count()
                     }).ToListAsync();
+
+                var graph = new getattendancegraph
+                {
+                    Year = currentYear.ToString(),
+                    graphlist = monthlyData
+                };
 
                 return graph;
             }
@@ -2225,6 +2240,7 @@ namespace CRM.Repository
                 throw new Exception("Error retrieving employee attendance graph: " + ex.Message, ex);
             }
         }
+
         public async Task<getTasklist> gettasklist(string userid)
         {
             try

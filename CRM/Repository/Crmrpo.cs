@@ -3567,7 +3567,42 @@ namespace CRM.Repository
                 throw;
             }
         }
+        public async Task<bool> AddAndUpdateLeaveTypemaster(LeaveType model, int VendorId)
+        {
+            try
+            {
 
+                if (model.Id == 0)
+                {
+                    var data = new LeaveType()
+                    {
+                        Leavetype1 = model.Leavetype1,
+                        Vendorid = model.Vendorid,
+                        Isactive = true,
+                        Createddate = DateTime.Now.Date
+
+                    };
+                    _context.Add(data);
+                    _context.SaveChanges();
+                    return true;
+                }
+                else
+                {
+                    var existdata = _context.LeaveTypes.Find(model.Id);
+
+                    existdata.Leavetype1 = model.Leavetype1;
+                    existdata.Isactive = model.Isactive;
+                    existdata.Createddate = DateTime.Now.Date;
+                }
+                _context.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 
 }

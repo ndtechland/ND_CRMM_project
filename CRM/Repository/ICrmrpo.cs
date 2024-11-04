@@ -117,6 +117,7 @@ namespace CRM.Repository
         Task<bool> AddAndUpdatePricingPlan(PricingPlanDTO model);
         Task<bool> AddAndUpdateOtherService(OtherService model);
         Task<bool> AddAndUpdateMissionVisions(MissionVisionDTO model);
+        Task<bool> AddAndUpdateLeaveTypemaster(LeaveType model, int VendorId);
 
 
     }

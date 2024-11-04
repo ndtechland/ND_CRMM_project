@@ -321,6 +321,7 @@ namespace CRM.Controllers.Api
                 {
                     string userId = User.Claims.FirstOrDefault()?.Value;
                     var employee = _context.EmployeeRegistrations.FirstOrDefault(emp => emp.EmployeeId == userId);
+
                     if (employee == null)
                     {
                         response.StatusCode = StatusCodes.Status404NotFound;
@@ -334,50 +335,50 @@ namespace CRM.Controllers.Api
                         .OrderByDescending(ad => ad.CurrentDate)
                         .ToList();
 
-                    // Fetch leave records for the current month
-                    var totalleave = _context.ApplyLeaveNews
-                        .Where(x => x.UserId == userId && x.CreatedDate.Month == DateTime.Now.Month && x.CreatedDate.Year == DateTime.Now.Year)
-                        .OrderByDescending(ad => ad.StartDate)
-                        .ToList();
+                    // Fetch approved leave records for the current month
+                    var toleave = await _context.ApplyLeaveNews
+                        .Where(p => p.UserId == userId && p.Isapprove == true)
+                        .Select(p => new
+                        {
+                            Id = p.Id,
+                            CountLeave = p.CountLeave,
+                            PaidCountLeave = p.PaidCountLeave
+                        }).ToListAsync();
+
+                    decimal totalLeaves = toleave.Sum(x => (decimal)(x.CountLeave + x.PaidCountLeave));
 
                     // Fetch total attendance days based on Vendor ID
                     var totalAttendanceDays = _context.Attendancedays
-                        .Where(x => x.Vendorid == employee.Vendorid)
-                        .FirstOrDefault();
+                        .FirstOrDefault(x => x.Vendorid == employee.Vendorid);
 
                     // Calculate current month attendance
                     var currentMonthAttendance = totalAttendance
-                        .Where(ad => ad.CurrentDate.Value.Month == DateTime.Now.Month && ad.CurrentDate.Value.Year == DateTime.Now.Year)
+                        .Where(ad => ad.CurrentDate.HasValue &&
+                                     ad.CurrentDate.Value.Month == DateTime.Now.Month &&
+                                     ad.CurrentDate.Value.Year == DateTime.Now.Year)
                         .ToList();
 
-                    // Calculate the number of days present in the current month
                     int presentDaysCount = currentMonthAttendance.Count;
 
-                    // Get total leave for the current month
-                    decimal totalLeave = totalleave.Count;
-
-                    // Calculate total attendance for the current year
-                    var yearlyAttendance = _context.EmployeeCheckInRecords
-                        .Where(ad => ad.EmpId == userId && ad.CurrentDate.Value.Year == DateTime.Now.Year)
+                    // Calculate yearly attendance
+                    var yearlyAttendance = totalAttendance
+                        .Where(ad => ad.CurrentDate.HasValue && ad.CurrentDate.Value.Year == DateTime.Now.Year)
                         .ToList();
-
                     int totalAttendanceDaysForYear = yearlyAttendance.Count;
 
-                    // Total AttendanceDays yearly Calculation
                     int monthlyAttendanceDays = int.TryParse(totalAttendanceDays?.Nodays, out int nodays) ? nodays : 0;
                     int yearlyTotalAttendanceDays = monthlyAttendanceDays * 12;
-                    int finalYearlyAttendanceDays = totalAttendanceDaysForYear;
 
                     // Calculate total days in current month
                     int daysInMonth = DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month);
 
-                    // Date of Joining and days calculation
+                    // Calculate days since joining
                     DateTime dateOfJoining = employee.DateOfJoining ?? DateTime.Now;
                     DateTime currentDate = DateTime.Now;
                     int totalDaysDifference = (int)(currentDate - dateOfJoining).TotalDays;
                     int adjustedDifference = totalDaysDifference - presentDaysCount;
 
-                    // Leave Left Calculation
+                    // Calculate leave left
                     var leaveRecords = _context.Leavemasters
                         .Where(le => le.EmpId == userId && (le.LeavetypeId == 1 || le.LeavetypeId == 2 || le.LeavetypeId == 3))
                         .ToList();
@@ -395,12 +396,12 @@ namespace CRM.Controllers.Api
                     // Response Data
                     response.Data = new
                     {
-                        TotalAttendance = $"{finalYearlyAttendanceDays} / {yearlyTotalAttendanceDays}",
-                        Attendance = $"{presentDaysCount} / {daysInMonth}",
+                        TotalAttendance = $"{totalAttendanceDaysForYear} / {yearlyTotalAttendanceDays}",
+                        MonthlyAttendance = $"{presentDaysCount} / {daysInMonth}",
                         LeaveLeft = totalLeaveLeft,
-                        Leave = totalLeave,
-                        offerletter = offerLetterPath,
-                        appointmentletter = appointmentLetterPath
+                        Leave = totalLeaves,
+                        OfferLetterPath = offerLetterPath,
+                        AppointmentLetterPath = appointmentLetterPath
                     };
                     response.StatusCode = StatusCodes.Status200OK;
                     response.Succeeded = true;
@@ -422,6 +423,7 @@ namespace CRM.Controllers.Api
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
+
 
         [Route("GetAllEmployeesalaryslip")]
         [HttpGet]
@@ -1553,14 +1555,14 @@ namespace CRM.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> EmpattendanceGraph()
         {
-            var response = new Response<List<getattendancegraph>>();
+            var response = new Response<getattendancegraph>();
             try
             {
                 if (User.Identity.IsAuthenticated)
                 {
                     var userid = User.Claims.FirstOrDefault().Value;
-                    List<getattendancegraph> isLoginExists = await _apiemp.GetEmpGraph(userid);
-                    if (isLoginExists.Count == 0)
+                    getattendancegraph isLoginExists = await _apiemp.GetEmpGraph(userid);
+                    if (isLoginExists == null)
                     {
                         response.Succeeded = true;
                         response.StatusCode = StatusCodes.Status200OK;
@@ -1569,7 +1571,7 @@ namespace CRM.Controllers.Api
                         response.Data = isLoginExists;
                         return Ok(response);
                     }
-                    else if (isLoginExists.Count != 0)
+                    else if (isLoginExists != null)
                     {
                         response.Succeeded = true;
                         response.StatusCode = StatusCodes.Status200OK;

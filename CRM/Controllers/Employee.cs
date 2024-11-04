@@ -2433,7 +2433,7 @@ namespace CRM.Controllers
                         existingEntity.LeavetypeId = Convert.ToInt16(model.LeavetypeId);
                         existingEntity.Value = model.Value;
                         existingEntity.EmpId = model.EmpId;
-                        existingEntity.IsActive = model.IsActive;
+                        existingEntity.IsActive = true;
                         existingEntity.Createddate = DateTime.Now.Date;
                         existingEntity.LeaveStartDate = DateTime.Now.Date;
                         existingEntity.LeaveUpdateDate = DateTime.Now.Date;

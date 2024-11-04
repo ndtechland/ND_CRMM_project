@@ -1891,29 +1891,109 @@ namespace CRM.Controllers
             }
         }
 
+        //public async Task<IActionResult> UpdateLeaveApplyStatus(int Id)
+        //{
+        //    var leave = await _context.ApplyLeaveNews.FirstOrDefaultAsync(x => x.Id == Id);
+        //    var empinfo = await _context.EmployeeRegistrations.FirstOrDefaultAsync(x => x.EmployeeId == leave.UserId);
+        //    var emppersonalinfo = await _context.EmployeePersonalDetails.FirstOrDefaultAsync(x => x.EmpRegId == leave.UserId);
+
+        //    if (leave == null)
+        //    {
+        //        TempData["msg"] = "Data not found!";
+        //        return RedirectToAction("ApprovedLeaveApply");
+        //    }
+
+        //    leave.Isapprove = !leave.Isapprove;
+        //    await _context.SaveChangesAsync();
+
+        //    string subject;
+        //    string emailBody;
+
+
+        //    if (leave.Isapprove == true)
+        //    {
+        //        subject = "Leave Approval Accepted";
+        //        emailBody = $"Dear {empinfo.FirstName} {empinfo.MiddleName} {empinfo.LastName},\n\nYour leave application has been approved.";
+        //    }
+        //    else
+        //    {
+        //        subject = "Leave Approval Rejected";
+        //        emailBody = $"Dear {empinfo.FirstName} {empinfo.MiddleName} {empinfo.LastName},\n\nWe regret to inform you that your leave application has been rejected.";
+        //    }
+
+        //    try
+        //    {
+        //        await _emailService.SendEmpLeaveApprovalEmailAsync(emppersonalinfo.PersonalEmailAddress, empinfo.FirstName, empinfo.MiddleName, empinfo.LastName, subject, emailBody);
+
+        //        TempData["msg"] = (bool)leave.Isapprove
+        //            ? "Approval status updated successfully and approval email sent!"
+        //            : "Approval status updated successfully and rejection email sent!";
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        TempData["msg"] = (bool)leave.Isapprove
+        //            ? "Approval status updated successfully, but failed to send approval email."
+        //            : "Approval status updated successfully, but failed to send rejection email.";
+
+        //    }
+
+        //    return RedirectToAction("ApprovedLeaveApply");
+        //}
+
         public async Task<IActionResult> UpdateLeaveApplyStatus(int Id)
         {
             var leave = await _context.ApplyLeaveNews.FirstOrDefaultAsync(x => x.Id == Id);
-            var empinfo = await _context.EmployeeRegistrations.FirstOrDefaultAsync(x => x.EmployeeId == leave.UserId);
-            var emppersonalinfo = await _context.EmployeePersonalDetails.FirstOrDefaultAsync(x => x.EmpRegId == leave.UserId);
-
             if (leave == null)
             {
                 TempData["msg"] = "Data not found!";
                 return RedirectToAction("ApprovedLeaveApply");
             }
 
+            var empinfo = await _context.EmployeeRegistrations.FirstOrDefaultAsync(x => x.EmployeeId == leave.UserId);
+            var emppersonalinfo = await _context.EmployeePersonalDetails.FirstOrDefaultAsync(x => x.EmpRegId == leave.UserId);
+
             leave.Isapprove = !leave.Isapprove;
-            await _context.SaveChangesAsync();
 
             string subject;
             string emailBody;
-
 
             if (leave.Isapprove == true)
             {
                 subject = "Leave Approval Accepted";
                 emailBody = $"Dear {empinfo.FirstName} {empinfo.MiddleName} {empinfo.LastName},\n\nYour leave application has been approved.";
+
+                var TypeOfLeave = await _context.Leavemasters
+                    .Where(x => x.LeavetypeId == leave.TypeOfLeaveId && x.EmpId == leave.UserId)
+                    .FirstOrDefaultAsync();
+
+                if (TypeOfLeave != null)
+                {
+                    decimal totalLeave = leave?.CountLeave ?? 0m;
+                    decimal currentLeaveBalance = TypeOfLeave.Value ?? 0m;
+
+                    if (currentLeaveBalance > 0)
+                    {
+                        decimal deductedLeave = Math.Min(totalLeave, currentLeaveBalance);
+                        TypeOfLeave.Value -= deductedLeave;
+                        leave.CountLeave = deductedLeave;
+                        // Uncomment if needed, but it will no longer affect PaidCountLeave
+                        // leave.PaidCountLeave = totalLeave - deductedLeave;
+                    }
+                    else
+                    {
+                        leave.CountLeave = 0;
+                    }
+
+                    _context.Entry(TypeOfLeave).State = EntityState.Modified;
+                    _context.Entry(leave).State = EntityState.Modified;
+
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    TempData["msg"] = "Leave type not found for the employee.";
+                    return RedirectToAction("ApprovedLeaveApply");
+                }
             }
             else
             {
@@ -1923,7 +2003,8 @@ namespace CRM.Controllers
 
             try
             {
-                await _emailService.SendEmpLeaveApprovalEmailAsync(emppersonalinfo.PersonalEmailAddress, empinfo.FirstName, empinfo.MiddleName, empinfo.LastName, subject, emailBody);
+                await _emailService.SendEmpLeaveApprovalEmailAsync(
+                    emppersonalinfo.PersonalEmailAddress, empinfo.FirstName, empinfo.MiddleName, empinfo.LastName, subject, emailBody);
 
                 TempData["msg"] = (bool)leave.Isapprove
                     ? "Approval status updated successfully and approval email sent!"
@@ -1934,11 +2015,13 @@ namespace CRM.Controllers
                 TempData["msg"] = (bool)leave.Isapprove
                     ? "Approval status updated successfully, but failed to send approval email."
                     : "Approval status updated successfully, but failed to send rejection email.";
-
             }
 
             return RedirectToAction("ApprovedLeaveApply");
         }
+
+
+
         public async Task<IActionResult> EmployeeEpf(int id)
         {
             try
@@ -2488,58 +2571,40 @@ namespace CRM.Controllers
             try
             {
                 int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
-
                 var adminLogin = await _context.AdminLogins.FirstOrDefaultAsync(x => x.Id == userId);
-                var employeeList = await _context.EmployeeRegistrations
-                                                  .Where(e => e.Vendorid == adminLogin.Vendorid)
-                                                  .OrderByDescending(x => x.EmployeeId)
-                                                  .ToListAsync();
 
-                EmployeeAttendanceDto attendanceDto = new EmployeeAttendanceDto
+                if (adminLogin == null) return NotFound("Admin not found.");
+
+                var attendanceRecords = await (from employee in _context.EmployeeRegistrations
+                                               join record in _context.EmployeeCheckInRecords
+                                               on employee.EmployeeId equals record.EmpId
+                                               where employee.Vendorid == adminLogin.Vendorid
+                                               orderby record.CurrentDate descending
+                                               select new EmployeeAttendanceDto
+                                               {
+                                                   EmpId = record.EmpId,
+                                                   EmployeeName = $"{employee.FirstName} " +
+                                                                  (string.IsNullOrEmpty(employee.MiddleName) ? "" : employee.MiddleName + " ") +
+                                                                  employee.LastName,
+                                                   CheckIntime = record.CheckIntime.HasValue
+                                                       ? record.CheckIntime.Value.ToString("dd-MMM-yyyy HH:mm")
+                                                       : "N/A",
+                                                   CheckOuttime = record.CheckOuttime.HasValue
+                                                       ? record.CheckOuttime.Value.ToString("dd-MMM-yyyy HH:mm")
+                                                       : "N/A",
+                                                   CurrentDate = record.CurrentDate.HasValue
+                                                       ? record.CurrentDate.Value.ToString("dd-MMM-yyyy HH:mm")
+                                                       : "N/A",
+                                                   Workinghour = record.CheckIntime.HasValue && record.CheckOuttime.HasValue
+                                                       ? $"{(int)(record.CheckOuttime.Value - record.CheckIntime.Value).TotalHours}h" +
+                                                         $"{(record.CheckOuttime.Value - record.CheckIntime.Value).Minutes}m"
+                                                       : "N/A"
+                                               }).ToListAsync();
+
+                var attendanceDto = new EmployeeAttendanceDto
                 {
-                    detail = new List<EmployeeAttendanceDto>()
+                    detail = attendanceRecords
                 };
-
-                List<EmployeeAttendanceDto> attendanceRecords = new List<EmployeeAttendanceDto>();
-
-                foreach (var employee in employeeList)
-                {
-                    var attendanceEntries = await _context.EmployeeCheckInRecords
-                                                          .Where(e => e.EmpId == employee.EmployeeId)
-                                                          .ToListAsync();
-
-                    foreach (var record in attendanceEntries)
-                    {
-                        string workingHours = "N/A";
-                        if (record.CheckIntime.HasValue && record.CheckOuttime.HasValue)
-                        {
-                            TimeSpan duration = record.CheckOuttime.Value - record.CheckIntime.Value;
-                            workingHours = $"{(int)duration.TotalHours}h{duration.Minutes}m";
-                        }
-
-                        attendanceRecords.Add(new EmployeeAttendanceDto
-                        {
-                            EmpId = record.EmpId,
-                            EmployeeName = $"{employee.FirstName} " +
-                                           (!string.IsNullOrEmpty(employee.MiddleName) ? employee.MiddleName + " " : "") +
-                                           employee.LastName,
-                            CheckIntime = record.CheckIntime.HasValue
-                                ? record.CheckIntime.Value.ToString("dd-MMM-yyyy HH:mm")
-                                : "N/A",
-                            CheckOuttime = record.CheckOuttime.HasValue
-                                ? record.CheckOuttime.Value.ToString("dd-MMM-yyyy HH:mm")
-                                : "N/A",
-                            CurrentDate = record.CurrentDate.HasValue
-                                ? record.CurrentDate.Value.ToString("dd-MMM-yyyy")
-                                : "N/A",
-                            Workinghour = workingHours,
-                        });
-                    }
-                }
-
-                attendanceDto.detail = attendanceRecords
-                    .OrderByDescending(r => r.CurrentDate)
-                    .ToList();
 
                 return View(attendanceDto);
             }
@@ -2731,7 +2796,95 @@ namespace CRM.Controllers
                 return "N/A";
             }
         }
+        public async Task<IActionResult> LeaveTypemaster(int id)
+        {
+            try
+            {
 
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                int vendorid = (int)adminlogin.Vendorid;
+                List<LeaveType> leave = _context.LeaveTypes.Where(e => e.Vendorid == vendorid).OrderBy(x => x.Id).ToList();
+                ;
+                int iId = (int)(id == null ? 0 : id);
+                ViewBag.id = 0;
+                ViewBag.Leavetype = "";
+                ViewBag.IsActive = "";
+                ViewBag.heading = "Add Leave Type";
+                ViewBag.btnText = "SAVE";
+                if (iId != null && iId != 0)
+                {
+                    var data = _context.LeaveTypes.Find(iId);
+                    if (data != null)
+                    {
+                        ViewBag.id = data.Id;
+                        ViewBag.Leavetype = data.Leavetype1;
+                        ViewBag.IsActive = data.Isactive;
+                        ViewBag.btnText = "UPDATE";
+                        ViewBag.heading = "Update Leave Type";
+
+                    }
+                }
+
+                return View(leave);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> LeaveTypemaster(LeaveType model)
+        {
+            try
+            {
+
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                int vendorid = (int)adminlogin.Vendorid;
+
+                bool check = await _ICrmrpo.AddAndUpdateLeaveTypemaster(model, vendorid);
+                if (check)
+                {
+                    if (model.Id == 0)
+                    {
+                        TempData["msg"] = "ok";
+                        return RedirectToAction("LeaveTypemaster");
+                    }
+                    else
+                    {
+                        TempData["msg"] = "updok";
+                        return RedirectToAction("LeaveTypemaster");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("LeaveTypemaster");
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        public async Task<IActionResult> DeleteLeaveType(int id)
+        {
+            try
+            {
+                var dlt = _context.LeaveTypes.Find(id);
+                _context.Remove(dlt);
+                _context.SaveChanges();
+                TempData["msg"] = "dltok";
+                return RedirectToAction("LeaveTypemaster");
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 }
 

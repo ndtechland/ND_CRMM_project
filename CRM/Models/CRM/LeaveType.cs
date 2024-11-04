@@ -9,5 +9,6 @@ namespace CRM.Models.Crm
         public string? Leavetype1 { get; set; }
         public bool? Isactive { get; set; }
         public DateTime? Createddate { get; set; }
+        public int? Vendorid { get; set; }
     }
 }
