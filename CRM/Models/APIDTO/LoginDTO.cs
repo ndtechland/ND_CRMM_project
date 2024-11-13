@@ -15,4 +15,10 @@
         public string? Employee_Name { get; set; }
         public string? Employee_ID { get; set; }
     }
+    public class DevicetokenDTO
+    {
+        public int? userid { get; set; }
+        public string? DeviceId { get; set; }
+    }
+
 }

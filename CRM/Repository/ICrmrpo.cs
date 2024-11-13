@@ -43,7 +43,7 @@ namespace CRM.Repository
       
         public DataTable GetEmployDetailById(string EmpId, int Userid);
         //for excel
-         public byte[] EmployeeListForExcel();
+         public byte[] EmployeeListForExcel(List<EmployeeImportExcel> data);
         
          public Task<List<ECS>> ESCExcel(int ? Userid);
 
@@ -85,7 +85,7 @@ namespace CRM.Repository
         public Task<List<empOfferletter>> OfferletterdetailList(int Userid);
         Task<int> AddVendorProduct(VendorProductMaster model, int VendorId);
         Task<List<VendorProductDTO>> GetVendorProductList(int vendorid);
-        public Task<List<LeavemasterDto>> getLeavemaster(int Userid);
+        public Task<List<LeavemasterDto>> getLeavemaster(int Userid,int? VendorId);
         Task<bool> AddVendorCategory(VendorCategoryMaster model, int VendorId);
         Task<List<VendorCategoryMaster>> GetVendorCategoryListByVendorId(int VendorId);
         public Task<EmpExperienceletter> GetExperienceletterbyid(int? id);
@@ -118,7 +118,6 @@ namespace CRM.Repository
         Task<bool> AddAndUpdateOtherService(OtherService model);
         Task<bool> AddAndUpdateMissionVisions(MissionVisionDTO model);
         Task<bool> AddAndUpdateLeaveTypemaster(LeaveType model, int VendorId);
-
 
     }
 }

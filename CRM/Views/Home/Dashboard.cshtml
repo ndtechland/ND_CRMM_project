@@ -1,124 +1,368 @@
 ﻿@{
     ViewBag.Title = "Dashboard";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
+    var addedBy = Context.Session.GetString("UserName");
+    if (!string.IsNullOrEmpty(addedBy))
+    {
+        ViewBag.UserName = addedBy;
+    }
+    else
+    {
+        ViewBag.UserName = "";
+    }
 }
-<div class="page-wrapper">
-    <div class="page-body-wrapper">
+@* @if (@ViewBag.UserName == "admin")
+{
+    <div class="page-wrapper">
+        <div class="page-body-wrapper">
 
-        <div class="page-sidebar">
-        </div>
- 
-        <div class="page-body">
+            <div class="page-sidebar">
+            </div>
 
-            <div class="container-fluid">
-                <div class="page-header">
+            <div class="page-body">
+
+                <div class="container-fluid">
+                    <div class="page-header">
+                        <div class="row">
+                        </div>
+                    </div>
+                </div>
+                <div class="container-fluid">
                     <div class="row">
-                       
+                        <div class="col-xl-3 col-md-6 xl-50">
+                            <a href="/Home/GetContacts">
+                                <div class="card o-hidden widget-cards">
+                                    <div class="bg-primary card-body">
+                                        <div class="media static-top-widget">
+                                            <div class="media-body">
+                                                <span class="m-0">Total Contact Us</span>
+                                                <h3 class="mb-0"> <span class="counter">@ViewBag.ContactCount</span></h3>
+                                            </div>
+                                            <div class="icons-widgets">
+                                                <i data-feather="message-square"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+
+                        </div>
+                        <div class="col-xl-3 col-md-6 xl-50">
+                            <a href="/Vendor/VendorList">
+                                <div class="card o-hidden widget-cards">
+                                    <div class="bg-warning card-body">
+                                        <div class="media static-top-widget">
+                                            <div class="media-body">
+                                                <span class="m-0">Total Generate Invoice</span>
+                                                <h3 class="mb-0"> <span class="counter">@ViewBag.VendorInvoice</span></h3>
+                                            </div>
+                                            <div class="icons-widgets">
+                                                <i data-feather="navigation"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-xl-3 col-md-6 xl-50">
+                            <a href="/Product/product">
+                                <div class="card o-hidden widget-cards">
+                                    <div class="bg-success card-body">
+                                        <div class="media static-top-widget">
+                                            <div class="media-body">
+                                                <span class="m-0">Total Product</span>
+                                                <h3 class="mb-0"> <span class="counter">@ViewBag.Product</span></h3>
+                                            </div>
+                                            <div class="icons-widgets">
+                                                <i data-feather="users"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-xl-3 col-md-6 xl-50">
+                            <a href="/Home/GetDemoRequests">
+                                <div class="card o-hidden widget-cards">
+                                    <div class="bg-warning card-body">
+                                        <div class="media static-top-widget">
+                                            <div class="media-body">
+                                                <span class="m-0">Total DemoRequest</span>
+                                                <h3 class="mb-0"> <span class="counter">@ViewBag.DemoRequest</span></h3>
+                                            </div>
+                                            <div class="icons-widgets">
+                                                <i data-feather="navigation"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-xl-3 col-md-6 xl-50">
+                            <a href="/Home/GetHelpCenters">
+                                <div class="card o-hidden widget-cards">
+                                    <div class="bg-success card-body">
+                                        <div class="media static-top-widget">
+                                            <div class="media-body">
+                                                <span class="m-0">Total HelpCenters</span>
+                                                <h3 class="mb-0"> <span class="counter">@ViewBag.HelpCenters</span></h3>
+                                            </div>
+                                            <div class="icons-widgets">
+                                                <i data-feather="users"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
                     </div>
                 </div>
+
             </div>
-            <div class="container-fluid">
-                <div class="row">
-                  @*  <div class="col-xl-3 col-md-6 xl-50">
-                        <div class="card o-hidden  widget-cards">
-                            <div class="bg-secondary card-body">
-                                <div class="media static-top-widget">
-                                    <div class="media-body">
-                                        <span class="m-0">CRM</span>
-                                        <h3 class="mb-0"> <span class="counter">98</span><small> This Month</small></h3>
-                                    </div>
-                                    <div class="icons-widgets">
-                                        <i data-feather="box"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>*@
-                    <div class="col-xl-3 col-md-6 xl-50">
-                        <a href="/Home/GetContacts">
-                            <div class="card o-hidden widget-cards">
-                            <div class="bg-primary card-body">
-                                <div class="media static-top-widget">
-                                    <div class="media-body">
-                                        <span class="m-0">Total Contact Us</span>
-                                        <h3 class="mb-0"> <span class="counter">@ViewBag.ContactCount</span><small> This Month</small></h3>
-                                    </div>
-                                    <div class="icons-widgets">
-                                        <i data-feather="message-square"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        </a>
-                        
-                    </div>
-                    <div class="col-xl-3 col-md-6 xl-50">
-                        <div class="card o-hidden widget-cards">
-                            <div class="bg-warning card-body">
-                                <div class="media static-top-widget">
-                                    <div class="media-body">
-                                        <span class="m-0">Generate Invoice</span>
-                                        <h3 class="mb-0"> <span class="counter">66</span><small> This Month</small></h3>
-                                    </div>
-                                    <div class="icons-widgets">
-                                        <i data-feather="navigation"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-md-6 xl-50">
-                        <div class="card o-hidden widget-cards">
-                            <div class="bg-success card-body">
-                                <div class="media static-top-widget">
-                                    <div class="media-body">
-                                        <span class="m-0">Add Product</span>
-                                        <h3 class="mb-0"> <span class="counter">45</span><small> This Month</small></h3>
-                                    </div>
-                                    <div class="icons-widgets">
-                                        <i data-feather="users"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-md-6 xl-50">
-                        <div class="card o-hidden widget-cards">
-                            <div class="bg-warning card-body">
-                                <div class="media static-top-widget">
-                                    <div class="media-body">
-                                        <span class="m-0">Earnings</span>
-                                        <h3 class="mb-0"> <span class="counter">66</span><small> This Month</small></h3>
-                                    </div>
-                                    <div class="icons-widgets">
-                                        <i data-feather="navigation"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    @*<div class="col-xl-3 col-md-6 xl-50">
-                        <div class="card o-hidden widget-cards">
-                            <div class="bg-success card-body">
-                                <div class="media static-top-widget">
-                                    <div class="media-body">
-                                        <span class="m-0">New Vendors</span>
-                                        <h3 class="mb-0"> <span class="counter">45</span><small> This Month</small></h3>
-                                    </div>
-                                    <div class="icons-widgets">
-                                        <i data-feather="users"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>*@
-                </div>
-            </div>
+
 
         </div>
-
 
     </div>
 
-</div>
+} *@
 
+@if (@ViewBag.UserName == "admin")
+{
+    <div class="page-wrapper">
+        <div class="page-body-wrapper">
+
+            <!-- Sidebar -->
+            <div class="page-sidebar">
+                <!-- Include sidebar content here if needed -->
+            </div>
+
+            <!-- Main Content -->
+            <div class="page-body">
+                <div class="container-fluid">
+                    <!-- Dashboard Header -->
+                    <div class="page-header">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <h2 class="text-center"></h2>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dashboard Widgets -->
+                    <div class="container-fluid">
+                        <div class="row">
+                            <!-- Total Contact Us -->
+                            <div class="col-xl-3 col-md-6">
+                                <a href="/Home/GetContacts">
+                                    <div class="card o-hidden widget-cards">
+                                        <div class="bg-primary card-body">
+                                            <div class="media">
+                                                <div class="media-body">
+                                                    <span>Total Contact Us</span>
+                                                    <h3 class="mb-0"><span class="counter">@ViewBag.ContactCount</span></h3>
+                                                </div>
+                                                <div class="icons-widgets">
+                                                    <i data-feather="message-square"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <!-- Total Generate Invoice -->
+                            <div class="col-xl-3 col-md-6">
+                                <a href="/Vendor/VendorList">
+                                    <div class="card o-hidden widget-cards">
+                                        <div class="bg-warning card-body">
+                                            <div class="media">
+                                                <div class="media-body">
+                                                    <span>Total Generate Invoice</span>
+                                                    <h3 class="mb-0"><span class="counter">@ViewBag.VendorInvoice</span></h3>
+                                                </div>
+                                                <div class="icons-widgets">
+                                                    <i data-feather="file-text"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <!-- Total Product -->
+                            <div class="col-xl-3 col-md-6">
+                                <a href="/Product/product">
+                                    <div class="card o-hidden widget-cards">
+                                        <div class="bg-success card-body">
+                                            <div class="media">
+                                                <div class="media-body">
+                                                    <span>Total Product</span>
+                                                    <h3 class="mb-0"><span class="counter">@ViewBag.Product</span></h3>
+                                                </div>
+                                                <div class="icons-widgets">
+                                                    <i data-feather="package"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <!-- Total Demo Request -->
+                            <div class="col-xl-3 col-md-6">
+                                <a href="/Home/GetDemoRequests">
+                                    <div class="card o-hidden widget-cards">
+                                        <div class="bg-info card-body">
+                                            <div class="media">
+                                                <div class="media-body">
+                                                    <span>Total Demo Request</span>
+                                                    <h3 class="mb-0"><span class="counter">@ViewBag.DemoRequest</span></h3>
+                                                </div>
+                                                <div class="icons-widgets">
+                                                    <i data-feather="clipboard"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <!-- Total Help Centers -->
+                            <div class="col-xl-3 col-md-6">
+                                <a href="/Home/GetHelpCenters">
+                                    <div class="card o-hidden widget-cards">
+                                        <div class="bg-danger card-body">
+                                            <div class="media">
+                                                <div class="media-body">
+                                                    <span>Total Help Centers</span>
+                                                    <h3 class="mb-0"><span class="counter">@ViewBag.HelpCenters</span></h3>
+                                                </div>
+                                                <div class="icons-widgets">
+                                                    <i data-feather="help-circle"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="page-wrapper">
+        <div class="page-body-wrapper">
+
+            <!-- Sidebar (Optional) -->
+            <div class="page-sidebar">
+                <!-- Include sidebar content here if needed -->
+            </div>
+
+            <!-- Main Content -->
+            <div class="page-body">
+                <div class="container-fluid">
+                    <!-- Dashboard Header -->
+                    <div class="page-header">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <h2 class="text-center"></h2>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dashboard Widgets -->
+                    <div class="container-fluid">
+                        <div class="row gy-4">
+
+                            <!-- Total Generate Invoice -->
+                            <div class="col-xl-3 col-md-6">
+                                <a href="/Sale/CustomerInvoiceList" class="text-decoration-none">
+                                    <div class="card o-hidden widget-cards shadow">
+                                        <div class="bg-warning card-body rounded-3 text-white">
+                                            <div class="d-flex align-items-center">
+                                                <div class="media-body">
+                                                    <span>Total Generate Invoice</span>
+                                                    <h3 class="mb-0 mt-2"><span class="counter">@ViewBag.CustomerInvoices</span></h3>
+                                                </div>
+                                                <div class="icons-widgets ms-auto">
+                                                    <i data-feather="file-text" class="feather-icon"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <!-- Total Product -->
+                            <div class="col-xl-3 col-md-6">
+                                <a href="/Product/VendorProductList" class="text-decoration-none">
+                                    <div class="card o-hidden widget-cards shadow">
+                                        <div class="bg-success card-body rounded-3 text-white">
+                                            <div class="d-flex align-items-center">
+                                                <div class="media-body">
+                                                    <span>Total Product</span>
+                                                    <h3 class="mb-0 mt-2"><span class="counter">@ViewBag.VendorProduct</span></h3>
+                                                </div>
+                                                <div class="icons-widgets ms-auto">
+                                                    <i data-feather="package" class="feather-icon"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <!-- Check in Employees -->
+                            <div class="col-xl-3 col-md-6">
+                                <a href="/Vendor/EmployeeAttendanceList" class="text-decoration-none">
+                                    <div class="card o-hidden widget-cards shadow">
+                                        <div class="bg-primary card-body rounded-3 text-white">
+                                            <div class="d-flex align-items-center">
+                                                <div class="media-body">
+                                                    <span>Employees Checked In Today</span>
+                                                    <h3 class="mb-0 mt-2"><span class="counter">@ViewBag.Checkin</span></h3>
+                                                </div>
+                                                <div class="icons-widgets ms-auto">
+                                                    <i data-feather="users" class="feather-icon"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <!-- On Break Employees Card with Different Color -->
+                            <div class="col-xl-3 col-md-6">
+                                <a href="/Vendor/EmployeeBreakList">
+                                    <div class="card o-hidden widget-cards">
+                                        <!-- Changed bg-warning to bg-danger -->
+                                        <div class="bg-danger card-body">
+                                            <div class="media">
+                                                <div class="media-body">
+                                                    <span>Employees Break In Today</span>
+                                                    <h3 class="mb-0">
+                                                        <span class="counter">@ViewBag.onBreakList</span>
+                                                    </h3>
+                                                </div>
+                                                <div class="icons-widgets">
+                                                    <i data-feather="users"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                           
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

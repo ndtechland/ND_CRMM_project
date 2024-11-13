@@ -29,14 +29,29 @@ namespace CRM.Controllers
             this._context = _context;
             this._ICrmrpo = _ICrmrpo;
         }
-        public IActionResult Dashboard()
+        public async Task<IActionResult> Dashboard()
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                ViewBag.ContactCount = _context.ContactUs.Count();
+                ViewBag.ContactCount = await _context.ContactUs.CountAsync();
                 int UserId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
-                var adminlogin =  _context.AdminLogins.Where(x => x.Id == UserId).FirstOrDefault();
-                ViewBag.Professional = _context.VendorRegistrations.Where(x => x.Id == adminlogin.Vendorid).Select(x =>x.Isprofessionaltax).FirstOrDefault();
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == UserId).FirstOrDefaultAsync();
+                ViewBag.Professional = await _context.VendorRegistrations.Where(x => x.Id == adminlogin.Vendorid).Select(x => x.Isprofessionaltax).FirstOrDefaultAsync();
+                ViewBag.VendorInvoice = await _context.VendorRegistrations.Where(x => x.Isactive == true).CountAsync();
+                ViewBag.Product = await _context.ProductMasters.CountAsync();
+                ViewBag.DemoRequest = await _context.DemoRequests.CountAsync();
+                ViewBag.HelpCenters = await _context.HelpCenters.CountAsync();
+                ViewBag.VendorProduct = await _context.VendorProductMasters.Where(x => x.VendorId == adminlogin.Vendorid && x.IsActive == true).CountAsync();
+                ViewBag.CustomerInvoices = await _context.CustomerInvoices.Where(x => x.VendorId == adminlogin.Vendorid).GroupBy(x => x.InvoiceNumber).CountAsync();
+                var emplist = await _context.EmployeeRegistrations
+                            .Where(x => x.Vendorid == adminlogin.Vendorid)
+                            .ToListAsync();
+                ViewBag.onBreakList = emplist.Count(x => _context.EmployeeCheckIns
+                    .Any(y => y.EmployeeId == x.EmployeeId && y.Breakin == true
+                             && y.Currentdate.Value.Date == DateTime.Now.Date));
+                ViewBag.Checkin = emplist.Count(x => _context.EmployeeCheckIns
+                 .Any(y => y.EmployeeId == x.EmployeeId && y.CheckIn == true
+                          && y.Currentdate.Value.Date == DateTime.Now.Date));
 
                 return View();
             }
@@ -1877,7 +1892,7 @@ namespace CRM.Controllers
                     var data = _context.PricingPlans.Find(iId);
 
                     var existingfeatures = await _context.PricingPlanFeatures
-                        .Where(s => s.PricingPlanId == data.Id)  
+                        .Where(s => s.PricingPlanId == data.Id)
                         .ToListAsync();
                     if (data != null)
                     {
@@ -1887,7 +1902,7 @@ namespace CRM.Controllers
                         ViewBag.tittle = data.Title;
                         ViewBag.Support = data.Support;
                         ViewBag.AnnulPrice = data.AnnulPrice;
-                        ViewBag.AnnulPriceInPercentage = data.AnnulPriceInPercentage; 
+                        ViewBag.AnnulPriceInPercentage = data.AnnulPriceInPercentage;
                         ViewBag.IsActive = data.IsActive;
                         ViewBag.Image = data.Image;
                         ViewBag.AnnulPriceInPercentage = data.AnnulPriceInPercentage;

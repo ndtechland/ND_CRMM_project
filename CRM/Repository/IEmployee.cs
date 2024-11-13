@@ -19,9 +19,9 @@ namespace CRM.Repository
         public Task<List<EmpattendanceDto>> GetAllEmpsalaryslip(string userid);
         public Task<EmpattendanceDto> Getsalarydetails(string userid, int month, int year);
         public Task<CompanyLoctionDto> GetCompanyLoction(string userid);
-        public Task<EmployeeCheckIn> Empcheckin(EmpCheckIn model, bool CheckIN);
+        public Task<EmployeeCheckIn> Empcheckin(CRM.Models.APIDTO.EmpCheckIn model, bool CheckIN);
         public Task<ApprovedPresnolInfo> webPersonalDetail(webPersonalDetail model, string userid);
-        public Task<EmployeeCheckIn> Empcheckout(EmpCheckIn model, bool CheckIN);
+        public Task<EmployeeCheckIn> Empcheckout(CRM.Models.APIDTO.EmpCheckIn model, bool CheckIN);
         public Task<Empattendancedatail> GetEmpattendance(string userid, DateTime Currentdate);
         public Task<EmployeeRegistration> Updateprofilepicture(profilepicture model, string userid);
         public Task<List<TasksassignDto>> GetEmpTasksassign(string userid);
@@ -31,7 +31,7 @@ namespace CRM.Repository
         public Task<EmpTasksList> Tasksassign(TasksListDto model, string userid);
         public Task<EmpTasksList> SubTaskCompletedempTasksassign(EmpSubTasksDto model, string userid);
         public Task<List<WebLoginactivity>> GetWebEmpLoginactivity(string userid);
-       // public Task<MeetEventsAndHolidayDto> GetOfficeEvents(string userid);
+        public Task<MeetEventsAndHolidayDto> GetholidayandEvents(string userid);
         public Task<List<officeEventsDto>> GetOfficeEvents(string userid);
         public Task<Monthlyattendancedatail> GetMonthAttanceDetails(string userid);
         public Task<TotalLeave> Getleavelist(string userid);
@@ -42,6 +42,7 @@ namespace CRM.Repository
         public Task<List<AppFaq>> Getappfaq();
         public Task<bool> Overtimeapply(string userid);
 
+        public Task<EmployeeCheckIn> UpdateEmpLocation(CRM.Models.APIDTO.EmpCheckIn model, bool CheckIN);
 
     }
 }

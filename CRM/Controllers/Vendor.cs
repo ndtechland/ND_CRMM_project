@@ -12,8 +12,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml.Style;
+using OfficeOpenXml;
 using SelectPdf;
 using System.Data.SqlClient;
+using ClosedXML.Excel;
 
 namespace CRM.Controllers
 {
@@ -1953,7 +1956,7 @@ namespace CRM.Controllers
             var emppersonalinfo = await _context.EmployeePersonalDetails.FirstOrDefaultAsync(x => x.EmpRegId == leave.UserId);
 
             leave.Isapprove = !leave.Isapprove;
-
+            await _context.SaveChangesAsync();
             string subject;
             string emailBody;
 
@@ -2019,8 +2022,6 @@ namespace CRM.Controllers
 
             return RedirectToAction("ApprovedLeaveApply");
         }
-
-
 
         public async Task<IActionResult> EmployeeEpf(int id)
         {
@@ -2573,7 +2574,8 @@ namespace CRM.Controllers
                 int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminLogin = await _context.AdminLogins.FirstOrDefaultAsync(x => x.Id == userId);
 
-                if (adminLogin == null) return NotFound("Admin not found.");
+                if (adminLogin == null)
+                    return NotFound("Admin not found.");
 
                 var attendanceRecords = await (from employee in _context.EmployeeRegistrations
                                                join record in _context.EmployeeCheckInRecords
@@ -2587,19 +2589,30 @@ namespace CRM.Controllers
                                                                   (string.IsNullOrEmpty(employee.MiddleName) ? "" : employee.MiddleName + " ") +
                                                                   employee.LastName,
                                                    CheckIntime = record.CheckIntime.HasValue
-                                                       ? record.CheckIntime.Value.ToString("dd-MMM-yyyy HH:mm")
+                                                       ? record.CheckIntime.Value.ToString("hh:mm tt")
                                                        : "N/A",
                                                    CheckOuttime = record.CheckOuttime.HasValue
-                                                       ? record.CheckOuttime.Value.ToString("dd-MMM-yyyy HH:mm")
+                                                       ? record.CheckOuttime.Value.ToString("hh:mm tt")
                                                        : "N/A",
                                                    CurrentDate = record.CurrentDate.HasValue
-                                                       ? record.CurrentDate.Value.ToString("dd-MMM-yyyy HH:mm")
-                                                       : "N/A",
-                                                   Workinghour = record.CheckIntime.HasValue && record.CheckOuttime.HasValue
-                                                       ? $"{(int)(record.CheckOuttime.Value - record.CheckIntime.Value).TotalHours}h" +
-                                                         $"{(record.CheckOuttime.Value - record.CheckIntime.Value).Minutes}m"
+                                                       ? record.CurrentDate.Value.ToString("dd-MMM-yyyy")
                                                        : "N/A"
                                                }).ToListAsync();
+
+                foreach (var attendanceRecord in attendanceRecords)
+                {
+                    if (DateTime.TryParse(attendanceRecord.CurrentDate, out DateTime currentDate))
+                    {
+                        string workingHours = await TotalWorkingHours(attendanceRecord.EmpId, currentDate);
+
+                        attendanceRecord.Workinghour = workingHours;
+                    }
+                    else
+                    {
+                        attendanceRecord.Workinghour = "Invalid Date";
+                    }
+                }
+
 
                 var attendanceDto = new EmployeeAttendanceDto
                 {
@@ -2673,7 +2686,7 @@ namespace CRM.Controllers
                     var currentDate = DateTime.Now.Date;
 
                     string startOverTime = "N/A";
-                   
+
                     overtimeRecords.Add(new EmployeeOvertimeDto
                     {
                         Id = record.Id,
@@ -2684,7 +2697,7 @@ namespace CRM.Controllers
                         EndTime = record.EndTime?.ToString("dd-MMM-yyyy HH:mm") ?? "N/A",
                         ApprovalDate = record.ApprovalDate?.ToString("dd-MMM-yyyy") ?? "N/A",
                         TotalOvertimeHours = overtimeHours,
-                        StartTime = await StartOverTime(employee.EmployeeId, (int)employee.OfficeshiftTypeid, currentDate), 
+                        StartTime = await StartOverTime(employee.EmployeeId, (int)employee.OfficeshiftTypeid, currentDate),
                         Approved = record.Approved
                     });
                 }
@@ -2885,6 +2898,423 @@ namespace CRM.Controllers
                 throw;
             }
         }
+
+        public async Task<IActionResult> EmployeeBreakList()
+        {
+            try
+            {
+                int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminLogin = await _context.AdminLogins.FirstOrDefaultAsync(x => x.Id == userId);
+
+                if (adminLogin == null)
+                {
+                    return NotFound("Admin not found.");
+                }
+                var empDetails = await _context.EmployeeRegistrations
+                    .Where(x => x.Vendorid == adminLogin.Vendorid)
+                    .ToListAsync();
+
+                if (empDetails == null || empDetails.Count == 0)
+                {
+                    return NotFound("No employees found for this vendor.");
+                }
+
+                var loginActivities = new List<EmployeeBreakDto>();
+
+                foreach (var employee in empDetails)
+                {
+                    var breakRecordsIn = await _context.EmployeeCheckIns
+                        .Where(g => g.EmployeeId == employee.EmployeeId && g.Breakin == true && g.CheckInTime.HasValue)
+                        .OrderByDescending(g => g.Currentdate)
+                        .ToListAsync();
+
+                    var breakRecordsOut = await _context.EmployeeCheckIns
+                        .Where(g => g.EmployeeId == employee.EmployeeId && g.Breakout == true && g.CheckInTime.HasValue)
+                        .OrderByDescending(g => g.Currentdate)
+                        .ToListAsync();
+
+                    int inIndex = 0, outIndex = 0;
+
+                    while (inIndex < breakRecordsIn.Count)
+                    {
+                        var breakInRecord = breakRecordsIn[inIndex];
+                        var loginActivity = new EmployeeBreakDto
+                        {
+                            EmpId = employee.EmployeeId.ToString(),
+                            EmployeeName = $"{employee.FirstName} " +
+                                           (string.IsNullOrEmpty(employee.MiddleName) ? "" : employee.MiddleName + " ") +
+                                           employee.LastName,
+                            BreakIntime = breakInRecord.CheckInTime.HasValue
+                                ? breakInRecord.CheckInTime.Value.ToString("hh:mm tt")
+                                : "N/A",
+                            BreakOuttime = "N/A",
+                            CurrentDate = breakInRecord.Currentdate.HasValue
+                                ? breakInRecord.Currentdate.Value.ToString("dd-MMM-yyyy")
+                                : "N/A",
+                            Breakhour = "N/A"
+                        };
+
+                        if (outIndex < breakRecordsOut.Count)
+                        {
+                            var breakOutRecord = breakRecordsOut[outIndex];
+
+                            if (breakOutRecord.Currentdate.HasValue &&
+                                breakOutRecord.Currentdate.Value.Date == breakInRecord.Currentdate.Value.Date &&
+                                breakOutRecord.CheckInTime > breakInRecord.CheckInTime)
+                            {
+                                loginActivity.BreakOuttime = breakOutRecord.CheckInTime.Value.ToString("hh:mm tt");
+
+                                var breakDuration = breakOutRecord.CheckInTime.Value - breakInRecord.CheckInTime.Value;
+                                loginActivity.Breakhour = $"{(int)breakDuration.TotalHours}h {breakDuration.Minutes}m";
+
+                                outIndex++;
+                            }
+                        }
+
+                        loginActivities.Add(loginActivity);
+
+                        inIndex++;
+                    }
+                }
+
+                var attendanceDto = new EmployeeBreakDto
+                {
+                    Breakdetail = loginActivities
+                };
+
+                return View(attendanceDto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        private async Task<string> TotalWorkingHours(string employeeId, DateTime currentDate)
+        {
+            var shiftDetails = await _context.EmployeeRegistrations
+                .Where(x => x.EmployeeId == employeeId)
+                .Join(_context.OfficeBreaks,
+                    emp => emp.OfficeshiftTypeid,
+                    ob => ob.Shiftid,
+                    (emp, ob) => new { ob.Starttime, ob.Endtime })
+                .FirstOrDefaultAsync();
+
+            double breakPeriodThreshold = 0;
+
+            if (shiftDetails != null && DateTime.TryParse(shiftDetails.Starttime, out DateTime startDateTime) &&
+                DateTime.TryParse(shiftDetails.Endtime, out DateTime endDateTime))
+            {
+                TimeSpan startTime = startDateTime.TimeOfDay;
+                TimeSpan endTime = endDateTime.TimeOfDay;
+                breakPeriodThreshold = (endTime - startTime).TotalHours;
+            }
+
+            var checkIns = await _context.EmployeeCheckInRecords
+                .Where(g => g.EmpId == employeeId && g.CurrentDate.HasValue && g.CurrentDate.Value.Date == currentDate.Date)
+                .OrderBy(g => g.CheckIntime)
+                .ToListAsync();
+
+            double totalHours = 0;
+            double totalBreakHours = 0;
+            DateTime? lastBreakInTime = null;
+            var latestCheckRecord = await _context.EmployeeCheckIns
+               .Where(x => x.EmployeeId == employeeId && x.Currentdate.HasValue && x.Currentdate.Value.Date == currentDate.Date)
+               .OrderByDescending(x => x.Id)
+               .FirstOrDefaultAsync();
+            foreach (var checkInRecord in checkIns)
+            {
+                if (checkInRecord.CheckIntime.HasValue)
+                {
+                    if (currentDate.Date != DateTime.Now.Date)
+                    {
+                        var checkOutRecord = checkIns.FirstOrDefault(g => g.CheckOuttime.HasValue && g.CheckOuttime > checkInRecord.CheckIntime);
+                        if (checkOutRecord != null)
+                        {
+                            totalHours += (checkOutRecord.CheckOuttime.Value - checkInRecord.CheckIntime.Value).TotalHours;
+                        }
+                    }
+                    else
+                    {
+                        if (latestCheckRecord?.CheckIn == true)
+                        {
+                            totalHours += (DateTime.Now - checkInRecord.CheckIntime.Value).TotalHours;
+                        }
+                        else
+                        {
+                            var checkOutRecord = checkIns.FirstOrDefault(g => g.CheckOuttime.HasValue && g.CheckOuttime > checkInRecord.CheckIntime);
+                            if (checkOutRecord != null)
+                            {
+                                totalHours += (checkOutRecord.CheckOuttime.Value - checkInRecord.CheckIntime.Value).TotalHours;
+                            }
+                        }
+                        var breakRecords = await _context.EmployeeCheckIns
+                            .Where(g => g.EmployeeId == employeeId && g.Currentdate.HasValue && g.Currentdate.Value.Date == currentDate.Date)
+                            .Where(g => g.Breakin == true || g.Breakout == true)
+                            .OrderBy(g => g.CheckInTime)
+                            .ToListAsync();
+
+                        foreach (var breakRecord in breakRecords)
+                        {
+                            if (breakRecord.Breakin == true && checkInRecord.CheckIntime.HasValue)
+                            {
+                                lastBreakInTime = breakRecord.CheckInTime;
+                            }
+                            else if (breakRecord.Breakout == true && lastBreakInTime.HasValue)
+                            {
+                                if (breakRecord.CheckInTime.HasValue && breakRecord.CheckInTime.Value.Date == currentDate.Date)
+                                {
+                                    double breakDuration = (breakRecord.CheckInTime.Value - lastBreakInTime.Value).TotalHours;
+
+                                    if (breakDuration > breakPeriodThreshold)
+                                    {
+                                        totalBreakHours += (breakDuration - breakPeriodThreshold);
+                                    }
+
+                                    lastBreakInTime = null;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            double netWorkingHours = totalHours - totalBreakHours;
+
+            return FormatHours(netWorkingHours);
+        }
+
+        private string FormatHours(double totalHours)
+        {
+            int hours = (int)totalHours;
+            int minutes = (int)((totalHours - hours) * 60);
+            return $"{hours}h {minutes}m";
+        }
+        public async Task<IActionResult> ExportBreakinReport()
+        {
+            try
+            {
+                int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminLogin = await _context.AdminLogins.FirstOrDefaultAsync(x => x.Id == userId);
+
+                if (adminLogin == null)
+                {
+                    return NotFound("Admin not found.");
+                }
+
+                var empDetails = await _context.EmployeeRegistrations
+                    .Where(x => x.Vendorid == adminLogin.Vendorid)
+                    .ToListAsync();
+
+                if (empDetails == null || empDetails.Count == 0)
+                {
+                    return NotFound("Employee not found.");
+                }
+
+                var loginActivities = new List<EmployeeBreakDto>();
+
+                foreach (var employee in empDetails)
+                {
+                    var breakRecordsIn = await _context.EmployeeCheckIns
+                        .Where(g => g.EmployeeId == employee.EmployeeId && g.Breakin == true && g.CheckInTime.HasValue)
+                        .OrderByDescending(g => g.Currentdate)
+                        .ToListAsync();
+
+                    var breakRecordsOut = await _context.EmployeeCheckIns
+                        .Where(g => g.EmployeeId == employee.EmployeeId && g.Breakout == true && g.CheckInTime.HasValue)
+                        .OrderByDescending(g => g.Currentdate)
+                        .ToListAsync();
+
+                    int index = 0;
+
+                    foreach (var breakInRecord in breakRecordsIn)
+                    {
+                        var loginActivity = new EmployeeBreakDto
+                        {
+                            EmpId = employee.EmployeeId.ToString(),
+                            EmployeeName = $"{employee.FirstName} " +
+                                           (string.IsNullOrEmpty(employee.MiddleName) ? "" : employee.MiddleName + " ") +
+                                           employee.LastName,
+                            BreakIntime = breakInRecord.CheckInTime.HasValue
+                                ? breakInRecord.CheckInTime.Value.ToString("hh:mm tt")
+                                : "N/A",
+                            BreakOuttime = "N/A",
+                            CurrentDate = breakInRecord.Currentdate.HasValue
+                                ? breakInRecord.Currentdate.Value.ToString("dd-MMM-yyyy")
+                                : "N/A",
+                            Breakhour = "N/A"
+                        };
+
+                        if (index < breakRecordsOut.Count)
+                        {
+                            var breakOutRecord = breakRecordsOut[index];
+
+                            if (breakOutRecord.CheckInTime.HasValue)
+                            {
+                                loginActivity.BreakOuttime = breakOutRecord.CheckInTime.Value.ToString("hh:mm tt");
+
+                                var breakDuration = breakOutRecord.CheckInTime.Value - breakInRecord.CheckInTime.Value;
+                                loginActivity.Breakhour = $"{(int)breakDuration.TotalHours}h {breakDuration.Minutes}m";
+                            }
+                        }
+
+                        loginActivities.Add(loginActivity);
+                        index++;
+                    }
+                }
+
+                using (var workbook = new XLWorkbook())
+                {
+                    var worksheet = workbook.Worksheets.Add("Employee Break Report");
+
+                    int currentwork = 1;
+                    worksheet.Cell(currentwork, 1).Value = "Sr.No.";
+                    worksheet.Cell(currentwork, 1).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 2).Value = "Employee ID";
+                    worksheet.Cell(currentwork, 2).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 3).Value = "Employee Name";
+                    worksheet.Cell(currentwork, 3).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 4).Value = "Break-In Time";
+                    worksheet.Cell(currentwork, 4).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 5).Value = "Break-Out Time";
+                    worksheet.Cell(currentwork, 5).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 6).Value = "Break Hours";
+                    worksheet.Cell(currentwork, 6).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 7).Value = "Date";
+                    worksheet.Cell(currentwork, 7).Style.Fill.BackgroundColor = XLColor.Yellow;
+
+                    currentwork++;
+
+                    var row = 1;
+                    foreach (var record in loginActivities)
+                    {
+                        worksheet.Cell(currentwork, 1).Value = row++; 
+                        worksheet.Cell(currentwork, 2).Value = record.EmpId;
+                        worksheet.Cell(currentwork, 3).Value = record.EmployeeName;
+                        worksheet.Cell(currentwork, 4).Value = record.BreakIntime;
+                        worksheet.Cell(currentwork, 5).Value = record.BreakOuttime;
+                        worksheet.Cell(currentwork, 6).Value = record.Breakhour;
+                        worksheet.Cell(currentwork, 7).Value = record.CurrentDate;
+
+                        currentwork++;
+                    }
+
+                    worksheet.Columns().AdjustToContents();
+
+                    using (var stream = new MemoryStream())
+                    {
+                        workbook.SaveAs(stream);
+                        var fileContent = stream.ToArray();
+                        return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "EmployeeBreakReport.xlsx");
+                    }
+
+                } 
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+        public async Task<IActionResult> ExportAttendanceReport()
+        {
+            try
+            {
+                int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminLogin = await _context.AdminLogins.FirstOrDefaultAsync(x => x.Id == userId);
+
+                if (adminLogin == null)
+                    return NotFound("Admin not found.");
+
+                var attendanceRecords = await (from employee in _context.EmployeeRegistrations
+                                               join record in _context.EmployeeCheckInRecords
+                                               on employee.EmployeeId equals record.EmpId
+                                               where employee.Vendorid == adminLogin.Vendorid
+                                               orderby record.CurrentDate descending
+                                               select new EmployeeAttendanceDto
+                                               {
+                                                   EmpId = record.EmpId,
+                                                   EmployeeName = $"{employee.FirstName} " +
+                                                                  (string.IsNullOrEmpty(employee.MiddleName) ? "" : employee.MiddleName + " ") +
+                                                                  employee.LastName,
+                                                   CheckIntime = record.CheckIntime.HasValue
+                                                       ? record.CheckIntime.Value.ToString("hh:mm tt")
+                                                       : "N/A",
+                                                   CheckOuttime = record.CheckOuttime.HasValue
+                                                       ? record.CheckOuttime.Value.ToString("hh:mm tt")
+                                                       : "N/A",
+                                                   CurrentDate = record.CurrentDate.HasValue
+                                                       ? record.CurrentDate.Value.ToString("dd-MMM-yyyy")
+                                                       : "N/A",
+                                                   Workinghour = "N/A"
+                                               }).ToListAsync();
+
+                foreach (var attendanceRecord in attendanceRecords)
+                {
+                    if (DateTime.TryParse(attendanceRecord.CurrentDate, out DateTime currentDate))
+                    {
+                        string workingHours = await TotalWorkingHours(attendanceRecord.EmpId, currentDate);
+                        attendanceRecord.Workinghour = workingHours;
+                    }
+                    else
+                    {
+                        attendanceRecord.Workinghour = "Invalid Date";
+                    }
+                }
+
+                using (var workbook = new XLWorkbook())
+                {
+                    var worksheet = workbook.Worksheets.Add("Employee Break Report");
+
+                    int currentwork = 1;
+                    worksheet.Cell(currentwork, 1).Value = "Sr.No.";
+                    worksheet.Cell(currentwork, 1).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 2).Value = "Employee ID";
+                    worksheet.Cell(currentwork, 2).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 3).Value = "Employee Name";
+                    worksheet.Cell(currentwork, 3).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 4).Value = "Check-In Time";
+                    worksheet.Cell(currentwork, 4).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 5).Value = "Check-Out Time";
+                    worksheet.Cell(currentwork, 5).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 6).Value = "Working Hours";
+                    worksheet.Cell(currentwork, 6).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 7).Value = "Date";
+                    worksheet.Cell(currentwork, 7).Style.Fill.BackgroundColor = XLColor.Yellow;
+
+                    currentwork++;
+
+                    var row = 1;
+                    foreach (var record in attendanceRecords)
+                    {
+                        worksheet.Cell(currentwork, 1).Value = row++;
+                        worksheet.Cell(currentwork, 2).Value = record.EmpId;
+                        worksheet.Cell(currentwork, 3).Value = record.EmployeeName;
+                        worksheet.Cell(currentwork, 4).Value = record.CheckIntime;
+                        worksheet.Cell(currentwork, 5).Value = record.CheckOuttime;
+                        worksheet.Cell(currentwork, 6).Value = record.Workinghour;
+                        worksheet.Cell(currentwork, 7).Value = record.CurrentDate;
+
+                        currentwork++;
+                    }
+
+                    worksheet.Columns().AdjustToContents();
+
+                    using (var stream = new MemoryStream())
+                    {
+                        workbook.SaveAs(stream);
+                        var fileContent = stream.ToArray();
+                        return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "EmployeeAttendanceReport.xlsx");
+                    }
+
+                }
+              
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
     }
 }
 

@@ -6,6 +6,7 @@ using CRM.Utilities;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.TeamFoundation.Common;
 using System.IdentityModel.Tokens.Jwt;
@@ -129,6 +130,50 @@ namespace CRM.Controllers.Api
                 response.StatusCode = StatusCodes.Status403Forbidden;
                 response.Message = "Invalid or expired refresh token.";
                 return Forbid(response.Message);
+            }
+        }
+        [Route("DeviceToken")]
+        [HttpPost]
+        public async Task<IActionResult> DeviceToken(DevicetokenDTO model)
+        {
+            var response = new Response<DevicetokenDTO>();
+
+            try
+            {
+                if (model.userid == null || string.IsNullOrEmpty(model.DeviceId))
+                {
+                    response.StatusCode = StatusCodes.Status400BadRequest;
+                    response.Message = "Invalid request data.";
+                    return BadRequest(response);
+                }
+
+                var user = await _context.EmployeeLogins
+                    .FirstOrDefaultAsync(x => x.Id == model.userid);
+
+                if (user != null)
+                {
+                    user.Deviceid = model.DeviceId;
+                    await _context.SaveChangesAsync(); 
+
+                    response.Succeeded = true;
+                    response.StatusCode = StatusCodes.Status200OK;
+                    response.Message = "Device ID updated successfully.";
+                    response.Data = model;
+
+                    return Ok(response);
+                }
+                else
+                {
+                    response.StatusCode = StatusCodes.Status404NotFound;
+                    response.Message = "User Id not found.";
+                    return NotFound(response);
+                }
+            }
+            catch (Exception ex)
+            {
+                response.StatusCode = StatusCodes.Status500InternalServerError;
+                response.Message = "An error occurred while processing your request.";
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
 
