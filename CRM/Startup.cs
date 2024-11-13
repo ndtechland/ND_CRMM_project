@@ -99,6 +99,7 @@ namespace CRM
                     builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
                 });
             });
+
             services.AddHangfire(config =>
             {
                 config.UseSqlServerStorage(Configuration.GetConnectionString("db1"));

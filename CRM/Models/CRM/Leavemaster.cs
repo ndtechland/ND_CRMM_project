@@ -13,5 +13,6 @@ namespace CRM.Models.Crm
         public DateTime? LeaveUpdateDate { get; set; }
         public DateTime LeaveStartDate { get; set; }
         public bool IsActive { get; set; }
+        public int? Vendorid { get; set; }
     }
 }

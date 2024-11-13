@@ -53,6 +53,7 @@ namespace CRM.Models.APIDTO
         public string? Currentdate { get; set; }
         public string? LoginStatus { get; set; }
         public string? Ontime { get; set; }
+        public string? dayPart { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<Breakactivity> loginactivities { get; set; }
@@ -165,7 +166,6 @@ namespace CRM.Models.APIDTO
         public string? TypeofLeave { get; set; }
         public string? Leaveapplydate { get; set; }
         public string? LeaveSearchdate { get; set; }
-
     }
     public class TotalLeave
     {
@@ -178,6 +178,9 @@ namespace CRM.Models.APIDTO
         public decimal? Totaldays { get; set; }
         public decimal? PaidLeave { get; set; }
         public decimal? UnPaidLeave { get; set; }
+        public string? LeaveStartdate { get; set; }
+        public string? LeaveEnddate { get; set; }
+
     }
 
     public class getattendancegraph

@@ -187,71 +187,82 @@ namespace CRM.Controllers
 
                 if (id != null)
                 {
-                    DataTable dtEmployeeRecord = _ICrmrpo.GetEmployDetailById(id, Userid);
+                    var empid = await _context.EmployeeRegistrations
+                                               .Where(x => x.EmployeeId == id && x.Vendorid == adminlogin.Vendorid)
+                                               .FirstOrDefaultAsync();
 
-                    if (dtEmployeeRecord != null && dtEmployeeRecord.Rows.Count > 0)
+                    if (empid != null)
                     {
-                        DataRow row = dtEmployeeRecord.Rows[0] as DataRow; // Explicit cast to DataRow
-                        if (row != null)
-                        {
+                        DataTable dtEmployeeRecord = _ICrmrpo.GetEmployDetailById(id, Userid);
 
-                            ViewBag.First_Name = row["First_Name"].ToString();
-                            ViewBag.Middle_Name = row["Middle_Name"].ToString();
-                            ViewBag.Last_Name = row["Last_Name"].ToString();
-                            ViewBag.Date_Of_Joining = ((DateTime)row["Date_Of_Joining"]).ToString("yyyy-MM-dd");
-                            ViewBag.Work_Email = row["Work_Email"].ToString();
-                            ViewBag.Gender_ID = row["Gender_ID"].ToString();
-                            ViewBag.Work_Location_ID = row["Work_Location_ID"].ToString();
-                            ViewBag.Designation_ID = row["Designation_ID"].ToString();
-                            ViewBag.Department_ID = row["Department_ID"].ToString();
-                            ViewBag.CustomerID = row["Vendorid"].ToString();
-                            ViewBag.Basic = row["Basic"].ToString();
-                            ViewBag.AnnualCTC = row["AnnualCTC"].ToString();
-                            ViewBag.HouseRentAllowance = row["HouseRentAllowance"].ToString();
-                            ViewBag.TravellingAllowance = row["TravellingAllowance"].ToString();
-                            ViewBag.ESIC = row["ESIC"].ToString();
-                            ViewBag.EPF = row["EPF"].ToString();
-                            ViewBag.MonthlyGrossPay = row["MonthlyGrossPay"].ToString();
-                            ViewBag.MonthlyCTC = row["MonthlyCTC"].ToString();
-                            ViewBag.Personal_Email_Address = row["Personal_Email_Address"].ToString();
-                            ViewBag.Mobile_Number = row["Mobile_Number"].ToString();
-                            ViewBag.Date_Of_Birth = ((DateTime)row["Date_Of_Birth"]).ToString("yyyy-MM-dd");
-                            ViewBag.Age = row["Age"].ToString();
-                            ViewBag.Father_Name = row["Father_Name"].ToString();
-                            ViewBag.PAN = row["PAN"].ToString();
-                            ViewBag.Address_Line_1 = row["Address_Line_1"].ToString();
-                            ViewBag.Address_Line_2 = row["Address_Line_2"].ToString();
-                            ViewBag.City = row["City"].ToString();
-                            ViewBag.State_ID = row["State_ID"].ToString();
-                            ViewBag.Pincode = row["Pincode"].ToString();
-                            ViewBag.Account_Holder_Name = row["Account_Holder_Name"].ToString();
-                            ViewBag.Bank_Name = row["Bank_Name"].ToString();
-                            ViewBag.Account_Number = row["Account_Number"].ToString();
-                            ViewBag.Re_Enter_Account_Number = row["Re_Enter_Account_Number"].ToString();
-                            ViewBag.IFSC = row["IFSC"].ToString();
-                            ViewBag.Account_Type_ID = row["Account_Type_ID"].ToString();
-                            ViewBag.EPF_Number = row["EPF_Number"].ToString();
-                            ViewBag.Deduction_Cycle = row["Deduction_Cycle"].ToString();
-                            ViewBag.Employee_Contribution_Rate = row["Employee_Contribution_Rate"].ToString();
-                            ViewBag.Professionaltax = row["Professionaltax"].ToString();
-                            ViewBag.nominee = row["nominee"].ToString();
-                            ViewBag.servicecharge = row["servicecharge"].ToString();
-                            ViewBag.specialallowance = row["SpecialAllowance"].ToString();
-                            ViewBag.gross = row["gross"].ToString();
-                            ViewBag.Amount = 0;//row["Amount"].ToString();
-                            ViewBag.Tdspercentage = 0;//row["tdspercentage"].ToString();
-                            ViewBag.Offerletters = row["offerletterid"].ToString();
-                            ViewBag.statesy = row["stateId"].ToString();
-                            ViewBag.shifttype = row["officeshiftTypeid"].ToString();
-                            ViewBag.Emp_Reg_Code = id;
-                            ViewBag.btnText = "UPDATE";
+                        if (dtEmployeeRecord != null && dtEmployeeRecord.Rows.Count > 0)
+                        {
+                            DataRow row = dtEmployeeRecord.Rows[0] as DataRow; 
+                            if (row != null)
+                            {
+
+                                ViewBag.First_Name = row["First_Name"].ToString();
+                                ViewBag.Middle_Name = row["Middle_Name"].ToString();
+                                ViewBag.Last_Name = row["Last_Name"].ToString();
+                                ViewBag.Date_Of_Joining = ((DateTime)row["Date_Of_Joining"]).ToString("yyyy-MM-dd");
+                                ViewBag.Work_Email = row["Work_Email"].ToString();
+                                ViewBag.Gender_ID = row["Gender_ID"].ToString();
+                                ViewBag.Work_Location_ID = row["Work_Location_ID"].ToString();
+                                ViewBag.Designation_ID = row["Designation_ID"].ToString();
+                                ViewBag.Department_ID = row["Department_ID"].ToString();
+                                ViewBag.CustomerID = row["Vendorid"].ToString();
+                                ViewBag.Basic = row["Basic"].ToString();
+                                ViewBag.AnnualCTC = row["AnnualCTC"].ToString();
+                                ViewBag.HouseRentAllowance = row["HouseRentAllowance"].ToString();
+                                ViewBag.TravellingAllowance = row["TravellingAllowance"].ToString();
+                                ViewBag.ESIC = row["ESIC"].ToString();
+                                ViewBag.EPF = row["EPF"].ToString();
+                                ViewBag.MonthlyGrossPay = row["MonthlyGrossPay"].ToString();
+                                ViewBag.MonthlyCTC = row["MonthlyCTC"].ToString();
+                                ViewBag.Personal_Email_Address = row["Personal_Email_Address"].ToString();
+                                ViewBag.Mobile_Number = row["Mobile_Number"].ToString();
+                                ViewBag.Date_Of_Birth = ((DateTime)row["Date_Of_Birth"]).ToString("yyyy-MM-dd");
+                                ViewBag.Age = row["Age"].ToString();
+                                ViewBag.Father_Name = row["Father_Name"].ToString();
+                                ViewBag.PAN = row["PAN"].ToString();
+                                ViewBag.Address_Line_1 = row["Address_Line_1"].ToString();
+                                ViewBag.Address_Line_2 = row["Address_Line_2"].ToString();
+                                ViewBag.City = row["City"].ToString();
+                                ViewBag.State_ID = row["State_ID"].ToString();
+                                ViewBag.Pincode = row["Pincode"].ToString();
+                                ViewBag.Account_Holder_Name = row["Account_Holder_Name"].ToString();
+                                ViewBag.Bank_Name = row["Bank_Name"].ToString();
+                                ViewBag.Account_Number = row["Account_Number"].ToString();
+                                ViewBag.Re_Enter_Account_Number = row["Re_Enter_Account_Number"].ToString();
+                                ViewBag.IFSC = row["IFSC"].ToString();
+                                ViewBag.Account_Type_ID = row["Account_Type_ID"].ToString();
+                                ViewBag.EPF_Number = row["EPF_Number"].ToString();
+                                ViewBag.Deduction_Cycle = row["Deduction_Cycle"].ToString();
+                                ViewBag.Employee_Contribution_Rate = row["Employee_Contribution_Rate"].ToString();
+                                ViewBag.Professionaltax = row["Professionaltax"].ToString();
+                                ViewBag.nominee = row["nominee"].ToString();
+                                ViewBag.servicecharge = row["servicecharge"].ToString();
+                                ViewBag.specialallowance = row["SpecialAllowance"].ToString();
+                                ViewBag.gross = row["gross"].ToString();
+                                ViewBag.Amount = 0;//row["Amount"].ToString();
+                                ViewBag.Tdspercentage = 0;//row["tdspercentage"].ToString();
+                                ViewBag.Offerletters = row["offerletterid"].ToString();
+                                ViewBag.statesy = row["stateId"].ToString();
+                                ViewBag.shifttype = row["officeshiftTypeid"].ToString();
+                                ViewBag.Emp_Reg_Code = id;
+                                ViewBag.btnText = "UPDATE";
+
+                            }
 
                         }
-
+                    }
+                    else
+                    {
+                        TempData["Message"] = "Invalid Employee Id";
+                        return RedirectToAction("Employeelist");
                     }
                 }
                 return View();
-
             }
 
             else
@@ -1036,19 +1047,35 @@ namespace CRM.Controllers
         }
 
         //-----ImportToExcelEmployeeList
-        public IActionResult ImportToExcelEmployeeList()
+        public async Task<IActionResult> ImportToExcelEmployeeList()
         {
             try
             {
-                var response = _ICrmrpo.EmployeeListForExcel();
-                return File(response, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Employee_List.xlsx");
+                List<EmployeeImportExcel> response = new List<EmployeeImportExcel>();
+                string userIdString = HttpContext.Session.GetString("UserId");
+                response = await _ICrmrpo.EmployeeList();
+                if (!string.IsNullOrEmpty(userIdString) && int.TryParse(userIdString, out int id))
+                {
+                    var adminlogin = await _context.AdminLogins.Where(x => x.Id == id).FirstOrDefaultAsync(); // Await the async call
+
+                    if (adminlogin != null && id == 1) 
+                    {
+                        var response1 = _ICrmrpo.EmployeeListForExcel(response); 
+                        return File(response1, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Employee_List.xlsx");
+                    }
+                    ViewBag.UserName = HttpContext.Session.GetString("UserName");
+                    return View(response);
+                }
+
+                return View(response);
             }
             catch (Exception Ex)
             {
-                throw Ex;
+               
+                throw; 
             }
-
         }
+
         public JsonResult EditSalaryDetails(string EmployeeId)
         {
             var empSalaryDetail = new EmployeeSalaryDetail();
@@ -2354,7 +2381,7 @@ namespace CRM.Controllers
                         Text = D.EmployeeId
 
                     }).ToList();
-                    ViewBag.leavetype = _context.LeaveTypes.Select(D => new SelectListItem
+                    ViewBag.leavetype = _context.LeaveTypes.Where(x => x.Vendorid == adminlogin.Vendorid).Select(D => new SelectListItem
                     {
                         Value = D.Id.ToString(),
                         Text = D.Leavetype1
@@ -2385,7 +2412,7 @@ namespace CRM.Controllers
                         }
                     }
                     LeavemasterDto response = new LeavemasterDto();
-                    response.lmd = await _ICrmrpo.getLeavemaster(Userid);
+                    response.lmd = await _ICrmrpo.getLeavemaster(Userid,adminlogin.Vendorid);
                     return View(response);
                 }
                 else
@@ -2406,6 +2433,9 @@ namespace CRM.Controllers
 
             if (HttpContext.Session.GetString("UserName") != null)
             {
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+
                 var options = _context.EmployeeRegistrations
                  .Select(D => new SelectListItem
                  {
@@ -2437,6 +2467,7 @@ namespace CRM.Controllers
                         existingEntity.Createddate = DateTime.Now.Date;
                         existingEntity.LeaveStartDate = DateTime.Now.Date;
                         existingEntity.LeaveUpdateDate = DateTime.Now.Date;
+                        existingEntity.Vendorid = adminlogin.Vendorid;
                         _context.SaveChanges();
                         TempData["Message"] = "updok";
                     }
@@ -2454,6 +2485,8 @@ namespace CRM.Controllers
                         IsActive = true,
                         Createddate = DateTime.Now.Date,
                         LeaveUpdateDate = DateTime.Now.Date,
+                        Vendorid = adminlogin.Vendorid
+
                     };
 
 

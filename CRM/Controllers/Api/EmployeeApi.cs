@@ -397,11 +397,11 @@ namespace CRM.Controllers.Api
                     response.Data = new
                     {
                         TotalAttendance = $"{totalAttendanceDaysForYear} / {yearlyTotalAttendanceDays}",
-                        MonthlyAttendance = $"{presentDaysCount} / {daysInMonth}",
+                        Attendance = $"{presentDaysCount} / {daysInMonth}",
                         LeaveLeft = totalLeaveLeft,
                         Leave = totalLeaves,
-                        OfferLetterPath = offerLetterPath,
-                        AppointmentLetterPath = appointmentLetterPath
+                        offerletter = offerLetterPath,
+                        appointmentletter = appointmentLetterPath
                     };
                     response.StatusCode = StatusCodes.Status200OK;
                     response.Succeeded = true;
@@ -423,8 +423,6 @@ namespace CRM.Controllers.Api
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
-
-
         [Route("GetAllEmployeesalaryslip")]
         [HttpGet]
         public async Task<IActionResult> GetAllEmployeesalaryslip()
@@ -684,9 +682,109 @@ namespace CRM.Controllers.Api
         {
             return angle * (Math.PI / 180);
         }
+        //[AllowAnonymous]
+        //[HttpPost, Route("EmployeeCheckIn")]
+        //public async Task<IActionResult> EmployeeCheckIn([FromBody] CRM.Models.APIDTO.EmpCheckIn model)
+        //{
+        //    var response = new Response<EmployeeCheckIn>();
+        //    try
+        //    {
+        //        bool CheckIN = true;
+        //        bool isTest = false;
+        //        var employee = await _context.EmployeeRegistrations.FirstOrDefaultAsync(x => x.Id == model.Userid);
+        //        if (employee.EmployeeId == "NDT-1002")
+        //        {
+        //            isTest = true;
+        //        }
+        //        if (employee == null)
+        //        {
+        //            response.StatusCode = StatusCodes.Status404NotFound;
+        //            response.Message = "Employee not found.";
+        //            return NotFound(response);
+        //        }
+        //        var company = await _context.VendorRegistrations.FirstOrDefaultAsync(x => x.Id == employee.Vendorid);
+        //        if (company == null)
+        //        {
+        //            response.StatusCode = StatusCodes.Status404NotFound;
+        //            response.Message = "Company not found.";
+        //            return NotFound(response);
+        //        }
+
+        //        double radiusInMeters = (double)Convert.ToDecimal(company.Radious);
+        //        double distance = CalculateDistance(
+        //            double.Parse(company.Maplat),
+        //            double.Parse(company.Maplong),
+        //            double.Parse(model.CurrentLat),
+        //            double.Parse(model.Currentlong)
+        //        );
+        //        if (!isTest)
+        //        {
+        //            if (distance > radiusInMeters)
+        //            {
+        //                bool CheckIn = await _context.EmployeeCheckIns
+        //                    .Where(x => x.EmployeeId == employee.EmployeeId && x.Currentdate.Value.Date == DateTime.Now.Date)
+        //                    .OrderByDescending(x => x.Id)
+        //                    .AnyAsync();
+
+        //                if (CheckIn)
+        //                {
+        //                    var recentCheckIn = await _context.EmployeeCheckIns
+        //                        .Where(x => x.EmployeeId == employee.EmployeeId && x.Currentdate.Value.Date == DateTime.Now.Date)
+        //                        .OrderByDescending(x => x.Id)
+        //                        .FirstOrDefaultAsync();
+
+        //                    if (recentCheckIn != null && recentCheckIn.Breakin == true)
+        //                    {
+        //                        response.Succeeded = true;
+        //                        response.StatusCode = StatusCodes.Status200OK;
+        //                        response.Status = "Success";
+        //                        response.Message = "Check-Out successful.";
+        //                        return Ok(response);
+        //                    }
+
+        //                    CheckIN = false;
+        //                    var CCModel = await _apiemp.Empcheckin(model, CheckIN);
+        //                    response.Succeeded = true;
+        //                    response.StatusCode = StatusCodes.Status200OK;
+        //                    response.Status = "Success";
+        //                    response.Message = "Check-Out successful.";
+        //                    response.Data = CCModel;
+        //                    return Ok(response);
+        //                }
+
+        //                response.StatusCode = StatusCodes.Status404NotFound;
+        //                response.Message = $"Employee is not within the {radiusInMeters} meter radius of the company's location.";
+        //                return BadRequest(response);
+        //            }
+        //        }
+
+        //        var apiModel = await _apiemp.Empcheckin(model, CheckIN);
+        //        if (apiModel != null)
+        //        {
+        //            response.Succeeded = true;
+        //            response.StatusCode = StatusCodes.Status200OK;
+        //            response.Status = "Success";
+        //            response.Message = "Check-in successful.";
+        //            response.Data = apiModel;
+        //            return Ok(response);
+        //        }
+        //        else
+        //        {
+        //            response.StatusCode = StatusCodes.Status400BadRequest;
+        //            response.Message = "Check-in failed. Please check your input.";
+        //            return BadRequest(response);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        response.StatusCode = StatusCodes.Status500InternalServerError;
+        //        response.Message = "An error occurred: " + ex.Message;
+        //        return StatusCode(response.StatusCode, response);
+        //    }
+        //}
         [AllowAnonymous]
         [HttpPost, Route("EmployeeCheckIn")]
-        public async Task<IActionResult> EmployeeCheckIn([FromBody] EmpCheckIn model)
+        public async Task<IActionResult> EmployeeCheckIn([FromBody] CRM.Models.APIDTO.EmpCheckIn model)
         {
             var response = new Response<EmployeeCheckIn>();
             try
@@ -694,16 +792,19 @@ namespace CRM.Controllers.Api
                 bool CheckIN = true;
                 bool isTest = false;
                 var employee = await _context.EmployeeRegistrations.FirstOrDefaultAsync(x => x.Id == model.Userid);
-                if (employee.EmployeeId == "NDT-1002")
+
+                if (employee.EmployeeId == "NDT-1002") 
                 {
                     isTest = true;
                 }
+
                 if (employee == null)
                 {
                     response.StatusCode = StatusCodes.Status404NotFound;
                     response.Message = "Employee not found.";
                     return NotFound(response);
                 }
+
                 var company = await _context.VendorRegistrations.FirstOrDefaultAsync(x => x.Id == employee.Vendorid);
                 if (company == null)
                 {
@@ -719,54 +820,103 @@ namespace CRM.Controllers.Api
                     double.Parse(model.CurrentLat),
                     double.Parse(model.Currentlong)
                 );
+
                 if (!isTest)
                 {
                     if (distance > radiusInMeters)
                     {
-                        bool CheckIn = await _context.EmployeeCheckIns
-                            .Where(x => x.EmployeeId == employee.EmployeeId && x.Currentdate.Value.Date == DateTime.Now.Date)
-                            .OrderByDescending(x => x.Id)
-                            .AnyAsync();
+                        //bool CheckIn = await _context.EmployeeCheckIns
+                        //    .Where(x => x.EmployeeId == employee.EmployeeId && x.Currentdate.Value.Date == DateTime.Now.Date)
+                        //    .OrderByDescending(x => x.Id)
+                        //    .AnyAsync();
 
-                        if (CheckIn)
-                        {
-                            var recentCheckIn = await _context.EmployeeCheckIns
-                                .Where(x => x.EmployeeId == employee.EmployeeId && x.Currentdate.Value.Date == DateTime.Now.Date)
-                                .OrderByDescending(x => x.Id)
-                                .FirstOrDefaultAsync();
-
-                            if (recentCheckIn != null && recentCheckIn.Breakin == true)
-                            {
-                                response.Succeeded = true;
-                                response.StatusCode = StatusCodes.Status200OK;
-                                response.Status = "Success";
-                                response.Message = "Check-Out successful.";
-                                return Ok(response);
-                            }
-
-                            CheckIN = false;
-                            var CCModel = await _apiemp.Empcheckin(model, CheckIN);
-                            response.Succeeded = true;
-                            response.StatusCode = StatusCodes.Status200OK;
-                            response.Status = "Success";
-                            response.Message = "Check-Out successful.";
-                            response.Data = CCModel;
-                            return Ok(response);
-                        }
+                        //if (CheckIn)
+                        //{
+                        //    CheckIN = false;
+                        //    var CCModel = await _apiemp.Empcheckin(model, CheckIN);
+                        //    response.Succeeded = true;
+                        //    response.StatusCode = StatusCodes.Status200OK;
+                        //    response.Status = "Success";
+                        //    response.Message = "Check-Out successful.";
+                        //    response.Data = CCModel;
+                        //    return Ok(response);
+                        //}
 
                         response.StatusCode = StatusCodes.Status404NotFound;
                         response.Message = $"Employee is not within the {radiusInMeters} meter radius of the company's location.";
                         return BadRequest(response);
                     }
                 }
-                var apiModel = await _apiemp.Empcheckin(model, CheckIN);
-                if (apiModel != null)
+
+                var todayCheckInRecords = await _context.EmployeeCheckIns
+                    .Where(x => x.EmployeeId == employee.EmployeeId && x.Currentdate.Value.Date == DateTime.Now.Date)
+                    .OrderByDescending(x => x.Id)
+                    .ToListAsync();
+
+                var lastRecord = todayCheckInRecords.FirstOrDefault();
+
+                if (model.Breakin)
+                {
+                    if (lastRecord != null && (lastRecord.Breakin == true && lastRecord.Breakout == false))
+                    {
+                        response.StatusCode = StatusCodes.Status400BadRequest;
+                        response.Message = "You can't apply another break-in without a break-out.";
+                        return BadRequest(response);
+                    }
+
+                    var apiModel = await _apiemp.Empcheckin(model, CheckIN);
+                    if (apiModel != null)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = "Break-In applied successfully.";
+                        response.Data = apiModel;
+                        return Ok(response);
+                    }
+                    else
+                    {
+                        response.StatusCode = StatusCodes.Status400BadRequest;
+                        response.Message = "Unable to apply break-in. Please check your input.";
+                        return BadRequest(response);
+                    }
+                }
+
+                if (model.Breakout)
+                {
+                    if (lastRecord == null || lastRecord.Breakin == false || (lastRecord.Breakin == true && lastRecord.Breakout == true))
+                    {
+                        response.StatusCode = StatusCodes.Status400BadRequest;
+                        response.Message = "You can't break-out without a prior break-in.";
+                        return BadRequest(response);
+                    }
+
+                    var apiModel = await _apiemp.Empcheckin(model, CheckIN);
+                    if (apiModel != null)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = "Break-Out applied successfully.";
+                        response.Data = apiModel;
+                        return Ok(response);
+                    }
+                    else
+                    {
+                        response.StatusCode = StatusCodes.Status400BadRequest;
+                        response.Message = "Unable to apply break-out. Please check your input.";
+                        return BadRequest(response);
+                    }
+                }
+
+                var apiCheckInModel = await _apiemp.Empcheckin(model, CheckIN);
+                if (apiCheckInModel != null)
                 {
                     response.Succeeded = true;
                     response.StatusCode = StatusCodes.Status200OK;
                     response.Status = "Success";
                     response.Message = "Check-in successful.";
-                    response.Data = apiModel;
+                    response.Data = apiCheckInModel;
                     return Ok(response);
                 }
                 else
@@ -783,6 +933,7 @@ namespace CRM.Controllers.Api
                 return StatusCode(response.StatusCode, response);
             }
         }
+
         //Web
         [HttpPost, Route("WebEmployeePersonalDetail")]
         public async Task<IActionResult> WebEmployeePersonalDetail([FromForm] webPersonalDetail model)
@@ -849,7 +1000,7 @@ namespace CRM.Controllers.Api
         }
         [AllowAnonymous]
         [HttpPost, Route("EmployeeCheckOut")]
-        public async Task<IActionResult> EmployeeCheckOut([FromBody] EmpCheckIn model)
+        public async Task<IActionResult> EmployeeCheckOut([FromBody] CRM.Models.APIDTO.EmpCheckIn model)
         {
             var response = new Response<EmployeeCheckIn>();
             try
@@ -1334,47 +1485,47 @@ namespace CRM.Controllers.Api
             }
         }
 
-        //[Route("GetofficeEvents")]
-        //[HttpGet]
-        //public async Task<IActionResult> GetofficeEvents()
-        //{
-        //    var response = new Response<MeetEventsAndHolidayDto>();
-        //    try
-        //    {
-        //        if (User.Identity.IsAuthenticated)
-        //        {
-        //            var userid = User.Claims.FirstOrDefault().Value;
-        //            var isLoginExists = await _apiemp.GetOfficeEvents(userid);
-        //            if (isLoginExists != null)
-        //            {
-        //                response.Succeeded = true;
-        //                response.StatusCode = StatusCodes.Status200OK;
-        //                response.Status = "Success";
-        //                response.Message = "upcoming or past events found.";
-        //                response.Data = isLoginExists;
-        //                return Ok(response);
-        //            }
-        //            else
-        //            {
-        //                response.StatusCode = StatusCodes.Status401Unauthorized;
-        //                response.Message = "Data not found.";
-        //                return Ok(response);
-        //            }
-        //        }
-        //        else
-        //        {
-        //            response.StatusCode = StatusCodes.Status401Unauthorized;
-        //            response.Message = "Token is expired.";
-        //            return BadRequest(response);
-        //        }
+        [Route("GetHolidayandEvents")]
+        [HttpGet]
+        public async Task<IActionResult> GetHolidayandEvents()
+        {
+            var response = new Response<MeetEventsAndHolidayDto>();
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userid = User.Claims.FirstOrDefault().Value;
+                    var isLoginExists = await _apiemp.GetholidayandEvents(userid);
+                    if (isLoginExists != null)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = "upcoming or past events found.";
+                        response.Data = isLoginExists;
+                        return Ok(response);
+                    }
+                    else
+                    {
+                        response.StatusCode = StatusCodes.Status401Unauthorized;
+                        response.Message = "Data not found.";
+                        return Ok(response);
+                    }
+                }
+                else
+                {
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Message = "Token is expired.";
+                    return BadRequest(response);
+                }
 
 
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new Exception(ex.Message);
-        //    }
-        //}
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
         [Route("GetofficeEvents")]
         [HttpGet]
         public async Task<IActionResult> GetofficeEvents()
@@ -1835,8 +1986,6 @@ namespace CRM.Controllers.Api
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
-
-
         private async Task<string> StartOverTime(string employeeId, int officeShiftId, DateTime currentDate)
         {
             var checkInData = await _context.EmployeeCheckInRecords
@@ -1862,6 +2011,106 @@ namespace CRM.Controllers.Api
             }
         }
 
+        [AllowAnonymous]
+        [HttpPost, Route("UpdateEmployeeLocation")]
+        public async Task<IActionResult> UpdateEmployeeLocation([FromBody] CRM.Models.APIDTO.EmpCheckIn model)
+        {
+            var response = new Response<EmployeeCheckIn>();
+            try
+            {
+                bool CheckIN = true;
+                bool isTest = false;
+
+                var employee = await _context.EmployeeRegistrations.FirstOrDefaultAsync(x => x.Id == model.Userid);
+                if (employee == null)
+                {
+                    response.StatusCode = StatusCodes.Status404NotFound;
+                    response.Message = "Employee not found.";
+                    return NotFound(response);
+                }
+
+                if (employee.EmployeeId == "NDT-1002")
+                {
+                    isTest = true;
+                }
+
+                var company = await _context.VendorRegistrations.FirstOrDefaultAsync(x => x.Id == employee.Vendorid);
+                if (company == null)
+                {
+                    response.StatusCode = StatusCodes.Status404NotFound;
+                    response.Message = "Company not found.";
+                    return NotFound(response);
+                }
+
+                double radiusInMeters = (double)Convert.ToDecimal(company.Radious);
+                double distance = CalculateDistance(
+                    double.Parse(company.Maplat),
+                    double.Parse(company.Maplong),
+                    double.Parse(model.CurrentLat),
+                    double.Parse(model.Currentlong)
+                );
+
+                bool checkInExists = await _context.EmployeeCheckIns
+                    .Where(x => x.EmployeeId == employee.EmployeeId && x.Currentdate.Value.Date == DateTime.Now.Date)
+                    .OrderByDescending(x => x.Id)
+                    .AnyAsync();
+
+                if (!isTest && distance > radiusInMeters)
+                {
+                    if (checkInExists)
+                    {
+                        CheckIN = false;
+                        var CCModel = await _apiemp.UpdateEmpLocation(model, CheckIN);
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = "Check-Out successful.";
+                        response.Data = CCModel;
+                        return Ok(response);
+                    }
+
+                    response.StatusCode = StatusCodes.Status404NotFound;
+                    response.Message = $"Employee is not within the {radiusInMeters} meter radius of the company's location.";
+                    return BadRequest(response);
+                }
+                else
+                {
+                    if (checkInExists)
+                    {
+                        var apiCheckInModel = await _apiemp.UpdateEmpLocation(model, CheckIN);
+                        if (apiCheckInModel != null)
+                        {
+                            response.Succeeded = true;
+                            response.StatusCode = StatusCodes.Status200OK;
+                            response.Status = "Success";
+                            response.Message = "Check-in successful.";
+                            response.Data = apiCheckInModel;
+                            return Ok(response);
+                        }
+                        else
+                        {
+                            response.StatusCode = StatusCodes.Status400BadRequest;
+                            response.Message = "Check-in failed. Please check your input.";
+                            return BadRequest(response);
+                        }
+                    }
+                    else
+                    {
+                        response.StatusCode = StatusCodes.Status400BadRequest;
+                        response.Message = "No existing check-in record found for today.";
+                        return BadRequest(response);
+                    }
+                }
+
+              
+            }
+            catch (Exception ex)
+            {
+                response.StatusCode = StatusCodes.Status500InternalServerError;
+                response.Message = "An error occurred: " + ex.Message;
+                return StatusCode(response.StatusCode, response);
+            }
+        }
 
     }
 }

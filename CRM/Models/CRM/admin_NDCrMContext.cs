@@ -39,6 +39,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<DemoRequest> DemoRequests { get; set; } = null!;
         public virtual DbSet<DepartmentMaster> DepartmentMasters { get; set; } = null!;
         public virtual DbSet<DesignationMaster> DesignationMasters { get; set; } = null!;
+        public virtual DbSet<EmpCheckIn> EmpCheckIns { get; set; } = null!;
         public virtual DbSet<EmpExperienceletter> EmpExperienceletters { get; set; } = null!;
         public virtual DbSet<EmpTasksList> EmpTasksLists { get; set; } = null!;
         public virtual DbSet<Empattendance> Empattendances { get; set; } = null!;
@@ -532,6 +533,33 @@ namespace CRM.Models.Crm
                     .HasColumnName("Designation_Name");
             });
 
+            modelBuilder.Entity<EmpCheckIn>(entity =>
+            {
+                entity.ToTable("EmpCheckIn");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.CheckInTime).HasColumnType("datetime");
+
+                entity.Property(e => e.CheckOutTime).HasColumnType("datetime");
+
+                entity.Property(e => e.CurrentLat)
+                    .HasMaxLength(200)
+                    .HasColumnName("currentLat");
+
+                entity.Property(e => e.Currentdate)
+                    .HasColumnType("datetime")
+                    .HasColumnName("currentdate");
+
+                entity.Property(e => e.Currentlong)
+                    .HasMaxLength(200)
+                    .HasColumnName("currentlong");
+
+                entity.Property(e => e.EmployeeId)
+                    .HasMaxLength(200)
+                    .HasColumnName("Employee_ID");
+            });
+
             modelBuilder.Entity<EmpExperienceletter>(entity =>
             {
                 entity.ToTable("EmpExperienceletter");
@@ -911,6 +939,8 @@ namespace CRM.Models.Crm
                 entity.ToTable("Employee_Login", "dbo");
 
                 entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.Deviceid).HasMaxLength(250);
 
                 entity.Property(e => e.EmployeeId)
                     .HasMaxLength(200)
@@ -1362,6 +1392,8 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.Id).HasColumnName("ID");
 
                 entity.Property(e => e.Value).HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.Vendorid).HasColumnName("vendorid");
             });
 
             modelBuilder.Entity<List>(entity =>

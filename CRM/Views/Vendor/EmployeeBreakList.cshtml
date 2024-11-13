@@ -1,7 +1,7 @@
-﻿@model CRM.Models.DTO.EmployeeAttendanceDto
+﻿@model CRM.Models.DTO.EmployeeBreakDto
 
 @{
-    ViewData["Title"] = "EmployeeAttendance";
+    ViewData["Title"] = "EmployeeBreakList";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
 
@@ -46,7 +46,7 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-body">
-                                <img src="~/image/execimage.png" style="height:50px; margin-left:96%;width:53px;cursor:pointer" title="Export To Excel" onclick="AttendanceExportExcelfn()" />
+                                <img src="~/image/execimage.png" style="height:50px; margin-left:96%;width:53px;cursor:pointer" title="Export To Excel" onclick="BreakinExportExcelfn()" />
                                 <div class=" table-responsive">
                                     <table id="datatable" class="table table-hover">
                                         <thead>
@@ -59,19 +59,19 @@
                                                     Employee Name
                                                 </th>
                                                 <th nowrap>
-                                                    Check-In Time
+                                                    Break-In Time
                                                 </th>
                                                 <th nowrap>
-                                                    Check-Out Time
+                                                    Break-Out Time
                                                 </th>
-                                                <th nowrap>Working Hours</th>
+                                                <th nowrap>Break Hours</th>
                                                 <th nowrap>Current Date</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @{
                                                 var count = 0;
-                                                foreach (var item in Model.detail)
+                                                foreach (var item in Model.Breakdetail)
                                                 {
                                                     count++;
                                                     <tr class="table-row">
@@ -83,13 +83,13 @@
                                                             @Html.DisplayFor(modelItem => item.EmployeeName)
                                                         </td>
                                                         <td nowrap>
-                                                            @item.CheckIntime
+                                                            @item.BreakIntime
                                                         </td>
                                                         <td nowrap>
-                                                            @item.CheckOuttime
+                                                            @item.BreakOuttime
                                                         </td>
                                                         <td>
-                                                            @item.Workinghour
+                                                            @item.Breakhour
                                                         </td>
                                                         <td nowrap>
                                                             @item.CurrentDate
@@ -113,7 +113,8 @@
     $(document).ready(function () {
         $('#datatable').DataTable();
     });
-     function AttendanceExportExcelfn() {
-        window.location.href = '/Vendor/ExportAttendanceReport';
+    function BreakinExportExcelfn() {
+        window.location.href = '/Vendor/ExportBreakinReport';
     }
+
 </script>
