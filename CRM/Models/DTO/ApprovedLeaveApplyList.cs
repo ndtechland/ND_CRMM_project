@@ -9,8 +9,8 @@
         public string? LeaveType { get; set; }
         public decimal? TotalLeaves { get; set; }
         public string TypeOfLeaveId { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
         public DateTime CreatedDate { get; set; }
         public decimal UnPaidCountLeave { get; set; }
         public string? Month { get; set; }

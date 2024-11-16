@@ -42,6 +42,14 @@ namespace CRM.Models.DTO
         public string? Ifsc { get; set; }
         public string? AccountHolderName { get; set; }
         public string? BranchAddress { get; set; }
+        public string? Paymentstatus { get; set; }
+        public int? Paymentid { get; set; }
+
+        public decimal? DueAmount { get; set; }
+        public decimal? PaidAmount { get; set; }
+        public decimal? TotalAmount { get; set; }
+        public DateTime? Dueamountdate { get; set; }
+
         public List<ProductDetail> ProductDetails { get; set; }
         public List<ProductDetailList> ProductDetailLists { get; set; }
         public List<CustomerInvoice> customerInvoice { get; set; }
@@ -63,6 +71,8 @@ namespace CRM.Models.DTO
         public decimal? SGST { get; set; }
         public decimal? CGST { get; set; }
         public string? InvoiceNumber { get; set; }
+        public DateTime? Dueamountdate { get; set; }
+
     }
 
     public class ProductDetailList
@@ -78,6 +88,10 @@ namespace CRM.Models.DTO
         public int? NoOfRenewMonth { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? RenewDate { get; set; }
+        public decimal? DueAmount { get; set; }
+        public decimal? PaidAmount { get; set; }
+        public DateTime? Dueamountdate { get; set; }
+
     }
 
 }

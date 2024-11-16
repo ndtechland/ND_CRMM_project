@@ -70,10 +70,10 @@
                     </div>
                     <a href="/Sale/Invoice" class="btn btn-primary"><i class="fa fa-plus"></i> Add More</a>
                 </div>
-                
+
             </div>
-           
-            
+
+
             <!-- Container-fluid Ends-->
             <!-- Container-fluid starts-->
             <div class="container-fluid">
@@ -94,44 +94,46 @@
                                                 <th nowrap>
                                                     Mobile Number
                                                 </th>
-                                                <th nowrap>
-                                                    Alternate Number
-                                                </th>
+                                                @*   <th nowrap>
+                                                Alternate Number
+                                                </th> *@
                                                 <th nowrap>
                                                     Email Id
                                                 </th>
                                                 <th nowrap>
-                                                    Office Location
-                                                </th>
-                                               
-                                                <th nowrap>
-                                                    Billing Location
-                                                </th>
-                                                
-                                                @* <th nowrap>
-                                                    Product Name
+                                                   Due Date
                                                 </th>
                                                 <th nowrap>
-                                                    Start Date
+                                                    Office State
                                                 </th>
                                                 <th nowrap>
-                                                    Renew Date
+                                                    Billing State
                                                 </th>
                                                 <th nowrap>
-                                                    Product Price
+                                                    IGST
                                                 </th>
                                                 <th nowrap>
-                                                    Product Renew Price
-                                                </th>
-                                                <th nowrap>
-                                                    SCGST
+                                                    SGST
                                                 </th>
                                                 <th nowrap>
                                                     CGST
                                                 </th>
                                                 <th nowrap>
-                                                    IGST
-                                                </th> *@
+                                                    Total Payment
+                                                </th>
+
+                                                <th nowrap>
+                                                    Due Payment
+                                                </th>
+                                                <th nowrap>
+                                                    Paid Payment
+                                                </th>
+                                                <th nowrap>
+                                                    Update Payment Status
+                                                </th>
+                                                <th nowrap>
+
+                                                </th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -150,55 +152,110 @@
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.MobileNumber)
                                                         </td>
-                                                        <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.AlternateNumber)
-                                                        </td>
+                                                        @* <td nowrap>
+                                                @Html.DisplayFor(modelItem => item.AlternateNumber)
+                                                </td>*@
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.Email)
                                                         </td>
                                                         <td nowrap>
-                                                            @item.OfficeAddress, @item.OfficeCity, @item.OfficeState
+                                                            @Html.DisplayFor(modelItem => item.Dueamountdate)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @item.OfficeState
                                                         </td>
 
                                                         <td nowrap>
-                                                            @item.BillingAddress, @item.BillingCity, @item.BillingState
-                                                        </td>
-                                                        @*<td>
-                                                            @Html.DisplayFor(modelItem => item.ProductName)
+                                                            @item.BillingState
                                                         </td>
                                                         <td nowrap>
-                                                            @item.StartDate
+                                                            @(item.IGST.HasValue ? $"{item.IGST}%" : "")
                                                         </td>
                                                         <td nowrap>
-                                                            @item.RenewDate
+                                                            @(item.SGST.HasValue ? $"{item.SGST}%" : "")
+                                                        </td>
+                                                        <td nowrap>
+                                                            @(item.CGST.HasValue ? $"{item.CGST}%" : "")
+                                                        </td>
+                                                        <td nowrap>
+                                                            @item.TotalAmount
+                                                        </td>
+                                                        <td nowrap>
+                                                            @item.DueAmount
+                                                        </td>
+                                                        <td nowrap>
+                                                            @item.PaidAmount
                                                         </td>
                                                         <td>
-                                                            @Html.DisplayFor(modelItem => item.ProductPrice)
+                                                            @if (item.Paymentid != 1)
+                                                            {
+                                                                if (item.Paymentid == 2 || item.Paymentid == 4)
+                                                                {
+                                                                    <select name="Paymentstatus"
+                                                                            class="form-control Paymentmode-dropdown"
+                                                                            id="ddPaymentmodeid_@item.InvoiceId"
+                                                                            style="height: 40px; width: 139px;"
+                                                                            onchange="handlePaymentTypeChange(@item.InvoiceId)">
+                                                                        <option value="0">-- Select Payment Type --</option>
+                                                                        @foreach (var shift in ViewBag.Paymentmode)
+                                                                        {
+                                                                            <option value="@shift.Value">@shift.Text</option>
+                                                                        }
+                                                                    </select>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <select name="Paymentstatus"
+                                                                            class="form-control Paymentmode-dropdown"
+                                                                            id="ddPaymentmodeid_@item.InvoiceId"
+                                                                            style="height: 40px; width: 139px;"
+                                                                            onchange="handlePaymentTypeChange(@item.InvoiceId)">
+                                                                        <option value="0">-- Select Payment Type --</option>
+                                                                        @foreach (var shift in ViewBag.Paymentmode)
+                                                                        {
+                                                                            <option value="@shift.Value">@shift.Text</option>
+                                                                        }
+                                                                    </select>
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                <select name="Paymentstatus"
+                                                                        class="form-control Paymentmode-dropdown"
+                                                                        id="ddPaymentmodeid_@item.InvoiceId"
+                                                                        style="height: 40px; width: 139px;"
+                                                                        disabled>
+                                                                    <option value="0">-- Select Payment Type --</option>
+                                                                    @foreach (var shift in ViewBag.Paymentmode)
+                                                                    {
+                                                                        <option value="@shift.Value">@shift.Text</option>
+                                                                    }
+                                                                </select>
+                                                            }
+                                                          
                                                         </td>
+
                                                         <td>
-                                                            @Html.DisplayFor(modelItem => item.RenewPrice)
+                                                            <form autocomplete="off">
+                                                                <input type="text" id="inputBox_@item.InvoiceId" style="display:none; width: 100px; height: 30px;" placeholder="Enter Amount" onkeyup="fncamount(this, @item.TotalAmount, @item.DueAmount)" required />
+                                                                <button type="button" class="btn btn-primary submit-payment" id="submitBtn_@item.InvoiceId" data-invoiceid="@item.InvoiceId" style="height: 40px; display:none;" onclick="updateCustomerInvoiceAmount(@item.InvoiceId)">Submit</button>
+                                                            </form>
                                                         </td>
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => item.SGST) %
-                                                        </td>
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => item.CGST) %
-                                                        </td>
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => item.IGST) %
-                                                        </td>
-                                                        *@
-                                                       
-                                                        <td>
+
+                                                        <td nowrap>
                                                             <div>
-                                                                <a href="/Sale/Invoice?InvoiceNumber=@item.InvoiceNumber" class="fa fa-edit m-2 font-success"></a>
+                                                                @if (item.Paymentid != 1)
+                                                                {
+                                                                    <a href="/Sale/Invoice?InvoiceNumber=@item.InvoiceNumber" class="fa fa-edit m-2 font-success"></a>
 
-                                                                <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteCustomerInvoice", "Sale", new { InvoiceNumber = item.InvoiceNumber })')" class="fa fa-trash font-danger" ></a>
+                                                                }
                                                                 <a href="@Url.Action("SendInvoicePDF", "Sale", new { InvoiceNumber = item.InvoiceNumber })"
                                                                    class="fa fa-envelope m-2 font-info"
                                                                    title="Send Email"></a>
+                                                                <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteCustomerInvoice", "Sale", new { InvoiceNumber = item.InvoiceNumber })')" class="fa fa-trash font-danger"></a>
 
-                                                                </div>
+
+                                                            </div>
                                                         </td>
                                                     </tr>
                                                 }
@@ -214,7 +271,7 @@
                 </div>
             </div>
             @* <div id="pagination-container">
-                <ul id="pagination" class="pagination"></ul>
+            <ul id="pagination" class="pagination"></ul>
             </div> *@
         </div>
 
@@ -307,3 +364,167 @@
         $('#datatable').DataTable();
     });
 </script>
+
+
+<script>
+    function bindpaymenttype(ShiftTypeid, itemId) {
+        var dropdownforpaymenttype = $("#ddPaymentmodeid_" + itemId);
+
+        if (itemId !== "0" && itemId !== "") {
+            dropdownforpaymenttype.val(ShiftTypeid);
+
+            if (ShiftTypeid != 1) {
+                toggleInputBoxBasedOnPaymentType(itemId);
+            }
+        }
+    }
+
+    function toggleInputBoxBasedOnPaymentType(itemId) {
+        var selectedPaymentType = $("#ddPaymentmodeid_" + itemId).val();
+
+        if (parseInt(selectedPaymentType) === 1) {
+            $("#inputBox_" + itemId).show();
+            $("#submitBtn_" + itemId).show();
+        } else if (parseInt(selectedPaymentType) === 3) {
+            $("#inputBox_" + itemId).show();
+            $("#submitBtn_" + itemId).show();
+        } else {
+            $("#inputBox_" + itemId).hide();
+            $("#submitBtn_" + itemId).hide();
+        }
+    }
+
+    function handlePaymentTypeChange(itemId) {
+        var paymentType = $("#ddPaymentmodeid_" + itemId).val();
+
+        // Show or hide the amount input field based on payment type
+        if (paymentType == 1 || paymentType == 3) {
+            $("#inputBox_" + itemId).show();
+            $("#submitBtn_" + itemId).show();
+        } else {
+            $("#inputBox_" + itemId).hide();
+            $("#submitBtn_" + itemId).hide();
+            updateCustomerInvoiceAmount(itemId); // Automatically update for other payment types
+        }
+    }
+
+    function updateCustomerInvoiceAmount(itemId) {
+        var paymentType = $("#ddPaymentmodeid_" + itemId).val();
+        var paidAmount = $("#inputBox_" + itemId).val() || 0;
+        var invoiceId = itemId;
+
+        // Check if payment type requires an amount (i.e., Paymentid 1 and 3)
+        if ((paymentType == 1 || paymentType == 3) && (isNaN(paidAmount) || paidAmount <= 0)) {
+            alert('Please enter a valid paid amount.');
+            return;
+        }
+
+        var data = {
+            InvoiceId: invoiceId,
+            Paymentid: paymentType,
+            PaidAmount: parseFloat(paidAmount)
+        };
+
+        console.log(data);
+
+        $.ajax({
+            url: '@Url.Action("UpdateCustomerInvoiceamount", "Sale")',
+            type: 'POST',
+            data: data,
+            success: function (response) {
+                if (response.success) {
+                    alert(response.message);
+                    location.reload(); // Reload the page to reflect changes
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+                alert('An error occurred while updating the payment information.');
+            }
+        });
+    }
+
+    $(document).ready(function () {
+    @foreach (var item in Model)
+    {
+        <text>
+                    bindpaymenttype('@item.Paymentid', '@item.InvoiceId');
+        </text>
+    }
+
+            $(".Paymentmode-dropdown").change(function () {
+                var itemId = $(this).attr('id').split('_')[1];
+                toggleInputBoxBasedOnPaymentType(itemId);
+            });
+
+        $(".submit-payment").click(function () {
+            var itemId = $(this).data('invoiceid');
+            updateCustomerInvoiceAmount(itemId);
+        });
+
+        var userpaymenttype = '@ViewBag.PaymentTypelist';
+        if (userpaymenttype != "") {
+            bindpaymenttype(userpaymenttype);
+        }
+        else {
+            bindpaymenttype("");
+        }
+    });
+
+</script>
+
+
+<script type="text/javascript">
+    function fncamount(inputElement, maxLimit, duemaxLimit) {
+        var value = inputElement.value.trim();
+
+        // Check if the input value is a valid number
+        if (isNaN(value) || value === '') {
+            Swal.fire({
+                title: 'Error',
+                text: 'Please enter a valid number.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            inputElement.value = '';
+            return;
+        }
+
+        // Convert the value to a float for comparison
+        var numericValue = parseFloat(value);
+
+        // Validate that the value is not negative
+        if (numericValue < 0) {
+            Swal.fire({
+                title: 'Error',
+                text: 'Amount cannot be negative.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            inputElement.value = '';
+            return;
+        }
+
+        // Check if duemaxLimit is 0, then use maxLimit as the primary validation
+        var effectiveLimit = duemaxLimit > 0 ? duemaxLimit : maxLimit;
+
+        // Validate against the effective limit (either Due Amount or Total Amount)
+        if (numericValue > effectiveLimit) {
+            Swal.fire({
+                title: 'Error',
+                text: `Payment cannot exceed the allowed amount of ${effectiveLimit}.`,
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            inputElement.value = '';
+            return;
+        }
+
+        // If the input passes all checks, it is valid
+        console.log(`Valid input: ${numericValue}`);
+    }
+
+</script>
+

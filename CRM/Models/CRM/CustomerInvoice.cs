@@ -21,5 +21,9 @@ namespace CRM.Models.Crm
         public DateTime? CreatedDate { get; set; }
         public string? InvoiceNumber { get; set; }
         public string? Description { get; set; }
+        public int? Paymentstatus { get; set; }
+        public decimal? DueAmount { get; set; }
+        public decimal? PaidAmount { get; set; }
+        public DateTime? Dueamountdate { get; set; }
     }
 }

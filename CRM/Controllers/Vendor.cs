@@ -1894,55 +1894,6 @@ namespace CRM.Controllers
             }
         }
 
-        //public async Task<IActionResult> UpdateLeaveApplyStatus(int Id)
-        //{
-        //    var leave = await _context.ApplyLeaveNews.FirstOrDefaultAsync(x => x.Id == Id);
-        //    var empinfo = await _context.EmployeeRegistrations.FirstOrDefaultAsync(x => x.EmployeeId == leave.UserId);
-        //    var emppersonalinfo = await _context.EmployeePersonalDetails.FirstOrDefaultAsync(x => x.EmpRegId == leave.UserId);
-
-        //    if (leave == null)
-        //    {
-        //        TempData["msg"] = "Data not found!";
-        //        return RedirectToAction("ApprovedLeaveApply");
-        //    }
-
-        //    leave.Isapprove = !leave.Isapprove;
-        //    await _context.SaveChangesAsync();
-
-        //    string subject;
-        //    string emailBody;
-
-
-        //    if (leave.Isapprove == true)
-        //    {
-        //        subject = "Leave Approval Accepted";
-        //        emailBody = $"Dear {empinfo.FirstName} {empinfo.MiddleName} {empinfo.LastName},\n\nYour leave application has been approved.";
-        //    }
-        //    else
-        //    {
-        //        subject = "Leave Approval Rejected";
-        //        emailBody = $"Dear {empinfo.FirstName} {empinfo.MiddleName} {empinfo.LastName},\n\nWe regret to inform you that your leave application has been rejected.";
-        //    }
-
-        //    try
-        //    {
-        //        await _emailService.SendEmpLeaveApprovalEmailAsync(emppersonalinfo.PersonalEmailAddress, empinfo.FirstName, empinfo.MiddleName, empinfo.LastName, subject, emailBody);
-
-        //        TempData["msg"] = (bool)leave.Isapprove
-        //            ? "Approval status updated successfully and approval email sent!"
-        //            : "Approval status updated successfully and rejection email sent!";
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        TempData["msg"] = (bool)leave.Isapprove
-        //            ? "Approval status updated successfully, but failed to send approval email."
-        //            : "Approval status updated successfully, but failed to send rejection email.";
-
-        //    }
-
-        //    return RedirectToAction("ApprovedLeaveApply");
-        //}
-
         public async Task<IActionResult> UpdateLeaveApplyStatus(int Id)
         {
             var leave = await _context.ApplyLeaveNews.FirstOrDefaultAsync(x => x.Id == Id);
@@ -3314,7 +3265,7 @@ namespace CRM.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
-
+        
     }
 }
 

@@ -35,23 +35,89 @@ namespace CRM.Controllers
             {
                 ViewBag.ContactCount = await _context.ContactUs.CountAsync();
                 int UserId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
-                var adminlogin = await _context.AdminLogins.Where(x => x.Id == UserId).FirstOrDefaultAsync();
-                ViewBag.Professional = await _context.VendorRegistrations.Where(x => x.Id == adminlogin.Vendorid).Select(x => x.Isprofessionaltax).FirstOrDefaultAsync();
-                ViewBag.VendorInvoice = await _context.VendorRegistrations.Where(x => x.Isactive == true).CountAsync();
-                ViewBag.Product = await _context.ProductMasters.CountAsync();
                 ViewBag.DemoRequest = await _context.DemoRequests.CountAsync();
                 ViewBag.HelpCenters = await _context.HelpCenters.CountAsync();
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == UserId).FirstOrDefaultAsync();
+
+                //VendorDashboard
+                ViewBag.Professional = await _context.VendorRegistrations.Where(x => x.Id == adminlogin.Vendorid).Select(x => x.Isprofessionaltax).FirstOrDefaultAsync();
+                // Customerlist
+                ViewBag.Customer = await _context.CustomerRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).CountAsync();
+                // VendorInvoice
+                ViewBag.VendorInvoice = await _context.VendorRegistrations.Where(x => x.Isactive == true).CountAsync();
+                // VendorProduct
                 ViewBag.VendorProduct = await _context.VendorProductMasters.Where(x => x.VendorId == adminlogin.Vendorid && x.IsActive == true).CountAsync();
+                // CustomerInvoices
                 ViewBag.CustomerInvoices = await _context.CustomerInvoices.Where(x => x.VendorId == adminlogin.Vendorid).GroupBy(x => x.InvoiceNumber).CountAsync();
+
                 var emplist = await _context.EmployeeRegistrations
                             .Where(x => x.Vendorid == adminlogin.Vendorid)
                             .ToListAsync();
+                //onBreakList
                 ViewBag.onBreakList = emplist.Count(x => _context.EmployeeCheckIns
                     .Any(y => y.EmployeeId == x.EmployeeId && y.Breakin == true
                              && y.Currentdate.Value.Date == DateTime.Now.Date));
+                //Checkin
                 ViewBag.Checkin = emplist.Count(x => _context.EmployeeCheckIns
                  .Any(y => y.EmployeeId == x.EmployeeId && y.CheckIn == true
                           && y.Currentdate.Value.Date == DateTime.Now.Date));
+                //ABSENT
+                ViewBag.ABSENT = emplist.Count(x => _context.EmployeeCheckInRecords
+               .Any(y => y.EmpId == x.EmployeeId && y.CurrentDate.Value.Date == DateTime.Now.Date));
+                ViewBag.Vendorlist = await _context.VendorRegistrations.CountAsync();
+                //Employee
+                ViewBag.Employee = emplist.Count();
+                //Holidays
+                ViewBag.Holidays = await _context.OfficeEvents
+     .Where(x => x.Vendorid == adminlogin.Vendorid && x.Date >= DateTime.Now.Date)
+     .Select(x => new
+     {
+         Subtittle = x.Subtittle,
+         Date = x.Date
+     })
+     .OrderByDescending(x => x.Date)
+     .ToListAsync();
+
+                ViewBag.Announcements = await _context.EventsmeetSchedulers
+    .Where(x => x.Vendorid == adminlogin.Vendorid)
+    .Select(x => new
+    {
+        Title = x.Tittle,
+        Date = x.ScheduleDate,
+        time = x.Time
+    })
+    .OrderByDescending(x => x.Date)
+    .ToListAsync();
+                //LeaveList
+                ViewBag.onLeaveList = emplist.Count(x => _context.ApplyLeaveNews
+     .Any(y => y.UserId == x.EmployeeId
+               && y.Isapprove == true
+               && y.StartDate.Date <= DateTime.Now.Date
+               && y.EndDate.Date >= DateTime.Now.Date));
+                //workingHours
+                var today = DateTime.Today;
+                var firstDayOfMonth = new DateTime(today.Year, today.Month, 1);
+                var records = _context.EmployeeCheckInRecords
+                    .Where(record => record.CurrentDate.HasValue &&
+                                    record.CurrentDate.Value.Date >= firstDayOfMonth &&
+                                    record.CurrentDate.Value.Date <= today)
+                    .AsEnumerable()
+                    .GroupBy(record => record.CurrentDate.Value.Date) 
+                    .ToList(); 
+
+                var workingHoursDates = records
+                    .Select(group => group.Key.ToString("yyyy-MM-dd"))
+                    .ToList();
+
+                var workingHoursData = records
+                    .Select(group => group.Sum(record =>
+                            (record.CheckOuttime.HasValue && record.CheckIntime.HasValue)
+                                ? (record.CheckOuttime.Value - record.CheckIntime.Value).TotalHours
+                                : 0))
+                    .ToList();
+                ViewBag.WorkingHoursDates = workingHoursDates;
+                ViewBag.WorkingHoursData = workingHoursData;
+
 
                 return View();
             }
@@ -2196,5 +2262,42 @@ namespace CRM.Controllers
                 throw;
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> GetPaymentStatusData(int? year = null)
+        {
+            using (var context = new admin_NDCrMContext())
+            {
+                int currentYear = year ?? DateTime.Now.Year;
+
+                var data = await (from invoice in context.CustomerInvoices
+                                  join mode in context.Paymentmodes
+                                  on invoice.Paymentstatus equals mode.Id
+                                  where invoice.CreatedDate.HasValue && invoice.CreatedDate.Value.Year == currentYear
+                                  group new { invoice, mode } by new
+                                  {
+                                      Month = invoice.CreatedDate.Value.Month,
+                                      Year = invoice.CreatedDate.Value.Year,
+                                      invoice.Paymentstatus,
+                                      mode.PaymentType
+                                  } into g
+                                  select new
+                                  {
+                                      Month = g.Key.Month,
+                                      Year = g.Key.Year,
+                                      PaymentStatus = g.Key.Paymentstatus,
+                                      PaymentMode = g.Key.PaymentType,
+                                      Count = g.Count()
+                                  }).ToListAsync();
+
+                if (data.Count == 0)
+                {
+                    Console.WriteLine("No data found for the year: " + currentYear);
+                }
+
+                return Ok(data);
+
+            }
+        }
+
     }
 }

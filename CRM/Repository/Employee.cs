@@ -798,6 +798,7 @@ namespace CRM.Repository
                     CurrentLat = model.CurrentLat,
                     Currentlong = model.Currentlong,
                     Currentdate = DateTime.Now,
+                    Updatedate = DateTime.Now,
                 };
                 empcheck.Breakin = model.Breakin;
                 empcheck.Breakout = model.Breakout;
@@ -806,12 +807,15 @@ namespace CRM.Repository
                 {
                     empcheck.CheckIn = checkIn;
                     empcheck.CheckOutTime = DateTime.Now;
+                    empcheck.Updatedate = DateTime.Now;
 
                 }
                 else
                 {
                     empcheck.CheckInTime = DateTime.Now;
                     empcheck.CheckIn = checkIn;
+                    empcheck.Updatedate = DateTime.Now;
+
                 }
                 await _context.EmployeeCheckIns.AddAsync(empcheck);
                 await _context.SaveChangesAsync();
@@ -2568,6 +2572,7 @@ namespace CRM.Repository
                     {
                         existingCheckInRecord.CurrentLat = model.CurrentLat;
                         existingCheckInRecord.Currentlong = model.Currentlong;
+                        existingCheckInRecord.Updatedate = DateTime.Now;
 
                         _context.EmployeeCheckIns.Update(existingCheckInRecord);
                     }
@@ -2580,7 +2585,7 @@ namespace CRM.Repository
                         existingCheckInRecord.Currentlong = model.Currentlong;
                         existingCheckInRecord.CheckOutTime = DateTime.Now;
                         existingCheckInRecord.CheckIn = false;
-
+                        existingCheckInRecord.Updatedate = DateTime.Now;
                         _context.EmployeeCheckIns.Update(existingCheckInRecord);
                     }
                     else
@@ -2595,6 +2600,7 @@ namespace CRM.Repository
                             CheckIn = false,
                             Breakin = false,
                             Breakout = false,
+                            Updatedate = DateTime.Now,
                         };
                         await _context.EmployeeCheckIns.AddAsync(newCheckOutRecord);
                     }

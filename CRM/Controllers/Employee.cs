@@ -1047,26 +1047,35 @@ namespace CRM.Controllers
         }
 
         //-----ImportToExcelEmployeeList
-        public async Task<IActionResult> ImportToExcelEmployeeList()
+        public async Task<IActionResult> ExportToExcelEmployeeList()
         {
             try
             {
                 List<EmployeeImportExcel> response = new List<EmployeeImportExcel>();
                 string userIdString = HttpContext.Session.GetString("UserId");
-                response = await _ICrmrpo.EmployeeList();
+                ViewBag.UserName = HttpContext.Session.GetString("UserName");
+
                 if (!string.IsNullOrEmpty(userIdString) && int.TryParse(userIdString, out int id))
                 {
                     var adminlogin = await _context.AdminLogins.Where(x => x.Id == id).FirstOrDefaultAsync(); // Await the async call
 
-                    if (adminlogin != null && id == 1) 
+                    if (id == 1)
                     {
-                        var response1 = _ICrmrpo.EmployeeListForExcel(response); 
-                        return File(response1, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Employee_List.xlsx");
+                        response = await _ICrmrpo.EmployeeList();
+                        var response1 = _ICrmrpo.EmployeeListForExcel(response);
+                        return File(response1, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "EmployeeList.xlsx");
                     }
-                    ViewBag.UserName = HttpContext.Session.GetString("UserName");
-                    return View(response);
+                    else
+                    {
+                        response = await _ICrmrpo.CustomerEmployeeList(id);
+                        foreach (var item in response)
+                        {
+                            ViewBag.shiftlist = item.ShiftTypeid;
+                        }
+                        var response1 = _ICrmrpo.EmployeeListForExcel(response);
+                        return File(response1, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "EmployeeList.xlsx");
+                    }
                 }
-
                 return View(response);
             }
             catch (Exception Ex)

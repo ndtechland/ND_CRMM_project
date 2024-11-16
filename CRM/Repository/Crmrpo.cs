@@ -28,6 +28,8 @@ using DocumentFormat.OpenXml.Wordprocessing;
 using CRM.Models.APIDTO;
 using Dapper;
 using CRM.Controllers;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.TeamFoundation.Common;
 
 
 namespace CRM.Repository
@@ -336,9 +338,17 @@ namespace CRM.Repository
             return result;
         }
 
+        //public async Task<List<EmployeeImportExcel>> EmployeeList()
+        //{
+        //    List<EmployeeImportExcel> employeeList = _context.EmployeeImportExcels.FromSqlRaw<EmployeeImportExcel>("USP_GetEmployeeDetails").ToListAsync().Result;
+
+        //    return employeeList;
+        //}
         public async Task<List<EmployeeImportExcel>> EmployeeList()
         {
-            List<EmployeeImportExcel> employeeList = _context.EmployeeImportExcels.FromSqlRaw<EmployeeImportExcel>("USP_GetEmployeeDetails").ToListAsync().Result;
+            List<EmployeeImportExcel> employeeList = await _context.EmployeeImportExcels
+                .FromSqlRaw("EXEC USP_GetEmployeeDetails")
+                .ToListAsync();
 
             return employeeList;
         }
@@ -692,223 +702,77 @@ namespace CRM.Repository
             return dt;
 
         }
-        //for excel
-        //public byte[] EmployeeListForExcel()
-        //{
-        //    List<EmployeeImportExcel> employeeList = _context.EmployeeImportExcels.FromSqlRaw<EmployeeImportExcel>("USP_GetEmployeeDetails").ToListAsync().Result;
-
-        //    using (var workbook = new XLWorkbook())
-        //    {
-
-        //        var worksheet = workbook.Worksheets.Add("EmployeeList");
-        //        var currentwork = 1;
-        //        worksheet.Cell(currentwork, 1).Value = "Sr.No.";
-        //        worksheet.Cell(currentwork, 1).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        //worksheet.Cell(currentwork, 2).Value = "First Name";
-        //        //worksheet.Cell(currentwork, 2).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        //worksheet.Cell(currentwork, 3).Value = "Middle Name";
-        //        //worksheet.Cell(currentwork, 3).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 2).Value = "Employee Name";
-        //        worksheet.Cell(currentwork, 2).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 3).Value = "Employee ID";
-        //        worksheet.Cell(currentwork, 3).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 4).Value = "Date Of Joining";
-        //        worksheet.Cell(currentwork, 4).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 5).Value = "Work Email";
-        //        worksheet.Cell(currentwork, 5).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 6).Value = "Gender";
-        //        worksheet.Cell(currentwork, 6).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 7).Value = "Work Location";
-        //        worksheet.Cell(currentwork, 7).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 8).Value = "Designation";
-        //        worksheet.Cell(currentwork, 8).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 9).Value = "Department";
-        //        worksheet.Cell(currentwork, 9).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 10).Value = "Company Name";
-        //        worksheet.Cell(currentwork, 10).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 11).Value = "Personal Email Address";
-        //        worksheet.Cell(currentwork, 11).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 12).Value = "Mobile Number";
-        //        worksheet.Cell(currentwork, 12).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 13).Value = "Date Of Birth";
-        //        worksheet.Cell(currentwork, 13).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 14).Value = "Age";
-        //        worksheet.Cell(currentwork, 14).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 15).Value = "Father Name";
-        //        worksheet.Cell(currentwork, 15).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 16).Value = "PAN";
-        //        worksheet.Cell(currentwork, 16).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        //worksheet.Cell(currentwork, 19).Value = "Address Line 1";
-        //        //worksheet.Cell(currentwork, 19).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        //worksheet.Cell(currentwork, 20).Value = "Address Line 2";
-        //        //worksheet.Cell(currentwork, 20).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        //worksheet.Cell(currentwork, 21).Value = "City";
-        //        //worksheet.Cell(currentwork, 21).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        //worksheet.Cell(currentwork, 22).Value = "State";
-        //        //worksheet.Cell(currentwork, 22).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        //worksheet.Cell(currentwork, 23).Value = "Pin Code";
-        //        //worksheet.Cell(currentwork, 23).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        //worksheet.Cell(currentwork, 24).Value = "Account Holder Name";
-        //        //worksheet.Cell(currentwork, 24).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 17).Value = "Bank Name";
-        //        worksheet.Cell(currentwork, 17).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 18).Value = "Account Number";
-        //        worksheet.Cell(currentwork, 18).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        //worksheet.Cell(currentwork, 27).Value = "Re-enter Account Number";
-        //        //worksheet.Cell(currentwork, 27).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 19).Value = "IFSC";
-        //        worksheet.Cell(currentwork, 19).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 20).Value = "EPF Number";
-        //        worksheet.Cell(currentwork, 20).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 20).Style.NumberFormat.NumberFormatId = 49;
-        //        worksheet.Cell(currentwork, 21).Value = "Employee Contribution Rate";
-        //        worksheet.Cell(currentwork, 21).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 22).Value = "Deduction Cycle";
-        //        worksheet.Cell(currentwork, 22).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 23).Value = "Account Type";
-        //        worksheet.Cell(currentwork, 23).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 24).Value = "Annual CTC";
-        //        worksheet.Cell(currentwork, 24).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        //worksheet.Cell(currentwork, 34).Value = "Basic";
-        //        //worksheet.Cell(currentwork, 34).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        //worksheet.Cell(currentwork, 35).Value = "HouseRent Allowance";
-        //        //worksheet.Cell(currentwork, 35).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        //worksheet.Cell(currentwork, 36).Value = "Conveyance Allowance";
-        //        //worksheet.Cell(currentwork, 36).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        //worksheet.Cell(currentwork, 37).Value = "Fixed Allowance";
-        //        //worksheet.Cell(currentwork, 37).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 25).Value = "EPF";
-        //        worksheet.Cell(currentwork, 25).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 25).Style.NumberFormat.NumberFormatId = 1;
-        //        //worksheet.Cell(currentwork, 39).Value = "Monthly CTC";
-        //        //worksheet.Cell(currentwork, 39).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        worksheet.Cell(currentwork, 26).Value = "Monthly Gross Pay";
-        //        worksheet.Cell(currentwork, 26).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //        currentwork++;
-
-        //        var index = 1;
-        //        foreach (var item in employeeList)
-        //        {
-
-        //            worksheet.Cell(currentwork, 1).Value = index++;
-        //            //worksheet.Cell(currentwork, 2).Value = item.FirstName;
-        //            //worksheet.Cell(currentwork, 3).Value = item.MiddleName;
-        //            worksheet.Cell(currentwork, 2).Value = item.MiddleName == null ? "" + item.FirstName + " " + "" + ' ' + "" + "" + item.LastName + "" : "" + item.FirstName + "" + "" + ' ' + "" + "" + item.MiddleName + "" + "" + ' ' + "" + "" + item.LastName + "";
-        //            worksheet.Cell(currentwork, 3).Value = item.EmployeeId;
-        //            worksheet.Cell(currentwork, 4).Value = item.DateOfJoining;
-        //            worksheet.Cell(currentwork, 5).Value = item.WorkEmail;
-        //            worksheet.Cell(currentwork, 6).Value = item.Gender;
-        //            worksheet.Cell(currentwork, 7).Value = item.WorkLocation;
-        //            worksheet.Cell(currentwork, 8).Value = item.DesignationName;
-        //            worksheet.Cell(currentwork, 9).Value = item.DepartmentName;
-        //            worksheet.Cell(currentwork, 10).Value = item.CustomerName;
-        //            worksheet.Cell(currentwork, 11).Value = item.PersonalEmailAddress;
-        //            worksheet.Cell(currentwork, 12).Value = item.Mobile;
-        //            worksheet.Cell(currentwork, 13).Value = item.DateOfBirth;
-        //            worksheet.Cell(currentwork, 14).Value = item.Age;
-        //            worksheet.Cell(currentwork, 15).Value = item.FatherName;
-        //            worksheet.Cell(currentwork, 16).Value = item.Pan;
-        //            //worksheet.Cell(currentwork, 19).Value = item.AddressLine1;
-        //            //worksheet.Cell(currentwork, 20).Value = item.AddressLine2;
-        //            //worksheet.Cell(currentwork, 21).Value = item.City;
-        //            //worksheet.Cell(currentwork, 22).Value = item.State;
-        //            //worksheet.Cell(currentwork, 23).Value = item.Pincode;
-        //            //worksheet.Cell(currentwork, 24).Value = item.AccountHolderName;
-        //            worksheet.Cell(currentwork, 17).Value = item.BankName;
-        //            worksheet.Cell(currentwork, 18).Value = item.AccountNumber;
-        //            //worksheet.Cell(currentwork, 27).Value = item.ReEnterAccountNumber;
-        //            worksheet.Cell(currentwork, 19).Value = item.Ifsc;
-        //            worksheet.Cell(currentwork, 20).Value = item.EpfNumber;
-        //            worksheet.Cell(currentwork, 21).Value = item.EmployeeContributionRate;
-        //            worksheet.Cell(currentwork, 22).Value = item.DeductionCycle;
-        //            worksheet.Cell(currentwork, 23).Value = item.AccountType;
-        //            worksheet.Cell(currentwork, 24).Value = item.AnnualCtc;
-        //            //worksheet.Cell(currentwork, 34).Value = item.Basic;
-        //            //worksheet.Cell(currentwork, 35).Value = item.HouseRentAllowance;
-        //            //worksheet.Cell(currentwork, 36).Value = item.ConveyanceAllowance;
-        //            //worksheet.Cell(currentwork, 37).Value = item.FixedAllowance;
-        //            worksheet.Cell(currentwork, 25).Value = item.Epf;
-        //            //worksheet.Cell(currentwork, 39).Value = item.MonthlyCTC;
-        //            worksheet.Cell(currentwork, 26).Value = item.MonthlyGrossPay;
-        //            currentwork++;
-        //        }
-        //        using (var stram = new MemoryStream())
-        //        {
-        //            workbook.SaveAs(stram);
-        //            return stram.ToArray();
-        //        }
-        //    }
-
-        //}
         public byte[] EmployeeListForExcel(List<EmployeeImportExcel> data)
         {
-            var employeeList = _context.EmployeeImportExcels.FromSqlRaw<EmployeeImportExcel>("USP_GetEmployeeDetails").ToList();
-
             using (var workbook = new XLWorkbook())
             {
                 var worksheet = workbook.Worksheets.Add("EmployeeList");
-                int currentRow = 1;
+                var currentwork = 1;
 
-                // Header Cells
+                // Adding headers with background color
                 var headers = new[]
                 {
-            "Sr.No.", "Employee Name", "Employee ID", "Date Of Joining", "Work Email", "Gender", "Work Location",
-            "Designation", "Department", "Company Name", "Personal Email Address", "Mobile Number", "Date Of Birth",
-            "Age", "Father Name", "PAN", "Bank Name", "Account Number", "IFSC", "EPF Number", "Employee Contribution Rate",
-            "Deduction Cycle", "Account Type", "Annual CTC", "EPF", "Monthly Gross Pay", "Shift Type", "Shift Type ID"
+            "Sr.No.", "Employee Name", "Employee ID", "Date Of Joining", "Work Email", "Gender",
+            "Work Location", "Designation", "Department", "Company Name", "Personal Email Address",
+            "Mobile Number", "Date Of Birth", "Age", "Father Name", "PAN", "Bank Name", "Account Number",
+            "IFSC", "EPF Number", "Employee Contribution Rate", "Deduction Cycle", "Account Type",
+            "Annual CTC", "EPF", "Monthly Gross Pay", "Shifttype", "ShiftTime"
         };
 
-                // Loop for headers
                 for (int i = 0; i < headers.Length; i++)
                 {
-                    worksheet.Cell(currentRow, i + 1).Value = headers[i];
-                    worksheet.Cell(currentRow, i + 1).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, i + 1).Value = headers[i];
+                    worksheet.Cell(currentwork, i + 1).Style.Fill.BackgroundColor = XLColor.Yellow;
                 }
 
-                currentRow++; // Move to the next row
+                currentwork++;
+                int index = 1;
 
-                // Populate the data rows
-                var index = 1;
-                foreach (var item in employeeList)
+                // Adding data rows
+                foreach (var item in data)
                 {
-                    worksheet.Cell(currentRow, 1).Value = index++;
-                    worksheet.Cell(currentRow, 2).Value = $"{item.FirstName} {item.MiddleName} {item.LastName}";
-                    worksheet.Cell(currentRow, 3).Value = item.EmployeeId;
-                    worksheet.Cell(currentRow, 4).Value = item.DateOfJoining.ToString("yyyy-MM-dd") ?? "N/A";
-                    worksheet.Cell(currentRow, 5).Value = item.WorkEmail;
-                    worksheet.Cell(currentRow, 6).Value = item.Gender;
-                    worksheet.Cell(currentRow, 7).Value = item.WorkLocation;
-                    worksheet.Cell(currentRow, 8).Value = item.DesignationName;
-                    worksheet.Cell(currentRow, 9).Value = item.DepartmentName;
-                    worksheet.Cell(currentRow, 10).Value = item.CustomerName;
-                    worksheet.Cell(currentRow, 11).Value = item.PersonalEmailAddress;
-                    worksheet.Cell(currentRow, 12).Value = item.Mobile ?? "N/A";
-                    worksheet.Cell(currentRow, 13).Value = item.DateOfBirth.ToString("yyyy-MM-dd") ?? "N/A";
-                    worksheet.Cell(currentRow, 14).Value = item.Age;
-                    worksheet.Cell(currentRow, 15).Value = item.FatherName;
-                    worksheet.Cell(currentRow, 16).Value = item.Pan;
-                    worksheet.Cell(currentRow, 17).Value = item.BankName;
-                    worksheet.Cell(currentRow, 18).Value = item.AccountNumber;
-                    worksheet.Cell(currentRow, 19).Value = item.Ifsc;
-                    worksheet.Cell(currentRow, 20).Value = item.EpfNumber;
-                    worksheet.Cell(currentRow, 21).Value = item.EmployeeContributionRate;
-                    worksheet.Cell(currentRow, 22).Value = item.DeductionCycle;
-                    worksheet.Cell(currentRow, 23).Value = item.AccountType;
-                    worksheet.Cell(currentRow, 24).Value = item.AnnualCtc;
-                    worksheet.Cell(currentRow, 25).Value = item.Epf;
-                    worksheet.Cell(currentRow, 26).Value = item.MonthlyGrossPay;
+                    worksheet.Cell(currentwork, 1).Value = index++;
+                    worksheet.Cell(currentwork, 2).Value = $"{item.FirstName} {item.MiddleName} {item.LastName}"; worksheet.Cell(currentwork, 3).Value = item.EmployeeId.ToString() ?? "N/A";
+                    worksheet.Cell(currentwork, 4).Value = item.DateOfJoining != DateTime.MinValue
+      ? item.DateOfJoining.ToString("yyyy-MM-dd")
+      : "N/A";
 
-                    // Handling nullable values for Shifttype and ShiftTypeid
-                    worksheet.Cell(currentRow, 27).Value = !string.IsNullOrEmpty(item.Shifttype) ? item.Shifttype : ""; // Empty string if null or empty
-                    worksheet.Cell(currentRow, 28).Value = item.ShiftTypeid.HasValue ? item.ShiftTypeid.Value : "";  // Empty string if null
 
-                    currentRow++;
+                    worksheet.Cell(currentwork, 5).Value = !string.IsNullOrEmpty(item.WorkEmail)
+    ? item.WorkEmail
+    : "N/A";
+                    worksheet.Cell(currentwork, 6).Value = !string.IsNullOrEmpty(item.Gender)
+     ? item.Gender
+     : "N/A";
+                    worksheet.Cell(currentwork, 7).Value = !string.IsNullOrEmpty(item.WorkLocation)
+       ? item.WorkLocation
+       : "N/A";
+                    worksheet.Cell(currentwork, 8).Value = item.DesignationName ?? "N/A";
+                    worksheet.Cell(currentwork, 9).Value = item.DepartmentName ?? "N/A";
+                    worksheet.Cell(currentwork, 10).Value = item.CustomerName ?? "N/A";
+                    worksheet.Cell(currentwork, 11).Value = item.PersonalEmailAddress ?? "N/A";
+                    worksheet.Cell(currentwork, 12).Value = item.Mobile?.ToString() ?? "N/A";
+                    worksheet.Cell(currentwork, 13).Value = item.DateOfBirth.ToString("yyyy-MM-dd") ?? "N/A";
+                    worksheet.Cell(currentwork, 14).Value = item.Age > 0 ? item.Age.ToString() : "N/A";
+                    worksheet.Cell(currentwork, 15).Value = item.FatherName ?? "N/A";
+                    worksheet.Cell(currentwork, 16).Value = item.Pan ?? "N/A";
+                    worksheet.Cell(currentwork, 17).Value = item.BankName ?? "N/A";
+                    worksheet.Cell(currentwork, 18).Value = item.AccountNumber?.ToString() ?? "N/A";
+                    worksheet.Cell(currentwork, 19).Value = item.Ifsc ?? "N/A";
+                    worksheet.Cell(currentwork, 20).Value = item.EpfNumber?.ToString() ?? "N/A";
+                    worksheet.Cell(currentwork, 21).Value = item.EmployeeContributionRate?.ToString() ?? "N/A";
+                    worksheet.Cell(currentwork, 22).Value = item.DeductionCycle ?? "N/A";
+                    worksheet.Cell(currentwork, 23).Value = item.AccountType ?? "N/A";
+                    worksheet.Cell(currentwork, 24).Value = item.AnnualCtc.ToString() ?? "N/A";
+                    worksheet.Cell(currentwork, 25).Value = item.Epf.ToString() ?? "N/A";
+                    worksheet.Cell(currentwork, 26).Value = item.MonthlyGrossPay.ToString() ?? "N/A";
+                    worksheet.Cell(currentwork, 27).Value = item.Shifttype ?? "N/A";
+                    worksheet.Cell(currentwork, 28).Value = item.OfficeshiftTypeid?.ToString() ?? "N/A";
+
+                    currentwork++;
                 }
 
-                // Adjust column widths
-                worksheet.Columns().AdjustToContents();
-
-                // Save to memory stream and return byte array
+                // Save to memory stream
                 using (var stream = new MemoryStream())
                 {
                     workbook.SaveAs(stream);
@@ -916,7 +780,6 @@ namespace CRM.Repository
                 }
             }
         }
-
 
         public WorkLocation1 GetWorkLocationById(int id)
         {
@@ -2060,7 +1923,7 @@ namespace CRM.Repository
                 throw ex;
             }
         }
-        public async Task<List<LeavemasterDto>> getLeavemaster(int Userid , int? VendorId)
+        public async Task<List<LeavemasterDto>> getLeavemaster(int Userid, int? VendorId)
         {
             try
             {
@@ -2262,62 +2125,42 @@ namespace CRM.Repository
         {
             try
             {
-
-                //if (model.Id == 0)
-                //{
-                foreach (var product in model)
-                {
-                    var data = new CustomerInvoice()
-                    {
-                        VendorId = vendorid,
-                        CustomerId = product.CustomerId,
-                        ProductId = product.ProductId,
-                        Description = product.Description,
-                        ProductPrice = product.ProductPrice,
-                        RenewPrice = product.RenewPrice,
-                        NoOfRenewMonth = product.NoOfRenewMonth,
-                        Hsncode = product.HsnSacCode,
-                        StartDate = product.StartDate,
-                        RenewDate = product.RenewDate,
-                        Igst = product.IGST,
-                        Sgst = product.SGST,
-                        Cgst = product.CGST,
-                        InvoiceNumber = InvoiceNo,
-                        CreatedDate = DateTime.Now
-                    };
-                    _context.Add(data);
-                }
-                _context.SaveChanges();
-                return true;
-                //}
-                //else
-                //{
-                //    var data = _context.CustomerInvoices.FirstOrDefault(ci => ci.Id == model.Id);
-                //    if (data != null)
-                //    { 
-                //        data.ProductPrice = model.ProductPrice;
-                //        data.RenewPrice = model.RenewPrice;
-                //        data.NoOfRenewMonth = model.NoOfRenewMonth;
-                //        data.Hsncode = model.Hsncode;
-                //        data.StartDate = model.StartDate;
-                //        data.RenewDate = model.RenewDate;
-                //        data.Igst = model.Igst;
-                //        data.Sgst = model.Sgst;
-                //        data.Cgst = model.Cgst;
-
-                //        _context.Update(data);
-                //        _context.SaveChanges();
-                //    }
-                //    return true;
-                //}
-
                 var AlreadyInvoiceNo = string.Empty;
+
+                var allExistingData = await _context.CustomerInvoices
+                    .Where(ci => model.Select(m => m.CustomerId).Contains(ci.CustomerId) && ci.InvoiceNumber == InvoiceNo)
+                    .ToListAsync();
+
                 foreach (var product in model)
                 {
-                    var data = _context.CustomerInvoices.FirstOrDefault(ci => ci.Id == product.Id);
+                    var existingInvoice = allExistingData
+                        .FirstOrDefault(ci => ci.CustomerId == product.CustomerId &&
+                                              ci.ProductId == product.ProductId &&
+                                              ci.InvoiceNumber == InvoiceNo);
+
+                    var customerExistingData = allExistingData
+                        .Where(ci => ci.CustomerId == product.CustomerId)
+                        .ToList();
+
+                    if (existingInvoice != null)
+                    {
+                        AlreadyInvoiceNo = existingInvoice.InvoiceNumber;
+                       
+                    }
+                    decimal totalDueAmount = customerExistingData
+                                                .Where(ci => ci.DueAmount.HasValue)  
+                                                .Select(ci => ci.DueAmount.Value)    
+                                                .FirstOrDefault();                  
+
+                    decimal dueAmount = (decimal)(totalDueAmount +
+                                        (product.ProductPrice +
+                                         (product.ProductPrice * product.IGST / 100 ?? 0) +
+                                         (product.ProductPrice * product.SGST / 100 ?? 0) +
+                                         (product.ProductPrice * product.CGST / 100 ?? 0)));
+
                     if (product.Id == 0)
                     {
-                        var Customerdata = new CustomerInvoice()
+                        var newInvoice = new CustomerInvoice()
                         {
                             VendorId = vendorid,
                             CustomerId = product.CustomerId,
@@ -2333,14 +2176,23 @@ namespace CRM.Repository
                             Sgst = product.SGST,
                             Cgst = product.CGST,
                             InvoiceNumber = string.IsNullOrEmpty(AlreadyInvoiceNo) ? InvoiceNo : AlreadyInvoiceNo,
-                            CreatedDate = DateTime.Now
+                            CreatedDate = DateTime.Now,
+                            Paymentstatus = 2,
+                            PaidAmount = customerExistingData.FirstOrDefault(ci => ci.PaidAmount.HasValue)?.PaidAmount ?? 0,
+                            DueAmount = dueAmount,
+                            Dueamountdate = product.Dueamountdate,
                         };
-                        _context.Add(Customerdata);
-                        _context.SaveChanges();
+
+                        _context.Add(newInvoice);
+                        foreach (var item in customerExistingData)
+                        {
+                            item.DueAmount = dueAmount;
+                        }
+                        await _context.SaveChangesAsync();
                     }
                     else
                     {
-
+                        var data = allExistingData.FirstOrDefault(ci => ci.Id == product.Id);
                         if (data != null)
                         {
                             data.ProductPrice = product.ProductPrice;
@@ -2349,66 +2201,85 @@ namespace CRM.Repository
                             data.Description = product.Description;
                             data.StartDate = product.StartDate;
                             data.RenewDate = product.RenewDate;
+                            data.Igst = product.IGST;
+                            data.Sgst = product.SGST;
+                            data.Cgst = product.CGST;
+                            data.Dueamountdate = product.Dueamountdate;
 
                             _context.Update(data);
-                            _context.SaveChanges();
+                            foreach (var item in customerExistingData)
+                            {
+                                item.DueAmount = dueAmount;
+                            }
+                            await _context.SaveChangesAsync();
+
+                            AlreadyInvoiceNo = data.InvoiceNumber;
                         }
-                        AlreadyInvoiceNo = data.InvoiceNumber;
                     }
                 }
+
                 return true;
-            }
-            catch (Exception)
-            {
-                throw; // Consider logging the exception here
-            }
-        }
-
-        public async Task<List<CustomerInvoiceDTO>> GetCustometInvoiceList(int vendorid)
-        {
-            try
-            {
-                var result = await (from ci in _context.CustomerInvoices
-                                    join c in _context.CustomerRegistrations on ci.CustomerId equals c.Id
-                                    join p in _context.VendorProductMasters on ci.ProductId equals p.Id
-                                    join s in _context.States on c.StateId equals s.Id
-                                    join ct in _context.Cities on c.CityId equals ct.Id
-                                    join sb in _context.States on c.BillingStateId equals sb.Id
-                                    join ctb in _context.Cities on c.BillingCityId equals ctb.Id
-                                    where c.Vendorid == vendorid
-                                    group new { ci, c, p, s, ct, sb, ctb } by ci.InvoiceNumber into grouped
-                                    select new CustomerInvoiceDTO
-                                    {
-                                        InvoiceId = grouped.FirstOrDefault().ci.Id,
-                                        CustomerId = grouped.FirstOrDefault().ci.CustomerId,
-                                        CompanyName = grouped.FirstOrDefault().c.CompanyName,
-                                        MobileNumber = grouped.FirstOrDefault().c.MobileNumber,
-                                        AlternateNumber = grouped.FirstOrDefault().c.AlternateNumber,
-                                        Email = grouped.FirstOrDefault().c.Email,
-                                        ProductName = grouped.FirstOrDefault().p.ProductName,
-                                        OfficeAddress = grouped.FirstOrDefault().c.Location,
-                                        OfficeState = grouped.FirstOrDefault().s.SName,
-                                        OfficeCity = grouped.FirstOrDefault().ct.City1,
-                                        BillingAddress = grouped.FirstOrDefault().c.BillingAddress,
-                                        BillingState = grouped.FirstOrDefault().sb.SName,
-                                        BillingCity = grouped.FirstOrDefault().ctb.City1,
-                                        InvoiceDate = grouped.FirstOrDefault().ci.CreatedDate,
-                                        ProductPrice = grouped.FirstOrDefault().ci.ProductPrice,
-                                        RenewPrice = grouped.FirstOrDefault().ci.RenewPrice,
-                                        StartDate = grouped.FirstOrDefault().ci.StartDate,
-                                        RenewDate = grouped.FirstOrDefault().ci.RenewDate,
-                                        InvoiceNumber = grouped.FirstOrDefault().ci.InvoiceNumber,
-                                        IGST = grouped.FirstOrDefault().ci.Igst,
-                                        SGST = grouped.FirstOrDefault().ci.Sgst,
-                                        CGST = grouped.FirstOrDefault().ci.Cgst
-                                    }).OrderByDescending(o => o.InvoiceId).ToListAsync();
-
-                return result;
             }
             catch (Exception ex)
             {
-                // Optionally log the exception
-                throw; // Rethrow the exception or handle it accordingly
+                throw;
+            }
+        }
+
+        public async Task<List<CustomerInvoiceDTO>> GetCustometInvoiceList(int vendorId)
+        {
+            try
+            {
+                var groupedInvoices = await (from ci in _context.CustomerInvoices
+                                             join c in _context.CustomerRegistrations on ci.CustomerId equals c.Id
+                                             join p in _context.VendorProductMasters on ci.ProductId equals p.Id
+                                             join s in _context.States on c.StateId equals s.Id
+                                             join ct in _context.Cities on c.CityId equals ct.Id
+                                             join sb in _context.States on c.BillingStateId equals sb.Id
+                                             join ctb in _context.Cities on c.BillingCityId equals ctb.Id
+                                             join pm in _context.Paymentmodes on ci.Paymentstatus equals pm.Id
+                                             where c.Vendorid == vendorId
+                                             group new { ci, c, p, s, ct, sb, ctb, pm } by ci.InvoiceNumber into grouped
+                                             select new CustomerInvoiceDTO
+                                             {
+                                                 InvoiceId = grouped.First().ci.Id,
+                                                 CustomerId = grouped.First().ci.CustomerId,
+                                                 CompanyName = grouped.First().c.CompanyName,
+                                                 MobileNumber = grouped.First().c.MobileNumber,
+                                                 AlternateNumber = grouped.First().c.AlternateNumber,
+                                                 Email = grouped.First().c.Email,
+                                                 ProductName = grouped.First().p.ProductName,
+                                                 OfficeAddress = grouped.First().c.Location,
+                                                 OfficeState = grouped.First().s.SName,
+                                                 OfficeCity = grouped.First().ct.City1,
+                                                 BillingAddress = grouped.First().c.BillingAddress,
+                                                 BillingState = grouped.First().sb.SName,
+                                                 BillingCity = grouped.First().ctb.City1,
+                                                 InvoiceDate = grouped.First().ci.CreatedDate,
+                                                 RenewPrice = grouped.First().ci.RenewPrice,
+                                                 StartDate = grouped.First().ci.StartDate,
+                                                 RenewDate = grouped.First().ci.RenewDate,
+                                                 InvoiceNumber = grouped.Key,
+                                                 Paymentstatus = grouped.First().pm.PaymentType,
+                                                 PaidAmount = grouped.First().ci.PaidAmount ?? 0,
+                                                 DueAmount = grouped.First().ci.DueAmount ?? 0,
+                                                 IGST = grouped.Sum(g => g.ci.Igst ?? 0),
+                                                 SGST = grouped.Sum(g => g.ci.Sgst ?? 0),
+                                                 CGST = grouped.Sum(g => g.ci.Cgst ?? 0),
+                                                 Paymentid = grouped.First().ci.Paymentstatus,
+                                                 Dueamountdate = grouped.First().ci.Dueamountdate,
+                                             }).OrderByDescending(ci =>ci.InvoiceId).ToListAsync();
+
+                foreach (var invoice in groupedInvoices)
+                {
+                    invoice.TotalAmount = await CalculateTotalAmountByInvoiceId(invoice.InvoiceNumber);
+                }
+
+                return groupedInvoices;
+            }
+            catch (Exception ex)
+            {
+                throw;
             }
         }
 
@@ -2492,7 +2363,7 @@ namespace CRM.Repository
                                   CGST = ci.Cgst,
                                   SGST = ci.Sgst,
                                   CustomerGstNumber = c.GstNumber,
-                                  NoOfRenewMonth = ci.NoOfRenewMonth
+                                  NoOfRenewMonth = ci.NoOfRenewMonth,
                               }).FirstOrDefault();
 
                 // Step 2: Get the related list of invoice items
@@ -2511,6 +2382,8 @@ namespace CRM.Repository
                                             RenewDate = ci.RenewDate,
                                             HsnSacCode = ci.Hsncode,
                                             ProductPrice = ci.ProductPrice,
+                                            DueAmount = ci.DueAmount,
+                                            PaidAmount= ci.PaidAmount
                                         }).ToList();
 
                     // Add the list to the invoice DTO if needed
@@ -2645,13 +2518,13 @@ namespace CRM.Repository
 
                     if (leave == null || leave.Count == 0)
                     {
-                        continue; 
+                        continue;
                     }
 
                     foreach (var l in leave)
                     {
                         decimal totalFullday = (l.EndDate - l.StartDate).Days - (l.EndDate != l.StartDate ? 1 : 0);
-                        totalFullday = Math.Max(totalFullday, 0); 
+                        totalFullday = Math.Max(totalFullday, 0);
                         leaveDetails.Add(new ApprovedLeaveApplyList
                         {
                             Id = l.Id,
@@ -2671,14 +2544,16 @@ namespace CRM.Repository
                             CreatedDate = l.CreatedDate,
                             UnPaidCountLeave = l.CountLeave,
                             Month = l.Month,
-                            Reason = l.Reason ?? "No reason provided", 
+                            Reason = l.Reason ?? "No reason provided",
                             Isapprove = l.Isapprove,
                             PaidCountLeave = l.PaidCountLeave,
                         });
                     }
                 }
-                return leaveDetails.OrderByDescending(l => l.CreatedDate).ToList();
-
+                return leaveDetails
+                      .OrderByDescending(l => l.StartDate == default(DateTime) ? DateTime.MinValue : l.StartDate)
+                      .ThenByDescending(l => l.EndDate == default(DateTime) ? DateTime.MinValue : l.EndDate)
+                      .ToList();
             }
             catch (Exception ex)
             {
@@ -2820,22 +2695,22 @@ namespace CRM.Repository
 
             if (startLeaveId == endLeaveId)
             {
-                if (startLeaveId == 1 || startLeaveId == 2) 
+                if (startLeaveId == 1 || startLeaveId == 2)
                 {
-                    halfDayCount ++; 
+                    halfDayCount++;
                 }
                 else if (startLeaveId == 3)
                 {
-                    fullDayCount ++;
+                    fullDayCount++;
                 }
             }
             else
             {
-                if (startLeaveId == 1 || startLeaveId == 2) halfDayCount++; 
-                if (startLeaveId == 3) fullDayCount++; 
+                if (startLeaveId == 1 || startLeaveId == 2) halfDayCount++;
+                if (startLeaveId == 3) fullDayCount++;
 
-                if (endLeaveId == 1 || endLeaveId == 2) halfDayCount++; 
-                if (endLeaveId == 3) fullDayCount++; 
+                if (endLeaveId == 1 || endLeaveId == 2) halfDayCount++;
+                if (endLeaveId == 3) fullDayCount++;
             }
 
             List<string> leaveTypes = new List<string>();
@@ -2853,7 +2728,7 @@ namespace CRM.Repository
             leaveTypes.Add($"(Total Leaves: {totalLeave})");
 
             return string.Join(", ", leaveTypes);
-        }     
+        }
         public async Task<bool> Addfaq(AppFaq model)
         {
             if (model.Id == 0)
@@ -3564,7 +3439,7 @@ namespace CRM.Repository
                     existdata.Amountpercentage = model.Amountpercentage;
                     existdata.Iactive = model.Iactive;
                     existdata.CreateDate = DateTime.Now;
-                    existdata.Finyear =Convert.ToInt32(model.Finyear);
+                    existdata.Finyear = Convert.ToInt32(model.Finyear);
 
                 }
                 _context.SaveChanges();
@@ -3580,7 +3455,7 @@ namespace CRM.Repository
         {
             try
             {
-                if(model.Id==0)
+                if (model.Id == 0)
                 {
                     var domainmodel = new OtherService()
                     {
@@ -3699,6 +3574,47 @@ namespace CRM.Repository
                 throw;
             }
         }
+
+        public async Task<decimal> CalculateTotalAmountByInvoiceId(string invoiceId)
+        {
+            try
+            {
+                var invoiceDetails = await (from ci in _context.CustomerInvoices
+                                            where ci.InvoiceNumber == invoiceId
+                                            select new
+                                            {
+                                                ProductPrice = ci.ProductPrice ?? 0,
+                                                IGST = ci.Igst ?? 0,
+                                                SGST = ci.Sgst ?? 0,
+                                                CGST = ci.Cgst ?? 0
+                                            }).ToListAsync();
+
+                if (invoiceDetails == null || !invoiceDetails.Any())
+                {
+                    return 0;
+                }
+
+                decimal totalAmount = 0;
+                foreach (var item in invoiceDetails)
+                {
+                    decimal productTotal = item.ProductPrice +
+                                           (item.ProductPrice * item.IGST / 100) +
+                                           (item.ProductPrice * item.SGST / 100) +
+                                           (item.ProductPrice * item.CGST / 100);
+
+                    totalAmount += productTotal;
+                }
+
+                totalAmount = decimal.Round(totalAmount, 2, MidpointRounding.AwayFromZero);
+
+                return totalAmount;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
     }
 
 }
