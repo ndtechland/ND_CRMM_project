@@ -234,6 +234,11 @@
                                                     <input name="RenewDate" type="date" class="form-control RenewDate" required readonly oninvalid="this.setCustomValidity('Please select RenewDate')" oninput="this.setCustomValidity('')" value="@ViewBag.renewDate" />
                                                     <span asp-validation-for="RenewDate" class="text-danger"></span>
                                                 </div>
+                                                <div class="form-group col-sm">
+                                                    <label for="Dueamountdate">Due Date <span class="text-danger">*</span></label>
+                                                    <input name="Dueamountdate" type="date" class="form-control Dueamountdate" required oninvalid="this.setCustomValidity('Please select DueDate')" oninput="this.setCustomValidity('')" value="@ViewBag.Dueamountdate" />
+                                                    <span asp-validation-for="Dueamountdate" class="text-danger"></span>
+                                                </div>
                                             </div>
 
 
@@ -251,8 +256,11 @@
                                                     <input type="text" class="form-control CGST" placeholder="00.0" readonly />
                                                 </div>
                                             </div>
-                                            <!-- Initially hidden remove button -->
-                                            <button type="button" class="btn btn-danger remove-section" style="display:none;">Remove</button>
+                                            <button type="button" class="btn btn-danger remove-section" id="deleteInvoiceProductBtn" style="display:block;">
+                                                Remove
+                                            </button>
+
+
                                         </div>
                                     </div>
 
@@ -291,4 +299,3 @@
 </script> *@
 <script src="~/js/invoice.js"></script>
 
- 

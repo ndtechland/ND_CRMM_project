@@ -378,6 +378,7 @@ window.onload = function () {
             newSection.querySelector('.IGST').value = product.iGST;
             newSection.querySelector('.SGST').value = product.sGST;
             newSection.querySelector('.CGST').value = product.cGST;
+            newSection.querySelector('.Dueamountdate').value = formatDateToYYYYMMDD(product.dueamountdate);
 
             // Show/remove the remove button accordingly
             if (ProductList.length === 1) {
@@ -412,6 +413,7 @@ document.getElementById('addSection').addEventListener('click', function () {
         newSection.querySelector('.RenewPrice').removeAttribute('readonly'); // Ensure RenewPrice is editable
         newSection.querySelector('.HsnSacCode').setAttribute('readonly', true); // Ensure HsnSacCode is readonly
         newSection.querySelector('.StartDate').removeAttribute('readonly'); // Ensure StartDate is editable
+        newSection.querySelector('.Dueamountdate').removeAttribute('readonly'); // Ensure StartDate is editable
         newSection.querySelector('.IGST').setAttribute('readonly', true); // Ensure IGST is readonly
         newSection.querySelector('.SGST').setAttribute('readonly', true); // Ensure SGST is readonly
         newSection.querySelector('.CGST').setAttribute('readonly', true); // Ensure CGST is readonly
@@ -504,6 +506,7 @@ function gatherProductDetails() {
             HsnSacCode: section.querySelector('.HsnSacCode').value,
             StartDate: section.querySelector('.StartDate').value,
             RenewDate: section.querySelector('.RenewDate').value,
+            Dueamountdate: section.querySelector('.Dueamountdate').value,
             IGST: section.querySelector('.IGST').value,
             SGST: section.querySelector('.SGST').value,
             CGST: section.querySelector('.CGST').value

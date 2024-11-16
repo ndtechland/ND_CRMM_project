@@ -84,6 +84,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<OurExpertise> OurExpertises { get; set; } = null!;
         public virtual DbSet<OurStory> OurStories { get; set; } = null!;
         public virtual DbSet<OurTutorial> OurTutorials { get; set; } = null!;
+        public virtual DbSet<Paymentmode> Paymentmodes { get; set; } = null!;
         public virtual DbSet<Payroll> Payrolls { get; set; } = null!;
         public virtual DbSet<PricingPlan> PricingPlans { get; set; } = null!;
         public virtual DbSet<PricingPlanFeature> PricingPlanFeatures { get; set; } = null!;
@@ -423,6 +424,12 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
+                entity.Property(e => e.DueAmount).HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.Dueamountdate)
+                    .HasColumnType("datetime")
+                    .HasColumnName("dueamountdate");
+
                 entity.Property(e => e.Hsncode)
                     .HasMaxLength(100)
                     .HasColumnName("HSNCode");
@@ -432,6 +439,10 @@ namespace CRM.Models.Crm
                     .HasColumnName("IGST");
 
                 entity.Property(e => e.InvoiceNumber).HasMaxLength(200);
+
+                entity.Property(e => e.PaidAmount).HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.Paymentstatus).HasColumnName("paymentstatus");
 
                 entity.Property(e => e.ProductPrice).HasColumnType("decimal(18, 0)");
 
@@ -711,6 +722,8 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.EmployeeId)
                     .HasMaxLength(200)
                     .HasColumnName("Employee_ID");
+
+                entity.Property(e => e.Updatedate).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<EmployeeCheckInRecord>(entity =>
@@ -1627,6 +1640,15 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.Title).HasMaxLength(150);
 
                 entity.Property(e => e.VedioUrl).HasColumnName("VedioURL");
+            });
+
+            modelBuilder.Entity<Paymentmode>(entity =>
+            {
+                entity.ToTable("Paymentmode");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.PaymentType).HasMaxLength(250);
             });
 
             modelBuilder.Entity<Payroll>(entity =>

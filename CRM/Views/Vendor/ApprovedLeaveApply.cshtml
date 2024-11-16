@@ -103,8 +103,8 @@
                                                         <td nowrap>@item.UserId</td>
                                                         <td nowrap>@item.EmployeeName</td>
                                                         <td nowrap>@item.EmpMobileNumber</td>
-                                                        <td nowrap>@item.StartDate.ToString("dd/MMM/yyyy")</td>
-                                                        <td nowrap>@item.EndDate.ToString("dd/MMM/yyyy")</td>
+                                                        <td nowrap>@item.StartDate?.ToString("dd/MMM/yyyy")</td>
+                                                        <td nowrap>@item.EndDate?.ToString("dd/MMM/yyyy")</td>
                                                         <td>@item.LeaveType</td>
                                                         <td>@item.TypeOfLeaveId</td>
                                                         <td>@item.Reason</td>
