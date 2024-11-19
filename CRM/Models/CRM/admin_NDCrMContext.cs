@@ -39,6 +39,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<DemoRequest> DemoRequests { get; set; } = null!;
         public virtual DbSet<DepartmentMaster> DepartmentMasters { get; set; } = null!;
         public virtual DbSet<DesignationMaster> DesignationMasters { get; set; } = null!;
+        public virtual DbSet<EmpApplywfh> EmpApplywfhs { get; set; } = null!;
         public virtual DbSet<EmpCheckIn> EmpCheckIns { get; set; } = null!;
         public virtual DbSet<EmpExperienceletter> EmpExperienceletters { get; set; } = null!;
         public virtual DbSet<EmpTasksList> EmpTasksLists { get; set; } = null!;
@@ -542,6 +543,25 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.DesignationName)
                     .HasMaxLength(150)
                     .HasColumnName("Designation_Name");
+            });
+
+            modelBuilder.Entity<EmpApplywfh>(entity =>
+            {
+                entity.ToTable("EmpApplywfh");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Currentdate)
+                    .HasColumnType("datetime")
+                    .HasColumnName("currentdate");
+
+                entity.Property(e => e.EndDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Reason).HasMaxLength(250);
+
+                entity.Property(e => e.Startdate).HasColumnType("datetime");
+
+                entity.Property(e => e.UserId).HasMaxLength(250);
             });
 
             modelBuilder.Entity<EmpCheckIn>(entity =>

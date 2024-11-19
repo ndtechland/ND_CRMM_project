@@ -39,6 +39,8 @@ namespace CRM.Controllers
                 ViewBag.HelpCenters = await _context.HelpCenters.CountAsync();
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == UserId).FirstOrDefaultAsync();
 
+                //VendorProfile
+                ViewBag.VendorProfile = await _context.VendorRegistrations.Where(x => x.Id == adminlogin.Vendorid).Select(x =>x.CompanyImage).FirstOrDefaultAsync();
                 //VendorDashboard
                 ViewBag.Professional = await _context.VendorRegistrations.Where(x => x.Id == adminlogin.Vendorid).Select(x => x.Isprofessionaltax).FirstOrDefaultAsync();
                 // Customerlist

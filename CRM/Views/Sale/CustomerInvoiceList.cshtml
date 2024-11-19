@@ -159,7 +159,7 @@
                                                             @Html.DisplayFor(modelItem => item.Email)
                                                         </td>
                                                         <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.Dueamountdate)
+                                                            @item.Dueamountdate?.ToString("dd/MM/yyyy")
                                                         </td>
                                                         <td nowrap>
                                                             @item.OfficeState

@@ -2656,9 +2656,8 @@ namespace CRM.Repository
                     if (checkIn)
                     {
                         checkInRecord.Workinghour = (DateTime.Now - checkInRecord.CheckIntime.Value).Duration();
-                        checkInRecord.CheckOuttime = null;
+                       // checkInRecord.CheckOuttime = null;
                     }
-
                     else
                     {
                         checkInRecord.Workinghour = (DateTime.Now - checkInRecord.CheckIntime.Value).Duration();
@@ -2668,7 +2667,6 @@ namespace CRM.Repository
                 }
                 else if (checkIn)
                 {
-                    // Create a new EmployeeCheckInRecord if no record exists for today
                     EmployeeCheckInRecord empCheckInRecord = new()
                     {
                         EmpId = emp.EmployeeId,
@@ -2687,6 +2685,149 @@ namespace CRM.Repository
             catch (Exception ex)
             {
                 throw new Exception("Error: " + ex.Message);
+            }
+        }
+        //public async Task<EmployeeCheckIn> UpdateEmpLocation(CRM.Models.APIDTO.EmpCheckIn model, bool checkIn)
+        //{
+        //    try
+        //    {
+        //        // Fetch employee and associated shift
+        //        var emp = await _context.EmployeeRegistrations
+        //            .FirstOrDefaultAsync(x => x.Id == model.Userid);
+        //        if (emp == null) throw new Exception("Employee not found.");
+
+        //        var officeShift = await _context.Officeshifts
+        //            .FirstOrDefaultAsync(s => s.Id == emp.OfficeshiftTypeid);
+        //        if (officeShift == null) throw new Exception("Employee shift information not found.");
+
+        //        // Fetch today's record
+        //        var today = DateTime.Now.Date;
+        //        var existingCheckInRecord = await _context.EmployeeCheckIns
+        //            .Where(x => x.EmployeeId == emp.EmployeeId && x.Currentdate.Value.Date == today)
+        //            .OrderByDescending(x => x.Id)
+        //            .FirstOrDefaultAsync();
+
+        //        if (checkIn)
+        //        {
+        //            if (existingCheckInRecord?.CheckIn == true)
+        //            {
+        //                // Update existing check-in
+        //                existingCheckInRecord.CurrentLat = model.CurrentLat;
+        //                existingCheckInRecord.Currentlong = model.Currentlong;
+        //                existingCheckInRecord.Updatedate = DateTime.Now;
+        //                _context.EmployeeCheckIns.Update(existingCheckInRecord);
+        //            }
+        //            else
+        //            {
+        //                // Add new check-in record
+        //                var newCheckIn = new EmployeeCheckIn
+        //                {
+        //                    EmployeeId = emp.EmployeeId,
+        //                    CurrentLat = model.CurrentLat,
+        //                    Currentlong = model.Currentlong,
+        //                    Currentdate = DateTime.Now,
+        //                    CheckInTime = DateTime.Now,
+        //                    CheckIn = true,
+        //                };
+        //                await _context.EmployeeCheckIns.AddAsync(newCheckIn);
+        //            }
+        //        }
+        //        else
+        //        {
+        //            if (existingCheckInRecord != null)
+        //            {
+        //                existingCheckInRecord.CurrentLat = model.CurrentLat;
+        //                existingCheckInRecord.Currentlong = model.Currentlong;
+        //                existingCheckInRecord.CheckOutTime = DateTime.Now;
+        //                existingCheckInRecord.CheckIn = false;
+        //                existingCheckInRecord.Updatedate = DateTime.Now;
+        //                _context.EmployeeCheckIns.Update(existingCheckInRecord);
+        //            }
+        //            else
+        //            {
+        //                // Add new check-out record if no existing record
+        //                var newCheckOut = new EmployeeCheckIn
+        //                {
+        //                    EmployeeId = emp.EmployeeId,
+        //                    CurrentLat = model.CurrentLat,
+        //                    Currentlong = model.Currentlong,
+        //                    Currentdate = DateTime.Now,
+        //                    CheckOutTime = DateTime.Now,
+        //                    CheckIn = false,
+        //                };
+        //                await _context.EmployeeCheckIns.AddAsync(newCheckOut);
+        //            }
+        //        }
+
+        //        // Update or Add Check-In Record in EmployeeCheckInRecords
+        //        var checkInRecord = await _context.EmployeeCheckInRecords
+        //            .Where(x => x.EmpId == emp.EmployeeId && x.CheckIntime.Value.Date == today)
+        //            .FirstOrDefaultAsync();
+
+        //        if (checkInRecord != null)
+        //        {
+        //            if (checkIn)
+        //            {
+        //                checkInRecord.Workinghour += DateTime.Now - checkInRecord.CheckIntime.Value;
+        //            }
+        //            else
+        //            {
+        //                checkInRecord.CheckOuttime = DateTime.Now;
+        //                checkInRecord.Workinghour += DateTime.Now - checkInRecord.CheckIntime.Value;
+        //            }
+        //            _context.EmployeeCheckInRecords.Update(checkInRecord);
+        //        }
+        //        else if (checkIn)
+        //        {
+        //            var newCheckInRecord = new EmployeeCheckInRecord
+        //            {
+        //                EmpId = emp.EmployeeId,
+        //                CheckIntime = DateTime.Now,
+        //                CurrentDate = DateTime.Now,
+        //                Isactive = true,
+        //                Workinghour = TimeSpan.Zero,
+        //                ShiftId = officeShift.Id,
+        //            };
+        //            await _context.EmployeeCheckInRecords.AddAsync(newCheckInRecord);
+        //        }
+
+        //        await _context.SaveChangesAsync();
+        //        return existingCheckInRecord ?? new EmployeeCheckIn(); // Return existing or default record
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // Log error (use your preferred logging framework)
+        //        Console.WriteLine($"Error in UpdateEmpLocation: {ex.Message}");
+        //        throw;
+        //    }
+        //}
+
+        public async Task<bool> ApplyWfh(EmpApplyWfhDto model, string userid)
+        {
+            try
+            {
+                if (model == null || string.IsNullOrEmpty(userid))
+                {
+                    throw new ArgumentException("Invalid input data.");
+                }
+
+                var apply = new EmpApplywfh
+                {
+                    UserId = userid,
+                    Startdate = model.Startdate,
+                    EndDate = model.EndDate,
+                    Currentdate = DateTime.Now,
+                    Reason = model.Reason,
+                    Iswfh = false
+                };
+
+                await _context.EmpApplywfhs.AddAsync(apply);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An unexpected error occurred: " + ex.Message, ex);
             }
         }
 
