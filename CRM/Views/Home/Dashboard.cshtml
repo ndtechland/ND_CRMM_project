@@ -353,21 +353,21 @@ else
                             <div class="card shadow">
                                 <div class="card-body">
                                     <h5 class="card-title">Work Hours</h5>
-                                    <canvas id="workHoursChart" class="chart-container"></canvas> 
+                                    <canvas id="workHoursChart" class="chart-container"></canvas>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="container mt-5">
-                        <div class="card">
-                            <div class="card-header text-center">
-                                <h5>Earnings</h5>
-                            </div>
-                            <div class="card-body">
-                                <canvas id="paymentStatusChart" width="400" height="200"></canvas>
-                            </div>
-                        </div>
-                    </div>
+                    @*    <div class="container mt-5">
+                <div class="card">
+                <div class="card-header text-center">
+                <h5>Earnings</h5>
+                </div>
+                <div class="card-body">
+                <canvas id="paymentStatusChart" width="400" height="200"></canvas>
+                </div>
+                </div>
+                </div> *@
                     <div class="row mt-4">
                         <!-- Holidays Section -->
                         <div class="col-lg-6 col-md-12 mb-4">
@@ -417,7 +417,7 @@ else
                                                     <div>
                                                         <h6 class="mb-0">Meeting at @announcement.time</h6>
                                                         <h6 class="mb-0">Talking about @announcement.Title</h6>
-                                                     
+
                                                         <small>
                                                             @announcement.Date?.ToString("dd MMM yyyy")
                                                         </small>
@@ -512,7 +512,7 @@ else
 
 
 
-<script>
+@* <script>
     $(document).ready(function () {
         const currentYear = new Date().getFullYear();
 
@@ -605,4 +605,4 @@ else
 </script>
 
 
-
+ *@

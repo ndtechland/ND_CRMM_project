@@ -51,4 +51,11 @@
         public string? StartTime { get; set; }
 
     }
+    public class EmpApplyWfhDto
+    {
+        public DateTime? Startdate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public string? Reason { get; set; }
+
+    }
 }

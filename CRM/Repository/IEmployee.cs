@@ -43,6 +43,7 @@ namespace CRM.Repository
         public Task<bool> Overtimeapply(string userid);
 
         public Task<EmployeeCheckIn> UpdateEmpLocation(CRM.Models.APIDTO.EmpCheckIn model, bool CheckIN);
+        public Task<bool> ApplyWfh(EmpApplyWfhDto model, string userid);
 
     }
 }

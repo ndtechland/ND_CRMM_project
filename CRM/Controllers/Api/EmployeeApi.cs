@@ -2111,6 +2111,70 @@ namespace CRM.Controllers.Api
                 return StatusCode(response.StatusCode, response);
             }
         }
+        [HttpPost("/api/EmployeeApi/Applywfh")]
+        public async Task<IActionResult> Applywfh([FromBody] EmpApplyWfhDto model)
+        {
+            var response = new Utilities.Response<bool>();
+            try
+            {
+                if (User.Identity.IsAuthenticated && User.Claims.Any())
+                {
+                    string userid = User.Claims.FirstOrDefault()?.Value;
+                    if (string.IsNullOrEmpty(userid))
+                    {
+                        response.Succeeded = false;
+                        response.StatusCode = StatusCodes.Status400BadRequest;
+                        response.Message = "User ID not found.";
+                        return BadRequest(response);
+                    }
+
+                    var data = await _context.EmpApplywfhs.Where(x => x.UserId == userid).ToListAsync();
+                    if (data != null && data.Any())
+                    {
+                        if (data.Any(x => x.Startdate == model.Startdate) || data.Any(x => x.EndDate == model.EndDate))
+                        {
+                            response.Succeeded = false;
+                            response.StatusCode = StatusCodes.Status501NotImplemented;
+                            response.Message = "WFH Already Applied...!";
+                            return Ok(response);
+                        }
+                    }
+
+                    bool Check = await _apiemp.ApplyWfh(model, userid);
+                    if (Check)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Message = "WFH Apply Successful...!";
+                        response.Data = Check;
+                        return Ok(response);
+                    }
+                    else
+                    {
+                        response.Succeeded = false;
+                        response.StatusCode = StatusCodes.Status500InternalServerError;
+                        response.Message = "WFH Not Applied...!";
+                        response.Data = Check;
+                        return BadRequest(response);
+                    }
+                }
+                else
+                {
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Message = "Token is expired.";
+                    return BadRequest(response);
+                }
+            }
+            catch (Exception ex)
+            {
+                response.Succeeded = false;
+                response.StatusCode = StatusCodes.Status500InternalServerError;
+                response.Message = "An error occurred while processing your request.";
+                response.Data = false;
+                Console.WriteLine("Error: " + ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
+        }
 
     }
 }

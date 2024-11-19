@@ -1,5 +1,6 @@
 ﻿@{
     var pp = ViewBag.Professional;
+    var profile = "/CompanyImage/" + ViewBag.VendorProfile;
     var addedBy = Context.Session.GetString("UserName");
     if (!string.IsNullOrEmpty(addedBy))
     {
@@ -7,12 +8,12 @@
     }
     else
     {
-        ViewBag.UserName = ""; 
+        ViewBag.UserName = "";
     }
 }
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
     <meta name="title" content="N D Connect - Streamline Business Operations with All-in-One Software">
     <meta name="description" content="N D Connect by N D Techland is a comprehensive software solution for businesses to manage customer data, invoicing, payment reminders, employee tracking, and more. Boost efficiency and streamline your operations with N D Connect.">
@@ -22,26 +23,11 @@
     <title>ND Connect</title>
 
     <!-- Google font-->
-    <!--Google font-->
-    <link href="https://fonts.googleapis.com/css?family=PT+Sans:400,700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Work+Sans:100,200,300,400,500,600,700,800,900" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
 
-    <!--icon css-->
+    <!-- Font Awesome-->
     <link rel="stylesheet" type="text/css" href="../assets/css/font-awesome.css">
-    <link rel="stylesheet" type="text/css" href="../assets/css/themify.css">
-
-
-    <!--Slick slider css-->
-    <link rel="stylesheet" type="text/css" href="../assets/css/slick.css">
-    <link rel="stylesheet" type="text/css" href="../assets/css/slick-theme.css">
-
-    <!--Animate css-->
-    <link rel="stylesheet" type="text/css" href="../assets/css/animate.css">
-    <!-- Bootstrap css -->
-    <link rel="stylesheet" type="text/css" href="../assets/css/bootstrap.css">
-
-    <!-- Theme css -->
-    <link rel="stylesheet" type="text/css" href="../assets/css/color2.css" media="screen" id="color">
 
     <!-- Flag icon-->
     <link rel="stylesheet" type="text/css" href="../assets/css/flag-icon.css">
@@ -63,78 +49,64 @@
 
     <!-- App css-->
     <link rel="stylesheet" type="text/css" href="../assets/css/admin.css">
-
-    <!-- Datatable css-->
-    <link rel="stylesheet" type="text/css" href="../assets/css/datatables.css"> 
- 
-
-    <style>
-        .page-main-header .main-header-right .nav-right .profile-dropdown {
-            right: -10px;
-            left: inherit;
-            width: 190px;
-            top: 63px;
-        }
-    </style>
-
-
 </head>
+
 <body>
 
     <!-- page-wrapper Start-->
-    @if (@ViewBag.UserName == "admin")
-    {
-        <div class="page-wrapper">
-            @RenderBody()
-            <!-- Page Header Start-->
-            <div class="page-main-header">
-                <div class="main-header-left">
-                    <div class="logo-wrapper">
-                        <a href="/Home/Dashboard">
-                            <img class="blur-up lazyloaded" src="../assets/images/layout-2/logo/logo.png" alt="" style="width: 203px;height: 70px;">
-                        </a>
-                    </div>
-                </div>
-                <div class="main-header-right ">
-                    <div class="mobile-sidebar">
-                        <div class="media-body text-end switch-sm">
-                            <label class="switch">
-                                <input id="sidebar-toggle" type="checkbox" checked="checked"><span class="switch-state"></span>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="nav-right col">
-                        <ul class="nav-menus">
-                            <li>
-                                <form class="form-inline search-form" autocomplete="off">
-                                    <div class="form-group">
-                                        <input class="form-control-plaintext" type="search" placeholder="Search.." id="Sidebarvalue-search"><span class="d-sm-none mobile-search"><i data-feather="search"></i></span>
-                                    </div>
-
-                                </form>
-                            </li>
-                            <li><h5>Hi @ViewBag.UserName !</h5></li>
-                            <li><a class="text-dark" href="#!" onclick="javascript:toggleFullScreen()"><i data-feather="maximize"></i></a></li>
-                            <li class="onhover-dropdown">
-                                <div class="media align-items-center">
-                                    <i class="fa fa-user fa-2x"></i>
-                                </div>
-                                <ul class="profile-dropdown onhover-show-div p-20 profile-dropdown-hover">
-                                    <li><a href="javascript:void(0)">Profile<span class="pull-right"><i data-feather="user"></i></span></a></li>
-                                    <li><a href="/Admin/Changepassword">Change password<span class="pull-right"><i data-feather="settings"></i></span></a></li>
-                                    <li><a href="/Admin/Logout">Logout<span class="pull-right"><i class="fa fa-sign-out"></i></span></a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                        <div class="d-lg-none mobile-toggle pull-right"><i data-feather="more-horizontal"></i></div>
-                    </div>
+    <div class="page-wrapper">
+        @RenderBody()
+        <!-- Page Header Start-->
+        <div class="page-main-header">
+            <div class="main-header-left">
+                <div class="logo-wrapper">
+                    <a href="/Home/Dashboard">
+                        <img class="blur-up lazyloaded" src="../assets/images/layout-2/logo/logo.png" alt="" style="width: 203px;height: 70px;">
+                    </a>
                 </div>
             </div>
-            <!-- Page Header Ends -->
-            <!-- Page Body Start-->
-            <div class="page-body-wrapper">
+            <div class="main-header-right ">
+                <div class="mobile-sidebar">
+                    <div class="media-body text-end switch-sm">
+                        <label class="switch">
+                            <input id="sidebar-toggle" type="checkbox" checked="checked"><span class="switch-state"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="nav-right col">
+                    <ul class="nav-menus">
+                        <li>
+                            <form class="form-inline search-form" autocomplete="off">
+                                <div class="form-group">
+                                    <input class="form-control-plaintext" type="search" placeholder="Search.." id="Sidebarvalue-search"><span class="d-sm-none mobile-search"><i data-feather="search"></i></span>
+                                </div>
 
-                <!-- Page Sidebar Start-->
+                            </form>
+                        </li>
+                        <li><h5>Hi @ViewBag.UserName !</h5></li>
+                        <li><a class="text-dark" href="#!" onclick="javascript:toggleFullScreen()"><i data-feather="maximize"></i></a></li>
+                        <li class="onhover-dropdown">
+                            <div class="media align-items-center">
+                                <i class="fa fa-user fa-2x"></i>
+                            </div>
+                            <ul class="profile-dropdown onhover-show-div p-20 profile-dropdown-hover">
+                                <li><a href="javascript:void(0)">Profile<span class="pull-right"><i data-feather="user"></i></span></a></li>
+                                <li><a href="/Admin/Changepassword">Change password<span class="pull-right"><i data-feather="settings"></i></span></a></li>
+                                <li><a href="/Admin/Logout">Logout<span class="pull-right"><i class="fa fa-sign-out"></i></span></a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <div class="d-lg-none mobile-toggle pull-right"><i data-feather="more-horizontal"></i></div>
+                </div>
+            </div>
+        </div>
+        <!-- Page Header Ends -->
+        <!-- Page Body Start-->
+        <div class="page-body-wrapper">
+
+            <!-- Page Sidebar Start-->
+             @if (@ViewBag.UserName == "admin")
+    {
                 <div class="page-sidebar">
                     <div class="sidebar custom-scrollbar">
                         <ul class="sidebar-menu">
@@ -176,7 +148,7 @@
                                     <li><a href="/Home/Designation"><i class="fa fa-circle"></i>Designation </a></li>
                                     <li><a href="/Employee/Employer"><i class="fa fa-circle"></i>Add Employer EPF/ESIC</a></li>
                                     <li><a href="/Employee/Employee_list"><i class="fa fa-circle"></i>Employer EPF/ESIC List</a></li>
-                                    <li><a href="/Home/AppFaq"><i class="fa fa-circle"></i>FAQ</a></li> 
+                                    <li><a href="/Home/AppFaq"><i class="fa fa-circle"></i>FAQ</a></li>
                                     <li><a href="/Home/Blogs"><i class="fa fa-circle"></i>Blogs</a></li>
                                     <li><a href="/Home/OurExpirtise"><i class="fa fa-circle"></i>Our Expertise</a></li>
                                     <li><a href="/Home/OurStory"><i class="fa fa-circle"></i>Our Story</a></li>
@@ -204,71 +176,17 @@
                         </ul>
                     </div>
                 </div>
-                <!-- footer start-->
-                <footer id="footer" class="footer" style="margin-top:18rem ;text-align:center">
-                    <div class="copyright">
-                        &copy; Copyright <strong><span>ndtechland.com</span></strong>. All Rights Reserved
-                    </div>
-                    <div class="credits">
-                        Designed by <a href="https://ndtechland.com/">N D Techland Pvt Ltd.</a>
-                    </div>
-                </footer>
-                <!-- footer end-->
-            </div>
-
-        </div>
-    }
-    else
-    {
-        <div class="page-wrapper">
-            @RenderBody()
-            <!-- Page Header Start-->
-            <div class="page-main-header">
-                <div class="main-header-left">
-                    <div class="logo-wrapper">
-                        <a href="/Home/Dashboard">
-                            <img class="blur-up lazyloaded" src="../assets/images/layout-2/logo/logo.png" alt="" style="width: 203px;height: 70px;">
-                        </a>
-                    </div>
-                </div>
-                <div class="main-header-right ">
-                    <div class="mobile-sidebar">
-                        <div class="media-body text-end switch-sm">
-                            <label class="switch">
-                                <input id="sidebar-toggle" type="checkbox" checked="checked"><span class="switch-state"></span>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="nav-right col">
-                        <ul class="nav-menus">
-                            <li>
-                                <form class="form-inline search-form" autocomplete="off">
-                                    <div class="form-group">
-                                        <input class="form-control-plaintext" type="search" placeholder="Search.." id="Sidebarvalue-search"><span class="d-sm-none mobile-search"><i data-feather="search"></i></span>
-                                    </div>
-
-                                </form>
-                            </li>
-                            <li><h5>Hi @ViewBag.UserName !</h5></li>
-                            <li><a class="text-dark" href="#!" onclick="javascript:toggleFullScreen()"><i data-feather="maximize"></i></a></li>
-                            <li class="onhover-dropdown">
-                                <div class="media align-items-center">
-                                    <i class="fa fa-user fa-2x"></i>
-                                </div>
-                                <ul class="profile-dropdown onhover-show-div p-20 profile-dropdown-hover">
-                                    <li><a href="/Vendor/VendorProfile">Profile<span class="pull-right"><i data-feather="user"></i></span></a></li>
-                                    <li><a href="/Admin/Changepassword">Change password<span class="pull-right"><i data-feather="settings"></i></span></a></li>
-                                    <li><a href="/Admin/Logout">Logout<span class="pull-right"><i class="fa fa-sign-out"></i></span></a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                        <div class="d-lg-none mobile-toggle pull-right"><i data-feather="more-horizontal"></i></div>
-                    </div>
-                </div>
-            </div>
-            <div class="page-body-wrapper">
+            }
+            else
+            {
                 <div class="page-sidebar">
                     <div class="sidebar custom-scrollbar">
+                        <div class="sidebar-user text-center">
+                            <div>
+                                <img class="img-60 rounded-circle lazyloaded blur-up" src="@profile" alt="#">
+                            </div>
+                            <h6 class="mt-3 f-14">@ViewBag.UserName</h6>
+                        </div>
                         <ul class="sidebar-menu">
                             <li><a class="sidebar-header" href="/Home/Dashboard"><i data-feather="home"></i><span>Dashboard</span></a></li>
                             <li>
@@ -288,7 +206,7 @@
                                             <li><a href="/Customer/CustomerList"><i class="fa fa-circle"></i>Customer List </a></li>
                                             <li><a href="/Sale/CustomerInvoiceList"><i class="fa fa-circle"></i>Invoice </a></li>
                                         </ul>
-                                    </li>    
+                                    </li>
                                 </ul>
                             </li>
                             <li>
@@ -304,7 +222,7 @@
                                             <li><a href="/Employee/GenerateSalary"><i class="fa fa-circle"></i>Generate Salary Slip </a></li>
                                             <li><a href="/Vendor/EmployeeEpf"><i class="fa fa-circle"></i>Employee EPF </a></li>
                                             <li><a href="/Vendor/EmployeeEsic"><i class="fa fa-circle"></i>Employee ESIC </a></li>
-                                        </ul>                                       
+                                        </ul>
                                     </li>
                                     <li>
                                         <a class="sidebar-header" href="javascript:void(0)"><i class="fa fa-circle"></i><span>Task Management</span><i class="fa fa-angle-right pull-right"></i></a>
@@ -319,8 +237,9 @@
                                             <li><a href="/Vendor/ApprovedPresnolInfo"><i class="fa fa-circle"></i>Employee Personal Info</a></li>
                                             <li><a href="/Vendor/Approvedbankdetails"><i class="fa fa-circle"></i>Employee Bank Details</a></li>
                                             <li><a href="/Vendor/ApprovedLeaveApply"><i class="fa fa-circle"></i>Leave Applied List </a></li>
-@*                                             <li><a href="/Vendor/EmployeeApplyOvertimeList"><i class="fa fa-circle"></i>Overtime Applied List </a></li>
- *@                                        </ul>
+                                            @*                                             <li><a href="/Vendor/EmployeeApplyOvertimeList"><i class="fa fa-circle"></i>Overtime Applied List </a></li>
+                                        *@
+                                        </ul>
                                     </li>
                                     <li>
                                         <a class="sidebar-header" href="javascript:void(0)"><i class="fa fa-circle"></i><span>Form 16</span><i class="fa fa-angle-right pull-right"></i></a>
@@ -389,7 +308,7 @@
                                     <li><a href="/Vendor/Officeshift"><i class="fa fa-circle"></i>Office Shift</a></li>
                                     <li><a href="/Vendor/officeBreak"><i class="fa fa-circle"></i>Office Break</a></li>
                                     <li><a href="/Employee/EmpLeavemaster"><i class="fa fa-circle"></i>Leave Master</a></li>
-                                    <li><a href="/Vendor/Events"><i class="fa fa-circle"></i>Events</a></li> 
+                                    <li><a href="/Vendor/Events"><i class="fa fa-circle"></i>Events</a></li>
                                     <li><a href="/Vendor/Aboutcompany"><i class="fa fa-circle"></i>About Company</a></li>
                                     <li><a href="/Employee/Employer"><i class="fa fa-circle"></i>Add Emp EPF & ESIC</a></li>
                                     <li><a href="/Employee/Employee_list"><i class="fa fa-circle"></i>Emp EPF & ESIC List</a></li>
@@ -407,72 +326,30 @@
                         </ul>
                     </div>
                 </div>
-                <!-- Right sidebar Ends-->
-                <!-- footer start-->
-                <footer id="footer" class="footer" style="margin-top:18rem;text-align:center">
-                    <div class="copyright">
-                        &copy; Copyright <strong><span>ndtechland.com</span></strong>. All Rights Reserved
+            }
+            <!-- Page Sidebar Ends-->
+           
+
+            <!-- footer start-->
+            <footer class="footer">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-6 footer-copyright">
+                            <p class="mb-0">Copyright 2019 © Bigdeal All rights reserved.</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="pull-right mb-0">Hand crafted & made with<i class="fa fa-heart"></i></p>
+                        </div>
                     </div>
-                    <div class="credits">
-                        Designed by <a href="https://ndtechland.com/">N D Techland Pvt Ltd.</a>
-                    </div>
-                </footer>
-                <!-- footer end-->
-            </div>
-
+                </div>
+            </footer>
+            <!-- footer end-->
         </div>
-    }
-    <div id="myModal" class="modal fade" role="dialog" style="z-index: 100000">
 
-        <div class="modal-dialog">
-
-            <div class="modal-content modal_rad">
-                <div class="modal-header">
-
-                    <h4 class="modal-title">Validation Message</h4>
-                </div>
-                <div class="modal-body">
-                    <p id="errorMessage" style="font-size: 11px; font-family: Verdana;">
-                    </p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" id="closemodal" class="btn btn-danger" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
     </div>
 
-    @RenderSection("Scripts", required: false)
     <!-- latest jquery-->
     <script src="../assets/js/jquery-3.3.1.min.js"></script>
-
-    <!-- slick js-->
-    <script src="../assets/js/slick.js"></script>
-
-    <!-- popper js-->
-    <script src="../assets/js/popper.min.js"></script>
-    <script src="../assets/js/bootstrap-notify.min.js"></script>
-
-    <!-- menu js-->
-    <script src="../assets/js/menu.js"></script>
-
-    <!-- timer js -->
-    <script src="../assets/js/timer2.js"></script>
-
-    <!-- Bootstrap js-->
-    <script src="../assets/js/bootstrap.js"></script>
-
-    <!-- tool tip js -->
-    <script src="../assets/js/tippy-popper.min.js"></script>
-    <script src="../assets/js/tippy-bundle.iife.min.js"></script>
-
-    <!-- father icon -->
-    <script src="../assets/js/feather.min.js"></script>
-    <script src="../assets/js/feather-icon.js"></script>
-
-    <!-- Theme js-->
-    <script src="../assets/js/modal.js"></script>
-    <script src="../assets/js/script.js"></script>
 
     <!-- Bootstrap js-->
     <script src="../assets/js/popper.min.js"></script>
@@ -502,6 +379,8 @@
     <script src="../assets/js/counter/jquery.counterup.min.js"></script>
     <script src="../assets/js/counter/counter-custom.js"></script>
 
+    <!--Customizer admin-->
+    <script src="../assets/js/admin-customizer.js"></script>
 
     <!--map js-->
     <script src="../assets/js/vector-map/jquery-jvectormap-2.0.2.min.js"></script>
@@ -532,12 +411,28 @@
 
     <!--script admin-->
     <script src="../assets/js/admin-script.js"></script>
-
-    <!-- Datatables js-->
-    <script src="../assets/js/datatables/jquery.dataTables.min.js"></script>
-    <script src="../assets/js/datatables/custom-basic.js"></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs5.min.js'></script>
+    <div id="myModal" class="modal fade" role="dialog" style="z-index: 100000">
 
+        <div class="modal-dialog">
+
+            <div class="modal-content modal_rad">
+                <div class="modal-header">
+
+                    <h4 class="modal-title">Validation Message</h4>
+                </div>
+                <div class="modal-body">
+                    <p id="errorMessage" style="font-size: 11px; font-family: Verdana;">
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="closemodal" class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @RenderSection("Scripts", required: false)
     <script type="text/javascript">
         $("#closemodal").click(function () {
             $("#myModal").modal('hide');
