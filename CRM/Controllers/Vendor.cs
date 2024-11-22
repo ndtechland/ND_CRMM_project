@@ -17,6 +17,7 @@ using OfficeOpenXml;
 using SelectPdf;
 using System.Data.SqlClient;
 using ClosedXML.Excel;
+using Org.BouncyCastle.Ocsp;
 
 namespace CRM.Controllers
 {
@@ -76,6 +77,7 @@ namespace CRM.Controllers
                         ViewBag.state = data.State;
                         ViewBag.startDate = ((DateTime)data.StartDate).ToString("yyyy-MM-dd");
                         ViewBag.renewDate = ((DateTime)data.RenewDate).ToString("yyyy-MM-dd");
+                        ViewBag.Pricingplan = vendor.PricingPlanid;
                         return View(data);
                     }
                 }
@@ -89,8 +91,7 @@ namespace CRM.Controllers
                     {
                         Value = p.Id.ToString(),
                         Text = p.ProductName,
-                    })
-                    .ToList();
+                    }).ToList();
                 ViewBag.PlanPrice = _context.PricingPlans.Where(x => x.IsActive == true)
                   .Select(p => new SelectListItem
                   {
@@ -2518,7 +2519,7 @@ namespace CRM.Controllers
                 throw;
             }
         }
-        public async Task<IActionResult> EmployeeAttendanceList()
+        public async Task<IActionResult> EmployeeAttendanceList(string EmpId)
         {
             try
             {
@@ -2548,7 +2549,7 @@ namespace CRM.Controllers
                                                    CurrentDate = record.CurrentDate.HasValue
                                                        ? record.CurrentDate.Value.ToString("dd-MMM-yyyy")
                                                        : "N/A"
-                                               }).ToListAsync();
+                                               }).Where(x =>x.EmpId == EmpId).ToListAsync();
 
                 foreach (var attendanceRecord in attendanceRecords)
                 {
@@ -2849,8 +2850,7 @@ namespace CRM.Controllers
                 throw;
             }
         }
-
-        public async Task<IActionResult> EmployeeBreakList()
+        public async Task<IActionResult> EmployeeBreakList(string EmpId)
         {
             try
             {
@@ -2862,7 +2862,7 @@ namespace CRM.Controllers
                     return NotFound("Admin not found.");
                 }
                 var empDetails = await _context.EmployeeRegistrations
-                    .Where(x => x.Vendorid == adminLogin.Vendorid)
+                    .Where(x => x.Vendorid == adminLogin.Vendorid && x.EmployeeId == EmpId)
                     .ToListAsync();
 
                 if (empDetails == null || empDetails.Count == 0)
@@ -3041,7 +3041,7 @@ namespace CRM.Controllers
             int minutes = (int)((totalHours - hours) * 60);
             return $"{hours}h {minutes}m";
         }
-        public async Task<IActionResult> ExportBreakinReport()
+        public async Task<IActionResult> ExportBreakinReport(string EmpId)
         {
             try
             {
@@ -3054,7 +3054,7 @@ namespace CRM.Controllers
                 }
 
                 var empDetails = await _context.EmployeeRegistrations
-                    .Where(x => x.Vendorid == adminLogin.Vendorid)
+                    .Where(x => x.Vendorid == adminLogin.Vendorid && x.EmployeeId == EmpId)
                     .ToListAsync();
 
                 if (empDetails == null || empDetails.Count == 0)
@@ -3139,7 +3139,7 @@ namespace CRM.Controllers
                     var row = 1;
                     foreach (var record in loginActivities)
                     {
-                        worksheet.Cell(currentwork, 1).Value = row++; 
+                        worksheet.Cell(currentwork, 1).Value = row++;
                         worksheet.Cell(currentwork, 2).Value = record.EmpId;
                         worksheet.Cell(currentwork, 3).Value = record.EmployeeName;
                         worksheet.Cell(currentwork, 4).Value = record.BreakIntime;
@@ -3159,14 +3159,14 @@ namespace CRM.Controllers
                         return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "EmployeeBreakReport.xlsx");
                     }
 
-                } 
+                }
             }
             catch (Exception ex)
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
-        public async Task<IActionResult> ExportAttendanceReport()
+        public async Task<IActionResult> ExportAttendanceReport(string EmpId)
         {
             try
             {
@@ -3197,7 +3197,7 @@ namespace CRM.Controllers
                                                        ? record.CurrentDate.Value.ToString("dd-MMM-yyyy")
                                                        : "N/A",
                                                    Workinghour = "N/A"
-                                               }).ToListAsync();
+                                               }).Where(x => x.EmpId == EmpId).ToListAsync();
 
                 foreach (var attendanceRecord in attendanceRecords)
                 {
@@ -3258,14 +3258,142 @@ namespace CRM.Controllers
                     }
 
                 }
-              
+
             }
             catch (Exception ex)
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
-        
+        [HttpGet,Route("/Vendor/showallemployeeAttendancelist")]
+        [HttpGet, Route("/Vendor/showallemployeeBreakinlist")]
+        public async Task<IActionResult> showallemployeelist()
+        {
+            int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+            var adminLogin = await _context.AdminLogins.FirstOrDefaultAsync(x => x.Id == userId);
+
+            if (adminLogin == null)
+                return Json(new { exists = false, message = "Admin not found." });
+
+            // Use Include to fetch related EmployeePersonalDetails in one query if relationships are set up
+            var employeeRegistrations = await _context.EmployeeRegistrations
+                .Where(x => x.Vendorid == adminLogin.Vendorid)
+                .Select(x => new
+                {
+                    x.EmployeeId,
+                    x.FirstName,
+                    x.MiddleName,
+                    x.LastName,
+                    x.DateOfJoining,
+                    PersonalDetails = _context.EmployeePersonalDetails
+                        .Where(g => g.EmpRegId == x.EmployeeId)
+                        .Select(g => new
+                        {
+                            g.MobileNumber,
+                            g.PersonalEmailAddress
+                        })
+                        .FirstOrDefault()
+                }).ToListAsync();
+
+            var epfInfo = employeeRegistrations.Select(x => new showallemployeelisteDto
+            {
+                EmpId = x.EmployeeId.ToString(),
+                EmployeeName = $"{x.FirstName} " +
+                               (string.IsNullOrEmpty(x.MiddleName) ? "" : x.MiddleName + " ") +
+                               x.LastName,
+                MobileNumber = x.PersonalDetails?.MobileNumber,
+                EmailId = x.PersonalDetails?.PersonalEmailAddress,
+                JoiningDate = x.DateOfJoining.HasValue ? x.DateOfJoining.Value.ToString("dd-MMM-yyyy") : "N/A"
+            }).ToList();
+
+            var model = new showallemployeelisteDto
+            {
+                emplist = epfInfo 
+            };
+
+            return View(model);
+        }
+        [HttpGet, Route("Vendor/ApprovedWfhApply")]
+        public async Task<IActionResult> ApprovedWfhApply(int? id)
+        {
+            try
+            {
+                int iId = id ?? 0;
+
+                if (HttpContext.Session.GetString("UserName") != null)
+                {
+                    int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                    var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                    var Approvedwfhdetail = await _ICrmrpo.GetWfhapplydetailList(adminlogin.Vendorid);
+                    if (Approvedwfhdetail != null)
+                    {
+                        return View(Approvedwfhdetail);
+
+                    }
+                    else
+                    {
+                        return View();
+
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Login", "Admin");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error Message : " + ex.Message, ex);
+            }
+        }
+
+        public async Task<IActionResult> UpdateWfhApplyStatus(int Id)
+        {
+            var applywfh = await _context.EmpApplywfhs.FirstOrDefaultAsync(x => x.Id == Id);
+            if (applywfh == null)
+            {
+                TempData["msg"] = "Data not found!";
+                return RedirectToAction("ApprovedWfhApply");
+            }
+
+            var empinfo = await _context.EmployeeRegistrations.FirstOrDefaultAsync(x => x.EmployeeId == applywfh.UserId);
+            var emppersonalinfo = await _context.EmployeePersonalDetails.FirstOrDefaultAsync(x => x.EmpRegId == applywfh.UserId);
+
+            applywfh.Iswfh = !applywfh.Iswfh;
+            await _context.SaveChangesAsync();
+            string subject;
+            string emailBody;
+
+            if (applywfh.Iswfh == true)
+            {
+                subject = "Wfh Approval Accepted";
+                emailBody = $"Dear {empinfo.FirstName} {empinfo.MiddleName} {empinfo.LastName},\n\nYour Wfh application has been approved.";
+            }
+            else
+            {
+                subject = "Wfh Approval Rejected";
+                emailBody = $"Dear {empinfo.FirstName} {empinfo.MiddleName} {empinfo.LastName},\n\nWe regret to inform you that your Wfh application has been rejected.";
+            }
+
+            try
+            {
+                await _emailService.SendEmpLeaveApprovalEmailAsync(
+                    emppersonalinfo.PersonalEmailAddress, empinfo.FirstName, empinfo.MiddleName, empinfo.LastName, subject, emailBody);
+
+                TempData["msg"] = (bool)applywfh.Iswfh
+                    ? "Approval status updated successfully and approval email sent!"
+                    : "Approval status updated successfully and rejection email sent!";
+            }
+            catch (Exception ex)
+            {
+                TempData["msg"] = (bool)applywfh.Iswfh
+                    ? "Approval status updated successfully, but failed to send approval email."
+                    : "Approval status updated successfully, but failed to send rejection email.";
+            }
+
+            return RedirectToAction("ApprovedWfhApply");
+        }
+
     }
 }
 

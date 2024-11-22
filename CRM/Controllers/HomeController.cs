@@ -39,8 +39,6 @@ namespace CRM.Controllers
                 ViewBag.HelpCenters = await _context.HelpCenters.CountAsync();
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == UserId).FirstOrDefaultAsync();
 
-                //VendorProfile
-                ViewBag.VendorProfile = await _context.VendorRegistrations.Where(x => x.Id == adminlogin.Vendorid).Select(x =>x.CompanyImage).FirstOrDefaultAsync();
                 //VendorDashboard
                 ViewBag.Professional = await _context.VendorRegistrations.Where(x => x.Id == adminlogin.Vendorid).Select(x => x.Isprofessionaltax).FirstOrDefaultAsync();
                 // Customerlist
@@ -63,9 +61,7 @@ namespace CRM.Controllers
                 ViewBag.Checkin = emplist.Count(x => _context.EmployeeCheckIns
                  .Any(y => y.EmployeeId == x.EmployeeId && y.CheckIn == true
                           && y.Currentdate.Value.Date == DateTime.Now.Date));
-                //ABSENT
-                ViewBag.ABSENT = emplist.Count(x => _context.EmployeeCheckInRecords
-               .Any(y => y.EmpId == x.EmployeeId && y.CurrentDate.Value.Date == DateTime.Now.Date));
+
                 ViewBag.Vendorlist = await _context.VendorRegistrations.CountAsync();
                 //Employee
                 ViewBag.Employee = emplist.Count();
@@ -104,8 +100,8 @@ namespace CRM.Controllers
                                     record.CurrentDate.Value.Date >= firstDayOfMonth &&
                                     record.CurrentDate.Value.Date <= today)
                     .AsEnumerable()
-                    .GroupBy(record => record.CurrentDate.Value.Date) 
-                    .ToList(); 
+                    .GroupBy(record => record.CurrentDate.Value.Date)
+                    .ToList();
 
                 var workingHoursDates = records
                     .Select(group => group.Key.ToString("yyyy-MM-dd"))
@@ -2265,41 +2261,190 @@ namespace CRM.Controllers
             }
         }
         [HttpGet]
-        public async Task<IActionResult> GetPaymentStatusData(int? year = null)
+        public async Task<IActionResult> GetPaymentStatusData()
         {
             using (var context = new admin_NDCrMContext())
             {
-                int currentYear = year ?? DateTime.Now.Year;
+                int currentYear = DateTime.Now.Year;
+
+                int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminLogin = await _context.AdminLogins
+                    .Where(x => x.Id == userId)
+                    .FirstOrDefaultAsync();
+
+                if (adminLogin == null)
+                {
+                    return BadRequest("Invalid user.");
+                }
 
                 var data = await (from invoice in context.CustomerInvoices
                                   join mode in context.Paymentmodes
                                   on invoice.Paymentstatus equals mode.Id
-                                  where invoice.CreatedDate.HasValue && invoice.CreatedDate.Value.Year == currentYear
+                                  where invoice.CreatedDate.HasValue
+                                        && invoice.CreatedDate.Value.Year == currentYear
+                                        && invoice.VendorId == adminLogin.Vendorid
                                   group new { invoice, mode } by new
                                   {
                                       Month = invoice.CreatedDate.Value.Month,
-                                      Year = invoice.CreatedDate.Value.Year,
                                       invoice.Paymentstatus,
-                                      mode.PaymentType
+                                      mode.PaymentType,
+                                      Invoice = invoice.InvoiceNumber,
+                                      PaidAmount = invoice.PaidAmount,
+                                      UnPaidAmount = invoice.DueAmount
                                   } into g
                                   select new
                                   {
                                       Month = g.Key.Month,
-                                      Year = g.Key.Year,
                                       PaymentStatus = g.Key.Paymentstatus,
                                       PaymentMode = g.Key.PaymentType,
-                                      Count = g.Count()
+                                      Count = g.Select(x => x.invoice.InvoiceNumber).Distinct().Count(),
+                                      PaidAmount = g.Select(x => x.invoice.PaidAmount).Distinct().Sum(),
+                                      UnPaidAmount = g.Select(x => x.invoice.DueAmount).Distinct().Sum()
                                   }).ToListAsync();
 
-                if (data.Count == 0)
+                var groupedData = data
+                    .GroupBy(x => new { x.Month, x.PaymentMode })
+                    .Select(g => new
+                    {
+                        Month = g.Key.Month,
+                        PaymentMode = g.Key.PaymentMode,
+                        Count = g.Sum(x => x.Count),
+                        PaidAmount = g.Sum(x => x.PaidAmount),
+                        UnPaidAmount = g.Sum(x => x.UnPaidAmount)
+                    }).ToList();
+
+                var monthNames = new[] { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
+
+                var monthlyData = new List<object>();
+                for (int i = 1; i <= 12; i++)
                 {
-                    Console.WriteLine("No data found for the year: " + currentYear);
+                    var monthlyPaymentData = groupedData.Where(x => x.Month == i).ToList();
+                    var paymentModes = monthlyPaymentData.ToDictionary(x => x.PaymentMode, x => x.Count);
+
+                    var monthName = monthNames[i - 1];
+
+                    decimal paidTotalAmount = (decimal)monthlyPaymentData.Sum(x => x.PaidAmount);
+                    decimal unpaidTotalAmount = (decimal)monthlyPaymentData.Sum(x => x.UnPaidAmount);
+
+                    monthlyData.Add(new
+                    {
+                        Month = monthName,
+                        Paid = paymentModes.GetValueOrDefault("Paid", 0),
+                        Unpaid = paymentModes.GetValueOrDefault("Unpaid", 0),
+                        Partial = paymentModes.GetValueOrDefault("Partial", 0),
+                        Canceled = paymentModes.GetValueOrDefault("Canceled", 0),
+                        PaidAmt = paidTotalAmount,
+                        UnPaidAmt = unpaidTotalAmount
+                    });
                 }
 
-                return Ok(data);
-
+                return Ok(monthlyData);
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> InvoiceTaxmaster(int id)
+        {
+            try
+            {
+                var model = new InvoiceChargesmasterDto();
+
+
+                var result = from charges in _context.InvoiceChargesmasters
+                             join vendor in _context.VendorRegistrations
+                             on charges.Vendorid equals vendor.Id
+                             select new InvoiceChargesmasterDto
+                             {
+                                 Id = charges.Id,
+                                 Vendorid = vendor.CompanyName,
+                             };
+                model.taxlist = result.ToList();
+
+                ViewBag.vendorid = _context.VendorRegistrations
+                    .Select(p => new SelectListItem
+                    {
+                        Value = p.Id.ToString(),
+                        Text = p.CompanyName,
+                    })
+                    .ToList();
+
+                // Initialize ViewBag values
+                ViewBag.id = 0;
+                ViewBag.Vendor = "";
+                ViewBag.IsActive = "";
+                ViewBag.heading = "Add Tax";
+                ViewBag.btnText = "SAVE";
+                if (id != 0)
+                {
+                    var data = await _context.InvoiceChargesmasters.FindAsync(id);
+                    if (data != null)
+                    {
+                        ViewBag.id = data.Id;
+                        ViewBag.Vendor = data.Vendorid;
+                        ViewBag.IsActive = data.Isactive;
+                        ViewBag.btnText = "UPDATE";
+                        ViewBag.heading = "Update Tax";
+                    }
+                }
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while processing the request.", ex);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> InvoiceTaxmaster(InvoiceChargesmaster model)
+        {
+            try
+            {
+                bool check = await _ICrmrpo.AddAndUpdateInvoiceChargesmaster(model);
+                if (check)
+                {
+                    if (model.Id == 0)
+                    {
+                        TempData["msg"] = "ok";
+                        return RedirectToAction("InvoiceTaxmaster");
+                    }
+                    else
+                    {
+                        TempData["msg"] = "updok";
+                        return RedirectToAction("InvoiceTaxmaster");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("InvoiceTaxmaster");
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public async Task<IActionResult> DeleteInvoiceChargesmaster(int id)
+        {
+            try
+            {
+                var dlt = _context.InvoiceChargesmasters.Find(id);
+                if (dlt != null)
+                {
+                    _context.InvoiceChargesmasters.Remove(dlt);
+                    _context.SaveChanges();
+                }
+                TempData["msg"] = "dltok";
+                return RedirectToAction("InvoiceTaxmaster");
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 }

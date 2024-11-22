@@ -30,6 +30,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<Blog> Blogs { get; set; } = null!;
         public virtual DbSet<CaseStudy> CaseStudies { get; set; } = null!;
         public virtual DbSet<Category> Categories { get; set; } = null!;
+        public virtual DbSet<Chargesmaster> Chargesmasters { get; set; } = null!;
         public virtual DbSet<City> Cities { get; set; } = null!;
         public virtual DbSet<ContactU> ContactUs { get; set; } = null!;
         public virtual DbSet<Counter> Counters { get; set; } = null!;
@@ -66,6 +67,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<Hash> Hashes { get; set; } = null!;
         public virtual DbSet<HelpCenter> HelpCenters { get; set; } = null!;
         public virtual DbSet<IndustryMaster> IndustryMasters { get; set; } = null!;
+        public virtual DbSet<InvoiceChargesmaster> InvoiceChargesmasters { get; set; } = null!;
         public virtual DbSet<Job> Jobs { get; set; } = null!;
         public virtual DbSet<JobParameter> JobParameters { get; set; } = null!;
         public virtual DbSet<JobQueue> JobQueues { get; set; } = null!;
@@ -380,6 +382,17 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.CategoryName).HasMaxLength(50);
             });
 
+            modelBuilder.Entity<Chargesmaster>(entity =>
+            {
+                entity.ToTable("Chargesmaster");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Chargesname).HasMaxLength(250);
+
+                entity.Property(e => e.Chargespercentage).HasColumnType("decimal(9, 2)");
+            });
+
             modelBuilder.Entity<City>(entity =>
             {
                 entity.Property(e => e.City1)
@@ -456,6 +469,12 @@ namespace CRM.Models.Crm
                     .HasColumnName("SGST");
 
                 entity.Property(e => e.StartDate).HasColumnType("date");
+
+                entity.Property(e => e.Taxamount)
+                    .HasColumnType("decimal(9, 0)")
+                    .HasColumnName("taxamount");
+
+                entity.Property(e => e.Taxid).HasColumnName("taxid");
             });
 
             modelBuilder.Entity<CustomerRegistration>(entity =>
@@ -973,7 +992,7 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Id).HasColumnName("ID");
 
-                entity.Property(e => e.Deviceid).HasMaxLength(250);
+                entity.Property(e => e.Deviceid).HasMaxLength(500);
 
                 entity.Property(e => e.EmployeeId)
                     .HasMaxLength(200)
@@ -1352,6 +1371,15 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.IndustryName)
                     .HasMaxLength(255)
                     .HasColumnName("Industry_Name");
+            });
+
+            modelBuilder.Entity<InvoiceChargesmaster>(entity =>
+            {
+                entity.ToTable("invoiceChargesmaster");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Vendorid).HasColumnName("vendorid");
             });
 
             modelBuilder.Entity<Job>(entity =>

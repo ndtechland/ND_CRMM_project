@@ -35,5 +35,6 @@ namespace CRM.Models.Crm
         public int? CityId { get; set; }
         public string? Invoicefile { get; set; }
         public bool? Isprofessionaltax { get; set; }
+        public int? PricingPlanid { get; set; }
     }
 }

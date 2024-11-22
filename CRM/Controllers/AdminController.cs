@@ -60,10 +60,17 @@ namespace CRM.Controllers
                                   al.Id,
                                   al.UserName,
                                   al.Role,
-                                 Vendorid = (int?)cr.Id
+                                  VendorId = (int?)cr.Id,
+                                  cr.Isactive
                               }).FirstOrDefault();
+                if (result == null)
+                {
+                    ViewBag.Message = "Invalid User Name or Password!";
+                    ModelState.Clear();
+                    return View();
+                }
 
-                if(result != null)
+                if (result.Role == "admin")
                 {
                     if (result.Id != null)
                     {
@@ -71,7 +78,7 @@ namespace CRM.Controllers
                         HttpContext.Session.SetString("UserId", result.Id.ToString());
                         ViewBag.UserName = result.UserName;
                         return RedirectToAction("Dashboard", "Home");
-                    }                  
+                    }
                     else
                     {
                         ViewBag.Message = "Invalid User Name or Password!";
@@ -79,7 +86,22 @@ namespace CRM.Controllers
                         return View();
                     }
                 }
-
+                else if (result.Role == "Vendor")
+                {
+                    if (result.Isactive == true)
+                    {
+                        HttpContext.Session.SetString("UserName", result.UserName);
+                        HttpContext.Session.SetString("UserId", result.Id.ToString());
+                        ViewBag.UserName = result.UserName;
+                        return RedirectToAction("Dashboard", "Home");
+                    }
+                    else
+                    {
+                        ViewBag.Message = "Your plan has expired!";
+                        ModelState.Clear();
+                        return View();
+                    }
+                }
                 else
                 {
                     ViewBag.Message = "Invalid User Name or Password!";
@@ -87,9 +109,9 @@ namespace CRM.Controllers
                     return View();
                 }
             }
-            catch (Exception Ex)
+            catch (Exception ex)
             {
-                throw new Exception("Error: " + Ex.Message);
+                return View();
             }
         }
 

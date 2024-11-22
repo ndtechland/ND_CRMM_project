@@ -1,7 +1,7 @@
-﻿@model CRM.Models.DTO.EmployeeBreakDto
+﻿@model CRM.Models.DTO.showallemployeelisteDto
 
 @{
-    ViewData["Title"] = "EmployeeBreakList";
+    ViewData["Title"] = "Employeelist";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
 
@@ -15,7 +15,7 @@
         padding: 24px 0.75rem !important;
     }
 </style>
-
+ 
 <div class="page-wrapper">
     <div class="page-body-wrapper">
         <div class="page-sidebar">
@@ -35,7 +35,7 @@
                             <ol class="breadcrumb pull-right">
                                 <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
                                 <li class="breadcrumb-item">Report</li>
-                                <li class="breadcrumb-item active">Employee Attendance</li>
+                                <li class="breadcrumb-item active">Employee List</li>
                             </ol>
                         </div>
                     </div>
@@ -46,7 +46,6 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-body">
-                                <img src="~/image/execimage.png" style="height:50px; margin-left:96%;width:53px;cursor:pointer" title="Export To Excel" onclick="BreakinExportExcelfn()" />
                                 <div class=" table-responsive">
                                     <table id="datatable" class="table table-hover">
                                         <thead>
@@ -59,40 +58,37 @@
                                                     Employee Name
                                                 </th>
                                                 <th nowrap>
-                                                    Break-In Time
+                                                    Mobile Number
                                                 </th>
                                                 <th nowrap>
-                                                    Break-Out Time
+                                                    Email Id
                                                 </th>
-                                                <th nowrap>Break Hours</th>
-                                                <th nowrap>Attendance Date</th>
+                                                <th nowrap>Joining Date</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @{
                                                 var count = 0;
-                                                foreach (var item in Model.Breakdetail)
+                                                foreach (var item in Model.emplist)
                                                 {
                                                     count++;
-                                                    <tr class="table-row" data-empid="@item.EmpId">
+                                                    <tr class="table-row">
                                                         <td>@count</td>
                                                         <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.EmpId)
+                                                            <a class="Attendancelist" href="@Url.Action("EmployeeAttendanceList", "Vendor",new {EmpId = @item.EmpId})">@item.EmpId</a>
+                                                            <a class="Breaklist" href="@Url.Action("EmployeeBreakList", "Vendor",new {EmpId = @item.EmpId})">@item.EmpId</a>
                                                         </td>
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.EmployeeName)
                                                         </td>
                                                         <td nowrap>
-                                                            @item.BreakIntime
+                                                            @item.MobileNumber
                                                         </td>
                                                         <td nowrap>
-                                                            @item.BreakOuttime
-                                                        </td>
-                                                        <td>
-                                                            @item.Breakhour
+                                                            @item.EmailId
                                                         </td>
                                                         <td nowrap>
-                                                            @item.CurrentDate
+                                                            @item.JoiningDate
                                                         </td>
                                                     </tr>
                                                 }
@@ -113,16 +109,18 @@
     $(document).ready(function () {
         $('#datatable').DataTable();
     });
-    function BreakinExportExcelfn() {
-        const firstRow = document.querySelector('.table-row');
-        const empId = firstRow ? firstRow.getAttribute('data-empid') : null;
+</script>
+<script>
+    $(document).ready(function () {
+        $(".Attendancelist").hide();
+        $(".Breaklist").hide();
+        var currentUrl = window.location.href;
 
-        if (empId) {
-            // Concatenation
-            window.location.href = '/Vendor/ExportBreakinReport?EmpId=' + empId;
-        } else {
-            alert('No Employee ID found!');
+        if (currentUrl.indexOf("showallemployeeAttendancelist") !== -1) {
+            $(".Attendancelist").show();
         }
-    }
-
+        else {
+            $(".Breaklist").show();
+        }
+    });
 </script>

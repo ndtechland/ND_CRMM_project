@@ -103,6 +103,9 @@
                                                     Product Name
                                                 </th>
                                                 <th nowrap>
+                                                    Plan Name
+                                                </th>
+                                                <th nowrap>
                                                     Start Date
                                                 </th>
                                                 <th nowrap>
@@ -149,6 +152,9 @@
                                                         </td>
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.ProductDetails)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @item.PricingPlanid @item.PricePlan
                                                         </td>
                                                         <td nowrap>
                                                             @item.StartDate.ToString("dd/MM/yyyy")

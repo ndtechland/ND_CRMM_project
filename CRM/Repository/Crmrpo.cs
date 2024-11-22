@@ -1429,6 +1429,7 @@ namespace CRM.Repository
                 parameters.Add("@Cgst", model.Cgst);
                 parameters.Add("@Scgst", model.Scgst);
                 parameters.Add("@Igst", model.Igst);
+                parameters.Add("@PricingPlanid", model.PricingPlanid);
                 parameters.Add("@CustomerId", dbType: DbType.Int32, direction: ParameterDirection.Output);
                 await connection.ExecuteAsync("VendorRegistration", parameters, commandType: CommandType.StoredProcedure);
                 int newCustomerId = parameters.Get<int>("@CustomerId");
@@ -1486,6 +1487,7 @@ namespace CRM.Repository
                 parameters.Add("@Cgst", model.Cgst);
                 parameters.Add("@Scgst", model.Scgst);
                 parameters.Add("@Igst", model.Igst);
+                parameters.Add("@PricingPlanid", model.PricingPlanid);
 
                 var result = await connection.ExecuteAsync(
                     "sp_updateVendor_Reg",
@@ -1497,54 +1499,72 @@ namespace CRM.Repository
             }
         }
 
-
         public async Task<List<VendorDto>> VendorList()
         {
-            List<VendorDto> cs = new List<VendorDto>();
             try
             {
-                SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
-                SqlCommand cmd = new SqlCommand("Vendorlist", con);
-                cmd.CommandType = CommandType.StoredProcedure;
-                con.Open();
-                SqlDataReader rdr = cmd.ExecuteReader();
-                while (rdr.Read())
+                using (var con = new SqlConnection(_context.Database.GetConnectionString()))
                 {
-                    var cse = new VendorDto()
-                    {
-                        Id = Convert.ToInt32(rdr["id"]),
-                        CompanyName = rdr["Company_Name"] == DBNull.Value ? null : Convert.ToString(rdr["Company_Name"]),
-                        //WorkLocation = rdr["Work_Location"] == DBNull.Value ? null : new string[] { Convert.ToString(rdr["Work_Location"]) },
-                        OfficeCity = rdr["OfficeCity"] == DBNull.Value ? null : Convert.ToString(rdr["OfficeCity"]),
-                        MobileNumber = rdr["Mobile_number"] == DBNull.Value ? "0" : Convert.ToString(rdr["Mobile_number"]),
-                        AlternateNumber = rdr["Alternate_number"] == DBNull.Value ? "0" : Convert.ToString(rdr["Alternate_number"]),
-                        Email = rdr["Email"] == DBNull.Value ? "0" : Convert.ToString(rdr["Email"]),
-                        GstNumber = rdr["GST_Number"] == DBNull.Value ? "0" : Convert.ToString(rdr["GST_Number"]),
-                        BillingAddress = rdr["Billing_Address"] == DBNull.Value ? "0" : Convert.ToString(rdr["Billing_Address"]),
-                        ProductDetails = rdr["Product_Details"] == DBNull.Value ? "0" : Convert.ToString(rdr["Product_Details"]),
-                        StartDate = rdr["Start_date"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(rdr["Start_date"]),
-                        RenewDate = rdr["Renew_Date"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(rdr["Renew_Date"]),
-                        OfficeState = rdr["OfficeState"] == DBNull.Value ? null : Convert.ToString(rdr["OfficeState"]),
-                        BillingState = rdr["BillingState"] == DBNull.Value ? null : Convert.ToString(rdr["BillingState"]),
-                        Location = rdr["Billing_Address"] == DBNull.Value ? null : Convert.ToString(rdr["Location"]),
-                        CompanyImage = rdr["Company_Image"] == DBNull.Value ? null : Convert.ToString(rdr["Company_Image"]),
-                        Isactive = rdr["Isactive"] == DBNull.Value ? null : Convert.ToBoolean(rdr["Isactive"]),
+                    await con.OpenAsync();
+                    var vendorList = (await con.QueryAsync<VendorDto>("Vendorlist",
+                        commandType: CommandType.StoredProcedure)).ToList();
 
-                    };
-
-                    cs.Add(cse);
+                    return vendorList;
                 }
-                return cs;
             }
             catch (Exception ex)
             {
-                throw ex;
-            }
-            finally
-            {
-                cs = null;
+                throw ex; 
             }
         }
+
+        //public async Task<List<VendorDto>> VendorList()
+        //{
+        //    List<VendorDto> cs = new List<VendorDto>();
+        //    try
+        //    {
+        //        SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
+        //        SqlCommand cmd = new SqlCommand("Vendorlist", con);
+        //        cmd.CommandType = CommandType.StoredProcedure;
+        //        con.Open();
+        //        SqlDataReader rdr = cmd.ExecuteReader();
+        //        while (rdr.Read())
+        //        {
+        //            var cse = new VendorDto()
+        //            {
+        //                Id = Convert.ToInt32(rdr["id"]),
+        //                CompanyName = rdr["Company_Name"] == DBNull.Value ? null : Convert.ToString(rdr["Company_Name"]),
+        //                //WorkLocation = rdr["Work_Location"] == DBNull.Value ? null : new string[] { Convert.ToString(rdr["Work_Location"]) },
+        //                OfficeCity = rdr["OfficeCity"] == DBNull.Value ? null : Convert.ToString(rdr["OfficeCity"]),
+        //                MobileNumber = rdr["Mobile_number"] == DBNull.Value ? "0" : Convert.ToString(rdr["Mobile_number"]),
+        //                AlternateNumber = rdr["Alternate_number"] == DBNull.Value ? "0" : Convert.ToString(rdr["Alternate_number"]),
+        //                Email = rdr["Email"] == DBNull.Value ? "0" : Convert.ToString(rdr["Email"]),
+        //                GstNumber = rdr["GST_Number"] == DBNull.Value ? "0" : Convert.ToString(rdr["GST_Number"]),
+        //                BillingAddress = rdr["Billing_Address"] == DBNull.Value ? "0" : Convert.ToString(rdr["Billing_Address"]),
+        //                ProductDetails = rdr["Product_Details"] == DBNull.Value ? "0" : Convert.ToString(rdr["Product_Details"]),
+        //                StartDate = rdr["Start_date"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(rdr["Start_date"]),
+        //                RenewDate = rdr["Renew_Date"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(rdr["Renew_Date"]),
+        //                OfficeState = rdr["OfficeState"] == DBNull.Value ? null : Convert.ToString(rdr["OfficeState"]),
+        //                BillingState = rdr["BillingState"] == DBNull.Value ? null : Convert.ToString(rdr["BillingState"]),
+        //                Location = rdr["Billing_Address"] == DBNull.Value ? null : Convert.ToString(rdr["Location"]),
+        //                CompanyImage = rdr["Company_Image"] == DBNull.Value ? null : Convert.ToString(rdr["Company_Image"]),
+        //                Isactive = rdr["Isactive"] == DBNull.Value ? null : Convert.ToBoolean(rdr["Isactive"]),
+
+        //            };
+
+        //            cs.Add(cse);
+        //        }
+        //        return cs;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+        //    finally
+        //    {
+        //        cs = null;
+        //    }
+        //}
         public async Task<VendorRegistrationDto> GetVendorProfile(string? id)
         {
             try
@@ -3614,7 +3634,102 @@ namespace CRM.Repository
                 throw;
             }
         }
+        public async Task<List<ApprovedwfhApplyList>> GetWfhapplydetailList(int? userId)
+        {
+            if (!userId.HasValue)
+                throw new ArgumentNullException(nameof(userId), "UserId cannot be null");
 
+            try
+            {
+                var adminLogin = await _context.AdminLogins.FindAsync(userId);
+
+                var empList = await _context.EmployeeRegistrations
+                    .Where(x => x.Vendorid == userId)
+                    .ToListAsync();
+
+                if (empList == null || empList.Count == 0)
+                    throw new Exception("No employees found for the specified user.");
+
+                var leaveDetails = new List<ApprovedwfhApplyList>();
+
+                foreach (var emp in empList)
+                {
+                    var leave = await _context.EmpApplywfhs
+                        .Where(p => p.UserId == emp.EmployeeId)
+                        .ToListAsync();
+
+                    if (leave == null || leave.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    foreach (var l in leave)
+                    {
+                        int totalFullday = (l.EndDate.Value.Date - l.Startdate.Value.Date).Days;
+                        if (l.Startdate.Value.Date == l.EndDate.Value.Date)
+                        {
+                            totalFullday = 1; 
+                        }
+
+                        leaveDetails.Add(new ApprovedwfhApplyList
+                        {
+                            Id = l.Id,
+                            UserId = l.UserId,
+                            EmployeeName = $"{emp.FirstName} {(emp.MiddleName != null ? emp.MiddleName + " " : "")}{emp.LastName}",
+                            EmpMobileNumber = await _context.EmployeePersonalDetails
+                                .Where(e => e.EmpRegId == emp.EmployeeId)
+                                .Select(e => e.MobileNumber)
+                                .FirstOrDefaultAsync() ?? "Unknown",
+                            StartDate = l.Startdate,
+                            EndDate = l.EndDate,
+                            CreatedDate = (DateTime)l.Currentdate,
+                            Reason = l.Reason ?? "No reason provided",
+                            Isapprove = l.Iswfh,
+                            days = totalFullday
+                        });
+                    }
+                }
+
+                return leaveDetails
+                    .OrderByDescending(l => l.StartDate == default(DateTime) ? DateTime.MinValue : l.StartDate)
+                    .ThenByDescending(l => l.EndDate == default(DateTime) ? DateTime.MinValue : l.EndDate)
+                    .ToList();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while retrieving leave details.", ex);
+            }
+        }
+        public async Task<bool> AddAndUpdateInvoiceChargesmaster(InvoiceChargesmaster model)
+        {
+            try
+            {
+                if (model.Id == 0)
+                {
+                    var domainmodel = new InvoiceChargesmaster()
+                    {
+                        Vendorid = model.Vendorid,
+                        Isactive  = true
+                    };
+                    _context.Add(domainmodel);
+                    _context.SaveChanges();
+                    return true;
+                }
+                else
+                {
+                    var existdata = _context.InvoiceChargesmasters.Find(model.Id);
+                    existdata.Vendorid = model.Vendorid;
+                    existdata.Isactive = model.Isactive;
+                    _context.SaveChanges();
+                    return true;
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 
 }

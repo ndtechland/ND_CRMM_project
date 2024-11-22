@@ -1,7 +1,7 @@
-﻿@model IEnumerable<CRM.Models.DTO.ApprovedLeaveApplyList>
+﻿@model IEnumerable<CRM.Models.DTO.ApprovedwfhApplyList>
 
 @{
-    ViewData["Title"] = "Approved Leave Applications";
+    ViewData["Title"] = "Approved Wfh Applications";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -30,7 +30,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     setTimeout(function () {
-                        window.location.href = '@Url.Action("ApprovedLeaveApply", "Vendor")';
+                        window.location.href = '@Url.Action("ApprovedWfhApply", "Vendor")';
                     }, 1000);
                 }
             });
@@ -51,7 +51,7 @@
                         <div class="col-lg-6">
                             <div class="page-header-left">
                                 <h2>
-                                    Employee Leave Applied List
+                                    Employee Wfh Applied List
                                 </h2>
                             </div>
                         </div>
@@ -60,7 +60,7 @@
                                 <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
                                 <li class="breadcrumb-item">Approval</li>
                                 <li class="breadcrumb-item active">
-                                    Leave Applied List
+                                    Wfh Applied List
                                 </li>
                             </ol>
                         </div>
@@ -84,11 +84,8 @@
                                                 <th nowrap>Mobile Number</th>
                                                 <th nowrap>Start Date</th>
                                                 <th nowrap>End Date</th>
-                                                <th nowrap>Total Leave</th>
-                                                <th nowrap>Type of Leave</th>
+                                                <th nowrap>Total Days</th>
                                                 <th nowrap>Reason</th>
-                                                <th nowrap>Paid Leave Count</th>
-                                                <th nowrap>Unpaid Leave Count</th>
                                                 <th nowrap>Applied Date</th>
                                                 <th>Status</th>
                                             </tr>
@@ -106,30 +103,27 @@
                                                         <td nowrap>@item.EmpMobileNumber</td>
                                                         <td nowrap>@item.StartDate?.ToString("dd/MMM/yyyy")</td>
                                                         <td nowrap>@item.EndDate?.ToString("dd/MMM/yyyy")</td>
-                                                        <td>@item.LeaveType</td>
-                                                        <td>@item.TypeOfLeaveId</td>
+                                                        <td>@item.days</td>
                                                         <td>@item.Reason</td>
-                                                        <td>@item.PaidCountLeave</td>
-                                                        <td>@item.UnPaidCountLeave</td>
                                                         <td nowrap>@item.CreatedDate.ToString("dd/MMM/yyyy")</td>
                                                         <td>
                                                             @if (item.Isapprove == true)
                                                             {
-                                                                <a href="@Url.Action("UpdateLeaveApplyStatus", "Vendor", new { Id = item.Id })" class="btn btn-success"
-                                                                   onclick="return confirm('Are you sure you want to disapproved leave?');">
+                                                                <a href="@Url.Action("UpdateWfhApplyStatus", "Vendor", new { Id = item.Id })" class="btn btn-success"
+                                                                   onclick="return confirm('Are you sure you want to disapproved Wfh?');">
                                                                     Approved
                                                                 </a>
                                                             }
                                                             else
                                                             {
-                                                                <a href="@Url.Action("UpdateLeaveApplyStatus", "Vendor", new { Id = item.Id })" class="btn btn-danger"
-                                                                   onclick="return confirm('Are you sure you want to approved leave?');">
+                                                                <a href="@Url.Action("UpdateWfhApplyStatus", "Vendor", new { Id = item.Id })" class="btn btn-danger"
+                                                                   onclick="return confirm('Are you sure you want to approved Wfh?');">
                                                                     Disapproved
                                                                 </a>
                                                             }
                                                         </td>
 
-                                                    </tr> 
+                                                    </tr>
                                                 }
                                             }
                                         </tbody>
@@ -151,7 +145,7 @@
 
 <script>
     $(document).ready(function () {
-        document.title = 'ApprovedLeavelist';
+        document.title = 'ApprovedWfhlist';
         $('#datatable').DataTable(
             {
                 "dom": '<"dt-buttons"Bf><"clear">lirtp',

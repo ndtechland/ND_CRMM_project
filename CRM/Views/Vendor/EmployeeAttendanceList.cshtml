@@ -50,7 +50,7 @@
                                 <div class=" table-responsive">
                                     <table id="datatable" class="table table-hover">
                                         <thead>
-                                            <tr style="background-color: #00baf2;">
+                                            <tr style="background-color: #00baf2;" >
                                                 <th nowrap>Sl. No.</th>
                                                 <th nowrap>
                                                     Employee Id
@@ -74,7 +74,7 @@
                                                 foreach (var item in Model.detail)
                                                 {
                                                     count++;
-                                                    <tr class="table-row">
+                                                    <tr class="table-row" data-empid="@item.EmpId">
                                                         <td>@count</td>
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.EmpId)
@@ -113,7 +113,17 @@
     $(document).ready(function () {
         $('#datatable').DataTable();
     });
-     function AttendanceExportExcelfn() {
-        window.location.href = '/Vendor/ExportAttendanceReport';
+    function AttendanceExportExcelfn() {
+        const firstRow = document.querySelector('.table-row');
+        const empId = firstRow ? firstRow.getAttribute('data-empid') : null;
+
+        if (empId) {
+            // Concatenation
+            window.location.href = '/Vendor/ExportAttendanceReport?EmpId=' + empId;
+        } else {
+            alert('No Employee ID found!');
+        }
     }
+
+
 </script>

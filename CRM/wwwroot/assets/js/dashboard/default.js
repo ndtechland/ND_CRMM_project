@@ -1,49 +1,160 @@
 
 //market-chart
-new Chartist.Bar('.market-chart', {
-    labels: ['100', '200', '300', '400', '500', '600', '700', '800'],
-    series: [
-        [5.3, 4, 3, 2, 3.5, 1.8, 3.8, 1.5],
-        [2.8, 3, 4.3, 5, 2.9, 2.8, 2.8, 2.8]
-    ]
-},
-    {
-    seriesBarDistance: 2,
-    chartPadding: {
-        left: 0,
-        right: 0,
-        bottom: 0,
-    },
-    axisX: {
-        showGrid: false,
-        labelInterpolationFnc: function(value) {
-            return value[0];
-        }
+//new Chartist.Bar('.market-chart', {
+//    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+//    series: [
+//        [5.3, 4, 3, 2, 3.5, 1.8, 3.8, 1.5, 1, 2, 1, 1],  // Paid data
+//        [2.8, 3, 4.3, 5, 2.9, 2.8, 2.8, 2.8, 2, 2, 3, 4],  // Unpaid data
+//        [3, 4, 2.5, 3.5, 4, 3, 4.5, 2, 2, 3, 4, 5],      // Partial data
+//        [3, 4, 2.5, 3.5, 4, 3, 2, 3, 4, 5, 6, 0]         // Canceled data
+//    ]
+//}, {
+//    seriesBarDistance: 4,
+//    chartPadding: {
+//        left: 0,
+//        right: 0,
+//        bottom: 0,
+//    },
+//    axisX: {
+//        showGrid: false,
+//        labelInterpolationFnc: function (value) {
+//            return value[0];  // Display the first letter of each month
+//        }
+//    }
+//}, [
+//    ['screen and (min-width: 300px)', {
+//        seriesBarDistance: 15,
+//        axisX: {
+//            labelInterpolationFnc: function (value) {
+//                return value.slice(0, 3);  // Shorten month name
+//            }
+//        }
+//    }],
+//    ['screen and (min-width: 600px)', {
+//        seriesBarDistance: 12,
+//        axisX: {
+//            labelInterpolationFnc: Chartist.noop
+//        }
+//    }]
+//]).on('draw', function (ctx) {
+//    if (ctx.type === 'bar') {
+//        // Define colors for each series (Paid, Unpaid, Partial, Canceled)
+//        let colors = [
+//            '#4CAF50', // Green for Paid
+//            '#FF5722', // Orange for Unpaid
+//            '#FFC107', // Yellow for Partial
+//            '#9E9E9E'  // Grey for Canceled
+//        ];
+
+//        // Apply color based on series index (0 for Paid, 1 for Unpaid, 2 for Partial, 3 for Canceled)
+//        let colorIndex = ctx.seriesIndex; // This gives us 0, 1, 2, or 3
+//        let color = colors[colorIndex];   // Choose color based on the series index
+
+//        // Apply the chosen color to the bar
+//        ctx.element.attr({
+//            style: `stroke-linecap: round; fill: ${color}; stroke: ${color};`
+//        });
+//    }
+//});
+
+$(document).ready(function () {
+    // Ensure the target element is available
+    if ($('.market-chart').length > 0) {
+        fetchPaymentStatusData();
+    } else {
+        console.error('.market-chart element not found');
     }
-}, [
-    ['screen and (min-width: 300px)', {
-        seriesBarDistance: 15,
-        axisX: {
-            labelInterpolationFnc: function(value) {
-                return value.slice(0, 3);
+
+    function fetchPaymentStatusData() {
+        $.ajax({
+            url: '/Home/GetPaymentStatusData',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                if (!Array.isArray(data)) {
+                    console.error("Unexpected response format:", data);
+                    return;
+                }
+
+                const labels = data.map(item => item?.month || "Unknown");
+                const series = [
+                    data.map(item => item?.paid || 0),
+                    data.map(item => item?.unpaid || 0),
+                    data.map(item => item?.partial || 0),
+                    data.map(item => item?.canceled || 0)
+                ];
+
+                // Initialize the chart after ensuring DOM is loaded and element exists
+                new Chartist.Bar('.market-chart', {
+                    labels: labels,
+                    series: series
+                }, {
+                    seriesBarDistance: 10,
+                    chartPadding: {
+                        left: 0,
+                        right: 0,
+                        bottom: 0
+                    },
+                    axisX: {
+                        showGrid: false,
+                        labelInterpolationFnc: function (value) {
+                            return value;
+                        }
+                    }
+                }).on('draw', function (ctx) {
+                    if (ctx.type === 'bar') {
+                        let colors = ['#4CAF50', '#FF5722', '#FFC107', '#9E9E9E'];
+                        let colorIndex = ctx.seriesIndex;
+                        let color = colors[colorIndex];
+
+                        ctx.element.attr({
+                            style: `stroke-linecap: round; fill: ${color}; stroke: ${color};`
+                        });
+
+                        const value = ctx.value;
+                        if (value > 0) {
+                            ctx.group.append(new Chartist.Svg('text', {
+                                x: ctx.x2 - ctx.width / 2,
+                                y: ctx.y - 10,
+                                style: 'fill: black; font-size: 12px; text-anchor: middle;'
+                            }, value));
+                        }
+                    }
+                }).on('mouseenter', '.ct-bar', function () {
+                    var bar = $(this);
+                    var index = bar.index();  // Get the index of the hovered bar
+
+                    var paidAmt = data[index]?.paid || 0;
+                    var unPaidAmt = data[index]?.unpaid || 0;
+
+                    // Correct usage of template literals
+                    var tooltip = $('<div class="tooltip"></div>')
+                        .text('Paid Amount: ${paidAmt}, Unpaid Amount: ${unPaidAmt}')  // Use backticks here
+                        .css({
+                            position: 'absolute',
+                            top: bar.offset().top - 30,  // Position the tooltip slightly above the bar
+                            left: bar.offset().left + (bar.width() / 2) - 50,
+                            background: 'rgba(0, 0, 0, 0.7)',
+                            color: 'white',
+                            padding: '5px 10px',
+                            borderRadius: '4px',
+                            fontSize: '12px',
+                            zIndex: '9999',
+                            pointerEvents: 'none'
+                        });
+
+                    // Append the tooltip to the body
+                    $('body').append(tooltip);
+                }).on('mouseleave', '.ct-bar', function () {
+                    $('.tooltip').remove();  // Remove the tooltip on mouse leave
+                });
+            },
+            error: function (xhr, status, error) {
+                console.error("Error fetching payment status data:", error);
             }
-        }
-    }],
-    ['screen and (min-width: 600px)', {
-        seriesBarDistance: 12,
-        axisX: {
-            labelInterpolationFnc: Chartist.noop
-        }
-    }]
-]).on('draw', function(ctx) {
-    if(ctx.type === 'bar') {
-        ctx.element.attr({
-            x1: ctx.x1 + 0.05,
-            style: 'stroke-linecap: round'
         });
     }
 });
-
 
 // vector map
 ! function(maps) {
