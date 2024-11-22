@@ -54,6 +54,8 @@ namespace CRM.Models.APIDTO
         public string? LoginStatus { get; set; }
         public string? Ontime { get; set; }
         public string? dayPart { get; set; }
+        public string? WFHStatus { get; set; }
+        public int? NumberofWFH { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<Breakactivity> loginactivities { get; set; }

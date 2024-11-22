@@ -47,14 +47,20 @@ namespace CRM.Controllers
                     var data = _ICrmrpo.GetCustomerById(id);
                     if (data != null)
                     {
-                        
+
                         ViewBag.ProductDetails = _context.ProductMasters.Where(x => x.IsDeleted == false)
                             .Select(p => new SelectListItem
                             {
                                 Value = p.Id.ToString(),
                                 Text = p.ProductName,
-                            })
-                            .ToList();
+                            }).ToList();
+               //         ViewBag.PlanPrice = _context.PricingPlans.Where(x => x.IsActive == true)
+               //.Select(p => new SelectListItem
+               //{
+               //    Value = p.Id.ToString(),
+               //    Text = $"{p.PlanName} {' '} {p.Price}",
+               //})
+               //.ToList();
                         ViewBag.SelectedStateId = data.StateId;
                         ViewBag.SelectedCityId = data.CityId;
                         ViewBag.state = data.BillingStateId;
@@ -81,8 +87,7 @@ namespace CRM.Controllers
                     {
                         Value = p.Id.ToString(),
                         Text = p.ProductName,
-                    })
-                    .ToList();
+                    }).ToList();
                 return View();
             }
             else

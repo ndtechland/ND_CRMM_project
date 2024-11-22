@@ -39,6 +39,8 @@ namespace CRM.Models.DTO
         public string? CompanyImage { get; set; }
         public bool? IsSameAddress { get; set; }
         public bool? Isactive { get; set; }
+        public string? PricingPlanid { get; set; }
+        public double? PricePlan { get; set; }
 
     }
     public partial class VendorRegistrationDto

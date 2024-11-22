@@ -2133,11 +2133,17 @@ namespace CRM.Controllers.Api
                     {
                         if (data.Any(x => x.Startdate == model.Startdate) || data.Any(x => x.EndDate == model.EndDate))
                         {
-                            response.Succeeded = false;
-                            response.StatusCode = StatusCodes.Status501NotImplemented;
-                            response.Message = "WFH Already Applied...!";
-                            return Ok(response);
+                            var errorResponse = new Response<bool>
+                            {
+                                Succeeded = false,
+                                StatusCode = StatusCodes.Status409Conflict,
+                                Message = "WFH Already Applied...!"
+                            };
+
+                            return StatusCode(StatusCodes.Status409Conflict, errorResponse);
                         }
+
+
                     }
 
                     bool Check = await _apiemp.ApplyWfh(model, userid);

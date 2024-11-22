@@ -11,6 +11,15 @@ namespace CRM.Models.DTO
         public bool? IsActive { get; set; }
         public DateTime? CreatedAt { get; set; }
         public IFormFile ImageFile { get; set; }
-        public List<CaseStudy> CaseStudyList { get; set; } 
+        public List<CaseStudy> CaseStudyList { get; set; }
     }
+    public class InvoiceChargesmasterDto
+    {
+        public int Id { get; set; }
+        public string? Vendorid { get; set; }
+        public bool? Isactive { get; set; }
+        public List<InvoiceChargesmasterDto> taxlist { get; set; }
+
+    }
+
 }

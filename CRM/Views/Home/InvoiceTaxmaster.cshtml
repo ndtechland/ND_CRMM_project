@@ -1,7 +1,7 @@
-﻿@model CRM.Models.DTO.MissionVisionDTO
+﻿@model CRM.Models.DTO.InvoiceChargesmasterDto
 
 @{
-    ViewData["Title"] = "MissionVisions";
+    ViewData["Title"] = "InvoiceChargesmaster";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -28,9 +28,9 @@
                 if (message == "dltok") {
                     alertText = "Deleted successfully.";
                 } else if (message == "updok") {
-                    alertText = "Mission & Vision updated successfully.";
+                    alertText = "Charges updated successfully.";
                 } else {
-                    alertText = "Mission & Vision added successfully.";
+                    alertText = "Charges added successfully.";
                 }
 
                 Swal.fire({
@@ -41,7 +41,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         setTimeout(function () {
-                            window.location.href = '@Url.Action("MissionVisions", "Home")';
+                            window.location.href = '@Url.Action("InvoiceTaxmaster", "Home")';
                         }, 1000);
                     }
                 });
@@ -57,7 +57,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         setTimeout(function () {
-                            window.location.href = '@Url.Action("MissionVisions", "Home")';
+                            window.location.href = '@Url.Action("InvoiceTaxmaster", "Home")';
                         }, 1000);
                     }
                 });
@@ -86,7 +86,7 @@
                             <ol class="breadcrumb pull-right">
                                 <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
                                 <li class="breadcrumb-item">Settings</li>
-                                <li class="breadcrumb-item active">Mission & Vision</li>
+                                <li class="breadcrumb-item active">Invoice Tax</li>
                             </ol>
                         </div>
                     </div>
@@ -97,38 +97,33 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-body">
-                                <form asp-action="MissionVisions" enctype="multipart/form-data" autocomplete="off" onsubmit="return validateForm()">
+                                <form asp-action="InvoiceTaxmaster" enctype="multipart/form-data" autocomplete="off" onsubmit="return validateForm()">
                                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                                    <div class="row">
-                                        <div class="form-group col-sm-6">
-                                            <label for="Title" class="control-label">Title</label>
-                                            <input type="hidden" name="Id" value="@ViewBag.id" />
-                                            <input type="text" name="MissionVisionName" id="Title" value="@ViewBag.MissionVisionName" placeholder="Enter Title" class="form-control" required />
+                                    <div class="form-group col-sm-4">
+                                        <label class="control-label">Company Name<span class="text-danger">*</span></label>
+                                        <input type="hidden" name="Id" value="@Model.Id" />
+                                        <div>
+                                            <select class="form-control" name="Vendorid" id="ddlVendorid">
+                                                <option value="">-- Select CompanyName --</option>
+                                                @foreach (var state in ViewBag.vendorid)
+                                                {
+                                                    <option value="@state.Value">@state.Text</option>
+                                                }
+                                            </select>
                                         </div>
-                                        <div class="form-group col-sm-6">
-                                            <label for="ImageFile" class="control-label">Upload Image</label>
-                                            <input type="file" accept=".png,.jpg,.jpeg" id="ImageFile" name="ImageFile" class="form-control" />
-                                            <input type="hidden" value="@ViewBag.FilePath" name="FilePath" />
-                                        </div>
-                                    </div>
-                  
-                                    <div class="form-group col-sm-12">
-                                        <label for="Content" class="control-label">Description</label>
-                                        <textarea rows="10" name="Description" id="makeMeSummernote" cols="5" class="form-control"
-                                                  placeholder="Default textarea">@ViewBag.Description</textarea>
                                     </div>
                                     @if (ViewBag.id > 0)
                                     {
                                         <div class="form-group col-sm-6">
                                             <label for="IsActive" class="control-label">Is Active</label>
-                                            <input name="IsActive" zoom="1.5;" value="true" type="checkbox" class="chkBox Activechecked" />
+                                            <input name="Isactive" zoom="1.5;" value="true" type="checkbox" class="chkBox Activechecked" />
                                         </div>
                                     }
                                     <div class="form-group">
                                         <input type="submit" value="@ViewBag.btnText" class="btn btn-primary" />
                                         @if (ViewBag.id > 0)
                                         {
-                                            <a href="/Home/MissionVisions" class="btn btn-danger">Cancel</a>
+                                            <a href="/Home/InvoiceTaxmaster" class="btn btn-danger">Cancel</a>
                                         }
                                     </div>
                                 </form>
@@ -148,12 +143,7 @@
                                         <thead>
                                             <tr>
                                                 <th nowrap>Sl. No.</th>
-                                                <th nowrap>
-                                                    Image
-                                                </th>
-                                                <th nowrap>Mission & Vision Name</th>
-                                                <th>Description</th>
-                                                <th>Created At</th>
+                                                <th>Company Name</th>
                                                 <th>Edit</th>
                                                 <th>Delete</th>
                                             </tr>
@@ -161,28 +151,19 @@
                                         <tbody>
                                             @{
                                                 var count = 0;
-                                                foreach (var item in Model.MissionVisions)
+                                                foreach (var item in Model.taxlist)
                                                 {
                                                     count++;
                                                     <tr class="table-row">
                                                         <td>@count</td>
-                                                        <td>
-                                                            <a href="~/image/@item.Image"><img src="~/image/@item.Image" alt="Expertise Image" style="width:100px;" /></a>
-                                                        </td>
                                                         <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.MissionVisionName)
+                                                            @Html.DisplayFor(modelItem => item.Vendorid)
                                                         </td>
                                                         <td>
-                                                            @Html.Raw(@item.Description)
-                                                        </td>
-                                                        <td nowrap>
-                                                            @item.CreatedDate
+                                                            <a href="/Home/InvoiceTaxmaster?Id=@item.Id" class="fa fa-edit m-2 font-success"></a>
                                                         </td>
                                                         <td>
-                                                            <a href="/Home/MissionVisions?Id=@item.Id" class="fa fa-edit m-2 font-success"></a>
-                                                        </td>
-                                                        <td>
-                                                            <a href="/Home/DeleteMissionVisions?Id=@item.Id" onclick="return confirm('Are you sure want to delete?')" class="fa fa-trash m-2 font-danger"></a>
+                                                            <a href="/Home/DeleteInvoiceChargesmaster?Id=@item.Id" onclick="return confirm('Are you sure want to delete?')" class="fa fa-trash m-2 font-danger"></a>
                                                         </td>
                                                     </tr>
                                                 }
@@ -216,6 +197,10 @@
             $('.Activechecked').attr('checked', false);
         });
     }
+    var taxes = '@ViewBag.Vendor';
+    if (taxes != "") {
+        $("#ddlVendorid").val(taxes);
+    }
 </script>
 <script>
     $(document).ready(function () {
@@ -224,20 +209,4 @@
 </script>
 
 
-<script>
-    $(document).ready(function () {
-        $('#makeMeSummernote').summernote({
-            height: 300, // Set the height in pixels
-            toolbar: [
-                // [groupName, [list of button]]
-                ['para', ['style', 'ul', 'ol', 'paragraph']],
-                ['style', ['bold', 'italic', 'underline', 'clear']],
-                ['font', ['strikethrough', 'superscript', 'subscript']],
-                ['color', ['color']],
-                ['height', ['height']],
-                ['insert', ['picture', 'link', 'video', 'table', 'hr']],
-                ['misc', ['fullscreen', 'codeview', 'undo', 'redo', 'help']]
-            ]
-        });
-    });
-</script>
+

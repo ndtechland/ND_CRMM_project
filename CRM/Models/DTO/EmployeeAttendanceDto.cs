@@ -22,5 +22,15 @@
         public string? Breakhour { get; set; }
         public List<EmployeeBreakDto> Breakdetail { get; set; }
     }
+    public class showallemployeelisteDto
+    {
+        public int? Id { get; set; }
+        public string? EmpId { get; set; }
+        public string? EmployeeName { get; set; }
+        public string? MobileNumber { get; set; }
+        public string? EmailId { get; set; }
+        public string? JoiningDate { get; set; }
+        public List<showallemployeelisteDto> emplist { get; set; }
 
+    }
 }

@@ -118,6 +118,8 @@ namespace CRM.Repository
         Task<bool> AddAndUpdateOtherService(OtherService model);
         Task<bool> AddAndUpdateMissionVisions(MissionVisionDTO model);
         Task<bool> AddAndUpdateLeaveTypemaster(LeaveType model, int VendorId);
+        public Task<List<ApprovedwfhApplyList>> GetWfhapplydetailList(int? Userid);
+        Task<bool> AddAndUpdateInvoiceChargesmaster(InvoiceChargesmaster model);
 
     }
 }

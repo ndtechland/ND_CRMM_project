@@ -164,7 +164,7 @@
                                         <div class="form-group col-sm">
                                             <label class="control-label">Choose Plan<span class="text-danger">*</span></label>
                                             <div>
-                                                <select class="form-control" name="StateId" id="PlanPrice">
+                                                <select class="form-control" name="PricingPlanid" id="PlanPrice">
                                                     <option value="">-- Select Plan --</option>
                                                     @foreach (var state in ViewBag.PlanPrice as IEnumerable<SelectListItem>)
                                                 {
@@ -961,6 +961,11 @@
         document.addEventListener("DOMContentLoaded", function (event) {
             $('.Activechecked').attr('checked', false);
         });
+    }
+
+    var plan = '@ViewBag.Pricingplan';
+    if (plan != "") {
+        $("#PlanPrice").val(plan);
     }
 </script>
 
