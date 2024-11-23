@@ -1220,10 +1220,9 @@ namespace CRM.Repository
                     throw new Exception("Employee not found.");
                 }
                 var wfhCount = await _context.EmpApplywfhs
-   .Where(g => g.UserId == userid && g.Iswfh == true
-       && g.Startdate.Value.Date <= DateTime.Now.Date
-       && g.EndDate.Value.Date >= DateTime.Now.Date)
-   .CountAsync();
+                .Where(g => g.UserId == userid && g.Iswfh == true && g.Currentdate.Value.Month == Currentdate.Month
+                            && g.Currentdate.Value.Year == Currentdate.Year)
+                .CountAsync();
                 var matchingRecord = await _context.EmpApplywfhs
     .Where(g => g.UserId == userid && g.Iswfh == true
         && g.Startdate.Value.Date <= DateTime.Now.Date

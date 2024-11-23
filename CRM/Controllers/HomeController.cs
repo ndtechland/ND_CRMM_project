@@ -96,26 +96,34 @@ namespace CRM.Controllers
                 var today = DateTime.Today;
                 var firstDayOfMonth = new DateTime(today.Year, today.Month, 1);
                 var records = _context.EmployeeCheckInRecords
-                    .Where(record => record.CurrentDate.HasValue &&
-                                    record.CurrentDate.Value.Date >= firstDayOfMonth &&
-                                    record.CurrentDate.Value.Date <= today)
-                    .AsEnumerable()
-                    .GroupBy(record => record.CurrentDate.Value.Date)
-                    .ToList();
+    .Where(record => record.CurrentDate.HasValue &&
+                    record.CurrentDate.Value.Date >= firstDayOfMonth &&
+                    record.CurrentDate.Value.Date <= today)
+    .AsEnumerable()
+    .GroupBy(record => record.CurrentDate.Value.Date)
+    .ToList();
 
                 var workingHoursDates = records
-                    .Select(group => group.Key.ToString("yyyy-MM-dd"))
+                    .Select(group => group.Key.Day.ToString())
                     .ToList();
 
                 var workingHoursData = records
-                    .Select(group => group.Sum(record =>
-                            (record.CheckOuttime.HasValue && record.CheckIntime.HasValue)
-                                ? (record.CheckOuttime.Value - record.CheckIntime.Value).TotalHours
-                                : 0))
-                    .ToList();
+    .Select(group => group.Sum(record =>
+        (record.CheckOuttime.HasValue && record.CheckIntime.HasValue)
+            ? Math.Max(0, (record.CheckOuttime.Value - record.CheckIntime.Value).TotalHours)
+            : 0))
+    .ToList();
+
+                int currentMonth = today.Month;
                 ViewBag.WorkingHoursDates = workingHoursDates;
                 ViewBag.WorkingHoursData = workingHoursData;
+                ViewBag.monthname = getMonthName(currentMonth);
 
+                ViewBag.Numberofwfh = emplist.Count(x => _context.EmpApplywfhs
+    .Any(y => y.UserId == x.EmployeeId
+              && y.Iswfh == true
+              && y.Startdate.Value.Date <= DateTime.Now.Date
+              && y.EndDate.Value.Date >= DateTime.Now.Date));
 
                 return View();
             }
@@ -2290,7 +2298,8 @@ namespace CRM.Controllers
                                       mode.PaymentType,
                                       Invoice = invoice.InvoiceNumber,
                                       PaidAmount = invoice.PaidAmount,
-                                      UnPaidAmount = invoice.DueAmount
+                                      UnPaidAmount = invoice.DueAmount,
+                                      overdueAmount = invoice.Taxamount,
                                   } into g
                                   select new
                                   {
@@ -2299,7 +2308,8 @@ namespace CRM.Controllers
                                       PaymentMode = g.Key.PaymentType,
                                       Count = g.Select(x => x.invoice.InvoiceNumber).Distinct().Count(),
                                       PaidAmount = g.Select(x => x.invoice.PaidAmount).Distinct().Sum(),
-                                      UnPaidAmount = g.Select(x => x.invoice.DueAmount).Distinct().Sum()
+                                      UnPaidAmount = g.Select(x => x.invoice.DueAmount).Distinct().Sum(),
+                                      overdueAmount = g.Select(x => x.invoice.Taxamount).Sum()
                                   }).ToListAsync();
 
                 var groupedData = data
@@ -2310,7 +2320,8 @@ namespace CRM.Controllers
                         PaymentMode = g.Key.PaymentMode,
                         Count = g.Sum(x => x.Count),
                         PaidAmount = g.Sum(x => x.PaidAmount),
-                        UnPaidAmount = g.Sum(x => x.UnPaidAmount)
+                        UnPaidAmount = g.Sum(x => x.UnPaidAmount),
+                        overdueAmount = g.Sum(x => x.overdueAmount)
                     }).ToList();
 
                 var monthNames = new[] { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
@@ -2325,6 +2336,7 @@ namespace CRM.Controllers
 
                     decimal paidTotalAmount = (decimal)monthlyPaymentData.Sum(x => x.PaidAmount);
                     decimal unpaidTotalAmount = (decimal)monthlyPaymentData.Sum(x => x.UnPaidAmount);
+                    decimal overdueTotalAmount = (decimal)monthlyPaymentData.Sum(x => x.overdueAmount);
 
                     monthlyData.Add(new
                     {
@@ -2334,7 +2346,8 @@ namespace CRM.Controllers
                         Partial = paymentModes.GetValueOrDefault("Partial", 0),
                         Canceled = paymentModes.GetValueOrDefault("Canceled", 0),
                         PaidAmt = paidTotalAmount,
-                        UnPaidAmt = unpaidTotalAmount
+                        UnPaidAmt = unpaidTotalAmount,
+                        overdueAmount = overdueTotalAmount
                     });
                 }
 
@@ -2445,6 +2458,55 @@ namespace CRM.Controllers
 
                 throw;
             }
+        }
+        public static string getMonthName(int monthValue)
+        {
+            string monthName;
+
+            switch (monthValue)
+            {
+                case 1:
+                    monthName = "January";
+                    break;
+                case 2:
+                    monthName = "February";
+                    break;
+                case 3:
+                    monthName = "March";
+                    break;
+                case 4:
+                    monthName = "April";
+                    break;
+                case 5:
+                    monthName = "May";
+                    break;
+                case 6:
+                    monthName = "June";
+                    break;
+                case 7:
+                    monthName = "July";
+                    break;
+                case 8:
+                    monthName = "August";
+                    break;
+                case 9:
+                    monthName = "September";
+                    break;
+                case 10:
+                    monthName = "October";
+                    break;
+                case 11:
+                    monthName = "November";
+                    break;
+                case 12:
+                    monthName = "December";
+                    break;
+                default:
+                    monthName = "Invalid Month";
+                    break;
+            }
+
+            return monthName;
         }
     }
 }

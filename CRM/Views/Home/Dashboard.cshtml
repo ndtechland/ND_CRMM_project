@@ -43,6 +43,15 @@
         border-radius: 8px; 
     }
 
+    .ct-tooltip {
+        background-color: #fff;
+        color: #000;
+        border: 1px solid #ccc;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 12px;
+    }
+
 </style>
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
@@ -315,16 +324,16 @@ else
                             </a>
                         </div>
 
-                       @*  <!-- ABSENT Employees Card with Different Color -->
+                        <!-- Wfh Card with Different Color -->
                         <div class="col-xl-3 col-md-6 xl-50">
-                            <a href="/Vendor/EmployeeAttendanceList">
+                                <a href="/Vendor/ApprovedWfhApply">
                                 <div class="card o-hidden widget-cards shadow">
                                     <div class="card-body rounded-3 text-muted">
                                         <div class="media">
                                             <div class="media-body">
-                                                <span>TODAY ABSENT</span>
-                                                <h3 class="mb-0"><span class="counter">@ViewBag.ABSENT</span></h3>
-                                            </div>
+                                                <span>TODAY WFH</span>
+                                                    <h3 class="mb-0"><span class="counter">@ViewBag.Numberofwfh</span></h3>
+                                                </div>
                                             <div class="icons-widgets">
                                                 <i data-feather="user-x" class="feather-icon"></i>
                                             </div>
@@ -332,7 +341,7 @@ else
                                     </div>
                                 </div>
                             </a>
-                        </div> *@
+                        </div> 
                         <!-- Employees on Leave Today Card with Different Color -->
                         <div class="col-xl-3 col-md-6 xl-50">
                             <a href="/Vendor/ApprovedLeaveApply">
@@ -354,7 +363,7 @@ else
                         <div class="col-xl-12">
                             <div class="card custom-border shadow">
                                 <div class="card-body">
-                                    <h5 class="card-title">Work Hours</h5>
+                                        <h5 class="card-title">Work Hours for @ViewBag.MonthName</h5>
                                     <canvas id="workHoursChart" class="chart-container"></canvas>
                                 </div>
                             </div>
@@ -363,34 +372,16 @@ else
                             <div class="card custom-border shadow">
                                 <div class="card-header">
                                     <h5>Payment Status Value</h5>
-                                    <div class="chart-value-box pull-right">
-                                        <div class="d-flex align-items-center">
-                                            <div class="value-square-box-success" style="background-color: #4CAF50; width: 20px; height: 20px; border-radius: 3px;"></div>
-                                            <span class="f-12 f-w-600 ms-2">Paid</span>
-
-                                            <div class="value-square-box-secondary ms-3" style="background-color: #FF5722; width: 20px; height: 20px; border-radius: 3px;"></div>
-                                            <span class="f-12 f-w-600 ms-2">Unpaid</span>
-
-                                            <div class="value-square-box-partial ms-3" style="background-color: #FFC107; width: 20px; height: 20px; border-radius: 3px;"></div>
-                                            <span class="f-12 f-w-600 ms-2">Partial</span>
-
-                                            <div class="value-square-box-canceled ms-3" style="background-color: #9E9E9E; width: 20px; height: 20px; border-radius: 3px;"></div>
-                                            <span class="f-12 f-w-600 ms-2">Canceled</span>
+                                        <div class="card-body">
+                                            <div class="payment-status-chart"></div>
+                                            <div style="width: 80%; margin: auto;">
+                                                <canvas id="paymentStatusChart" height="100"></canvas>
+                                            </div>
                                         </div>
 
-                                    </div>
                                 </div>
 
-                                <div class="card-body">
-                                    <div class="market-chart"></div>
-                                    <div class="code-box-copy">
-                                        <button class="code-box-copy__btn btn-clipboard" data-clipboard-target="#example-head" title="Copy"><i class="icofont icofont-copy-alt"></i></button>
-                                        <pre><code class="language-html" id="example-head">&lt;!-- Cod Box Copy begin --&gt;
-    &lt;div class="market-chart"&gt;&lt;/div&gt;
-    &lt;!-- Cod Box Copy end --&gt;</code></pre>
-                                    </div>
-                                </div>
-                            
+                              
                             </div>
                         </div>
 
@@ -624,7 +615,7 @@ else
                         type: 'category',
                         title: {
                             display: true,
-                            text: 'Date'
+                            text: 'Day'
                         }
                     },
                     y: {
@@ -640,7 +631,6 @@ else
 
         new Chart(ctx, config);
     });
-
 </script>
 
 

@@ -791,13 +791,20 @@ namespace CRM.Controllers.Api
             {
                 bool CheckIN = true;
                 bool isTest = false;
+                bool isWfh = false;
                 var employee = await _context.EmployeeRegistrations.FirstOrDefaultAsync(x => x.Id == model.Userid);
 
                 if (employee.EmployeeId == "NDT-1002") 
                 {
                     isTest = true;
                 }
-
+                var wfhlist = await _context.EmpApplywfhs.FirstOrDefaultAsync(x => x.UserId == employee.EmployeeId && x.Iswfh == true
+                 && x.Startdate.Value.Date <= DateTime.Now.Date
+                 && x.EndDate.Value.Date >= DateTime.Now.Date);
+                if (wfhlist != null)
+                {
+                    isWfh = true;
+                }
                 if (employee == null)
                 {
                     response.StatusCode = StatusCodes.Status404NotFound;
@@ -821,7 +828,7 @@ namespace CRM.Controllers.Api
                     double.Parse(model.Currentlong)
                 );
 
-                if (!isTest)
+                if (!isTest && !isWfh)
                 {
                     if (distance > radiusInMeters)
                     {
@@ -1006,12 +1013,25 @@ namespace CRM.Controllers.Api
             try
             {
                 bool CheckIN = false;
+                bool isTest = false;
+                bool isWfh = false;
                 var employee = await _context.EmployeeRegistrations.FirstOrDefaultAsync(x => x.Id == model.Userid);
+                if (employee.EmployeeId == "NDT-1002")
+                {
+                    isTest = true;
+                }
                 if (employee == null)
                 {
                     response.StatusCode = StatusCodes.Status404NotFound;
                     response.Message = "Employee not found.";
                     return NotFound(response);
+                }
+                var wfhlist = await _context.EmpApplywfhs.FirstOrDefaultAsync(x => x.UserId == employee.EmployeeId && x.Iswfh == true
+                 && x.Startdate.Value.Date <= DateTime.Now.Date
+                 && x.EndDate.Value.Date >= DateTime.Now.Date);
+                if (wfhlist != null)
+                {
+                    isWfh = true;
                 }
                 var employeeCheckIns = await _context.EmployeeCheckIns
                     .FirstOrDefaultAsync(x => x.EmployeeId == employee.EmployeeId && x.CheckIn == true);
@@ -1038,15 +1058,16 @@ namespace CRM.Controllers.Api
                     double.Parse(model.CurrentLat),
                     double.Parse(model.Currentlong)
                 );
-
-                if (distance > radiusInMeters)
+                if (!isTest && !isWfh)
                 {
-                    response.Succeeded = true;
-                    response.StatusCode = StatusCodes.Status200OK;
-                    response.Message = $"Employee is not within the {radiusInMeters} meter radius of the company's location.";
-                    return BadRequest(response);
+                    if (distance > radiusInMeters)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Message = $"Employee is not within the {radiusInMeters} meter radius of the company's location.";
+                        return BadRequest(response);
+                    }
                 }
-
                 var apiModel = await _apiemp.Empcheckout(model, CheckIN);
                 if (apiModel != null)
                 {
@@ -2020,7 +2041,7 @@ namespace CRM.Controllers.Api
             {
                 bool CheckIN = true;
                 bool isTest = false;
-
+                bool isWfh = false;
                 var employee = await _context.EmployeeRegistrations.FirstOrDefaultAsync(x => x.Id == model.Userid);
                 if (employee == null)
                 {
@@ -2033,7 +2054,13 @@ namespace CRM.Controllers.Api
                 {
                     isTest = true;
                 }
-
+                var wfhlist = await _context.EmpApplywfhs.FirstOrDefaultAsync(x => x.UserId == employee.EmployeeId && x.Iswfh == true
+               && x.Startdate.Value.Date <= DateTime.Now.Date
+               && x.EndDate.Value.Date >= DateTime.Now.Date);
+                if (wfhlist != null)
+                {
+                    isWfh = true;
+                }
                 var company = await _context.VendorRegistrations.FirstOrDefaultAsync(x => x.Id == employee.Vendorid);
                 if (company == null)
                 {
@@ -2055,7 +2082,7 @@ namespace CRM.Controllers.Api
                     .OrderByDescending(x => x.Id)
                     .AnyAsync();
 
-                if (!isTest && distance > radiusInMeters)
+                if (!isTest && !isWfh && distance > radiusInMeters)
                 {
                     if (checkInExists)
                     {
