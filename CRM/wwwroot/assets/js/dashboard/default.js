@@ -1,3 +1,250 @@
+﻿//document.addeventlistener("domcontentloaded", function () {
+//    const ctx = document.getelementbyid('paymentstatuschart').getcontext('2d');
+
+//    // fetch data from the correct api endpoint
+//    fetch('/home/getpaymentstatusdata')
+//        .then(response => response.json())
+//        .then(data => {
+//            // extract data for the chart
+//            const months = data.map(item => item.month);
+//            const paidcounts = data.map(item => item.paid);
+//            const unpaidcounts = data.map(item => item.unpaid);
+//            const partialcounts = data.map(item => item.partial);
+//            const canceledcounts = data.map(item => item.canceled);
+//            const paidamounts = data.map(item => item.paidamt);
+//            const unpaidamounts = data.map(item => item.unpaidamt);
+//            const overdueamounts = data.map(item => item.overdueamount);
+
+//            // create the grouped bar chart
+//            new chart(ctx, {
+//                type: 'bar', // keeping the bar chart
+//                data: {
+//                    labels: months,
+//                    datasets: [
+//                        {
+//                            label: 'paid count',
+//                            data: paidcounts,
+//                            backgroundcolor: 'green', // paid will be in green
+//                            bordercolor: 'darkgreen',
+//                            borderwidth: 1
+//                        },
+//                        {
+//                            label: 'unpaid count',
+//                            data: unpaidcounts,
+//                            backgroundcolor: 'red', // unpaid will be in red
+//                            bordercolor: 'darkred',
+//                            borderwidth: 1
+//                        },
+//                        {
+//                            label: 'partial count',
+//                            data: partialcounts,
+//                            backgroundcolor: 'blue',
+//                            bordercolor: 'darkblue',
+//                            borderwidth: 1
+//                        },
+//                        {
+//                            label: 'canceled count',
+//                            data: canceledcounts,
+//                            backgroundcolor: 'orange',
+//                            bordercolor: 'darkorange',
+//                            borderwidth: 1
+//                        },
+//                        {
+//                            label: 'overdue amount',
+//                            data: overdueamounts,
+//                            backgroundcolor: 'yellow',
+//                            bordercolor: 'darkyellow',
+//                            borderwidth: 1
+//                        }
+//                    ]
+//                },
+//                options: {
+//                    responsive: true,
+//                    plugins: {
+//                        tooltip: {
+//                            callbacks: {
+//                                afterbody: function (tooltipitems) {
+//                                    const index = tooltipitems[0].dataindex;
+//                                    const tooltipdata = [];
+
+//                                    // display paid count and paid amount in separate lines
+//                                    tooltipdata.push(`paid count: ${paidcounts[index]}`);
+//                                    tooltipdata.push(`paid amount: ₹${paidamounts[index].tolocalestring()}`);
+
+//                                    // display unpaid count and unpaid amount in separate lines
+//                                    tooltipdata.push(`unpaid count: ${unpaidcounts[index]}`);
+//                                    tooltipdata.push(`unpaid amount: ₹${unpaidamounts[index].tolocalestring()}`);
+
+//                                    // display other categories separately
+//                                    tooltipdata.push(`partial count: ${partialcounts[index]}`);
+//                                    tooltipdata.push(`canceled count: ${canceledcounts[index]}`);
+//                                    tooltipdata.push(`overdue amount: ₹${overdueamounts[index].tolocalestring()}`);
+
+//                                    return tooltipdata; // return all categories as separate tooltip lines
+//                                }
+//                            }
+//                        },
+//                        legend: {
+//                            position: 'top'
+//                        }
+//                    },
+//                    scales: {
+//                        x: {
+//                            title: {
+//                                display: true,
+//                                text: 'months'
+//                            }
+//                        },
+//                        y: {
+//                            title: {
+//                                display: true,
+//                                text: 'count of invoices / amount (₹)'
+//                            },
+//                            beginatzero: true
+//                        }
+//                    }
+//                }
+//            });
+//        })
+//        .catch(error => {
+//            console.error("error fetching data:", error);
+//        });
+//});
+
+document.addEventListener("DOMContentLoaded", function () {
+    const ctx = document.getElementById('paymentStatusChart').getContext('2d');
+
+    // Fetch data from the correct API endpoint
+    fetch('/Home/GetPaymentStatusData')
+        .then(response => response.json())
+        .then(data => {
+            // Log the data for debugging
+            console.log('Fetched data:', data);
+
+            const months = data.map(item => item.month);
+            const paidCounts = data.map(item => item.paid);
+            const unpaidCounts = data.map(item => item.unpaid);
+            const partialCounts = data.map(item => item.partial);
+            const canceledCounts = data.map(item => item.canceled);
+            const paidAmounts = data.map(item => item.paidAmt);
+            const unpaidAmounts = data.map(item => item.unPaidAmt);
+            const partialAmounts = data.map(item => item.partialAmt);
+            const overdueCounts = data.map(item => item.overdueamount);
+            const overdueAmounts = data.map(item => item.overdueamount);
+
+            // Handle undefined or null values gracefully by using fallback values
+            const safePaidAmounts = paidAmounts.map(amount => amount || 0);
+            const safeUnpaidAmounts = unpaidAmounts.map(amount => amount || 0);
+            const safePartialAmounts = partialAmounts.map(amount => amount || 0);
+            const safeCanceledCounts = canceledCounts.map(count => count || 0);
+            const safeOverdueAmounts = overdueAmounts.map(amount => amount || 0);  // Use for 'Overdue Amount'
+            const safeOverdueCounts = overdueCounts.map(amount => amount || 0);  // If needed for counts
+
+            // Create the chart
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: months,
+                    datasets: [
+                        {
+                            label: 'Paid',
+                            data: paidCounts,
+                            backgroundColor: 'green',
+                            borderColor: 'darkgreen',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Unpaid',
+                            data: unpaidCounts,
+                            backgroundColor: 'red',
+                            borderColor: 'darkred',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Partial',
+                            data: partialCounts,
+                            backgroundColor: 'blue',
+                            borderColor: 'darkblue',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Canceled Count',
+                            data: canceledCounts,
+                            backgroundColor: 'orange',
+                            borderColor: 'darkorange',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Overdue Count',
+                            data: safeOverdueCounts,  // Use 'safeOverdueAmounts' for the dataset
+                            backgroundColor: 'yellow',
+                            borderColor: 'darkyellow',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                afterBody: function (tooltipItems) {
+                                    const tooltipData = [];
+
+                                    // Iterate through each tooltip item (it could be multiple data points)
+                                    tooltipItems.forEach(function (tooltipItem) {
+                                        const index = tooltipItem.dataIndex;
+
+                                        // For each dataset, get the specific data you want to show
+                                        if (tooltipItem.datasetIndex === 0) {  // 'Paid' dataset
+                                            tooltipData.push(`Paid Amount: ₹${safePaidAmounts[index].toLocaleString()}`);
+                                        } else if (tooltipItem.datasetIndex === 1) {  // 'Unpaid' dataset
+                                            tooltipData.push(`Unpaid Amount: ₹${safeUnpaidAmounts[index].toLocaleString()}`);
+                                        } else if (tooltipItem.datasetIndex === 2) {  // 'Partial' dataset
+                                            tooltipData.push(`Partial Amount: ₹${safePartialAmounts[index].toLocaleString()}`);
+                                        } else if (tooltipItem.datasetIndex === 3) {  // 'Canceled Count'
+                                            tooltipData.push(`Canceled Count: ${safeCanceledCounts[index].toLocaleString()}`);
+                                        } else if (tooltipItem.datasetIndex === 4) {  // 'Overdue Amount'
+                                            tooltipData.push(`Overdue Amount: ₹${safeOverdueAmounts[index].toLocaleString()}`);  // Use safeOverdueAmounts
+                                        }
+                                    });
+
+                                    return tooltipData;  // Return the collected data for the tooltip
+                                }
+                            }
+                        },
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Months'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Count of Invoices / Amount (₹)'
+                            },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        })
+        .catch(error => {
+            console.error("Error fetching data:", error);
+        });
+});
+
+
+
+
+
+
 
 //market-chart
 //new Chartist.Bar('.market-chart', {
@@ -57,104 +304,124 @@
 //    }
 //});
 
-$(document).ready(function () {
-    // Ensure the target element is available
-    if ($('.market-chart').length > 0) {
-        fetchPaymentStatusData();
-    } else {
-        console.error('.market-chart element not found');
-    }
+//$(document).ready(function () {
+//    // Ensure the target element is available
+//    if ($('.market-chart').length > 0) {
+//        fetchPaymentStatusData();
+//    } else {
+//        console.error('.market-chart element not found');
+//    }
 
-    function fetchPaymentStatusData() {
-        $.ajax({
-            url: '/Home/GetPaymentStatusData',
-            type: 'GET',
-            dataType: 'json',
-            success: function (data) {
-                if (!Array.isArray(data)) {
-                    console.error("Unexpected response format:", data);
-                    return;
-                }
+//    function fetchPaymentStatusData() {
+//        $.ajax({
+//            url: '/Home/GetPaymentStatusData',
+//            type: 'GET',
+//            dataType: 'json',
+//            success: function (data) {
+//                if (!Array.isArray(data)) {
+//                    console.error("Unexpected response format:", data);
+//                    return;
+//                }
 
-                const labels = data.map(item => item?.month || "Unknown");
-                const series = [
-                    data.map(item => item?.paid || 0),
-                    data.map(item => item?.unpaid || 0),
-                    data.map(item => item?.partial || 0),
-                    data.map(item => item?.canceled || 0)
-                ];
+//                const labels = data.map(item => item?.month || "Unknown");
+//                const series = [
+//                    data.map(item => item?.paid || 0),
+//                    data.map(item => item?.unpaid || 0),
+//                    data.map(item => item?.partial || 0),
+//                    data.map(item => item?.canceled || 0)
+//                ];
 
-                // Initialize the chart after ensuring DOM is loaded and element exists
-                new Chartist.Bar('.market-chart', {
-                    labels: labels,
-                    series: series
-                }, {
-                    seriesBarDistance: 10,
-                    chartPadding: {
-                        left: 0,
-                        right: 0,
-                        bottom: 0
-                    },
-                    axisX: {
-                        showGrid: false,
-                        labelInterpolationFnc: function (value) {
-                            return value;
-                        }
-                    }
-                }).on('draw', function (ctx) {
-                    if (ctx.type === 'bar') {
-                        let colors = ['#4CAF50', '#FF5722', '#FFC107', '#9E9E9E'];
-                        let colorIndex = ctx.seriesIndex;
-                        let color = colors[colorIndex];
+//                // Create the Chartist bar chart
+//                const chart = new Chartist.Bar('.market-chart', {
+//                    labels: labels,
+//                    series: series
+//                }, {
+//                    seriesBarDistance: 10,
+//                    chartPadding: {
+//                        left: 0,
+//                        right: 0,
+//                        bottom: 0
+//                    },
+//                    axisX: {
+//                        showGrid: false,
+//                        labelInterpolationFnc: function (value) {
+//                            return value;
+//                        }
+//                    }
+//                });
 
-                        ctx.element.attr({
-                            style: `stroke-linecap: round; fill: ${color}; stroke: ${color};`
-                        });
+//                // Add hover tooltip functionality
+//                chart.on('draw', function (ctx) {
+//                    if (ctx.type === 'bar') {
+//                        // Set colors for each bar
+//                        const colors = ['#4CAF50', '#FF5722', '#FFC107', '#9E9E9E'];
+//                        const colorIndex = ctx.seriesIndex;
+//                        const color = colors[colorIndex];
 
-                        const value = ctx.value;
-                        if (value > 0) {
-                            ctx.group.append(new Chartist.Svg('text', {
-                                x: ctx.x2 - ctx.width / 2,
-                                y: ctx.y - 10,
-                                style: 'fill: black; font-size: 12px; text-anchor: middle;'
-                            }, value));
-                        }
-                    }
-                }).on('mouseenter', '.ct-bar', function () {
-                    var bar = $(this);
-                    var index = bar.index();  // Get the index of the hovered bar
+//                        ctx.element.attr({
+//                            style: `stroke-linecap: round; fill: ${color}; stroke: ${color};`
+//                        });
 
-                    var paidAmt = data[index]?.paid || 0;
-                    var unPaidAmt = data[index]?.unpaid || 0;
+//                        // Add value above bars
+//                        if (ctx.value > 0) {
+//                            ctx.group.append(new Chartist.Svg('text', {
+//                                x: ctx.x2,
+//                                y: ctx.y2 - 10,
+//                                style: 'fill: black; font-size: 12px; text-anchor: middle;',
+//                                text: ctx.value
+//                            }));
+//                        }
+//                    }
+//                });
 
-                    // Correct usage of template literals
-                    var tooltip = $('<div class="tooltip"></div>')
-                        .text('Paid Amount: ${paidAmt}, Unpaid Amount: ${unPaidAmt}')  // Use backticks here
-                        .css({
-                            position: 'absolute',
-                            top: bar.offset().top - 30,  // Position the tooltip slightly above the bar
-                            left: bar.offset().left + (bar.width() / 2) - 50,
-                            background: 'rgba(0, 0, 0, 0.7)',
-                            color: 'white',
-                            padding: '5px 10px',
-                            borderRadius: '4px',
-                            fontSize: '12px',
-                            zIndex: '9999',
-                            pointerEvents: 'none'
-                        });
+//                // Handle hover using event delegation
+//                $('.market-chart').on('mouseenter', '.ct-bar', function (event) {
+//                    const barIndex = $(this).index(); // Get the index of the bar
+//                    const datasetIndex = $(this).parent().index(); // Get the series index
 
-                    // Append the tooltip to the body
-                    $('body').append(tooltip);
-                }).on('mouseleave', '.ct-bar', function () {
-                    $('.tooltip').remove();  // Remove the tooltip on mouse leave
-                });
-            },
-            error: function (xhr, status, error) {
-                console.error("Error fetching payment status data:", error);
-            }
-        });
-    }
-});
+//                    // Retrieve the corresponding data
+//                    const paidAmt = data[barIndex]?.paid || 0;
+//                    const unPaidAmt = data[barIndex]?.unpaid || 0;
+
+//                    // Create a tooltip
+//                    const tooltip = $('<div class="tooltip"></div>')
+//                        .text(`Paid: ${paidAmt}, Unpaid: ${unPaidAmt}`)
+//                        .css({
+//                            position: 'absolute',
+//                            top: event.pageY - 40,
+//                            left: event.pageX - 50,
+//                            background: 'rgba(0, 0, 0, 0.7)',
+//                            color: 'white',
+//                            padding: '5px 10px',
+//                            borderRadius: '4px',
+//                            fontSize: '12px',
+//                            zIndex: '9999',
+//                            pointerEvents: 'none'
+//                        });
+
+//                    $('body').append(tooltip);
+//                });
+
+//                // Remove tooltip on mouseleave
+//                $('.market-chart').on('mouseleave', '.ct-bar', function () {
+//                    $('.tooltip').remove();
+//                });
+
+//                // Update tooltip position on mousemove
+//                $('.market-chart').on('mousemove', '.ct-bar', function (event) {
+//                    $('.tooltip').css({
+//                        top: event.pageY - 40,
+//                        left: event.pageX - 50
+//                    });
+//                });
+//            },
+//            error: function (xhr, status, error) {
+//                console.error("Error fetching payment status data:", error);
+//            }
+//        });
+//    }
+//});
+
 
 // vector map
 ! function(maps) {

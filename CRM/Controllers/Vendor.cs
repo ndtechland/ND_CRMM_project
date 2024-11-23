@@ -3275,7 +3275,6 @@ namespace CRM.Controllers
             if (adminLogin == null)
                 return Json(new { exists = false, message = "Admin not found." });
 
-            // Use Include to fetch related EmployeePersonalDetails in one query if relationships are set up
             var employeeRegistrations = await _context.EmployeeRegistrations
                 .Where(x => x.Vendorid == adminLogin.Vendorid)
                 .Select(x => new

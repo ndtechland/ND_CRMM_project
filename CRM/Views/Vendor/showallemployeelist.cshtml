@@ -75,9 +75,17 @@
                                                     <tr class="table-row">
                                                         <td>@count</td>
                                                         <td nowrap>
-                                                            <a class="Attendancelist" href="@Url.Action("EmployeeAttendanceList", "Vendor",new {EmpId = @item.EmpId})">@item.EmpId</a>
-                                                            <a class="Breaklist" href="@Url.Action("EmployeeBreakList", "Vendor",new {EmpId = @item.EmpId})">@item.EmpId</a>
+                                                            @if (Context.Request.Path.Value.Contains("showallemployeeAttendancelist"))
+                                                            {
+                                                                <a class="Attendancelist" href="@Url.Action("EmployeeAttendanceList", "Vendor", new { EmpId = @item.EmpId })">@item.EmpId</a>
+                                                            }
+                                                            else if (Context.Request.Path.Value.Contains("showallemployeeBreakinlist"))
+                                                            {
+                                                                <a class="Breaklist" href="@Url.Action("EmployeeBreakList", "Vendor", new { EmpId = @item.EmpId })">@item.EmpId</a>
+                                                            }
                                                         </td>
+
+
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.EmployeeName)
                                                         </td>
@@ -111,16 +119,18 @@
     });
 </script>
 <script>
+   
     $(document).ready(function () {
         $(".Attendancelist").hide();
         $(".Breaklist").hide();
+
         var currentUrl = window.location.href;
 
-        if (currentUrl.indexOf("showallemployeeAttendancelist") !== -1) {
+        if (currentUrl.includes("showallemployeeAttendancelist")) {
             $(".Attendancelist").show();
-        }
-        else {
+        } else if (currentUrl.includes("showallemployeeBreakinlist")) {
             $(".Breaklist").show();
         }
     });
+
 </script>

@@ -94,6 +94,7 @@ namespace CRM.Controllers
         //        {
         //            Console.WriteLine($"Scheduling auto-checkout for shift {shift.Id} at {shift.Endtime}");
 
+        //            // Schedule job to run at shift's end time
         //            RecurringJob.AddOrUpdate<HangfiretaskController>(
         //                $"AutoCheckOutForShift_{shift.Id}",
         //                controller => controller.AutoCheckOutForAllEmployees(shift.Id, endTime),
@@ -114,7 +115,6 @@ namespace CRM.Controllers
         //    var currentDate = DateTime.Today;
         //    DateTime now = DateTime.Now;
 
-        //    // Skip if the current time is before the shift end time.
         //    if (now.TimeOfDay < shiftEndTime)
         //    {
         //        Console.WriteLine("It's not yet time for auto-checkout.");
@@ -130,7 +130,6 @@ namespace CRM.Controllers
 
         //    DateTime effectiveCheckOutTime = currentDate.Add(shiftEndTime);
 
-        //    // Fetch employees who belong to this shift
         //    var employeesWithCheckIns = await _context.EmployeeRegistrations
         //        .Where(emp => emp.OfficeshiftTypeid == shiftId)
         //        .Select(emp => new
@@ -142,25 +141,21 @@ namespace CRM.Controllers
 
         //    foreach (var emp in employeesWithCheckIns)
         //    {
-        //        // Check latest check-in record for the employee
         //        var empCheckInRecord = await _context.EmpCheckIns
         //            .Where(x => x.EmployeeId == emp.EmployeeId && x.Currentdate.HasValue && x.Currentdate.Value.Date == DateTime.Now.Date)
         //            .OrderByDescending(x => x.Id)
         //            .FirstOrDefaultAsync();
 
-        //        // Skip if already checked out or no check-in was recorded
         //        if (empCheckInRecord == null || empCheckInRecord.CheckIn == false)
         //        {
+        //            Console.WriteLine($"Skipping employee {emp.EmployeeId}: No valid check-in record found.");
         //            continue;
         //        }
 
-        //        // Auto-checkout logic
         //        var checkInRecord = await _context.EmployeeCheckInRecords
-        //            .Where(g => g.EmpId == emp.EmployeeId &&
-        //                        g.CurrentDate.HasValue &&
+        //            .Where(g => g.EmpId == emp.EmployeeId && g.CurrentDate.HasValue &&
         //                        g.CurrentDate.Value.Date == currentDate &&
-        //                        g.ShiftId == shiftId &&
-        //                        g.CheckOuttime == null)
+        //                        g.ShiftId == shiftId && g.CheckOuttime == null)
         //            .OrderByDescending(g => g.CheckIntime)
         //            .FirstOrDefaultAsync();
 
@@ -172,17 +167,14 @@ namespace CRM.Controllers
 
         //        DateTime checkInTime = checkInRecord.CheckIntime.Value;
 
-        //        // Ensure we only calculate working hours if the check-in time is earlier than end time
         //        DateTime checkoutTime = checkInTime < effectiveCheckOutTime ? effectiveCheckOutTime : checkInTime;
 
         //        TimeSpan workingHours = checkoutTime - checkInTime;
         //        checkInRecord.CheckOuttime = checkoutTime;
         //        checkInRecord.Workinghour = workingHours;
-        //        checkInRecord.CurrentDate = DateTime.Now;
 
         //        Console.WriteLine($"Auto-checkout completed for employee {emp.EmployeeId} at {checkoutTime}. Working hours: {workingHours.TotalHours} hours.");
 
-        //        // Log the checkout into EmployeeCheckIns
         //        var employeeCheckIn = new EmployeeCheckIn
         //        {
         //            EmployeeId = emp.EmployeeId,
@@ -206,38 +198,38 @@ namespace CRM.Controllers
         {
             var chargeMasters = _context.Chargesmasters.ToList();
             var customerInvoices = _context.CustomerInvoices.ToList();
-
             foreach (var invoice in customerInvoices)
             {
+                if (invoice.Paymentstatus == 1)
+                    continue;
                 if (invoice.Dueamountdate.HasValue)
                 {
                     int overdueDays = (DateTime.Now - invoice.Dueamountdate.Value).Days;
-
                     if (overdueDays > 0)
                     {
-                        var charge = chargeMasters
-                            .FirstOrDefault(x =>
-                            {
-                                var rangeParts = x.Chargesname?.Split('-');
-                                if (rangeParts != null && rangeParts.Length == 2)
-                                {
-                                    int startDay = int.Parse(rangeParts[0]);
-                                    int endDay = int.Parse(rangeParts[1]);
-
-                                    return overdueDays >= startDay && overdueDays <= endDay;
-                                }
-
-                                return false;
-                            });
-
-                        if (charge != null && charge.Chargespercentage.HasValue)
+                        var applicableCharge = chargeMasters.FirstOrDefault(charge =>
                         {
-                            decimal gstMultiplier = (decimal)((invoice.ProductPrice * invoice.Igst / 100 ?? 0) + (invoice.ProductPrice * invoice.Sgst / 100 ?? 0) + (invoice.ProductPrice * invoice.Cgst / 100 ?? 0));
+                            if (string.IsNullOrEmpty(charge.Chargesname)) return false;
+                            var rangeParts = charge.Chargesname.Split('-');
+                            if (rangeParts.Length == 2 &&
+                                int.TryParse(rangeParts[0], out int startDay) &&
+                                int.TryParse(rangeParts[1], out int endDay))
+                            {
+                                return overdueDays >= startDay && overdueDays <= endDay;
+                            }
 
-                            decimal chargeMultiplier = (decimal)(gstMultiplier * charge.Chargespercentage.Value / 100);
+                            return false;
+                        });
 
+                        if (applicableCharge?.Chargespercentage.HasValue == true)
+                        {
+                            decimal gstMultiplier = (decimal)((invoice.ProductPrice * (invoice.Igst ?? 0) / 100) +
+                                                    (invoice.ProductPrice * (invoice.Sgst ?? 0) / 100) +
+                                                    (invoice.ProductPrice * (invoice.Cgst ?? 0) / 100));
+
+                            decimal chargeMultiplier = gstMultiplier * applicableCharge.Chargespercentage.Value / 100;
                             invoice.Taxamount = chargeMultiplier;
-                            invoice.Taxid = charge.Id;
+                            invoice.Taxid = applicableCharge.Id;
                         }
                     }
                 }
