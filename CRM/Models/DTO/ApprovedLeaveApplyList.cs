@@ -15,7 +15,7 @@
         public decimal UnPaidCountLeave { get; set; }
         public string? Month { get; set; }
         public string? Reason { get; set; }
-        public bool? Isapprove { get; set; }
+        public int? Isapprove { get; set; }
         public decimal? PaidCountLeave { get; set; }
     }
 
@@ -31,6 +31,6 @@
         public DateTime CreatedDate { get; set; }
         public string? Reason { get; set; }
         public int? days { get; set; }
-        public bool? Isapprove { get; set; }
+        public int? Isapprove { get; set; }
     }
 }

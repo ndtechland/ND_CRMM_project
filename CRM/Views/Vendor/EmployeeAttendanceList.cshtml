@@ -71,8 +71,9 @@
                                         <tbody>
                                             @{
                                                 var count = 0;
-                                                foreach (var item in Model.detail)
+                                                @foreach (var item in Model.detail)
                                                 {
+
                                                     count++;
                                                     <tr class="table-row" data-empid="@item.EmpId">
                                                         <td>@count</td>
@@ -88,14 +89,20 @@
                                                         <td nowrap>
                                                             @item.CheckOuttime
                                                         </td>
-                                                        <td>
+                                                       @*<td nowrap>
+                                                            @item.Workinghour
+                                                        </td>*@
+
+                                                        <td class="working-hour" data-workinghour="@item.Workinghour" data-maxhour="@item.maxHour">
                                                             @item.Workinghour
                                                         </td>
+
                                                         <td nowrap>
                                                             @item.CurrentDate
                                                         </td>
                                                     </tr>
                                                 }
+
                                             }
                                         </tbody>
                                     </table>
@@ -126,4 +133,23 @@
     }
 
 
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var rows = document.querySelectorAll('.working-hour');
+
+        rows.forEach(function (row) {
+            var workinghour = parseFloat(row.getAttribute('data-workinghour'));
+            var maxHour = parseFloat(row.getAttribute('data-maxhour'));
+            if (!isNaN(workinghour) && !isNaN(maxHour)) {
+                if (workinghour >= maxHour) {
+                    row.style.color = 'forestgreen'; 
+                } else {
+                    row.style.color = 'red';  
+                }
+            } else {
+                row.style.color = 'red';  
+            }
+        });
+    });
 </script>

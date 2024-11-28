@@ -9,7 +9,7 @@ namespace CRM.Models.Crm
         public DateTime? Startdate { get; set; }
         public DateTime? EndDate { get; set; }
         public DateTime? Currentdate { get; set; }
-        public bool? Iswfh { get; set; }
+        public int? Iswfh { get; set; }
         public string? Reason { get; set; }
         public string? UserId { get; set; }
     }

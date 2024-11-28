@@ -23,6 +23,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<AggregatedCounter> AggregatedCounters { get; set; } = null!;
         public virtual DbSet<AppFaq> AppFaqs { get; set; } = null!;
         public virtual DbSet<ApplyLeaveNews> ApplyLeaveNews { get; set; } = null!;
+        public virtual DbSet<Approvalmaster> Approvalmasters { get; set; } = null!;
         public virtual DbSet<ApprovedPresnolInfo> ApprovedPresnolInfos { get; set; } = null!;
         public virtual DbSet<Approvedbankdetail> Approvedbankdetails { get; set; } = null!;
         public virtual DbSet<Attendanceday> Attendancedays { get; set; } = null!;
@@ -217,6 +218,17 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.CountLeave).HasColumnType("decimal(18, 2)");
 
                 entity.Property(e => e.PaidCountLeave).HasColumnType("decimal(18, 2)");
+            });
+
+            modelBuilder.Entity<Approvalmaster>(entity =>
+            {
+                entity.ToTable("Approvalmaster");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Status)
+                    .HasMaxLength(200)
+                    .HasColumnName("status");
             });
 
             modelBuilder.Entity<ApprovedPresnolInfo>(entity =>

@@ -16,7 +16,7 @@ namespace CRM.Models.Crm
         public decimal CountLeave { get; set; }
         public string? Month { get; set; }
         public string? Reason { get; set; }
-        public bool? Isapprove { get; set; }
+        public int? Isapprove { get; set; }
         public decimal? PaidCountLeave { get; set; }
     }
 }

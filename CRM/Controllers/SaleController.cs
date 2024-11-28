@@ -106,97 +106,163 @@ namespace CRM.Controllers
             }
         }
 
+        //[HttpPost]
+        //public async Task<IActionResult> Invoice(List<ProductDetail> model)
+        //{
+        //    try
+        //    {
+        //        int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+        //        var adminlogin = await _context.AdminLogins
+        //                                       .Where(x => x.Id == Userid)
+        //                                       .FirstOrDefaultAsync();
+        //        bool data;
+        //        if (adminlogin == null)
+        //        {
+        //            TempData["Message"] = "Admin not found.";
+        //            return View(model);
+        //        }
+
+        //        string InvoiceNo = model.FirstOrDefault()?.InvoiceNumber; 
+
+        //        if (string.IsNullOrEmpty(InvoiceNo))
+        //        {
+        //            InvoiceNo = GenerateInvoiceNumber();
+        //        }
+
+        //        var existingInvoice = await _context.CustomerInvoices
+        //                                             .Where(x => x.InvoiceNumber == InvoiceNo )
+        //                                             .FirstOrDefaultAsync();
+
+        //        if (existingInvoice != null)
+        //        {
+        //             data = await _ICrmrpo.CustomerInvoice(model, InvoiceNo, (int)adminlogin.Vendorid);
+
+        //            if (data)
+        //            {
+        //                foreach (var product in model)
+        //                {
+        //                    if (product.Id == 0)
+        //                    {
+        //                        TempData["Message"] = "ok";
+        //                    }
+        //                    else
+        //                    {
+        //                        TempData["Message"] = "updok"; ;
+        //                    }
+        //                }
+
+        //                var model1 = new
+        //                {
+        //                    path = "/Sale/Invoice"
+        //                };
+        //                return Ok(model1);
+        //            }
+        //            else
+        //            {
+        //                TempData["Message"] = "Invoice addition failed.";
+        //                return View(model);
+        //            }
+        //        }
+
+        //        else
+        //        {
+        //            data = await _ICrmrpo.CustomerInvoice(model, InvoiceNo, (int)adminlogin.Vendorid);
+
+        //            if (data)
+        //            {
+        //                foreach (var product in model)
+        //                {
+        //                    if (product.Id == 0)
+        //                    {
+        //                        TempData["Message"] = "ok";
+        //                    }
+        //                    else
+        //                    {
+        //                        TempData["Message"] = "updok"; ;
+        //                    }
+        //                }
+
+        //                var model1 = new
+        //                {
+        //                    path = "/Sale/Invoice"
+        //                };
+        //                return Ok(model1);
+        //            }
+        //            else
+        //            {
+        //                TempData["Message"] = "Invoice addition failed.";
+        //                return View(model);
+        //            }
+        //        }
+
+        //    }
+        //    catch (Exception Ex)
+        //    {
+        //        TempData["Message"] = "An error occurred while processing the invoice.";
+        //        return View(model);
+        //    }
+        //}
         [HttpPost]
         public async Task<IActionResult> Invoice(List<ProductDetail> model)
         {
             try
             {
-                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
-                var adminlogin = await _context.AdminLogins
-                                               .Where(x => x.Id == Userid)
-                                               .FirstOrDefaultAsync();
-                bool data;
+                int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.FirstOrDefaultAsync(x => x.Id == userId);
+
                 if (adminlogin == null)
                 {
                     TempData["Message"] = "Admin not found.";
                     return View(model);
                 }
 
-                string InvoiceNo = model.FirstOrDefault()?.InvoiceNumber; 
+                var customerId = model.FirstOrDefault()?.CustomerId;
 
-                if (string.IsNullOrEmpty(InvoiceNo))
+                if (customerId == null)
                 {
-                    InvoiceNo = GenerateInvoiceNumber();
+                    TempData["Message"] = "CustomerId not found.";
+                    return View(model);
                 }
+
+                var checkInvoice = await _context.CustomerInvoices
+                                                  .Where(x => x.CustomerId == customerId && x.Paymentstatus == 1)
+                                                  .ToListAsync();
+
+                string InvoiceNo = model.FirstOrDefault()?.InvoiceNumber ?? GenerateInvoiceNumber();
 
                 var existingInvoice = await _context.CustomerInvoices
-                                                     .Where(x => x.InvoiceNumber == InvoiceNo)
-                                                     .FirstOrDefaultAsync();
+                                                     .FirstOrDefaultAsync(x => x.InvoiceNumber == InvoiceNo);
 
-                if (existingInvoice != null)
+                bool isSuccess = await _ICrmrpo.CustomerInvoice(model, InvoiceNo, (int)adminlogin.Vendorid);
+
+                if (isSuccess)
                 {
-                     data = await _ICrmrpo.CustomerInvoice(model, InvoiceNo, (int)adminlogin.Vendorid);
 
-                    if (data)
+                    foreach (var product in model)
                     {
-                        foreach (var product in model)
+                        if (product.Id == 0)
                         {
-                            if (product.Id == 0)
-                            {
-                                TempData["Message"] = "ok";
-                            }
-                            else
-                            {
-                                TempData["Message"] = "updok"; ;
-                            }
+                            TempData["Message"] = "ok";
                         }
-
-                        var model1 = new
+                        else
                         {
-                            path = "/Sale/Invoice"
-                        };
-                        return Ok(model1);
+                            TempData["Message"] = "updok"; 
+                        }
                     }
-                    else
-                    {
-                        TempData["Message"] = "Invoice addition failed.";
-                        return View(model);
-                    }
-                }
 
+                    var model1 = new
+                    {
+                        path = "/Sale/Invoice"
+                    };
+                    return Ok(model1);
+                }
                 else
                 {
-                    data = await _ICrmrpo.CustomerInvoice(model, InvoiceNo, (int)adminlogin.Vendorid);
-
-                    if (data)
-                    {
-                        foreach (var product in model)
-                        {
-                            if (product.Id == 0)
-                            {
-                                TempData["Message"] = "ok";
-                            }
-                            else
-                            {
-                                TempData["Message"] = "updok"; ;
-                            }
-                        }
-
-                        var model1 = new
-                        {
-                            path = "/Sale/Invoice"
-                        };
-                        return Ok(model1);
-                    }
-                    else
-                    {
-                        TempData["Message"] = "Invoice addition failed.";
-                        return View(model);
-                    }
+                    TempData["Message"] = "Failed to process invoice.";
+                    return View(model);
                 }
-             
             }
-            catch (Exception Ex)
+            catch (Exception ex)
             {
                 TempData["Message"] = "An error occurred while processing the invoice.";
                 return View(model);
@@ -502,7 +568,7 @@ namespace CRM.Controllers
             }
             catch (Exception ex)
             {
-                throw ex; 
+                throw ex;
             }
         }
 
@@ -516,37 +582,35 @@ namespace CRM.Controllers
                     if (result != null)
                     {
                         var invoicesToDelete = _context.CustomerInvoices
-                            .Where(c => c.InvoiceNumber == result.InvoiceNumber)
+                            .Where(c => c.InvoiceNumber == result.InvoiceNumber && c.Paymentstatus != 3)
                             .ToList();
-
                         if (invoicesToDelete.Any())
                         {
-                            decimal totalDueAmount = invoicesToDelete
-                                               .Where(ci => ci.DueAmount.HasValue)
-                                               .Select(ci => ci.DueAmount.Value)
-                                               .FirstOrDefault();
+                            //decimal totalDueAmount = invoicesToDelete
+                            //                   .Where(ci => ci.DueAmount.HasValue)
+                            //                   .Select(ci => ci.DueAmount.Value)
+                            //                   .FirstOrDefault();
 
-                               
-                            foreach (var item in invoicesToDelete)
-                            {
-                                decimal dueAmount = (decimal)(totalDueAmount -
-                                                   (result.ProductPrice * (result.Igst / 100 ?? 0)) +
-                                                   (result.ProductPrice * (result.Sgst / 100 ?? 0)) +
-                                                   (result.ProductPrice * (result.Cgst / 100 ?? 0)));
+                            //decimal dueAmount = (decimal)(result.DueAmount -
+                            //                     (result.ProductPrice) + (result.ProductPrice * (result.Igst / 100 ?? 0)) +
+                            //                      (result.ProductPrice * (result.Sgst / 100 ?? 0)) +
+                            //                      (result.ProductPrice * (result.Cgst / 100 ?? 0)));
 
-                                item.DueAmount = dueAmount;
-                            }
-                            await _context.SaveChangesAsync();
+                            //foreach (var item in invoicesToDelete)
+                            //{
+                            //    item.DueAmount = dueAmount;
+                            //}
+                            // await _context.SaveChangesAsync();
 
                             _context.CustomerInvoices.RemoveRange(result);
                             await _context.SaveChangesAsync();
-                            TempData["Message"] = "Deleted Successfully.";
-                            return new JsonResult(new { success = true, message = "Deleted Successfully" });
+                            //  TempData["Message"] = "Deleted Successfully.";
+                            return new JsonResult(new { success = true, message = "Deleted Successfully", redirectUrl = "/Sale/Invoice?InvoiceNumber=" + result.InvoiceNumber });
                         }
                         else
                         {
-                            TempData["Message"] = "No matching invoices found for deletion.";
-                            return new JsonResult(new { success = false, message = "No matching invoices found for deletion." });
+                           // TempData["Message"] = "No matching invoices found for deletion.";
+                            return new JsonResult(new { success = false, message = "No matching invoices found for deletion.", redirectUrl = "/Sale/Invoice?InvoiceNumber=" + result.InvoiceNumber });
                         }
                     }
                     else
@@ -643,10 +707,9 @@ namespace CRM.Controllers
                 decimal totalAmount = 0;
                 foreach (var item in invoiceDetails)
                 {
-                    decimal productTotal = item.ProductPrice +
-                                           (item.ProductPrice * item.IGST / 100) +
+                    decimal productTotal = (item.ProductPrice + (item.ProductPrice * item.IGST / 100) +
                                            (item.ProductPrice * item.SGST / 100) +
-                                           (item.ProductPrice * item.CGST / 100);
+                                           (item.ProductPrice * item.CGST / 100));
 
                     totalAmount += productTotal;
                 }

@@ -337,7 +337,7 @@ namespace CRM.Controllers.Api
 
                     // Fetch approved leave records for the current month
                     var toleave = await _context.ApplyLeaveNews
-                        .Where(p => p.UserId == userId && p.Isapprove == true)
+                        .Where(p => p.UserId == userId && p.Isapprove == 2)
                         .Select(p => new
                         {
                             Id = p.Id,
@@ -798,7 +798,7 @@ namespace CRM.Controllers.Api
                 {
                     isTest = true;
                 }
-                var wfhlist = await _context.EmpApplywfhs.FirstOrDefaultAsync(x => x.UserId == employee.EmployeeId && x.Iswfh == true
+                var wfhlist = await _context.EmpApplywfhs.FirstOrDefaultAsync(x => x.UserId == employee.EmployeeId && x.Iswfh == 2
                  && x.Startdate.Value.Date <= DateTime.Now.Date
                  && x.EndDate.Value.Date >= DateTime.Now.Date);
                 if (wfhlist != null)
@@ -1026,7 +1026,7 @@ namespace CRM.Controllers.Api
                     response.Message = "Employee not found.";
                     return NotFound(response);
                 }
-                var wfhlist = await _context.EmpApplywfhs.FirstOrDefaultAsync(x => x.UserId == employee.EmployeeId && x.Iswfh == true
+                var wfhlist = await _context.EmpApplywfhs.FirstOrDefaultAsync(x => x.UserId == employee.EmployeeId && x.Iswfh == 2
                  && x.Startdate.Value.Date <= DateTime.Now.Date
                  && x.EndDate.Value.Date >= DateTime.Now.Date);
                 if (wfhlist != null)
@@ -2054,7 +2054,7 @@ namespace CRM.Controllers.Api
                 {
                     isTest = true;
                 }
-                var wfhlist = await _context.EmpApplywfhs.FirstOrDefaultAsync(x => x.UserId == employee.EmployeeId && x.Iswfh == true
+                var wfhlist = await _context.EmpApplywfhs.FirstOrDefaultAsync(x => x.UserId == employee.EmployeeId && x.Iswfh == 2
                && x.Startdate.Value.Date <= DateTime.Now.Date
                && x.EndDate.Value.Date >= DateTime.Now.Date);
                 if (wfhlist != null)
@@ -2208,6 +2208,46 @@ namespace CRM.Controllers.Api
                 return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
+        [AllowAnonymous]
+        [Route("GetempLatlongbyuserid")]
+        [HttpGet]
+        public async Task<IActionResult> GetempLatlongbyuserid(int userid)
+        {
+            var response = new Response<EmployeeCheckIn>();
+            try
+            {
+                if (userid != null)
+                {
+                   var isLoginExists = await _apiemp.GetLATLONG(userid);
+                    if (isLoginExists != null)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = "Employee Task Here.";
+                        response.Data = isLoginExists;
+                        return Ok(response);
+                    }
+                    else
+                    {
+                        response.StatusCode = StatusCodes.Status401Unauthorized;
+                        response.Message = "Data not found.";
+                        return Ok(response);
+                    }
+                }
+                else
+                {
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Message = "Userid not found..";
+                    return BadRequest(response);
+                }
 
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }

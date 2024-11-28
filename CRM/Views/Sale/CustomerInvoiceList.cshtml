@@ -101,7 +101,7 @@
                                                     Email Id
                                                 </th>
                                                 <th nowrap>
-                                                   Due Date
+                                                    Due Date
                                                 </th>
                                                 <th nowrap>
                                                     Office State
@@ -232,7 +232,7 @@
                                                                     }
                                                                 </select>
                                                             }
-                                                          
+
                                                         </td>
 
                                                         <td>
@@ -281,57 +281,6 @@
 </div>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
-    var currentPage = 1;
-    var rowsPerPage = 5;
-    $(document).ready(function () {
-        function paginateTable() {
-            var table = $('#datatable');
-            var rows = table.find('tbody tr');
-
-
-            var totalPages = Math.ceil(rows.length / rowsPerPage);
-
-
-            var pagination = $('#pagination');
-            pagination.empty();
-
-            for (var i = 1; i <= totalPages; i++) {
-                var link = $('<li class="page-item"><a class="page-link" href="#">' + i + '</a></li>');
-
-
-                if (i === currentPage) {
-                    link.addClass('active');
-                }
-
-                pagination.append(link);
-            }
-
-
-            var startIndex = (currentPage - 1) * rowsPerPage;
-            var endIndex = startIndex + rowsPerPage;
-
-            rows.hide().slice(startIndex, endIndex).show();
-        }
-
-
-        paginateTable();
-
-        $(document).on('click', '#pagination li a', function (event) {
-            event.preventDefault();
-
-            var clickedPage = parseInt($(this).text());
-
-
-            currentPage = clickedPage;
-            paginateTable();
-
-
-            $('html, body').animate({ scrollTop: $('#table-container').offset().top }, 'slow');
-        });
-    });
-
-</script>
-<script>
     function confirmDelete(url) {
         var result = confirm("Are you sure you want to delete?");
         if (result) {
@@ -376,21 +325,6 @@
             if (ShiftTypeid != 1) {
                 toggleInputBoxBasedOnPaymentType(itemId);
             }
-        }
-    }
-
-    function toggleInputBoxBasedOnPaymentType(itemId) {
-        var selectedPaymentType = $("#ddPaymentmodeid_" + itemId).val();
-
-        if (parseInt(selectedPaymentType) === 1) {
-            $("#inputBox_" + itemId).show();
-            $("#submitBtn_" + itemId).show();
-        } else if (parseInt(selectedPaymentType) === 3) {
-            $("#inputBox_" + itemId).show();
-            $("#submitBtn_" + itemId).show();
-        } else {
-            $("#inputBox_" + itemId).hide();
-            $("#submitBtn_" + itemId).hide();
         }
     }
 
@@ -446,6 +380,10 @@
         });
     }
 
+   
+</script>
+
+<script>
     $(document).ready(function () {
     @foreach (var item in Model)
     {
@@ -461,7 +399,7 @@
 
         $(".submit-payment").click(function () {
             var itemId = $(this).data('invoiceid');
-            updateCustomerInvoiceAmount(itemId);
+            updateCustomerInvoiceAmount(timid);
         });
 
         var userpaymenttype = '@ViewBag.PaymentTypelist';
@@ -472,6 +410,21 @@
             bindpaymenttype("");
         }
     });
+
+    function toggleInputBoxBasedOnPaymentType(itemId) {
+        var selectedPaymentType = $("#ddPaymentmodeid_" + itemId).val();
+
+        if (parseInt(selectedPaymentType) === 1) {
+            $("#inputBox_" + itemId).show();
+            $("#submitBtn_" + itemId).show();
+        } else if (parseInt(selectedPaymentType) === 3) {
+            $("#inputBox_" + itemId).show();
+            $("#submitBtn_" + itemId).show();
+        } else {
+            $("#inputBox_" + itemId).hide();
+            $("#submitBtn_" + itemId).hide();
+        }
+    }
 
 </script>
 
