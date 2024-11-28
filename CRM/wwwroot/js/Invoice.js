@@ -428,39 +428,108 @@ document.getElementById('addSection').addEventListener('click', function () {
 });
 
 // Handle the remove section button
+//document.getElementById('customerSections').addEventListener('click', function (e) {
+//    if (e.target.classList.contains('remove-section')) {
+//        const sections = document.querySelectorAll('.customer-section');
+//        const section = e.target.closest('.customer-section');
+//        const sectionIdInput = section.querySelector('.Id'); // Get the hidden input within the section
+//        const sectionIdValue = sectionIdInput ? sectionIdInput.value : 0;
+//        if (sections.length > 1) { // Prevent removal if only one section is left
+//            const confirmed = confirm('Are you sure you want to delete this Product?');
+//            if (confirmed) {
+//                e.target.closest('.customer-section').remove();
+//                if (sectionIdValue > 0) {
+//                    $.ajax({
+//                        url: '/Sale/DeleteProdbyUpdate',
+//                        type: 'POST',
+//                        dataType: 'JSON',
+//                        data: {
+//                            id: sectionIdValue
+//                        },
+//                        success: function (result) {
+//                            //window.location.href = result.path;
+//                            location.reload
+//                        },
+//                        error: function (result) {
+//                            console.log(result)
+//                        }
+//                    })
+//                }
+//            }
+//        } else {
+//            alert('At least one section must remain.');
+//        }
+//    }
+//});
 document.getElementById('customerSections').addEventListener('click', function (e) {
     if (e.target.classList.contains('remove-section')) {
         const sections = document.querySelectorAll('.customer-section');
         const section = e.target.closest('.customer-section');
         const sectionIdInput = section.querySelector('.Id'); // Get the hidden input within the section
         const sectionIdValue = sectionIdInput ? sectionIdInput.value : 0;
+
         if (sections.length > 1) { // Prevent removal if only one section is left
-            const confirmed = confirm('Are you sure you want to delete this Product?');
-            if (confirmed) {
-                e.target.closest('.customer-section').remove();
-                if (sectionIdValue > 0) {
-                    $.ajax({
-                        url: '/Sale/DeleteProdbyUpdate',
-                        type: 'POST',
-                        dataType: 'JSON',
-                        data: {
-                            id: sectionIdValue
-                        },
-                        success: function (result) {
-                            //window.location.href = result.path;
-                        },
-                        error: function (result) {
-                            console.log(result)
-                        }
-                    })
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'Do you want to delete this product?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    section.remove(); // Remove the section immediately
+                    if (sectionIdValue > 0) {
+                        $.ajax({
+                            url: '/Sale/DeleteProdbyUpdate',
+                            type: 'POST',
+                            dataType: 'JSON',
+                            data: { id: sectionIdValue },
+                            success: function (response) {
+                                if (response.success) {
+                                    Swal.fire({
+                                        title: 'Deleted!',
+                                        text: response.message || 'Product deleted successfully.',
+                                        icon: 'success'
+                                    }).then(() => {
+                                        if (response.redirectUrl) {
+                                            window.location.href = response.redirectUrl; // Redirect to the provided URL
+                                        }
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        title: 'Error',
+                                        text: response.message || 'Failed to delete the product.',
+                                        icon: 'error'
+                                    }).then(() => {
+                                        if (response.redirectUrl) {
+                                            window.location.href = response.redirectUrl; // Redirect to the provided URL
+                                        }
+                                    });
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                console.error(`Error: ${error}`);
+                                Swal.fire({
+                                    title: 'Error',
+                                    text: 'An error occurred while deleting the product. Please try again.',
+                                    icon: 'error'
+                                });
+                            }
+                        });
+                    }
                 }
-            }
+            });
         } else {
-            alert('At least one section must remain.');
+            Swal.fire({
+                title: 'Cannot Delete',
+                text: 'At least one section must remain.',
+                icon: 'info',
+                confirmButtonText: 'OK'
+            });
         }
     }
 });
-
 // Function to calculate and display renew date based on inputs
 function calculateRenewDate(event) {
     const $section = event.target.closest('.customer-section');

@@ -9,6 +9,9 @@
         public string? CheckOuttime { get; set; }
         public string? CurrentDate { get; set; }
         public string? Workinghour { get; set; }
+        public string? maxHour { get; set; }
+        public int? ShiftId { get; set; }
+
         public List<EmployeeAttendanceDto> detail { get; set; }
     }
     public class EmployeeBreakDto

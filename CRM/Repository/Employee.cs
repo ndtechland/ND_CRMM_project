@@ -50,7 +50,7 @@ namespace CRM.Repository
                     var empid = await _context.EmployeeRegistrations.Where(x => x.EmployeeId == userid && x.IsDeleted == false).Select(x => new EmployeeBasicInfo
                     {
                         Userid = x.Id,
-                        FullName = x.FirstName,
+                        FullName = x.FirstName + x.MiddleName  + x.LastName,
                         WorkEmail = x.WorkEmail,
                         MobileNumber = _context.EmployeePersonalDetails.Where(g => g.EmpId == x.Id).Select(g => g.MobileNumber).First(),
                         DateOfBirth = _context.EmployeePersonalDetails.Where(g => g.EmpId == x.Id).Select(g => g.DateOfBirth.Value.ToString("dd-MM-yyyy")).First(),
@@ -657,7 +657,7 @@ namespace CRM.Repository
                     CountLeave = Balance,
                     PaidCountLeave = PaidCountLeave,
                     Month = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month),
-                    Isapprove = false
+                    Isapprove = 3
                 };
                 await _context.ApplyLeaveNews.AddAsync(apply);
                 await _context.SaveChangesAsync();
@@ -1220,11 +1220,11 @@ namespace CRM.Repository
                     throw new Exception("Employee not found.");
                 }
                 var wfhCount = await _context.EmpApplywfhs
-                .Where(g => g.UserId == userid && g.Iswfh == true && g.Currentdate.Value.Month == Currentdate.Month
+                .Where(g => g.UserId == userid && g.Iswfh == 2 && g.Currentdate.Value.Month == Currentdate.Month
                             && g.Currentdate.Value.Year == Currentdate.Year)
                 .CountAsync();
                 var matchingRecord = await _context.EmpApplywfhs
-    .Where(g => g.UserId == userid && g.Iswfh == true
+    .Where(g => g.UserId == userid && g.Iswfh == 2
         && g.Startdate.Value.Date <= DateTime.Now.Date
         && g.EndDate.Value.Date >= DateTime.Now.Date)
     .OrderByDescending(g => g.Id)
@@ -1300,7 +1300,7 @@ namespace CRM.Repository
                 }
 
 
-              
+
                 return new Empattendancedatail
                 {
                     OfficeHour = $"{currentofficeShift.Starttime} - {currentofficeShift.Endtime}",
@@ -1652,9 +1652,38 @@ namespace CRM.Repository
         }
         private async Task<string> CalculateMonthlyWorkingHours(string employeeId, DateTime Currentdate)
         {
+            var shiftDetails = await _context.EmployeeRegistrations
+                .Where(x => x.EmployeeId == employeeId)
+                .Join(_context.OfficeBreaks,
+                    emp => emp.OfficeshiftTypeid,
+                    ob => ob.Shiftid,
+                    (emp, ob) => new { ob.Starttime, ob.Endtime })
+                .FirstOrDefaultAsync();
+
+            double breakPeriodThreshold = 0;
+
+            if (shiftDetails != null && DateTime.TryParse(shiftDetails.Starttime, out DateTime startDateTime) &&
+                DateTime.TryParse(shiftDetails.Endtime, out DateTime endDateTime))
+            {
+                TimeSpan startTime = startDateTime.TimeOfDay;
+                TimeSpan endTime = endDateTime.TimeOfDay;
+                breakPeriodThreshold = (endTime - startTime).TotalHours;
+            }
             var checkIns = await _context.EmployeeCheckInRecords
-                .Where(g => g.EmpId == employeeId && g.CurrentDate.Value.Month == Currentdate.Month)
+                .Where(g => g.EmpId == employeeId &&  g.CurrentDate.Value.Month == Currentdate.Month)
+                .OrderBy(g => g.CheckIntime)
                 .ToListAsync();
+
+            double totalHours = 0;
+            double totalBreakHours = 0;
+            DateTime? lastBreakInTime = null;
+
+
+            var breakRecords = await _context.EmployeeCheckIns
+                           .Where(g => g.EmployeeId == employeeId && g.Currentdate.HasValue && g.Currentdate.Value.Month == Currentdate.Month)
+                           .Where(g => g.Breakin == true || g.Breakout == true)
+                           .OrderBy(g => g.CheckInTime)
+                           .ToListAsync();
 
             double monthlyHours = 0;
 
@@ -1667,9 +1696,31 @@ namespace CRM.Repository
                     if (checkOutRecord != null)
                     {
                         monthlyHours += (checkOutRecord.CheckOuttime.Value - checkInRecord.CheckIntime.Value).TotalHours;
-                        checkIns.Remove(checkOutRecord);
                     }
                 }
+                foreach (var breakRecord in breakRecords)
+                {
+                    if (breakRecord.Breakin == true && checkInRecord.CheckIntime.HasValue)
+                    {
+                        lastBreakInTime = breakRecord.CheckInTime;
+                    }
+                    else if (breakRecord.Breakout == true && lastBreakInTime.HasValue)
+                    {
+                        if (breakRecord.CheckInTime.HasValue && breakRecord.CheckInTime.Value.Month == Currentdate.Month)
+                        {
+                            double breakDuration = (breakRecord.CheckInTime.Value - lastBreakInTime.Value).TotalHours;
+
+                            if (breakDuration > breakPeriodThreshold)
+                            {
+                                totalBreakHours += (breakDuration - breakPeriodThreshold);
+                            }
+
+                            lastBreakInTime = null;
+                        }
+                    }
+                }
+                double netWorkingHours = monthlyHours - totalBreakHours;
+
             }
 
             return FormatHours(monthlyHours);
@@ -2235,7 +2286,7 @@ namespace CRM.Repository
                   && l.StartDate.Month == DateTime.Now.Month
                   && l.StartDate.Year == DateTime.Now.Year
                   && l.StartDate.Day <= DateTime.Now.Day
-                  && l.Isapprove == true)
+                  && l.Isapprove == 2)
       .ToListAsync();
 
 
@@ -2263,7 +2314,7 @@ namespace CRM.Repository
             {
                 decimal totalFullday = 0.00m;
                 var toleave = await _context.ApplyLeaveNews
-                    .Where(p => p.UserId == userid && p.Isapprove == true)
+                    .Where(p => p.UserId == userid && p.Isapprove == 2)
                     .Select(p => new
                     {
                         Id = p.Id,
@@ -2561,151 +2612,6 @@ namespace CRM.Repository
                 return "Night";
             }
         }
-        // public async Task<EmployeeCheckIn> UpdateEmpLocation(CRM.Models.APIDTO.EmpCheckIn model, bool checkIn)
-        // {
-        //     try
-        //     {
-        //         var emp = await _context.EmployeeRegistrations
-        //             .FirstOrDefaultAsync(x => x.Id == model.Userid);
-        //         if (emp == null)
-        //         {
-        //             throw new Exception("Employee not found.");
-        //         }
-
-        //         var officeShift = await _context.Officeshifts
-        //             .FirstOrDefaultAsync(s => s.Id == emp.OfficeshiftTypeid);
-        //         if (officeShift == null)
-        //         {
-        //             throw new Exception("Employee shift information not found.");
-        //         }
-
-        //         // Get today's record for this employee if it exists
-        //         var existingCheckInRecord = await _context.EmployeeCheckIns
-        //.Where(x => x.EmployeeId == emp.EmployeeId && x.Currentdate.Value.Date == DateTime.Now.Date)
-        //.OrderByDescending(x => x.Id)
-        //.FirstOrDefaultAsync();
-
-        //         if (checkIn)
-        //         {
-        //             if (existingCheckInRecord.CheckIn == true)
-        //             {
-        //                 existingCheckInRecord.CurrentLat = model.CurrentLat;
-        //                 existingCheckInRecord.Currentlong = model.Currentlong;
-        //                 existingCheckInRecord.Updatedate = DateTime.Now;
-
-        //                 _context.EmployeeCheckIns.Update(existingCheckInRecord);
-        //             }
-        //         }
-        //         else
-        //         {
-        //             if (existingCheckInRecord.CheckIn == false)
-        //             {
-        //                 //existingCheckInRecord.CurrentLat = model.CurrentLat;
-        //                 //existingCheckInRecord.Currentlong = model.Currentlong;
-        //                 //existingCheckInRecord.CheckOutTime = DateTime.Now;
-        //                 //existingCheckInRecord.CheckIn = false;
-        //                 existingCheckInRecord.Updatedate = DateTime.Now;
-        //                 _context.EmployeeCheckIns.Update(existingCheckInRecord);
-        //             }
-        //             else
-        //             {
-        //                 var newCheckOutRecord = new EmployeeCheckIn
-        //                 {
-        //                     EmployeeId = emp.EmployeeId,
-        //                     CurrentLat = model.CurrentLat,
-        //                     Currentlong = model.Currentlong,
-        //                     Currentdate = DateTime.Now,
-        //                     CheckOutTime = DateTime.Now,
-        //                     CheckIn = false,
-        //                     Breakin = false,
-        //                     Breakout = false,
-        //                     Updatedate = DateTime.Now,
-        //                 };
-        //                 await _context.EmployeeCheckIns.AddAsync(newCheckOutRecord);
-        //             }
-        //         }
-
-        //         await _context.SaveChangesAsync();
-
-
-        //         var fgdfdin = await _context.EmpCheckIns
-        //            .Where(x => x.EmployeeId == emp.EmployeeId && x.Currentdate.Value.Date == DateTime.Now.Date)
-        //            .OrderByDescending(x => x.Id)
-        //            .FirstOrDefaultAsync();
-
-        //         if (fgdfdin == null)
-        //         {
-        //             CRM.Models.Crm.EmpCheckIn empcheckin = new CRM.Models.Crm.EmpCheckIn()
-        //             {
-        //                 EmployeeId = emp.EmployeeId,
-        //                 CurrentLat = model.CurrentLat,
-        //                 Currentlong = model.Currentlong,
-        //                 Currentdate = DateTime.Now,
-        //                 CheckInTime = DateTime.Now,
-        //                 CheckIn = true,
-        //             };
-
-        //             await _context.EmpCheckIns.AddAsync(empcheckin);
-        //             await _context.SaveChangesAsync();
-        //         }
-        //         else
-        //         {
-        //             if (fgdfdin.CheckIn == true && !checkIn)
-        //             {
-        //                 CRM.Models.Crm.EmpCheckIn empcheckout = new CRM.Models.Crm.EmpCheckIn()
-        //                 {
-        //                     EmployeeId = emp.EmployeeId,
-        //                     CurrentLat = model.CurrentLat,
-        //                     Currentlong = model.Currentlong,
-        //                     Currentdate = DateTime.Now,
-        //                     CheckOutTime = DateTime.Now,
-        //                     CheckIn = false,
-        //                 };
-
-        //                 await _context.EmpCheckIns.AddAsync(empcheckout);
-        //                 await _context.SaveChangesAsync();
-        //             }
-        //         }
-        //         var checkInRecord = await _context.EmployeeCheckInRecords
-        //             .Where(x => x.EmpId == emp.EmployeeId && x.CheckIntime.Value.Date == DateTime.Now.Date)
-        //             .FirstOrDefaultAsync();
-
-        //         if (checkInRecord != null)
-        //         {
-        //             if (checkIn)
-        //             {
-        //                 checkInRecord.Workinghour = (DateTime.Now - checkInRecord.CheckIntime.Value).Duration();
-        //                 // checkInRecord.CheckOuttime = null;
-        //             }
-        //             else
-        //             {
-        //                 checkInRecord.Workinghour = (DateTime.Now - checkInRecord.CheckIntime.Value).Duration();
-        //                 checkInRecord.CheckOuttime = DateTime.Now;
-        //             }
-        //             _context.EmployeeCheckInRecords.Update(checkInRecord);
-        //         }
-        //         else if (checkIn)
-        //         {
-        //             EmployeeCheckInRecord empCheckInRecord = new()
-        //             {
-        //                 EmpId = emp.EmployeeId,
-        //                 CheckIntime = DateTime.Now,
-        //                 CurrentDate = DateTime.Now,
-        //                 Isactive = true,
-        //                 Workinghour = TimeSpan.Zero,
-        //                 ShiftId = officeShift.Id,
-        //             };
-        //             await _context.EmployeeCheckInRecords.AddAsync(empCheckInRecord);
-        //         }
-        //         await _context.SaveChangesAsync();
-
-        //         return existingCheckInRecord;
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         throw new Exception("Error: " + ex.Message);
-        //     }
-        // }
         public async Task<EmployeeCheckIn> UpdateEmpLocation(CRM.Models.APIDTO.EmpCheckIn model, bool checkIn)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
@@ -2762,18 +2668,8 @@ namespace CRM.Repository
                     }
                     else
                     {
-                        await _context.EmployeeCheckIns.AddAsync(new EmployeeCheckIn
-                        {
-                            EmployeeId = employeeId,
-                            CurrentLat = model.CurrentLat,
-                            Currentlong = model.Currentlong,
-                            Currentdate = DateTime.Now,
-                            CheckInTime = DateTime.Now,
-                            CheckIn = true,
-                            Breakin= false,
-                            Breakout= false,
-                            Updatedate = DateTime.Now
-                        });
+                        existingCheckInRecord.Updatedate = DateTime.Now;
+                        _context.EmployeeCheckIns.Update(existingCheckInRecord);
                     }
                 }
                 if (!checkIn)
@@ -2889,7 +2785,7 @@ namespace CRM.Repository
                     EndDate = model.EndDate,
                     Currentdate = DateTime.Now,
                     Reason = model.Reason,
-                    Iswfh = false
+                    Iswfh = 3
                 };
 
                 await _context.EmpApplywfhs.AddAsync(apply);
@@ -2901,5 +2797,20 @@ namespace CRM.Repository
                 throw new Exception("An unexpected error occurred: " + ex.Message, ex);
             }
         }
+        public async Task<EmployeeCheckIn> GetLATLONG(int id)
+        {
+            try
+            {
+                var empdata = _context.EmployeeLogins.Where(x => x.Id == id).FirstOrDefault();
+
+                var LatLongdata = _context.EmployeeCheckIns.Where(x => x.EmployeeId == empdata.EmployeeId).OrderByDescending(x => x.Updatedate).FirstOrDefault();
+                return LatLongdata;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error: " + ex.Message, ex);
+            }
+        }
+
     }
 }

@@ -97,7 +97,7 @@ namespace CRM.Controllers
                     }
                     else
                     {
-                        ViewBag.Message = "Your plan has expired!";
+                        ViewBag.Message = "Your id not activate!";
                         ModelState.Clear();
                         return View();
                     }

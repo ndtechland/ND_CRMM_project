@@ -89,7 +89,7 @@ namespace CRM.Controllers
                 //LeaveList
                 ViewBag.onLeaveList = emplist.Count(x => _context.ApplyLeaveNews
      .Any(y => y.UserId == x.EmployeeId
-               && y.Isapprove == true
+               && y.Isapprove == 2
                && y.StartDate.Date <= DateTime.Now.Date
                && y.EndDate.Date >= DateTime.Now.Date));
                 //workingHours
@@ -121,7 +121,7 @@ namespace CRM.Controllers
 
                 ViewBag.Numberofwfh = emplist.Count(x => _context.EmpApplywfhs
     .Any(y => y.UserId == x.EmployeeId
-              && y.Iswfh == true
+              && y.Iswfh == 2
               && y.Startdate.Value.Date <= DateTime.Now.Date
               && y.EndDate.Value.Date >= DateTime.Now.Date));
 
@@ -729,7 +729,7 @@ namespace CRM.Controllers
                 throw;
             }
         }
-
+         
         [HttpPost]
         public async Task<IActionResult> ProfessionalTDStax(ProfessionaltaxDto model)
         {

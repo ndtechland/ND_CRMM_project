@@ -101,28 +101,24 @@
                                                         <td nowrap>@item.UserId</td>
                                                         <td nowrap>@item.EmployeeName</td>
                                                         <td nowrap>@item.EmpMobileNumber</td>
-                                                        <td nowrap>@item.StartDate?.ToString("dd/MMM/yyyy")</td>
-                                                        <td nowrap>@item.EndDate?.ToString("dd/MMM/yyyy")</td>
+                                                        <td nowrap id="startDate_@item.Id" data-original-value="@item.StartDate?.ToString("yyyy-MM-dd")">
+                                                            @item.StartDate?.ToString("dd/MMM/yyyy")
+                                                        </td>
+                                                        <td nowrap id="endDate_@item.Id" data-original-value="@item.EndDate?.ToString("yyyy-MM-dd")">
+                                                            @item.EndDate?.ToString("dd/MMM/yyyy")
+                                                        </td>
                                                         <td>@item.days</td>
                                                         <td>@item.Reason</td>
                                                         <td nowrap>@item.CreatedDate.ToString("dd/MMM/yyyy")</td>
                                                         <td>
-                                                            @if (item.Isapprove == true)
-                                                            {
-                                                                <a href="@Url.Action("UpdateWfhApplyStatus", "Vendor", new { Id = item.Id })" class="btn btn-success"
-                                                                   onclick="return confirm('Are you sure you want to disapproved Wfh?');">
-                                                                    Approved
-                                                                </a>
-                                                            }
-                                                            else
-                                                            {
-                                                                <a href="@Url.Action("UpdateWfhApplyStatus", "Vendor", new { Id = item.Id })" class="btn btn-danger"
-                                                                   onclick="return confirm('Are you sure you want to approved Wfh?');">
-                                                                    Disapproved
-                                                                </a>
-                                                            }
+                                                            <select name="Isapprove" class="form-control approvalstatus-dropdown" id="ddlapprovalstatusid_@item.Id" style="height: 40px; width: 135px;">
+                                                                <option value="0">-- Select Status --</option>
+                                                                @foreach (var statusitem in ViewBag.approvestatus)
+                                                                {
+                                                                    <option value="@statusitem.Value">@statusitem.Text</option>
+                                                                }
+                                                            </select>
                                                         </td>
-
                                                     </tr>
                                                 }
                                             }
@@ -142,24 +138,257 @@
         </div>
     </div>
 </div>
-
 <script>
     $(document).ready(function () {
         document.title = 'ApprovedWfhlist';
-        $('#datatable').DataTable(
-            {
-                "dom": '<"dt-buttons"Bf><"clear">lirtp',
-                "paging": true,
-                "autoWidth": true,
-                "buttons": [
-                    'colvis',
-                    'copyHtml5',
-                    'csvHtml5',
-                    'excelHtml5',
-                    'pdfHtml5',
-                    'print'
-                ]
+
+        // Serialize the status data from the server
+        var StatusData = @Html.Raw(Json.Serialize(ViewBag.approvestatus));
+
+        // Initialize DataTable
+        var table = $('#datatable').DataTable({
+            "dom": '<"dt-buttons"Bf><"clear">lirtp',
+            "paging": true,
+            "autoWidth": true,
+            "buttons": [
+                'colvis',
+                'copyHtml5',
+                'csvHtml5',
+                'excelHtml5',
+                'pdfHtml5',
+                'print'
+            ]
+        });
+
+        // Function to update the text color of options and selected value
+        function updateTextColor(selectElement) {
+            $(selectElement).find('option').each(function () {
+                var value = $(this).val();
+                switch (value) {
+                    case "1": // Partial
+                        $(this).css('color', '#FFCC00'); // Yellow
+                        break;
+                    case "2": // Complete
+                        $(this).css('color', '#28A745'); // Green
+                        break;
+                    case "3": // Disapprove
+                        $(this).css('color', '#DC3545'); // Red
+                        break;
+                    default:
+                        $(this).css('color', 'black'); // Default
+                        break;
+                }
+            });
+
+            var selectedValue = $(selectElement).val();
+            switch (selectedValue) {
+                case "1":
+                    $(selectElement).css('color', '#FFCC00'); // Yellow
+                    break;
+                case "2":
+                    $(selectElement).css('color', '#28A745'); // Green
+                    break;
+                case "3":
+                    $(selectElement).css('color', '#DC3545'); // Red
+                    break;
+                default:
+                    $(selectElement).css('color', 'black'); // Default
+                    break;
             }
-        );
+        }
+
+        // Function to set dropdown value and apply colors
+        function bindstatusid(statusid, itemId) {
+            var dropdown = $("#ddlapprovalstatusid_" + itemId);
+            if (statusid !== null && statusid !== "") {
+                dropdown.val(statusid);
+                updateTextColor(dropdown); // Apply color after setting value
+            }
+        }
+
+        // Initialize dropdowns on page load
+    @foreach (var item in Model)
+    {
+        <text>
+                    bindstatusid('@item.Isapprove', '@item.Id');
+        </text>
+    }
+
+            // Handle table redraw (pagination, sorting, search)
+            table.on('draw', function () {
+    @foreach (var item in Model)
+    {
+        <text>
+                            bindstatusid('@item.Isapprove', '@item.Id');
+        </text>
+    }
+        });
+
+        // Update text color on dropdown change
+        $(document).on('change', '.approvalstatus-dropdown', function () {
+            updateTextColor(this);
+        });
     });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const statusDropdowns = document.querySelectorAll('.approvalstatus-dropdown');
+
+        statusDropdowns.forEach(function (dropdown) {
+            dropdown.addEventListener('change', function () {
+                const itemId = dropdown.id.split('_')[1];
+                const statusId = dropdown.value;
+
+                // Retrieve current and original dates from the table
+                const startDate = getStartDate(itemId);
+                const endDate = getEndDate(itemId);
+                const originalStartDate = $("#startDate_" + itemId).data('original-value');
+                const originalEndDate = $("#endDate_" + itemId).data('original-value');
+
+                // Check if the selected status is "Partial" (statusId === "1") before prompting for date editing
+                if (statusId === "1" && startDate === originalStartDate && endDate === originalEndDate) {
+                    Swal.fire({
+                        title: 'Do you want to edit the Start and End dates?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes',
+                        cancelButtonText: 'No'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            enableDateFields(itemId);
+
+                            Swal.fire({
+                                title: 'Edit the dates, then click OK',
+                                html: `
+                                    <label>Start Date</label>
+                                    <input type="text" id="swal-start-date" class="swal2-input" value="${startDate}">
+                                    <label>End Date</label>
+                                    <input type="text" id="swal-end-date" class="swal2-input" value="${endDate}">
+                                `,
+                                didOpen: () => {
+                                    // Initialize flatpickr for date inputs
+                                    flatpickr("#swal-start-date", {
+                                        defaultDate: startDate,
+                                        dateFormat: "Y-m-d",
+                                    });
+                                    flatpickr("#swal-end-date", {
+                                        defaultDate: endDate,
+                                        dateFormat: "Y-m-d",
+                                    });
+                                },
+                                confirmButtonText: 'OK',
+                                preConfirm: () => {
+                                    const updatedStartDate = document.getElementById('swal-start-date').value;
+                                    const updatedEndDate = document.getElementById('swal-end-date').value;
+
+                                    if (!updatedStartDate || !updatedEndDate) {
+                                        Swal.showValidationMessage('Start date and End date cannot be empty.');
+                                        return false;
+                                    }
+
+                                    return { updatedStartDate, updatedEndDate };
+                                }
+                            }).then((editResult) => {
+                                if (editResult.isConfirmed) {
+                                    const { updatedStartDate, updatedEndDate } = editResult.value;
+                                    updateApprovalStatus(itemId, statusId, updatedStartDate, updatedEndDate);
+                                }
+                            });
+                        } else {
+                            updateApprovalStatus(itemId, statusId, originalStartDate, originalEndDate);
+                        }
+                    });
+                } else {
+                    updateApprovalStatus(itemId, statusId, startDate, endDate);
+                }
+            });
+        });
+    });
+
+    // Helper Functions
+    function getStartDate(itemId) {
+        return $("#startDate_" + itemId).data('original-value');
+    }
+
+    function getEndDate(itemId) {
+        return $("#endDate_" + itemId).data('original-value');
+    }
+
+    function enableDateFields(itemId) {
+        $("#startDate_" + itemId).prop('disabled', false);
+        $("#endDate_" + itemId).prop('disabled', false);
+    }
+
+    function updateApprovalStatus(itemId, statusId, startDate, endDate) {
+        if (statusId === "0") {
+            Swal.fire('Please select a valid status.');
+            return;
+        }
+
+        if (statusId === "3" && !confirm('Are you sure you want to disapprove this leave?')) {
+            return;
+        }
+
+        if (statusId === "1" && (!startDate || !endDate)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Start date and End date must be provided when Partial status is selected.'
+            });
+            return;
+        }
+
+        // AJAX call to update the status
+        $.ajax({
+            url: '/Vendor/UpdateWfhApplyStatus',
+            type: 'POST',
+            data: { Id: itemId, Isapprove: statusId, StartDate: startDate, EndDate: endDate },
+            success: function (response) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: response.message
+                });
+
+                $("#approvalStatus_" + itemId).text(getStatusText(statusId));
+                toggleDateFields(itemId, statusId);
+            },
+            error: function () {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred while updating the status.'
+                });
+            }
+        });
+    }
+
+    function getStatusText(statusId) {
+        const statuses = {
+            "1": "Partial",
+            "2": "Complete",
+            "3": "Disapprove"
+        };
+        return statuses[statusId] || "Pending";
+    }
+
+    function toggleDateFields(itemId, statusId) {
+        const isPartial = statusId === "1";
+        $("#startDate_" + itemId).prop('disabled', !isPartial);
+        $("#endDate_" + itemId).prop('disabled', !isPartial);
+    }
+
+    // Initialize original values on load
+    $(document).ready(function () {
+        $(".approvalstatus-dropdown").each(function () {
+            const itemId = $(this).attr("id").split("_")[1];
+            const startDateField = $("#startDate_" + itemId);
+            const endDateField = $("#endDate_" + itemId);
+
+            startDateField.data('original-value', startDateField.text().trim());
+            endDateField.data('original-value', endDateField.text().trim());
+        });
+    });
+
 </script>

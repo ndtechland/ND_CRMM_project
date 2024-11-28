@@ -247,7 +247,7 @@
     </div>
 
 </div>
- 
+
 <script>
     $(document).ready(function () {
         document.title = 'SubTaskDetail';
@@ -357,48 +357,17 @@
         icon.parentNode.remove();
     }
 </script>
- 
-
-<!--For selected dropdowm in list and update task status-->
 
 <script>
-
-    function bindtaskstatusid(taskstatusid, itemsubtaskId) {
-        var itemsListfortaskstatusid = @Html.Raw(Json.Serialize(ViewBag.SubTaskStatus));
-        var dropdownfortaskstatusid = $("#ddltaskstatusid_" + itemsubtaskId);
-        if (itemsubtaskId !== "0" && itemsubtaskId !== "") {
-            dropdownfortaskstatusid.val(taskstatusid);
-        }
-    }
     $(document).ready(function () {
-    @foreach (var item in Model.EmpTaskList)
-    {
-        <text>
-                bindtaskstatusid('@item.TaskStatusId', '@item.SubtaskId');
-        </text>
-    }
-                                    var usertaskstatus = '@ViewBag.SubTaskStatus';
-
-        if (usertaskstatus != "") {
-            bindtaskstatusid(usertaskstatus);
-        }
-        else {
-            bindtaskstatusid("");
-        }
-    });
-</script>
-<script>
-    $(document).ready(function () {
-        // Store the initial values of the dropdowns
         $('.taskstatus-dropdown').each(function () {
             $(this).data('previous', $(this).val());
         });
 
         $(document).on("change", ".taskstatus-dropdown", function () {
             var selectedTaskStatusId = $(this).val();
-            var previousTaskStatusId = $(this).data('previous'); // Get the previously stored value
+            var previousTaskStatusId = $(this).data('previous'); 
 
-            // Only make the AJAX call if the value has changed
             if (selectedTaskStatusId !== previousTaskStatusId) {
                 var selectedId = $(this).closest('tr').find('.EmpTaskId').text().trim();
 
@@ -411,7 +380,6 @@
                     },
                     success: function (response) {
                         if (response.success) {
-                            // Show success message using SweetAlert2
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Success',
@@ -429,43 +397,124 @@
                     }
                 });
 
-                // Update the stored value
                 $(this).data('previous', selectedTaskStatusId);
             }
         });
     });
 </script>
 
-<!--End code For selected dropdowm in list and update task status-->
 
-<script>
-    $(document).ready(function () {
-        $('.taskstatus-dropdown').change(function () {
-            // Get the selected option value
-            var selectedText = $(this).find("option:selected").text();
-
-            // Change the text color based on the selected option
-            if (selectedText === "Pending") {
-                $(this).css('color', 'orange');
-            } else if (selectedText === "In Progress") {
-                $(this).css('color', 'blue');
-            } else if (selectedText === "Completed") {
-                $(this).css('color', 'green');
-            } else if (selectedText === "Reassigned") {
-                $(this).css('color', 'purple');
-            } else if (selectedText === "UnCompleted") {
-                $(this).css('color', 'red');
-            } else {
-                $(this).css('color', 'black'); // default color
-            }
-        });
-
-        // Trigger the change event on page load to set the initial color
-        $('.taskstatus-dropdown').trigger('change');
-    });
-</script>
 <script>
     $(document).ready(function () {
         $('#myTable').DataTable();
     });
+</script>
+
+<script>
+    $(document).ready(function () {
+        var table = $('#datatable').DataTable({
+            "dom": '<"dt-buttons"Bf><"clear">lirtp',
+            "paging": true,
+            "autoWidth": true,
+            "buttons": [
+                'colvis',
+                'copyHtml5',
+                'csvHtml5',
+                'excelHtml5',
+                'pdfHtml5',
+                'print'
+            ]
+        });
+
+        function updateDropdownColor(dropdown) {
+            $(dropdown).find('option').each(function () {
+                var value = $(this).val(); 
+                switch (value) {
+                    case "1":
+                        $(this).css('color', 'orange'); 
+                        break;
+                    case "2":
+                        $(this).css('color', 'blue'); 
+                        break;
+                    case "3":
+                        $(this).css('color', 'green'); 
+                        break;
+                    case "4":
+                        $(this).css('color', 'purple');
+                        break;
+                    case "5":
+                        $(this).css('color', 'red'); 
+                        break;
+                    default:
+                        $(this).css('color', 'black'); 
+                        break;
+                }
+            });
+
+            var selectedValue = $(dropdown).val(); 
+            switch (selectedValue) {
+                case "1":
+                    $(dropdown).css('color', 'orange'); 
+                    break;
+                case "2":
+                    $(dropdown).css('color', 'blue'); 
+                    break;
+                case "3":
+                    $(dropdown).css('color', 'green'); 
+                    break;
+                case "4":
+                    $(dropdown).css('color', 'purple'); 
+                    break;
+                case "5":
+                    $(dropdown).css('color', 'red'); 
+                    break;
+                default:
+                    $(dropdown).css('color', 'black'); 
+                    break;
+            }
+        }
+
+        function bindtaskstatusid(taskstatusid, itemsubtaskId) {
+            var dropdownfortaskstatusid = $("#ddltaskstatusid_" + itemsubtaskId);
+            if (taskstatusid && taskstatusid !== "0" && taskstatusid !== "") {
+                dropdownfortaskstatusid.val(taskstatusid); 
+                updateDropdownColor(dropdownfortaskstatusid); 
+            }
+        }
+    @foreach (var item in Model.EmpTaskList)
+    {
+        <text>
+                    bindtaskstatusid('@item.TaskStatusId', '@item.SubtaskId'); // Bind each task status ID to its dropdown
+        </text>
+    }
+
+        var usertaskstatus = '@ViewBag.SubTaskStatus';
+        if (usertaskstatus != "") {
+            bindtaskstatusid(usertaskstatus, ''); 
+        }
+        else {
+            bindtaskstatusid("", ''); 
+        }
+
+        table.on('draw', function () {
+    @foreach (var item in Model.EmpTaskList)
+    {
+        <text>
+                        bindtaskstatusid('@item.TaskStatusId', '@item.SubtaskId'); // Bind task status ID again after redraw
+        </text>
+    }
+            var usertaskstatus = '@ViewBag.SubTaskStatus';
+            if (usertaskstatus != "") {
+                bindtaskstatusid(usertaskstatus, ''); 
+            }
+            else {
+                bindtaskstatusid("", ''); 
+            }
+        });
+
+        $(document).on('change', '.taskstatus-dropdown', function () {
+            updateDropdownColor(this); 
+        });
+    });
+
 </script>

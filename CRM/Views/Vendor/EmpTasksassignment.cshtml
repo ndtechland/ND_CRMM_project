@@ -280,6 +280,8 @@
                                                                 }
                                                             </select>
                                                         </td>
+
+
                                                         <td>
                                                             <div>
                                                                 <a href="@Url.Action("EmpTasksassignment","Vendor",new { id=item.Id})" class="fa fa-edit m-2 font-success"></a>
@@ -343,31 +345,6 @@
     }
 </script>
 <script>
-
-    function bindtaskstatusid(taskstatusid, itemId) {
-        var itemsListfortaskstatusid = @Html.Raw(Json.Serialize(ViewBag.TaskStatus));
-        var dropdownfortaskstatusid = $("#ddltaskstatusid_" + itemId);
-        if (itemId !== "0" && itemId !== "") {
-            dropdownfortaskstatusid.val(taskstatusid);
-        }
-    }
-    $(document).ready(function () {
-    @foreach (var item in Model)
-    {
-        <text>
-                    bindtaskstatusid('@item.TaskStatusId', '@item.Id');
-        </text>
-    }
-        var usertaskstatus = '@ViewBag.TaskStatus';
-        if (usertaskstatus != "") {
-            bindtaskstatusid(usertaskstatus);
-        }
-        else {
-            bindtaskstatusid("");
-        }
-    });
-</script>
-<script>
     $(document).ready(function () {
         $('.taskstatus-dropdown').each(function () {
             $(this).data('previous', $(this).val());
@@ -411,35 +388,10 @@
     });
 </script>
 
-<!--End code For selected dropdowm in list and update task status-->
 <script>
     $(document).ready(function () {
-        $('.taskstatus-dropdown').change(function () {
-            var selectedText = $(this).find("option:selected").text();
-            if (selectedText === "Pending") {
-                $(this).css('color', 'orange');
-            } else if (selectedText === "In Progress") {
-                $(this).css('color', 'blue');
-            } else if (selectedText === "Completed") {
-                $(this).css('color', 'green');
-            } else if (selectedText === "Reassigned") {
-                $(this).css('color', 'purple');
-            } else if (selectedText === "UnCompleted") {
-                $(this).css('color', 'red');
-            } else {
-                $(this).css('color', 'black'); 
-            }
-        });
-        $('.taskstatus-dropdown').trigger('change');
-    });
-</script>
-
-
-
-
-<script>
-    $(document).ready(function () {
-        $('#datatable').DataTable({
+        // Initialize DataTable with buttons
+        var table = $('#datatable').DataTable({
             "dom": '<"dt-buttons"Bf><"clear">lirtp',
             "paging": true,
             "autoWidth": true,
@@ -452,5 +404,94 @@
                 'print'
             ]
         });
+
+        function updateDropdownColor(dropdown) {
+            $(dropdown).find('option').each(function () {
+                var value = $(this).val(); 
+                switch (value) {
+                    case "1":
+                        $(this).css('color', 'orange'); 
+                        break;
+                    case "2":
+                        $(this).css('color', 'blue'); 
+                        break;
+                    case "3":
+                        $(this).css('color', 'green'); 
+                        break;
+                    case "4":
+                        $(this).css('color', 'purple'); 
+                        break;
+                    case "5":
+                        $(this).css('color', 'red'); 
+                        break;
+                    default:
+                        $(this).css('color', 'black'); 
+                        break;
+                }
+            });
+
+            var selectedValue = $(dropdown).val(); 
+            switch (selectedValue) {
+                case "1":
+                    $(dropdown).css('color', 'orange'); 
+                    break;
+                case "2":
+                    $(dropdown).css('color', 'blue'); 
+                    break;
+                case "3":
+                    $(dropdown).css('color', 'green'); 
+                    break;
+                case "4":
+                    $(dropdown).css('color', 'purple'); 
+                    break;
+                case "5":
+                    $(dropdown).css('color', 'red'); 
+                    break;
+                default:
+                    $(dropdown).css('color', 'black'); 
+                    break;
+            }
+        }
+
+        function bindtaskstatusid(taskstatusid, itemId) {
+            var dropdownfortaskstatusid = $("#ddltaskstatusid_" + itemId); 
+            if (dropdownfortaskstatusid.length > 0) {
+                if (taskstatusid && taskstatusid !== "0" && taskstatusid !== "") {
+                    dropdownfortaskstatusid.val(taskstatusid);  
+                    updateDropdownColor(dropdownfortaskstatusid); 
+                }
+            }
+        }
+
+    @foreach (var item in Model)
+    {
+        <text>
+                    bindtaskstatusid('@item.TaskStatusId', '@item.Id'); // Bind each task status ID to its dropdown
+        </text>
+    }
+
+            table.on('draw', function () {
+    @foreach (var item in Model)
+    {
+        <text>
+          bindtaskstatusid('@item.TaskStatusId', '@item.Id'); // Bind task status ID again after redraw
+        </text>
+    }
+            });
+
+        $(document).on('change', '.taskstatus-dropdown', function () {
+            updateDropdownColor(this); 
+        });
     });
 </script>
+
+
+
+
+
+
+
+
+
+
+

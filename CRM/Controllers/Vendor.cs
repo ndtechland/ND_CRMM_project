@@ -18,6 +18,7 @@ using SelectPdf;
 using System.Data.SqlClient;
 using ClosedXML.Excel;
 using Org.BouncyCastle.Ocsp;
+using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 
 namespace CRM.Controllers
 {
@@ -1872,6 +1873,11 @@ namespace CRM.Controllers
                 {
                     int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                     var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                    ViewBag.approvestatus = await _context.Approvalmasters.Select(w => new SelectListItem
+                    {
+                        Value = w.Id.ToString(),
+                        Text = w.Status,
+                    }).ToListAsync();
                     var Approvedbankdetail = await _ICrmrpo.GetLeaveapplydetailList(adminlogin.Vendorid);
                     if (Approvedbankdetail != null)
                     {
@@ -1895,54 +1901,43 @@ namespace CRM.Controllers
             }
         }
 
-        public async Task<IActionResult> UpdateLeaveApplyStatus(int Id)
+        [HttpPost]
+        public async Task<IActionResult> UpdateLeaveApplyStatus(int Id, int Isapprove, DateTime StartDate, DateTime EndDate)
         {
             var leave = await _context.ApplyLeaveNews.FirstOrDefaultAsync(x => x.Id == Id);
             if (leave == null)
             {
-                TempData["msg"] = "Data not found!";
-                return RedirectToAction("ApprovedLeaveApply");
+                return Json(new { success = false, message = "Data not found!" });
             }
+
+            leave.Isapprove = Isapprove;
+            await _context.SaveChangesAsync();
 
             var empinfo = await _context.EmployeeRegistrations.FirstOrDefaultAsync(x => x.EmployeeId == leave.UserId);
             var emppersonalinfo = await _context.EmployeePersonalDetails.FirstOrDefaultAsync(x => x.EmpRegId == leave.UserId);
 
-            leave.Isapprove = !leave.Isapprove;
-            await _context.SaveChangesAsync();
             string subject;
             string emailBody;
 
-            if (leave.Isapprove == true)
+            if (leave.Isapprove == 2)
             {
                 subject = "Leave Approval Accepted";
                 emailBody = $"Dear {empinfo.FirstName} {empinfo.MiddleName} {empinfo.LastName},\n\nYour leave application has been approved.";
 
                 var TypeOfLeave = await _context.Leavemasters
-                    .Where(x => x.LeavetypeId == leave.TypeOfLeaveId && x.EmpId == leave.UserId)
-                    .FirstOrDefaultAsync();
+                    .FirstOrDefaultAsync(x => x.LeavetypeId == leave.TypeOfLeaveId && x.EmpId == leave.UserId);
 
                 if (TypeOfLeave != null)
                 {
                     decimal totalLeave = leave?.CountLeave ?? 0m;
                     decimal currentLeaveBalance = TypeOfLeave.Value ?? 0m;
 
-                    if (currentLeaveBalance > 0)
-                    {
-                        decimal deductedLeave = Math.Min(totalLeave, currentLeaveBalance);
-                        TypeOfLeave.Value -= deductedLeave;
-                        leave.CountLeave = deductedLeave;
-                        // Uncomment if needed, but it will no longer affect PaidCountLeave
-                        // leave.PaidCountLeave = totalLeave - deductedLeave;
-                    }
-                    else
-                    {
-                        leave.CountLeave = 0;
-                    }
+                    decimal deductedLeave = Math.Min(totalLeave, currentLeaveBalance);
+                    TypeOfLeave.Value -= deductedLeave;
+                    leave.CountLeave = deductedLeave;
 
                     _context.Entry(TypeOfLeave).State = EntityState.Modified;
                     _context.Entry(leave).State = EntityState.Modified;
-
-                    await _context.SaveChangesAsync();
                 }
                 else
                 {
@@ -1950,29 +1945,46 @@ namespace CRM.Controllers
                     return RedirectToAction("ApprovedLeaveApply");
                 }
             }
+            else if (leave.Isapprove == 1) // Partial approval (Pending)
+            {
+                subject = "Leave Approval Status Update";
+                emailBody = $"Dear {empinfo.FirstName} {empinfo.MiddleName} {empinfo.LastName},\n\nWe regret to inform you that your leave application is still pending. Please reapply with your desired {StartDate.Date} and {EndDate.Date} dates for processing.";
+            }
             else
             {
                 subject = "Leave Approval Rejected";
-                emailBody = $"Dear {empinfo.FirstName} {empinfo.MiddleName} {empinfo.LastName},\n\nWe regret to inform you that your leave application has been rejected.";
+                emailBody = $"Dear {empinfo.FirstName} {empinfo.MiddleName} {empinfo.LastName},\n\nWe regret to inform you that your leave application has been rejected. Please contact HR for further details.";
             }
+
+            var status = await _context.Approvalmasters.Where(x => x.Id == leave.Isapprove).Select(x => x.Status).FirstOrDefaultAsync();
 
             try
             {
                 await _emailService.SendEmpLeaveApprovalEmailAsync(
-                    emppersonalinfo.PersonalEmailAddress, empinfo.FirstName, empinfo.MiddleName, empinfo.LastName, subject, emailBody);
-
-                TempData["msg"] = (bool)leave.Isapprove
-                    ? "Approval status updated successfully and approval email sent!"
-                    : "Approval status updated successfully and rejection email sent!";
+                    emppersonalinfo.PersonalEmailAddress,
+                    empinfo.FirstName,
+                    empinfo.MiddleName,
+                    empinfo.LastName,
+                    subject,
+                    emailBody
+                );
+                TempData["msg"] = GetApprovalMessage(status);
             }
             catch (Exception ex)
             {
-                TempData["msg"] = (bool)leave.Isapprove
-                    ? "Approval status updated successfully, but failed to send approval email."
-                    : "Approval status updated successfully, but failed to send rejection email.";
+                throw;
             }
+            return Json(new { success = true, message = GetApprovalMessage(status) });
+        }
 
-            return RedirectToAction("ApprovedLeaveApply");
+        private string GetApprovalMessage(string status)
+        {
+            return status switch
+            {
+                "Complete" => "Approval status updated successfully and approval email sent!",
+                "Disapprove" => "Approval status updated successfully and rejection email sent!",
+                _ => "Approval status updated successfully with a partial status!"
+            };
         }
 
         public async Task<IActionResult> EmployeeEpf(int id)
@@ -2022,7 +2034,6 @@ namespace CRM.Controllers
             }
             catch (Exception)
             {
-
                 throw;
             }
         }
@@ -2526,52 +2537,72 @@ namespace CRM.Controllers
                 int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminLogin = await _context.AdminLogins.FirstOrDefaultAsync(x => x.Id == userId);
 
-                if (adminLogin == null)
-                    return NotFound("Admin not found.");
-
-                var attendanceRecords = await (from employee in _context.EmployeeRegistrations
-                                               join record in _context.EmployeeCheckInRecords
-                                               on employee.EmployeeId equals record.EmpId
-                                               where employee.Vendorid == adminLogin.Vendorid
-                                               orderby record.CurrentDate descending
-                                               select new EmployeeAttendanceDto
-                                               {
-                                                   EmpId = record.EmpId,
-                                                   EmployeeName = $"{employee.FirstName} " +
-                                                                  (string.IsNullOrEmpty(employee.MiddleName) ? "" : employee.MiddleName + " ") +
-                                                                  employee.LastName,
-                                                   CheckIntime = record.CheckIntime.HasValue
-                                                       ? record.CheckIntime.Value.ToString("hh:mm tt")
-                                                       : "N/A",
-                                                   CheckOuttime = record.CheckOuttime.HasValue
-                                                       ? record.CheckOuttime.Value.ToString("hh:mm tt")
-                                                       : "N/A",
-                                                   CurrentDate = record.CurrentDate.HasValue
-                                                       ? record.CurrentDate.Value.ToString("dd-MMM-yyyy")
-                                                       : "N/A"
-                                               }).Where(x =>x.EmpId == EmpId).ToListAsync();
-
-                foreach (var attendanceRecord in attendanceRecords)
+                if (adminLogin != null)
                 {
-                    if (DateTime.TryParse(attendanceRecord.CurrentDate, out DateTime currentDate))
-                    {
-                        string workingHours = await TotalWorkingHours(attendanceRecord.EmpId, currentDate);
+                    var attendanceRecords = await (from employee in _context.EmployeeRegistrations
+                                                   join record in _context.EmployeeCheckInRecords
+                                                   on employee.EmployeeId equals record.EmpId
+                                                   where employee.Vendorid == adminLogin.Vendorid
+                                                   orderby record.CurrentDate descending
+                                                   select new EmployeeAttendanceDto
+                                                   {
+                                                       EmpId = record.EmpId,
+                                                       EmployeeName = $"{employee.FirstName} " +
+                                                                      (string.IsNullOrEmpty(employee.MiddleName) ? "" : employee.MiddleName + " ") +
+                                                                      employee.LastName,
+                                                       CheckIntime = record.CheckIntime.HasValue
+                                                           ? record.CheckIntime.Value.ToString("hh:mm tt")
+                                                           : "N/A",
+                                                       CheckOuttime = record.CheckOuttime.HasValue
+                                                           ? record.CheckOuttime.Value.ToString("hh:mm tt")
+                                                           : "N/A",
+                                                       CurrentDate = record.CurrentDate.HasValue
+                                                           ? record.CurrentDate.Value.ToString("dd-MMM-yyyy")
+                                                           : "N/A",
+                                                       ShiftId = record.ShiftId,
+                                                   }).Where(x => x.EmpId == EmpId).ToListAsync();
 
-                        attendanceRecord.Workinghour = workingHours;
-                    }
-                    else
+                    foreach (var attendanceRecord in attendanceRecords)
                     {
-                        attendanceRecord.Workinghour = "Invalid Date";
+                        var shiftDetails = await _context.EmployeeRegistrations
+                        .Where(x => x.EmployeeId == attendanceRecord.EmpId)
+                        .Join(_context.Officeshifts,
+                            emp => emp.OfficeshiftTypeid,
+                            ob => ob.Id,
+                           (emp, ob) => new { ob.Starttime, ob.Endtime })
+                           .FirstOrDefaultAsync();
+
+                        if (shiftDetails != null && DateTime.TryParse(shiftDetails.Starttime, out DateTime startDateTime) &&
+                            DateTime.TryParse(shiftDetails.Endtime, out DateTime endDateTime))
+                        {
+                            TimeSpan startTime = startDateTime.TimeOfDay;
+                            TimeSpan endTime = endDateTime.TimeOfDay;
+                            double totalHours = (endTime - startTime).TotalHours;
+                            attendanceRecord.maxHour = FormatHours(totalHours); // Keep maxHour as string
+                        }
+
+                        if (DateTime.TryParse(attendanceRecord.CurrentDate, out DateTime currentDate))
+                        {
+                            string workingHours = await TotalWorkingHours(attendanceRecord.EmpId, currentDate);
+                            attendanceRecord.Workinghour = workingHours;
+                        }
+                        else
+                        {
+                            attendanceRecord.Workinghour = "Invalid Date";
+                        }
                     }
+
+                    var attendanceDto = new EmployeeAttendanceDto
+                    {
+                        detail = attendanceRecords
+                    };
+
+                    return View(attendanceDto);
                 }
-
-
-                var attendanceDto = new EmployeeAttendanceDto
+                else
                 {
-                    detail = attendanceRecords
-                };
-
-                return View(attendanceDto);
+                    return RedirectToAction("Login", "Admin");
+                }
             }
             catch (Exception ex)
             {
@@ -3265,7 +3296,7 @@ namespace CRM.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
-        [HttpGet,Route("/Vendor/showallemployeeAttendancelist")]
+        [HttpGet, Route("/Vendor/showallemployeeAttendancelist")]
         [HttpGet, Route("/Vendor/showallemployeeBreakinlist")]
         public async Task<IActionResult> showallemployeelist()
         {
@@ -3307,7 +3338,7 @@ namespace CRM.Controllers
 
             var model = new showallemployeelisteDto
             {
-                emplist = epfInfo 
+                emplist = epfInfo
             };
 
             return View(model);
@@ -3323,6 +3354,11 @@ namespace CRM.Controllers
                 {
                     int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                     var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                    ViewBag.approvestatus = await _context.Approvalmasters.Select(w => new SelectListItem
+                    {
+                        Value = w.Id.ToString(),
+                        Text = w.Status,
+                    }).ToListAsync();
                     var Approvedwfhdetail = await _ICrmrpo.GetWfhapplydetailList(adminlogin.Vendorid);
                     if (Approvedwfhdetail != null)
                     {
@@ -3346,7 +3382,8 @@ namespace CRM.Controllers
             }
         }
 
-        public async Task<IActionResult> UpdateWfhApplyStatus(int Id)
+        [HttpPost]
+        public async Task<IActionResult> UpdateWfhApplyStatus(int Id, int Isapprove, DateTime StartDate, DateTime EndDate)
         {
             var applywfh = await _context.EmpApplywfhs.FirstOrDefaultAsync(x => x.Id == Id);
             if (applywfh == null)
@@ -3358,39 +3395,55 @@ namespace CRM.Controllers
             var empinfo = await _context.EmployeeRegistrations.FirstOrDefaultAsync(x => x.EmployeeId == applywfh.UserId);
             var emppersonalinfo = await _context.EmployeePersonalDetails.FirstOrDefaultAsync(x => x.EmpRegId == applywfh.UserId);
 
-            applywfh.Iswfh = !applywfh.Iswfh;
+            applywfh.Iswfh = Isapprove;
             await _context.SaveChangesAsync();
             string subject;
             string emailBody;
 
-            if (applywfh.Iswfh == true)
+            if (applywfh.Iswfh == 2)
             {
                 subject = "Wfh Approval Accepted";
                 emailBody = $"Dear {empinfo.FirstName} {empinfo.MiddleName} {empinfo.LastName},\n\nYour Wfh application has been approved.";
             }
+            else if (applywfh.Iswfh == 1) // Partial approval (Pending)
+            {
+                subject = "Wfh Approval Partial";
+                emailBody = $"Dear {empinfo.FirstName} {empinfo.MiddleName} {empinfo.LastName},\n\nWe regret to inform you that your Wfh application is still pending. Please reapply with your desired {StartDate.Date} and {EndDate.Date} dates for processing.";
+            }
             else
             {
                 subject = "Wfh Approval Rejected";
-                emailBody = $"Dear {empinfo.FirstName} {empinfo.MiddleName} {empinfo.LastName},\n\nWe regret to inform you that your Wfh application has been rejected.";
+                emailBody = $"Dear {empinfo.FirstName} {empinfo.MiddleName} {empinfo.LastName},\n\nWe regret to inform you that your wfh application has been rejected. Please contact HR for further details.";
             }
+
+            var status = await _context.Approvalmasters.Where(x => x.Id == applywfh.Iswfh).Select(x => x.Status).FirstOrDefaultAsync();
 
             try
             {
                 await _emailService.SendEmpLeaveApprovalEmailAsync(
-                    emppersonalinfo.PersonalEmailAddress, empinfo.FirstName, empinfo.MiddleName, empinfo.LastName, subject, emailBody);
-
-                TempData["msg"] = (bool)applywfh.Iswfh
-                    ? "Approval status updated successfully and approval email sent!"
-                    : "Approval status updated successfully and rejection email sent!";
+                    emppersonalinfo.PersonalEmailAddress,
+                    empinfo.FirstName,
+                    empinfo.MiddleName,
+                    empinfo.LastName,
+                    subject,
+                    emailBody
+                );
+                TempData["msg"] = GetwfhApprovalMessage(status);
             }
             catch (Exception ex)
             {
-                TempData["msg"] = (bool)applywfh.Iswfh
-                    ? "Approval status updated successfully, but failed to send approval email."
-                    : "Approval status updated successfully, but failed to send rejection email.";
+                throw;
             }
-
-            return RedirectToAction("ApprovedWfhApply");
+            return Json(new { success = true, message = GetwfhApprovalMessage(status) });
+        }
+        private string GetwfhApprovalMessage(string status)
+        {
+            return status switch
+            {
+                "Complete" => "Approval status updated successfully and approval email sent!",
+                "Disapprove" => "Approval status updated successfully and rejection email sent!",
+                _ => "Approval status updated successfully with a partial status!"
+            };
         }
 
     }
