@@ -45,6 +45,8 @@
         public string? OfficeLocation { get; set; }
         public string? OfficeState { get; set; }
         public string? OfficeCity { get; set; }
+
+
     }
     public partial class Offerletters
     {

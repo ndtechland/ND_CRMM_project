@@ -32,6 +32,8 @@ namespace CRM.Models.APIDTO
         public string? FatherName { get; set; }
         public string? ShiftTime { get; set; }
         public string? ShiftType { get; set; }
+        public string FirstName { get; set; } = null!;
+        public string LastName { get; set; } = null!;
     }
     public class CompanyLoctionDto
     {

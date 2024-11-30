@@ -14,15 +14,13 @@
             font-family: 'Times New Roman', Times, serif;
             line-height: 1.6;
             color: #000;
-            background-color: #f4f4f4;
             margin: 0;
             padding: 0;
         }
 
         .container {
-            width: 800px;
+            width: 650px;
             margin: 50px auto;
-            background-color: #fff;
             padding: 40px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             border: 1px solid #ddd;
@@ -47,7 +45,7 @@
             top: 0;
             right: 0;
             width: 100%;
-            height: 100%;
+            height: 41%;
             background: linear-gradient(135deg, #0C70B5 50%, transparent 50%);
         }
 
@@ -109,22 +107,22 @@
 
         <!-- Content Section -->
         <div class="content">
-            <p>To,</p>
-            <p>
-                <strong>@Model.EmployeeName</strong><br>
-                Employee Code / No.: <strong>@Model.EmployeeCode</strong><br>
-                Current Designation: <strong>@Model.CurrentDesignation</strong><br>
-                Residential Address: <strong>@Model.CompanyAddress</strong>
-            </p>
+            <h3>To,</h3>
+            <h4>
+                <strong>[@Model.EmployeeName]</strong><br>
+                Employee Code / No.: <strong>[@Model.EmployeeCode]</strong><br>
+                Current Designation: <strong>[@Model.CurrentDesignation]</strong><br>
+                Residential Address: <strong>[@Model.CompanyAddress]</strong>
+            </h4>
 
             <div class="subject">
-                <p>Subject: Experience Letter</p>
+                <h2>Subject: Experience Letter</h2>
             </div> 
 
             <div class="details">
                 <p>
-                    This is to certify that <strong>@Model.EmployeeName</strong> joined our organization as a <strong>@Model.Designation</strong>.
-                    She was associated with our organization from <strong>@Model.StartDate</strong> to <strong>@Model.EndDate</strong>. During
+                    This is to certify that <strong>[@Model.EmployeeName]</strong> joined our organization as a <strong>[@Model.Designation]</strong>.
+                    She was associated with our organization from <strong>[@Model.StartDate]</strong> to <strong>[@Model.EndDate]</strong>. During
                     this tenure, we had ample opportunity to assess her professional and personal abilities.
                 </p>
 

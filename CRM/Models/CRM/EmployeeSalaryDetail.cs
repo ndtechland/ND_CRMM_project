@@ -25,5 +25,7 @@ namespace CRM.Models.Crm
         public decimal? Gross { get; set; }
         public decimal? Amount { get; set; }
         public decimal? Tdspercentage { get; set; }
+        public decimal? Conveyanceallowance { get; set; }
+        public decimal? FixedAllowance { get; set; }
     }
 }

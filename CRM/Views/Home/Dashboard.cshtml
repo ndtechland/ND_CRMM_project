@@ -52,6 +52,12 @@
         font-size: 12px;
     }
 
+    .payment-status-chart {
+        position: relative;
+        width: 100%;
+        height: auto;
+    }
+
 </style>
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
@@ -368,22 +374,20 @@ else
                                 </div>
                             </div>
                         </div>
-                        <div class="col-xl-8 xl-100">
-                            <div class="card custom-border shadow">
-                                <div class="card-header">
-                                    <h5>Payment Status Value</h5>
-                                        <div class="card-body">
-                                            <div class="payment-status-chart"></div>
-                                            <div style="width: 80%; margin: auto;">
-                                                <canvas id="paymentStatusChart" height="100"></canvas>
-                                            </div>
+                            <div class="col-xl-6 col-lg-12 col-md-12">
+                                <div class="card shadow-sm">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0">Payment Status Value</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <!-- Chart Container -->
+                                        <div class="payment-status-chart">
+                                            <canvas id="paymentStatusChart" height="150"></canvas>
                                         </div>
-
+                                    </div>
                                 </div>
-
-                              
                             </div>
-                        </div>
+
 
                         <div class="row mt-4">
                             <!-- Holidays Section -->

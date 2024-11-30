@@ -1,32 +1,36 @@
 ﻿
 document.addEventListener("DOMContentLoaded", function () {
-    const ctx = document.getElementById('paymentStatusChart').getContext('2d');
+    const canvasElement = document.getElementById('paymentStatusChart');
+
+    if (!canvasElement) {
+        console.error("Canvas element with ID 'paymentStatusChart' not found.");
+        return;
+    }
+
+    const ctx = canvasElement.getContext('2d');
 
     // Fetch data from the correct API endpoint
     fetch('/Home/GetPaymentStatusData')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
-            // Log the data for debugging
             console.log('Fetched data:', data);
 
-            const months = data.map(item => item.month);
-            const paidCounts = data.map(item => item.paid);
-            const unpaidCounts = data.map(item => item.unpaid);
-            const partialCounts = data.map(item => item.partial);
-            const canceledCounts = data.map(item => item.canceled);
-            const paidAmounts = data.map(item => item.paidAmt);
-            const unpaidAmounts = data.map(item => item.unPaidAmt);
-            const partialAmounts = data.map(item => item.partialAmt);
-            const overdueCounts = data.map(item => item.overdueamount);
-            const overdueAmounts = data.map(item => item.overdueamount);
-
-            // Handle undefined or null values gracefully by using fallback values
-            const safePaidAmounts = paidAmounts.map(amount => amount || 0);
-            const safeUnpaidAmounts = unpaidAmounts.map(amount => amount || 0);
-            const safePartialAmounts = partialAmounts.map(amount => amount || 0);
-            const safeCanceledCounts = canceledCounts.map(count => count || 0);
-            const safeOverdueAmounts = overdueAmounts.map(amount => amount || 0);  // Use for 'Overdue Amount'
-            const safeOverdueCounts = overdueCounts.map(amount => amount || 0);  // If needed for counts
+            // Map data to chart-compatible arrays
+            const months = data.map(item => item.month || 'N/A');
+            const paidCounts = data.map(item => item.paid || 0);
+            const unpaidCounts = data.map(item => item.unpaid || 0);
+            const partialCounts = data.map(item => item.partial || 0);
+            const canceledCounts = data.map(item => item.canceled || 0);
+            const overdueCounts = data.map(item => item.overduecount || 0); // Ensure matching field names
+            const paidAmounts = data.map(item => item.paidAmt || 0);
+            const unpaidAmounts = data.map(item => item.unPaidAmt || 0);
+            const partialAmounts = data.map(item => item.partialAmt || 0);
+            const overdueAmounts = data.map(item => item.overdueamount || 0);
 
             // Create the chart
             new Chart(ctx, {
@@ -37,36 +41,36 @@ document.addEventListener("DOMContentLoaded", function () {
                         {
                             label: 'Paid',
                             data: paidCounts,
-                            backgroundColor: 'green',
+                            backgroundColor: 'rgba(0, 128, 0, 0.6)',
                             borderColor: 'darkgreen',
                             borderWidth: 1
                         },
                         {
                             label: 'Unpaid',
                             data: unpaidCounts,
-                            backgroundColor: 'red',
+                            backgroundColor: 'rgba(255, 0, 0, 0.6)',
                             borderColor: 'darkred',
                             borderWidth: 1
                         },
                         {
                             label: 'Partial',
                             data: partialCounts,
-                            backgroundColor: 'blue',
+                            backgroundColor: 'rgba(0, 0, 255, 0.6)',
                             borderColor: 'darkblue',
                             borderWidth: 1
                         },
                         {
-                            label: 'Canceled Count',
+                            label: 'Canceled',
                             data: canceledCounts,
-                            backgroundColor: 'orange',
+                            backgroundColor: 'rgba(255, 165, 0, 0.6)',
                             borderColor: 'darkorange',
                             borderWidth: 1
                         },
                         {
-                            label: 'Overdue Count',
-                            data: safeOverdueCounts,  // Use 'safeOverdueAmounts' for the dataset
-                            backgroundColor: 'yellow',
-                            borderColor: 'darkyellow',
+                            label: 'Overdue ',
+                            data: overdueCounts,
+                            backgroundColor: 'rgba(255, 255, 0, 0.6)',
+                            borderColor: 'gold',
                             borderWidth: 1
                         }
                     ]
@@ -79,25 +83,23 @@ document.addEventListener("DOMContentLoaded", function () {
                                 afterBody: function (tooltipItems) {
                                     const tooltipData = [];
 
-                                    // Iterate through each tooltip item (it could be multiple data points)
                                     tooltipItems.forEach(function (tooltipItem) {
                                         const index = tooltipItem.dataIndex;
 
-                                        // For each dataset, get the specific data you want to show
-                                        if (tooltipItem.datasetIndex === 0) {  // 'Paid' dataset
-                                            tooltipData.push(`Paid Amount: ₹${safePaidAmounts[index].toLocaleString()}`);
-                                        } else if (tooltipItem.datasetIndex === 1) {  // 'Unpaid' dataset
-                                            tooltipData.push(`Unpaid Amount: ₹${safeUnpaidAmounts[index].toLocaleString()}`);
-                                        } else if (tooltipItem.datasetIndex === 2) {  // 'Partial' dataset
-                                            tooltipData.push(`Partial Amount: ₹${safePartialAmounts[index].toLocaleString()}`);
-                                        } else if (tooltipItem.datasetIndex === 3) {  // 'Canceled Count'
-                                            tooltipData.push(`Canceled Count: ${safeCanceledCounts[index].toLocaleString()}`);
-                                        } else if (tooltipItem.datasetIndex === 4) {  // 'Overdue Amount'
-                                            tooltipData.push(`Overdue Amount: ₹${safeOverdueAmounts[index].toLocaleString()}`);  // Use safeOverdueAmounts
+                                        if (tooltipItem.datasetIndex === 0) {
+                                            tooltipData.push(`Paid Amount: ₹${paidAmounts[index].toLocaleString()}`);
+                                        } else if (tooltipItem.datasetIndex === 1) {
+                                            tooltipData.push(`Unpaid Amount: ₹${unpaidAmounts[index].toLocaleString()}`);
+                                        } else if (tooltipItem.datasetIndex === 2) {
+                                            tooltipData.push(`Partial Amount: ₹${partialAmounts[index].toLocaleString()}`);
+                                        } else if (tooltipItem.datasetIndex === 3) {
+                                            tooltipData.push(`Canceled Count: ${canceledCounts[index].toLocaleString()}`);
+                                        } else if (tooltipItem.datasetIndex === 4) {
+                                            tooltipData.push(`Overdue Amount: ₹${overdueAmounts[index].toLocaleString()}`);
                                         }
                                     });
 
-                                    return tooltipData;  // Return the collected data for the tooltip
+                                    return tooltipData;
                                 }
                             }
                         },
@@ -115,7 +117,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         y: {
                             title: {
                                 display: true,
-                                text: 'Count of Invoices / Amount (₹)'
+                                text: 'Counts / Amount (₹)'
                             },
                             beginAtZero: true
                         }
@@ -124,10 +126,9 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         })
         .catch(error => {
-            console.error("Error fetching data:", error);
+            console.error("Error fetching or rendering data:", error);
         });
 });
-
 
 
 
