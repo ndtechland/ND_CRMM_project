@@ -36,7 +36,8 @@ namespace CRM.Models.DTO
         public decimal? Servicecharge { get; set; }
         public decimal? SpecialAllowance { get; set; }
         public decimal? Gross { get; set; }
-
+        public decimal? Conveyanceallowance { get; set; }
+        public decimal? FixedAllowance { get; set; }
 
         // Personal Info
         public string? PersonalEmailAddress { get; set; }

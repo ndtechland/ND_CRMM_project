@@ -235,7 +235,7 @@ namespace CRM.Repository
                 cmd.Parameters.AddWithValue("@AnnualCTC", model.AnnualCTC);
                 cmd.Parameters.AddWithValue("@Basic", model.Basic);
                 cmd.Parameters.AddWithValue("@HouseRentAllowance", model.HouseRentAllowance);
-                //cmd.Parameters.AddWithValue("@TravellingAllowance", model.TravellingAllowance);
+                cmd.Parameters.AddWithValue("@TravellingAllowance", model.TravellingAllowance);
                 cmd.Parameters.AddWithValue("@ESIC", model.ESIC);
                 cmd.Parameters.AddWithValue("@EPF", model.EPF);
                 cmd.Parameters.AddWithValue("@MonthlyGrossPay", model.MonthlyGrossPay);
@@ -246,6 +246,9 @@ namespace CRM.Repository
                 cmd.Parameters.AddWithValue("@gross", model.Gross);
                 cmd.Parameters.AddWithValue("@amount", model.Amount);
                 cmd.Parameters.AddWithValue("@tdspercentage", model.Tdspercentage);
+                cmd.Parameters.AddWithValue("@conveyanceallowance", model.Conveyanceallowance);
+                cmd.Parameters.AddWithValue("@FixedAllowance", model.FixedAllowance);
+
                 // Personal detail
                 cmd.Parameters.AddWithValue("@Personal_Email_Address", model.PersonalEmailAddress);
                 cmd.Parameters.AddWithValue("@Mobile_Number", model.MobileNumber);

@@ -1175,6 +1175,10 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Basic).HasColumnType("decimal(18, 0)");
 
+                entity.Property(e => e.Conveyanceallowance)
+                    .HasColumnType("decimal(9, 0)")
+                    .HasColumnName("conveyanceallowance");
+
                 entity.Property(e => e.EmpId).HasColumnName("EmpID");
 
                 entity.Property(e => e.EmployeeId)
@@ -1191,6 +1195,8 @@ namespace CRM.Models.Crm
                     .HasColumnType("decimal(18, 0)")
                     .HasColumnName("ESIC")
                     .HasDefaultValueSql("((1400.00))");
+
+                entity.Property(e => e.FixedAllowance).HasColumnType("decimal(9, 0)");
 
                 entity.Property(e => e.Gross)
                     .HasColumnType("decimal(18, 0)")

@@ -183,6 +183,8 @@ namespace CRM.Controllers
                 ViewBag.Offerletters = "";
                 ViewBag.shifttype = "";
                 ViewBag.statesy = "";
+                ViewBag.Conveyanceallowance = "";
+                ViewBag.FixedAllowance = "";
                 ViewBag.btnText = "SAVE";
 
                 if (id != null)
@@ -249,6 +251,8 @@ namespace CRM.Controllers
                                 ViewBag.Offerletters = row["offerletterid"].ToString();
                                 ViewBag.statesy = row["stateId"].ToString();
                                 ViewBag.shifttype = row["officeshiftTypeid"].ToString();
+                                ViewBag.Conveyanceallowance = row["conveyanceallowance"].ToString();
+                                ViewBag.FixedAllowance = row["FixedAllowance"].ToString();
                                 ViewBag.Emp_Reg_Code = id;
                                 ViewBag.btnText = "UPDATE";
 
@@ -1936,11 +1940,11 @@ namespace CRM.Controllers
         }
 
         [HttpGet, Route("/Employee/EmployeeOfferletter")]
-        public async Task<IActionResult> EmployeeOfferletter(int? Id = 0, int? Userid = 0)
+        public async Task<IActionResult> EmployeeOfferletter(int? Id = 0)
         {
             try
             {
-                //int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 if (adminlogin == null)
                 {
@@ -1948,7 +1952,7 @@ namespace CRM.Controllers
                 }
                 var vendorinfo = _context.VendorRegistrations.Where(v => v.Id == adminlogin.Vendorid).FirstOrDefault();
                 var offerletter = await _context.Offerletters
-                    .Where(x => x.Vendorid == adminlogin.Vendorid && x.IsDeleted == false && x.Id == Id)
+                    .Where(x => x.Id == Id && x.IsDeleted == false)
                     .FirstOrDefaultAsync();
                 if (offerletter == null)
                 {
@@ -1976,7 +1980,7 @@ namespace CRM.Controllers
                     CompanyName = _context.VendorRegistrations.Where(g => g.Id == offerletter.Vendorid).Select(g => g.CompanyName).FirstOrDefault(),
                     OfficeLocation = _context.VendorRegistrations.Where(g => g.Id == offerletter.Vendorid).Select(g => g.Location).FirstOrDefault(),
                     OfficeState = _context.States.Where(g => g.Id == vendorinfo.StateId).Select(g => g.SName).FirstOrDefault(),
-                    OfficeCity = _context.Cities.Where(g => g.Id == vendorinfo.CityId).Select(g => g.City1).FirstOrDefault()
+                    OfficeCity = _context.Cities.Where(g => g.Id == vendorinfo.CityId).Select(g => g.City1).FirstOrDefault(),
                 };
                 return View(result);
             }
@@ -1998,7 +2002,7 @@ namespace CRM.Controllers
                 }
                 string schema = Request.Scheme;
                 string host = Request.Host.Value;
-                string SlipURL = $"{schema}://{host}/Employee/EmployeeOfferletter?Id={Id}&userid={Userid}";
+                string SlipURL = $"{schema}://{host}/Employee/EmployeeOfferletter?Id={Id}";
                 HtmlToPdf converter = new HtmlToPdf();
                 PdfDocument doc = converter.ConvertUrl(SlipURL);
                 string wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "EMPpdfs");
@@ -2048,18 +2052,12 @@ namespace CRM.Controllers
             }
         }
         [HttpGet, Route("/Employee/Appointmentletter")]
-        public async Task<IActionResult> Appointmentletter(int? Id = 0, int? Userid = 0)
+        public async Task<IActionResult> Appointmentletter(int? Id = 0)
         {
             try
             {
-                //int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
-                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
-                if (adminlogin == null)
-                {
-                    return BadRequest("Admin login not found");
-                }
                 var empdetail = await _context.EmployeeRegistrations
-                    .Where(x => x.Vendorid == adminlogin.Vendorid && x.IsDeleted == false && x.Id == Id)
+                    .Where(x => x.Id == Id && x.IsDeleted == false)
                     .FirstOrDefaultAsync();
                 if (empdetail == null)
                 {
@@ -2105,7 +2103,7 @@ namespace CRM.Controllers
                 }
                 string schema = Request.Scheme;
                 string host = Request.Host.Value;
-                string SlipURL = $"{schema}://{host}/Employee/Appointmentletter?Id={Id}&userid={Userid}";
+                string SlipURL = $"{schema}://{host}/Employee/Appointmentletter?Id={Id}";
                 HtmlToPdf converter = new HtmlToPdf();
                 PdfDocument doc = converter.ConvertUrl(SlipURL);
                 string wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "EMPpdfs");
@@ -2527,19 +2525,13 @@ namespace CRM.Controllers
             }
         }
         [HttpGet, Route("/Employee/EmployeeExperienceletter")]
-        public async Task<IActionResult> EmployeeExperienceletter(int? Id = 0, int? Userid = 0)
+        public async Task<IActionResult> EmployeeExperienceletter(int? Id = 0)
         {
             try
             {
-                //int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
-                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
-                if (adminlogin == null)
-                {
-                    return BadRequest("Admin login not found");
-                }
-                var vendorinfo = _context.VendorRegistrations.Where(v => v.Id == adminlogin.Vendorid).FirstOrDefault();
-                var Experienceletter = await _context.EmpExperienceletters.Where(x => x.Vendorid == adminlogin.Vendorid && x.Id == Id).FirstOrDefaultAsync();
+                var Experienceletter = await _context.EmpExperienceletters.Where(x => x.Id == Id).FirstOrDefaultAsync();
                 var empExperienceletter = await _context.EmployeeRegistrations.Where(x => x.EmployeeId == Experienceletter.EmployeeId).FirstOrDefaultAsync();
+                var vendorinfo = _context.VendorRegistrations.Where(v => v.Id == empExperienceletter.Vendorid).FirstOrDefault();
                 if (Experienceletter == null)
                 {
                     return BadRequest("Experience letter not found");
@@ -2579,7 +2571,7 @@ namespace CRM.Controllers
                 }
                 string schema = Request.Scheme;
                 string host = Request.Host.Value;
-                string SlipURL = $"{schema}://{host}/Employee/EmployeeExperienceletter?Id={Id}&userid={Userid}";
+                string SlipURL = $"{schema}://{host}/Employee/EmployeeExperienceletter?Id={Id}";
                 HtmlToPdf converter = new HtmlToPdf();
                 PdfDocument doc = converter.ConvertUrl(SlipURL);
                 string wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "EMPpdfs");

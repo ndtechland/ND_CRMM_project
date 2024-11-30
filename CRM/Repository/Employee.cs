@@ -50,7 +50,9 @@ namespace CRM.Repository
                     var empid = await _context.EmployeeRegistrations.Where(x => x.EmployeeId == userid && x.IsDeleted == false).Select(x => new EmployeeBasicInfo
                     {
                         Userid = x.Id,
-                        FullName = x.FirstName + x.MiddleName  + x.LastName,
+                        FullName = x.FirstName /*+ x.MiddleName + x.LastName*/,
+                        FirstName = x.FirstName,
+                        LastName = x.LastName,
                         WorkEmail = x.WorkEmail,
                         MobileNumber = _context.EmployeePersonalDetails.Where(g => g.EmpId == x.Id).Select(g => g.MobileNumber).First(),
                         DateOfBirth = _context.EmployeePersonalDetails.Where(g => g.EmpId == x.Id).Select(g => g.DateOfBirth.Value.ToString("dd-MM-yyyy")).First(),
@@ -1670,7 +1672,7 @@ namespace CRM.Repository
                 breakPeriodThreshold = (endTime - startTime).TotalHours;
             }
             var checkIns = await _context.EmployeeCheckInRecords
-                .Where(g => g.EmpId == employeeId &&  g.CurrentDate.Value.Month == Currentdate.Month)
+                .Where(g => g.EmpId == employeeId && g.CurrentDate.Value.Month == Currentdate.Month)
                 .OrderBy(g => g.CheckIntime)
                 .ToListAsync();
 
@@ -2614,7 +2616,6 @@ namespace CRM.Repository
         }
         public async Task<EmployeeCheckIn> UpdateEmpLocation(CRM.Models.APIDTO.EmpCheckIn model, bool checkIn)
         {
-            using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
                 var emp = await _context.EmployeeRegistrations
@@ -2629,7 +2630,7 @@ namespace CRM.Repository
                 await HandleEmpCheckIns(model, emp.EmployeeId, today, checkIn);
                 await HandleEmployeeCheckInRecords(emp.EmployeeId, officeShift.Id, today, checkIn);
 
-                await transaction.CommitAsync();
+                // await transaction.CommitAsync();
 
                 return new EmployeeCheckIn
                 {
@@ -2643,7 +2644,6 @@ namespace CRM.Repository
             }
             catch (Exception ex)
             {
-                await transaction.RollbackAsync();
                 throw new Exception("Error saving employee check-in data: " + ex.Message, ex);
             }
         }
@@ -2735,38 +2735,27 @@ namespace CRM.Repository
             var checkInRecord = await _context.EmployeeCheckInRecords
                 .FirstOrDefaultAsync(x => x.EmpId == employeeId && x.CheckIntime.HasValue && x.CheckIntime.Value.Date == today);
 
-            if (checkIn)
+            if (!checkIn)
             {
-                if (checkInRecord == null)
+                if(checkInRecord.CheckOuttime == null)
                 {
-                    await _context.EmployeeCheckInRecords.AddAsync(new EmployeeCheckInRecord
-                    {
-                        EmpId = employeeId,
-                        CheckIntime = DateTime.Now,
-                        CurrentDate = DateTime.Now,
-                        Isactive = true,
-                        Workinghour = TimeSpan.Zero,
-                        ShiftId = shiftId
-                    });
+                    checkInRecord.CheckOuttime = DateTime.Now;
+                    checkInRecord.Workinghour = (checkInRecord.CheckOuttime.Value - checkInRecord.CheckIntime.Value).Duration();
+
                 }
-                else if (checkInRecord.CheckOuttime != null)
+                else if(checkInRecord.CheckOuttime != null)
                 {
                     checkInRecord.CheckOuttime = null;
                     checkInRecord.Isactive = true;
-                    _context.EmployeeCheckInRecords.Update(checkInRecord);
                 }
             }
             else
             {
-                if (checkInRecord != null && checkInRecord.CheckOuttime == null)
-                {
-                    checkInRecord.CheckOuttime = DateTime.Now;
-                    checkInRecord.Workinghour = (checkInRecord.CheckOuttime.Value - checkInRecord.CheckIntime.Value).Duration();
-                    _context.EmployeeCheckInRecords.Update(checkInRecord);
-                }
+                checkInRecord.Isactive = true;
             }
-
+            _context.EmployeeCheckInRecords.Update(checkInRecord);
             await _context.SaveChangesAsync();
+
         }
 
         public async Task<bool> ApplyWfh(EmpApplyWfhDto model, string userid)

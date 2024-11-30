@@ -243,9 +243,10 @@ namespace CRM.Controllers
         [Route("Hangfiretask/UpdateTaxes")]
         public IActionResult UpdateTaxes()
         {
-            RecurringJob.AddOrUpdate(() => Taxes(), Cron.Daily);
-            return Ok("Database check job initiated!");
+            RecurringJob.AddOrUpdate(() => Taxes(), Cron.Daily(9)); 
+            return Ok("Daily Taxes update job scheduled!");
         }
+
 
     }
 }
