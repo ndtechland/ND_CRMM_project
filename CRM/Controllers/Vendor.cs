@@ -78,6 +78,7 @@ namespace CRM.Controllers
                         ViewBag.state = data.State;
                         ViewBag.startDate = ((DateTime)data.StartDate).ToString("yyyy-MM-dd");
                         ViewBag.renewDate = ((DateTime)data.RenewDate).ToString("yyyy-MM-dd");
+                        ViewBag.duedate = ((DateTime)data.Duedate).ToString("yyyy-MM-dd");
                         ViewBag.Pricingplan = vendor.PricingPlanid;
                         return View(data);
                     }
@@ -113,6 +114,14 @@ namespace CRM.Controllers
         {
             try
             {
+                string invoiceNo = GenerateInvoiceNumber();
+
+                var existingInvoice = await _context.VendorRegistrations
+                                                    .FirstOrDefaultAsync(x => x.InvoiceNumber == invoiceNo);
+                if (existingInvoice != null)
+                {
+                    invoiceNo = GenerateInvoiceNumber();
+                }
                 if (model.Id > 0)
                 {
                     var data = await _ICrmrpo.updateVendorreg(model);
@@ -129,7 +138,7 @@ namespace CRM.Controllers
                 }
                 else
                 {
-                    var response = await _ICrmrpo.Vendorreg(model);
+                    var response = await _ICrmrpo.Vendorreg(model, invoiceNo);
                     if (response != null)
                     {
                         TempData["Message"] = "Registration Successfully.";
@@ -2005,9 +2014,8 @@ namespace CRM.Controllers
                     }).ToList();
                     int iId = (int)(id == null ? 0 : id);
 
-                    ViewBag.EPFNumber = "";
+                    ViewBag.id = "";
                     ViewBag.EPFPercentage = "";
-                    ViewBag.EmployeeId = "";
                     ViewBag.Heading = "Add Employee EPF";
                     ViewBag.BtnText = "SAVE";
 
@@ -2017,9 +2025,7 @@ namespace CRM.Controllers
                         if (data != null)
                         {
                             ViewBag.id = data.Id;
-                            ViewBag.EPFNumber = data.Epfnumber;
                             ViewBag.EPFPercentage = data.Epfpercentage;
-                            ViewBag.SelectedEmployeeId = data.EmployeeId;
                             ViewBag.BtnText = "UPDATE";
                             ViewBag.Heading = "Update EPF";
 
@@ -2044,7 +2050,7 @@ namespace CRM.Controllers
             {
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
-                var checkexist = _context.EmployeeEpfPayrollInfos.Where(e => e.EmployeeId == model.EmployeeId).FirstOrDefault();
+                var checkexist = _context.EmployeeEpfPayrollInfos.Where(e => e.Id == model.Id).FirstOrDefault();
                 bool check = await _ICrmrpo.AddEmployeeEpf(model, (int)adminlogin.Vendorid);
                 if (check)
                 {
@@ -2052,7 +2058,7 @@ namespace CRM.Controllers
                     {
                         if (checkexist != null)
                         {
-                            TempData["Message"] = $"An EPF record for employee ID {model.EmployeeId} already exists.";
+                            TempData["Message"] = $"An EPF record  already exists.";
                             return RedirectToAction("EmployeeEpf");
                         }
 
@@ -2078,27 +2084,27 @@ namespace CRM.Controllers
             }
         }
 
-        [HttpGet]
-        public JsonResult GetEmpEpfNumber(string employeeId)
-        {
+        //[HttpGet]
+        //public JsonResult GetEmpEpfNumber(string employeeId)
+        //{
 
-            var epflist = _context.EmployeeEpfPayrollInfos.Where(x => x.EmployeeId == employeeId).FirstOrDefault();
-            var employee = _context.EmployeeBankDetails.Where(e => e.EmpId == employeeId)
-                .Select(e => new
-                {
-                    EPFNumber = e.EpfNumber
-                })
-                .FirstOrDefault();
-
-
-            if (employee != null)
-            {
-                return Json(employee);
-            }
+        //    var epflist = _context.EmployeeEpfPayrollInfos.Where(x => x.EmployeeId == employeeId).FirstOrDefault();
+        //    var employee = _context.EmployeeBankDetails.Where(e => e.EmpId == employeeId)
+        //        .Select(e => new
+        //        {
+        //            EPFNumber = e.EpfNumber
+        //        })
+        //        .FirstOrDefault();
 
 
-            return Json(null);
-        }
+        //    if (employee != null)
+        //    {
+        //        return Json(employee);
+        //    }
+
+
+        //    return Json(null);
+        //}
         //public JsonResult GetVendorEfp()
         //{
 
@@ -2146,19 +2152,19 @@ namespace CRM.Controllers
                     int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                     var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                     var epflist = _context.EmployeeEsicPayrollInfos.Where(e => e.Vendorid == adminlogin.Vendorid).OrderByDescending(e => e.Id).ToList();
-                    var epfEmployeeList = (from salary in _context.EmployeeSalaryDetails
-                                           join employee in _context.EmployeeRegistrations
-                                           on salary.EmployeeId equals employee.EmployeeId
-                                           where employee.Vendorid == adminlogin.Vendorid && salary.Gross < 21000
-                                           orderby salary.Id descending
-                                           select new
-                                           {
-                                               Value = employee.EmployeeId.ToString(),
-                                               Text = employee.EmployeeId
-                                           }).ToList();
+                    //var epfEmployeeList = (from salary in _context.EmployeeSalaryDetails
+                    //                       join employee in _context.EmployeeRegistrations
+                    //                       on salary.EmployeeId equals employee.EmployeeId
+                    //                       where employee.Vendorid == adminlogin.Vendorid && salary.Gross < 21000
+                    //                       orderby salary.Id descending
+                    //                       select new
+                    //                       {
+                    //                           Value = employee.EmployeeId.ToString(),
+                    //                           Text = employee.EmployeeId
+                    //                       }).ToList();
 
 
-                    ViewBag.EmployeeItem = epfEmployeeList;
+                    //ViewBag.EmployeeItem = epfEmployeeList;
 
                     //ViewBag.EmployeeItem = _context.EmployeeRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).Select(D => new SelectListItem
                     //{
@@ -2167,9 +2173,10 @@ namespace CRM.Controllers
 
                     //}).ToList();
                     int iId = (int)(id == null ? 0 : id);
-                    ViewBag.ESICNumber = "";
+
+                    ViewBag.id = "";
                     ViewBag.ESICPercentage = "";
-                    ViewBag.EmployeeId = "";
+                    ViewBag.EsicAmount = "";
                     ViewBag.Heading = "Add Employee ESIC";
                     ViewBag.BtnText = "SAVE";
                     if (iId != null && iId != 0)
@@ -2178,9 +2185,8 @@ namespace CRM.Controllers
                         if (data != null)
                         {
                             ViewBag.id = data.Id;
-                            ViewBag.ESICNumber = data.Esicnumber;
                             ViewBag.ESICPercentage = data.Esicpercentage;
-                            ViewBag.SelectedEmployeeId = data.EmployeeId;
+                            ViewBag.EsicAmount = data.EsicAmount;
                             ViewBag.BtnText = "UPDATE";
                             ViewBag.Heading = "Update ESIC";
 
@@ -2197,7 +2203,6 @@ namespace CRM.Controllers
             }
             catch (Exception)
             {
-
                 throw;
             }
         }
@@ -2208,7 +2213,7 @@ namespace CRM.Controllers
             {
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
-                var checkexist = _context.EmployeeEsicPayrollInfos.Where(e => e.EmployeeId == model.EmployeeId).FirstOrDefault();
+                var checkexist = _context.EmployeeEsicPayrollInfos.Where(e => e.Id == model.Id).FirstOrDefault();
 
                 bool check = await _ICrmrpo.AddEmployeeEsic(model, (int)adminlogin.Vendorid);
                 if (check)
@@ -2217,7 +2222,7 @@ namespace CRM.Controllers
                     {
                         if (checkexist != null)
                         {
-                            TempData["Message"] = $"An ESIC record for employee ID {model.EmployeeId} already exists.";
+                            TempData["Message"] = $"An ESIC record  already exists.";
                             return RedirectToAction("EmployeeEsic");
                         }
                         TempData["Message"] = "ok";
@@ -2542,7 +2547,7 @@ namespace CRM.Controllers
                     var attendanceRecords = await (from employee in _context.EmployeeRegistrations
                                                    join record in _context.EmployeeCheckInRecords
                                                    on employee.EmployeeId equals record.EmpId
-                                                   where employee.Vendorid == adminLogin.Vendorid
+                                                   where employee.Vendorid == adminLogin.Vendorid && employee.IsDeleted == false
                                                    orderby record.CurrentDate descending
                                                    select new EmployeeAttendanceDto
                                                    {
@@ -2610,28 +2615,28 @@ namespace CRM.Controllers
             }
         }
 
-        [HttpGet]
-        public JsonResult CheckEmployeeExists(string employeeId)
-        {
-            var epfInfo = _context.EmployeeEpfPayrollInfos.FirstOrDefault(x => x.EmployeeId == employeeId);
-            if (epfInfo != null)
-            {
-                return Json(new { exists = true, message = "This Employee already has an EPF record." });
-            }
+        //[HttpGet]
+        //public JsonResult CheckEmployeeExists(string employeeId)
+        //{
+        //    var epfInfo = _context.EmployeeEpfPayrollInfos.FirstOrDefault(x => x.EmployeeId == employeeId);
+        //    if (epfInfo != null)
+        //    {
+        //        return Json(new { exists = true, message = "This Employee already has an EPF record." });
+        //    }
 
-            return Json(new { exists = false });
-        }
-        [HttpGet]
-        public JsonResult CheckEmployeeEsicExists(string employeeId)
-        {
-            var epfInfo = _context.EmployeeEsicPayrollInfos.FirstOrDefault(x => x.EmployeeId == employeeId);
-            if (epfInfo != null)
-            {
-                return Json(new { exists = true, message = "This Employee already has an Esic record." });
-            }
+        //    return Json(new { exists = false });
+        //}
+        //[HttpGet]
+        //public JsonResult CheckEmployeeEsicExists(string employeeId)
+        //{
+        //    var epfInfo = _context.EmployeeEsicPayrollInfos.FirstOrDefault(x => x.EmployeeId == employeeId);
+        //    if (epfInfo != null)
+        //    {
+        //        return Json(new { exists = true, message = "This Employee already has an Esic record." });
+        //    }
 
-            return Json(new { exists = false });
-        }
+        //    return Json(new { exists = false });
+        //}
 
         public async Task<IActionResult> EmployeeApplyOvertimeList()
         {
@@ -2893,7 +2898,7 @@ namespace CRM.Controllers
                     return NotFound("Admin not found.");
                 }
                 var empDetails = await _context.EmployeeRegistrations
-                    .Where(x => x.Vendorid == adminLogin.Vendorid && x.EmployeeId == EmpId)
+                    .Where(x => x.Vendorid == adminLogin.Vendorid && x.EmployeeId == EmpId && x.IsDeleted == false)
                     .ToListAsync();
 
                 if (empDetails == null || empDetails.Count == 0)
@@ -3085,7 +3090,7 @@ namespace CRM.Controllers
                 }
 
                 var empDetails = await _context.EmployeeRegistrations
-                    .Where(x => x.Vendorid == adminLogin.Vendorid && x.EmployeeId == EmpId)
+                    .Where(x => x.Vendorid == adminLogin.Vendorid && x.EmployeeId == EmpId && x.IsDeleted == false)
                     .ToListAsync();
 
                 if (empDetails == null || empDetails.Count == 0)
@@ -3210,7 +3215,7 @@ namespace CRM.Controllers
                 var attendanceRecords = await (from employee in _context.EmployeeRegistrations
                                                join record in _context.EmployeeCheckInRecords
                                                on employee.EmployeeId equals record.EmpId
-                                               where employee.Vendorid == adminLogin.Vendorid
+                                               where employee.Vendorid == adminLogin.Vendorid && employee.IsDeleted == false
                                                orderby record.CurrentDate descending
                                                select new EmployeeAttendanceDto
                                                {
@@ -3228,7 +3233,7 @@ namespace CRM.Controllers
                                                        ? record.CurrentDate.Value.ToString("dd-MMM-yyyy")
                                                        : "N/A",
                                                    Workinghour = "N/A"
-                                               }).Where(x => x.EmpId == EmpId).ToListAsync();
+                                               }).Where(x => x.EmpId == EmpId ).ToListAsync();
 
                 foreach (var attendanceRecord in attendanceRecords)
                 {
@@ -3307,7 +3312,7 @@ namespace CRM.Controllers
                 return Json(new { exists = false, message = "Admin not found." });
 
             var employeeRegistrations = await _context.EmployeeRegistrations
-                .Where(x => x.Vendorid == adminLogin.Vendorid)
+                .Where(x => x.Vendorid == adminLogin.Vendorid && x.IsDeleted == false)
                 .Select(x => new
                 {
                     x.EmployeeId,
@@ -3444,6 +3449,188 @@ namespace CRM.Controllers
                 "Disapprove" => "Approval status updated successfully and rejection email sent!",
                 _ => "Approval status updated successfully with a partial status!"
             };
+        }
+        private string GenerateInvoiceNumber()
+        {
+            var lastInvoice = _context.VendorRegistrations
+                                      .OrderByDescending(x => x.Id)
+                                      .FirstOrDefault();
+
+            int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+            var adminLogin = _context.AdminLogins.FirstOrDefault(x => x.Id == userId);
+
+            int numericValue = 10001;
+
+            string companyName = "ND";
+            string[] unwantedWords = { "pvt ltd", "private limited", "ltd", "inc", "corporation", "corp" };
+
+            foreach (var word in unwantedWords)
+            {
+                companyName = companyName.Replace(word, "", StringComparison.OrdinalIgnoreCase).Trim();
+            }
+
+            string firstChars;
+            var words = companyName.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (words.Length == 2 && words[0].Equals(words[1], StringComparison.OrdinalIgnoreCase))
+            {
+                firstChars = char.ToUpper(words[0][0]).ToString() + char.ToUpper(words[0][1]);
+            }
+            else if (words.Length >= 2)
+            {
+                firstChars = string.Concat(words.Select(w => char.ToUpper(w[0])));
+            }
+            else
+            {
+                firstChars = companyName.Length >= 3 ? companyName.Substring(0, 3).ToUpper() : companyName.ToUpper();
+            }
+
+            DateTime now = DateTime.Now;
+            int startYear = now.Month >= 4 ? now.Year : now.Year - 1;
+            int endYear = startYear + 1;
+            string financialYear = $"{startYear}/{endYear % 100}";
+
+            if (lastInvoice != null && !string.IsNullOrEmpty(lastInvoice.InvoiceNumber))
+            {
+                string[] parts = lastInvoice.InvoiceNumber.Split('-');
+                if (parts.Length > 2 && int.TryParse(parts.Last(), out int lastNumericValue))
+                {
+                    string lastFinancialYear = parts[1];
+                    string lastFirstChars = parts[0];
+
+                    if (lastFinancialYear != financialYear || lastFirstChars != firstChars)
+                    {
+                        numericValue = 10001;
+                    }
+                    else
+                    {
+                        numericValue = lastNumericValue + 1;
+                    }
+                }
+            }
+
+            string invoiceId = $"{firstChars}-{financialYear}-{numericValue:D4}";
+            return invoiceId;
+        }
+        [HttpGet]
+        public async Task<IActionResult> salarydeduction(int id)
+        {
+            try
+            {
+
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                int vendorid = (int)adminlogin.Vendorid;
+                List<Salarydeductionmaster> events = _context.Salarydeductionmasters.Where(e => e.Vendorid == vendorid).ToList();
+                int iId = (int)(id == null ? 0 : id);
+                ViewBag.id = 0;
+                ViewBag.Deductiontype = "";
+                ViewBag.Deductionpercentage = "";
+                ViewBag.heading = "Add Salary Deduction ";
+                ViewBag.btnText = "SAVE";
+                if (iId != null && iId != 0)
+                {
+                    var data = _context.Salarydeductionmasters.Find(iId);
+                    if (data != null)
+                    {
+                        ViewBag.id = data.Id;
+                        ViewBag.Deductiontype = data.Deductiontype;
+                        ViewBag.Deductionpercentage = data.Deductionpercentage;
+                        ViewBag.btnText = "UPDATE";
+                        ViewBag.heading = "Update";
+
+                    }
+                }
+
+                return View(events);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> salarydeduction(Salarydeductionmaster model)
+        {
+            try
+            {
+
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                int vendorid = (int)adminlogin.Vendorid;
+
+                bool check = await _ICrmrpo.salarydeduction(model, vendorid);
+                if (check)
+                {
+                    if (model.Id == 0)
+                    {
+                        TempData["msg"] = "ok";
+                        return RedirectToAction("salarydeduction");
+                    }
+                    else
+                    {
+                        TempData["msg"] = "updok";
+                        return RedirectToAction("salarydeduction");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("salarydeduction");
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        public async Task<IActionResult> Deletesalarydeduction(int id)
+        {
+            try
+            {
+                var dlt = _context.Salarydeductionmasters.Find(id);
+                _context.Remove(dlt);
+                _context.SaveChanges();
+                TempData["msg"] = "dltok";
+                return RedirectToAction("salarydeduction");
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetSalaryDeductions(decimal annualSalary)
+        {
+            try
+            {
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                int vendorid = (int)adminlogin.Vendorid;
+
+                var deductions = await _context.Salarydeductionmasters
+                    .Where(e => e.Vendorid == vendorid)
+                    .Select(e => new
+                    {
+                        e.Deductiontype,
+                        e.Deductionpercentage
+                    })
+                    .ToListAsync();
+                var calculatedDeductions = deductions.Select(d => new
+                {
+                    d.Deductiontype,
+                    d.Deductionpercentage,
+                    CalculatedAmount = Math.Round((annualSalary * (d.Deductionpercentage ?? 0) / 100) / 12, 2) 
+                });
+
+                return Json(calculatedDeductions);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
     }

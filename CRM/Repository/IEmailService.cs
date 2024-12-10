@@ -16,5 +16,7 @@ namespace CRM.Repository
         Task SendInvoicePdfEmail(string toEmail, string body, byte[] filecontent, string filename, string mimetype);
         Task SendEmpLeaveApprovalEmailAsync(string ToEmpEmail, string FirstName, string MiddleName, string LastName, string Subject, string emailBody);
         Task SendMeetEmailAsync(string ToEmpEmail, string FirstName, string MiddleName, string LastName, string emailBody);
+        Task CustomerWelcomeEmail(string toEmail, string CompanyName);
+
     }
 }

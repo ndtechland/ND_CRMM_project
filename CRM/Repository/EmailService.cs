@@ -21,6 +21,7 @@ using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.TeamFoundation.SourceControl.WebApi.Legacy;
 using DocumentFormat.OpenXml.Vml;
 using DocumentFormat.OpenXml.Spreadsheet;
+using CRM.Controllers;
 
 
 namespace CRM.Repository
@@ -80,6 +81,7 @@ namespace CRM.Repository
                 throw ex;
             }
         }
+        //Emp
         public async Task SendEmailCred(EmpMultiform model, string password, int? UserId)
         {
             try
@@ -127,7 +129,7 @@ namespace CRM.Repository
                 throw ex;
             }
         }
-
+        //VendorRegistration
         public async Task SendEmailCredentials(string toEmail, string CompanyName, string username, string password)
         {
             var emailMessage = new MimeMessage();
@@ -217,7 +219,7 @@ namespace CRM.Repository
             }
         }
 
-        //new
+        //CustomerInvoice
         public async Task SendInvoicePdfEmail(string toEmail, string body, byte[] filecontent, string filename, string mimetype)
         {
             try
@@ -323,6 +325,47 @@ namespace CRM.Repository
                 }
             }
         }
+        public async Task CustomerWelcomeEmail(string toEmail, string CompanyName)
+        {
+            var emailMessage = new MimeMessage();
+
+            emailMessage.From.Add(new MailboxAddress("N D Techland Private Limited", "aastrolense@gmail.com"));
+            emailMessage.To.Add(new MailboxAddress("", toEmail));
+            emailMessage.Subject = "Welcome to N D Connect!";
+
+            emailMessage.Body = new TextPart("html")
+            {
+                Text = $@"
+<p>Dear {CompanyName},</p>
+<p>Welcome to N D Connect!</p>
+<p>We’re thrilled to have you on board. At N D Connect, we’re committed to helping you streamline your operations and achieve your business goals. Our platform provides comprehensive solutions, from customer management and invoicing to employee tracking and more.</p>
+
+<p>Thank you for choosing N D Connect. We look forward to working with you and supporting your success.</p>
+<p>Best regards,</p>
+<p>N D Techland Private Limited<br />
+Phone: 0120-4354103<br />
+<a href='https://www.ndtechland.com'>www.ndtechland.com</a></p>"
+            };
+
+            using (var client = new SmtpClient())
+            {
+                try
+                {
+                    // Connect to your SMTP server
+                    await client.ConnectAsync("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
+                    await client.AuthenticateAsync("aastrolense@gmail.com", "efpbsimjkzxeoxnv");
+
+                    await client.SendAsync(emailMessage);
+                }
+                finally
+                {
+                    await client.DisconnectAsync(true);
+                    client.Dispose();
+                }
+            }
+        }
+
+
     }
 
 }

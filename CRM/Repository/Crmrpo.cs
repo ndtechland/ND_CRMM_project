@@ -143,7 +143,7 @@ namespace CRM.Repository
                     //parameters.Add("@SCGST", model.Scgst);
                     //parameters.Add("@CGST", model.Cgst);
                     //parameters.Add("@IGST", model.Igst);
-                    parameters.Add("@IsSameAddress", model.IsSameAddress);
+                    parameters.Add("@IsSameAddress", model.IsSameAddress == null ? false : model.IsSameAddress);
                     parameters.Add("@CustomerId", dbType: DbType.Int32, direction: ParameterDirection.Output);
 
                     await connection.ExecuteAsync("CustomerRegistration", parameters, commandType: CommandType.StoredProcedure);
@@ -247,7 +247,8 @@ namespace CRM.Repository
                 cmd.Parameters.AddWithValue("@amount", model.Amount);
                 cmd.Parameters.AddWithValue("@tdspercentage", model.Tdspercentage);
                 cmd.Parameters.AddWithValue("@conveyanceallowance", model.Conveyanceallowance);
-                cmd.Parameters.AddWithValue("@FixedAllowance", model.FixedAllowance);
+                cmd.Parameters.AddWithValue("@Medical", model.Medical);
+                cmd.Parameters.AddWithValue("@VariablePay", model.VariablePay);
 
                 // Personal detail
                 cmd.Parameters.AddWithValue("@Personal_Email_Address", model.PersonalEmailAddress);
@@ -534,139 +535,100 @@ namespace CRM.Repository
             return result;
         }
 
-
-        public async Task<List<salarydetail>> salarydetail(int Userid)
+        public async Task<List<salarydetail>> salarydetail(int userId)
         {
-            List<salarydetail> emp = new List<salarydetail>();
             try
             {
-                SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
-                SqlCommand cmd = new SqlCommand("sp_SalaryDetail", con);
-                cmd.Parameters.Add(new SqlParameter("@id", SqlDbType.Int) { Value = Userid });
-
-                cmd.CommandType = CommandType.StoredProcedure;
-                con.Open();
-
-                // Execute the stored procedure and read the result
-                SqlDataReader rdr = await cmd.ExecuteReaderAsync();
-                while (await rdr.ReadAsync())
+                using (var connection = new SqlConnection(_context.Database.GetConnectionString()))
                 {
-                    var emps = new salarydetail()
-                    {
-                        Id = Convert.ToInt32(rdr["ID"]),
-                        FirstName = rdr["FirstName"] == DBNull.Value ? null : Convert.ToString(rdr["FirstName"]),
-                        EmployeeId = rdr["EmployeeId"] == DBNull.Value ? null : Convert.ToString(rdr["EmployeeId"]),
-                        MonthlyCtc = rdr["MonthlyCTC"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["MonthlyCTC"]),
-                        CustomerID = rdr["Vendorid"] == DBNull.Value ? 0 : Convert.ToInt64(rdr["Vendorid"]),
-                        FatherName = rdr["FatherName"] == DBNull.Value ? null : Convert.ToString(rdr["FatherName"]),
-                        Incentive = rdr["Incentive"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["Incentive"]),
-                    };
+                    await connection.OpenAsync();
+                    var result = await connection.QueryAsync<salarydetail>(
+                        "sp_SalaryDetail",
+                        new { id = userId },
+                        commandType: CommandType.StoredProcedure);
 
-                    emp.Add(emps);
+                    return result.ToList();
                 }
-                return emp;
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
-
-        public async Task<List<GenerateSalary>> GenerateSalary(int Month, int year, int Userid, string EmployeeId)
+        public async Task<List<GenerateSalary>> GenerateSalary(int userId)
         {
             try
             {
-                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                var adminLogin = await _context.AdminLogins
+                    .Where(x => x.Id == userId)
+                    .FirstOrDefaultAsync();
 
-                SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
-                SqlCommand cmd = new SqlCommand("GetGenerateSalary", con);
-                cmd.Parameters.Add(new SqlParameter("@id", SqlDbType.Int) { Value = Convert.ToInt32(adminlogin.Vendorid) });
-                cmd.Parameters.Add(new SqlParameter("@Month", SqlDbType.Int) { Value = Convert.ToInt32(Month) });
-                cmd.Parameters.Add(new SqlParameter("@year", SqlDbType.Int) { Value = Convert.ToInt32(year) });
-                cmd.Parameters.Add(new SqlParameter("@EmployeeId", SqlDbType.VarChar) { Value = EmployeeId });
-                cmd.CommandType = CommandType.StoredProcedure;
-                con.Open();
-                SqlDataReader rdr = cmd.ExecuteReader();
-                List<GenerateSalary> emp = new List<GenerateSalary>();
-                while (rdr.Read())
+                if (adminLogin == null)
+                    throw new Exception("Admin login not found.");
+
+                var vendorId = adminLogin.Vendorid;
+
+                using (var connection = new SqlConnection(_context.Database.GetConnectionString()))
                 {
-                    var emps = new GenerateSalary()
-                    {
-                        Id = Convert.ToInt32(rdr["id"]),
-                        EmployeeId = Convert.ToString(rdr["Employee_ID"]),
-                        EmployeeName = Convert.ToString(rdr["First_Name"]),
-                        MonthlyGrossPay = Convert.ToDecimal(rdr["MonthlyGrossPay"]),
-                        MonthlyCtc = Convert.ToDecimal(rdr["MonthlyCTC"]),
-                        SalarySlip = Convert.ToString(rdr["SalarySlip"])
-                    };
+                    var parameters = new { id = vendorId };
+                    var query = "GetGenerateSalary";
 
-                    emp.Add(emps);
+                    var result = await connection.QueryAsync<GenerateSalary>(
+                        query,
+                        parameters,
+                        commandType: CommandType.StoredProcedure);
+
+                    return result.ToList();
                 }
-                return emp;
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("An error occurred while generating the salary.", ex);
             }
-
         }
         public async Task<int> Employer(EmployeerModelEPF model, int AdminLoginId)
         {
-            var existingActiveRecords = _context.EmployeerEpfs.Where(e => e.IsActive && e.DeductionCycle == model.Deduction_Cycle).ToList();
+            if (model == null)
+                throw new ArgumentNullException(nameof(model));
 
-            if (existingActiveRecords.Count > 0)
-            {
-                foreach (var record in existingActiveRecords)
-                {
-                    record.IsActive = false;
-                }
-
-                _context.SaveChanges();
-            }
-            if (model.EsicEmployer_Contribution_Rate == null && model.EsicEPF_Number == null)
-            {
-                var parameter = new List<SqlParameter>
+            var parameters = new List<SqlParameter>
     {
-        new SqlParameter("@EPF_Number", model.EPF_Number),
-        new SqlParameter("@Deduction_Cycle", model.Deduction_Cycle),
-        new SqlParameter("@Employer_Contribution_Rate", model.Employer_Contribution_Rate),
+        new SqlParameter("@Id", model.Id),
+        new SqlParameter("@Deduction_Cycle", model.Deduction_Cycle ?? (object)DBNull.Value),
         new SqlParameter("@AdminLoginId", AdminLoginId)
     };
 
-                var result = await Task.Run(() => _context.Database
-                    .ExecuteSqlRawAsync(@"exec USP_Employeer_EPF  @EPF_Number, @Deduction_Cycle, @Employer_Contribution_Rate,@AdminLoginId", parameter.ToArray()));
-
-                return result;
-            }
-            else if (model.Employer_Contribution_Rate == null && model.EPF_Number == null)
+            if (model.Deduction_Cycle == "ESIC")
             {
-                var parameter = new List<SqlParameter>
-    {
-        new SqlParameter("@EPF_Number", model.EsicEPF_Number),
-        new SqlParameter("@Deduction_Cycle", model.Deduction_Cycle),
-        new SqlParameter("@Employer_Contribution_Rate", model.EsicEmployer_Contribution_Rate),
-        new SqlParameter("@AdminLoginId", AdminLoginId)
-    };
-
-                var result = await Task.Run(() => _context.Database
-                    .ExecuteSqlRawAsync(@"exec USP_Employeer_EPF  @EPF_Number, @Deduction_Cycle, @Employer_Contribution_Rate,@AdminLoginId", parameter.ToArray()));
-
-                return result;
+                parameters.Add(new SqlParameter("@EPF_Number", model.EsicEPF_Number ?? (object)DBNull.Value));
+                parameters.Add(new SqlParameter("@Employer_Contribution_Rate", model.EsicEmployer_Contribution_Rate ?? (object)DBNull.Value));
             }
-            return 1;
-        }
+            else if (model.Deduction_Cycle == "EPF")
+            {
+                parameters.Add(new SqlParameter("@EPF_Number", model.EPF_Number ?? (object)DBNull.Value));
+                parameters.Add(new SqlParameter("@Employer_Contribution_Rate", model.Employer_Contribution_Rate ?? (object)DBNull.Value));
+            }
+            else
+            {
+                throw new InvalidOperationException("Invalid Deduction Cycle specified.");
+            }
 
-        public async Task<List<EmployeerEpf>> EmployerList(string Deduction_Cycle, int AdminLoginId)
-        {
-            var result = await _context.EmployeerEpfs
-                .FromSqlInterpolated($"EXEC EmployerList {Deduction_Cycle}, {AdminLoginId}")
-                .ToListAsync();
+            var result = await _context.Database.ExecuteSqlRawAsync(
+                "exec USP_Employeer_EPF @Id, @EPF_Number, @Deduction_Cycle, @Employer_Contribution_Rate, @AdminLoginId",
+                parameters.ToArray()
+            );
 
             return result;
         }
 
+        public async Task<List<EmployeerEpf>> EmployerList(int AdminLoginId)
+        {
+            var result = await _context.EmployeerEpfs
+                .FromSqlInterpolated($"EXEC EmployerList {AdminLoginId}")
+                .ToListAsync();
 
-
+            return result;
+        }
         public async Task<Invoice> GenerateInvoice(int ID)
         {
             try
@@ -913,7 +875,7 @@ namespace CRM.Repository
                 //parameters.Add("@SCGST", model.Scgst, DbType.Decimal);
                 //parameters.Add("@CGST", model.Cgst, DbType.Decimal);
                 //parameters.Add("@IGST", model.Igst, DbType.Decimal);
-                parameters.Add("@IsSameAddress", model.IsSameAddress, DbType.Boolean);
+                parameters.Add("@IsSameAddress", model.IsSameAddress == null ? false : model.IsSameAddress, DbType.Boolean);
 
                 var result = await connection.ExecuteAsync(
                     "sp_updateCustomer_Reg",
@@ -1092,25 +1054,6 @@ namespace CRM.Repository
             return _context.EmployeerEpfs.Find(id);
         }
 
-        public async Task<int> updateEmployer(EmployeerEpf model)
-        {
-            var parameter = new List<SqlParameter>();
-            parameter.Add(new SqlParameter("@id", model.Id));
-            parameter.Add(new SqlParameter("@EPF_Number", model.EpfNumber));
-            parameter.Add(new SqlParameter("@Deduction_Cycle", model.DeductionCycle));
-            parameter.Add(new SqlParameter("@Employer_Contribution_Rate", model.EmployerContributionRate));
-
-
-            var result = await Task.Run(() => _context.Database
-           .ExecuteSqlRawAsync(@"exec sp_updateEmployer @id,@EPF_Number,@Deduction_Cycle,@Employer_Contribution_Rate", parameter.ToArray()));
-
-            return result;
-        }
-        //public EmployeerTd tdsDetails(int CustomerId)
-        //{
-        //    return _context.EmployeerTds.Where(x => x.CustomerId == CustomerId).FirstOrDefault();
-        //}
-
         public byte[] ImportToExcelAttendance(List<salarydetail> data)
         {
 
@@ -1259,10 +1202,16 @@ namespace CRM.Repository
         private string GenerateDynamicUsername(string companyName)
         {
             Random rnd = new Random();
+            //string letters = new string(Enumerable.Range(0, 4)
+            //    .Select(_ => (char)rnd.Next('a', 'z' + 1))
+            //    .ToArray());
+            //string numbers = rnd.Next(10, 100).ToString() + rnd.Next(1000, 10000).ToString();
+            //return $"{letters}_{numbers}";
+
             string letters = new string(Enumerable.Range(0, 4)
-                .Select(_ => (char)rnd.Next('a', 'z' + 1))
-                .ToArray());
-            string numbers = rnd.Next(10, 100).ToString() + rnd.Next(1000, 10000).ToString();
+            .Select(_ => (char)rnd.Next('a', 'z' + 1))
+            .ToArray());
+            string numbers = $"{rnd.Next(10, 100)}{rnd.Next(1000, 10000)}";
             return $"{letters}_{numbers}";
         }
 
@@ -1356,52 +1305,27 @@ namespace CRM.Repository
         }
         public VendorDto GetVendorById(int id)
         {
-            VendorDto cs = new VendorDto();
             try
             {
-                DateTime startDate;
-                SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
-                SqlCommand cmd = new SqlCommand("sp_GetVendorById", con);
-                cmd.Parameters.Add(new SqlParameter("@id", SqlDbType.Int) { Value = Convert.ToInt32(id) });
-                cmd.CommandType = CommandType.StoredProcedure;
-                con.Open();
-                SqlDataReader rdr = cmd.ExecuteReader();
-                while (rdr.Read())
+                using (var con = new SqlConnection(_context.Database.GetConnectionString()))
                 {
-                    cs = new VendorDto()
-                    {
-                        Id = Convert.ToInt32(rdr["id"]),
-                        CompanyName = rdr["Company_Name"] == DBNull.Value ? null : Convert.ToString(rdr["Company_Name"]),
-                        //WorkLocation = rdr["Work_Location"] == DBNull.Value ? new string[0] : ((string)rdr["Work_Location"]).Split(','),
-                        CityId = rdr["CityId"] == DBNull.Value ? '0' : Convert.ToInt32(rdr["CityId"]),
-                        MobileNumber = rdr["Mobile_number"] == DBNull.Value ? null : Convert.ToString(rdr["Mobile_number"]),
-                        AlternateNumber = (rdr["Alternate_number"] == DBNull.Value ? null : Convert.ToString(rdr["Alternate_number"])),
-                        Email = rdr["Email"] == DBNull.Value ? null : Convert.ToString(rdr["Email"]),
-                        GstNumber = rdr["GST_Number"] == DBNull.Value ? null : Convert.ToString(rdr["GST_Number"]),
-                        BillingAddress = rdr["Billing_Address"] == DBNull.Value ? null : Convert.ToString(rdr["Billing_Address"]),
-                        ProductDetails = rdr["ProductDetails"] == DBNull.Value ? null : Convert.ToString(rdr["ProductDetails"]),
-                        StartDate = (DateTime)(rdr["Start_date"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(rdr["Start_date"])),
-                        RenewDate = (DateTime)(rdr["Renew_Date"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(rdr["Renew_Date"])),
-                        State = rdr["State"] == DBNull.Value ? null : Convert.ToString(rdr["State"]),
-                        BillingStateId = rdr["BillingStateId"] == DBNull.Value ? (int?)null : Convert.ToInt32(rdr["BillingStateId"]),
-                        BillingCityId = rdr["BillingCityId"] == DBNull.Value ? (int?)null : Convert.ToInt32(rdr["BillingCityId"]),
-                        IsSameAddress = rdr["IsSameAddress"] == DBNull.Value ? null : Convert.ToBoolean(rdr["IsSameAddress"]),
-                        StateId = rdr["stateId"] == DBNull.Value ? (int?)null : Convert.ToInt32(rdr["stateId"]),
-                        Location = rdr["Billing_Address"] == DBNull.Value ? null : Convert.ToString(rdr["Location"]),
-                        Renewprice = rdr["Renewprice"] == DBNull.Value ? null : Convert.ToString(rdr["Renewprice"]),
-                        productprice = rdr["productprice"] == DBNull.Value ? null : Convert.ToString(rdr["productprice"]),
-                        NoOfRenewMonth = rdr["NoOfRenewMonth"] == DBNull.Value ? (int?)null : Convert.ToInt32(rdr["NoOfRenewMonth"]),
+                    const string query = "sp_GetVendorById";
+                    var vendor = con.Query<VendorDto>(
+                        query,
+                        new { id },
+                        commandType: CommandType.StoredProcedure
+                    ).FirstOrDefault();
 
-                    };
+                    return vendor;
                 }
-                return cs;
             }
             catch (Exception ex)
             {
                 throw ex;
             }
         }
-        public async Task<VendorRegResultDTO> Vendorreg(VendorDto model)
+
+        public async Task<VendorRegResultDTO> Vendorreg(VendorDto model, string InvoiceNo)
         {
             using (var connection = new SqlConnection(Configuration.GetConnectionString("db1"))) // Use your actual connection string here
             {
@@ -1433,6 +1357,8 @@ namespace CRM.Repository
                 parameters.Add("@Scgst", model.Scgst);
                 parameters.Add("@Igst", model.Igst);
                 parameters.Add("@PricingPlanid", model.PricingPlanid);
+                parameters.Add("@InvoiceNumber", InvoiceNo);
+                parameters.Add("@duedate", model.Duedate);
                 parameters.Add("@CustomerId", dbType: DbType.Int32, direction: ParameterDirection.Output);
                 await connection.ExecuteAsync("VendorRegistration", parameters, commandType: CommandType.StoredProcedure);
                 int newCustomerId = parameters.Get<int>("@CustomerId");
@@ -1491,7 +1417,7 @@ namespace CRM.Repository
                 parameters.Add("@Scgst", model.Scgst);
                 parameters.Add("@Igst", model.Igst);
                 parameters.Add("@PricingPlanid", model.PricingPlanid);
-
+                parameters.Add("@duedate", model.Duedate);
                 var result = await connection.ExecuteAsync(
                     "sp_updateVendor_Reg",
                     parameters,
@@ -2101,8 +2027,6 @@ namespace CRM.Repository
                 var existing = await _context.EmpExperienceletters.FindAsync(model.Id);
                 if (existing != null)
                 {
-                    existing.CurrDesignationId = model.CurrDesignationId;
-                    existing.DesignationId = model.CurrDesignationId;
                     existing.StartDate = model.StartDate;
                     existing.EndDate = model.EndDate;
                     existing.HrDesignation = model.HrDesignation;
@@ -2125,8 +2049,6 @@ namespace CRM.Repository
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 EmpExperienceletter of = new EmpExperienceletter()
                 {
-                    CurrDesignationId = model.CurrDesignationId,
-                    DesignationId = model.DesignationId,
                     StartDate = model.StartDate,
                     EndDate = model.EndDate,
                     Vendorid = adminlogin.Vendorid,
@@ -2175,22 +2097,24 @@ namespace CRM.Repository
                         .Where(ci => ci.DueAmount.HasValue)
                         .Select(ci => ci.DueAmount.Value)
                         .FirstOrDefault();
-                    int paymentstatus = (int)customerExistingData
-                    .Select(ci => ci.Paymentstatus)
-                      .FirstOrDefault();
 
-                    if (product.Id == 0)
+                    int paymentstatus = customerExistingData
+                        .Select(ci => ci.Paymentstatus)
+                        .FirstOrDefault() ?? 2; 
+
+                    if (product.Id == 0) 
                     {
-                        decimal newdueAmount = 0;
+                        decimal newDueAmount = 0;
 
                         if (totalDueAmount != 0)
                         {
-                            newdueAmount = (decimal)(totalDueAmount +
-                                                     product.ProductPrice +
-                                                     ((product.ProductPrice * (product.IGST ?? 0)) / 100) +
-                                                     ((product.ProductPrice * (product.SGST ?? 0)) / 100) +
-                                                     ((product.ProductPrice * (product.CGST ?? 0)) / 100));
+                            newDueAmount = (decimal)(totalDueAmount +
+                                           product.ProductPrice +
+                                           ((product.ProductPrice * (product.IGST ?? 0m)) / 100) +
+                                           ((product.ProductPrice * (product.SGST ?? 0m)) / 100) +
+                                           ((product.ProductPrice * (product.CGST ?? 0m)) / 100));
                         }
+
                         var newInvoice = new CustomerInvoice()
                         {
                             VendorId = vendorid,
@@ -2208,20 +2132,21 @@ namespace CRM.Repository
                             Cgst = product.CGST,
                             InvoiceNumber = string.IsNullOrEmpty(AlreadyInvoiceNo) ? InvoiceNo : AlreadyInvoiceNo,
                             CreatedDate = DateTime.Now,
-                            Paymentstatus = customerExistingData?.FirstOrDefault(ci => ci.CustomerId == product.CustomerId)?.Paymentstatus ?? 2,
-                            PaidAmount = customerExistingData.FirstOrDefault(ci => ci.PaidAmount.HasValue)?.PaidAmount ?? 0,
-                            DueAmount = newdueAmount,
+                            Paymentstatus = paymentstatus, 
+                            PaidAmount = customerExistingData
+                                .FirstOrDefault(ci => ci.PaidAmount.HasValue)?.PaidAmount ?? 0, 
+                            DueAmount = newDueAmount,
                             Dueamountdate = product.Dueamountdate,
                         };
+
                         _context.Add(newInvoice);
 
                         foreach (var item in customerExistingData)
                         {
-                            item.DueAmount = newdueAmount;
+                            item.DueAmount = newDueAmount;
                         }
                     }
-
-                    else
+                    else 
                     {
                         var data = allExistingData.FirstOrDefault(ci => ci.Id == product.Id);
                         if (data != null)
@@ -2633,7 +2558,7 @@ namespace CRM.Repository
                 var adminLogin = await _context.AdminLogins.FindAsync(userId);
 
                 var empList = await _context.EmployeeRegistrations
-                    .Where(x => x.Vendorid == userId)
+                    .Where(x => x.Vendorid == userId && x.IsDeleted == false)
                     .ToListAsync();
 
                 if (empList == null || empList.Count == 0)
@@ -2701,51 +2626,20 @@ namespace CRM.Repository
 
                     var domainmodel = new EmployeeEpfPayrollInfo()
                     {
-                        Epfnumber = model.Epfnumber,
                         Epfpercentage = model.Epfpercentage,
-                        EmployeeId = model.EmployeeId,
                         Vendorid = VendorId,
                         CreatedDate = DateTime.Now,
-                        EffectiveDate = DateTime.Now,
-                        UpdatedDate = DateTime.Now
+
                     };
                     await _context.AddAsync(domainmodel);
-                    if (model.EmployeeId != null && model.EmployeeId.Length > 0)
-                    {
-                        var employee = await _context.EmployeeSalaryDetails.Where(e => e.EmployeeId == model.EmployeeId).FirstOrDefaultAsync();
-                        if (employee != null)
-                        {
-                            var Epfamount = employee.Gross * model.Epfpercentage / 100;
-                            var totalGross = employee.Gross - Epfamount;
-                            employee.Gross = totalGross;
-                            employee.Epf = (decimal)Epfamount;
-
-                        }
-
-                    }
                     await _context.SaveChangesAsync();
                     return true;
                 }
                 else
                 {
                     var existdata = _context.EmployeeEpfPayrollInfos.Find(model.Id);
-                    existdata.Epfnumber = model.Epfnumber;
                     existdata.Epfpercentage = model.Epfpercentage;
-                    existdata.EmployeeId = model.EmployeeId;
-                    existdata.UpdatedDate = DateTime.Now;
-                    if (model.EmployeeId != null && model.EmployeeId.Length > 0)
-                    {
-                        var employee = await _context.EmployeeSalaryDetails.Where(e => e.EmployeeId == model.EmployeeId).FirstOrDefaultAsync();
-                        if (employee != null)
-                        {
-                            var Epfamount = employee.Gross * model.Epfpercentage / 100;
-                            var totalGross = employee.Gross - Epfamount;
-                            employee.Gross = totalGross;
-                            employee.Epf = (decimal)Epfamount;
 
-                        }
-
-                    }
                     await _context.SaveChangesAsync();
                     return true;
                 }
@@ -2766,48 +2660,20 @@ namespace CRM.Repository
                 {
                     var domainmodel = new EmployeeEsicPayrollInfo()
                     {
-                        Esicnumber = model.Esicnumber,
                         Esicpercentage = model.Esicpercentage,
-                        EmployeeId = model.EmployeeId,
+                        EsicAmount = model.EsicAmount,
                         Vendorid = VendorId,
                         CreatedDate = DateTime.Now
                     };
                     await _context.AddAsync(domainmodel);
-                    if (model.EmployeeId != null && model.EmployeeId.Length > 0)
-                    {
-                        var employee = await _context.EmployeeSalaryDetails.Where(e => e.EmployeeId == model.EmployeeId).FirstOrDefaultAsync();
-                        if (employee != null)
-                        {
-                            var Esiamount = employee.Gross * model.Esicpercentage / 100;
-                            var totalGross = employee.Gross - Esiamount;
-                            employee.Gross = totalGross;
-                            employee.Esic = (decimal)Esiamount;
-
-                        }
-
-                    }
                     await _context.SaveChangesAsync();
                     return true;
                 }
                 else
                 {
                     var existdata = _context.EmployeeEsicPayrollInfos.Find(model.Id);
-                    existdata.Esicnumber = model.Esicnumber;
                     existdata.Esicpercentage = model.Esicpercentage;
-                    existdata.EmployeeId = model.EmployeeId;
-                    if (model.EmployeeId != null && model.EmployeeId.Length > 0)
-                    {
-                        var employee = await _context.EmployeeSalaryDetails.Where(e => e.EmployeeId == model.EmployeeId).FirstOrDefaultAsync();
-                        if (employee != null)
-                        {
-                            var Esiamount = employee.Gross * model.Esicpercentage / 100;
-                            var totalGross = employee.Gross - Esiamount;
-                            employee.Gross = totalGross;
-                            employee.Esic = (decimal)Esiamount;
-
-                        }
-
-                    }
+                    existdata.EsicAmount = model.EsicAmount;
                     await _context.SaveChangesAsync();
                     return true;
                 }
@@ -3755,7 +3621,7 @@ namespace CRM.Repository
                 var adminLogin = await _context.AdminLogins.FindAsync(userId);
 
                 var empList = await _context.EmployeeRegistrations
-                    .Where(x => x.Vendorid == userId)
+                    .Where(x => x.Vendorid == userId && x.IsDeleted == false)
                     .ToListAsync();
 
                 if (empList == null || empList.Count == 0)
@@ -3834,6 +3700,90 @@ namespace CRM.Repository
                     _context.SaveChanges();
                     return true;
                 }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        public async Task<EmpRelievingletter> GetRelievingletterbyid(int? id)
+        {
+            try
+            {
+                var query = await _context.EmpRelievingletters.Where(x => x.Id == id).FirstOrDefaultAsync();
+                return query;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<bool> updateRelievingletterdetail(EmpRelievingletter model)
+        {
+            try
+            {
+                var existing = await _context.EmpRelievingletters.FindAsync(model.Id);
+                if (existing != null)
+                {
+                    existing.ResignationDate = model.ResignationDate;
+                    existing.LastDateofEmployment = model.LastDateofEmployment;
+                    existing.EmployeeId = model.EmployeeId;
+                    await _context.SaveChangesAsync();
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<int> AddRelievingletterdetail(EmpRelievingletter model, int Userid)
+        {
+            try
+            {
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                EmpRelievingletter of = new EmpRelievingletter()
+                {
+                    ResignationDate = model.ResignationDate,
+                    LastDateofEmployment = model.LastDateofEmployment,
+                    Vendorid = adminlogin.Vendorid,
+                    EmployeeId = model.EmployeeId,
+                };
+                _context.EmpRelievingletters.Add(of);
+                _context.SaveChanges();
+                return 1;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<bool> salarydeduction(Salarydeductionmaster model, int VendorId)
+        {
+            try
+            {
+                if (model.Id == 0)
+                {
+                    var data = new Salarydeductionmaster()
+                    {
+                        Vendorid = VendorId,
+                        Deductiontype = model.Deductiontype,
+                        Deductionpercentage = model.Deductionpercentage,
+                    };
+                    _context.Add(data);
+                    _context.SaveChanges();
+                    return true;
+                }
+                else
+                {
+                    var existdata = _context.Salarydeductionmasters.Find(model.Id);
+                    existdata.Deductiontype = model.Deductiontype;
+                    existdata.Deductionpercentage = model.Deductionpercentage;
+                }
+                _context.SaveChanges();
+                return true;
             }
             catch (Exception)
             {

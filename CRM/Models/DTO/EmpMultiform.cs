@@ -37,7 +37,11 @@ namespace CRM.Models.DTO
         public decimal? SpecialAllowance { get; set; }
         public decimal? Gross { get; set; }
         public decimal? Conveyanceallowance { get; set; }
-        public decimal? FixedAllowance { get; set; }
+        //public decimal? FixedAllowance { get; set; }
+        public decimal? Medical { get; set; }
+        public decimal? VariablePay { get; set; }
+        //public decimal? EmployerContribution { get; set; }
+
 
         // Personal Info
         public string? PersonalEmailAddress { get; set; }

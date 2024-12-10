@@ -1,4 +1,6 @@
-﻿namespace CRM.Models.DTO
+﻿using CRM.Models.Crm;
+
+namespace CRM.Models.DTO
 {
     public class EmployeerModelEPF
     {
@@ -10,6 +12,7 @@
         public string? EsicEPF_Number { get; set; }
         public string? EsicEmployer_Contribution_Rate { get; set; }
         public DateTime? CreateDate { get; set; }
-        public bool IsActive { get; set; }       
-    }
+        public bool IsActive { get; set; }
+        public List<EmployeerEpf> EmployeerEpflist { get; set; }
+}
 }

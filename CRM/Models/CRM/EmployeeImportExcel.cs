@@ -68,5 +68,7 @@ namespace CRM.Models.Crm
         public string? OfficeshiftTypeid { get; set; }
         public string? Shifttype { get; set; }
         public long? ShiftTypeid { get; set; }
+        public decimal? Conveyanceallowance { get; set; }
+        public decimal? FixedAllowance { get; set; }
     }
 }

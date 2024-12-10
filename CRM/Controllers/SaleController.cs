@@ -105,103 +105,6 @@ namespace CRM.Controllers
                 throw;
             }
         }
-
-        //[HttpPost]
-        //public async Task<IActionResult> Invoice(List<ProductDetail> model)
-        //{
-        //    try
-        //    {
-        //        int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
-        //        var adminlogin = await _context.AdminLogins
-        //                                       .Where(x => x.Id == Userid)
-        //                                       .FirstOrDefaultAsync();
-        //        bool data;
-        //        if (adminlogin == null)
-        //        {
-        //            TempData["Message"] = "Admin not found.";
-        //            return View(model);
-        //        }
-
-        //        string InvoiceNo = model.FirstOrDefault()?.InvoiceNumber; 
-
-        //        if (string.IsNullOrEmpty(InvoiceNo))
-        //        {
-        //            InvoiceNo = GenerateInvoiceNumber();
-        //        }
-
-        //        var existingInvoice = await _context.CustomerInvoices
-        //                                             .Where(x => x.InvoiceNumber == InvoiceNo )
-        //                                             .FirstOrDefaultAsync();
-
-        //        if (existingInvoice != null)
-        //        {
-        //             data = await _ICrmrpo.CustomerInvoice(model, InvoiceNo, (int)adminlogin.Vendorid);
-
-        //            if (data)
-        //            {
-        //                foreach (var product in model)
-        //                {
-        //                    if (product.Id == 0)
-        //                    {
-        //                        TempData["Message"] = "ok";
-        //                    }
-        //                    else
-        //                    {
-        //                        TempData["Message"] = "updok"; ;
-        //                    }
-        //                }
-
-        //                var model1 = new
-        //                {
-        //                    path = "/Sale/Invoice"
-        //                };
-        //                return Ok(model1);
-        //            }
-        //            else
-        //            {
-        //                TempData["Message"] = "Invoice addition failed.";
-        //                return View(model);
-        //            }
-        //        }
-
-        //        else
-        //        {
-        //            data = await _ICrmrpo.CustomerInvoice(model, InvoiceNo, (int)adminlogin.Vendorid);
-
-        //            if (data)
-        //            {
-        //                foreach (var product in model)
-        //                {
-        //                    if (product.Id == 0)
-        //                    {
-        //                        TempData["Message"] = "ok";
-        //                    }
-        //                    else
-        //                    {
-        //                        TempData["Message"] = "updok"; ;
-        //                    }
-        //                }
-
-        //                var model1 = new
-        //                {
-        //                    path = "/Sale/Invoice"
-        //                };
-        //                return Ok(model1);
-        //            }
-        //            else
-        //            {
-        //                TempData["Message"] = "Invoice addition failed.";
-        //                return View(model);
-        //            }
-        //        }
-
-        //    }
-        //    catch (Exception Ex)
-        //    {
-        //        TempData["Message"] = "An error occurred while processing the invoice.";
-        //        return View(model);
-        //    }
-        //}
         [HttpPost]
         public async Task<IActionResult> Invoice(List<ProductDetail> model)
         {
@@ -246,7 +149,7 @@ namespace CRM.Controllers
                         }
                         else
                         {
-                            TempData["Message"] = "updok"; 
+                            TempData["Message"] = "updok";
                         }
                     }
 
@@ -561,7 +464,7 @@ namespace CRM.Controllers
                     }
 
                     string Email_body = $"Hello {result.CompanyName}, please find your attached invoice.";
-                    await _IEmailService.SendInvoicePdfEmail(result.Email, Email_body, pdf, "Product.pdf", "application/pdf");
+                    await _IEmailService.SendInvoicePdfEmail(result.Email, Email_body, pdf, result.ProductName, "application/pdf");
                     TempData["Message"] = "Invoice sent successfully";
                     return RedirectToAction("CustomerInvoiceList");
                 }
@@ -609,7 +512,7 @@ namespace CRM.Controllers
                         }
                         else
                         {
-                           // TempData["Message"] = "No matching invoices found for deletion.";
+                            // TempData["Message"] = "No matching invoices found for deletion.";
                             return new JsonResult(new { success = false, message = "No matching invoices found for deletion.", redirectUrl = "/Sale/Invoice?InvoiceNumber=" + result.InvoiceNumber });
                         }
                     }

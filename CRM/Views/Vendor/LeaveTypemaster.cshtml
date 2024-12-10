@@ -153,7 +153,7 @@
                                                             @Html.DisplayFor(modelItem => item.Leavetype1)
                                                         </td>
                                                         <td>
-                                                            @item.Createddate
+                                                            @item.Createddate?.ToString("dd/MM/yyyy")
                                                         </td>
                                                         <td>
                                                             <div>

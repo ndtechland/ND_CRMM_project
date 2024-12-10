@@ -1,8 +1,9 @@
-﻿@model IEnumerable<CRM.Models.Crm.EmployeeEsicPayrollInfo>
+﻿@model IEnumerable<CRM.Models.Crm.Salarydeductionmaster>
 @{
-    ViewData["Title"] = "EmployeeEsic";
+    ViewData["Title"] = "EmployeeEpf";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
+
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -26,10 +27,10 @@
         padding: 24px 0.75rem !important;
     }
 </style>
-
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         var message = "@TempData["Message"]";
+
         if (message == "ok" || message == "dltok" || message == "updok") {
             if (message) {
                 let alertText;
@@ -37,10 +38,11 @@
                 if (message == "dltok") {
                     alertText = "Deleted successfully.";
                 } else if (message == "updok") {
-                    alertText = "ESIC updated successfully.";
+                    alertText = "Updated successfully.";
                 } else {
-                    alertText = "ESIC added successfully.";
+                    alertText = "Added successfully.";
                 }
+
                 Swal.fire({
                     title: 'Success',
                     text: alertText,
@@ -49,7 +51,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         setTimeout(function () {
-                            window.location.href = '@Url.Action("EmployeeEsic", "Vendor")';
+                            window.location.href = '@Url.Action("salarydeduction", "Vendor")';
                         }, 1000);
                     }
                 });
@@ -65,13 +67,12 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         setTimeout(function () {
-                            window.location.href = '@Url.Action("EmployeeEsic", "Vendor")';
+                            window.location.href = '@Url.Action("salarydeduction", "Vendor")';
                         }, 1000);
                     }
                 });
             }
         }
-
     });
 </script>
 <div class="page-wrapper">
@@ -95,8 +96,8 @@
                         <div class="col-lg-6">
                             <ol class="breadcrumb pull-right">
                                 <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
-                                <li class="breadcrumb-item">Employee </li>
-                                <li class="breadcrumb-item active">Employee ESIC</li>
+                                <li class="breadcrumb-item">Settings</li>
+                                <li class="breadcrumb-item active">Salarydeduction</li>
                             </ol>
                         </div>
                     </div>
@@ -109,19 +110,27 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-body">
-                                <form method="post" asp-controller="Vendor" asp-action="EmployeeEsic" autocomplete="off" onsubmit="return validateForm()">
+                                <form method="post" asp-controller="Vendor" asp-action="salarydeduction" autocomplete="off" onsubmit="return validateForm()">
                                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                                    <div class="row gx-3 mb-3">
-                                        <input value="@ViewBag.id" name="Id" hidden/>
-                                        <div class="form-group col-md-3">
-                                            <label class="control-label" for="esic">ESIC %</label>
-                                            <input type="text" id="esic" name="ESICPercentage" value="@ViewBag.ESICPercentage" class="form-control" required />
-                                            <span name="EPFPercentage" class="text-danger"></span>
+                                    <div class="row">
+                                        <div class="form-group col-md-6">
+                                            <label class="control-label" for="deductionType">Deduction Type</label>
+                                            <select name="Deductiontype"  id="deductionType" class="form-control" required>
+                                                <option value="">-- Please Select Deduction Type --</option>
+                                                <option value="Basic Salary">Basic Salary</option>
+                                                <option value="HRA">HRA (House Rent Allowance)</option>
+                                                <option value="Special Allowance">Special Allowance</option>
+                                                <option value="Conveyance Allowance">Conveyance Allowance</option>
+                                                <option value="Medical Allowance">Medical Allowance</option>
+                                                <option value="Variable Pay">Variable Pay</option>
+                                            </select>
+                                            <span name="Deductiontype" class="text-danger"></span>
                                         </div>
-                                        <div class="form-group col-md-3">
-                                            <label class="control-label" for="EsicAmount">ESIC Amount</label>
-                                            <input type="text" id="esicAmount" name="EsicAmount" value="@ViewBag.EsicAmount" class="form-control" required />
-                                            <span name="EsicAmount" class="text-danger"></span>
+
+                                        <div class="form-group col-md-6">
+                                            <label class="control-label" for="epf">Deduction Percentage %</label>
+                                            <input type="text" id="epf" name="Deductionpercentage" value="@ViewBag.Deductionpercentage" class="form-control" required />
+                                            <span name="Deductionpercentage" class="text-danger"></span>
                                         </div>
                                     </div>
 
@@ -137,50 +146,44 @@
             </div>
             <div class="container-fluid">
                 <div class="row">
-
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-body">
-                                <div class=" table-responsive">
-                                    <table id="datatable" class="table table-responsive">
+                                <div class="table-responsive">
+                                    <table id="datatable" class="table table-hover">
                                         <thead>
                                             <tr style="background-color: #00baf2;">
                                                 <th nowrap>Sl. No.</th>
                                                 <th nowrap>
-                                                    ESIC
+                                                    Deduction Type
                                                 </th>
                                                 <th nowrap>
-                                                    Esic Amount
+                                                    Deduction Percentage
                                                 </th>
-                                                <th nowrap>
-                                                    Created At
-                                                </th>
-
-                                                <th>Delete</th>
+                                                <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @{
                                                 var count = 0;
-                                                @foreach (var item in Model)
+                                                foreach (var item in Model)
                                                 {
+
                                                     count++;
                                                     <tr class="table-row">
+
                                                         <td>@count</td>
                                                         <td nowrap>
-                                                         @Html.DisplayFor(modelItem => item.Esicpercentage)%
+                                                            @Html.DisplayFor(modelItem => item.Deductiontype)
                                                         </td>
                                                         <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.EsicAmount)
-                                                        </td>
-                                                        <td nowrap>
-                                                            @item.CreatedDate?.ToString("dd/MM/yyyy")
+                                                            @Html.DisplayFor(modelItem => item.Deductionpercentage)%
                                                         </td>
                                                         <td>
                                                             <div>
-                                                                <a href="/Vendor/EmployeeEsic?Id=@item.Id" class="fa fa-edit m-2 font-success"></a>
+                                                                <a href="/Vendor/salarydeduction?Id=@item.Id" class="fa fa-edit m-2 font-success"></a>
 
-                                                                <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteEmpEsic", "Vendor", new { id = item.Id })')" class="fa fa-trash font-danger"></a>
+                                                                <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("Deletesalarydeduction", "Vendor", new { id = item.Id })')" class="fa fa-trash font-danger"></a>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -189,7 +192,6 @@
                                         </tbody>
                                     </table>
                                 </div>
-
                             </div>
                         </div>
                     </div>
@@ -204,8 +206,6 @@
     </div>
 
 </div>
-
-
 <script>
     function confirmDelete(url) {
         var result = confirm("Are you sure you want to delete?");
@@ -215,10 +215,9 @@
     }
 </script>
 
-
 <script>
 
-    $(document).ready(function () {
+     $(document).ready(function () {
 
         $('#datatable').DataTable(
             {
@@ -236,38 +235,9 @@
             }
         );
     });
-</script>
+    var Deductiontype = '@ViewBag.Deductiontype';
+    if (Deductiontype != "") {
+        $("#deductionType").val(Deductiontype);
+    }
 
-
-<script type="text/javascript">
-    $('#empddl').change(function () {
-        var employeeId = $(this).val();
-        if (employeeId != "0") {
-            $.ajax({
-                url: '@Url.Action("CheckEmployeeEsicExists", "Vendor")',
-                type: 'GET',
-                data: { employeeId: employeeId },
-                   success: function (response) {
-                    if (response.exists) {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Warning',
-                            text: response.message,
-                            confirmButtonText: 'OK'
-                        });
-                        $('#empddl').val('0');
-                    }
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    console.error("Error: " + textStatus, errorThrown);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Error checking ESIC record.',
-                        confirmButtonText: 'OK'
-                    });
-                }
-            });
-        }
-    });
 </script>

@@ -11,11 +11,13 @@ namespace CRM.Controllers
     {
         private readonly admin_NDCrMContext _context;
         private readonly ICrmrpo _ICrmrpo;
+        private readonly IEmailService _emailService;
 
-        public CustomerController(ICrmrpo _ICrmrpo, admin_NDCrMContext _context)
+        public CustomerController(ICrmrpo _ICrmrpo, admin_NDCrMContext _context, IEmailService emailService)
         {
             this._context = _context;
             this._ICrmrpo = _ICrmrpo;
+            _emailService = emailService;
         }
         [Route("Customer/Customer")]
         [HttpGet]
@@ -124,6 +126,7 @@ namespace CRM.Controllers
                     if (response > 0)
                     {
                         TempData["Message"] = "ok";
+                        await _emailService.CustomerWelcomeEmail(model.Email, model.CompanyName);
                         return RedirectToAction("Customer", "Customer");
                     }
                     else

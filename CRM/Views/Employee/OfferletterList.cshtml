@@ -21,21 +21,51 @@
     }
 </style>
 <style>
-    #loader {
+    .loader {
+        border: 16px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 16px solid #3498db;
+        width: 120px;
+        height: 120px;
+        animation: spin 2s linear infinite;
         position: fixed;
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
         z-index: 9999;
+        display: none;
     }
 
-    #content {
-        filter: blur(50%); /* Adjust the blur strength as needed */
-        pointer-events: none; /* Disable interactions with the blurred content */
+    @@keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
     }
 
+    /* Overlay style */
+    .overlay {
+        display: none;
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0);
+        z-index: 9998;
+    }
+
+    /* Add blur to content when loader is active */
+    .blurred {
+        filter: blur(1px);
+    }
 </style>
-<div class="page-wrapper">
+<div class="page-wrapper" id="content">
     <div class="page-body-wrapper">
         <div class="page-sidebar">
         </div>
@@ -218,9 +248,8 @@
     </div>
 
 </div>
-<div id="loader" style="display:none;">
-    <img src="~/assets/images/layout-2/logo/loddergif.gif" alt="Loading..." />
-</div>
+<div class="overlay" id="overlay"></div>
+<div class="loader" id="loader"></div>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
     $(document).ready(function () {
@@ -250,11 +279,16 @@
         }
     }
 </script>
+
+
 <script type="text/javascript">
     function OfferletterdownloadPDF(id) {
         var url = '@Url.Action("OfferletterDocPDF", "Employee")' + '?id=' + id;
-        // Show the loader before starting the fetch process
+
+        // Show loader and apply blur
         document.getElementById('loader').style.display = 'block';
+        document.getElementById('overlay').style.display = 'block';
+        document.getElementById('content').classList.add('blurred');
 
         fetch(url, {
             method: 'GET',
@@ -263,42 +297,51 @@
             }
         })
             .then(response => {
-                // Hide the loader once a response is received
-                document.getElementById('loader').style.display = 'none';
-
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
-                window.location.reload();
                 return response.json();
             })
             .then(data => {
+                // Hide the loader and overlay after success or failure
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('overlay').style.display = 'none';
+                document.getElementById('content').classList.remove('blurred');
+
                 if (data.success) {
                     Swal.fire({
                         title: 'Success',
                         text: data.message,
                         icon: 'success',
-                        confirmButtonText: 'OK'
+                        confirmButtonText: 'OK',
+                        allowOutsideClick: false
+                    }).then(() => {
+                        window.location.reload(); // Reload after user confirms
                     });
                 } else {
                     Swal.fire({
                         title: 'Error',
                         text: data.message,
                         icon: 'error',
-                        confirmButtonText: 'OK'
+                        confirmButtonText: 'OK',
+                        allowOutsideClick: false
                     });
                 }
             })
             .catch(error => {
-                // Hide the loader if an error occurs
+                // Hide the loader and overlay on error
                 document.getElementById('loader').style.display = 'none';
+                document.getElementById('overlay').style.display = 'none';
+                document.getElementById('content').classList.remove('blurred');
 
                 Swal.fire({
                     title: 'Error',
                     text: 'An error occurred while processing the request.',
                     icon: 'error',
-                    confirmButtonText: 'OK'
+                    confirmButtonText: 'OK',
+                    allowOutsideClick: false
                 });
             });
     }
+
 </script>
