@@ -37,7 +37,7 @@
 
         @@page {
             size: A4;
-            margin: 5mm;
+            margin: 10mm;
         }
 
         .invoice-container {
@@ -68,7 +68,7 @@
         h1 {
             text-align: center;
             margin: 20px 0;
-            font-size: 24px;
+            font-size: 35px;
             text-transform: uppercase;
         }
 
@@ -162,7 +162,7 @@
 
         .footer {
             clear: both;
-            margin-top: -111px;
+            margin-top: 200px;
             text-align: right;
         }
 
@@ -196,10 +196,10 @@
             <table>
                 <tr>
                     <td>
-                        <strong>Invoice #:</strong> ND-2024/25-1014<br>
+                        <strong>Invoice #:</strong> @Model.InvoiceNumber<br>
                         <strong>Invoice Date:</strong> @fordate <br>
                         <strong>Terms:</strong> Due on Receipt<br>
-                        <strong>Due Date:</strong> @fordate
+                        <strong>Due Date:</strong> @Model.Duedate.ToString("dd-MM-yyyy")
                     </td>
                     <td>
                         <strong>Place of Supply:</strong> Uttar Pradesh (09)

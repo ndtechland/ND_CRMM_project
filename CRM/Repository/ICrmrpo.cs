@@ -36,9 +36,9 @@ namespace CRM.Repository
 
         public Task<List<salarydetail>> salarydetail(int Userid);
 
-        public Task<List<GenerateSalary>> GenerateSalary(int Month, int year, int Userid,string EmployeeId);
+        public Task<List<GenerateSalary>> GenerateSalary(int Userid);
         public Task<int> Employer(EmployeerModelEPF model,int AdminLoginId);
-        public Task<List<EmployeerEpf>> EmployerList(string Deduction_Cycle, int AdminLoginId);
+        public Task<List<EmployeerEpf>> EmployerList(int AdminLoginId);
         public Task<Invoice> GenerateInvoice(int ID);
       
         public DataTable GetEmployDetailById(string EmpId, int Userid);
@@ -59,7 +59,7 @@ namespace CRM.Repository
         public Task<List<EPFReportDTO>> EPFReport(string customerId, int Month, int year, string WorkLocation);
         public Task<List<EPFReportDTO>> ESIReport(string customerId, int Month, int year, string WorkLocation);
         public EmployeerEpf GetEmployer(int id);
-        public Task<int> updateEmployer(EmployeerEpf model);
+      //  public Task<int> updateEmployer(EmployeerModelEPF model);
         //public EmployeerTd tdsDetails(int CustomerId);
         public byte[] ImportToExcelAttendance(List<salarydetail> data);
         public List<State> BindState();
@@ -70,7 +70,7 @@ namespace CRM.Repository
         public Task<int> UpdateChangepassword(ChangePassworddto model, string AddedBy, int id);
         public Task<List<EmployeeImportExcel>> CustomerEmployeeList(int id);
         public VendorDto GetVendorById(int id);
-        public Task<VendorRegResultDTO> Vendorreg(VendorDto model);
+        public Task<VendorRegResultDTO> Vendorreg(VendorDto model,string InvoiceNo);
         public Task<int> updateVendorreg(VendorDto model);
         public Task<List<VendorDto>> VendorList();
         public Task<VendorRegistrationDto> GetVendorProfile(string? id);
@@ -120,6 +120,11 @@ namespace CRM.Repository
         Task<bool> AddAndUpdateLeaveTypemaster(LeaveType model, int VendorId);
         public Task<List<ApprovedwfhApplyList>> GetWfhapplydetailList(int? Userid);
         Task<bool> AddAndUpdateInvoiceChargesmaster(InvoiceChargesmaster model);
+        public Task<EmpRelievingletter> GetRelievingletterbyid(int? id);
+        public Task<bool> updateRelievingletterdetail(EmpRelievingletter model);
+        public Task<int> AddRelievingletterdetail(EmpRelievingletter model, int Userid);
+        Task<bool> salarydeduction(Salarydeductionmaster model, int VendorId);
+
 
     }
 }

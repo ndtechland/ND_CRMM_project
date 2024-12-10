@@ -13,6 +13,7 @@
         public bool? IsDeleted { get; set; }
         public decimal? Incentive { get; set; }
         public decimal? TravellingAllowance { get; set; }
+        public decimal? MonthlyPay { get; set; }
 
     }
 }

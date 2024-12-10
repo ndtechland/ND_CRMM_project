@@ -51,7 +51,7 @@ namespace CRM.Controllers
                 ViewBag.CustomerInvoices = await _context.CustomerInvoices.Where(x => x.VendorId == adminlogin.Vendorid).GroupBy(x => x.InvoiceNumber).CountAsync();
 
                 var emplist = await _context.EmployeeRegistrations
-                            .Where(x => x.Vendorid == adminlogin.Vendorid)
+                            .Where(x => x.Vendorid == adminlogin.Vendorid && x.IsDeleted == false)
                             .ToListAsync();
                 //onBreakList
                 ViewBag.onBreakList = emplist.Count(x => _context.EmployeeCheckIns

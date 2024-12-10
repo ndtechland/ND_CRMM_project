@@ -79,6 +79,9 @@
                                                 <th nowrap>Sl. No.</th>
                                                 <th hidden></th>
                                                 <th nowrap>
+                                                    Invoice Number
+                                                </th>
+                                                <th nowrap>
                                                     Company Name
                                                 </th>
                                                 <th nowrap>
@@ -129,6 +132,8 @@
                                                     <tr class="table-row">
                                                         <td>@count</td>
                                                         <td class="Id" hidden>@item.Id</td>
+                                                        <td nowrap><a href="/Vendor/VendorInvoice?ID=@item.Id">@item.InvoiceNumber</a></td>
+
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.CompanyName)
                                                         </td>

@@ -44,6 +44,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<EmpApplywfh> EmpApplywfhs { get; set; } = null!;
         public virtual DbSet<EmpCheckIn> EmpCheckIns { get; set; } = null!;
         public virtual DbSet<EmpExperienceletter> EmpExperienceletters { get; set; } = null!;
+        public virtual DbSet<EmpRelievingletter> EmpRelievingletters { get; set; } = null!;
         public virtual DbSet<EmpTasksList> EmpTasksLists { get; set; } = null!;
         public virtual DbSet<Empattendance> Empattendances { get; set; } = null!;
         public virtual DbSet<EmployeeBankDetail> EmployeeBankDetails { get; set; } = null!;
@@ -96,6 +97,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<Professionaltax> Professionaltaxes { get; set; } = null!;
         public virtual DbSet<Quation> Quations { get; set; } = null!;
         public virtual DbSet<RequestDemo> RequestDemos { get; set; } = null!;
+        public virtual DbSet<Salarydeductionmaster> Salarydeductionmasters { get; set; } = null!;
         public virtual DbSet<Schema> Schemas { get; set; } = null!;
         public virtual DbSet<Server> Servers { get; set; } = null!;
         public virtual DbSet<Set> Sets { get; set; } = null!;
@@ -628,14 +630,6 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
-                entity.Property(e => e.CurrDesignationId)
-                    .HasMaxLength(120)
-                    .HasColumnName("CurrDesignationID");
-
-                entity.Property(e => e.DesignationId)
-                    .HasMaxLength(120)
-                    .HasColumnName("DesignationID");
-
                 entity.Property(e => e.EmployeeId).HasMaxLength(120);
 
                 entity.Property(e => e.EndDate).HasColumnType("datetime");
@@ -647,6 +641,21 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.HrName).HasMaxLength(250);
 
                 entity.Property(e => e.StartDate).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<EmpRelievingletter>(entity =>
+            {
+                entity.ToTable("EmpRelievingletter");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.EmployeeId).HasMaxLength(250);
+
+                entity.Property(e => e.LastDateofEmployment).HasColumnType("datetime");
+
+                entity.Property(e => e.RelievingletterFile).HasMaxLength(250);
+
+                entity.Property(e => e.ResignationDate).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<EmpTasksList>(entity =>
@@ -802,19 +811,9 @@ namespace CRM.Models.Crm
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.EffectiveDate).HasColumnType("date");
-
-                entity.Property(e => e.EmployeeId).HasMaxLength(100);
-
-                entity.Property(e => e.Epfnumber)
-                    .HasMaxLength(100)
-                    .HasColumnName("EPFNumber");
-
                 entity.Property(e => e.Epfpercentage)
                     .HasColumnType("decimal(18, 2)")
                     .HasColumnName("EPFPercentage");
-
-                entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.Vendorid).HasColumnName("vendorid");
             });
@@ -827,11 +826,7 @@ namespace CRM.Models.Crm
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.EmployeeId).HasMaxLength(100);
-
-                entity.Property(e => e.Esicnumber)
-                    .HasMaxLength(100)
-                    .HasColumnName("ESICNumber");
+                entity.Property(e => e.EsicAmount).HasColumnType("decimal(9, 0)");
 
                 entity.Property(e => e.Esicpercentage)
                     .HasColumnType("decimal(18, 2)")
@@ -879,6 +874,10 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.City).HasMaxLength(255);
 
+                entity.Property(e => e.Conveyanceallowance)
+                    .HasColumnType("decimal(9, 0)")
+                    .HasColumnName("conveyanceallowance");
+
                 entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
 
                 entity.Property(e => e.CustomerName).HasMaxLength(255);
@@ -922,6 +921,8 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.FatherName).HasMaxLength(255);
 
                 entity.Property(e => e.FirstName).HasMaxLength(255);
+
+                entity.Property(e => e.FixedAllowance).HasColumnType("decimal(9, 0)");
 
                 entity.Property(e => e.Gender).HasMaxLength(255);
 
@@ -1175,6 +1176,8 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Basic).HasColumnType("decimal(18, 0)");
 
+                entity.Property(e => e.Composite).HasColumnType("decimal(9, 0)");
+
                 entity.Property(e => e.Conveyanceallowance)
                     .HasColumnType("decimal(9, 0)")
                     .HasColumnName("conveyanceallowance");
@@ -1186,6 +1189,8 @@ namespace CRM.Models.Crm
                     .HasColumnName("EmployeeID");
 
                 entity.Property(e => e.EmployeeName).HasMaxLength(120);
+
+                entity.Property(e => e.EmployerContribution).HasColumnType("decimal(9, 0)");
 
                 entity.Property(e => e.Epf)
                     .HasColumnType("decimal(18, 0)")
@@ -1206,6 +1211,8 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Incentive).HasColumnType("decimal(18, 0)");
 
+                entity.Property(e => e.Medical).HasColumnType("decimal(9, 0)");
+
                 entity.Property(e => e.MonthlyCtc)
                     .HasColumnType("decimal(18, 0)")
                     .HasColumnName("MonthlyCTC");
@@ -1225,6 +1232,8 @@ namespace CRM.Models.Crm
                     .HasColumnName("tdspercentage");
 
                 entity.Property(e => e.TravellingAllowance).HasColumnType("decimal(18, 0)");
+
+                entity.Property(e => e.VariablePay).HasColumnType("decimal(9, 0)");
             });
 
             modelBuilder.Entity<EmployeeTask>(entity =>
@@ -1848,6 +1857,23 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.Title).HasMaxLength(150);
             });
 
+            modelBuilder.Entity<Salarydeductionmaster>(entity =>
+            {
+                entity.ToTable("salarydeductionmaster");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Deductionpercentage)
+                    .HasColumnType("decimal(9, 0)")
+                    .HasColumnName("deductionpercentage");
+
+                entity.Property(e => e.Deductiontype)
+                    .HasMaxLength(200)
+                    .HasColumnName("deductiontype");
+
+                entity.Property(e => e.Vendorid).HasColumnName("vendorid");
+            });
+
             modelBuilder.Entity<Schema>(entity =>
             {
                 entity.HasKey(e => e.Version)
@@ -2031,6 +2057,10 @@ namespace CRM.Models.Crm
                     .HasMaxLength(255)
                     .HasColumnName("Company_Name");
 
+                entity.Property(e => e.Duedate)
+                    .HasColumnType("datetime")
+                    .HasColumnName("duedate");
+
                 entity.Property(e => e.Email).HasMaxLength(255);
 
                 entity.Property(e => e.GstNumber)
@@ -2040,6 +2070,8 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.Igst)
                     .HasColumnType("decimal(18, 0)")
                     .HasColumnName("IGST");
+
+                entity.Property(e => e.InvoiceNumber).HasMaxLength(200);
 
                 entity.Property(e => e.Invoicefile)
                     .HasMaxLength(250)

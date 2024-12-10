@@ -50,7 +50,7 @@ namespace CRM.Repository
                     var empid = await _context.EmployeeRegistrations.Where(x => x.EmployeeId == userid && x.IsDeleted == false).Select(x => new EmployeeBasicInfo
                     {
                         Userid = x.Id,
-                        FullName = x.FirstName /*+ x.MiddleName + x.LastName*/,
+                        FullName = x.FirstName + "" + x.MiddleName + "  " + x.LastName,
                         FirstName = x.FirstName,
                         LastName = x.LastName,
                         WorkEmail = x.WorkEmail,
@@ -2745,7 +2745,6 @@ namespace CRM.Repository
                 }
                 else if(checkInRecord.CheckOuttime != null)
                 {
-                    checkInRecord.CheckOuttime = null;
                     checkInRecord.Isactive = true;
                 }
             }

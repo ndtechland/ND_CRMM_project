@@ -27,5 +27,9 @@ namespace CRM.Models.Crm
         public decimal? Tdspercentage { get; set; }
         public decimal? Conveyanceallowance { get; set; }
         public decimal? FixedAllowance { get; set; }
+        public decimal? Medical { get; set; }
+        public decimal? Composite { get; set; }
+        public decimal? VariablePay { get; set; }
+        public decimal? EmployerContribution { get; set; }
     }
 }

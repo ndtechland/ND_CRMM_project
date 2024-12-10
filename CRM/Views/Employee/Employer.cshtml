@@ -3,7 +3,12 @@
     ViewData["Title"] = "Employer";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
-
+<style>
+    .dataTables_wrapper table.dataTable th {
+        background-color: #00baf2 !important;
+        padding: 24px 0.75rem !important;
+    }
+</style>
 <div class="page-wrapper">
     <div class="page-body-wrapper">
         <div class="page-sidebar">
@@ -41,6 +46,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <form action="Employer" method="post" autocomplete="off">
+                                    <input type="text" hidden name="Id" value="@ViewBag.id" />
                                     @* <div asp-validation-summary="ModelOnly" class="text-danger"></div> *@
                                     <div class="row">
                                         <div class="col-md-4">
@@ -54,7 +60,7 @@
                                         <div class="col-md-4" id="esic">
                                             <label>ESIC Percentage</label>
                                             <div class="input-group">
-                                                <input class="form-control" placeholder="0.00" name="EsicEPF_Number" id="validationCustom1" type="text">
+                                                <input class="form-control" placeholder="0.00" value="@ViewBag.EpfNumber" name="EsicEPF_Number" id="validationCustom1" type="text">
                                                 <div class="input-group-append">
                                                     <span class="input-group-text">%</span>
                                                 </div>
@@ -62,12 +68,12 @@
                                         </div>
                                         <div class="col-md-4" id="esicrate">
                                             <label>ESIC Max Contribution</label>
-                                            <input class="form-control" placeholder="ESIC Contribution Rate" name="EsicEmployer_Contribution_Rate" id="validationCustom1" type="text">
+                                            <input class="form-control" placeholder="ESIC Contribution Rate" value="@ViewBag.EmployerContributionRate" name="EsicEmployer_Contribution_Rate" id="validationCustom1" type="text">
                                         </div>
                                         <div class="col-md-4" id="epf">
                                             <label>EPF Percentage</label>
                                             <div class="input-group">
-                                                <input class="form-control" placeholder="0.00" name="EPF_Number" id="validationCustom1" type="text">
+                                                <input class="form-control" placeholder="0.00" value="@ViewBag.EpfNumber" name="EPF_Number" id="validationCustom1" type="text">
                                                 <div class="input-group-append">
                                                     <span class="input-group-text">%</span>
                                                 </div>
@@ -75,12 +81,12 @@
                                         </div>
                                         <div class="col-md-4" id="epfrate">
                                             <label>Employer Max Contribution</label>
-                                            <input class="form-control" placeholder="Employer Contribution Rate" name="Employer_Contribution_Rate" id="validationCustom1" type="text">
+                                            <input class="form-control" placeholder="Employer Contribution Rate" value="@ViewBag.EmployerContributionRate" name="Employer_Contribution_Rate" id="validationCustom1" type="text">
                                         </div>
                                     </div>
                                     <br />
                                     <div class="form-group" style="display:flex; justify-content:center;">
-                                        <input type="submit" value="Save" class="btn btn-primary" id="btnsave" />
+                                        <input type="submit" value="@ViewBag.btnText" class="btn btn-primary" id="btnsave" />
                                     </div>
                                 </form>
                             </div>
@@ -88,7 +94,77 @@
                     </div>
                 </div>
             </div>
+            <div class="container-fluid">
+                <div class="row">
 
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class=" table-responsive">
+                                    @if (Model != null && Model.EmployeerEpflist.Count() > 0)
+                                    {
+                                        <table id="datatable" class="table table-responsive">
+                                            <thead>
+                                                <tr style="background-color: #00baf2;">
+                                                    <th nowrap>Sl. No.</th>
+                                                    <th nowrap>
+                                                        Percentage
+                                                    </th>
+                                                    <th nowrap>
+                                                        Deduction Cycle
+                                                    </th>
+                                                    <th nowrap>
+                                                        Contribution Rate
+                                                    </th>
+                                                    <th nowrap>
+                                                        Added On
+                                                    </th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @{
+                                                    var count = 0;
+                                                    @foreach (var item in Model.EmployeerEpflist)
+                                                    {
+                                                        count++;
+                                                        <tr class="table-row">
+                                                            <td>@count</td>
+                                                            <td>
+                                                                @Html.DisplayFor(modelItem => item.EpfNumber) %
+                                                            </td>
+                                                            <td>
+                                                                @(
+                                                                item.DeductionCycle
+                                                                    )
+
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(modelItem => item.EmployerContributionRate)
+                                                            </td>
+
+                                                            <td>
+                                                                @Html.DisplayFor(modelItem => item.CreateDate)
+                                                            </td>
+                                                            <td>
+                                                                <div>
+                                                                    <a href="/Employee/Employer?Id=@item.Id" class="fa fa-edit m-2 font-success"></a>
+                                                                    <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteEmployer","Employee", new { Id= item.Id })')" class="fa fa-trash font-danger"></a>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            </tbody>
+                                        </table>
+                                    }
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
 
@@ -100,29 +176,44 @@
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
     $(document).ready(function () {
-       $('#btnsave').hide();
+        // Hide all the relevant fields initially
+       // $('#btnsave').hide();
         $('#esic').hide();
         $('#esicrate').hide();
         $('#epf').hide();
         $('#epfrate').hide();
-    });
+
+        // Check the current selection and display the correct fields for editing
+        var selectedDeduction = $('#decycle').val();
+        toggleFields(selectedDeduction);
+
+        // When the deduction cycle changes, show/hide the respective fields
         $('#decycle').change(function () {
-            $('#btnsave').show();
             var selectedDeduction = $(this).val();
-            if (selectedDeduction === 'ESIC') {
+            toggleFields(selectedDeduction);
+            $('#btnsave').show();  // Show the save button when a change is made
+        });
+
+        function toggleFields(deductionCycle) {
+            if (deductionCycle === 'ESIC') {
                 $('#epf').hide();
                 $('#epfrate').hide();
                 $('#esic').show();
                 $('#esicrate').show();
-            } else if (selectedDeduction === 'EPF') {
+            } else if (deductionCycle === 'EPF') {
                 $('#esic').hide();
                 $('#esicrate').hide();
                 $('#epf').show();
                 $('#epfrate').show();
+            } else {
+                // Hide both sections if no valid deduction cycle is selected
+                $('#esic, #esicrate, #epf, #epfrate').hide();
             }
-           
-        });    
+        }
+    });
+
 </script>
+
  <script>
     $(function () {
         $("input[name='EPF_Number']").on('input', function (e) {
@@ -134,6 +225,23 @@
             $(this).val($(this).val().replace(/[^0-9]/g, ''));
         });
     });
+</script>
+<script>
+    $(document).ready(function () {
+        $('#datatable').DataTable();
+    });
+    var DeductionCycle = '@ViewBag.DeductionCycle';
+    if (DeductionCycle != "") {
+        $("#decycle").val(DeductionCycle);
+    }
+</script>
+<script>
+    function confirmDelete(url) {
+        var result = confirm("Are you sure you want to delete?");
+        if (result) {
+            window.location.href = url;
+        }
+    }
 </script>
 
 

@@ -16,9 +16,9 @@
                 if (message == "dltok") {
                     alertText = "Deleted successfully.";
                 } else if (message == "updok") {
-                    alertText = "Product updated successfully.";
+                    alertText = "Customer updated successfully.";
                 } else {
-                    alertText = "Product added successfully.";
+                    alertText = "Customer added successfully.";
                 }
 
                 Swal.fire({
@@ -29,7 +29,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         setTimeout(function () {
-                            window.location.href = '@Url.Action("VendorProductList", "Product")';
+                            window.location.href = '@Url.Action("CustomerList", "Customer")';
                         }, 1000);
                     }
                 });
@@ -805,15 +805,23 @@
     }
 
     function validateNumericInput(event) {
-        if ([46, 8, 9, 27, 13].indexOf(event.keyCode) !== -1 ||
-            (event.keyCode == 65 && event.ctrlKey === true) ||
-            (event.keyCode >= 35 && event.keyCode <= 39)) {
-            return;
-        }
-        if ((event.shiftKey || (event.keyCode < 48 || event.keyCode > 57)) && (event.keyCode < 96 || event.keyCode > 105)) {
-            event.preventDefault();
-        }
+        // Allow copy, paste, cut, space, backspace, tab, escape, enter, and arrow keys
+        if ([67, 86, 88].includes(event.keyCode) && (event.ctrlKey || event.metaKey) ||
+            [32, 46, 8, 9, 27, 13].includes(event.keyCode) ||
+            (event.keyCode >= 35 && event.keyCode <= 39)) return;
+
+        // Allow numeric input (main keyboard and numpad)
+        if ((event.keyCode >= 48 && event.keyCode <= 57) || (event.keyCode >= 96 && event.keyCode <= 105)) return;
+
+        // Prevent other inputs
+        event.preventDefault();
     }
+
+    // Disable right-click menu
+    document.addEventListener('contextmenu', e => e.preventDefault());
+
+    // Usage example
+    document.getElementById("yourInputField").addEventListener("keydown", validateNumericInput);
 
     function ValidateGST() {
         var Obj = document.getElementById("GstNumber");

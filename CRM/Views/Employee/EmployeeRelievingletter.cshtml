@@ -1,4 +1,4 @@
-﻿@model CRM.Models.DTO.Experienceletters
+﻿@model CRM.Models.DTO.Relievingletters
 @{
     Layout = "";
     DateTime date = DateTime.Now;
@@ -10,7 +10,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Experience Letter</title>
+    <title>Relieving Letter</title>
     <link rel="stylesheet" href="styles.css">
     <style>
         body {
@@ -23,7 +23,7 @@
 
         .container {
             width: 100%;
-            max-width: 650px;
+            max-width: 736px;
             margin: 0 auto;
             padding: 75px;
             box-shadow: none;
@@ -51,7 +51,7 @@
             position: absolute;
             top: 0;
             right: 0;
-            width: 100%;
+            width: 95%;
             height: 50%;
             background: linear-gradient(135deg, #173564 60%, transparent 50%);
         }
@@ -156,16 +156,12 @@
             <img src="~/CompanyImage/@Model.CompanyImage" alt="Company Logo" class="logo">
 
             <div class="header-bg"></div>
-            <div class="date">
-                <h3>Date:@fordate</h3>
-            </div>
         </div>
 
 
-        <!-- Content Section -->
         <div class="content">
             <h4>
-                To,<br />
+                To,<br/>
                 <strong>[@Model.EmployeeName]</strong><br>
                 Employee Code / No.: <strong>[@Model.EmployeeCode]</strong><br>
                 Current Designation: <strong>[@Model.Designation]</strong><br>
@@ -173,27 +169,31 @@
             </h4>
             <hr>
             <div class="subject">
-                <h2>Subject: Experience Letter</h2>
+                <h2>Subject: Relieving Order Letter</h2>
             </div>
-           
+            
             <div class="details">
                 <p>
-                    This is to certify that <strong>[@Model.EmployeeName]</strong> joined our organization as a <strong>[@Model.Designation]</strong>.
-                    She / He was associated with our organization from <strong>[@Model.StartDate]</strong> to <strong>[@Model.EndDate]</strong>. During
-                    this tenure, we had ample opportunity to assess her professional and personal abilities.
+                    Dear <strong>[@Model.EmployeeName]</strong>,
                 </p>
-
                 <p>
-                    In our organization, she worked with dedication, sincerity, and hard work. We wish
-                    her all the success in her future endeavors and for a bright career ahead.
+                    With reference to your resignation letter dated <strong>[@Model.ResignationDate]</strong>, from the post of <strong>[@Model.Designation]</strong> this is to inform you that your resignation has been this is to inform you that your resignation has been accepted by the management. We have also received the Clearance Report from the concerned department regarding your full and final settlement of your accounts with our company.
                 </p>
+                <p>
+                    Therefore, we do hereby relieve you from all your services with our organization, effective <br /> from <strong>[@Model.LastDateofEmployment]</strong>.
+                </p>
+                <p> 
+                    We thank you for your association with our company and wish you a successful future ahead.
+                </p>
+                <p>
+                    Yours sincerely,<br>
+                </p>
+                <h3>For <strong>[@Model.CompanyName]</strong></h3>
+              
             </div>
             <hr>
             <div class="signature">
                 <p>
-                    For <strong>@Model.CompanyName</strong><br>
-                    <strong>@Model.HrName</strong><br>
-                    <strong>@Model.HrDesignation</strong><br>
                     <strong>@Model.CompanyAddress</strong><br>
                     <strong>@Model.CompanyEmail</strong><br>
                     <strong>@Model.CompanyPhoneNumber</strong>

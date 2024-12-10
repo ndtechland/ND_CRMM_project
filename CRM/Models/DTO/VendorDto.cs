@@ -41,6 +41,8 @@ namespace CRM.Models.DTO
         public bool? Isactive { get; set; }
         public string? PricingPlanid { get; set; }
         public double? PricePlan { get; set; }
+        public DateTime Duedate { get; set; }
+        public string? InvoiceNumber { get; set; }
 
     }
     public partial class VendorRegistrationDto

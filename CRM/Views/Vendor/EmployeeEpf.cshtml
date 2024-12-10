@@ -27,21 +27,6 @@
         padding: 24px 0.75rem !important;
     }
 </style>
-<style>
-    .select2-container .select2-selection--single {
-        height: 34px !important;
-    }
-
-    .select2-container--default .select2-selection--single {
-        border: 1px solid #ccc !important;
-        border-radius: 0px !important;
-    }
-
-    .select2-results__options {
-        display: grid !important;
-    }
-
-</style>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         var message = "@TempData["Message"]";
@@ -128,22 +113,7 @@
                                 <form method="post" asp-controller="Vendor" asp-action="EmployeeEpf" autocomplete="off" onsubmit="return validateForm()">
                                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                                     <div class="row">
-                                        <div class="form-group col-lg-4">
-                                            <input type="hidden" name="Id" value="@ViewBag.id" />
-                                            <label for="empddl">Employee Id</label>
-                                            <select name="EmployeeId" id="empddl" class="form-control select2" required>
-                                                <option value="0">-- Select Employee Id --</option>
-                                                @foreach (var item in ViewBag.EmployeeItem)
-                                                {
-                                                    <option value="@item.Value">@item.Text</option>
-                                                }
-                                            </select>
-                                        </div>
-                                        <div class="form-group col-md-4">
-                                            <label class="control-label" for="epfnumberr">EPF Number</label>
-                                            <input type="text" name="EPFNumber" placeholder="Please Enter EPF Number" value="@ViewBag.EPFNumber" class="form-control" readonly required />
-                                            <span name="EPFNumber" class="text-danger"></span>
-                                        </div>
+                                        <input value="@ViewBag.id" name="Id" hidden />
                                         <div class="form-group col-md-4">
                                             <label class="control-label" for="epf">EPF %</label>
                                             <input type="text" id="epf" name="EPFPercentage" value="@ViewBag.EPFPercentage" class="form-control" required />
@@ -172,12 +142,6 @@
                                             <tr style="background-color: #00baf2;">
                                                 <th nowrap>Sl. No.</th>
                                                 <th nowrap>
-                                                    Employee Id
-                                                </th>
-                                                <th nowrap>
-                                                    EPF Number
-                                                </th>
-                                                <th nowrap>
                                                     EPF
                                                 </th>
                                                 <th nowrap>
@@ -197,13 +161,6 @@
                                                     <tr class="table-row">
                                                         
                                                         <td>@count</td>
-                                                       
-                                                        <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.EmployeeId)
-                                                        </td>
-                                                        <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.Epfnumber)
-                                                        </td>
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.Epfpercentage)%
                                                         </td>
@@ -239,64 +196,7 @@
 </div>
 
 
-<script>
-   $('.select2').select2();
-</script>
- 
- 
-<script type="text/javascript">
-    var selectedEmpId = '@ViewBag.SelectedEmployeeId'
-    if (selectedEmpId != "") {
-        $("#empddl").val(selectedEmpId).trigger('change');
-    }
-</script>
-@* <script type="text/javascript">
-    $('#empddl').change(function () {
-        var employeeId = $(this).val(); 
-        if (employeeId && employeeId !== "0") {
-            $.ajax({
-                url: '@Url.Action("GetEmpEpfNumber", "Vendor")', 
-                type: 'GET',
-                data: { employeeId: employeeId },
-                success: function (data) {
-                    console.log("EPF Number received: ", data);
-                    if (data && data.epfNumber) {
-                        $('input[name="EPFNumber"]').val(data.epfNumber);
-                    } else {
-                        $('input[name="EPFNumber"]').val(''); 
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.error("Error occurred: " + error);
-                    console.log(xhr.responseText);
-                    $('input[name="EPFNumber"]').val(''); 
-                }
-            });
-        } else {
-            // Clear the fields if no EmployeeId is selected
-            $('input[name="EPFNumber"]').val('');
-        }
-    });
-</script>
- *@
-@* <script>
-    $(document).ready(function () {
-        
-        $.ajax({
-            url: '@Url.Action("GetVendorEfp")',   
-            type: 'GET',
-            success: function (data) {
-                if (data && data.epfPercentage) {
-                    
-                    $('#epf').val(data.epfPercentage);
-                }
-            },
-            error: function () {
-                console.log('Error retrieving EPF data');
-            }
-        });
-    });
-</script> *@
+
 <script>
     function confirmDelete(url) {
         var result = confirm("Are you sure you want to delete?");

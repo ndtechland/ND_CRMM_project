@@ -45,8 +45,6 @@
         public string? OfficeLocation { get; set; }
         public string? OfficeState { get; set; }
         public string? OfficeCity { get; set; }
-
-
     }
     public partial class Offerletters
     {
@@ -76,7 +74,6 @@
         public int Id { get; set; }
         public string? EmployeeName { get; set; }
         public string? EmployeeCode { get; set; }
-        public string? CurrentDesignation { get; set; }
         public string? Designation { get; set; }
         public string? StartDate { get; set; }
         public string? EndDate { get; set; }
@@ -89,5 +86,22 @@
         public string? CompanyEmail { get; set; }
         public string? CompanyPhoneNumber { get; set; }
         public string? CompanyImage { get; set; }
+    }
+    public partial class Relievingletters
+    {
+        public int Id { get; set; }
+        public string? EmployeeName { get; set; }
+        public string? EmployeeCode { get; set; }
+        public string? Designation { get; set; }
+        public string? ResignationDate { get; set; }
+        public string? LastDateofEmployment { get; set; }
+        public string? CompanyName { get; set; }
+        public string? WorkEmail { get; set; }
+        public string? CompanyAddress { get; set; }
+        public string? CompanyEmail { get; set; }
+        public string? CompanyPhoneNumber { get; set; }
+        public string? CompanyImage { get; set; }
+        public string? RelievingletterFile { get; set; }
+
     }
 }

@@ -217,7 +217,6 @@ namespace CRM.Controllers
                             {
                                 return overdueDays >= startDay && overdueDays <= endDay;
                             }
-
                             return false;
                         });
 
@@ -239,14 +238,26 @@ namespace CRM.Controllers
         }
 
 
-        [HttpPost]
+        //[HttpGet]
+        //[Route("Hangfiretask/UpdateTaxes")]
+        //public IActionResult UpdateTaxes()
+        //{
+        //    RecurringJob.AddOrUpdate("taxes-job", () => Taxes(), "0 12 * * *");
+        //    //RecurringJob.AddOrUpdate(() => Taxes(), Cron.Daily(9)); 
+        //    return Ok("Daily Taxes update job scheduled!");
+        //}
+        [HttpGet]
         [Route("Hangfiretask/UpdateTaxes")]
         public IActionResult UpdateTaxes()
         {
-            RecurringJob.AddOrUpdate(() => Taxes(), Cron.Daily(9)); 
-            return Ok("Daily Taxes update job scheduled!");
+            BackgroundJob.Enqueue(() => Taxes());
+            DateTime nextRunTime = DateTime.Now.Date.AddDays(1).AddHours(12);
+            RecurringJob.AddOrUpdate("taxes-job", () => Taxes(), "0 12 * * *");
+
+            return Ok($"Taxes job triggered immediately and scheduled for next run at {nextRunTime:hh:mm tt}.");
         }
 
+        
 
     }
 }

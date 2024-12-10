@@ -39,6 +39,8 @@
         public string? HsnSacCode { get; set; } 
         public string? StateName { get; set; }
         public string? CityName { get; set; }
-    
+        public string? InvoiceNumber { get; set; }
+        public DateTime Duedate { get; set; }
+
     }
 }

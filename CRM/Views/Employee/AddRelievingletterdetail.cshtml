@@ -1,6 +1,6 @@
-﻿@model CRM.Models.Crm.EmpExperienceletter
+﻿@model CRM.Models.Crm.EmpRelievingletter
 @{
-    ViewData["Title"] = "AddExperienceletters";
+    ViewData["Title"] = "AddRelievingletter";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -46,7 +46,7 @@
                 if (message == "dltok") {
                     alertText = "Deleted successfully.";
                 } else if (message == "updok") {
-                    alertText = "Data  updated successfully.";
+                    alertText = "Data updated successfully.";
                 } else {
                     alertText = "Data added successfully.";
                 }
@@ -59,7 +59,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         setTimeout(function () {
-                            window.location.href = '@Url.Action("ExperienceletterList", "Employee")';
+                            window.location.href = '@Url.Action("AddRelievingletterdetail", "Employee")';
                         }, 1000);
                     }
                 });
@@ -75,13 +75,13 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         setTimeout(function () {
-                            window.location.href = '@Url.Action("ExperienceletterList", "Employee")';
+                            window.location.href = '@Url.Action("AddRelievingletterdetail", "Employee")';
                         }, 1000);
                     }
                 });
             }
         }
-        
+
     });
 </script>
 <div class="page-wrapper">
@@ -102,8 +102,8 @@
                             <ol class="breadcrumb pull-right">
                                 <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
                                 <li class="breadcrumb-item">Letter</li>
-                                <li class="breadcrumb-item">Exp letter</li>
-                                <li class="breadcrumb-item active">Add Experienceletter Detail</li>
+                                <li class="breadcrumb-item">Relieving Letter</li>
+                                <li class="breadcrumb-item">Add Relieving letter</li>
                             </ol>
                         </div>
                     </div>
@@ -116,7 +116,7 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-body">
-                                <form method="post" enctype="multipart/form-data" action="/Employee/AddExperienceletteretail" autocomplete="off">
+                                <form method="post" enctype="multipart/form-data" action="/Employee/AddRelievingletterdetail" autocomplete="off">
                                     <div class="container">
                                         <div class="row mb-3">
                                             <div class="form-group col-lg-6">
@@ -132,25 +132,15 @@
                                                 <span asp-validation-for="EmployeeId" class="text-danger"></span>
                                             </div>
                                             <div class="col-lg-6 form-group">
-                                                <label for="StartDate">Start Date</label>
-                                                <input class="form-control" value='@ViewBag.StartDate' name="StartDate" id="StartDate" type="date">
+                                                <label for="ResignationDate">Resignation Date</label>
+                                                <input class="form-control" value='@ViewBag.ResignationDate' name="ResignationDate" id="ResignationDate" type="date">
                                             </div>
-                                           
+
                                         </div>
                                         <div class="row mb-3">
                                             <div class="col-lg-6 form-group">
-                                                <label for="EndDate">End Date</label>
-                                                <input class="form-control" value='@ViewBag.EndDate' name="EndDate" id="EndDate" type="date">
-                                            </div>
-                                            <div class="col-lg-6 form-group">
-                                                <label for="HrName">HR Name</label>
-                                                <input class="form-control" value='@ViewBag.HrName' placeholder="Enter HR Name" name="HrName" id="HrName" type="text">
-                                            </div>
-                                        </div>
-                                        <div class="row mb-3">
-                                            <div class="col-lg-6 form-group">
-                                                <label for="HrDesignation">HR Designation</label>
-                                                <input class="form-control" value='@ViewBag.HrJobTitle' placeholder="Enter HR Designation" name="HrDesignation" id="HrDesignation" type="text">
+                                                <label for="LastDateofEmployment">LastDate of Employment</label>
+                                                <input class="form-control" value='@ViewBag.LastDateofEmployment' name="LastDateofEmployment" id="EndDate" type="date">
                                             </div>
                                         </div>
                                         <div class="form-group text-center">
