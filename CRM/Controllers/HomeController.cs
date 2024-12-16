@@ -13,7 +13,10 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Services.Users;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
+
 //using System.Web.Http;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
@@ -67,63 +70,108 @@ namespace CRM.Controllers
                 ViewBag.Employee = emplist.Count();
                 //Holidays
                 ViewBag.Holidays = await _context.OfficeEvents
-     .Where(x => x.Vendorid == adminlogin.Vendorid && x.Date >= DateTime.Now.Date)
-     .Select(x => new
-     {
-         Subtittle = x.Subtittle,
-         Date = x.Date
-     })
-     .OrderByDescending(x => x.Date)
-     .ToListAsync();
+                .Where(x => x.Vendorid == adminlogin.Vendorid && x.Date >= DateTime.Now.Date)
+                .Select(x => new
+                {
+                    Subtittle = x.Subtittle,
+                    Date = x.Date
+                }).OrderByDescending(x => x.Date).ToListAsync();
 
                 ViewBag.Announcements = await _context.EventsmeetSchedulers
-    .Where(x => x.Vendorid == adminlogin.Vendorid)
-    .Select(x => new
-    {
-        Title = x.Tittle,
-        Date = x.ScheduleDate,
-        time = x.Time
-    })
-    .OrderByDescending(x => x.Date)
-    .ToListAsync();
+                .Where(x => x.Vendorid == adminlogin.Vendorid)
+                .Select(x => new
+                {
+                    Title = x.Tittle,
+                    Date = x.ScheduleDate,
+                    time = x.Time
+                }).OrderByDescending(x => x.Date).ToListAsync();
                 //LeaveList
                 ViewBag.onLeaveList = emplist.Count(x => _context.ApplyLeaveNews
-     .Any(y => y.UserId == x.EmployeeId
+               .Any(y => y.UserId == x.EmployeeId
                && y.Isapprove == 2
                && y.StartDate.Date <= DateTime.Now.Date
                && y.EndDate.Date >= DateTime.Now.Date));
-                //workingHours
+               
                 var today = DateTime.Today;
                 var firstDayOfMonth = new DateTime(today.Year, today.Month, 1);
-                var records = _context.EmployeeCheckInRecords
-    .Where(record => record.CurrentDate.HasValue &&
-                    record.CurrentDate.Value.Date >= firstDayOfMonth &&
-                    record.CurrentDate.Value.Date <= today)
-    .AsEnumerable()
-    .GroupBy(record => record.CurrentDate.Value.Date)
-    .ToList();
 
-                var workingHoursDates = records
-                    .Select(group => group.Key.Day.ToString())
+                // Generate all dates from 1st of the month to today
+                var allDates = Enumerable.Range(0, (today - firstDayOfMonth).Days + 1)
+                    .Select(offset => firstDayOfMonth.AddDays(offset))
                     .ToList();
-
-                var workingHoursData = records
-    .Select(group => group.Sum(record =>
-        (record.CheckOuttime.HasValue && record.CheckIntime.HasValue)
-            ? Math.Max(0, (record.CheckOuttime.Value - record.CheckIntime.Value).TotalHours)
-            : 0))
-    .ToList();
-
+                var records = _context.EmployeeCheckInRecords
+                    .Where(record => record.CurrentDate.HasValue &&
+                                     record.CurrentDate.Value.Year == today.Year &&
+                                     record.CurrentDate.Value.Month == today.Month &&
+                                     record.CurrentDate.Value.Date <= today) 
+                    .AsEnumerable()
+                    .GroupBy(record => record.CurrentDate.Value.Date)
+                    .ToDictionary(group => group.Key, group => group.Sum(record =>
+                        (record.CheckOuttime.HasValue && record.CheckIntime.HasValue)
+                        ? Math.Max(0, (record.CheckOuttime.Value - record.CheckIntime.Value).TotalHours)
+                        : 0));
+                var workingHoursDates = allDates.Select(date => date.Day.ToString()).ToList(); 
+                var workingHoursData = allDates.Select(date =>
+                    records.ContainsKey(date) ? records[date] : 0 
+                ).ToList();
                 int currentMonth = today.Month;
                 ViewBag.WorkingHoursDates = workingHoursDates;
                 ViewBag.WorkingHoursData = workingHoursData;
+
                 ViewBag.monthname = getMonthName(currentMonth);
 
                 ViewBag.Numberofwfh = emplist.Count(x => _context.EmpApplywfhs
-    .Any(y => y.UserId == x.EmployeeId
-              && y.Iswfh == 2
-              && y.Startdate.Value.Date <= DateTime.Now.Date
-              && y.EndDate.Value.Date >= DateTime.Now.Date));
+                .Any(y => y.UserId == x.EmployeeId
+                 && y.Iswfh == 2
+                 && y.Startdate.Value.Date <= DateTime.Now.Date
+                 && y.EndDate.Value.Date >= DateTime.Now.Date));
+                //tasklist
+                List<TasksListDashDto> response = await _context.EmployeeTasks
+     .Where(x => x.Vendorid == adminlogin.Vendorid)
+     .OrderByDescending(x => x.Id)
+     .Select(x => new TasksListDashDto
+     {
+         EmployeeId = x.EmployeeId,
+         EmployeeName = _context.EmployeeRegistrations
+             .Where(em => em.EmployeeId == x.EmployeeId)
+             .Select(em => em.FirstName)
+             .FirstOrDefault(),
+         TaskName = x.Task,
+         Taskstatus = _context.TaskStatuses
+             .Where(a => a.Id == x.Status)
+             .Select(status => status.StatusName)
+             .FirstOrDefault(),
+     }).Take(5).ToListAsync();
+                ViewBag.TasksList = response;
+                //replytasklist
+                List<string> employeeIds = emplist.Select(emp => emp.EmployeeId).ToList();
+
+                var replytasklist = await (from task in _context.EmpTasksLists
+                                           join employee in _context.EmployeeRegistrations
+                                               on task.EmployeeId equals employee.EmployeeId
+                                           join status in _context.TaskStatuses
+                                               on task.Taskstatus equals status.Id
+                                           join employeeTask in _context.EmployeeTasks
+                                               on task.Subtaskid equals employeeTask.Id into taskDetails
+                                           from taskDetail in taskDetails.DefaultIfEmpty()
+                                           join subTask in _context.EmployeeTasksLists
+                                               on task.Taskid equals subTask.Id into subTaskDetails
+                                           from subTaskDetail in subTaskDetails.DefaultIfEmpty()
+                                           where employeeIds.Contains(task.EmployeeId)
+                                           select new TasksReplyListDashDto
+                                           {
+                                               id = task.Id,
+                                               TaskName = taskDetail != null ? taskDetail.Task : "N/A",
+                                               SubTaskName = subTaskDetail != null ? subTaskDetail.Taskname : "N/A",
+                                               Replydate = task.Replydate.HasValue
+                                                   ? task.Replydate.Value.ToString("dd MMM yy")
+                                                   : "N/A",
+                                               Taskstatus = status.StatusName,
+                                           }).OrderByDescending(task => task.id).Take(4).ToListAsync();
+
+                ViewBag.ReplyTasksList = replytasklist;
+
+
 
                 return View();
             }
@@ -729,7 +777,7 @@ namespace CRM.Controllers
                 throw;
             }
         }
-         
+
         [HttpPost]
         public async Task<IActionResult> ProfessionalTDStax(ProfessionaltaxDto model)
         {

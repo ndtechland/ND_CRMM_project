@@ -364,6 +364,106 @@ Phone: 0120-4354103<br />
                 }
             }
         }
+        public async Task CustomerRenewalEmail(string toEmail, string CompanyName, string RenewalDate, string productname, decimal productAmount)
+        {
+            var emailMessage = new MimeMessage();
+
+            emailMessage.From.Add(new MailboxAddress("N D Techland Private Limited", "aastrolense@gmail.com"));
+            emailMessage.To.Add(new MailboxAddress("", toEmail));
+            emailMessage.Subject = "Reminder: Upcoming Renewal for Your N D Connect/N D Techland Product";
+
+            emailMessage.Body = new TextPart("html")
+            {
+                Text = $@"
+<p>Dear {CompanyName},</p>
+<p>We hope this message finds you well.</p>
+<p>This is a friendly reminder that your product subscription with N D Connect/N D Techland is approaching its renewal date on <strong>[{RenewalDate}]</strong>.
+<br/>To ensure uninterrupted service and continue enjoying our comprehensive features, please complete your renewal before the due date.</p>
+
+<p><strong>Subscription Details:</strong></p>
+<ul>
+    <li><strong>Product Name:</strong> [{productname}]</li>
+    <li><strong>Amount:</strong> [{productAmount}]</li>
+    <li><strong>Renewal Date:</strong> [{RenewalDate}]</li>
+</ul>
+
+<p>If you need any assistance with the renewal process or have any questions, please feel free to contact us at <strong>0120-4354103</strong>. We’re here to help!</p>
+
+<p>Thank you for your continued support and for choosing N D Techland.</p>
+
+<p>Best regards,</p>
+<p><strong>N D Techland Private Limited</strong><br />
+Phone: 0120-4354103<br />
+<a href='https://www.ndtechland.com'>www.ndtechland.com</a></p>"
+            };
+
+
+            using (var client = new SmtpClient())
+            {
+                try
+                {
+                    // Connect to your SMTP server
+                    await client.ConnectAsync("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
+                    await client.AuthenticateAsync("aastrolense@gmail.com", "efpbsimjkzxeoxnv");
+
+                    await client.SendAsync(emailMessage);
+                }
+                finally
+                {
+                    await client.DisconnectAsync(true);
+                    client.Dispose();
+                }
+            }
+        }
+        public async Task CustomerExpirEmail(string toEmail, string CompanyName, string ExpirationDate, string productName)
+        {
+            var emailMessage = new MimeMessage();
+
+            emailMessage.From.Add(new MailboxAddress("N D Techland Private Limited", "aastrolense@gmail.com"));
+            emailMessage.To.Add(new MailboxAddress("", toEmail));
+            emailMessage.Subject = $"Action Required: Your Product {productName} Has Expired";
+
+            emailMessage.Body = new TextPart("html")
+            {
+                Text = $@"
+<p>Dear {CompanyName},</p>
+<p>We hope this message finds you well.</p>
+<p>This is a reminder that your product, <strong>{productName}</strong>, expired on <strong>{ExpirationDate}</strong>. 
+<br/>To ensure you continue receiving uninterrupted service, please take the necessary action to renew or replace the product.</p>
+
+<p><strong>Product Details:</strong></p>
+<ul>
+    <li><strong>Product Name:</strong> {productName}</li>
+    <li><strong>Expiration Date:</strong> {ExpirationDate}</li>
+</ul>
+
+<p>If you need assistance with renewal or have any questions, please feel free to contact us at <strong>0120-4354103</strong>. We’re here to help!</p>
+
+<p>Thank you for your prompt attention to this matter.</p>
+
+<p>Best regards,</p>
+<p><strong>N D Techland Private Limited</strong><br />
+Phone: 0120-4354103<br />
+<a href='https://www.ndtechland.com'>www.ndtechland.com</a></p>"
+            };
+
+            using (var client = new SmtpClient())
+            {
+                try
+                {
+                    // Connect to your SMTP server
+                    await client.ConnectAsync("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
+                    await client.AuthenticateAsync("aastrolense@gmail.com", "efpbsimjkzxeoxnv");
+
+                    await client.SendAsync(emailMessage);
+                }
+                finally
+                {
+                    await client.DisconnectAsync(true);
+                    client.Dispose();
+                }
+            }
+        }
 
 
     }

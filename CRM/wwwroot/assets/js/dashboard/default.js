@@ -134,8 +134,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-
-
 // vector map
 ! function(maps) {
     "use strict";

@@ -27,5 +27,6 @@ namespace CRM.Models.Crm
         public DateTime? Dueamountdate { get; set; }
         public int? Taxid { get; set; }
         public decimal? Taxamount { get; set; }
+        public bool? IsRenewDate { get; set; }
     }
 }

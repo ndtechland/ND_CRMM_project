@@ -222,6 +222,9 @@
                                                     Employee Id
                                                 </th>
                                                 <th nowrap>
+                                                    Employee Name
+                                                </th>
+                                                <th nowrap>
                                                     Task Name
                                                 </th>
                                                 <th nowrap>
@@ -254,6 +257,9 @@
                                                         <td class="EmpTaskId" hidden>@item.Id</td>
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.EmployeeId)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.EmployeeName)
                                                         </td>
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.Task)
@@ -421,7 +427,7 @@
                     case "4":
                         $(this).css('color', 'purple'); 
                         break;
-                    case "5":
+                    case "6":
                         $(this).css('color', 'red'); 
                         break;
                     default:
@@ -444,7 +450,7 @@
                 case "4":
                     $(dropdown).css('color', 'purple'); 
                     break;
-                case "5":
+                case "6":
                     $(dropdown).css('color', 'red'); 
                     break;
                 default:

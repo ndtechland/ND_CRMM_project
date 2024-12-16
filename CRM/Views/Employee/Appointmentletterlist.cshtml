@@ -64,7 +64,7 @@
     }
 </style>
 
-<div class="page-wrapper">
+<div class="page-wrapper" id="content">
     <div class="page-body-wrapper">
         <div class="page-sidebar">
         </div>
@@ -191,10 +191,10 @@
         });
     }
 </script>
-
 <script type="text/javascript">
-    function AppointmentletterdownloadPDF(Id) {
+    function AppointmentletterdownloadPDF(id) {
         var url = '@Url.Action("AppointmentletterDocPDF", "Employee")' + '?Id=' + Id;
+
         // Show loader and apply blur
         document.getElementById('loader').style.display = 'block';
         document.getElementById('overlay').style.display = 'block';
@@ -255,6 +255,7 @@
     }
 
 </script>
+
 <script>
     $(document).ready(function () {
         document.title = 'Appointmentdetail';
@@ -274,4 +275,68 @@
             }
         );
     });
+</script>
+<script type="text/javascript">
+    function AppointmentletterdownloadPDF(Id) {
+        var url = '@Url.Action("AppointmentletterDocPDF", "Employee")' + '?Id=' + Id;
+
+        // Show loader and apply blur
+        document.getElementById('loader').style.display = 'block';
+        document.getElementById('overlay').style.display = 'block';
+        document.getElementById('content').classList.add('blurred');
+
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Hide the loader and overlay after success or failure
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('overlay').style.display = 'none';
+                document.getElementById('content').classList.remove('blurred');
+
+                if (data.success) {
+                    Swal.fire({
+                        title: 'Success',
+                        text: data.message,
+                        icon: 'success',
+                        confirmButtonText: 'OK',
+                        allowOutsideClick: false
+                    }).then(() => {
+                        window.location.reload(); // Reload after user confirms
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: data.message,
+                        icon: 'error',
+                        confirmButtonText: 'OK',
+                        allowOutsideClick: false
+                    });
+                }
+            })
+            .catch(error => {
+                // Hide the loader and overlay on error
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('overlay').style.display = 'none';
+                document.getElementById('content').classList.remove('blurred');
+
+                Swal.fire({
+                    title: 'Error',
+                    text: 'An error occurred while processing the request.',
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                    allowOutsideClick: false
+                });
+            });
+    }
+
 </script>

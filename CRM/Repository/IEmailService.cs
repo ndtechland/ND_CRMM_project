@@ -17,6 +17,8 @@ namespace CRM.Repository
         Task SendEmpLeaveApprovalEmailAsync(string ToEmpEmail, string FirstName, string MiddleName, string LastName, string Subject, string emailBody);
         Task SendMeetEmailAsync(string ToEmpEmail, string FirstName, string MiddleName, string LastName, string emailBody);
         Task CustomerWelcomeEmail(string toEmail, string CompanyName);
+        Task CustomerRenewalEmail(string toEmail, string CompanyName, string RenewalDate,string productname, decimal productAmount);
+        Task CustomerExpirEmail(string toEmail, string CompanyName, string RenewalDate,string productname);
 
     }
 }

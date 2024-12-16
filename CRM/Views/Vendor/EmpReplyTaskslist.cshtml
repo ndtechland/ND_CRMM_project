@@ -1,0 +1,165 @@
+﻿@model IEnumerable<CRM.Models.DTO.EmptaskReplyListDto>
+@{
+    ViewData["Title"] = "Reply Task";
+    Layout = "~/Views/Shared/_adminLayout.cshtml";
+}
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css">
+<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js"></script>
+
+<style>
+    .dataTables_wrapper table.dataTable th {
+        background-color: #00baf2 !important;
+        padding: 24px 0.75rem !important;
+    }
+</style>
+<div class="page-wrapper">
+    <div class="page-body-wrapper">
+        <div class="page-sidebar">
+        </div>
+
+        <div class="page-body">
+
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="page-header-left">
+                                <div class="page-header-left">
+                                    <h4>@ViewBag.heading</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <ol class="breadcrumb pull-right">
+                                <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
+                                <li class="breadcrumb-item">HR Payrole</li>
+                                <li class="breadcrumb-item">Task Management</li>
+                                <li class="breadcrumb-item active">Reply Task</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table id="datatable" class="table table-hover">
+                                        <thead>
+                                            <tr style="background-color: #00baf2;">
+                                                <th nowrap>Sl. No.</th>
+                                                <th>Employee Id</th>
+                                                <th nowrap>
+                                                    Employee Name
+                                                </th>
+                                                <th>Task Name</th>
+                                                <th>Sub Task Name</th>
+                                                <th>Task Reason</th>
+                                                <th>Reply Date</th>
+                                                <th>Task Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{
+                                                var count = 0;
+                                                foreach (var item in Model)
+                                                {
+                                                    count++;
+                                                    <tr class="table-row">
+                                                        <td>@count</td>
+                                                        <td>@Html.DisplayFor(modelItem => item.EmployeeId)</td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.EmployeeName)
+                                                        </td>
+                                                        <td>@Html.DisplayFor(modelItem => item.TaskName)</td>
+                                                        <td>@Html.DisplayFor(modelItem => item.SubTaskName)</td>
+                                                        <td>@Html.DisplayFor(modelItem => item.TaskReason)</td>
+                                                        <td>@Html.DisplayFor(modelItem => item.Replydate)</td>
+                                                        <td class="task-status">@Html.DisplayFor(modelItem => item.Taskstatus)</td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="pagination-container">
+                <ul id="pagination" class="pagination"></ul>
+            </div>
+        </div>
+
+
+    </div>
+
+</div>
+
+<script>
+    $(document).ready(function () {
+        // Initialize DataTable
+        document.title = 'SubTaskDetail';
+        var table = $('#datatable').DataTable({
+            "dom": '<"dt-buttons"Bf><"clear">lirtp',
+            "paging": true,
+            "autoWidth": true,
+            "buttons": [
+                'colvis',
+                'copyHtml5',
+                'csvHtml5',
+                'excelHtml5',
+                'pdfHtml5',
+                'print'
+            ]
+        });
+
+        table.rows().every(function () {
+            var row = this.node();
+            var statusCell = $(row).find('.task-status'); 
+            var value = statusCell.text().trim(); 
+
+            switch (value) {
+                case "Pending":
+                    statusCell.css('color', 'orange');
+                    break;
+                case "In Progress":
+                    statusCell.css('color', 'blue');
+                    break;
+                case "Completed":
+                    statusCell.css('color', 'green');
+                    break;
+                case "Reassigned":
+                    statusCell.css('color', 'purple');
+                    break;
+                case "UnCompleted":
+                    statusCell.css('color', 'red');
+                    break;
+                default:
+                    statusCell.css('color', 'black');
+                    break;
+            }
+        });
+    });
+</script>
+
+

@@ -89,6 +89,8 @@ namespace CRM
             services.AddScoped<IHome, Home>();
             services.AddScoped<Dcrypt>();
             services.AddScoped<Encrypt>();
+            ///added new 
+            services.AddHostedService<ScheduledTaskService>();
             services.Configure<URL>(Configuration.GetSection("URL"));
 
             // CORS policy
@@ -100,13 +102,13 @@ namespace CRM
                 });
             });
 
-            services.AddHangfire(config =>
-            {
-                config.UseSqlServerStorage(Configuration.GetConnectionString("db1"));
-            });
+            //services.AddHangfire(config =>
+            //{
+            //    config.UseSqlServerStorage(Configuration.GetConnectionString("db1"));
+            //});
             // Controllers with views
             services.AddControllersWithViews();
-            services.AddHangfireServer();
+            //services.AddHangfireServer();
 
         }
 
@@ -128,8 +130,8 @@ namespace CRM
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSession();
-            app.UseHangfireServer();
-            app.UseHangfireDashboard("/hangfire");
+            //app.UseHangfireServer();
+            //app.UseHangfireDashboard("/hangfire");
             // Routing and CORS
             app.UseRouting();
             app.UseCors("CorsPolicy");
@@ -143,7 +145,7 @@ namespace CRM
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Admin}/{action=Login}/{id?}");
+                pattern: "{controller=Admin}/{action=Login}/{id?}");
             });
         }
     }

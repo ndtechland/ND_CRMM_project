@@ -19,6 +19,7 @@ using System.Data.SqlClient;
 using ClosedXML.Excel;
 using Org.BouncyCastle.Ocsp;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
+using System.Threading.Tasks;
 
 namespace CRM.Controllers
 {
@@ -1287,6 +1288,7 @@ namespace CRM.Controllers
                    //Status = _context.TaskStatuses.Where(a => a.Id == x.Status).Select(status => status.StatusName).FirstOrDefault(),
                    TaskStatusId = x.Status,
                    EmployeeId = x.EmployeeId,
+                   EmployeeName = _context.EmployeeRegistrations.Where(a => a.EmployeeId == x.EmployeeId).Select(status => status.FirstName).FirstOrDefault(),
                }).ToListAsync();
                 ViewBag.TaskStatus = await _context.TaskStatuses.Select(w => new SelectListItem
                 {
@@ -1296,7 +1298,7 @@ namespace CRM.Controllers
                 ViewBag.EmployeeId = _context.EmployeeRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).Select(D => new SelectListItem
                 {
                     Value = D.EmployeeId.ToString(),
-                    Text = D.EmployeeId
+                    Text = $"{D.EmployeeId} {' '} ({D.FirstName})"
 
                 }).ToList();
 
@@ -1442,7 +1444,8 @@ namespace CRM.Controllers
                     .Select(D => new SelectListItem
                     {
                         Value = D.EmployeeId.ToString(),
-                        Text = D.EmployeeId
+                        Text = $"{D.EmployeeId} {' '} ({D.FirstName})"
+
                     }).ToListAsync();
 
 
@@ -3630,6 +3633,55 @@ namespace CRM.Controllers
             catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
+            }
+        }
+        [HttpGet, Route("Vendor/EmpReplyTaskslist")]
+        public async Task<IActionResult> EmpReplyTaskslist()
+        {
+            if (HttpContext.Session.GetString("UserName") != null)
+            {
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.FirstOrDefaultAsync(x => x.Id == Userid);
+                ViewBag.Heading = "Reply Task";
+
+                var emplist = await _context.EmployeeRegistrations
+                            .Where(x => x.Vendorid == adminlogin.Vendorid && x.IsDeleted == false)
+                            .ToListAsync();
+
+                List<string> employeeIds = emplist.Select(emp => emp.EmployeeId).ToList();
+
+                var replytasklist = await (from task in _context.EmpTasksLists
+                                           join employee in _context.EmployeeRegistrations
+                                               on task.EmployeeId equals employee.EmployeeId
+                                           join status in _context.TaskStatuses
+                                               on task.Taskstatus equals status.Id
+                                           join employeeTask in _context.EmployeeTasks
+                                               on task.Subtaskid equals employeeTask.Id into taskDetails
+                                           from taskDetail in taskDetails.DefaultIfEmpty()
+                                           join subTask in _context.EmployeeTasksLists
+                                               on task.Taskid equals subTask.Id into subTaskDetails
+                                           from subTaskDetail in subTaskDetails.DefaultIfEmpty()
+                                           where employeeIds.Contains(task.EmployeeId)
+                                           select new EmptaskReplyListDto
+                                           {
+                                               id= task.Id,
+                                               EmployeeId = task.EmployeeId,
+                                               EmployeeName = employee.FirstName,
+                                               TaskName = taskDetail != null ? taskDetail.Task : "N/A",
+                                               SubTaskName = subTaskDetail != null ? subTaskDetail.Taskname : "N/A",
+                                               Replydate = task.Replydate.HasValue
+                                                   ? task.Replydate.Value.ToString("dd MMM yy")
+                                                   : "N/A",
+                                               Taskstatus = status.StatusName,
+                                               TaskReason = task.Taskreason
+                                           }).OrderByDescending(task => task.id).ToListAsync();
+
+
+                return View(replytasklist);
+            }
+            else
+            {
+                return RedirectToAction("Login", "Admin");
             }
         }
 

@@ -53,6 +53,8 @@ using CRM.Models.APIDTO;
 using Org.BouncyCastle.Asn1.Pkcs;
 using CRM.Utilities;
 using System.Security.Cryptography;
+using Microsoft.Extensions.Logging;
+using NLog;
 
 namespace CRM.Controllers
 {
@@ -70,8 +72,6 @@ namespace CRM.Controllers
             this._ICrmrpo = _ICrmrpo;
             this._IEmailService = _IEmailService;
             _configuration = configuration;
-
-
         }
         [HttpGet, Route("Employee/EmployeeRegistration")]
         public async Task<IActionResult> EmployeeRegistration(string id)
@@ -350,6 +350,7 @@ namespace CRM.Controllers
         {
             try
             {
+
                 List<EmployeeImportExcel> response = new List<EmployeeImportExcel>();
                 if (HttpContext.Session.GetString("UserName") != null)
                 {
@@ -382,6 +383,7 @@ namespace CRM.Controllers
                     ViewBag.UserName = HttpContext.Session.GetString("UserName");
                     return View(response);
                 }
+                
                 return RedirectToAction("Login", "Admin");
             }
             catch (Exception ex)
@@ -530,7 +532,7 @@ namespace CRM.Controllers
         }
         [HttpGet]
         [Route("Employee/salarydetail")]
-        public async Task<IActionResult> salarydetail(int month= 0)
+        public async Task<IActionResult> salarydetail(int month = 0)
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
@@ -553,7 +555,7 @@ namespace CRM.Controllers
                 {
                     total += (decimal)item.MonthlyCtc;
                 }
-               
+
                 ViewBag.TotalAmmount = total;
                 ViewBag.CustomerName = _context.CustomerRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).Select(x => new SelectListItem
                 {
@@ -816,12 +818,12 @@ namespace CRM.Controllers
             {
 
                 int adminloginid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
-               
-                
-                    var response = await _ICrmrpo.Employer(model, adminloginid);
-                    ModelState.Clear();
-                    return RedirectToAction("Employer");
-                
+
+
+                var response = await _ICrmrpo.Employer(model, adminloginid);
+                ModelState.Clear();
+                return RedirectToAction("Employer");
+
             }
             catch (Exception Ex)
             {
@@ -1501,7 +1503,7 @@ namespace CRM.Controllers
                                .Select(e => new
                                {
                                    e.DeductionCycle,
-                                   e.EpfNumber 
+                                   e.EpfNumber
                                })
                                .ToList();
 
@@ -1948,40 +1950,62 @@ namespace CRM.Controllers
         {
             try
             {
-                var empdetail = await _context.EmployeeRegistrations
-                    .Where(x => x.Id == Id && x.IsDeleted == false)
-                    .FirstOrDefaultAsync();
-                if (empdetail == null)
+                // Check if the ID is valid
+                if (Id == null || Id == 0)
                 {
-                    return BadRequest("Appointment letter not found");
+                    return BadRequest("Invalid employee ID");
                 }
-                var result = new EmpAppointmentletter
+
+                // Query the data with type matching for the joins
+                var result = await (from emp in _context.EmployeeRegistrations
+                                    join des in _context.DesignationMasters
+                                    on Convert.ToInt16(emp.DesignationId) equals des.Id 
+                                    join vendor in _context.VendorRegistrations on emp.Vendorid equals vendor.Id
+                                    join state in _context.States on vendor.StateId equals state.Id
+                                    join dpt in _context.DepartmentMasters on Convert.ToInt16(emp.DepartmentId) equals dpt.Id
+                                    join salary in _context.EmployeeSalaryDetails on emp.EmployeeId equals salary.EmployeeId into salaryJoin
+                                    from salaryDetails in salaryJoin.DefaultIfEmpty()
+                                    where emp.Id == Id && emp.IsDeleted == false
+                                    select new EmpAppointmentletter
+                                    {
+                                        Designation = des.DesignationName.Trim(),
+                                        EmployeeName = $"{emp.FirstName} {(emp.MiddleName ?? "")} {emp.LastName}",
+                                        Empcode = emp.EmployeeId,
+                                        CompanyName = vendor.CompanyName,
+                                        JobLocation = vendor.Location,
+                                        CompanyAddress = vendor.Location,
+                                        CompanyEmail = vendor.Email,
+                                        CompanyState = state.SName,
+                                        HRA = salaryDetails.HouseRentAllowance,
+                                        HRAYearly = (salaryDetails.HouseRentAllowance) * 12,
+                                        CompanyImage = vendor.CompanyImage,
+                                        DateOfJoining = emp.DateOfJoining.Value.ToString("dd/MM/yyyy"),
+                                        BasicSalary = salaryDetails.Basic ,
+                                        BasicSalaryYearly = salaryDetails.Basic  * 12,
+                                        Medical = salaryDetails.Medical ,
+                                        MedicalYearly = (salaryDetails.Medical) * 12,
+                                        Conveyance = salaryDetails.Conveyanceallowance,
+                                        ConveyanceYearly = (salaryDetails.Conveyanceallowance) * 12,
+                                        PF = salaryDetails.Epf ,
+                                        PFYearly = (salaryDetails.Epf) * 12,
+                                        ESIC = salaryDetails.Esic ,
+                                        ESICYearly = (salaryDetails.Esic) * 12,
+                                        DepartmentName = dpt.DepartmentName.Trim(),
+                                    }).FirstOrDefaultAsync();
+
+                if (result == null)
                 {
-                    Empcode = empdetail.EmployeeId,
-                    First_Name = empdetail.FirstName,
-                    MonthlyCtc = _context.EmployeeSalaryDetails.Where(x => x.EmployeeId == empdetail.EmployeeId).Select(x => x.MonthlyCtc).FirstOrDefault(),
-                    AnnualCtc = _context.EmployeeSalaryDetails.Where(x => x.EmployeeId == empdetail.EmployeeId).Select(x => x.AnnualCtc).FirstOrDefault(),
-                    CompanyName = _context.VendorRegistrations.Where(g => g.Id == empdetail.Vendorid).Select(g => g.CompanyName).FirstOrDefault(),
-                    Designation_Name = _context.DesignationMasters.Where(g => g.Id == Convert.ToInt16(empdetail.DesignationId)).Select(g => g.DesignationName).FirstOrDefault()?.Trim(),
-                    Department_Name = _context.DepartmentMasters.Where(g => g.Id == Convert.ToInt16(empdetail.DepartmentId)).Select(g => g.DepartmentName).FirstOrDefault()?.Trim(),
-                    Joiningdate = empdetail.DateOfJoining?.ToString("dd/MM/yyyy"),
-                    OfccityId = _context.Cities.Where(g => g.Id == Convert.ToInt16(empdetail.WorkLocationId)).Select(g => g.City1).FirstOrDefault(),
-                    Basic = _context.EmployeeSalaryDetails.Where(x => x.EmployeeId == empdetail.EmployeeId).Select(x => x.Basic).FirstOrDefault(),
-                    HouseRentAllowance = _context.EmployeeSalaryDetails.Where(x => x.EmployeeId == empdetail.EmployeeId).Select(x => x.HouseRentAllowance).FirstOrDefault(),
-                    EmployeeESIC = _context.EmployeeSalaryDetails.Where(x => x.EmployeeId == empdetail.EmployeeId).Select(x => x.Esic).FirstOrDefault(),
-                    EmployeeEPF = _context.EmployeeSalaryDetails.Where(x => x.EmployeeId == empdetail.EmployeeId).Select(x => x.Epf).FirstOrDefault(),
-                    CurrentDate = DateTime.Now.Date.ToString("dd/MM/yyyy"),
-                    CompanyImage = _context.VendorRegistrations.Where(g => g.Id == empdetail.Vendorid).Select(g => g.CompanyImage).FirstOrDefault(),
-                    Location = _context.VendorRegistrations.Where(g => g.Id == empdetail.Vendorid).Select(g => g.Location).FirstOrDefault(),
-                };
+                    return BadRequest("Appointment letter details not found");
+                }
+
                 return View(result);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error: {ex.Message}");
                 return BadRequest($"An error occurred: {ex.Message}");
             }
         }
+
         public async Task<IActionResult> AppointmentletterDocPDF(int? Id = 0)
         {
             try
@@ -2908,7 +2932,7 @@ namespace CRM.Controllers
                     empoff.RelievingletterFile = uniqueFileName;
                     _context.SaveChanges();
                     string emailSubject = $"Relieving letter for {result.Name}";
-                    string emailBody = $"Hello {result.Name}, please find your attached Experience letter.";
+                    string emailBody = $"Hello {result.Name}, please find your attached Relieving letter.";
                     await _IEmailService.SendEmailAsync(result.WorkEmail, emailSubject, emailBody, pdf, uniqueFileName, "application/pdf");
                     return Json(new { success = true, message = "Relieving letter  has been Sent successfully.", fileName = uniqueFileName });
 
@@ -3010,13 +3034,13 @@ namespace CRM.Controllers
         public JsonResult EmpEpfesilist()
         {
             int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
-            var adminLogin =  _context.AdminLogins
+            var adminLogin = _context.AdminLogins
                                           .FirstOrDefault(x => x.Id == Userid);
 
             var esicdata = _context.EmployeeEsicPayrollInfos.Where(e => e.Vendorid == adminLogin.Vendorid).FirstOrDefault();
             var epfdata = _context.EmployeeEpfPayrollInfos.Where(e => e.Vendorid == adminLogin.Vendorid).FirstOrDefault();
 
-            decimal? esicPercentage = esicdata?.Esicpercentage; 
+            decimal? esicPercentage = esicdata?.Esicpercentage;
             decimal? epfPercentage = epfdata?.Epfpercentage;
             decimal? esicAmount = esicdata?.EsicAmount;
 

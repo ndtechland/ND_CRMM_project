@@ -95,6 +95,16 @@
                                     @Html.TextBoxFor(Model => Model.Id, new { @class = "from-control", type = "hidden" })
                                     <div class="row">
                                         <div class="form-group col-sm">
+                                            <label for="validationCustom0">First Name </label>
+                                            <input asp-for="FirstName" id="FirstName" placeholder="Enter FirstName" class="form-control" />
+                                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                                        </div>
+                                        <div class="form-group col-sm">
+                                            <label for="validationCustom0">Last Name </label>
+                                            <input asp-for="LastName" id="LastName" class="form-control" placeholder="Enter LastName"/>
+                                            <span asp-validation-for="LastName" class="text-danger"></span>
+                                        </div>
+                                        <div class="form-group col-sm">
                                             <label for="validationCustom0">Company Name <span class="text-danger">*</span></label>
                                             <input asp-for="CompanyName" id="CompanyName" placeholder="Enter CompanyName" class="form-control" required="" oninvalid="this.setCustomValidity('Please Enter CompanyName')" oninput="this.setCustomValidity('')" />
                                             <span asp-validation-for="CompanyName" class="text-danger"></span>
@@ -104,6 +114,11 @@
                                             <input asp-for="Location" id="address" class="form-control" placeholder="Enter Address" required="" />
                                             <span asp-validation-for="Location" class="text-danger"></span>
                                         </div>
+                                       
+                                         
+
+                                    </div>
+                                    <div class="row">
                                         <div class="form-group col-sm">
                                             <label class="control-label">State Name <span class="text-danger">*</span></label>
                                             <div>
@@ -125,10 +140,6 @@
                                                 <option value="">--Select City--</option>
                                             </select>
                                         </div>
-                                         
-
-                                    </div>
-                                    <div class="row">
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Mobile Number <span class="text-danger">*</span></label>
                                             <div class="input-group">

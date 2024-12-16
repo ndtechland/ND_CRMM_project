@@ -1,4 +1,5 @@
-﻿using CRM.Models.Crm;
+﻿using ClosedXML.Excel;
+using CRM.Models.Crm;
 using CRM.Models.DTO;
 using CRM.Repository;
 using Microsoft.AspNetCore.Mvc;
@@ -31,14 +32,6 @@ namespace CRM.Controllers
                 var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
 
                 ViewBag.checkvendorbillingstateid = _context.VendorRegistrations.Where(v => v.Id == adminlogin.Vendorid).FirstOrDefault().BillingStateId;
-
-                //ViewBag.StateItems = _context.States
-                //    .Select(p => new SelectListItem
-                //    {
-                //        Value = p.Id.ToString(),
-                //        Text = p.SName,
-                //    })
-                //    .ToList();
                 var items = _context.States.ToList();
                 ViewBag.StateItems = new SelectList(items, "Id", "SName");
                 if (id != 0)
@@ -46,7 +39,7 @@ namespace CRM.Controllers
     
                     ViewBag.Heading = "Customer Registration";
                     ViewBag.btnText = "Update";
-                    var data = _ICrmrpo.GetCustomerById(id);
+                    var data =  _ICrmrpo.GetCustomerById(id);
                     if (data != null)
                     {
 
@@ -56,13 +49,7 @@ namespace CRM.Controllers
                                 Value = p.Id.ToString(),
                                 Text = p.ProductName,
                             }).ToList();
-               //         ViewBag.PlanPrice = _context.PricingPlans.Where(x => x.IsActive == true)
-               //.Select(p => new SelectListItem
-               //{
-               //    Value = p.Id.ToString(),
-               //    Text = $"{p.PlanName} {' '} {p.Price}",
-               //})
-               //.ToList();
+
                         ViewBag.SelectedStateId = data.StateId;
                         ViewBag.SelectedCityId = data.CityId;
                         ViewBag.state = data.BillingStateId;
@@ -223,7 +210,6 @@ namespace CRM.Controllers
             }
         }
 
-
         public async Task<IActionResult> GetCityByStateId(int stateid)
         {
             var dist = await _context.Cities
@@ -232,5 +218,82 @@ namespace CRM.Controllers
 
             return Json(dist);
         }
+        public async Task<IActionResult> ExportCustomerList()
+        {
+            try
+            {
+                int Adminid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Adminid).FirstOrDefaultAsync();
+                var customerList = await _ICrmrpo.CustomerList((int)adminlogin.Vendorid);
+
+                using (var workbook = new XLWorkbook())
+                {
+                    var worksheet = workbook.Worksheets.Add("Customer Details");
+
+                    // Adding Header Row
+                    int currentRow = 1;
+                    worksheet.Cell(currentRow, 1).Value = "Sl. No.";
+                    worksheet.Cell(currentRow, 2).Value = "First Name";
+                    worksheet.Cell(currentRow, 3).Value = "Last Name";
+                    worksheet.Cell(currentRow, 4).Value = "Company Name";
+                    worksheet.Cell(currentRow, 5).Value = "Mobile Number";
+                    worksheet.Cell(currentRow, 6).Value = "Alternate Number";
+                    worksheet.Cell(currentRow, 7).Value = "Email ID";
+                    worksheet.Cell(currentRow, 8).Value = "GST Number";
+                    worksheet.Cell(currentRow, 9).Value = "Office Location";
+                    worksheet.Cell(currentRow, 10).Value = "Office City";
+                    worksheet.Cell(currentRow, 11).Value = "Office State";
+                    worksheet.Cell(currentRow, 12).Value = "Billing Location";
+                    worksheet.Cell(currentRow, 13).Value = "Billing City";
+                    worksheet.Cell(currentRow, 14).Value = "Billing State";
+
+                    // Applying style to header
+                    for (int col = 1; col <= 14; col++)
+                    {
+                        worksheet.Cell(currentRow, col).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, col).Style.Font.Bold = true;
+                    }
+
+                    // Adding Data Rows
+                    int serialNumber = 1;
+                    foreach (var item in customerList)
+                    {
+                        currentRow++;
+                        worksheet.Cell(currentRow, 1).Value = serialNumber++;
+                        worksheet.Cell(currentRow, 2).Value = item.FirstName;
+                        worksheet.Cell(currentRow, 3).Value = item.LastName;
+                        worksheet.Cell(currentRow, 4).Value = item.CompanyName;
+                        worksheet.Cell(currentRow, 5).Value = item.MobileNumber;
+                        worksheet.Cell(currentRow, 6).Value = item.AlternateNumber;
+                        worksheet.Cell(currentRow, 7).Value = item.Email;
+                        worksheet.Cell(currentRow, 8).Value = item.GstNumber;
+                        worksheet.Cell(currentRow, 9).Value = item.Location;
+                        worksheet.Cell(currentRow, 10).Value = item.OfficeCity;
+                        worksheet.Cell(currentRow, 11).Value = item.OfficeState;
+                        worksheet.Cell(currentRow, 12).Value = item.BillingAddress;
+                        worksheet.Cell(currentRow, 13).Value = item.BillingCity;
+                        worksheet.Cell(currentRow, 14).Value = item.BillingState;
+
+
+                    }
+
+                    // Adjust columns to content
+                    worksheet.Columns().AdjustToContents();
+
+                    // Save and return the Excel file
+                    using (var stream = new MemoryStream())
+                    {
+                        workbook.SaveAs(stream);
+                        var fileContent = stream.ToArray();
+                        return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "CustomerList.xlsx");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
     }
 }
