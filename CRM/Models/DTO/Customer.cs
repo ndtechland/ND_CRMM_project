@@ -31,7 +31,8 @@ namespace CRM.Models.DTO
         public int? NoOfRenewMonth { get; set; }
         public string? Renewprice { get; set; }
         public string? productprice { get; set; }
-
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
     }
     public class CustomerListDto
     {
@@ -61,6 +62,8 @@ namespace CRM.Models.DTO
         public int? NoOfRenewMonth { get; set; }
         public string? Renewprice { get; set; }
         public string? productprice { get; set; }
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
 
     }
 }

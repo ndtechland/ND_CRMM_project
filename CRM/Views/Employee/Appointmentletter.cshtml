@@ -3,145 +3,282 @@
     Layout = "";
 }
 
-<style>
-    .appointment-letter {
-        padding: 30px 50px;
-        margin-top: 20px; /* Adjust this value as needed */
-    }
+<!DOCTYPE html>
+<html lang="en">
 
-    td {
-        padding: 5px 10px;
-    }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointment Letter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
 
-    table {
-        width: 100%;
-        margin-top: 20px; /* Adjust this value as needed */
-    }
-</style>
-<div class="appointment-letter">
-    <p style="text-align: center;font-size:20px">
-        <img src='~/CompanyImage/@Model.CompanyImage' style="width: 150px; height: 100px;" />
-    </p>
-    <p>
-        @*Employee Code *@ @Model.Empcode <br />
-        @*Current Date*@ @Model.CurrentDate
-    </p>
-    <p>
-        Mr. ƒ Ms.  @Model.First_Name <br />
-        Address<br />
-        @Model.OfccityId- @Model.Location
-    </p>
-    <p>
-        Dear Applicant @Model.First_Name,
-    </p>
-    <p>
-        We thank you for deciding to be a part of the Company Name family.
-    </p>
-    <p> Congratulations and welcome onboard a dynamic and winning team! </p>
-    <p>Further to your acceptance of the offer letter dated Date of Offer Letter, we are pleased to confirm your appointment as Designation for our  Department Name  at  Location  in  Company Name . </p>
-    <p> Please make note of the following important terms and conditions of your employment: </p>
-    <p>Commencement of employment: You have joined our services on date of joining and the said date has been recorded as your Date of Joining and will be considered as such for all future purposes pertaining to your employmentƒassociation with us.</p>
-    <p>Compensation & Benefits: Please refer to Annexure I, for details of your remuneration and benefits as applicable to you. The aforesaid CTC is subject to applicable taxes and statutory deductions that may prevail from time to time.</p>
-    <ul style="padding-left:15px">
-        Transfer:
-        <li> While your current posting is in Location with Department, the company reserves the right to transfer you to another location, unit, department or company, associate company, subsidiary company, group company based on its requirements.</li>
-        <li>In the event of such transfer you will be required to abide by the rules and regulations, service conditions and benefits of the department, store and location where you are transferred to.</li>
-    </ul>
-    <p>Retirement: Your retirement from the services of the company will be on attainment of the age of 60 years.</p>
-    <p>
-        Governing Terms & Conditions: You will be governed by the clauses mentioned in your Service Agreement, TCOC (Tata Code of Conduct), company HR policies and POSH (Prevention of Sexual Harassment) at all points of time during your tenure of employment with the company. Please note that the appointment is subject to the backgroundƒdocument verification. Please note that failure to adhere to these norms, may lead to immediate termination from the services of the company.
-    </p>
-    <p>Declarations: This appointment is made on the basis of information provided by you. Should it prove untrueƒincorrect at any time, the Company reserves the rights to take appropriate action including forthwith termination of service. We shall be entitled to initiate necessary enquiries with the source of reference provided by you. In case of unfavorable report, we shall be entitled to take appropriate steps including forthwith terminating this agreement</p>
-    <p>Wish you a successful professional stint with us. We look forward to a mutually beneficial and enriching experience having you on board. All the best!</p>
-    <p>
-        Warm Regards,<br />
-        For Company Name
-    </p>
-    <p>
-        Name,<br />
-        Authorised Signatory Designation
-    </p>
-    <p>
-        <div style="float:right;width:30%;">
-            I have read the above terms and conditions of my appointment. I accept the same.<br />
-            _____________________ <br />
-            Applicant Name<br />
-            Employee Code
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #173564 60%, transparent 50%);
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+            font-size: 24px;
+            margin-top: 20px;
+        }
+
+            .header img {
+                margin-right: -548px;
+                height: 65px;
+            }
+
+        h4 {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        h3 {
+            text-align: left;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .section {
+            margin-bottom: 20px;
+        }
+
+        ul {
+            margin: 10px 0;
+        }
+
+            ul li {
+                margin: 5px 0;
+            }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+            table th,
+            table td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: left;
+            }
+
+        .signature {
+            text-align: left;
+            margin-top: 30px;
+        }
+
+        .footer {
+            margin-top: 50px;
+            font-size: 0.85em;
+            color: #555;
+            text-align: center;
+            border-top: 2px solid #173564;
+            padding-top: 10px;
+            position: relative;
+        }
+
+            .footer::before {
+                content: '';
+                position: absolute;
+                top: -12px;
+                left: 0;
+                width: 100%;
+                height: 10px;
+                background-color: #173564;
+            }
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="https://api.ndtechland.com/CompanyImage/638631208701816327.png" alt="Company Logo">
         </div>
-    </p>
-    <p style="clear: both;">
-        Encl:<br />
-        1) Service Agreement
-    </p>
-</div>
-<div style="page-break-before: always;"></div>
 
-<table border=1 cellspacing=0>
-    <tr>
-        <td colspan="3" style="text-align:center">ANNEXURE I</td>
-    </tr>
-    <tr>
-        <td colspan="3" style="text-align:center">@Model.CompanyName LIMITED</td>
-    </tr>
-    <tr>
-        <td style="width:40%">Employee No </td>
-        <td colspan="2">@Model.Empcode</td>
-    </tr>
-    <tr>
-        <td style="width:40%">Name  </td>
-        <td colspan="2">@Model.First_Name</td>
-    </tr>
-    <tr>
-        <td style="width:40%">Designation  </td>
-        <td colspan="2">@Model.Designation_Name</td>
-    </tr>
-    <tr>
-        <td style="width:40%">Department  </td>
-        <td colspan="2">@Model.Department_Name</td>
-    </tr>
-    <tr>
-        <td style="width:40%">Date of Joining  </td>
-        <td colspan="2">@Model.Joiningdate</td>
-    </tr>
-    <tr>
-        <td style="width:40%">SALARY COMPONENTS </td>
-        <td>INR PER MONTH</td>
-        <td>INR PER ANNUM</td>
-    </tr>
-    <tr>
-        <td style="width:40%">Basic  </td>
-        <td>@Model.Basic</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td style="width:40%">HRA  </td>
-        <td>@Model.HouseRentAllowance</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td style="width:40%">PF </td>
-        <td>@Model.EmployeeEPF</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td style="width:40%">ESIC</td>
-        <td>@Model.EmployeeESIC</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td style="width:40%">Other allowance  </td>
-        <td></td>
-        <td></td>
-    </tr>
-    <tr>
-        <td style="width:40%">CTC  </td>
-        <td></td>
-        <td></td>
-    </tr>
-    <tr>
-        <td colspan="3" style="width:40%">
-            Remarks: With ref to FY FY pro−rata Performance Linked Award will be RS.
-            PRO RATED VARIABLE AMOUNT ƒ−.
-        </td>
-    </tr>
-</table>
+        <h4>Subject: Appointment as @Model.DepartmentName</h4>
+        <div class="section">
+            <p>Dear @Model.EmployeeName,</p>
+            <p>
+                We are pleased to offer you a position as <b>@Model.Designation</b>, at <b>@Model.CompanyName</b>, with your initial posting in
+                <b>@Model.JobLocation</b>, upon joining.
+            </p>
+            <p>
+                This appointment is subject to the terms and conditions outlined in Annexure A, as well as the company’s
+                prevailing Rules and Regulations. The details regarding your salary, allowances, and perquisites are
+                provided in Annexure B.
+            </p>
+            <p>
+                We aim to offer you a rewarding and challenging career, providing ample opportunities for professional
+                growth and development.
+            </p>
+            <p>
+                Please return the duplicate copy of this letter, duly signed, as your acceptance of the offer, along
+                with Annexure A (Terms of Appointment), Annexure B (Details of Perquisites), and Annexure C (Salary
+                Breakdown).
+            </p>
+            <p>With best wishes,<br><b>@Model.CompanyName</b><br>@Model.CompanyAddress<br>@Model.CompanyEmail</p>
+        </div>
+        <div class="section">
+            <h3>Annexure A: Terms of Appointment</h3>
+            <ul>
+                <li>
+                    <b>Company Policies:</b> Your appointment is governed by the company's Rules and Regulations, which
+                    may be updated from time to time.
+                </li>
+                <li>
+                    <b>Start Date and Probation:</b> Your employment will commence from the date mentioned in this
+                    letter. You will be on a three-month probation, after which your performance will be reviewed for
+                    confirmation.
+                </li>
+                <li>
+                    <b>Notice Period:</b> During the probation period, either party may terminate the employment by
+                    giving one week’s notice. After confirmation, the notice period will be one month or three months'
+                    basic salary in lieu of notice.
+                </li>
+                <li>
+                    <b>Transferability:</b> You may be transferred to any company location or department as per the
+                    needs of the business.
+                </li>
+                <li><b>Retirement:</b> The company may retire you upon reaching the age of 58 years, if necessary.</li>
+                <li>
+                    <b>Confidentiality and Conduct:</b> You are expected to maintain confidentiality and adhere to the
+                    highest standards of conduct and integrity, as per company policies.
+                </li>
+                <li>
+                    <b>Jurisdiction:</b> In the event of disputes arising from this appointment, jurisdiction will be
+                    held by the National Capital Territory of @Model.CompanyState.
+                </li>
+            </ul>
+        </div>
+        <div class="section">
+            <h3>Annexure B: Details of Perquisites and Allowances</h3>
+            <ul>
+                <li><b>Name:</b> @Model.EmployeeName</li>
+                <li><b>Designation:</b> @Model.Designation</li>
+                <li><b>Grade:</b> @Model.Empcode</li>
+                <li><b>Location:</b> @Model.JobLocation</li>
+                <li><b>Basic Salary:</b> ₹@Model.BasicSalary per month</li>
+                <li><b>Date of Joining:</b> @Model.DateOfJoining</li>
+                <li><b>Probation Period:</b> Three months from the date of joining</li>
+                <li>
+                    <b>In addition to your basic salary, the following allowances and benefits will apply:</b>
+                    <ol>
+                        <li>
+                            <b>House Rent Allowance (HRA):</b> 50% of Basic Salary -
+                            <ul>
+                                <li>₹@Model.HRA per month</li>
+                                <li>Annual = ₹@Model.HRAYearly</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <b>Medical Reimbursement:</b> Half month’s Basic Salary per annum (first year) -
+                            <ul>
+                                <li>₹@Model.Medical per month</li>
+                                <li>Annual = ₹@Model.MedicalYearly</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <b>Conveyance Reimbursement:</b> 10% of Basic Salary -
+                            <ul>
+                                <li>₹@Model.Conveyance per month</li>
+                                <li>Annual = ₹@Model.ConveyanceYearly</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <b>Provident Fund (PF):</b> 13% of Basic Salary -
+                            <ul>
+                                <li>₹@Model.PF per month</li>
+                                <li>Annual = ₹@Model.PFYearly</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <b>Employee State Insurance Corporation (ESIC):</b>3.75% of Basic Salary (if salary is below ₹19,000) -
+                            <ul>
+                                <li>₹@Model.ESIC per month</li>
+                                <li>Annual = ₹@Model.ESICYearly</li>
+                            </ul>
+                        </li>
+                        <li>Gratuity and Other Benefits: As per applicable laws</li>
+
+                    </ol>
+                </li>
+            </ul>
+        </div>
+        <div class="section">
+            <h3>Annexure C: Total Salary Breakdown</h3>
+            <table>
+                <tr>
+                    <th>Component</th>
+                    <th>Amount (INR) Per Month</th>
+                    <th>Amount (INR) Per Year</th>
+                </tr>
+                <tr>
+                    <td>Basic Salary</td>
+                    <td>₹@Model.BasicSalary</td>
+                    <td>₹@Model.BasicSalaryYearly</td>
+                </tr>
+                <tr>
+                    <td>House Rent Allowance (HRA)</td>
+                    <td>₹@Model.HRA</td>
+                    <td>₹@Model.HRAYearly</td>
+                </tr>
+                <tr>
+                    <td>Medical Reimbursement</td>
+                    <td>₹@Model.Medical</td>
+                    <td>₹@Model.MedicalYearly</td>
+                </tr>
+                <tr>
+                    <td>Conveyance Reimbursement</td>
+                    <td>₹@Model.Conveyance</td>
+                    <td>₹@Model.ConveyanceYearly</td>
+                </tr>
+                <tr>
+                    <td>Provident Fund (PF)</td>
+                    <td>₹@Model.PF</td>
+                    <td>₹@Model.PFYearly</td>
+                </tr>
+                <tr>
+                    <td>ESIC</td>
+                    <td>₹@Model.ESIC</td>
+                    <td>₹@Model.ESICYearly</td>
+                </tr>
+                <tr>
+                    <td><b>Total Gross Salary</b></td>
+                    <td><b>₹@Model.TotalMonthlySalary</b></td>
+                    <td><b>₹@Model.TotalYearlySalary</b></td>
+                </tr>
+            </table>
+        </div>
+        <div class="signature">
+            <p>@Model.CompanyName</p>
+            <p>@Model.EmployeeName</p>
+            <p>Signature: ______________________</p>
+            <p>Date: ______________________</p>
+        </div>
+        <div class="footer">
+            <p>
+                N D Techland Private Limited<br>
+                Head Office: C-53, Sector-2, Noida-201301, U.P. | Branches: Noida | Delhi | Patna | Bangalore<br>
+                Web: www.ndtechland.com | Email: info@ndtechland.com
+            </p>
+        </div>
+    </div>
+</body>
+
+</html>

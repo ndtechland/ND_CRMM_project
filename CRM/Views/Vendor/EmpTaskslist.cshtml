@@ -192,6 +192,9 @@
                                                 <th nowrap>Sl. No.</th>
                                                 <th hidden> gfgf</th>
                                                 <th>Employee Id</th>
+                                                <th nowrap>
+                                                    Employee Name
+                                                </th>
                                                 <th>Task Name</th>
                                                 <th>Sub Task Name</th>
                                                 <th>Task Status</th>
@@ -208,6 +211,9 @@
                                                         <td>@count</td>
                                                         <td class="EmpTaskId" hidden>@item.SubtaskId</td>
                                                         <td>@Html.DisplayFor(modelItem => item.EmployeeId)</td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.EmployeeName)
+                                                        </td>
                                                         <td>@Html.DisplayFor(modelItem => item.Emptask)</td>
                                                         <td>@Html.DisplayFor(modelItem => item.Taskname)</td>
                                                         <td>
@@ -357,8 +363,139 @@
         icon.parentNode.remove();
     }
 </script>
-
 <script>
+    $(document).ready(function () {
+        var table = $('#myTable').DataTable();
+
+        // Function to update the dropdown color based on selected value
+        function updateDropdownColor(dropdown) {
+            $(dropdown).find('option').each(function () {
+                var value = $(this).val();
+                switch (value) {
+                    case "1":
+                        $(this).css('color', 'orange');
+                        break;
+                    case "2":
+                        $(this).css('color', 'blue');
+                        break;
+                    case "3":
+                        $(this).css('color', 'green');
+                        break;
+                    case "4":
+                        $(this).css('color', 'purple');
+                        break;
+                    case "6":
+                        $(this).css('color', 'red');
+                        break;
+                    default:
+                        $(this).css('color', 'black');
+                        break;
+                }
+            });
+
+            var selectedValue = $(dropdown).val();
+            switch (selectedValue) {
+                case "1":
+                    $(dropdown).css('color', 'orange');
+                    break;
+                case "2":
+                    $(dropdown).css('color', 'blue');
+                    break;
+                case "3":
+                    $(dropdown).css('color', 'green');
+                    break;
+                case "4":
+                    $(dropdown).css('color', 'purple');
+                    break;
+                case "6":
+                    $(dropdown).css('color', 'red');
+                    break;
+                default:
+                    $(dropdown).css('color', 'black');
+                    break;
+            }
+        }
+
+        // Function to bind task status to dropdown based on task status ID
+        function bindtaskstatusid(taskstatusid, itemsubtaskId) {
+            var dropdownfortaskstatusid = $("#ddltaskstatusid_" + itemsubtaskId);
+            if (taskstatusid && taskstatusid !== "0" && taskstatusid !== "") {
+                dropdownfortaskstatusid.val(taskstatusid);
+                updateDropdownColor(dropdownfortaskstatusid);
+            }
+        }
+
+        // Initial binding of task status IDs for each row
+    @foreach (var item in Model.EmpTaskList)
+    {
+        <text>
+                    bindtaskstatusid('@item.TaskStatusId', '@item.SubtaskId'); // Bind each task status ID to its dropdown
+        </text>
+    }
+
+            // Re-bind task status dropdowns after each table redraw (e.g., page change or search)
+            table.on('draw', function () {
+    @foreach (var item in Model.EmpTaskList)
+    {
+        <text>
+                            bindtaskstatusid('@item.TaskStatusId', '@item.SubtaskId'); // Bind each task status ID again after redraw
+        </text>
+    }
+            });
+
+        // Handle dropdown change event to update its color
+        $(document).on('change', '.taskstatus-dropdown', function () {
+            updateDropdownColor(this);
+        });
+    });
+</script>
+ <script>
+    $(document).ready(function () {
+        $('.taskstatus-dropdown').each(function () {
+            $(this).data('previous', $(this).val());
+        });
+
+        $(document).on("change", ".taskstatus-dropdown", function () {
+            var selectedTaskStatusId = $(this).val();
+            var previousTaskStatusId = $(this).data('previous');
+
+            if (selectedTaskStatusId !== previousTaskStatusId) {
+                var selectedId = $(this).closest('tr').find('.EmpTaskId').text().trim();
+
+                $.ajax({
+                    url: '/Vendor/UpdateSubTaskStatus',
+                    type: 'POST',
+                    data: {
+                        Taskstatusid: selectedTaskStatusId,
+                        Id: selectedId
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: response.message
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error updating shift type:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'There was an error updating the shift type.'
+                        });
+                    }
+                });
+
+                $(this).data('previous', selectedTaskStatusId);
+            }
+        });
+    });
+</script>
+
+
+@* <script>
     $(document).ready(function () {
         $('.taskstatus-dropdown').each(function () {
             $(this).data('previous', $(this).val());
@@ -517,4 +654,4 @@
         });
     });
 
-</script>
+</script> *@

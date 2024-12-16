@@ -13,7 +13,7 @@
     }
 }
 
-    <style >
+<style>
     .holiday-date {
         width: 50px;
         height: 50px;
@@ -39,8 +39,8 @@
     }
 
     .custom-border {
-        border: 2px solid #ccc; 
-        border-radius: 8px; 
+        border: 2px solid #ccc;
+        border-radius: 8px;
     }
 
     .ct-tooltip {
@@ -52,11 +52,15 @@
         font-size: 12px;
     }
 
-    .payment-status-chart {
-        position: relative;
-        width: 100%;
-        height: auto;
+    #paymentStatusChart {
+        height: 200%; 
+        width: 100%; 
+        max-width: 100%; 
     }
+
+
+
+
 
 </style>
 
@@ -90,7 +94,7 @@
                     <div class="container-fluid">
                         <div class="row">
                             <!-- TOTAL Users -->
-                           <div class="col-xl-3 col-md-6 xl-50">
+                            <div class="col-xl-3 col-md-6 xl-50">
                                 <a href="/Vendor/VendorList" class="text-decoration-none">
                                     <div class="card o-hidden widget-cards custom-border shadow">
                                         <div class="card-body rounded-3 text-primary">
@@ -109,7 +113,7 @@
                             </div>
 
                             <!-- TOTAL Generate Invoice -->
-                           <div class="col-xl-3 col-md-6 xl-50">
+                            <div class="col-xl-3 col-md-6 xl-50">
                                 <a href="/Vendor/VendorList" class="text-decoration-none">
                                     <div class="card o-hidden widget-cards custom-border shadow">
                                         <div class="card-body rounded-3 text-warning">
@@ -128,7 +132,7 @@
                             </div>
 
                             <!-- TOTAL Contact Us -->
-                           <div class="col-xl-3 col-md-6 xl-50">
+                            <div class="col-xl-3 col-md-6 xl-50">
                                 <a href="/Home/GetContacts" class="text-decoration-none">
                                     <div class="card o-hidden widget-cards custom-border shadow">
                                         <div class="card-body rounded-3 text-primary">
@@ -147,7 +151,7 @@
                             </div>
 
                             <!-- TOTAL Demo Request -->
-                           <div class="col-xl-3 col-md-6 xl-50">
+                            <div class="col-xl-3 col-md-6 xl-50">
                                 <a href="/Home/GetDemoRequests" class="text-decoration-none">
                                     <div class="card o-hidden widget-cards custom-border  shadow">
                                         <div class="card-body rounded-3 text-info">
@@ -166,7 +170,7 @@
                             </div>
 
                             <!-- TOTAL Help Centers -->
-                           <div class="col-xl-3 col-md-6 xl-50">
+                            <div class="col-xl-3 col-md-6 xl-50">
                                 <a href="/Home/GetHelpCenters" class="text-decoration-none">
                                     <div class="card o-hidden widget-cards custom-border shadow">
                                         <div class="card-body rounded-3 text-danger">
@@ -214,168 +218,195 @@ else
                         </div>
                     </div>
 
-                <div class="container-fluid">
-                    <div class="row">
-                        <!-- TOTAL Product -->
-                        <div class="col-xl-3 col-md-6 xl-50">
-                            <a href="/Product/VendorProductList" class="text-decoration-none">
-                                <div class="card o-hidden widget-cards custom-border shadow">
-                                    <div class="card-body rounded-3 text-success">
-                                        <div class="d-flex align-items-center">
-                                            <div class="media-body">
-                                                <span>TOTAL PRODUCT</span>
-                                                <h3 class="mb-0 mt-2"><span class="counter">@ViewBag.VendorProduct</span></h3>
-                                            </div>
-                                            <div class="icons-widgets ms-auto">
-                                                <i data-feather="package" class="feather-icon"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-
-                        <!-- TOTAL Customer -->
-                        <div class="col-xl-3 col-md-6 xl-50">
-                            <a href="/Customer/CustomerList" class="text-decoration-none">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <!-- TOTAL Product -->
+                            <div class="col-xl-3 col-md-6 xl-50">
+                                <a href="/Product/VendorProductList" class="text-decoration-none">
                                     <div class="card o-hidden widget-cards custom-border shadow">
-                                    <div class="card-body rounded-3 text-primary">
-                                        <div class="d-flex align-items-center">
-                                            <div class="media-body">
-                                                <span>TOTAL USERS</span>
-                                                <h3 class="mb-0 mt-2"><span class="counter">@ViewBag.Customer</span></h3>
-                                            </div>
-                                            <div class="icons-widgets ms-auto">
-                                                <i data-feather="users" class="feather-icon"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-
-                        <!-- TOTAL Generate Invoice -->
-                        <div class="col-xl-3 col-md-6 xl-50">
-                            <a href="/Sale/CustomerInvoiceList" class="text-decoration-none">
-                                <div class="card o-hidden widget-cards custom-border shadow">
-                                    <div class="card-body rounded-3 text-warning">
-                                        <div class="d-flex align-items-center">
-                                            <div class="media-body">
-                                                <span>TOTAL INVOICE</span>
-                                                <h3 class="mb-0 mt-2"><span class="counter">@ViewBag.CustomerInvoices</span></h3>
-                                            </div>
-                                            <div class="icons-widgets ms-auto">
-                                                <i data-feather="file-text" class="feather-icon"></i>
+                                        <div class="card-body rounded-3 text-success">
+                                            <div class="d-flex align-items-center">
+                                                <div class="media-body">
+                                                    <span>TOTAL PRODUCT</span>
+                                                    <h3 class="mb-0 mt-2"><span class="counter">@ViewBag.VendorProduct</span></h3>
+                                                </div>
+                                                <div class="icons-widgets ms-auto">
+                                                    <i data-feather="package" class="feather-icon"></i>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </a>
-                        </div>
+                                </a>
+                            </div>
 
-                        <!-- TOTAL Employee -->
-                        <div class="col-xl-3 col-md-6 xl-50">
-                            <a href="/Employee/Employeelist" class="text-decoration-none">
+                            <!-- TOTAL Customer -->
+                            <div class="col-xl-3 col-md-6 xl-50">
+                                <a href="/Customer/CustomerList" class="text-decoration-none">
                                     <div class="card o-hidden widget-cards custom-border shadow">
-                                    <div class="card-body rounded-3 text-dark">
-                                        <div class="d-flex align-items-center">
-                                            <div class="media-body">
-                                                <span>TOTAL EMPLOYEE</span>
-                                                <h3 class="mb-0 mt-2"><span class="counter">@ViewBag.Employee</span></h3>
-                                            </div>
-                                            <div class="icons-widgets ms-auto">
-                                                <i data-feather="user" class="feather-icon"></i>
+                                        <div class="card-body rounded-3 text-primary">
+                                            <div class="d-flex align-items-center">
+                                                <div class="media-body">
+                                                    <span>TOTAL USERS</span>
+                                                    <h3 class="mb-0 mt-2"><span class="counter">@ViewBag.Customer</span></h3>
+                                                </div>
+                                                <div class="icons-widgets ms-auto">
+                                                    <i data-feather="users" class="feather-icon"></i>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </a>
-                        </div>
+                                </a>
+                            </div>
 
-                        <!-- PRESENT Employees -->
-                        <div class="col-xl-3 col-md-6 xl-50">
-                            <a href="/Vendor/showallemployeeAttendancelist" class="text-decoration-none">
+                            <!-- TOTAL Generate Invoice -->
+                            <div class="col-xl-3 col-md-6 xl-50">
+                                <a href="/Sale/CustomerInvoiceList" class="text-decoration-none">
                                     <div class="card o-hidden widget-cards custom-border shadow">
-                                    <div class="card-body rounded-3 text-info">
-                                        <div class="d-flex align-items-center">
-                                            <div class="media-body">
-                                                <span>TODAY PRESENT</span>
-                                                <h3 class="mb-0 mt-2"><span class="counter">@ViewBag.Checkin</span></h3>
-                                            </div>
-                                            <div class="icons-widgets ms-auto">
-                                                <i data-feather="check-circle" class="feather-icon"></i>
+                                        <div class="card-body rounded-3 text-warning">
+                                            <div class="d-flex align-items-center">
+                                                <div class="media-body">
+                                                    <span>TOTAL INVOICE</span>
+                                                    <h3 class="mb-0 mt-2"><span class="counter">@ViewBag.CustomerInvoices</span></h3>
+                                                </div>
+                                                <div class="icons-widgets ms-auto">
+                                                    <i data-feather="file-text" class="feather-icon"></i>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </a>
-                        </div>
+                                </a>
+                            </div>
 
-                        <!-- On Break Employees Card with Different Color -->
-                        <div class="col-xl-3 col-md-6 xl-50">
-                            <a href="/Vendor/showallemployeeBreakinlist">
+                            <!-- TOTAL Employee -->
+                            <div class="col-xl-3 col-md-6 xl-50">
+                                <a href="/Employee/Employeelist" class="text-decoration-none">
                                     <div class="card o-hidden widget-cards custom-border shadow">
-                                    <div class="card-body rounded-3 text-danger">
-                                        <div class="media">
-                                            <div class="media-body">
-                                                <span>TODAY ON BREAK</span>
-                                                <h3 class="mb-0"><span class="counter">@ViewBag.onBreakList</span></h3>
-                                            </div>
-                                            <div class="icons-widgets">
-                                                <i data-feather="pause-circle" class="feather-icon"></i>
+                                        <div class="card-body rounded-3 text-dark">
+                                            <div class="d-flex align-items-center">
+                                                <div class="media-body">
+                                                    <span>TOTAL EMPLOYEE</span>
+                                                    <h3 class="mb-0 mt-2"><span class="counter">@ViewBag.Employee</span></h3>
+                                                </div>
+                                                <div class="icons-widgets ms-auto">
+                                                    <i data-feather="user" class="feather-icon"></i>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </a>
-                        </div>
+                                </a>
+                            </div>
 
-                        <!-- Wfh Card with Different Color -->
-                        <div class="col-xl-3 col-md-6 xl-50">
+                            <!-- PRESENT Employees -->
+                            <div class="col-xl-3 col-md-6 xl-50">
+                                <a href="/Vendor/showallemployeeAttendancelist" class="text-decoration-none">
+                                    <div class="card o-hidden widget-cards custom-border shadow">
+                                        <div class="card-body rounded-3 text-info">
+                                            <div class="d-flex align-items-center">
+                                                <div class="media-body">
+                                                    <span>TODAY PRESENT</span>
+                                                    <h3 class="mb-0 mt-2"><span class="counter">@ViewBag.Checkin</span></h3>
+                                                </div>
+                                                <div class="icons-widgets ms-auto">
+                                                    <i data-feather="check-circle" class="feather-icon"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <!-- On Break Employees Card with Different Color -->
+                            <div class="col-xl-3 col-md-6 xl-50">
+                                <a href="/Vendor/showallemployeeBreakinlist">
+                                    <div class="card o-hidden widget-cards custom-border shadow">
+                                        <div class="card-body rounded-3 text-danger">
+                                            <div class="media">
+                                                <div class="media-body">
+                                                    <span>TODAY ON BREAK</span>
+                                                    <h3 class="mb-0"><span class="counter">@ViewBag.onBreakList</span></h3>
+                                                </div>
+                                                <div class="icons-widgets">
+                                                    <i data-feather="pause-circle" class="feather-icon"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <!-- Wfh Card with Different Color -->
+                            <div class="col-xl-3 col-md-6 xl-50">
                                 <a href="/Vendor/ApprovedWfhApply">
-                                <div class="card o-hidden widget-cards shadow">
-                                    <div class="card-body rounded-3 text-muted">
-                                        <div class="media">
-                                            <div class="media-body">
-                                                <span>TODAY WFH</span>
+                                    <div class="card o-hidden widget-cards shadow">
+                                        <div class="card-body rounded-3 text-muted">
+                                            <div class="media">
+                                                <div class="media-body">
+                                                    <span>TODAY WFH</span>
                                                     <h3 class="mb-0"><span class="counter">@ViewBag.Numberofwfh</span></h3>
                                                 </div>
-                                            <div class="icons-widgets">
-                                                <i data-feather="user-x" class="feather-icon"></i>
+                                                <div class="icons-widgets">
+                                                    <i data-feather="user-x" class="feather-icon"></i>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </a>
-                        </div> 
-                        <!-- Employees on Leave Today Card with Different Color -->
-                        <div class="col-xl-3 col-md-6 xl-50">
-                            <a href="/Vendor/ApprovedLeaveApply">
+                                </a>
+                            </div>
+                            <!-- Employees on Leave Today Card with Different Color -->
+                            <div class="col-xl-3 col-md-6 xl-50">
+                                <a href="/Vendor/ApprovedLeaveApply">
                                     <div class="card o-hidden widget-cards custom-border shadow">
-                                    <div class="card-body rounded-3 text-warning">
-                                        <div class="media">
-                                            <div class="media-body">
-                                                <span>TODAY ON LEAVE</span>
-                                                <h3 class="mb-0"><span class="counter">@ViewBag.onLeaveList</span></h3>
-                                            </div>
-                                            <div class="icons-widgets">
-                                                <i data-feather="thermometer" class="feather-icon"></i>
+                                        <div class="card-body rounded-3 text-warning">
+                                            <div class="media">
+                                                <div class="media-body">
+                                                    <span>TODAY ON LEAVE</span>
+                                                    <h3 class="mb-0"><span class="counter">@ViewBag.onLeaveList</span></h3>
+                                                </div>
+                                                <div class="icons-widgets">
+                                                    <i data-feather="thermometer" class="feather-icon"></i>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col-xl-12">
-                            <div class="card custom-border shadow">
-                                <div class="card-body">
+                                </a>
+                            </div>
+                            <div class="col-xl-12">
+                                <div class="card custom-border shadow">
+                                    <div class="card-body">
                                         <h5 class="card-title">Work Hours for @ViewBag.MonthName</h5>
-                                    <canvas id="workHoursChart" class="chart-container"></canvas>
+                                        <canvas id="workHoursChart" class="chart-container"></canvas>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                            <div class="col-xl-6 col-lg-12 col-md-12">
-                                <div class="card shadow-sm">
+                            <div class="col-xl-4 xl-100">
+                                <div class="card height-equal">
+                                    <div class="card-header">
+                                        <h5>Reply Task List</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="order-timeline">
+
+                                        </div>
+                                        
+                                    </div>
+                                    <a href="/Vendor/EmpReplyTaskslist" class="btn btn-primary" style="margin-right: auto;">View All</a>
+                                </div>
+                            </div>
+                            <div class="col-xl-8 xl-100">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5>Payment Status Value</h5>
+                                    </div>
+                                    <div class="card-body payment-status-chart">
+                                        <!-- Canvas element for rendering the chart -->
+                                        <canvas id="paymentStatusChart" height="185" width="600"></canvas>
+                                    </div>
+                                </div>
+                              
+                            </div>
+
+                     @*        <div class="col-xl-6 xl-100">
+                                <div class="card">
                                     <div class="card-header d-flex justify-content-between align-items-center">
                                         <h5 class="mb-0">Payment Status Value</h5>
                                     </div>
@@ -387,185 +418,108 @@ else
                                     </div>
                                 </div>
                             </div>
-
-
-                        <div class="row mt-4">
-                            <!-- Holidays Section -->
-                            <div class="col-lg-6 col-md-12 mb-4">
-                                <div class="card custom-border shadow">
+                           *@
+                            <div class="col-xl-6 xl-100">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5>Task List</h5>
+                                    </div>
                                     <div class="card-body">
-                                        <h5 class="card-title">HOLIDAYS</h5>
-                                        <ul class="list-unstyled">
-                                            @if (ViewBag.Holidays != null)
-                                            {
-                                                foreach (var holiday in ViewBag.Holidays)
+                                        <div class="user-status table-responsive latest-order-table" style="height: 270px;">
+                                            <table class="table table-bordernone">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col">Employee ID</th>
+                                                        <th scope="col">Employee Name</th>
+                                                        <th scope="col">Task Name</th>
+                                                        <th scope="col">Task Status</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="taskListTable">
+                                                    <!-- Rows will be dynamically added here -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <a href="/Vendor/EmpTasksassignment" class="btn btn-primary">View All</a>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-4">
+                                <!-- Holidays Section -->
+                                <div class="col-lg-6 col-md-12 mb-4">
+                                    <div class="card custom-border shadow">
+                                        <div class="card-body">
+                                            <h5 class="card-title">HOLIDAYS</h5>
+                                            <ul class="list-unstyled">
+                                                @if (ViewBag.Holidays != null)
                                                 {
-                                                    <li class="d-flex align-items-center mb-3">
-                                                        <div class="holiday-date bg-light rounded text-center me-3 p-2">
-                                                            <h4 class="mb-0">@holiday.Date?.ToString("dd")</h4>
-                                                            <small class="text-uppercase">@holiday.Date?.ToString("MMM")</small>
-                                                        </div>
-                                                        <div>
-                                                            <h6 class="mb-0">@holiday.Subtittle</h6>
-                                                            <small>@holiday.Date?.ToString("dd MMM yyyy")</small>
-                                                        </div>
-                                                    </li>
+                                                    foreach (var holiday in ViewBag.Holidays)
+                                                    {
+                                                        <li class="d-flex align-items-center mb-3">
+                                                            <div class="holiday-date bg-light rounded text-center me-3 p-2">
+                                                                <h4 class="mb-0">@holiday.Date?.ToString("dd")</h4>
+                                                                <small class="text-uppercase">@holiday.Date?.ToString("MMM")</small>
+                                                            </div>
+                                                            <div>
+                                                                <h6 class="mb-0">@holiday.Subtittle</h6>
+                                                                <small>@holiday.Date?.ToString("dd MMM yyyy")</small>
+                                                            </div>
+                                                        </li>
+                                                    }
                                                 }
-                                            }
-                                            else
-                                            {
-                                                <p>No public holidays available.</p>
-                                            }
-                                        </ul>
+                                                else
+                                                {
+                                                    <p>No public holidays available.</p>
+                                                }
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Announcements Section -->
+                                <div class="col-lg-6 col-md-12 mb-4">
+                                    <div class="card custom-border shadow">
+                                        <div class="card-body">
+                                            <h5 class="card-title">ANNOUNCEMENTS</h5>
+                                            <ul class="list-unstyled">
+                                                @if (ViewBag.Announcements != null && ViewBag.Announcements.Count > 0)
+                                                {
+                                                    foreach (var announcement in ViewBag.Announcements)
+                                                    {
+                                                        <li class="d-flex align-items-start mb-3">
+                                                            <div class="announcement-icon bg-light rounded-circle text-center me-3 p-2">
+                                                                <i class="bi bi-megaphone fs-5 text-primary"></i>
+                                                            </div>
+                                                            <div>
+                                                                <h6 class="mb-0">Meeting at @announcement.time</h6>
+                                                                <h6 class="mb-0">Talking about @announcement.Title</h6>
+                                                                <small>@announcement.Date?.ToString("dd MMM yyyy")</small>
+                                                            </div>
+                                                        </li>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <p>No announcements available.</p>
+                                                }
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Announcements Section -->
-                            <div class="col-lg-6 col-md-12 mb-4">
-                                <div class="card custom-border shadow">
-                                    <div class="card-body">
-                                        <h5 class="card-title">ANNOUNCEMENTS</h5>
-                                        <ul class="list-unstyled">
-                                            @if (ViewBag.Announcements != null && ViewBag.Announcements.Count > 0)
-                                            {
-                                                foreach (var announcement in ViewBag.Announcements)
-                                                {
-                                                    <li class="d-flex align-items-start mb-3">
-                                                        <div class="announcement-icon bg-light rounded-circle text-center me-3 p-2">
-                                                            <i class="bi bi-megaphone fs-5 text-primary"></i>
-                                                        </div>
-                                                        <div>
-                                                            <h6 class="mb-0">Meeting at @announcement.time</h6>
-                                                            <h6 class="mb-0">Talking about @announcement.Title</h6>
-                                                            <small>@announcement.Date?.ToString("dd MMM yyyy")</small>
-                                                        </div>
-                                                    </li>
-                                                }
-                                            }
-                                            else
-                                            {
-                                                <p>No announcements available.</p>
-                                            }
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
+
+
+
                         </div>
-
-                     @*    <div class="col-xl-4 xl-100">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5>Latest Orders</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="user-status table-responsive latest-order-table">
-                                        <table class="table table-bordernone">
-                                            <thead>
-                                                <tr>
-                                                    <th scope="col">Order ID</th>
-                                                    <th scope="col">Order Total</th>
-                                                    <th scope="col">Payment Method</th>
-                                                    <th scope="col">Status</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>1</td>
-                                                    <td class="digits">$120.00</td>
-                                                    <td class="font-danger">Bank Transfers</td>
-                                                    <td class="digits">On Way</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>2</td>
-                                                    <td class="digits">$90.00</td>
-                                                    <td class="font-secondary">Ewallets</td>
-                                                    <td class="digits">Delivered</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>3</td>
-                                                    <td class="digits">$240.00</td>
-                                                    <td class="font-warning">Cash</td>
-                                                    <td class="digits">Delivered</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>4</td>
-                                                    <td class="digits">$120.00</td>
-                                                    <td class="font-danger">Direct Deposit</td>
-                                                    <td class="digits">$6523</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>5</td>
-                                                    <td class="digits">$50.00</td>
-                                                    <td class="font-primary">Bank Transfers</td>
-                                                    <td class="digits">Delivered</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                        <a href="order.html" class="btn btn-primary">View All Orders</a>
-                                    </div>
-                                    <div class="code-box-copy">
-                                        <button class="code-box-copy__btn btn-clipboard" data-clipboard-target="#example-head1" title="" data-original-title="Copy"><i class="icofont icofont-copy-alt"></i></button>
-                                        <pre class=" language-html"><code class=" language-html" id="example-head1">
-    &lt;div class="user-status table-responsive latest-order-table"&gt;
-        &lt;table class="table table-bordernone"&gt;
-            &lt;thead&gt;
-                &lt;tr&gt;
-                    &lt;th scope="col"&gt;Order ID&lt;/th&gt;
-                    &lt;th scope="col"&gt;Order Total&lt;/th&gt;
-                    &lt;th scope="col"&gt;Payment Method&lt;/th&gt;
-                    &lt;th scope="col"&gt;Status&lt;/th&gt;
-                &lt;/tr&gt;
-            &lt;/thead&gt;
-            &lt;tbody&gt;
-                &lt;tr&gt;
-                    &lt;td&gt;1&lt;/td&gt;
-                    &lt;td class="digits"&gt;$120.00&lt;/td&gt;
-                    &lt;td class="font-secondary"&gt;Bank Transfers&lt;/td&gt;
-                    &lt;td class="digits"&gt;Delivered&lt;/td&gt;
-                &lt;/tr&gt;
-                &lt;tr&gt;
-                    &lt;td&gt;2&lt;/td&gt;
-                    &lt;td class="digits"&gt;$90.00&lt;/td&gt;
-                    &lt;td class="font-secondary"&gt;Ewallets&lt;/td&gt;
-                    &lt;td class="digits"&gt;Delivered&lt;/td&gt;
-                &lt;/tr&gt;
-                &lt;tr&gt;
-                    &lt;td&gt;3&lt;/td&gt;
-                    &lt;td class="digits"&gt;$240.00&lt;/td&gt;
-                    &lt;td class="font-secondary"&gt;Cash&lt;/td&gt;
-                    &lt;td class="digits"&gt;Delivered&lt;/td&gt;
-                &lt;/tr&gt;
-                &lt;tr&gt;
-                    &lt;td&gt;4&lt;/td&gt;
-                    &lt;td class="digits"&gt;$120.00&lt;/td&gt;
-                    &lt;td class="font-primary"&gt;Direct Deposit&lt;/td&gt;
-                    &lt;td class="digits"&gt;Delivered&lt;/td&gt;
-                &lt;/tr&gt;
-                &lt;tr&gt;
-                    &lt;td&gt;5&lt;/td&gt;
-                    &lt;td class="digits"&gt;$50.00&lt;/td&gt;
-                    &lt;td class="font-primary"&gt;Bank Transfers&lt;/td&gt;
-                    &lt;td class="digits"&gt;Delivered&lt;/td&gt;
-                &lt;/tr&gt;
-            &lt;/tbody&gt;
-        &lt;/table&gt;
-    &lt;/div&gt;
-                                        </code></pre>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> *@
-
-
                     </div>
+
+
+
                 </div>
 
-
-              
             </div>
-
-        </div>
         </div>
     </div>
 }
@@ -636,6 +590,157 @@ else
         new Chart(ctx, config);
     });
 </script>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Get the data from ViewBag or model
+        const tasksList = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.TasksList));
+
+        const taskListTable = document.getElementById('taskListTable');
+
+        // Function to return the color based on task status
+        function getStatusColor(status) {
+            switch (status) {
+                case "Pending":
+                    return 'orange';
+                case "In Progress":
+                    return 'blue';
+                case "Completed":
+                    return 'green';
+                case "Reassigned":
+                    return 'purple';
+                case "UnCompleted":
+                    return 'red';
+                default:
+                    return 'black'; // default color for unknown statuses
+            }
+        }
+
+        // Loop through the data and create rows
+        tasksList.forEach(task => {
+            const row = document.createElement('tr');
+
+            // Create cells and append data
+            const employeeIdCell = document.createElement('td');
+            employeeIdCell.textContent = task.EmployeeId;
+
+            const employeeNameCell = document.createElement('td');
+            employeeNameCell.textContent = task.EmployeeName;
+
+            const taskNameCell = document.createElement('td');
+            taskNameCell.textContent = task.TaskName;
+
+            const taskStatusCell = document.createElement('td');
+            taskStatusCell.textContent = task.Taskstatus;
+
+            // Apply the text color to the taskStatus cell based on the status
+            taskStatusCell.style.color = getStatusColor(task.Taskstatus);
+
+            // Append cells to the row
+            row.appendChild(employeeIdCell);
+            row.appendChild(employeeNameCell);
+            row.appendChild(taskNameCell);
+            row.appendChild(taskStatusCell);
+
+            // Append the row to the table body
+            taskListTable.appendChild(row);
+        });
+    });
+</script>
+
+<script>
+    function createTimeline() {
+        // Example reply task list data from ViewBag (replace with your actual data)
+        const replytasklist = @Html.Raw(Json.Serialize(ViewBag.ReplyTasksList));
+
+        // Container where the tasks will be displayed
+        const timelineContainer = document.querySelector('.order-timeline');
+
+        // Status mappings for taskstatus (support both numeric and string keys)
+        const statusMappings = {
+            1: { colorClass: 'timeline-icon-warning', icon: 'clock', label: 'Pending' },
+            2: { colorClass: 'timeline-icon-info', icon: 'refresh-cw', label: 'In Progress' },
+            3: { colorClass: 'timeline-icon-success', icon: 'check-circle', label: 'Completed' },
+            4: { colorClass: 'timeline-icon-secondary', icon: 'repeat', label: 'Reassigned' },
+            6: { colorClass: 'timeline-icon-danger', icon: 'x-circle', label: 'UnCompleted' },
+            "Pending": { colorClass: 'timeline-icon-warning', icon: 'clock', label: 'Pending' },
+            "In Progress": { colorClass: 'timeline-icon-info', icon: 'refresh-cw', label: 'In Progress' },
+            "Completed": { colorClass: 'timeline-icon-success', icon: 'check-circle', label: 'Completed' },
+            "Reassigned": { colorClass: 'timeline-icon-secondary', icon: 'repeat', label: 'Reassigned' },
+            "UnCompleted": { colorClass: 'timeline-icon-danger', icon: 'x-circle', label: 'UnCompleted' }
+        };
+
+        // Loop through the task list
+        replytasklist.forEach((task) => {
+            // Safely handle null or missing values
+            const taskName = task.taskName || 'N/A';
+            const subTaskName = task.subTaskName || 'N/A';
+            const taskStatus = task.taskstatus || 'Unknown'; // Default to 'Unknown'
+            const taskDate = task.replydate || 'N/A';
+
+            // Match the taskstatus with statusMappings or use 'Unknown Status'
+            const status = statusMappings[taskStatus] || {
+                colorClass: 'timeline-icon-primary',
+                icon: 'alert-circle',
+                label: taskStatus
+            };
+
+            // Build the timeline item
+            const taskDiv = document.createElement('div');
+            taskDiv.classList.add('media');
+
+            // Timeline line
+            const timelineLine = document.createElement('div');
+            timelineLine.classList.add('timeline-line');
+            taskDiv.appendChild(timelineLine);
+
+            // Status Icon (colorClass and icon)
+            const timelineIcon = document.createElement('div');
+            timelineIcon.classList.add(status.colorClass);
+            timelineIcon.innerHTML = `<i data-feather="${status.icon}"></i>`;
+            taskDiv.appendChild(timelineIcon);
+
+            // Media body (text)
+            const mediaBody = document.createElement('div');
+            mediaBody.classList.add('media-body');
+
+            const statusText = document.createElement('span');
+            statusText.classList.add('font-primary');
+            statusText.textContent = `Status: ${status.label}`; // Display proper status label
+            mediaBody.appendChild(statusText);
+
+            const taskDescription = document.createElement('p');
+            taskDescription.textContent = `Task: ${taskName}, SubTask: ${subTaskName}`;
+            mediaBody.appendChild(taskDescription);
+
+            taskDiv.appendChild(mediaBody);
+
+            // Right-aligned task date
+            const taskDateElement = document.createElement('span');
+            taskDateElement.classList.add('pull-right', 'text-muted');
+            taskDateElement.textContent = taskDate;
+            taskDiv.appendChild(taskDateElement);
+
+            // Append the timeline item to the container
+            timelineContainer.appendChild(taskDiv);
+        });
+
+        // Re-render feather icons after dynamic HTML creation
+        feather.replace();
+    }
+
+    // Call the function to display the timeline
+    createTimeline();
+
+</script>
+
+
+
+
+
+
+
 
 
 

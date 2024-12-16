@@ -12,6 +12,7 @@
         public string? Status { get; set; }
         public int? TaskStatusId { get; set; }
         public string? EmployeeId { get; set; }
+        public string? EmployeeName { get; set; }
     }
     public class EmpTasknameDto
     {
@@ -23,6 +24,7 @@
         public int? TaskStatusId { get; set; }
         public string? Taskname { get; set; }
         public int SubtaskId { get; set; }
+        public string? EmployeeName { get; set; }
 
     }
     public class EmpTasksListDto
@@ -56,6 +58,33 @@
         public DateTime? Startdate { get; set; }
         public DateTime? EndDate { get; set; }
         public string? Reason { get; set; }
+
+    }
+    public class TasksListDashDto
+    {
+        public string? EmployeeId { get; set; }
+        public string? EmployeeName { get; set; }
+        public string? TaskName { get; set; }
+        public string? Taskstatus { get; set; }
+    }
+    public class TasksReplyListDashDto
+    {
+        public int? id { get; set; }
+        public string? TaskName { get; set; }
+        public string? SubTaskName { get; set; }
+        public string? Replydate { get; set; }
+        public string? Taskstatus { get; set; }
+    }
+    public class EmptaskReplyListDto
+    {
+        public int? id { get; set; }
+        public string? EmployeeId { get; set; }
+        public string? EmployeeName { get; set; }
+        public string? TaskName { get; set; }
+        public string? SubTaskName { get; set; }
+        public string? Replydate { get; set; }
+        public string? Taskstatus { get; set; }
+        public string? TaskReason { get; set; }
 
     }
 }

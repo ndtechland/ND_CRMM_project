@@ -71,7 +71,7 @@
 
         p {
             margin: 2px 0;
-            font-size:larger;
+            font-size: larger;
         }
 
         .footer {
@@ -118,8 +118,9 @@
         /* Adjust for printing */
         @@page {
             size: A4;
-/*             margin: 20mm;
- */        }
+            /*             margin: 20mm;
+         */
+        }
 
         @@media print {
             body {
@@ -150,6 +151,10 @@
     </style>
 </head>
 <body>
+   @*  <div style="text-align:center; margin-top: 20px;">
+        <button id="printButton" onclick="printPage()">Print</button>
+        <button id="backButton" onclick="window.history.back()">Back</button>
+    </div> *@
     <div class="container">
         <!-- Header Section -->
         <div class="header">
@@ -159,7 +164,7 @@
 
         <div class="content">
             <h4>
-                To,<br/>
+                To,<br />
                 <strong>@Model.Name</strong><br>
                 @Model.CandidateAddress<br>
                 @Model.CityName, @Model.StateName, @Model.CandidatePincode
@@ -205,3 +210,18 @@
     </div>
 </body>
 </html>
+<script>
+    // Function to hide buttons after print
+    function afterPrint() {
+        document.getElementById('printButton').style.display = 'none';
+        document.getElementById('backButton').style.display = 'none';
+    }
+
+    // Call the afterPrint function after print
+    window.onafterprint = afterPrint;
+
+    // Print function
+    function printPage() {
+        window.print();
+    }
+</script>

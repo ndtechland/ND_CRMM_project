@@ -98,6 +98,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<Quation> Quations { get; set; } = null!;
         public virtual DbSet<RequestDemo> RequestDemos { get; set; } = null!;
         public virtual DbSet<Salarydeductionmaster> Salarydeductionmasters { get; set; } = null!;
+        public virtual DbSet<ScheduledTask> ScheduledTasks { get; set; } = null!;
         public virtual DbSet<Schema> Schemas { get; set; } = null!;
         public virtual DbSet<Server> Servers { get; set; } = null!;
         public virtual DbSet<Set> Sets { get; set; } = null!;
@@ -511,9 +512,13 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Email).HasMaxLength(255);
 
+                entity.Property(e => e.FirstName).HasMaxLength(200);
+
                 entity.Property(e => e.GstNumber)
                     .HasMaxLength(255)
                     .HasColumnName("GST_Number");
+
+                entity.Property(e => e.LastName).HasMaxLength(200);
 
                 entity.Property(e => e.Location).HasMaxLength(200);
 
@@ -1872,6 +1877,19 @@ namespace CRM.Models.Crm
                     .HasColumnName("deductiontype");
 
                 entity.Property(e => e.Vendorid).HasColumnName("vendorid");
+            });
+
+            modelBuilder.Entity<ScheduledTask>(entity =>
+            {
+                entity.ToTable("ScheduledTask");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Excutetime).HasColumnType("datetime");
+
+                entity.Property(e => e.Scheduleday).HasMaxLength(200);
+
+                entity.Property(e => e.Schedulemethod).HasMaxLength(200);
             });
 
             modelBuilder.Entity<Schema>(entity =>

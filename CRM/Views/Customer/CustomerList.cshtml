@@ -4,6 +4,57 @@
     ViewData["Title"] = "CustomerList";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var message = "@TempData["Message"]";
+        if (message == "ok" || message == "dltok" || message == "updok") {
+            if (message) {
+                let alertText;
+
+                if (message == "dltok") {
+                    alertText = "Deleted successfully.";
+                } else if (message == "updok") {
+                    alertText = "Customer updated successfully.";
+                } else {
+                    alertText = "Customer added successfully.";
+                }
+
+                Swal.fire({
+                    title: 'Success',
+                    text: alertText,
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        setTimeout(function () {
+                            window.location.href = '@Url.Action("CustomerList", "Customer")';
+                        }, 1000);
+                    }
+                });
+            }
+        }
+        else {
+            if (message) {
+                Swal.fire({
+                    title: 'Failed',
+                    text: message,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        setTimeout(function () {
+                            window.location.href = '@Url.Action("CustomerList", "Customer")';
+                        }, 1000);
+                    }
+                });
+            }
+        }
+    });
+</script>
 <style>
     .dataTables_wrapper table.dataTable th {
         background-color: #00baf2 !important;
@@ -49,11 +100,18 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-body">
-                                <div  class=" table-responsive">
+                                <img src="~/image/execimage.png" style="height:50px; margin-left:96%;width:53px;cursor:pointer" title="Export To Excel" onclick="ExportCustomerExcelfn()" />
+                                <div class=" table-responsive">
                                     <table id="datatable" class="table table-hover">
                                         <thead>
                                             <tr style="background-color: #00baf2;">
                                                 <th nowrap>Sl. No.</th>
+                                                <th nowrap>
+                                                    First Name
+                                                </th>
+                                                <th nowrap>
+                                                    Last Name
+                                                </th>
                                                 <th nowrap>
                                                     Company Name
                                                 </th>
@@ -71,35 +129,11 @@
                                                 </th>
                                                 <th nowrap>
                                                     Office Location
-                                                </th>                                      
-                                                <th nowrap>
-                                                   Billing Location
-                                                </th> 
-                                                @* <th nowrap>
-                                                    Product Name
                                                 </th>
                                                 <th nowrap>
-                                                    Start Date
+                                                    Billing Location
                                                 </th>
-                                                <th nowrap>
-                                                    Renew Date
-                                                </th>
-                                                 <th nowrap>
-                                                   Product Price 
-                                                </th>
-                                                 <th nowrap>
-                                                   Product Renew Price 
-                                                </th>
-                                                 <th nowrap>
-                                                  SCGST
-                                                </th>
-                                                 <th nowrap>
-                                                  CGST
-                                                </th>
-                                                 <th nowrap>
-                                                  IGST
-                                                </th> *@
-                                                <th>Action</th>
+                                                <th nowrap>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -110,6 +144,12 @@
                                                     count++;
                                                     <tr class="table-row">
                                                         <td>@count</td>
+                                                        <td>
+                                                            @item.FirstName
+                                                        </td>
+                                                        <td>
+                                                            @item.LastName
+                                                        </td>
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.CompanyName)
                                                         </td>
@@ -125,38 +165,14 @@
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.GstNumber)
                                                         </td>
-                                                        <td >
+                                                        <td>
                                                             @item.Location, @item.OfficeCity, @item.OfficeState
-                                                        </td>                                                       
-                                                        
+                                                        </td>
+
                                                         <td>
                                                             @item.BillingAddress, @item.BillingCity, @item.BillingState
-                                                        </td> 
-                                                        @*<td>
-                                                            @Html.DisplayFor(modelItem => item.ProductDetails)
                                                         </td>
                                                         <td nowrap>
-                                                            @item.StartDate.ToString("dd/MM/yyyy")
-                                                        </td>
-                                                        <td nowrap>
-                                                            @item.RenewDate.ToString("dd/MM/yyyy")
-                                                        </td>
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => item.productprice)
-                                                        </td>
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => item.Renewprice)
-                                                        </td>
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => item.Scgst) %
-                                                        </td>
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => item.Cgst) %
-                                                        </td>
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => item.Igst) %
-                                                        </td>*@
-                                                        <td>
                                                             <div>
                                                                 <a href="@Url.Action("Customer","Customer",new { id=item.Id})" class="fa fa-edit m-2 font-success"></a>
                                                                 <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteCustomer", "Customer", new { id = item.Id })')" class="fa fa-trash font-danger"></a>
@@ -169,14 +185,14 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                
+
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-           @*  <div id="pagination-container">
-                <ul id="pagination" class="pagination"></ul>
+            @*  <div id="pagination-container">
+            <ul id="pagination" class="pagination"></ul>
             </div> *@
         </div>
 
@@ -198,5 +214,8 @@
     $(document).ready(function () {
         $('#datatable').DataTable();
     });
+    function ExportCustomerExcelfn() {
+
+        window.location.href = '/Customer/ExportCustomerList';
+    }
 </script>
- 

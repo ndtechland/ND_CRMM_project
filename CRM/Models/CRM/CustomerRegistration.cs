@@ -19,5 +19,7 @@ namespace CRM.Models.Crm
         public string? Location { get; set; }
         public bool? IsSameAddress { get; set; }
         public int? CityId { get; set; }
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
     }
 }
