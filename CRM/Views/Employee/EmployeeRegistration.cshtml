@@ -733,7 +733,7 @@
                             <input class="form-control" name="TdsPercentage" value='@ViewBag.Tdspercentage' placeholder="00.0" id="txtTdspercentage" type="hidden">
                             </div>
                             *@
-                            <h4 class="text-danger EmployeeContribution">Employee Contribution</h4>
+                            <h4 class="text-danger EmployeeContribution" style="display:none;">Employee Contribution</h4>
                             <div class="row">
                                 <div class="col-md-6 txtLabelEPF" style="display:none;">
                                     <label>EPF (<span id="displayEmpEPFMaster"></span>%)</label>
@@ -748,7 +748,7 @@
 
                             <br>
 
-                            <h4 class="text-danger">Employer Contribution</h4>
+                            <h4 class="text-danger EmployerContribution" style="display:none;">Employer Contribution</h4>
                             <div class="row">
                                 <div class="col-md-6 txtLabelEmployerEPF" style="display:none;">
                                     <label>EPF (<span id="displayEPFMaster"></span>%)</label>
@@ -778,6 +778,9 @@
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="~/js/multiformvalidation.js"></script>
 <script>
+    $(document).ready(function(){
+        SalaryCalculation();
+    })
     function SalaryCalculation() {
         var AnnualCTC = parseFloat($('#txtAnnualCTC').val());
         var basicSalaryInput = $('#txtBasicSalary');
@@ -812,6 +815,10 @@
                         monthlySalaryInput.val(0);
                         specialAllowanceInput.val(0);
                         monthlyGrossPayInput.val(0);
+                        EmployeeEpfInput.val(0);
+                        EmployerEpfInput.val(0);
+                        EmployeeESICInput.val(0);
+                        EmployerESICInput.val(0);
 
                         data.forEach(function (item) {
                             switch (item.deductiontype) {
@@ -837,28 +844,25 @@
 
                         if (AnnualCTC > 0) {
                             var monthlySalary = AnnualCTC / 12;
-                            monthlySalaryInput.val(parseFloat(monthlySalary));
-
-                            var basicSalary = parseFloat(basicSalaryInput.val()) || 0;
-                            
-                           
-                            EmployeeEpfEsic(basicSalary, monthlySalary, esicPercentage, epfPercentage, esicAmount);
-                            var hra = parseFloat(houseRentAllowanceInput.val()) || 0;
-                            var conveyance = parseFloat(conveyanceAllowanceInput.val()) || 0;
-                            var medical = parseFloat(medicalAllowanceInput.val()) || 0;
-                            var variablePay = parseFloat(variableAllowanceInput.val()) || 0;
-                            var empepf = parseFloat(EmployeeEpfInput.val()) || 0;
-                            var empesic = parseFloat(EmployeeESICInput.val()) || 0;
-                            var employerEpf = parseFloat(EmployerEpfInput.val()) || 0;
-                            var employeresic = parseFloat(EmployerESICInput.val()) || 0;
-
-                            var totalSpecial = AnnualCTC - basicSalary - hra - conveyance - medical - variablePay - empepf - empesic - employerEpf - employeresic;
-                            var monthlyGrossPay = basicSalary + hra + totalSpecial + conveyance + medical + variablePay;
-
-                            specialAllowanceInput.val(parseFloat(totalSpecial));
-                            monthlyGrossPayInput.val(parseFloat(monthlyGrossPay));
+                            monthlySalaryInput.val(parseFloat(monthlySalary).toFixed(2));
+                            var basicSalary = parseFloat(basicSalaryInput.val()).toFixed(2);
+                            GetEmployerEPF(basicSalary);
                         }
-                       
+                       if(parseFloat(monthlySalaryInput.val()) > esicAmount)
+                       {
+                          var basicSalary = parseFloat(basicSalaryInput.val()).toFixed(2);
+                          DeductionEPFFields(epfPercentage,basicSalary);
+                            $('#ESIC').css('display', 'none');
+                            $('.ESICLabel').css('display', 'none');
+                       }else if(parseFloat(monthlySalaryInput.val()) <= esicAmount)
+                       {
+                           var basicSalary = parseFloat(basicSalaryInput.val()).toFixed(2);
+                           DeductionEPFFields(epfPercentage,basicSalary);
+                           DeductionESICFields(esicPercentage,basicSalary)
+                       }
+
+                       // here you are calculate the Special Allowance and Gross Pay
+
                     },
                     error: function (err) {
                         console.error('Failed to fetch deductions:', err);
@@ -870,146 +874,60 @@
             }
         });
     }
-
-   
-    function EmployeeEpfEsic(basicSalary, monthlySalary, esicPercentage, epfPercentage, esicAmount) {
-        if (monthlySalary <= esicAmount) {
-            // Show both EPF and ESIC when monthly salary is greater than or equal to esicAmount
-            $('#displayEmpEPFMaster').text(epfPercentage ? epfPercentage.toFixed(2) : '0');
-            var epfValue = basicSalary * epfPercentage / 100;  // Calculate EPF based on basicSalary
-            $('#txtEPF').val(epfValue.toFixed(2)).css('display', 'block');
-            $('.txtLabelEPF').css('display', 'block');
-
-            $('#displayEmpESICMaster').text(esicPercentage ? esicPercentage.toFixed(2) : '0');
-            var esicValue = basicSalary * esicPercentage / 100;
-            $('#ESIC').val(esicValue.toFixed(2)).css('display', 'block');
-            $('.ESICLabel').css('display', 'block');
-
-            // var AnnualCTC = parseFloat($('#txtAnnualCTC').val());
-            // var BasicSalary = parseFloat($('#txtBasicSalary').val());
-            // var Hra = parseFloat($('#txtHouseRentAllowance').val());
-            // var Conveyance = parseFloat($('#txtConveyanceallowance').val());
-            // var Medical = parseFloat($('#txtMedical').val());
-            // var VariablePay = parseFloat($('#txtVariablePay').val());
-            // var epf = parseFloat($('#txtEPF').val());
-            // var Esi = parseFloat($('#ESIC').val());
-            // var EsiMaster = parseFloat($('#ESICMaster').val());
-            // var epfMaster = parseFloat($('#txtEPFMaster').val());
-
-            // if (isNaN(AnnualCTC)) AnnualCTC = 0;
-            // if (isNaN(BasicSalary)) BasicSalary = 0;
-            // if (isNaN(Hra)) Hra = 0;
-            // if (isNaN(Conveyance)) Conveyance = 0;
-            // if (isNaN(Medical)) Medical = 0;
-            // if (isNaN(VariablePay)) VariablePay = 0;
-            // if (isNaN(epf)) epf = 0;
-            // if (isNaN(epfMaster)) epfMaster = 0;
-            // if (isNaN(Esi)) Esi = 0;
-            // if (isNaN(EsiMaster)) EsiMaster = 0;
-
-            // var totalSpecial = AnnualCTC - BasicSalary - Hra - Conveyance - Medical - VariablePay - epf - epfMaster - Esi - EsiMaster;
-            // var monthlyGrossPay = BasicSalary + Hra + totalSpecial + Conveyance + Medical + VariablePay;
-
-            // $('#SpecialAllowance').val(totalSpecial.toFixed(2));
-            // $('#txtMonthlyGrossPay').val(monthlyGrossPay.toFixed(2));
-        } else {
-            // Show only EPF when monthly salary is less than esicAmount
-            $('#displayEmpEPFMaster').text(epfPercentage ? epfPercentage.toFixed(2) : '0');
-            var epfValue = basicSalary * epfPercentage / 100;
-            $('#txtEPF').val(epfValue.toFixed(2)).css('display', 'block');
-            $('.txtLabelEPF').css('display', 'block');
-
-            // var AnnualCTC = parseFloat($('#txtAnnualCTC').val());
-            // var BasicSalary = parseFloat($('#txtBasicSalary').val());
-            // var Hra = parseFloat($('#txtHouseRentAllowance').val());
-            // var Conveyance = parseFloat($('#txtConveyanceallowance').val());
-            // var Medical = parseFloat($('#txtMedical').val());
-            // var VariablePay = parseFloat($('#txtVariablePay').val());
-            // var epf = parseFloat($('#txtEPF').val());
-            // var Esi = parseFloat($('#ESIC').val());
-            // var EsiMaster = parseFloat($('#ESICMaster').val());
-            // var epfMaster = parseFloat($('#txtEPFMaster').val());
-
-            // if (isNaN(AnnualCTC)) AnnualCTC = 0;
-            // if (isNaN(BasicSalary)) BasicSalary = 0;
-            // if (isNaN(Hra)) Hra = 0;
-            // if (isNaN(Conveyance)) Conveyance = 0;
-            // if (isNaN(Medical)) Medical = 0;
-            // if (isNaN(VariablePay)) VariablePay = 0;
-            // if (isNaN(epf)) epf = 0;
-            // if (isNaN(epfMaster)) epfMaster = 0;
-            // if (isNaN(Esi)) Esi = 0;
-            // if (isNaN(EsiMaster)) EsiMaster = 0;
-
-            // var totalSpecial = AnnualCTC - BasicSalary - Hra - Conveyance - Medical - VariablePay - epf - epfMaster - Esi - EsiMaster;
-            // var monthlyGrossPay = BasicSalary + Hra + totalSpecial + Conveyance + Medical + VariablePay;
-
-            // $('#SpecialAllowance').val(totalSpecial.toFixed(2));
-            // $('#txtMonthlyGrossPay').val(monthlyGrossPay.toFixed(2));
-            // Hide ESIC
-            $('#displayEmpESICMaster').text('0');
-            $('#ESIC').val('0').css('display', 'none');
-            $('.ESICLabel').css('display', 'none');
-        }      
+    function DeductionEPFFields(epfPercentage,basicSalary){
+        $('#displayEmpEPFMaster').text(epfPercentage ? epfPercentage.toFixed(2) : '0');
+        var epfValue = basicSalary * epfPercentage / 100;  // Calculate EPF based on basicSalary
+        $('.EmployeeContribution').css('display', 'block');
+        $('.EmployerContribution').css('display', 'block');
+        $('#txtEPF').val(epfValue.toFixed(2)).css('display', 'block');
+        $('.txtLabelEPF').css('display', 'block');
     }
-    function EmployerEPFAndESIC(annualSalary) {
-        if (!annualSalary || annualSalary <= 0) {
-            console.error("Invalid annual salary:", annualSalary);
-            return;
-        }
+    function DeductionESICFields(esicPercentage,basicSalary)
+    {
+      $('#displayEmpESICMaster').text(esicPercentage ? esicPercentage.toFixed(2) : '0');
+      var esicValue = basicSalary * esicPercentage / 100;
+      $('.EmployeeContribution').css('display', 'block');
+        $('.EmployerContribution').css('display', 'block');
+      $('#ESIC').val(esicValue.toFixed(2)).css('display', 'block');
+      $('.ESICLabel').css('display', 'block');
 
-        // Calculate monthly salary
-        var monthlySalary = annualSalary / 12;
-
-        var basicSalaryInput = $('#txtBasicSalary');
-        var basicSalary = parseFloat(basicSalaryInput.val()) || 0;
-
-        $.ajax({
-            url: '/Employee/Epfesilist',
-            type: 'GET',
-            dataType: 'json',
-            success: function (response) {
-                if (!response || !response.data) {
-                    console.error("Invalid response from API:", response);
-                    return;
-                }
-
-                var epfPercentage = 0;
-                var esicPercentage = 0;
-
-                response.data.forEach(function (item) {
-                    if (item.deductionCycle === "EPF") {
-                        epfPercentage = parseFloat(item.epfNumber) || 0;
-                    } else if (item.deductionCycle === "ESIC") {
-                        esicPercentage = parseFloat(item.epfNumber) || 0;
-                    }
-                });
-
-                // EPF Calculation
-                var epfValue = (basicSalary * epfPercentage) / 100;
-                $('#displayEPFMaster').text(epfPercentage.toFixed(2));
-                $('#txtEPFMaster').val(epfValue.toFixed(2)).show();
-                $('.txtLabelEmployerEPF').show();
-
-                // Hide ESIC
-                $('#displayESICMaster').text('0');
-                $('#ESICMaster').val('0').hide();
-                $('.txtLabelEmployerEsic').hide();
-            },
-            error: function () {
-                alert('Error fetching data.');
-            }
-        });
     }
+    function GetEmployerEPF(basicSalary){
+         $.ajax({
+                     url: '/Employee/Epfesilist',
+                     type: 'GET',
+                     dataType: 'json',
+                     success: function (response) {
+                         if (!response || !response.data) {
+                             console.error("Invalid response from API:", response);
+                             return;
+                         }
+                         var epfPercentage = 0;
+                         var esicPercentage = 0;
 
-    // Event listener for input change
-    $('#txtAnnualCTC').on('input change', function () {
-        var annualSalary = parseFloat($(this).val()) || 0;
-        if (annualSalary > 0) {
-            EmployerEPFAndESIC(annualSalary);
-        }
-    });
+                         response.data.forEach(function (item) {
+                             if (item.deductionCycle === "EPF") {
+                                 epfPercentage = parseFloat(item.epfNumber) || 0;
+                             } else if (item.deductionCycle === "ESIC") {
+                                 esicPercentage = parseFloat(item.epfNumber) || 0;
+                             }
+                         });
+                         // Always show EPF, regardless of monthly salary comparison
+                         var epfValue = (basicSalary * epfPercentage) / 100;
+                         $('#displayEPFMaster').text(epfPercentage.toFixed(2));
+                         $('#txtEPFMaster').val(epfValue.toFixed(2)).show();
+                         $('.txtLabelEmployerEPF').show();
 
+                         // Hide ESIC
+                         $('#displayESICMaster').text('0');
+                         $('#ESICMaster').val('0').hide();
+                         $('.txtLabelEmployerEsic').hide();
+                     },
+                     error: function () {
+                         alert('Error fetching data.');
+                     }
+                 });
+    } 
 </script>
 <script>
 
