@@ -177,6 +177,13 @@
                         </div>
                     </div>
                 </div>
+                <div class="row-12">
+                     <div class="form-group col-sm-3">
+                    <label for="Dueamountdate">Due Date <span class="text-danger">*</span></label>
+                    <input name="Dueamountdate" type="date" class="form-control Dueamountdate" required oninvalid="this.setCustomValidity('Please select DueDate')" oninput="this.setCustomValidity('')" value="@ViewBag.Dueamountdate" />
+                    <span asp-validation-for="Dueamountdate" class="text-danger"></span>
+                    </div>
+                </div>
                 <div class="form-group" style="display:flex; justify-content:right;">
                     <button type="button" class="btn btn-success" id="addSection"><i class="fa fa-plus"></i> Add Product</button>
                 </div>
@@ -203,7 +210,7 @@
                                                 </div>
                                                 <div class="form-group col-sm">
                                                     <label for="Price">Price <span class="text-danger">*</span></label>
-                                                    <input class="form-control Price" placeholder="00.0" name="ProductPrice" id="Price" type="text" readonly>
+                                                    <input class="form-control Price" placeholder="00.0" name="ProductPrice" id="Price" type="text">
                                                     <span asp-validation-for="ProductPrice" class="text-danger"></span>
                                                 </div>
                                             </div>
@@ -234,11 +241,11 @@
                                                     <input name="RenewDate" type="date" class="form-control RenewDate" required readonly oninvalid="this.setCustomValidity('Please select RenewDate')" oninput="this.setCustomValidity('')" value="@ViewBag.renewDate" />
                                                     <span asp-validation-for="RenewDate" class="text-danger"></span>
                                                 </div>
-                                                <div class="form-group col-sm">
+                                               @*  <div class="form-group col-sm">
                                                     <label for="Dueamountdate">Due Date <span class="text-danger">*</span></label>
                                                     <input name="Dueamountdate" type="date" class="form-control Dueamountdate" required oninvalid="this.setCustomValidity('Please select DueDate')" oninput="this.setCustomValidity('')" value="@ViewBag.Dueamountdate" />
                                                     <span asp-validation-for="Dueamountdate" class="text-danger"></span>
-                                                </div>
+                                                </div> *@
                                             </div>
 
 

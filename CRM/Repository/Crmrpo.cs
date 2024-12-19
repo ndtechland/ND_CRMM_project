@@ -1483,7 +1483,8 @@ namespace CRM.Repository
                                        BillingStateId = v.BillingStateId,
                                        OfficeCityId = v.CityId,
                                        OfficeStateId = v.StateId,
-                                       Isprofessionaltax = v.Isprofessionaltax
+                                       Isprofessionaltax = v.Isprofessionaltax,
+                                       VendorSingature  =v.VendorSingature
                                    }).FirstOrDefaultAsync();
                 return query;
             }
@@ -1514,7 +1515,16 @@ namespace CRM.Repository
                 string ImagePath = fileOperation.SaveBase64Image("CompanyImage", model.ImageFile, allowedExtensions);
                 customer.CompanyImage = ImagePath;
             }
-
+            if (model.VendorSingatureImageFile != null)
+            {
+                var fileExtension = Path.GetExtension(model.VendorSingatureImageFile.FileName).ToLower();
+                if (!allowedExtensions.Contains(fileExtension))
+                {
+                    throw new InvalidOperationException("Only .jpg, .jpeg, and .png files are allowed.");
+                }
+                string ImagePath = fileOperation.SaveBase64Image("CompanyImage", model.VendorSingatureImageFile, allowedExtensions);
+                customer.VendorSingature = ImagePath;
+            }
             customer.CompanyName = model.CompanyName;
             customer.Email = model.Email;
             customer.GstNumber = model.GstNumber;
@@ -2381,6 +2391,7 @@ namespace CRM.Repository
                                   SGST = ci.Sgst,
                                   CustomerGstNumber = c.GstNumber,
                                   NoOfRenewMonth = ci.NoOfRenewMonth,
+                                  VendorSingature = v.VendorSingature
                               }).FirstOrDefault();
 
                 // Step 2: Get the related list of invoice items
