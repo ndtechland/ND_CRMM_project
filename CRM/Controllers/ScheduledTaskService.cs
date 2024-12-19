@@ -1,6 +1,7 @@
 ﻿using CRM.Models.Crm;
 using CRM.Models.DTO;
 using CRM.Repository;
+using DocumentFormat.OpenXml.InkML;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
@@ -14,7 +15,7 @@ namespace CRM.Controllers
         private Timer _updateTasksTimer;
         private readonly IServiceProvider _serviceProvider;
         private readonly TimeSpan _interval = TimeSpan.FromSeconds(40);
-        // private readonly TimeSpan _intervalday = TimeSpan.FromMinutes(1); 
+        private readonly TimeSpan _intervalday = TimeSpan.FromDays(1);
         private readonly ILogger<ScheduledTaskService> _logger;
 
         public ScheduledTaskService(IServiceProvider serviceProvider, ILogger<ScheduledTaskService> logger)
@@ -41,7 +42,7 @@ namespace CRM.Controllers
 
                     var tasks = context.ScheduledTasks.ToList();
                     DateTime currentTime = DateTime.Now;
-                  
+
 
                     foreach (var task in tasks)
                     {
@@ -75,36 +76,62 @@ namespace CRM.Controllers
                     var emailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
 
                     var tasks = context.ScheduledTasks.ToList();
-                    Console.WriteLine(tasks[0].Scheduletime.ToString());
-
                     string currentTime = DateTime.Now.ToString("hh:mm tt");
                     string currentDayOfWeek = DateTime.Now.DayOfWeek.ToString();
 
                     _logger.LogInformation($"DoWork method called!!!::::::::{DateTime.Now.ToString()}");
 
+                    DateTime today = DateTime.Today;
+                    DateTime lastDayOfMonth = new DateTime(today.Year, today.Month, DateTime.DaysInMonth(today.Year, today.Month));
+                  
+                    var emplist = context.EmployeeRegistrations.ToList();
+
+                    _logger.LogInformation($"Today's date: {today.ToString("yyyy-MM-dd")}");
+
                     foreach (var task in tasks)
                     {
-                       
                         string scheduleTime = DateTime.Today.Add(task.Scheduletime.Value).ToString("hh:mm tt");
-                        _logger.LogInformation($"DoWork method value !!!::::::::{task.Scheduletime.HasValue},{scheduleTime},{task.Scheduleday.ToString()},{currentTime},{currentDayOfWeek}");
+                        _logger.LogInformation($"Task {task.Id}: schedule time: {scheduleTime}, current time: {currentTime}, current day of week: {currentDayOfWeek}");
 
                         if (scheduleTime == currentTime && task.IsExcute == false && task.Scheduleday.ToString() == currentDayOfWeek)
                         {
                             task.Schedulemethod = CustomerTaxes(context, emailService);
                             task.Excutetime = DateTime.Now;
                             task.IsExcute = true;
-                            Console.WriteLine($"Task {task.Id} triggered at {DateTime.Now}");
-                            context.SaveChanges();
+                            _logger.LogInformation($"Task {task.Id} triggered at {DateTime.Now}");
                         }
+                        if (today == lastDayOfMonth && task.IsExcute == false)
+                        {
+                            _logger.LogInformation($"Performing end-of-month operations for {today.ToString("yyyy-MM-dd")}.");
+                            task.Schedulemethod = EmpLeaveDoWork(context);
+                            task.Excutetime = DateTime.Now;
+                            task.IsExcute = true;
+                            _logger.LogInformation($"End-of-month operations completed successfully.");
+                        }
+                        //foreach (var employee in emplist)
+                        //{
+                        //    if (employee.DateOfJoining.HasValue && employee.DateOfJoining.Value.AddMonths(3) == today)
+                        //    {
+                        //        _logger.LogInformation($"Performing probation leave operations for employee {employee.EmployeeId}.");
+                        //        task.Schedulemethod = EmpLeaveProbationperiod(context, employee.EmployeeId);
+                        //        task.Excutetime = DateTime.Now;
+                        //        task.IsExcute = true;
+                        //        _logger.LogInformation($"Probation leave operations completed for employee {employee.EmployeeId}.");
+                        //    }
+                        //}
+
                     }
+                    context.SaveChanges();
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in StartAsync: {ex.Message}");
+                _logger.LogError($"Error in DoWork: {ex.Message}");
             }
-            Console.WriteLine($"Scheduled task running at: {DateTime.Now}");
+
+            _logger.LogInformation($"Scheduled task running at: {DateTime.Now}");
         }
+
         public Task StopAsync(CancellationToken cancellationToken)
         {
             _doWorkTimer?.Change(Timeout.Infinite, 0);
@@ -190,6 +217,57 @@ namespace CRM.Controllers
             context.SaveChanges();
             return "CustomerTaxes";
         }
+        public string EmpLeaveDoWork(admin_NDCrMContext context)
+        {
+            var leaveTypes = context.LeaveTypes.ToList();
+            var leaveMasters = context.Leavemasters.ToList();
+            foreach (var leaveMaster in leaveMasters)
+            {
+                var leaveType = leaveTypes.FirstOrDefault(x => x.Id == leaveMaster.LeavetypeId);
+
+                if (leaveType != null)
+                {
+                    switch (leaveMaster.LeavetypeId)
+                    {
+                        case 1:
+                            leaveMaster.Value += leaveType.Leavevalue; 
+                            leaveMaster.LeaveUpdateDate = DateTime.Now; 
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+            }
+            context.SaveChanges();
+            return "EmpLeaveDoWork";
+        }
+        public string EmpLeaveProbationperiod(admin_NDCrMContext context, string EmployeeId)
+        {
+            var emplist = context.EmployeeRegistrations.Where(x => x.EmployeeId == EmployeeId).ToList();
+            var vendorId = emplist.FirstOrDefault()?.Vendorid;
+
+            if (vendorId.HasValue)
+            {
+                var leaveTypes = context.LeaveTypes.Where(x => x.Vendorid == vendorId.Value).ToList();
+                foreach (var leaveType in leaveTypes)
+                {
+                    Leavemaster leavemaster = new Leavemaster
+                    {
+                        EmpId = EmployeeId, 
+                        LeavetypeId = leaveType.Id, 
+                        Value = leaveType.Leavevalue, 
+                        Vendorid = vendorId.Value, 
+                        LeaveUpdateDate = DateTime.Now, 
+                        LeaveStartDate = DateTime.Now,
+                    };
+                    context.Leavemasters.Add(leavemaster);
+                }
+                context.SaveChanges();
+            }
+            return "EmpLeaveProbationperiod";
+        }
+
     }
-   
+
 }

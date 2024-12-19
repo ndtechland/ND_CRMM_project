@@ -1475,6 +1475,10 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Leavetype1).HasColumnName("leavetype");
 
+                entity.Property(e => e.Leavevalue)
+                    .HasColumnType("decimal(18, 2)")
+                    .HasColumnName("leavevalue");
+
                 entity.Property(e => e.Vendorid).HasColumnName("vendorid");
             });
 

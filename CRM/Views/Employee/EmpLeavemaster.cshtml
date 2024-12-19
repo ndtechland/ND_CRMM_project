@@ -160,7 +160,7 @@
                                         </div>
                                         <div class="form-group col-md-6">
                                             <label for="exampleInputEmail1">Leave Value</label>
-                                            <input type="text" class="form-control" value='@ViewBag.Value' required id="txtJobTtle" placeholder="Leave Value 1.5" name="Value" onkeydown="validateNumericInput(event)">
+                                            <input type="text" class="form-control" value='@ViewBag.Value' required id="txtValue" placeholder="Leave Value 1.5" name="Value" onkeydown="validateNumericInput(event)">
                                             <span asp-validation-for="Value" class="text-danger"></span>
                                         </div>
                                         <div class="form-group col-md-6">
@@ -276,15 +276,22 @@
         }
     }
     function validateNumericInput(event) {
-        if ([67, 86, 88].includes(event.keyCode) && (event.ctrlKey || event.metaKey) ||
-            [32, 46, 8, 9, 27, 13].includes(event.keyCode) ||
-            (event.keyCode >= 35 && event.keyCode <= 39)) return;
-        if ((event.keyCode >= 48 && event.keyCode <= 57) || (event.keyCode >= 96 && event.keyCode <= 105)) return;
-        event.preventDefault();
+        const input = event.target;
+        const key = event.key;
+        if (['ArrowLeft', 'ArrowRight', 'Backspace', 'Delete', 'Tab', 'Enter'].includes(key)) return;
+
+        if ((event.ctrlKey || event.metaKey) && ['c', 'v', 'x'].includes(key.toLowerCase())) return;
+
+        if (!/^[0-9.]$/.test(key)) {
+            event.preventDefault();
+            return;
+        }
+        if (key === '.' && input.value.includes('.')) {
+            event.preventDefault();
+        }
     }
     document.addEventListener('contextmenu', e => e.preventDefault());
-    document.getElementById("yourInputField").addEventListener("keydown", validateNumericInput);
-
+    document.getElementById("txtValue").addEventListener("keydown", validateNumericInput);
 
 </script>
 

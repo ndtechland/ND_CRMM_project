@@ -75,7 +75,7 @@ namespace CRM.Controllers
                 {
                     Subtittle = x.Subtittle,
                     Date = x.Date
-                }).OrderByDescending(x => x.Date).ToListAsync();
+                }).ToListAsync();
 
                 ViewBag.Announcements = await _context.EventsmeetSchedulers
                 .Where(x => x.Vendorid == adminlogin.Vendorid)

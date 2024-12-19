@@ -2814,6 +2814,7 @@ namespace CRM.Controllers
                 ViewBag.id = 0;
                 ViewBag.Leavetype = "";
                 ViewBag.IsActive = "";
+                ViewBag.Leavevalue = "";
                 ViewBag.heading = "Add Leave Type";
                 ViewBag.btnText = "SAVE";
                 if (iId != null && iId != 0)
@@ -2823,6 +2824,7 @@ namespace CRM.Controllers
                     {
                         ViewBag.id = data.Id;
                         ViewBag.Leavetype = data.Leavetype1;
+                        ViewBag.Leavevalue = data.Leavevalue;
                         ViewBag.IsActive = data.Isactive;
                         ViewBag.btnText = "UPDATE";
                         ViewBag.heading = "Update Leave Type";
@@ -3619,13 +3621,12 @@ namespace CRM.Controllers
                     {
                         e.Deductiontype,
                         e.Deductionpercentage
-                    })
-                    .ToListAsync();
+                    }).ToListAsync();
                 var calculatedDeductions = deductions.Select(d => new
                 {
                     d.Deductiontype,
                     d.Deductionpercentage,
-                    CalculatedAmount = Math.Round((annualSalary * (d.Deductionpercentage ?? 0) / 100) / 12, 2) 
+                    CalculatedAmount = Math.Round((annualSalary * (d.Deductionpercentage ?? 0) / 100) /*/ 12*/, 2) 
                 });
 
                 return Json(calculatedDeductions);

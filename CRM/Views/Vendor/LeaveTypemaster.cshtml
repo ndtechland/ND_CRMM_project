@@ -97,8 +97,11 @@
                                             <input type="hidden" name="Id" value="@ViewBag.id" />
                                             <input type="text" name="Leavetype1" id="Leavetype1" value="@ViewBag.Leavetype" placeholder="Enter Leave Type Name" class="form-control" required />
                                         </div>
+                                        <div class="form-group col-md-6">
+                                            <label for="Leavevalue" class="control-label">Leave Value</label>
+                                            <input type="text" name="Leavevalue" id="Leavevalue" value="@ViewBag.Leavevalue" placeholder="Enter Leave Value" class="form-control" required onkeydown="validateNumericInput(event)" />
+                                        </div>
                                     </div>
-
                                     @if (ViewBag.id > 0)
                                     {
                                         <div class="form-group col-md-6">
@@ -136,6 +139,9 @@
                                                 <th nowrap>
                                                     Leave Type Name
                                                 </th>
+                                                <th nowrap>
+                                                    Leave Value
+                                                </th>
                                                 <th>Created At</th>
                                                 <th>Edit</th>
                                                 <th>Delete</th>
@@ -151,6 +157,9 @@
                                                         <td>@count</td>
                                                         <td>
                                                             @Html.DisplayFor(modelItem => item.Leavetype1)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.Leavevalue)
                                                         </td>
                                                         <td>
                                                             @item.Createddate?.ToString("dd/MM/yyyy")
@@ -252,4 +261,25 @@
     } else {
         $("#IsActive").prop("checked", false);
     }
+
+ 
+</script>
+<script>
+    function validateNumericInput(event) {
+        const input = event.target;
+        const key = event.key;
+        if (['ArrowLeft', 'ArrowRight', 'Backspace', 'Delete', 'Tab', 'Enter'].includes(key)) return;
+
+        if ((event.ctrlKey || event.metaKey) && ['c', 'v', 'x'].includes(key.toLowerCase())) return;
+
+        if (!/^[0-9.]$/.test(key)) {
+            event.preventDefault();
+            return;
+        }
+        if (key === '.' && input.value.includes('.')) {
+            event.preventDefault();
+        }
+    }
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.getElementById("Leavevalue").addEventListener("keydown", validateNumericInput);
 </script>
