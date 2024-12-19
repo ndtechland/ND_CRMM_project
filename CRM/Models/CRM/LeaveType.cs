@@ -10,5 +10,6 @@ namespace CRM.Models.Crm
         public bool? Isactive { get; set; }
         public DateTime? Createddate { get; set; }
         public int? Vendorid { get; set; }
+        public decimal? Leavevalue { get; set; }
     }
 }

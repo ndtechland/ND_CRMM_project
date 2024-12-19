@@ -247,21 +247,21 @@ document.querySelectorAll(".btn-navigate-form-step").forEach((button) => {
 });
 
 
-function fnValidate() {
-    const monthlyCTCField = document.getElementById("txtMonthlyCTC");
-    const monthlyCTCError = document.getElementById("MonthlyCTCError");
+//function fnValidate() {
+//    const monthlyCTCField = document.getElementById("txtMonthlyCTC");
+//    const monthlyCTCError = document.getElementById("MonthlyCTCError");
 
-    // Regular expression to check for a decimal point
-    const decimalRegex = /^\d+(\.\d{1,2})?$/;
+//    // Regular expression to check for a decimal point
+//    const decimalRegex = /^\d+(\.\d{1,2})?$/;
 
-    // Check if Monthly CTC contains a decimal point and is not empty
-    if (!monthlyCTCField.value || !decimalRegex.test(monthlyCTCField.value)) {
-        monthlyCTCError.style.display = "block"; // Show error message
-        return false; // Prevent form submission
-    } else {
-        monthlyCTCError.style.display = "none"; // Hide error message if valid
-    }
+//    // Check if Monthly CTC contains a decimal point and is not empty
+//    if (!monthlyCTCField.value || !decimalRegex.test(monthlyCTCField.value)) {
+//        monthlyCTCError.style.display = "block"; // Show error message
+//        return false; // Prevent form submission
+//    } else {
+//        monthlyCTCError.style.display = "none"; // Hide error message if valid
+//    }
 
-    // If all validations pass, allow the form to submit
-    return true;
-}
+//    // If all validations pass, allow the form to submit
+//    return true;
+//}

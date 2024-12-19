@@ -112,6 +112,8 @@
                             <div class="card-body">
                                 <form method="post" asp-controller="Vendor" asp-action="salarydeduction" autocomplete="off" onsubmit="return validateForm()">
                                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                    <input type="text" name="Id" value="@ViewBag.id" hidden />
+
                                     <div class="row">
                                         <div class="form-group col-md-6">
                                             <label class="control-label" for="deductionType">Deduction Type</label>
@@ -119,8 +121,8 @@
                                                 <option value="">-- Please Select Deduction Type --</option>
                                                 <option value="Basic Salary">Basic Salary</option>
                                                 <option value="HRA">HRA (House Rent Allowance)</option>
-                                                <option value="Special Allowance">Special Allowance</option>
-                                                <option value="Conveyance Allowance">Conveyance Allowance</option>
+@*                                                 <option value="Special Allowance">Special Allowance</option>
+ *@                                                <option value="Conveyance Allowance">Conveyance Allowance</option>
                                                 <option value="Medical Allowance">Medical Allowance</option>
                                                 <option value="Variable Pay">Variable Pay</option>
                                             </select>

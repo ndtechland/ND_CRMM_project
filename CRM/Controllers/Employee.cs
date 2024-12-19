@@ -2301,13 +2301,13 @@ namespace CRM.Controllers
                     ViewBag.EmployeeId = _context.EmployeeRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).Select(D => new SelectListItem
                     {
                         Value = D.EmployeeId.ToString(),
-                        Text = D.EmployeeId
+                        Text = $"{D.EmployeeId} {' '} ({D.FirstName})"
 
                     }).ToList();
                     ViewBag.leavetype = _context.LeaveTypes.Where(x => x.Vendorid == adminlogin.Vendorid).Select(D => new SelectListItem
                     {
                         Value = D.Id.ToString(),
-                        Text = D.Leavetype1
+                        Text = $"{D.Leavetype1} {' '} ({D.Leavevalue})"
 
                     }).ToList();
                     ViewBag.id = 0;
@@ -2363,14 +2363,14 @@ namespace CRM.Controllers
                  .Select(D => new SelectListItem
                  {
                      Value = D.EmployeeId.ToString(),
-                     Text = D.EmployeeId.ToString()
+                     Text = $"{D.EmployeeId} {' '} ({D.FirstName})"
                  }).ToList();
 
                 ViewBag.EmployeeId = options;
                 ViewBag.leavetype = _context.LeaveTypes.Select(D => new SelectListItem
                 {
                     Value = D.Id.ToString(),
-                    Text = D.Leavetype1
+                    Text = $"{D.Leavetype1} {' '} ({D.Leavevalue})"
 
                 }).ToList();
                 int AddedByid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));

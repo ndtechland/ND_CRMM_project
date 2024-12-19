@@ -3509,6 +3509,7 @@ namespace CRM.Repository
                         Leavetype1 = model.Leavetype1,
                         Vendorid = VendorId,
                         Isactive = true,
+                        Leavevalue = model.Leavevalue,
                         Createddate = DateTime.Now.Date
                     };
                     _context.Add(data);
@@ -3521,6 +3522,7 @@ namespace CRM.Repository
 
                     existdata.Leavetype1 = model.Leavetype1;
                     existdata.Isactive = model.Isactive;
+                    existdata.Leavevalue = model.Leavevalue;
                     existdata.Createddate = DateTime.Now.Date;
                     existdata.Vendorid = VendorId;
                 }
