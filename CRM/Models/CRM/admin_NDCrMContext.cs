@@ -2145,6 +2145,8 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.State).HasMaxLength(255);
 
                 entity.Property(e => e.StateId).HasColumnName("stateId");
+
+                entity.Property(e => e.VendorSingature).HasMaxLength(250);
             });
 
             modelBuilder.Entity<WorkLocation>(entity =>

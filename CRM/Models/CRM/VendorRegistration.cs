@@ -38,5 +38,6 @@ namespace CRM.Models.Crm
         public int? PricingPlanid { get; set; }
         public string? InvoiceNumber { get; set; }
         public DateTime? Duedate { get; set; }
+        public string? VendorSingature { get; set; }
     }
 }

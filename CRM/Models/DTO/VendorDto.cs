@@ -73,6 +73,9 @@ namespace CRM.Models.DTO
         public string radious { get; set; } = null!;
         public string maplat { get; set; } = null!;
         public string maplong { get; set; } = null!;
+        public string? VendorSingature { get; set; }
+        public IFormFile VendorSingatureImageFile { get; set; }
+
     }
-    
+
 }
