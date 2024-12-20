@@ -76,7 +76,6 @@ namespace CRM.Controllers
         [HttpGet, Route("Employee/EmployeeRegistration")]
         public async Task<IActionResult> EmployeeRegistration(string id)
         {
-
             if (HttpContext.Session.GetString("UserName") != null)
             {
                 ViewBag.UserName = HttpContext.Session.GetString("UserName");
@@ -1352,6 +1351,7 @@ namespace CRM.Controllers
 
 
         }
+
         //private string GenerateEmployeeId()
         //{
         //    var data = _context.EmployeeRegistrations
@@ -1359,31 +1359,59 @@ namespace CRM.Controllers
         //                      .FirstOrDefault();
         //    string EmpID = string.Empty;
         //    int numericValue = 1001;
-        //    var CompanyDetail = _context.VendorRegistrations.Where(x =>x.Id == data.Vendorid).FirstOrDefault();
-        //    var words = CompanyDetail.CompanyName.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        //    var CompanyDetail = _context.VendorRegistrations.Where(x => x.Id == data.Vendorid).FirstOrDefault();
+
+        //    // Clean up the company name by removing unwanted substrings
+        //    string companyName = CompanyDetail.CompanyName;
+        //    string[] unwantedWords = new[] { "pvt ltd", "private limited", "ltd", "inc", "corporation", "corp" };
+
+        //    // Remove unwanted words (case-insensitive)
+        //    foreach (var word in unwantedWords)
+        //    {
+        //        companyName = companyName.Replace(word, "", StringComparison.OrdinalIgnoreCase).Trim();
+        //    }
 
         //    string result = string.Empty;
 
-        //    // Loop through the words to build the result
-        //    for (int i = 0; i < words.Length; i++)
+        //    // Split company name by space to handle multi-word names
+        //    var words = companyName.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+        //    if (words.Length == 2)
         //    {
-        //        if (i == 0) // For the first word
+        //        // For two-word names, check if the words are the same
+        //        if (words[0].Equals(words[1], StringComparison.OrdinalIgnoreCase))
         //        {
-        //            result += char.ToUpper(words[i][0]); // Add the first character
-        //            if (words[i].Length > 1) // Check if there is a second character
-        //            {
-        //                result += char.ToUpper(words[i][1]); // Add the second character
-        //            }
+        //            // If both words are the same, take the first two characters from the first word
+        //            result = char.ToUpper(words[0][0]).ToString() + char.ToUpper(words[0][1]).ToString();
         //        }
-        //        else if (i == 1) // For the second word
+        //        else
         //        {
-        //            result += char.ToUpper(words[i][0]); // Add the first character of the second word
-        //            break; // Stop after processing the second word
+        //            // If not the same, take the first two characters of the first word and the first of the second word
+        //            result = char.ToUpper(words[0][0]).ToString() + char.ToUpper(words[0][1]).ToString() + char.ToUpper(words[1][0]);
         //        }
         //    }
-        //    var firstChars = result;
+        //    else if (words.Length > 2)
+        //    {
+        //        // For more than two words, take the first letter of each word
+        //        foreach (var word in words)
+        //        {
+        //            result += char.ToUpper(word[0]);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        // For a single word, take up to the first 3 characters
+        //        result = companyName.Length >= 3 ?
+        //                 companyName.Substring(0, 3).ToUpper() :
+        //                 companyName.ToUpper();
+        //    }
 
+        //    string firstChars = result;
+
+        //    // Get the current month and year in the "MMyyyy" format
         //    string currentMonthYear = DateTime.Now.ToString("MMyyyy");
+
+        //    // Check if a previous employee ID exists and increment the numeric value
         //    if (data != null && !string.IsNullOrEmpty(data.EmployeeId))
         //    {
         //        string[] parts = data.EmployeeId.Split('-');
@@ -1392,10 +1420,13 @@ namespace CRM.Controllers
         //            numericValue++;
         //        }
         //    }
+
+        //    // Format the final employee ID with leading zeros
         //    EmpID = $"{firstChars}{currentMonthYear}-{numericValue:D4}";
 
         //    return EmpID;
         //}
+
         private string GenerateEmployeeId()
         {
             var data = _context.EmployeeRegistrations
@@ -1403,6 +1434,7 @@ namespace CRM.Controllers
                               .FirstOrDefault();
             string EmpID = string.Empty;
             int numericValue = 1001;
+
             var CompanyDetail = _context.VendorRegistrations.Where(x => x.Id == data.Vendorid).FirstOrDefault();
 
             // Clean up the company name by removing unwanted substrings
@@ -1425,12 +1457,10 @@ namespace CRM.Controllers
                 // For two-word names, check if the words are the same
                 if (words[0].Equals(words[1], StringComparison.OrdinalIgnoreCase))
                 {
-                    // If both words are the same, take the first two characters from the first word
                     result = char.ToUpper(words[0][0]).ToString() + char.ToUpper(words[0][1]).ToString();
                 }
                 else
                 {
-                    // If not the same, take the first two characters of the first word and the first of the second word
                     result = char.ToUpper(words[0][0]).ToString() + char.ToUpper(words[0][1]).ToString() + char.ToUpper(words[1][0]);
                 }
             }
@@ -1444,7 +1474,6 @@ namespace CRM.Controllers
             }
             else
             {
-                // For a single word, take up to the first 3 characters
                 result = companyName.Length >= 3 ?
                          companyName.Substring(0, 3).ToUpper() :
                          companyName.ToUpper();
@@ -1454,14 +1483,31 @@ namespace CRM.Controllers
 
             // Get the current month and year in the "MMyyyy" format
             string currentMonthYear = DateTime.Now.ToString("MMyyyy");
+            string currentYear = DateTime.Now.ToString("yyyy");
 
             // Check if a previous employee ID exists and increment the numeric value
             if (data != null && !string.IsNullOrEmpty(data.EmployeeId))
             {
                 string[] parts = data.EmployeeId.Split('-');
-                if (parts.Length > 1 && int.TryParse(parts.Last(), out numericValue))
+
+                if (parts.Length > 1)
                 {
-                    numericValue++;
+                    string previousYear = parts[0].Substring(parts[0].Length - 4, 4);
+                    string previousAbbr = parts[0].Substring(0, parts[0].Length - 6);
+
+                    if (previousYear == currentYear && previousAbbr == firstChars)
+                    {
+                        // Increment numeric value if the year and abbreviation are the same
+                        if (int.TryParse(parts.Last(), out numericValue))
+                        {
+                            numericValue++;
+                        }
+                    }
+                    else
+                    {
+                        // Reset numeric value if year or abbreviation changes
+                        numericValue = 1001;
+                    }
                 }
             }
 
@@ -1470,6 +1516,7 @@ namespace CRM.Controllers
 
             return EmpID;
         }
+
         public async Task<IActionResult> DeleteEmployer(int id)
         {
             try
