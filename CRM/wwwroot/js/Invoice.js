@@ -111,7 +111,7 @@ function updateTaxFields() {
                 if (response.data != null) {
                     // Update specific fields for this product section
                     $section.find('.HsnSacCode').val(response.data.hsnSacCode).attr('readonly', true);
-                    $section.find('.Price').val(response.data.productPrice).attr('readonly', true);
+                    $section.find('.Price').val(response.data.productPrice);
 
                     // Update GST fields based on state match
                     var checkVendorBillingStateId = $("#checkvendorbillingstateid").val();
@@ -408,12 +408,12 @@ document.getElementById('addSection').addEventListener('click', function () {
         // Specify which fields should be read-only or editable in the new section
         newSection.querySelector('.RenewDate').setAttribute('readonly', true); // Set RenewDate as readonly
         newSection.querySelector('.ProductDetails').removeAttribute('readonly'); // Ensure ProductDetails is editable
-        newSection.querySelector('.Price').setAttribute('readonly', true); // Ensure Price is readonly
+        newSection.querySelector('.Price'); // Ensure Price is readonly
         newSection.querySelector('.NoOfRenewMonth').removeAttribute('readonly'); // Ensure NoOfRenewMonth is editable
         newSection.querySelector('.RenewPrice').removeAttribute('readonly'); // Ensure RenewPrice is editable
         newSection.querySelector('.HsnSacCode').setAttribute('readonly', true); // Ensure HsnSacCode is readonly
         newSection.querySelector('.StartDate').removeAttribute('readonly'); // Ensure StartDate is editable
-        newSection.querySelector('.Dueamountdate').removeAttribute('readonly'); // Ensure StartDate is editable
+        //newSection.querySelector('.Dueamountdate').removeAttribute('readonly'); // Ensure StartDate is editable
         newSection.querySelector('.IGST').setAttribute('readonly', true); // Ensure IGST is readonly
         newSection.querySelector('.SGST').setAttribute('readonly', true); // Ensure SGST is readonly
         newSection.querySelector('.CGST').setAttribute('readonly', true); // Ensure CGST is readonly

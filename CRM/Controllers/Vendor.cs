@@ -213,6 +213,7 @@ namespace CRM.Controllers
                 ViewBag.FilePathDetail = data.CompanyImage;
                 ViewBag.id = id;
                 ViewBag.professionaltax = data.Isprofessionaltax;
+                ViewBag.VendorSingature = data.VendorSingature;
                 ViewBag.btnText = "Update";
                 return View(data);
             }
@@ -3685,7 +3686,33 @@ namespace CRM.Controllers
                 return RedirectToAction("Login", "Admin");
             }
         }
+        [HttpGet]
+        public IActionResult DeletSignatureFile(string FilePath, int id)
+        {
+            bool success = false;
 
+            if (FilePath != "")
+            {
+                string folderPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "CompanyImage");
+                string folderfilepathPath = folderPath + "//" + FilePath;
+                if (Directory.Exists(folderPath))
+                {
+                    if (System.IO.File.Exists(folderfilepathPath))
+                    {
+                        System.IO.File.Delete(folderfilepathPath);
+                        success = true;
+                    }
+                    var img = _context.VendorRegistrations.FirstOrDefault(s => s.VendorSingature == FilePath && s.Id == id);
+                    if (img != null)
+                    {
+                        img.VendorSingature = null;
+                        _context.SaveChangesAsync();
+                    }
+
+                }
+            }
+            return Json(success);
+        }
     }
 }
 

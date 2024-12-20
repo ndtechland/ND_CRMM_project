@@ -49,6 +49,7 @@ namespace CRM.Models.DTO
         public decimal? PaidAmount { get; set; }
         public decimal? TotalAmount { get; set; }
         public DateTime? Dueamountdate { get; set; }
+        public string? VendorSingature { get; set; }
 
         public List<ProductDetail> ProductDetails { get; set; }
         public List<ProductDetailList> ProductDetailLists { get; set; }
