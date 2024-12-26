@@ -140,9 +140,9 @@
                                             </select>
                                         </div>
                                         <div class="form-group col-lg-6">
-                                            <label for="TxttaskId">Employee Task</label>
+                                            <label for="TxttaskId">Project Name</label>
                                             <select id="TxttaskId" name="Emptask" class="form-control" required>
-                                                <option value="">-- Select Task --</option>
+                                                <option value="">-- Select Project Name --</option>
                                                 <!-- Populate tasks if needed -->
                                             </select>
                                         </div>
@@ -195,8 +195,8 @@
                                                 <th nowrap>
                                                     Employee Name
                                                 </th>
+                                                <th>Project Name</th>
                                                 <th>Task Name</th>
-                                                <th>Sub Task Name</th>
                                                 <th>Task Status</th>
                                                 <th>Action</th>
                                             </tr>
@@ -309,7 +309,7 @@
                 success: function (data) {
                     console.log("Data received: ", data);
                     $('#TxttaskId').empty();
-                    $('#TxttaskId').append('<option value="">-- Select Task --</option>');
+                    $('#TxttaskId').append('<option value="">-- Select Project Name --</option>');
                     $.each(data, function (index, item) {
                         $('#TxttaskId').append('<option value="' + item.value + '">' + item.text + '</option>');
                     });

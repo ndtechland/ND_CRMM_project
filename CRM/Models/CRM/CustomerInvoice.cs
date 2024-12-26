@@ -24,9 +24,5 @@ namespace CRM.Models.Crm
         public int? Paymentstatus { get; set; }
         public decimal? DueAmount { get; set; }
         public decimal? PaidAmount { get; set; }
-        public DateTime? Dueamountdate { get; set; }
-        public int? Taxid { get; set; }
-        public decimal? Taxamount { get; set; }
-        public bool? IsRenewDate { get; set; }
     }
 }

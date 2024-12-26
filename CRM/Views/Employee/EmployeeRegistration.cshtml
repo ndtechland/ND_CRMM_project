@@ -686,10 +686,6 @@
                                     <label>Special Allowance</label>
                                     <input class="form-control" value='@ViewBag.specialallowance' name="SpecialAllowance" id="SpecialAllowance" placeholder="Enter Special Allowance" type="text" readonly>
                                 </div>
-                                @* <div class="col">
-                                <label>Gross</label>
-                                <input class="form-control" value='@ViewBag.gross' name="gross" id="txtgross" type="text" readonly>
-                                </div> *@
                                 <div class="col">
                                     <label>Conveyance allowance</label>
                                     <input class="form-control" value='@ViewBag.Conveyanceallowance' name="Conveyanceallowance" placeholder="00.0" id="txtConveyanceallowance" type="text" readonly>
@@ -706,43 +702,30 @@
                                     <label>Variable Pay</label>
                                     <input class="form-control" value='@ViewBag.VariablePay ' name="VariablePay" placeholder="00.0" id="txtVariablePay" type="text" readonly>
                                 </div>
-                                @*   <div class="col">
-                                <label>Travelling Allowance<span class="text-danger">*</span> </label>
-                                <input class="form-control" value='@ViewBag.TravellingAllowance ' name="TravellingAllowance" placeholder="00.0" id="txtTravelling" type="text">
-                                <span id="TravellingAllowanceNameError" class="text-danger" style="display:none;">This field is required.</span>
-
-                                </div> *@
                                 <div class="col">
                                     <label>Gross Pay</label>
-                                    <input class="form-control" value='@ViewBag.MonthlyGrossPay' name="MonthlyGrossPay" placeholder="00.0" id="txtMonthlyGrossPay" type="text" readonly>
+                                    <input class="form-control" value='@ViewBag.MonthlyGrossPay' name="MonthlyGrossPay" placeholder="00.0" id="txtMonthlyGrossPay"  type="text" readonly>
                                 </div>
-
-                                @*  <div class="col">
-                                <label>Fixed Allowance</label>
-                                <input class="form-control" value='@ViewBag.FixedAllowance' name="FixedAllowance" placeholder="00.0" id="txtFixedAllowance" type="text" readonly>
-                                </div> *@
                             </div>
                             <br>
-                            @* <div class="col ProfessionaltaxLabel">
-                            <label id="ProfessionaltaxLabel">Professional Tax</label>
-                            <input class="form-control" value='@ViewBag.Professionaltax' name="Professionaltax" placeholder="Enter Professional Tax" id="Professionaltax" type="text" readonly>
-                            </div> *@
-                            @*    <div class="col" style="display:none">
-                            <label>TDS (<span id="displayTdsPercentage">@ViewBag.Tdspercentage</span>%)</label>
-                            <input class="form-control" value='@ViewBag.Amount' name="Amount" placeholder="00.0" id="txtAmount" type="text" readonly>
-                            <input class="form-control" name="TdsPercentage" value='@ViewBag.Tdspercentage' placeholder="00.0" id="txtTdspercentage" type="hidden">
-                            </div>
-                            *@
+                            <div class="col-md-2 tdssection" style="display:none;">
+                                <label>TDS (<span id="displayTdsPercentage"></span>%)</label>
+                                <input class="form-control" value='@ViewBag.tdsvalue' name="tdsvalue" placeholder="00.0" id="txttdsvalue" type="text" readonly>
+                                <input name="Tdspercentage" id="txtTdspercentage" value="@ViewBag.Tdspercentage" type="hidden">
+
+                            </div> 
+
+                            <br>
                             <h4 class="text-danger EmployeeContribution" style="display:none;">Employee Contribution</h4>
                             <div class="row">
-                                <div class="col-md-6 txtLabelEPF" style="display:none;">
-                                    <label>EPF (<span id="displayEmpEPFMaster"></span>%)</label>
-                                    <input class="form-control" value='@ViewBag.EPF' name="EPF" id="txtEPF" type="text" readonly>
-                                </div>
-                                <div class="col-md-6 ESICLabel" style="display:none;">
-                                    <label id="ESICLabel">ESIC (<span id="displayEmpESICMaster"></span>%)</label>
-                                    <input class="form-control" value='@ViewBag.ESIC' name="ESIC" id="ESIC" type="text" readonly>
-                                </div>
+                            <div class="col-md-6 txtLabelEPF" style="display:none;">
+                            <label>EPF (<span id="displayEmpEPFMaster"></span>%)</label>
+                            <input class="form-control" value='@ViewBag.EPF' name="EPF" id="txtEPF" type="text" readonly>
+                            </div>
+                            <div class="col-md-6 ESICLabel" style="display:none;">
+                            <label id="ESICLabel">ESIC (<span id="displayEmpESICMaster"></span>%)</label>
+                            <input class="form-control" value='@ViewBag.ESIC' name="ESIC" id="ESIC" type="text" readonly>
+                            </div>
                             </div>
 
 
@@ -750,17 +733,25 @@
 
                             <h4 class="text-danger EmployerContribution" style="display:none;">Employer Contribution</h4>
                             <div class="row">
-                                <div class="col-md-6 txtLabelEmployerEPF" style="display:none;">
-                                    <label>EPF (<span id="displayEPFMaster"></span>%)</label>
-                                    <input class="form-control" name="EPF" placeholder="00.0" id="txtEPFMaster" type="text" readonly>
-                                    <input class="form-control" name="Epf_Number" value='@ViewBag.epfNumber' placeholder="00.0" id="txtepfNumber" type="hidden">
-                                </div>
-                                <div class="col-md-6 txtLabelEmployerEsic" style="display:none;">
-                                    <label>ESIC (<span id="displayESICMaster"></span>%)</label>
-                                    <input class="form-control" name="ESIC_Number" id="ESICMaster" type="text" readonly>
-                                </div>
+                            <div class="col-md-6 txtLabelEmployerEPF" style="display:none;">
+                            <label>EPF (<span id="displayEPFMaster"></span>%)</label>
+                            <input class="form-control" name="EmployerContribution" placeholder="00.0" id="txtEPFMaster" type="text" value="@ViewBag.EmployerContribution" readonly>
                             </div>
+                            <div class="col-md-6 txtLabelEmployerEsic" style="display:none;">
+                            <label>ESIC (<span id="displayESICMaster"></span>%)</label>
+                            <input class="form-control" name="ESIC_Number" id="ESICMaster" type="text" readonly>
+                            </div>
+                            </div>
+
                         </div>
+                        <input name="EmployerContributionpercentage" id="txtEmployerContributionpercentage" value="@ViewBag.EmployerContributionpercentage" type="hidden">
+                        <input name="Epfpercentage" id="txtEpfpercentage" value="@ViewBag.EPfpercentage" type="hidden">
+                        <input name="Esipercentage" id="txtEsipercentage" value="@ViewBag.Esipercentage" type="hidden">
+                        <input name="Basicpercentage" id="txtBasicpercentage" value="@ViewBag.Basicpercentage" type="hidden">
+                        <input name="Hrapercentage" id="txtHrapercentage" value="@ViewBag.HRApercentage" type="hidden">
+                        <input name="Conveyancepercentage" id="txtConveyancepercentage" value="@ViewBag.Conveyancepercentage" type="hidden">
+                        <input name="Medicalpercentage" id="txtMedicalpercentage" value="@ViewBag.Medicalpercentage" type="hidden">
+                        <input name="Variablepercentage" id="txtVariablepercentage" value="@ViewBag.Variablepercentage" type="hidden">
 
                         <div class="mt-3">
                             <button class="button btn-navigate-form-step" type="button" step_number="3">Prev</button>
@@ -774,12 +765,13 @@
         </div>
     </div>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="~/js/multiformvalidation.js"></script>
 <script>
-    $(document).ready(function(){
-        SalaryCalculation();
+    $(document).ready(function () {
+        UpdateSalaryCalculation();
     })
     function SalaryCalculation() {
         var AnnualCTC = parseFloat($('#txtAnnualCTC').val());
@@ -793,7 +785,7 @@
         var monthlyGrossPayInput = $('#txtMonthlyGrossPay');
         var EmployeeEpfInput = $('#txtEPF');
         var EmployeeESICInput = $('#ESIC');
-        var EmployerEpfInput = $('#txtepfNumber');
+        var EmployerEpfInput = $('#txtEPFMaster');
         var EmployerESICInput = $('#ESICMaster');
 
         $.ajax({
@@ -824,18 +816,27 @@
                             switch (item.deductiontype) {
                                 case "Basic Salary":
                                     basicSalaryInput.val(item.calculatedAmount || 0);
+                                    $('#txtBasicpercentage').val(item.deductionpercentage || 0);
                                     break;
                                 case "HRA":
                                     houseRentAllowanceInput.val(item.calculatedAmount || 0);
+                                    $('#txtHrapercentage').val(item.deductionpercentage || 0);
+
                                     break;
                                 case "Conveyance Allowance":
                                     conveyanceAllowanceInput.val(item.calculatedAmount || 0);
+                                    $('#txtConveyancepercentage').val(item.deductionpercentage || 0);
+
                                     break;
                                 case "Medical Allowance":
                                     medicalAllowanceInput.val(item.calculatedAmount || 0);
+                                    $('#txtMedicalpercentage').val(item.deductionpercentage || 0);
+
                                     break;
                                 case "Variable Pay":
                                     variableAllowanceInput.val(item.calculatedAmount || 0);
+                                    $('#txtVariablepercentage').val(item.deductionpercentage || 0);
+
                                     break;
                                 default:
                                     break;
@@ -846,23 +847,44 @@
                             var monthlySalary = AnnualCTC / 12;
                             monthlySalaryInput.val(parseFloat(monthlySalary).toFixed(2));
                             var basicSalary = parseFloat(basicSalaryInput.val()).toFixed(2);
-                            GetEmployerEPF(basicSalary);
+                            GetEmployerEPF(basicSalary, function (epfValue) {
+                                var BasicSalary = parseFloat($('#txtBasicSalary').val()) || 0;
+                                var Hra = parseFloat($('#txtHouseRentAllowance').val()) || 0;
+                                var Conveyance = parseFloat($('#txtConveyanceallowance').val()) || 0;
+                                var Medical = parseFloat($('#txtMedical').val()) || 0;
+                                var VariablePay = parseFloat($('#txtVariablePay').val()) || 0;
+                                var epf = parseFloat($('#txtEPF').val()) || 0;
+                                var epfMaster = parseFloat($('#txtEPFMaster').val()) || 0;
+                                var Esi = parseFloat($('#ESIC').val()) || 0;
+                                var EsiMaster = parseFloat($('#ESICMaster').val()) || 0;
+
+                                var totalSpecial = AnnualCTC - BasicSalary - Hra - Conveyance - Medical - VariablePay - epf - epfMaster - Esi - EsiMaster;
+                                var monthlyGrossPay = BasicSalary + Hra + totalSpecial + Conveyance + Medical + VariablePay;
+
+                                $('#SpecialAllowance').val(totalSpecial.toFixed(2));
+                                $('#txtMonthlyGrossPay').val(monthlyGrossPay.toFixed(2));
+                                var monthlyGrossPay = $('#txtMonthlyGrossPay').val();
+                                calculateEmployeeTax(monthlyGrossPay);
+                            });
+                           
+
                         }
-                       if(parseFloat(monthlySalaryInput.val()) > esicAmount)
-                       {
-                          var basicSalary = parseFloat(basicSalaryInput.val()).toFixed(2);
-                          DeductionEPFFields(epfPercentage,basicSalary);
+                        
+
+                        if (parseFloat(monthlySalaryInput.val()) > esicAmount) {
+                            var basicSalary = parseFloat(basicSalaryInput.val()).toFixed(2);
+                            DeductionEPFFields(epfPercentage, basicSalary);
                             $('#ESIC').css('display', 'none');
                             $('.ESICLabel').css('display', 'none');
-                       }else if(parseFloat(monthlySalaryInput.val()) <= esicAmount)
-                       {
-                           var basicSalary = parseFloat(basicSalaryInput.val()).toFixed(2);
-                           DeductionEPFFields(epfPercentage,basicSalary);
-                           DeductionESICFields(esicPercentage,basicSalary)
-                       }
-
-                       // here you are calculate the Special Allowance and Gross Pay
-
+                            $('#txtEpfpercentage').val(epfPercentage.toFixed(2));
+                           
+                        } else if (parseFloat(monthlySalaryInput.val()) <= esicAmount) {
+                            var basicSalary = parseFloat(basicSalaryInput.val()).toFixed(2);
+                            DeductionEPFFields(epfPercentage, basicSalary);
+                            DeductionESICFields(esicPercentage, basicSalary);
+                            $('#txtEpfpercentage').val(epfPercentage.toFixed(2));
+                            $('#txtEsipercentage').val(esicPercentage.toFixed(2));
+                        }
                     },
                     error: function (err) {
                         console.error('Failed to fetch deductions:', err);
@@ -874,61 +896,196 @@
             }
         });
     }
-    function DeductionEPFFields(epfPercentage,basicSalary){
+    function DeductionEPFFields(epfPercentage, basicSalary) {
         $('#displayEmpEPFMaster').text(epfPercentage ? epfPercentage.toFixed(2) : '0');
-        var epfValue = basicSalary * epfPercentage / 100;  // Calculate EPF based on basicSalary
+        var epfValue = basicSalary * epfPercentage / 100;
         $('.EmployeeContribution').css('display', 'block');
         $('.EmployerContribution').css('display', 'block');
         $('#txtEPF').val(epfValue.toFixed(2)).css('display', 'block');
         $('.txtLabelEPF').css('display', 'block');
     }
-    function DeductionESICFields(esicPercentage,basicSalary)
-    {
-      $('#displayEmpESICMaster').text(esicPercentage ? esicPercentage.toFixed(2) : '0');
-      var esicValue = basicSalary * esicPercentage / 100;
-      $('.EmployeeContribution').css('display', 'block');
+    function DeductionESICFields(esicPercentage, basicSalary) {
+        $('#displayEmpESICMaster').text(esicPercentage ? esicPercentage.toFixed(2) : '0');
+        var esicValue = basicSalary * esicPercentage / 100;
+        $('.EmployeeContribution').css('display', 'block');
         $('.EmployerContribution').css('display', 'block');
-      $('#ESIC').val(esicValue.toFixed(2)).css('display', 'block');
-      $('.ESICLabel').css('display', 'block');
+        $('#ESIC').val(esicValue.toFixed(2)).css('display', 'block');
+        $('.ESICLabel').css('display', 'block');
 
     }
-    function GetEmployerEPF(basicSalary){
-         $.ajax({
-                     url: '/Employee/Epfesilist',
-                     type: 'GET',
-                     dataType: 'json',
-                     success: function (response) {
-                         if (!response || !response.data) {
-                             console.error("Invalid response from API:", response);
-                             return;
-                         }
-                         var epfPercentage = 0;
-                         var esicPercentage = 0;
+    function GetEmployerEPF(basicSalary, callback) {
+        $.ajax({
+            url: '/Employee/Epfesilist',
+            type: 'GET',
+            dataType: 'json',
+            success: function (response) {
+                if (!response || !response.data) {
+                    console.error("Invalid response from API:", response);
+                    return;
+                }
+                var epfPercentage = 0;
 
-                         response.data.forEach(function (item) {
-                             if (item.deductionCycle === "EPF") {
-                                 epfPercentage = parseFloat(item.epfNumber) || 0;
-                             } else if (item.deductionCycle === "ESIC") {
-                                 esicPercentage = parseFloat(item.epfNumber) || 0;
-                             }
-                         });
-                         // Always show EPF, regardless of monthly salary comparison
-                         var epfValue = (basicSalary * epfPercentage) / 100;
-                         $('#displayEPFMaster').text(epfPercentage.toFixed(2));
-                         $('#txtEPFMaster').val(epfValue.toFixed(2)).show();
-                         $('.txtLabelEmployerEPF').show();
+                response.data.forEach(function (item) {
+                    if (item.deductionCycle === "EPF") {
+                        epfPercentage = parseFloat(item.epfNumber) || 0;
+                    }
+                });
+                var epfValue = (basicSalary * epfPercentage) / 100;
+                $('#displayEPFMaster').text(epfPercentage.toFixed(2));
+                $('#txtEmployerContributionpercentage').val(epfPercentage.toFixed(2));
+                $('#txtEPFMaster').val(epfValue.toFixed(2)).show();
+                $('.txtLabelEmployerEPF').show();
+                if (callback && typeof callback === 'function') {
+                    callback(epfValue);
+                }
+            },
+            error: function () {
+                alert('Error fetching data.');
+            }
+        });
+    }
+    function calculateEmployeeTax(monthlyGrossPay) {
+        //var monthlyGrossPay = parseFloat($('#txtMonthlyGrossPay').val());
+        $.ajax({
+            url: '/Employee/GetEmployeetax',
+            type: 'GET',
+            data: { GrossPay: monthlyGrossPay },
+            success: function (response) {
+                if (response.success) {
+                    var result = response.result;
 
-                         // Hide ESIC
-                         $('#displayESICMaster').text('0');
-                         $('#ESICMaster').val('0').hide();
-                         $('.txtLabelEmployerEsic').hide();
-                     },
-                     error: function () {
-                         alert('Error fetching data.');
-                     }
-                 });
-    } 
+                    if (result.checkIsprofessionaltax) {
+                        $('#txttdsvalue').val(result.taxAmount.toFixed(2));
+                        $('#displayTdsPercentage').text(result.taxpercentage.toFixed(2));
+                        $('#txtTdspercentage').val(result.taxpercentage.toFixed(2));
+                        $('.col-md-2').show();
+                        $('.tdssection').css('display', 'none');
+
+                    } else {
+                        $('#txttdsvalue').val('');
+                        $('#displayTdsPercentage').text('');
+                        $('.col-md-2').hide();
+                        $('.tdssection').css('display', 'none');
+
+                    }
+                } 
+            },
+            error: function () {
+                // Swal.fire('Error', 'An error occurred while processing your request.', 'error');
+            }
+        });
+    }
+
+
+    function UpdateSalaryCalculation() {
+        var AnnualCTC = parseFloat($('#txtAnnualCTC').val());
+        var basicSalaryInput = $('#txtBasicSalary');
+        var houseRentAllowanceInput = $('#txtHouseRentAllowance');
+        var conveyanceAllowanceInput = $('#txtConveyanceallowance');
+        var medicalAllowanceInput = $('#txtMedical');
+        var variableAllowanceInput = $('#txtVariablePay');
+        var monthlySalaryInput = $('#txtMonthlyCTC');
+        var specialAllowanceInput = $('#SpecialAllowance');
+        var monthlyGrossPayInput = parseFloat($('#txtMonthlyGrossPay').val());
+        var EmployeeEpfInput = $('#txtEPF');
+        var EmployeeESICInput = $('#ESIC');
+        var EmployerEpfInput = $('#txtEPFMaster');
+        var EmployerESICInput = $('#ESICMaster');
+
+        // Retrieving values from hidden fields (from @ViewBag)
+        var EmployerContributionpercentage = parseFloat($('#txtEmployerContributionpercentage').val()) || 0;
+        var Epfpercentage = parseFloat($('#txtEpfpercentage').val()) || 0;
+        var Esipercentage = parseFloat($('#txtEsipercentage').val()) || 0;
+        var Tdspercentage = parseFloat($('#txtTdspercentage').val()) || 0;
+
+        var Basicpercentage = $('#txtBasicpercentage');
+        var Hrapercentage = $('#txtHrapercentage');
+        var Conveyancepercentage = $('#txtConveyancepercentage');
+        var Medicalpercentage = $('#txtMedicalpercentage');
+        var Variablepercentage = $('#txtVariablepercentage');
+
+        $.ajax({
+            url: '/Employee/EmpEpfesilist',
+            method: 'GET',
+            dataType: 'json',
+            success: function (response) {
+                var esicPercentage = parseFloat(response.esicPercentage) || 0;
+                var epfPercentage = parseFloat(response.epfPercentage) || 0;
+                var esicAmount = parseFloat(response.esicAmount) || 0;
+
+                if (AnnualCTC > 0) {
+                    var monthlySalary = AnnualCTC / 12;
+                    monthlySalaryInput.val(parseFloat(monthlySalary).toFixed(2));
+                    var basicSalary = parseFloat(basicSalaryInput.val()).toFixed(2);
+                    var BasicSalary = parseFloat($('#txtBasicSalary').val()) || 0;
+                    var Hra = parseFloat($('#txtHouseRentAllowance').val()) || 0;
+                    var Conveyance = parseFloat($('#txtConveyanceallowance').val()) || 0;
+                    var Medical = parseFloat($('#txtMedical').val()) || 0;
+                    var VariablePay = parseFloat($('#txtVariablePay').val()) || 0;
+                    var epf = parseFloat($('#txtEPF').val()) || 0;
+                    var epfMaster = parseFloat($('#txtEPFMaster').val()) || 0;
+                    var Esi = parseFloat($('#ESIC').val()) || 0;
+                    var EsiMaster = parseFloat($('#ESICMaster').val()) || 0;
+
+                    var totalSpecial = AnnualCTC - BasicSalary - Hra - Conveyance - Medical - VariablePay - epf - epfMaster - Esi - EsiMaster;
+                    var monthlyGrossPay = BasicSalary + Hra + totalSpecial + Conveyance + Medical + VariablePay;
+
+                    $('#SpecialAllowance').val(totalSpecial.toFixed(2));
+                    $('#txtMonthlyGrossPay').val(monthlyGrossPay.toFixed(2));
+
+                }
+
+                if (parseFloat(monthlySalaryInput.val()) > esicAmount) {
+                    var basicSalary = parseFloat(basicSalaryInput.val()).toFixed(2);
+                    var empepfvalue = parseFloat(Epfpercentage).toFixed(2);
+                    $('#displayEmpEPFMaster').text(empepfvalue);
+                    var epfValue = basicSalary * empepfvalue / 100;
+                    $('.EmployeeContribution').css('display', 'block');
+                    $('.EmployerContribution').css('display', 'block');
+                    $('#txtEPF').val(epfValue.toFixed(2)).css('display', 'block');
+                    $('.txtLabelEPF').css('display', 'block');
+
+                    var EmployerepfValue = (basicSalary * EmployerContributionpercentage) / 100;
+                    $('#displayEPFMaster').text(EmployerContributionpercentage.toFixed(2));
+                    $('#txtEPFMaster').val(EmployerepfValue.toFixed(2)).show();
+                    $('.txtLabelEmployerEPF').show();
+                    $('#displayTdsPercentage').val(Tdspercentage.toFixed(2));
+                    var taxvalue = Tdspercentage * monthlyGrossPayInput / 100;
+                    $('#txttdsvalue').val(taxvalue.toFixed(2));
+                } else if (parseFloat(monthlySalaryInput.val()) <= esicAmount) {
+                    var basicSalary = parseFloat(basicSalaryInput.val()).toFixed(2);
+                    $('#displayEmpEPFMaster').text(Epfpercentage.toFixed(2));
+                    var epfValue = basicSalary * Epfpercentage / 100;
+                    $('.EmployeeContribution').css('display', 'block');
+                    $('.EmployerContribution').css('display', 'block');
+                    $('#txtEPF').val(epfValue.toFixed(2)).css('display', 'block');
+                    $('.txtLabelEPF').css('display', 'block');
+
+                    var empesivalue = parseFloat(Esipercentage).toFixed(2);
+                    $('#displayEmpESICMaster').text(empesivalue);
+                    var esicValue = basicSalary * empesivalue / 100;
+                    $('.EmployeeContribution').css('display', 'block');
+                    $('.EmployerContribution').css('display', 'block');
+                    $('#ESIC').val(esicValue.toFixed(2)).css('display', 'block');
+                    $('.ESICLabel').css('display', 'block');
+
+                    var EmployerepfValue = (basicSalary * EmployerContributionpercentage) / 100;
+                    $('#displayEPFMaster').text(EmployerContributionpercentage.toFixed(2));
+                    $('#txtEPFMaster').val(EmployerepfValue.toFixed(2)).show();
+                    $('.txtLabelEmployerEPF').show();
+                    $('#displayTdsPercentage').val(Tdspercentage.toFixed(2));
+                    var taxvalue = Tdspercentage * monthlyGrossPayInput / 100;
+                    $('#txttdsvalue').val(taxvalue.toFixed(2));
+
+                }
+            }
+        });
+    }
+
 </script>
+
+
+
 <script>
 
     function bindshifttypeid(OfficeshiftTypeid) {
@@ -1200,16 +1357,16 @@
 </script>
 <script>
     function validateNumericInput(event) {
-        if ([46, 8, 9, 27, 13].indexOf(event.keyCode) !== -1 ||
-            (event.keyCode == 65 && event.ctrlKey === true) ||
-            (event.keyCode >= 35 && event.keyCode <= 39)) {
-            return;
-        }
-        if ((event.shiftKey || (event.keyCode < 48 || event.keyCode > 57)) && (event.keyCode < 96 || event.keyCode > 105)) {
-            event.preventDefault();
-        }
+        if ([67, 86, 88].includes(event.keyCode) && (event.ctrlKey || event.metaKey) ||
+            [32, 46, 8, 9, 27, 13].includes(event.keyCode) ||
+            (event.keyCode >= 35 && event.keyCode <= 39)) return;
 
+        if ((event.keyCode >= 48 && event.keyCode <= 57) || (event.keyCode >= 96 && event.keyCode <= 105)) return;
+        event.preventDefault();
     }
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.getElementById("yourInputField").addEventListener("keydown", validateNumericInput);
+
 
 </script>
 

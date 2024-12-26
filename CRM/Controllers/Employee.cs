@@ -193,7 +193,16 @@ namespace CRM.Controllers
                 ViewBag.Conveyanceallowance = "";
                 ViewBag.MedicalAllowance = "";
                 ViewBag.VariablePay = "";
-                ViewBag.FixedAllowance = "";
+                ViewBag.EmployerContribution = "";
+                ViewBag.tdsvalue = "";
+                ViewBag.Basicpercentage = "";
+                ViewBag.HRApercentage = "";
+                ViewBag.Conveyancepercentage = "";
+                ViewBag.Medicalpercentage = "";
+                ViewBag.Variablepercentage = "";
+                ViewBag.EmployerContributionpercentage = "";
+                ViewBag.EPfpercentage = "";
+                ViewBag.Esipercentage = "";
                 ViewBag.btnText = "SAVE";
 
                 if (id != null)
@@ -264,6 +273,16 @@ namespace CRM.Controllers
                                 ViewBag.FixedAllowance = row["FixedAllowance"].ToString();
                                 ViewBag.MedicalAllowance = row["Medical"].ToString();
                                 ViewBag.VariablePay = row["VariablePay"].ToString();
+                                ViewBag.EmployerContribution = row["EmployerContribution"].ToString(); 
+                                ViewBag.tdsvalue = row["tdsvalue"].ToString(); 
+                                ViewBag.Basicpercentage = row["Basicpercentage"].ToString(); 
+                                ViewBag.HRApercentage = row["HRApercentage"].ToString(); 
+                                ViewBag.Conveyancepercentage = row["Conveyancepercentage"].ToString(); 
+                                ViewBag.Medicalpercentage = row["Medicalpercentage"].ToString(); 
+                                ViewBag.Variablepercentage = row["Variablepercentage"].ToString(); 
+                                ViewBag.EmployerContributionpercentage = row["EmployerContributionpercentage"].ToString(); 
+                                ViewBag.EPfpercentage = row["EPfpercentage"].ToString(); 
+                                ViewBag.Esipercentage = row["Esipercentage"].ToString(); 
                                 ViewBag.Emp_Reg_Code = id;
                                 ViewBag.btnText = "UPDATE";
 
@@ -373,6 +392,7 @@ namespace CRM.Controllers
                             foreach (var item in response)
                             {
                                 ViewBag.shiftlist = item.ShiftTypeid;
+                                ViewBag.Isactive = item.Isactive;
                             }
                         }
 
@@ -383,7 +403,7 @@ namespace CRM.Controllers
                     ViewBag.UserName = HttpContext.Session.GetString("UserName");
                     return View(response);
                 }
-                
+
                 return RedirectToAction("Login", "Admin");
             }
             catch (Exception ex)
@@ -553,7 +573,7 @@ namespace CRM.Controllers
                 decimal total = 0.00M;
                 foreach (var item in response)
                 {
-                    total += (decimal)item.MonthlyCtc;
+                    total += (decimal)item.Grosspay;
                 }
 
                 ViewBag.TotalAmmount = total;
@@ -1631,9 +1651,9 @@ namespace CRM.Controllers
                                 {
                                     attend.EmployeeId = row[col].ToString();
                                 }
-                                else if (col.Caption == "Monthly CTC")
+                                else if (col.Caption == "Gross Pay")
                                 {
-                                    attend.MonthlyCtc = Convert.ToInt32(row[col].ToString());
+                                    attend.Grosspay = Convert.ToInt32(row[col].ToString());
                                 }
                                 else if (col.Caption == "Attendance")
                                 {
@@ -1959,7 +1979,7 @@ namespace CRM.Controllers
                 // Query the data with type matching for the joins
                 var result = await (from emp in _context.EmployeeRegistrations
                                     join des in _context.DesignationMasters
-                                    on Convert.ToInt16(emp.DesignationId) equals des.Id 
+                                    on Convert.ToInt16(emp.DesignationId) equals des.Id
                                     join vendor in _context.VendorRegistrations on emp.Vendorid equals vendor.Id
                                     join state in _context.States on vendor.StateId equals state.Id
                                     join dpt in _context.DepartmentMasters on Convert.ToInt16(emp.DepartmentId) equals dpt.Id
@@ -1980,15 +2000,15 @@ namespace CRM.Controllers
                                         HRAYearly = (salaryDetails.HouseRentAllowance) * 12,
                                         CompanyImage = vendor.CompanyImage,
                                         DateOfJoining = emp.DateOfJoining.Value.ToString("dd/MM/yyyy"),
-                                        BasicSalary = salaryDetails.Basic ,
-                                        BasicSalaryYearly = salaryDetails.Basic  * 12,
-                                        Medical = salaryDetails.Medical ,
+                                        BasicSalary = salaryDetails.Basic,
+                                        BasicSalaryYearly = salaryDetails.Basic * 12,
+                                        Medical = salaryDetails.Medical,
                                         MedicalYearly = (salaryDetails.Medical) * 12,
                                         Conveyance = salaryDetails.Conveyanceallowance,
                                         ConveyanceYearly = (salaryDetails.Conveyanceallowance) * 12,
-                                        PF = salaryDetails.Epf ,
+                                        PF = salaryDetails.Epf,
                                         PFYearly = (salaryDetails.Epf) * 12,
-                                        ESIC = salaryDetails.Esic ,
+                                        ESIC = salaryDetails.Esic,
                                         ESICYearly = (salaryDetails.Esic) * 12,
                                         DepartmentName = dpt.DepartmentName.Trim(),
                                     }).FirstOrDefaultAsync();
@@ -2298,7 +2318,7 @@ namespace CRM.Controllers
                     ViewBag.UserName = HttpContext.Session.GetString("UserName");
                     int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                     var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
-                    ViewBag.EmployeeId = _context.EmployeeRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).Select(D => new SelectListItem
+                    ViewBag.EmployeeId = _context.EmployeeRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid && x.IsDeleted == false).Select(D => new SelectListItem
                     {
                         Value = D.EmployeeId.ToString(),
                         Text = $"{D.EmployeeId} {' '} ({D.FirstName})"
@@ -2359,7 +2379,7 @@ namespace CRM.Controllers
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
 
-                var options = _context.EmployeeRegistrations
+                var options = _context.EmployeeRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid && x.IsDeleted == false)
                  .Select(D => new SelectListItem
                  {
                      Value = D.EmployeeId.ToString(),
@@ -2555,7 +2575,7 @@ namespace CRM.Controllers
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
 
 
-                ViewBag.EmployeeId = _context.EmployeeRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).Select(D => new SelectListItem
+                ViewBag.EmployeeId = _context.EmployeeRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid && x.IsDeleted == false).Select(D => new SelectListItem
                 {
                     Value = D.EmployeeId.ToString(),
                     Text = D.EmployeeId
@@ -2708,7 +2728,7 @@ namespace CRM.Controllers
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
 
 
-                ViewBag.EmployeeId = _context.EmployeeRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).Select(D => new SelectListItem
+                ViewBag.EmployeeId = _context.EmployeeRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid && x.IsDeleted == false).Select(D => new SelectListItem
                 {
                     Value = D.EmployeeId.ToString(),
                     Text = D.EmployeeId
@@ -3052,6 +3072,67 @@ namespace CRM.Controllers
             };
 
             return new JsonResult(result);
+        }
+        [HttpPost]
+        public JsonResult UpdateEmployeeIsactive(int id, bool isActive)
+        {
+            var emp = _context.EmployeeRegistrations.FirstOrDefault(x => x.Id == id);
+            if (emp != null)
+            {
+                emp.Isactive = isActive;
+                _context.SaveChanges();
+                return Json(new
+                {
+                    success = true,
+                    message = isActive ? "Employee Activated successfully." : "Employee Deactivated successfully."
+                });
+            }
+            return Json(new { success = false, message = "Employee not found." });
+        }
+        public JsonResult GetEmployeetax(decimal GrossPay)
+        {
+            int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+            var adminLogin = _context.AdminLogins.FirstOrDefault(x => x.Id == Userid);
+
+            if (adminLogin == null)
+            {
+                return new JsonResult(new { success = false, message = "User not found." });
+            }
+
+            var Vendor = _context.VendorRegistrations.FirstOrDefault(e => e.Id == adminLogin.Vendorid);
+
+            if (Vendor == null)
+            {
+                return new JsonResult(new { success = false, message = "Vendor not found." });
+            }
+
+            var professionaltaxdata = _context.Professionaltaxes
+                .Where(pt => pt.Minamount <= GrossPay && pt.Maxamount >= GrossPay)
+                .ToList();
+
+            if (!professionaltaxdata.Any())
+            {
+                return new JsonResult(new { success = false, message = "No professional tax data found for the provided GrossPay." });
+            }
+
+            bool check = (bool)Vendor.Isprofessionaltax;
+            decimal taxpercentage = 0;
+            decimal taxAmount = 0;
+            var pt = professionaltaxdata.FirstOrDefault();
+            if (pt != null)
+            {
+                taxpercentage = pt.Amountpercentage ?? 0;
+                taxAmount = (GrossPay * taxpercentage) / 100;
+            }
+
+            var result = new
+            {
+                checkIsprofessionaltax = check,
+                taxpercentage = taxpercentage,
+                taxAmount = taxAmount
+            };
+
+            return new JsonResult(new { success = true, result });
         }
 
 

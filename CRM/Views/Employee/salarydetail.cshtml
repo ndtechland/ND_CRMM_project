@@ -193,7 +193,7 @@
                                                         Employee Id
                                                     </th>
                                                     <th nowrap>
-                                                        Monthly CTC
+                                                        Gross Pay
                                                     </th>
                                                     <th nowrap>
                                                         MonthlyPay
@@ -234,7 +234,7 @@
                                                                 @item.TravellingAllowance
                                                             </td>
                                                             <td>
-                                                                @Html.DisplayFor(modelItem => item.MonthlyCtc)
+                                                                @Html.DisplayFor(modelItem => item.Grosspay)
                                                             </td>
                                                             @*<td>
                                                                 @Html.DisplayFor(modelItem => item.MonthlyPay)
@@ -249,7 +249,7 @@
                                                                 </a>
                                                             </td>
                                                         </tr>
-                                                        TotalAmt += item.MonthlyCtc;
+                                                        TotalAmt += item.Grosspay;
                                                     }
                                                 }
                                             </tbody>

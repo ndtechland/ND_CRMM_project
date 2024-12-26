@@ -22,7 +22,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
 
 
-
 <style>
     .dataTables_wrapper table.dataTable th {
         background-color: #00baf2 !important;
@@ -162,7 +161,7 @@
                                             </select>
                                         </div>
                                         <div class="form-group col-md-6">
-                                            <label class="control-label" for="Date-picker">Task Name</label>
+                                            <label class="control-label" for="Date-picker">Project Name</label>
                                             <input id="Date-picker" type="text" name="Task" placeholder="Please Enter Task Name" value="@ViewBag.Task" class="form-control" required />
                                             <span name="Date" class="text-danger"></span>
                                         </div>
@@ -180,19 +179,19 @@
                                             <input id="taskTitle" type="text" name="Tittle" value="@ViewBag.Tittle" placeholder="Please Enter Task Title" class="form-control" required />
                                         </div>
 
-                                        <div class="form-group col-md-6">
+                                        <div class="form-group col-md-6 editor-space">
                                             <label class="control-label" for="taskDescription">Task Description</label>
-                                            <input id="taskDescription" type="text" name="Description" value="@ViewBag.Description" placeholder="Please Enter Task Description" class="form-control" />
-                                        </div>
-                                        <div class="form-group col-md-6">
-                                            <label for="taskStatusID">Task Status</label>
-                                            <select name="Status" class="form-control" id="taskStatusID" required>
-                                                <option value="">-- Select Task Status --</option>
-                                                @foreach (var item in ViewBag.TaskStatus)
-                                                {
-                                                    <option value="@item.Value">@item.Text</option>
-                                                }
-                                            </select>
+                                            <textarea rows="5" name="Description" id="editor1" class="form-control" cols="30" rows="10" placeholder="Please Enter Task Description">@ViewBag.Description</textarea>
+                                       </div>
+                                         <div class="form-group col-md-6">
+                                        <label for="taskStatusID">Task Status</label>
+                                        <select name="Status" class="form-control" id="taskStatusID" required>
+                                        <option value="">-- Select Task Status --</option>
+                                        @foreach (var item in ViewBag.TaskStatus)
+                                        {
+                                        <option value="@item.Value">@item.Text</option>
+                                        }
+                                        </select>
                                         </div>
                                     </div>
 
@@ -225,7 +224,7 @@
                                                     Employee Name
                                                 </th>
                                                 <th nowrap>
-                                                    Task Name
+                                                    Project Name
                                                 </th>
                                                 <th nowrap>
                                                     Task Startdate
@@ -273,10 +272,7 @@
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.Tittle)
                                                         </td>
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => item.Description)
-                                                        </td>
-
+                                                        <td>@Html.Raw(@item.Description.Length > 100 ? @item.Description.Substring(0, 150) + "..." : @item.Description)</td>
                                                         <td>
                                                             <select name="StatusName" class="form-control taskstatus-dropdown" id="ddltaskstatusid_@item.Id" style="height: 40px; width: 230px;">
                                                                 <option value="0">-- Select Status --</option>
@@ -413,58 +409,58 @@
 
         function updateDropdownColor(dropdown) {
             $(dropdown).find('option').each(function () {
-                var value = $(this).val(); 
+                var value = $(this).val();
                 switch (value) {
                     case "1":
-                        $(this).css('color', 'orange'); 
+                        $(this).css('color', 'orange');
                         break;
                     case "2":
-                        $(this).css('color', 'blue'); 
+                        $(this).css('color', 'blue');
                         break;
                     case "3":
-                        $(this).css('color', 'green'); 
+                        $(this).css('color', 'green');
                         break;
                     case "4":
-                        $(this).css('color', 'purple'); 
+                        $(this).css('color', 'purple');
                         break;
                     case "6":
-                        $(this).css('color', 'red'); 
+                        $(this).css('color', 'red');
                         break;
                     default:
-                        $(this).css('color', 'black'); 
+                        $(this).css('color', 'black');
                         break;
                 }
             });
 
-            var selectedValue = $(dropdown).val(); 
+            var selectedValue = $(dropdown).val();
             switch (selectedValue) {
                 case "1":
-                    $(dropdown).css('color', 'orange'); 
+                    $(dropdown).css('color', 'orange');
                     break;
                 case "2":
-                    $(dropdown).css('color', 'blue'); 
+                    $(dropdown).css('color', 'blue');
                     break;
                 case "3":
-                    $(dropdown).css('color', 'green'); 
+                    $(dropdown).css('color', 'green');
                     break;
                 case "4":
-                    $(dropdown).css('color', 'purple'); 
+                    $(dropdown).css('color', 'purple');
                     break;
                 case "6":
-                    $(dropdown).css('color', 'red'); 
+                    $(dropdown).css('color', 'red');
                     break;
                 default:
-                    $(dropdown).css('color', 'black'); 
+                    $(dropdown).css('color', 'black');
                     break;
             }
         }
 
         function bindtaskstatusid(taskstatusid, itemId) {
-            var dropdownfortaskstatusid = $("#ddltaskstatusid_" + itemId); 
+            var dropdownfortaskstatusid = $("#ddltaskstatusid_" + itemId);
             if (dropdownfortaskstatusid.length > 0) {
                 if (taskstatusid && taskstatusid !== "0" && taskstatusid !== "") {
-                    dropdownfortaskstatusid.val(taskstatusid);  
-                    updateDropdownColor(dropdownfortaskstatusid); 
+                    dropdownfortaskstatusid.val(taskstatusid);
+                    updateDropdownColor(dropdownfortaskstatusid);
                 }
             }
         }
@@ -480,22 +476,16 @@
     @foreach (var item in Model)
     {
         <text>
-          bindtaskstatusid('@item.TaskStatusId', '@item.Id'); // Bind task status ID again after redraw
+                            bindtaskstatusid('@item.TaskStatusId', '@item.Id'); // Bind task status ID again after redraw
         </text>
     }
-            });
+                    });
 
         $(document).on('change', '.taskstatus-dropdown', function () {
-            updateDropdownColor(this); 
+            updateDropdownColor(this);
         });
     });
 </script>
-
-
-
-
-
-
 
 
 

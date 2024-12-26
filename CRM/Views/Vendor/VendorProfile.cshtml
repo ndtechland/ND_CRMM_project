@@ -324,11 +324,11 @@
                                                 <label style="margin-top:31px;" for="Isprofessionaltax" class="form-label">Would you like the system to automatically determine payroll tax deductions using the latest tax rate?</label>
                                                 <div>
                                                     <div class="form-check form-check-inline" style="margin-top: 15px;">
-                                                        <input class="form-check-input" type="radio" name="Isprofessionaltax" id="ProfessionalYes" value="true" onchange="toggleEmployeeDropdown(true)" required />
+                                                        <input class="form-check-input" type="radio" asp-for="Isprofessionaltax" id="ProfessionalYes" value="@true" onchange="toggleEmployeeDropdown(true)" required />
                                                         <label class="form-check-label" for="ProfessionalYes">Yes</label>
                                                     </div>
                                                     <div class="form-check form-check-inline" style="margin-top: 15px;">
-                                                        <input class="form-check-input" type="radio" name="Isprofessionaltax" id="ProfessionalNo" value="false" onchange="toggleEmployeeDropdown(false)" checked required />
+                                                        <input class="form-check-input" type="radio" asp-for="Isprofessionaltax" id="ProfessionalNo" value="@false" onchange="toggleEmployeeDropdown(false)" checked required />
                                                         <label class="form-check-label" for="ProfessionalNo">No</label>
                                                     </div>
                                                 </div>
@@ -397,12 +397,12 @@
     var eventmeet = '@ViewBag.professionaltax'.toLowerCase();
     if (eventmeet !== "") {
         if (eventmeet === "true") {
-            $("#ProfessionalYes").prop("checked", false);
-            $("#ProfessionalNo").prop("checked", true);
-        }
-        if (eventmeet === "false") {
             $("#ProfessionalYes").prop("checked", true);
             $("#ProfessionalNo").prop("checked", false);
+        }
+        if (eventmeet === "false") {
+            $("#ProfessionalYes").prop("checked", false);
+            $("#ProfessionalNo").prop("checked", true);
         }
     }
 </script>
@@ -499,16 +499,17 @@
 
 <script>
     function validateNumericInput(event) {
-        if ([46, 8, 9, 27, 13].indexOf(event.keyCode) !== -1 ||
-            (event.keyCode == 65 && event.ctrlKey === true) ||
-            (event.keyCode >= 35 && event.keyCode <= 39)) {
-            return;
-        }
-        if ((event.shiftKey || (event.keyCode < 48 || event.keyCode > 57)) && (event.keyCode < 96 || event.keyCode > 105)) {
-            event.preventDefault();
-        }
+        if ([67, 86, 88].includes(event.keyCode) && (event.ctrlKey || event.metaKey) ||
+            [32, 46, 8, 9, 27, 13].includes(event.keyCode) ||
+            (event.keyCode >= 35 && event.keyCode <= 39)) return;
 
+        if ((event.keyCode >= 48 && event.keyCode <= 57) || (event.keyCode >= 96 && event.keyCode <= 105)) return;
+        event.preventDefault();
     }
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.getElementById("yourInputField").addEventListener("keydown", validateNumericInput);
+
+
     function ValidateGST() {
         var Obj = document.getElementById("GstNumber");
         if (Obj.value != "") {

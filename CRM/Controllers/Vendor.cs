@@ -1296,7 +1296,7 @@ namespace CRM.Controllers
                     Value = w.Id.ToString(),
                     Text = w.StatusName,
                 }).ToListAsync();
-                ViewBag.EmployeeId = _context.EmployeeRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).Select(D => new SelectListItem
+                ViewBag.EmployeeId = _context.EmployeeRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid && x.IsDeleted == false).Select(D => new SelectListItem
                 {
                     Value = D.EmployeeId.ToString(),
                     Text = $"{D.EmployeeId} {' '} ({D.FirstName})"
@@ -1441,7 +1441,7 @@ namespace CRM.Controllers
                     Text = w.StatusName,
                 }).ToListAsync();
                 ViewBag.EmployeeId = await _context.EmployeeRegistrations
-                    .Where(x => x.Vendorid == adminlogin.Vendorid)
+                    .Where(x => x.Vendorid == adminlogin.Vendorid && x.IsDeleted == false)
                     .Select(D => new SelectListItem
                     {
                         Value = D.EmployeeId.ToString(),
@@ -2410,7 +2410,7 @@ namespace CRM.Controllers
                 ViewBag.EmployeeItem = _context.EmployeeRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).Select(D => new SelectListItem
                 {
                     Value = D.EmployeeId.ToString(),
-                    Text = D.EmployeeId
+                    Text = $"{D.EmployeeId} {' '} ({D.FirstName})"
 
                 }).ToList();
                 int iId = (int)(id == null ? 0 : id);
@@ -3626,7 +3626,7 @@ namespace CRM.Controllers
                 var calculatedDeductions = deductions.Select(d => new
                 {
                     d.Deductiontype,
-                    d.Deductionpercentage,
+                    d.Deductionpercentage ,
                     CalculatedAmount = Math.Round((annualSalary * (d.Deductionpercentage ?? 0) / 100) /*/ 12*/, 2) 
                 });
 

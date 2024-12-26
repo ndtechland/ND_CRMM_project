@@ -3,6 +3,7 @@ using CRM.Models.Crm;
 using CRM.Models.CRM;
 using CRM.Models.DTO;
 using CRM.Repository;
+using DocumentFormat.OpenXml.InkML;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -232,6 +233,19 @@ namespace CRM.Controllers
 
         }
 
-       
+        [HttpGet]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public async Task<JsonResult> getsessionkey()
+        {
+
+            if (HttpContext.Session.GetString("UserName") == null)
+            {
+                return Json(false);
+            }
+            else
+            {
+                return Json(true);
+            }
+        }
     }
 }

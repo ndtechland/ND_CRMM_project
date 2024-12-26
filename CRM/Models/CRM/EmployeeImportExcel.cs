@@ -70,5 +70,6 @@ namespace CRM.Models.Crm
         public long? ShiftTypeid { get; set; }
         public decimal? Conveyanceallowance { get; set; }
         public decimal? FixedAllowance { get; set; }
+        public bool? Isactive { get; set; }
     }
 }

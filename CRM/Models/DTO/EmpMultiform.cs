@@ -40,8 +40,16 @@ namespace CRM.Models.DTO
         //public decimal? FixedAllowance { get; set; }
         public decimal? Medical { get; set; }
         public decimal? VariablePay { get; set; }
-        //public decimal? EmployerContribution { get; set; }
-
+        public decimal? EmployerContribution { get; set; }
+        public decimal? Tdsvalue { get; set; }
+        public decimal? Basicpercentage { get; set; }
+        public decimal? Hrapercentage { get; set; }
+        public decimal? Conveyancepercentage { get; set; }
+        public decimal? Medicalpercentage { get; set; }
+        public decimal? Variablepercentage { get; set; }
+        public decimal? EmployerContributionpercentage { get; set; }
+        public decimal? Epfpercentage { get; set; }
+        public decimal? Esipercentage { get; set; }
 
         // Personal Info
         public string? PersonalEmailAddress { get; set; }

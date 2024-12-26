@@ -28,7 +28,8 @@ namespace CRM.Models.DTO
         public string OfficeAddress { get; set; }
         public string VendorOfficeAddress { get; set; }
         public string BillingAddress { get; set; }
-        public DateTime? InvoiceDate { get; set; }
+        public string? InvoiceDate { get; set; }
+        public string? InvoiceDueDate { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? RenewDate { get; set; }
         public string? InvoiceNumber { get; set; }
@@ -48,9 +49,10 @@ namespace CRM.Models.DTO
         public decimal? DueAmount { get; set; }
         public decimal? PaidAmount { get; set; }
         public decimal? TotalAmount { get; set; }
-        public DateTime? Dueamountdate { get; set; }
         public string? VendorSingature { get; set; }
-
+        public DateTime? Dueamountdate { get; set; }
+        public string? Notes { get; set; }
+        public string? Terms { get; set; }
         public List<ProductDetail> ProductDetails { get; set; }
         public List<ProductDetailList> ProductDetailLists { get; set; }
         public List<CustomerInvoice> customerInvoice { get; set; }
@@ -91,7 +93,7 @@ namespace CRM.Models.DTO
         public DateTime? RenewDate { get; set; }
         public decimal? DueAmount { get; set; }
         public decimal? PaidAmount { get; set; }
-        public DateTime? Dueamountdate { get; set; }
+        public string? Description { get; set; }
 
     }
 

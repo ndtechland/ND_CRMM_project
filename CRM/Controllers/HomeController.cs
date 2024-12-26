@@ -75,7 +75,7 @@ namespace CRM.Controllers
                 {
                     Subtittle = x.Subtittle,
                     Date = x.Date
-                }).ToListAsync();
+                }).Take(5).ToListAsync();
 
                 ViewBag.Announcements = await _context.EventsmeetSchedulers
                 .Where(x => x.Vendorid == adminlogin.Vendorid)
@@ -84,7 +84,7 @@ namespace CRM.Controllers
                     Title = x.Tittle,
                     Date = x.ScheduleDate,
                     time = x.Time
-                }).OrderByDescending(x => x.Date).ToListAsync();
+                }).OrderByDescending(x => x.Date).Take(5).ToListAsync();
                 //LeaveList
                 ViewBag.onLeaveList = emplist.Count(x => _context.ApplyLeaveNews
                .Any(y => y.UserId == x.EmployeeId
@@ -99,17 +99,32 @@ namespace CRM.Controllers
                 var allDates = Enumerable.Range(0, (today - firstDayOfMonth).Days + 1)
                     .Select(offset => firstDayOfMonth.AddDays(offset))
                     .ToList();
+                var employeeIdsrecords = emplist.Select(emp => emp.EmployeeId).ToList();
+
+                // Filter records to only include those matching the employee IDs in emplist
                 var records = _context.EmployeeCheckInRecords
                     .Where(record => record.CurrentDate.HasValue &&
                                      record.CurrentDate.Value.Year == today.Year &&
                                      record.CurrentDate.Value.Month == today.Month &&
-                                     record.CurrentDate.Value.Date <= today) 
+                                     record.CurrentDate.Value.Date <= today &&
+                                     employeeIdsrecords.Contains(record.EmpId)) // Match with emplist
                     .AsEnumerable()
                     .GroupBy(record => record.CurrentDate.Value.Date)
                     .ToDictionary(group => group.Key, group => group.Sum(record =>
                         (record.CheckOuttime.HasValue && record.CheckIntime.HasValue)
                         ? Math.Max(0, (record.CheckOuttime.Value - record.CheckIntime.Value).TotalHours)
                         : 0));
+                //var records = _context.EmployeeCheckInRecords
+                //    .Where(record => record.CurrentDate.HasValue &&
+                //                     record.CurrentDate.Value.Year == today.Year &&
+                //                     record.CurrentDate.Value.Month == today.Month &&
+                //                     record.CurrentDate.Value.Date <= today) 
+                //    .AsEnumerable()
+                //    .GroupBy(record => record.CurrentDate.Value.Date)
+                //    .ToDictionary(group => group.Key, group => group.Sum(record =>
+                //        (record.CheckOuttime.HasValue && record.CheckIntime.HasValue)
+                //        ? Math.Max(0, (record.CheckOuttime.Value - record.CheckIntime.Value).TotalHours)
+                //        : 0));
                 var workingHoursDates = allDates.Select(date => date.Day.ToString()).ToList(); 
                 var workingHoursData = allDates.Select(date =>
                     records.ContainsKey(date) ? records[date] : 0 
@@ -2336,10 +2351,12 @@ namespace CRM.Controllers
                 var data = await (from invoice in context.CustomerInvoices
                                   join mode in context.Paymentmodes
                                   on invoice.Paymentstatus equals mode.Id
+                                  join ctd in context.CustomerInvoicedetails
+                                 on invoice.InvoiceNumber equals ctd.InvoiceNumber
                                   where invoice.CreatedDate.HasValue
                                         && invoice.CreatedDate.Value.Year == currentYear
                                         && invoice.VendorId == adminLogin.Vendorid
-                                  group new { invoice, mode } by new
+                                  group new { invoice, mode ,ctd} by new
                                   {
                                       Month = invoice.CreatedDate.Value.Month,
                                       invoice.Paymentstatus,
@@ -2347,7 +2364,7 @@ namespace CRM.Controllers
                                       Invoice = invoice.InvoiceNumber,
                                       PaidAmount = invoice.PaidAmount,
                                       UnPaidAmount = invoice.DueAmount,
-                                      overdueAmount = invoice.Taxamount,
+                                      overdueAmount = ctd.Taxamount,
                                   } into g
                                   select new
                                   {
@@ -2357,7 +2374,7 @@ namespace CRM.Controllers
                                       Count = g.Select(x => x.invoice.InvoiceNumber).Distinct().Count(),
                                       PaidAmount = g.Select(x => x.invoice.PaidAmount).Distinct().Sum(),
                                       UnPaidAmount = g.Select(x => x.invoice.DueAmount).Distinct().Sum(),
-                                      overdueAmount = g.Select(x => x.invoice.Taxamount).Sum()
+                                      overdueAmount = g.Select(x => x.ctd.Taxamount).Sum()
                                   }).ToListAsync();
 
                 var groupedData = data

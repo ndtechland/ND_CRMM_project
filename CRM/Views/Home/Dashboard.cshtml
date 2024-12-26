@@ -429,10 +429,10 @@ else
                                             <table class="table table-bordernone">
                                                 <thead>
                                                     <tr>
-                                                        <th scope="col">Employee ID</th>
-                                                        <th scope="col">Employee Name</th>
-                                                        <th scope="col">Task Name</th>
-                                                        <th scope="col">Task Status</th>
+                                                        <th nowrap>Employee ID</th>
+                                                        <th nowrap>Employee Name</th>
+                                                        <th nowrap>Task Name</th>
+                                                        <th nowrap>Task Status</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody id="taskListTable">
@@ -445,73 +445,64 @@ else
                                     </div>
                                 </div>
                             </div>
-                            <div class="row mt-4">
-                                <!-- Holidays Section -->
-                                <div class="col-lg-6 col-md-12 mb-4">
-                                    <div class="card custom-border shadow">
-                                        <div class="card-body">
-                                            <h5 class="card-title">HOLIDAYS</h5>
-                                            <ul class="list-unstyled">
-                                                @if (ViewBag.Holidays != null)
+                            <div class="col-lg-3 xl-100">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Holidays</h5>
+                                        <ul class="list-unstyled">
+                                            @if (ViewBag.Holidays != null)
+                                            {
+                                                foreach (var holiday in ViewBag.Holidays)
                                                 {
-                                                    foreach (var holiday in ViewBag.Holidays)
-                                                    {
-                                                        <li class="d-flex align-items-center mb-3">
-                                                            <div class="holiday-date bg-light rounded text-center me-3 p-2">
-                                                                <h4 class="mb-0">@holiday.Date?.ToString("dd")</h4>
-                                                                <small class="text-uppercase">@holiday.Date?.ToString("MMM")</small>
-                                                            </div>
-                                                            <div>
-                                                                <h6 class="mb-0">@holiday.Subtittle</h6>
-                                                                <small>@holiday.Date?.ToString("dd MMM yyyy")</small>
-                                                            </div>
-                                                        </li>
-                                                    }
+                                                    <li class="d-flex align-items-center mb-3">
+                                                        <div class="holiday-date bg-light rounded text-center me-3 p-2">
+                                                            <h4 class="mb-0">@holiday.Date?.ToString("dd")</h4>
+                                                            <small class="text-uppercase">@holiday.Date?.ToString("MMM")</small>
+                                                        </div>
+                                                        <div>
+                                                            <h6 class="mb-0">@holiday.Subtittle</h6>
+                                                            <small>@holiday.Date?.ToString("dd MMM yyyy")</small>
+                                                        </div>
+                                                    </li>
                                                 }
-                                                else
-                                                {
-                                                    <p>No public holidays available.</p>
-                                                }
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Announcements Section -->
-                                <div class="col-lg-6 col-md-12 mb-4">
-                                    <div class="card custom-border shadow">
-                                        <div class="card-body">
-                                            <h5 class="card-title">ANNOUNCEMENTS</h5>
-                                            <ul class="list-unstyled">
-                                                @if (ViewBag.Announcements != null && ViewBag.Announcements.Count > 0)
-                                                {
-                                                    foreach (var announcement in ViewBag.Announcements)
-                                                    {
-                                                        <li class="d-flex align-items-start mb-3">
-                                                            <div class="announcement-icon bg-light rounded-circle text-center me-3 p-2">
-                                                                <i class="bi bi-megaphone fs-5 text-primary"></i>
-                                                            </div>
-                                                            <div>
-                                                                <h6 class="mb-0">Meeting at @announcement.time</h6>
-                                                                <h6 class="mb-0">Talking about @announcement.Title</h6>
-                                                                <small>@announcement.Date?.ToString("dd MMM yyyy")</small>
-                                                            </div>
-                                                        </li>
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    <p>No announcements available.</p>
-                                                }
-                                            </ul>
-                                        </div>
+                                            }
+                                            else
+                                            {
+                                                <p>No public holidays available.</p>
+                                            }
+                                        </ul>
                                     </div>
                                 </div>
                             </div>
-
-
-
-
+                            <div class="col-lg-3 xl-100">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Announcements</h5>
+                                        <ul class="list-unstyled">
+                                            @if (ViewBag.Announcements != null && ViewBag.Announcements.Count > 0)
+                                            {
+                                                foreach (var announcement in ViewBag.Announcements)
+                                                {
+                                                    <li class="d-flex align-items-start mb-3">
+                                                        <div class="announcement-icon bg-light rounded-circle text-center me-3 p-2">
+                                                            <i class="bi bi-megaphone fs-5 text-primary"></i>
+                                                        </div>
+                                                        <div>
+                                                            <h6 class="mb-0">Meeting at @announcement.time</h6>
+                                                            <h6 class="mb-0">Talking about @announcement.Title</h6>
+                                                            <small>@announcement.Date?.ToString("dd MMM yyyy")</small>
+                                                        </div>
+                                                    </li>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <p>No announcements available.</p>
+                                            }
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
