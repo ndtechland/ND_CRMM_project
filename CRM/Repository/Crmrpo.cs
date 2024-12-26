@@ -227,6 +227,16 @@ namespace CRM.Repository
                 cmd.Parameters.AddWithValue("@conveyanceallowance", model.Conveyanceallowance);
                 cmd.Parameters.AddWithValue("@Medical", model.Medical);
                 cmd.Parameters.AddWithValue("@VariablePay", model.VariablePay);
+                cmd.Parameters.AddWithValue("@EmployerContribution", model.EmployerContribution);
+                cmd.Parameters.AddWithValue("@tdsvalue", model.Tdsvalue);
+                cmd.Parameters.AddWithValue("@Basicpercentage", model.Basicpercentage);
+                cmd.Parameters.AddWithValue("@HRApercentage", model.Hrapercentage);
+                cmd.Parameters.AddWithValue("@Conveyancepercentage", model.Conveyancepercentage);
+                cmd.Parameters.AddWithValue("@Medicalpercentage", model.Medicalpercentage);
+                cmd.Parameters.AddWithValue("@Variablepercentage", model.Variablepercentage);
+                cmd.Parameters.AddWithValue("@EmployerContributionpercentage", model.EmployerContributionpercentage);
+                cmd.Parameters.AddWithValue("@EPfpercentage", model.Epfpercentage);
+                cmd.Parameters.AddWithValue("@Esipercentage", model.Esipercentage);
 
                 // Personal detail
                 cmd.Parameters.AddWithValue("@Personal_Email_Address", model.PersonalEmailAddress);
@@ -1033,7 +1043,7 @@ namespace CRM.Repository
                 worksheet.Cell(currentwork, 3).Style.Fill.BackgroundColor = XLColor.Yellow;
                 worksheet.Cell(currentwork, 4).Value = "Employee Id";
                 worksheet.Cell(currentwork, 4).Style.Fill.BackgroundColor = XLColor.Yellow;
-                worksheet.Cell(currentwork, 5).Value = "Monthly CTC";
+                worksheet.Cell(currentwork, 5).Value = "Gross Pay";
                 worksheet.Cell(currentwork, 5).Style.Fill.BackgroundColor = XLColor.Yellow;
                 worksheet.Cell(currentwork, 6).Value = "Attendance";
                 worksheet.Cell(currentwork, 6).Style.Fill.BackgroundColor = XLColor.Yellow;
@@ -1047,7 +1057,7 @@ namespace CRM.Repository
                     worksheet.Cell(currentwork, 2).Value = item.FirstName;
                     worksheet.Cell(currentwork, 3).Value = item.FatherName;
                     worksheet.Cell(currentwork, 4).Value = item.EmployeeId;
-                    worksheet.Cell(currentwork, 5).Value = item.MonthlyCtc;
+                    worksheet.Cell(currentwork, 5).Value = item.Grosspay;
                     currentwork++;
                 }
                 using (var stram = new MemoryStream())
@@ -1863,6 +1873,7 @@ namespace CRM.Repository
                                         Createddate = lm.Createddate,
                                         IsActive = lm.IsActive,
                                         LeaveStartDate = lm.LeaveStartDate,
+                                        EmpName = $"{emp.FirstName} {' '} {emp.LastName}",
                                     }).ToListAsync();
 
                 return result;
@@ -2036,7 +2047,7 @@ namespace CRM.Repository
                 throw ex;
             }
         }
-        public async Task<bool> CustomerInvoice(List<ProductDetail> model, string InvoiceNo, int vendorid)
+        public async Task<bool> CustomerInvoice(List<ProductDetail> model, string InvoiceNo, int vendorid, DateTime? InvoiceDate = null, DateTime? InvoiceDueDate = null, string InvoiceNotes = null, string InvoiceTerms = null)
         {
             try
             {
@@ -2045,6 +2056,7 @@ namespace CRM.Repository
                 var allExistingData = await _context.CustomerInvoices
                     .Where(ci => model.Select(m => m.CustomerId).Contains(ci.CustomerId) && ci.InvoiceNumber == InvoiceNo)
                     .ToListAsync();
+                var invoicedetail = await _context.CustomerInvoicedetails.FirstOrDefaultAsync(cid => cid.InvoiceNumber == InvoiceNo);
 
                 var groupedData = allExistingData
                     .GroupBy(ci => ci.CustomerId)
@@ -2080,12 +2092,18 @@ namespace CRM.Repository
                         if (totalDueAmount != 0)
                         {
                             newDueAmount = (decimal)(totalDueAmount +
-                                           product.ProductPrice +
-                                           ((product.ProductPrice * (product.IGST ?? 0m)) / 100) +
-                                           ((product.ProductPrice * (product.SGST ?? 0m)) / 100) +
-                                           ((product.ProductPrice * (product.CGST ?? 0m)) / 100));
+                                product.ProductPrice +
+                                ((product.ProductPrice * (product.IGST ?? 0m)) / 100) +
+                                ((product.ProductPrice * (product.SGST ?? 0m)) / 100) +
+                                ((product.ProductPrice * (product.CGST ?? 0m)) / 100));
                         }
-
+                        else
+                        {
+                            newDueAmount = (decimal)(product.ProductPrice +
+                                ((product.ProductPrice * (product.IGST ?? 0m)) / 100) +
+                                ((product.ProductPrice * (product.SGST ?? 0m)) / 100) +
+                                ((product.ProductPrice * (product.CGST ?? 0m)) / 100));
+                        }
                         var newInvoice = new CustomerInvoice()
                         {
                             VendorId = vendorid,
@@ -2107,7 +2125,6 @@ namespace CRM.Repository
                             PaidAmount = customerExistingData
                                 .FirstOrDefault(ci => ci.PaidAmount.HasValue)?.PaidAmount ?? 0, 
                             DueAmount = newDueAmount,
-                            Dueamountdate = product.Dueamountdate,
                         };
 
                         _context.Add(newInvoice);
@@ -2131,17 +2148,35 @@ namespace CRM.Repository
                             data.Igst = product.IGST;
                             data.Sgst = product.SGST;
                             data.Cgst = product.CGST;
-                            data.Dueamountdate = product.Dueamountdate;
-
                             _context.Update(data);
                             AlreadyInvoiceNo = data.InvoiceNumber;
                         }
                     }
-
+                    if (invoicedetail != null)
+                    {
+                        invoicedetail.InvoiceNumber = InvoiceNo;
+                        invoicedetail.InvoiceDate = InvoiceDate;
+                        invoicedetail.InvoiceDueDate = InvoiceDueDate;
+                        invoicedetail.Notes = InvoiceNotes;
+                        invoicedetail.Terms = InvoiceTerms;
+                        _context.Update(invoicedetail);
+                    }
+                    else
+                    {
+                        var newinvoicedetail = new CustomerInvoicedetail()
+                        {
+                            InvoiceNumber = InvoiceNo,
+                            InvoiceDate = InvoiceDate,
+                            InvoiceDueDate = InvoiceDueDate,
+                            Notes = InvoiceNotes,
+                            Terms = InvoiceTerms,
+                        };
+                        _context.Add(newinvoicedetail);
+                    }
                     await _context.SaveChangesAsync();
                 }
 
-                return true;
+              return true;
             }
             catch (Exception ex)
             {
@@ -2282,7 +2317,7 @@ namespace CRM.Repository
                                                  BillingAddress = grouped.First().c.BillingAddress,
                                                  BillingState = grouped.First().sb.SName,
                                                  BillingCity = grouped.First().ctb.City1,
-                                                 InvoiceDate = grouped.First().ci.CreatedDate,
+                                                // InvoiceDate = grouped.First().ci.CreatedDate,
                                                  RenewPrice = grouped.First().ci.RenewPrice,
                                                  StartDate = grouped.First().ci.StartDate,
                                                  RenewDate = grouped.First().ci.RenewDate,
@@ -2294,7 +2329,6 @@ namespace CRM.Repository
                                                  SGST = grouped.Sum(g => g.ci.Sgst ?? 0),
                                                  CGST = grouped.Sum(g => g.ci.Cgst ?? 0),
                                                  Paymentid = grouped.First().ci.Paymentstatus,
-                                                 Dueamountdate = grouped.First().ci.Dueamountdate,
                                              }).OrderByDescending(ci => ci.InvoiceId).ToListAsync();
 
                 foreach (var invoice in groupedInvoices)
@@ -2315,40 +2349,6 @@ namespace CRM.Repository
             try
             {
 
-
-                //var result = (from ci in _context.CustomerInvoices
-                //              join c in _context.CustomerRegistrations on ci.CustomerId equals c.Id
-                //              join s in _context.States on c.StateId equals s.Id
-                //              join ct in _context.Cities on c.CityId equals ct.Id
-                //              join sb in _context.States on c.BillingStateId equals sb.Id
-                //              join ctb in _context.Cities on c.BillingCityId equals ctb.Id
-                //              where (ci.InvoiceNumber == InvoiceNumber)
-                //              select new CustomerInvoiceDTO
-                //              {
-                //                  InvoiceId=ci.Id,
-                //                  InvoiceNumber=ci.InvoiceNumber,
-                //                  CompanyName=c.CompanyName,
-                //                  MobileNumber=c.MobileNumber,
-                //                  Email=c.Email,
-                //                  OfficeAddress = c.Location,
-                //                  OfficeState = s.SName,
-                //                  OfficeCity = ct.City1,
-                //                  BillingAddress = c.BillingAddress,
-                //                  BillingState = sb.SName,
-                //                  // ProductName=p.ProductName,
-                //                  InvoiceDate =ci.CreatedDate,
-                //                  IGST=ci.Igst,
-                //                  CGST=ci.Cgst,
-                //                  SGST=ci.Sgst,
-                //                  //StartDate=ci.StartDate,
-                //                  //RenewDate=ci.RenewDate,
-                //                  //HsnSacCode=ci.Hsncode,
-                //                 // ProductPrice=ci.ProductPrice,
-                //                  CustomerGstNumber=c.GstNumber,
-                //                  NoOfRenewMonth=ci.NoOfRenewMonth                                  
-                //              }).FirstOrDefault();
-
-
                 CustomerInvoiceDTO invoiceDTO = new CustomerInvoiceDTO();
                 invoiceDTO = (from ci in _context.CustomerInvoices
                               join c in _context.CustomerRegistrations on ci.CustomerId equals c.Id
@@ -2360,7 +2360,8 @@ namespace CRM.Repository
                               join vb in _context.VendorBankDetails on v.Id equals vb.VendorId
                               join vs in _context.States on v.StateId equals vs.Id
                               join vct in _context.Cities on v.CityId equals vct.Id
-                              where (ci.InvoiceNumber == InvoiceNumber)
+                              join ctd in _context.CustomerInvoicedetails on ci.InvoiceNumber equals ctd.InvoiceNumber
+                              where (ci.InvoiceNumber == InvoiceNumber && ctd.InvoiceNumber == InvoiceNumber)
                               select new CustomerInvoiceDTO
                               {
                                   InvoiceId = ci.Id,
@@ -2385,16 +2386,18 @@ namespace CRM.Repository
                                   BillingCity = ctb.City1,
                                   BillingAddress = c.BillingAddress,
                                   BillingState = sb.SName,
-                                  InvoiceDate = ci.CreatedDate,
+                                  InvoiceDate = ctd.InvoiceDate.Value.ToString("dd-MM-yyyy"),
                                   IGST = ci.Igst,
                                   CGST = ci.Cgst,
                                   SGST = ci.Sgst,
                                   CustomerGstNumber = c.GstNumber,
                                   NoOfRenewMonth = ci.NoOfRenewMonth,
-                                  VendorSingature = v.VendorSingature
+                                  VendorSingature = v.VendorSingature,
+                                  InvoiceDueDate = ctd.InvoiceDueDate.Value.ToString("dd-MM-yyyy"),
+                                  Notes = ctd.Notes,
+                                  Terms = ctd.Terms
                               }).FirstOrDefault();
 
-                // Step 2: Get the related list of invoice items
                 if (invoiceDTO != null)
                 {
                     var invoiceItems = (from ci in _context.CustomerInvoices
@@ -2411,7 +2414,8 @@ namespace CRM.Repository
                                             HsnSacCode = ci.Hsncode,
                                             ProductPrice = ci.ProductPrice,
                                             DueAmount = ci.DueAmount,
-                                            PaidAmount = ci.PaidAmount
+                                            PaidAmount = ci.PaidAmount,
+                                            Description = ci.Description,
                                         }).ToList();
 
                     // Add the list to the invoice DTO if needed

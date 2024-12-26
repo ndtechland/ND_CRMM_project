@@ -110,8 +110,10 @@
                                         <thead>
                                             <tr style="background-color: #00baf2;">
                                                 <th nowrap>
+                                                   Status
+                                                </th>
+                                                <th nowrap>
                                                     Sl. No.
-
                                                 </th>
 
                                                 <th nowrap>
@@ -209,23 +211,6 @@
                                                 <th nowrap>
                                                     Employee Address
                                                 </th>
-
-                                               @*  <th nowrap>
-                                                    Address Line2
-                                                </th>
-
-                                                <th nowrap>
-                                                    City
-                                                </th>
-
-                                                <th nowrap>
-                                                    State
-                                                </th>
-
-                                                <th nowrap>
-                                                    Pincode
-                                                </th> *@
-
                                                 <th nowrap>
                                                     Account Holder Name
                                                 </th>
@@ -237,19 +222,12 @@
                                                 <th nowrap>
                                                     Account Number
                                                 </th>
-
-                                                @* <th nowrap>
-                                                ReEnter Account Number
-                                                </th> *@
-
                                                 <th nowrap>
                                                     IFSC
                                                 </th>
-
                                                 <th nowrap>
                                                     Account Type
                                                 </th>
-
                                                 <th nowrap>
                                                     EPF Number
                                                 </th>
@@ -307,6 +285,15 @@
                                                 {
                                                     count++;
                                                     <tr class="table-row">
+                                                        <td>
+                                                            <input type="checkbox"
+                                                                   id="empisactive_@item.Id"
+                                                                   name="Isactive"
+                                                                   value="true"
+                                                            @(item.Isactive.HasValue && item.Isactive.Value ? "checked" : "")
+                                                                   onclick="updateEmployeeIsactive(@item.Id, this.checked)">
+                                                        </td>
+
                                                         <td>@count</td>
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.FirstName) @Html.DisplayFor(modelItem => item.MiddleName)  @Html.DisplayFor(modelItem => item.LastName)
@@ -396,23 +383,6 @@
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.AddressLine2),@Html.DisplayFor(modelItem => item.AddressLine1),@Html.DisplayFor(modelItem => item.City),@Html.DisplayFor(modelItem => item.Pincode),@Html.DisplayFor(modelItem => item.State)
                                                         </td>
-
-                                                        @*<td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.AddressLine2)
-                                                        </td>
-
-                                                        <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.City)
-                                                        </td>
-
-                                                        <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.State)
-                                                        </td>
-
-                                                        <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.Pincode)
-                                                        </td>
-                                                        *@
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.AccountHolderName)
                                                         </td>
@@ -422,11 +392,6 @@
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.AccountNumber)
                                                         </td>
-
-                                                        @*<td nowrap>
-                                                @Html.DisplayFor(modelItem => item.ReEnterAccountNumber)
-                                                </td>*@
-
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.Ifsc)
                                                         </td>
@@ -505,9 +470,9 @@
                     </div>
                 </div>
             </div>
-            <div id="pagination-container">
+@*             <div id="pagination-container">
                 <ul id="pagination" class="pagination"></ul>
-            </div>
+            </div> *@
         </div>
 
 
@@ -608,4 +573,24 @@
     function ExportExcelfn() {
         window.location.href = '/Employee/ExportToExcelEmployeeList';
     }
+
+ function updateEmployeeIsactive(id, isActive) {
+    $.ajax({
+        url: '/Employee/UpdateEmployeeIsactive',
+        type: 'POST',
+        data: { id: id, isActive: isActive },
+        success: function (response) {
+            if (response.success) {
+                Swal.fire('Success', response.message, 'success');
+            } else {
+                Swal.fire('Error', response.message, 'error');
+            }
+        },
+        error: function () {
+            Swal.fire('Error', 'An unexpected error occurred while updating the employee status.', 'error');
+        }
+    });
+}
+
+
 </script>

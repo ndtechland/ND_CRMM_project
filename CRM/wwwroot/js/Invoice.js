@@ -2,6 +2,7 @@
     // Handle customer search on keyup
     $('#customerName').on('keyup', function () {
         var searchTerm = $(this).val();
+        var cloneId = true;
         if (searchTerm.length >= 1) {
             $.ajax({
                 url: '/Sale/GetCustomerNames',
@@ -11,7 +12,7 @@
                     $('#customerSuggestions').empty();
                     if (data.length > 0) {
                         $.each(data, function (index, customer) {
-                            $('#customerSuggestions').append(`<a href="#" class="list-group-item list-group-item-action" onclick="selectCustomer(${customer.id}, '${customer.companyName}')">${customer.companyName}</a>`);
+                            $('#customerSuggestions').append(`<a href="#" class="list-group-item list-group-item-action" onclick="selectCustomer(${customer.id}, '${customer.companyName}','${cloneId}')">${customer.companyName}</a>`);
                         });
                     } else {
                         $('#customerSuggestions').append('<div class="list-group-item">No customers found</div>');
@@ -37,15 +38,17 @@
     // Handle customer selection on change
     $('#customerName').on('change', function () {
         var customerId = $(this).val();
+        var cloneId = true;
         if (customerId) {
-            fetchCustomerDetails(customerId);
+            fetchCustomerDetails(customerId, cloneId);
         }
     });
    
     var customerId = $("#customerId").val();
     var customerName = $("#customerName").val();
-    if (customerId != '' && customerName != '') {
-        selectCustomer(customerId, customerName);
+    var cloneId = $("#cloneId").val();
+    if (customerId != '' && customerName != '' && cloneId != '') {
+        selectCustomer(customerId, customerName, cloneId);
     }
            
 
@@ -57,19 +60,21 @@
 });
 
 // Handle customer selection
-function selectCustomer(customerId, customerName) {
+function selectCustomer(customerId, customerName, cloneId) {
     $('#customerName').val(customerName);
     $('#customerId').val(customerId);
+    $('#cloneId').val(cloneId);
     $('#customerSuggestions').empty();
-    fetchCustomerDetails(customerId);
+    //const clone = $('#cloneId').val();
+    fetchCustomerDetails(customerId, cloneId);
 }
 
 // Fetch customer details by ID
-function fetchCustomerDetails(customerId) {
+function fetchCustomerDetails(customerId, cloneId) {
     $.ajax({
         url: '/Sale/GetCustomerDetailsById',
         type: 'GET',
-        data: { id: customerId },
+        data: { id: customerId, clone: cloneId },
         success: function (customerData) {
             $('#billingAddressLabel').text(customerData.billingAddress);
             $('#officeAddressLabel').text(customerData.location);
@@ -81,6 +86,7 @@ function fetchCustomerDetails(customerId) {
             $('#emailNumberLabel').text(customerData.email);
             $('#gstNumberLabel').text(customerData.gstNumber);
             $('.billingStateId').text(customerData.billingStateId); // Set billing state ID
+            $('.InvoiceNumber').val(customerData.invoiceNumber); // Set billing state ID
             updateTaxFields(); // Recalculate GST
             $('#customerDetailsRow').removeClass('d-none'); // Show customer details
         },
@@ -308,7 +314,11 @@ function sendProductDetailsToAPI() {
         type: 'POST',
         dataType: 'JSON',
         data: {
-            model: gatherProductDetails()
+            model: gatherProductDetails(),
+            InvoiceDate: $('#Invoicedate').val(),
+            InvoiceDueDate: $('#InvoiceDueDate').val(),
+            InvoiceNotes: $('#InvoiceNotes').val(),
+            InvoiceTerms: $('#InvoiceTerms').val(),
         },
         success: function (result) {
             window.location.href = result.path;
@@ -378,7 +388,7 @@ window.onload = function () {
             newSection.querySelector('.IGST').value = product.iGST;
             newSection.querySelector('.SGST').value = product.sGST;
             newSection.querySelector('.CGST').value = product.cGST;
-            newSection.querySelector('.Dueamountdate').value = formatDateToYYYYMMDD(product.dueamountdate);
+            //newSection.querySelector('.Dueamountdate').value = formatDateToYYYYMMDD(product.dueamountdate);
 
             // Show/remove the remove button accordingly
             if (ProductList.length === 1) {
@@ -575,7 +585,7 @@ function gatherProductDetails() {
             HsnSacCode: section.querySelector('.HsnSacCode').value,
             StartDate: section.querySelector('.StartDate').value,
             RenewDate: section.querySelector('.RenewDate').value,
-            Dueamountdate: section.querySelector('.Dueamountdate').value,
+            //Dueamountdate: section.querySelector('.Dueamountdate').value,
             IGST: section.querySelector('.IGST').value,
             SGST: section.querySelector('.SGST').value,
             CGST: section.querySelector('.CGST').value

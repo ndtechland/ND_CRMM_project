@@ -6,6 +6,7 @@
         public string LeavetypeId { get; set; }
         public decimal? Value { get; set; }
         public string? EmpId { get; set; }
+        public string? EmpName { get; set; }
         public DateTime? Createddate { get; set; }
         public DateTime? LeaveStartDate { get; set; }
         public bool IsActive { get; set; }

@@ -190,6 +190,7 @@
                                             <tr style="background-color: #00baf2;">
                                                 <th nowrap>Sl. No.</th>
                                                 <th nowrap>EmployeeId</th>
+                                                <th nowrap>Employee Name</th>
                                                 <th nowrap>Leave Type</th>
                                                 <th nowrap>Value</th>
                                                 <th nowrap>Leave StartDate</th>
@@ -209,6 +210,7 @@
 
                                                                 <th scope="row">@count</th>
                                                                 <td>@item.EmpId</td>
+                                                                <td>@item.EmpName</td>
                                                                 <td>@item.LeavetypeId</td>
                                                                 <td>@item.Value</td>
                                                             <td style="white-space: nowrap">@item.LeaveStartDate?.ToString("dd/MM/yyyy")</td>

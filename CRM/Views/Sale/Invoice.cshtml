@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Invoice";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
+    bool dd = Convert.ToBoolean(@ViewBag.clone);
 }
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
@@ -116,6 +117,7 @@
                     <div class="form-group col-md-6">
                         <label for="customerName">Customer Name <span class="text-danger">*</span></label>
                         <input type="text" id="customerId" value="@ViewBag.CustomerId" hidden />
+                        <input type="text" id="cloneId" value="@ViewBag.clone.ToString().ToLower()" hidden />
                         <input type="text" id="customerName" name="CustomerId" class="form-control" value="@ViewBag.CustomerName" placeholder="Type to search..." autocomplete="off" required>
                         <div id="customerSuggestions" class="list-group"></div>
                     </div>
@@ -129,7 +131,7 @@
                             </div>
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-3">
                                         @* <h4>Office Details</h4> *@
                                         <div class="form-group">
                                             <label for="officeStateLabel"><b>Office State :</b></label>
@@ -156,7 +158,7 @@
                                             <p id="gstNumberLabel" class="form-control-static">N/A</p>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-3">
                                         @* <h4>Billing Details</h4> *@
                                         <div class="form-group">
                                             <label for="billingStateLabel"><b>Billing State :</b></label>
@@ -177,13 +179,6 @@
                         </div>
                     </div>
                 </div>
-                <div class="row-12">
-                     <div class="form-group col-sm-3">
-                    <label for="Dueamountdate">Due Date <span class="text-danger">*</span></label>
-                    <input name="Dueamountdate" type="date" class="form-control Dueamountdate" required oninvalid="this.setCustomValidity('Please select DueDate')" oninput="this.setCustomValidity('')" value="@ViewBag.Dueamountdate" />
-                    <span asp-validation-for="Dueamountdate" class="text-danger"></span>
-                    </div>
-                </div>
                 <div class="form-group" style="display:flex; justify-content:right;">
                     <button type="button" class="btn btn-success" id="addSection"><i class="fa fa-plus"></i> Add Product</button>
                 </div>
@@ -192,6 +187,32 @@
                         <div class="card">
                             <div class="card-body">
                                 <form asp-action="Invoice" method="post" autocomplete="off">
+                                    <div class="row">
+                                        <div class="form-group col-sm-2">
+                                            <label for="InvoiceNumber">Invoice Number </label>
+                                            <input asp-for="InvoiceNumber" name="InvoiceNumber" type="text" class="form-control InvoiceNumber" value="@ViewBag.InvoiceNumber" readonly />
+                                        </div>
+                                        <div class="form-group col-sm-2">
+                                            <label for="InvoiceDate">Invoice Date <span class="text-danger">*</span></label>
+                                            <input asp-for="InvoiceDate" name="InvoiceDate" id="Invoicedate" type="date" class="form-control " value="@ViewBag.Invoicedate" />
+                                            <span asp-validation-for="InvoiceDate" class="text-danger"></span>
+
+                                        </div>
+                                        <div class="form-group col-sm-2">
+                                            <label for="InvoiceDueDate">Invoice Due Date <span class="text-danger">*</span></label>
+                                            <input asp-for="InvoiceDueDate" id="InvoiceDueDate" name="InvoiceDueDate" type="date" class="form-control" value="@ViewBag.InvoiceDuedate" />
+                                            <span asp-validation-for="InvoiceDueDate" class="text-danger"></span>
+
+                                        </div>
+                                        <div class="form-group col-sm-2">
+                                            <label for="Notes">Notes </label>
+                                            <input asp-for="Notes" id="InvoiceNotes" name="Notes" type="text" class="form-control" value="@ViewBag.Notes" />
+                                        </div>
+                                        <div class="form-group col-sm-2">
+                                            <label for="Terms">Terms </label>
+                                            <input asp-for="Terms" id="InvoiceTerms" name="Terms" type="text" class="form-control" value="@ViewBag.Terms" />
+                                        </div>
+                                    </div>
                                     <div id="customerSections">
                                         <!-- Initial Customer Section -->
                                         <div class="customer-section">
@@ -205,7 +226,7 @@
                                                 </div>
                                                 <div class="form-group col-sm">
                                                     <label for="Price">Description <span class="text-danger">*</span></label>
-                                                    <textarea class="form-control Description"  name="Description" type="text"></textarea>
+                                                    <textarea class="form-control Description" name="Description" type="text"></textarea>
                                                     <span asp-validation-for="Description" class="text-danger"></span>
                                                 </div>
                                                 <div class="form-group col-sm">
@@ -241,11 +262,6 @@
                                                     <input name="RenewDate" type="date" class="form-control RenewDate" required readonly oninvalid="this.setCustomValidity('Please select RenewDate')" oninput="this.setCustomValidity('')" value="@ViewBag.renewDate" />
                                                     <span asp-validation-for="RenewDate" class="text-danger"></span>
                                                 </div>
-                                               @*  <div class="form-group col-sm">
-                                                    <label for="Dueamountdate">Due Date <span class="text-danger">*</span></label>
-                                                    <input name="Dueamountdate" type="date" class="form-control Dueamountdate" required oninvalid="this.setCustomValidity('Please select DueDate')" oninput="this.setCustomValidity('')" value="@ViewBag.Dueamountdate" />
-                                                    <span asp-validation-for="Dueamountdate" class="text-danger"></span>
-                                                </div> *@
                                             </div>
 
 
@@ -295,7 +311,7 @@
 
 <!-- Add this in the head section of your HTML -->
 <script>
-    
+
     var productdata = '@Html.Raw(Json.Serialize(Model.customerInvoice))';
     //var ProductList = JSON.parse(productdata);
 </script>
@@ -305,4 +321,3 @@
     $('.select2').select2();
 </script> *@
 <script src="~/js/invoice.js"></script>
-

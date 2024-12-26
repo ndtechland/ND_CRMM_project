@@ -99,6 +99,8 @@ namespace CRM.Controllers
                             task.Excutetime = DateTime.Now;
                             task.IsExcute = true;
                             _logger.LogInformation($"Task {task.Id} triggered at {DateTime.Now}");
+                            context.SaveChanges();
+
                         }
                         if (today == lastDayOfMonth && task.IsExcute == false)
                         {
@@ -107,6 +109,8 @@ namespace CRM.Controllers
                             task.Excutetime = DateTime.Now;
                             task.IsExcute = true;
                             _logger.LogInformation($"End-of-month operations completed successfully.");
+                            context.SaveChanges();
+
                         }
                         //foreach (var employee in emplist)
                         //{
@@ -121,7 +125,6 @@ namespace CRM.Controllers
                         //}
 
                     }
-                    context.SaveChanges();
                 }
             }
             catch (Exception ex)
@@ -151,15 +154,21 @@ namespace CRM.Controllers
             var customerInvoices = context.CustomerInvoices.ToList();
             var customerDetails = context.CustomerRegistrations.ToDictionary(c => c.Id);
             var productDetails = context.VendorProductMasters.ToDictionary(p => p.Id, p => p.ProductName);
+            var customerdDetails = context.CustomerInvoicedetails.Where(c => customerInvoices.Select(inv => inv.InvoiceNumber).Contains(c.InvoiceNumber)).ToList();
 
             foreach (var invoice in customerInvoices)
             {
+                var invoiceDetails = customerdDetails.FirstOrDefault(c => c.InvoiceNumber == invoice.InvoiceNumber);
+                if (invoiceDetails == null)
+                {
+                    continue; 
+                }
                 if (invoice.Paymentstatus == 1)
                     continue;
 
-                if (invoice.Dueamountdate.HasValue)
+                if (invoiceDetails.InvoiceDueDate.HasValue && invoiceDetails.InvoiceDueDate.Value.Date < DateTime.Now.Date)
                 {
-                    int overdueDays = (DateTime.Now - invoice.Dueamountdate.Value).Days;
+                    int overdueDays = (DateTime.Now - invoiceDetails.InvoiceDueDate.Value).Days;
                     if (overdueDays > 0)
                     {
                         var applicableCharge = chargeMasters.FirstOrDefault(charge =>
@@ -178,8 +187,8 @@ namespace CRM.Controllers
                                                     (((invoice.Igst ?? 0) + (invoice.Sgst ?? 0) + (invoice.Cgst ?? 0)) / 100);
 
                             decimal chargeMultiplier = gstMultiplier * applicableCharge.Chargespercentage.Value / 100;
-                            invoice.Taxamount = chargeMultiplier;
-                            invoice.Taxid = applicableCharge.Id;
+                            invoiceDetails.Taxamount = chargeMultiplier;
+                            invoiceDetails.Taxid = applicableCharge.Id;
                         }
                     }
                 }
@@ -200,13 +209,13 @@ namespace CRM.Controllers
                         if (DateTime.Now.Date >= startNotificationDate && DateTime.Now.Date < renewalDate)
                         {
                             emailService.CustomerRenewalEmail(toEmail, companyName, renewalDate.ToString("dd/MM/yyyy"), productName, gstMultiplier);
-                            invoice.IsRenewDate = true;
+                            invoiceDetails.IsRenewDate = true;
 
                         }
-                        else if (DateTime.Now.Date >= renewalDate && invoice.IsRenewDate == false)
+                        else if (DateTime.Now.Date >= renewalDate && invoiceDetails.IsRenewDate == false)
                         {
                             emailService.CustomerExpirEmail(toEmail, companyName, renewalDate.ToString("dd/MM/yyyy"), productName);
-                            invoice.IsRenewDate = true;
+                            invoiceDetails.IsRenewDate = true;
 
                         }
                         _logger.LogInformation($"CustomerTaxes !!!::::::::{customerInvoices}");

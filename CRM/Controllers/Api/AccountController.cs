@@ -46,9 +46,8 @@ namespace CRM.Controllers.Api
                             userid = x.Id,
                             Employee_Name = x.MiddleName == null ? x.FirstName + " " + x.LastName : x.FirstName + " " + x.MiddleName + " " + x.LastName,
                             Employee_ID = x.EmployeeId
-                        })
-                        .FirstOrDefault();
-
+                        }).FirstOrDefault();
+                    
                     if (loginProfile != null)
                     {
                         var token = _jwtToken.GenerateAccessToken(model);
@@ -59,7 +58,6 @@ namespace CRM.Controllers.Api
                         response.Status = "Success";
                         response.Message = "Login Successful.";
                         response.Data = loginProfile;
-
                         return Ok(new { response, token, refreshToken });
                     }
                     else

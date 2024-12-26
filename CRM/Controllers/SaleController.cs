@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Org.BouncyCastle.Ocsp;
 using SelectPdf;
+using System.Text;
 
 namespace CRM.Controllers
 {
@@ -22,7 +23,7 @@ namespace CRM.Controllers
             _IEmailService = iEmailService;
         }
         [HttpGet]
-        public async Task<IActionResult> Invoice(string InvoiceNumber)
+        public async Task<IActionResult> Invoice(string InvoiceNumber ,bool clone=false)
         {
             try
             {
@@ -34,8 +35,12 @@ namespace CRM.Controllers
                     var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
 
                     ViewBag.checkvendorbillingstateid = _context.VendorRegistrations.Where(v => v.Id == adminlogin.Vendorid).FirstOrDefault().BillingStateId;
-                    //var customerData = _context.CustomerInvoices.Where(c => c.CustomerId == id).ToList();
-
+                    var Invoicedetail = _context.CustomerInvoicedetails.Where(x => x.InvoiceNumber == InvoiceNumber).FirstOrDefault();
+                    DateTime Invoicedate = Invoicedetail?.InvoiceDate ?? DateTime.Now.Date;
+                    DateTime InvoiceDuedate = Invoicedetail?.InvoiceDueDate ?? DateTime.Now.Date;
+                    var notes = Invoicedetail?.Notes ?? null;
+                    var Terms = Invoicedetail?.Terms ?? null;
+                   
                     if (InvoiceNumber != null)
                     {
 
@@ -57,16 +62,12 @@ namespace CRM.Controllers
 
                             ViewBag.CustomerId = data.CustomerId;
                             ViewBag.CustomerName = _context.CustomerRegistrations.Where(x => x.Id == data.CustomerId).First().CompanyName;
-                            //ViewBag.ProductId = data.ProductId;
-                            //ViewBag.Price = data.ProductPrice;
-                            //ViewBag.RenewPrice = data.RenewPrice;
-                            //ViewBag.NoOfRenewMonth = data.NoOfRenewMonth;
-                            //ViewBag.HsnSacCode = data.Hsncode;
-                            //ViewBag.StartDate = data.StartDate;
-                            //ViewBag.RenewDate = data.RenewDate;
-                            //ViewBag.IGST = data.Igst;
-                            //ViewBag.SGST = data.Sgst;
-                            //ViewBag.CGST = data.Cgst;
+                            ViewBag.InvoiceNumber = InvoiceNumber;
+                            ViewBag.Invoicedate = Invoicedate.ToString("yyyy-MM-dd");
+                            ViewBag.InvoiceDuedate = InvoiceDuedate.ToString("yyyy-MM-dd");
+                            ViewBag.Notes = notes;
+                            ViewBag.Terms = Terms;
+                            ViewBag.clone = clone;
                             return View(customerInv);
                         }
 
@@ -85,13 +86,19 @@ namespace CRM.Controllers
                     ViewBag.SGST = 0;
                     ViewBag.CGST = 0;
                     ViewBag.Dueamountdate = null;
+                    ViewBag.Invoicedate = Invoicedate.ToString("yyyy-MM-dd");
+                    ViewBag.InvoiceDuedate = InvoiceDuedate.ToString("yyyy-MM-dd");
+                    ViewBag.Notes = null;
+                    ViewBag.Terms = null;
+                    ViewBag.InvoiceNumber = InvoiceNumber;
+                    ViewBag.clone = clone;
                     ViewBag.ProductDetails = _context.VendorProductMasters.Where(c => c.IsActive == true)
-                    .Select(p => new SelectListItem
-                    {
-                        Value = p.Id.ToString(),
-                        Text = p.ProductName,
-                    })
-                    .ToList();
+                     .Select(p => new SelectListItem
+                     {
+                         Value = p.Id.ToString(),
+                         Text = p.ProductName,
+                     })
+                     .ToList();
                     return View(customerInv);
                 }
                 else
@@ -106,7 +113,7 @@ namespace CRM.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> Invoice(List<ProductDetail> model)
+        public async Task<IActionResult> Invoice(List<ProductDetail> model, DateTime? InvoiceDate = null, DateTime? InvoiceDueDate = null, string InvoiceNotes = null, string InvoiceTerms = null)
         {
             try
             {
@@ -130,13 +137,12 @@ namespace CRM.Controllers
                 var checkInvoice = await _context.CustomerInvoices
                                                   .Where(x => x.CustomerId == customerId && x.Paymentstatus == 1)
                                                   .ToListAsync();
+                string InvoiceNo = model.FirstOrDefault()?.InvoiceNumber ?? null;
 
-                string InvoiceNo = model.FirstOrDefault()?.InvoiceNumber ?? GenerateInvoiceNumber();
+                //var existingInvoice = await _context.CustomerInvoices
+                //                                     .FirstOrDefaultAsync(x => x.InvoiceNumber == InvoiceNo);
 
-                var existingInvoice = await _context.CustomerInvoices
-                                                     .FirstOrDefaultAsync(x => x.InvoiceNumber == InvoiceNo);
-
-                bool isSuccess = await _ICrmrpo.CustomerInvoice(model, InvoiceNo, (int)adminlogin.Vendorid);
+                bool isSuccess = await _ICrmrpo.CustomerInvoice(model, InvoiceNo, (int)adminlogin.Vendorid, InvoiceDate, InvoiceDueDate,InvoiceNotes,InvoiceTerms);
 
                 if (isSuccess)
                 {
@@ -191,11 +197,24 @@ namespace CRM.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetCustomerDetailsById(int id)
+        public IActionResult GetCustomerDetailsById(int id, bool clone = false)
         {
             int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
             var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
-
+            var existingInvoice = _context.CustomerInvoices.Where(x => x.CustomerId == id).FirstOrDefault();
+            string InvoiceNo = null;
+            if (clone == true)
+            {
+                InvoiceNo = GenerateInvoiceNumber();
+            }
+            else if(clone == false)
+            {
+                InvoiceNo = existingInvoice != null ? existingInvoice.InvoiceNumber : GenerateInvoiceNumber();
+            }
+            else
+            {
+                InvoiceNo = GenerateInvoiceNumber();
+            }
             var customer = (from c in _context.CustomerRegistrations
                             join so in _context.States on c.StateId equals so.Id
                             join sb in _context.States on c.BillingStateId equals sb.Id
@@ -213,9 +232,9 @@ namespace CRM.Controllers
                                 MobileNumber = c.MobileNumber,
                                 Email = c.Email,
                                 GstNumber = c.GstNumber,
-                                BillingCity = cb.City1
-                            })
-               .FirstOrDefault();
+                                BillingCity = cb.City1,
+                                InvoiceNumber = InvoiceNo,
+                            }).FirstOrDefault();
 
             return Json(customer);
         }
@@ -626,5 +645,6 @@ namespace CRM.Controllers
                 return 0;
             }
         }
+
     }
 }

@@ -9,7 +9,7 @@
         public long CustomerID { get; set; }
         public long Attendance { get; set; }
         public string? FatherName { get; set; }
-        public decimal? MonthlyCtc { get; set; }
+        public decimal? Grosspay { get; set; }
         public bool? IsDeleted { get; set; }
         public decimal? Incentive { get; set; }
         public decimal? TravellingAllowance { get; set; }

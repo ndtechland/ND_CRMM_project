@@ -159,7 +159,7 @@
                                         <a class="sidebar-header" href="javascript:void(0)"><i class="fa fa-circle"></i> <span>Quotation</span><i class="fa fa-angle-right pull-right"></i></a>
                                         <ul class="sidebar-submenu">
                                             <li><a href="/Home/Quation"><i class="fa fa-circle"></i>Generate Quotation</a></li>
-                                            <li><a href="/Home/QuationList"><i class="fa fa-circle"></i>List of Quotation </a></li>
+                                            <li><a href="/Home/QuationList"><i class="fa fa-circle"></i>Quotation List</a></li>
                                         </ul>
                                     </li>
                                 </ul>
@@ -172,8 +172,6 @@
                                     <li><a href="/Home/Categorymaster"><i class="fa fa-circle"></i>Category</a></li>
                                     <li><a href="/Home/Department"><i class="fa fa-circle"></i>Department </a></li>
                                     <li><a href="/Home/Designation"><i class="fa fa-circle"></i>Designation </a></li>
-                                    <li><a href="/Employee/Employer"><i class="fa fa-circle"></i>Add Employer EPF/ESIC</a></li>
-                                    <li><a href="/Employee/Employee_list"><i class="fa fa-circle"></i>Employer EPF/ESIC List</a></li>
                                     <li><a href="/Home/AppFaq"><i class="fa fa-circle"></i>FAQ</a></li>
                                     <li><a href="/Home/Blogs"><i class="fa fa-circle"></i>Blogs</a></li>
                                     <li><a href="/Home/OurExpirtise"><i class="fa fa-circle"></i>Our Expertise</a></li>
@@ -240,7 +238,7 @@
                                             <li><a href="/Employee/EmployeeRegistration"><i class="fa fa-circle"></i>Employee Registration</a></li>
                                             <li><a href="/Employee/Employeelist"><i class="fa fa-circle"></i>Employee List </a></li>
                                             <li><a href="/Employee/salarydetail"><i class="fa fa-circle"></i>Generate Salary  </a></li>
-                                            <li><a href="/Employee/GenerateSalary"><i class="fa fa-circle"></i>Generate Salary Slip </a></li>
+                                            <li><a href="/Employee/GenerateSalary"><i class="fa fa-circle"></i>Generated Salary Slip </a></li>
                                             <li><a href="/Vendor/EmployeeEpf"><i class="fa fa-circle"></i>Employee EPF </a></li>
                                             <li><a href="/Vendor/EmployeeEsic"><i class="fa fa-circle"></i>Employee ESIC </a></li>
                                         </ul>
@@ -249,7 +247,7 @@
                                         <a class="sidebar-header" href="javascript:void(0)"><i class="fa fa-circle"></i><span>Task Management</span><i class="fa fa-angle-right pull-right"></i></a>
                                         <ul class="sidebar-submenu">
                                             <li><a href="/Vendor/EmpTasksassignment"><i class="fa fa-circle"></i>Add Task</a></li>
-                                            <li><a href="/Vendor/EmpTaskslist"><i class="fa fa-circle"></i>Add Sub Task</a></li>
+                                            <li><a href="/Vendor/EmpTaskslist"><i class="fa fa-circle"></i>Assign Task</a></li>
                                             <li><a href="/Vendor/EmpReplyTaskslist"><i class="fa fa-circle"></i>Reply Task</a></li>
                                         </ul>
                                     </li>
@@ -342,7 +340,7 @@
                                     <li><a href="/Vendor/Aboutcompany"><i class="fa fa-circle"></i>About Company</a></li>
                                     <li><a href="/Employee/Employer"><i class="fa fa-circle"></i>Emp EPF & ESIC</a></li>
                                     <li><a href="/Vendor/EventsScheduler" title="Schedule events"><i class="fa fa-circle"></i>Event Schedule</a></li>
-                                    <li><a href="/Vendor/EventsScheduleList" title="List Schedule events"><i class="fa fa-circle"></i>List Event Schedule</a></li>
+                                    <li><a href="/Vendor/EventsScheduleList" title="List Schedule events"><i class="fa fa-circle"></i>Event Schedule List</a></li>
                                     @if (pp == true)
                                     {
                                         <li><a href="/Home/ProfessionalTDStax"><i class="fa fa-circle"></i>Professional Tax</a></li>
@@ -423,7 +421,32 @@
             });
         });
     </script>
-   
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                url: '/Admin/getsessionkey',
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    console.log('Success:', data);
+                    if (data === false) {
+                        window.location.href = "/Admin/Login";
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error status:', status);
+                    console.error('Error response:', xhr.responseText);
+                    console.error('Error object:', error);
+                }
+            });
+        });
+    </script>
+    <!--ck editor-->
+    <script src="../assets/js/editor/ckeditor/ckeditor.js"></script>
+    <script src="../assets/js/editor/ckeditor/styles.js"></script>
+    <script src="../assets/js/editor/ckeditor/adapters/jquery.js"></script>
+    <script src="../assets/js/editor/ckeditor/ckeditor.custom.js"></script>
+
 
     <!-- Datatables js-->
   
