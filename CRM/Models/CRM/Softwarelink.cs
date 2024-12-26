@@ -12,5 +12,8 @@ namespace CRM.Models.Crm
         public bool? Ismenu { get; set; }
         public int? ParentId { get; set; }
         public bool? Isactive { get; set; }
+        public bool? IsSubHeading { get; set; }
+        public bool? IsSubHeadingTwo { get; set; }
+        public bool? Isvendor { get; set; }
     }
 }

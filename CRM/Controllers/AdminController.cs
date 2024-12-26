@@ -3,6 +3,7 @@ using CRM.Models.Crm;
 using CRM.Models.CRM;
 using CRM.Models.DTO;
 using CRM.Repository;
+using Dapper;
 using DocumentFormat.OpenXml.InkML;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -16,6 +17,8 @@ using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using Microsoft.EntityFrameworkCore;
 using NETCore.MailKit.Core;
 using NuGet.Protocol.Plugins;
+using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Net;
 using System.Security.Claims;
@@ -237,7 +240,6 @@ namespace CRM.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public async Task<JsonResult> getsessionkey()
         {
-
             if (HttpContext.Session.GetString("UserName") == null)
             {
                 return Json(false);
@@ -246,6 +248,48 @@ namespace CRM.Controllers
             {
                 return Json(true);
             }
+        }
+        public async Task<ActionResult> ShowSidebarMenus()
+        {
+            string Username = HttpContext.Session.GetString("UserName");
+            //var SubHeadingTwoQuery = string.Empty;
+            //IEnumerable<SoftwareLinkDTO> SubHeadingTwoList;
+            //var SubHeadingQuery = string.Empty;
+            //List<SoftwareLinkDTO> SubHeadingList = new List<SoftwareLinkDTO>(); 
+            //var HeadingQuery = string.Empty;
+            //IEnumerable<SoftwareLinkDTO> HeadingList;
+            if (Username?.ToLower() == "admin")
+            {
+                 var HeadingQuery = @"select * from SoftwareLink where  IsHeading=1 and Isvendor = 0";
+                using (var con = new SqlConnection(_context.Database.GetConnectionString()))
+                {
+                    await con.OpenAsync();
+                    var HeadingList = await con.QueryAsync<SoftwareLinkDTO>(HeadingQuery, commandType: CommandType.Text);
+                    foreach (var item in HeadingList)
+                    {
+                        var SubHeadingQuery = @"select * from SoftwareLink where  IsSubHeading=1 and Isvendor = 0 and ParentID = "+item.Id+"";
+                        item.SubHeading = (IEnumerable<Softwarelink>)await con.QueryAsync<SoftwareLinkDTO>(SubHeadingQuery, commandType: CommandType.Text);
+                       
+                        foreach (var item1 in item.SubHeading)
+                        {
+                            var SubHeadingTwoQuery = @"select * from SoftwareLink where  IsSubHeadingTwo=1 and Isvendor = 0 and ParentID = " + item1.Id + "";
+                            item1.IsSubHeadingTwo = await con.QueryAsync<SoftwareLinkDTO>(SubHeadingQuery, commandType: CommandType.Text);
+                        }
+                    }
+                    
+                }
+                //var softwareLinks = _context<SoftwareLinkDTO>(query).ToList();
+                //var softwareLinks1=_context.Softwarelinks.Where(x=>x.Isheading=true);
+                //foreach (var item in softwareLinks)
+                //{
+                //    var q = @"select * from SoftwareLink where  Par_context_Id=" + item.Id + "";
+                //    var l = _context.Database.SqlQuery<Softwarelink>(q).ToList();
+                //    item.ChildMenus = l;
+                //}
+                //return PartialView(softwareLinks);
+            }
+
+            return View();
         }
     }
 }
