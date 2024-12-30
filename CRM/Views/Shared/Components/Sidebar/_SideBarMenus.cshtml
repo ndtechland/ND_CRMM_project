@@ -1,0 +1,76 @@
+﻿@model IEnumerable<CRM.Models.DTO.SoftwareLinkDTO>
+
+<div class="page-sidebar">
+    <div class="sidebar custom-scrollbar">
+        <ul class="sidebar-menu">
+            <li><a class="sidebar-header" href="/Home/Dashboard"><i data-feather="home"></i><span>Dashboard</span></a></li>
+            @foreach (var heading in Model)
+            {
+                <li>
+                    <a class="sidebar-header" href="javascript:void(0)">
+                        <i data-feather="box"></i> <span>@heading.Tittle</span>
+                        <i class="fa fa-angle-right pull-right">
+                        </i>
+                    </a>
+                    <ul class="sidebar-submenu">
+                        @if (heading.SubHeading.Count() > 0)
+                        {
+                            @if (heading.SubHeading != null && heading.SubHeading.Any())
+                            {
+                                @foreach (var subHeading in heading.SubHeading)
+                                {
+                                    <li>
+                                        <a class="sidebar-header" href="javascript:void(0)"><i class="fa fa-circle"></i><span>@subHeading.Tittle</span><i class="fa fa-angle-right pull-right"></i></a>
+                                        <ul class="sidebar-submenu">
+                                            @if (subHeading.SubHeadingTwo.Count() == 0)
+                                            {
+                                                @if (subHeading.ChildMenus != null && subHeading.ChildMenus.Any())
+                                                {
+
+                                                    foreach (var subChild in subHeading.ChildMenus)
+                                                    {
+                                                        <li><a href="@subChild.Url"><i class="fa fa-circle"></i>@subChild.Tittle</a></li>
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                @foreach (var subHeadingTwo in subHeading.SubHeadingTwo)
+                                                {
+                                                <li>
+                                                        <a class="sidebar-header" href="javascript:void(0)"><i class="fa fa-circle"></i><span>@subHeadingTwo.Tittle</span><i class="fa fa-angle-right pull-right"></i></a>
+                                                        <ul class="sidebar-submenu">
+                                                            @if (subHeadingTwo.ChildMenus != null && subHeadingTwo.ChildMenus.Any())
+                                                            {
+                                                                foreach (var subChildTwo in subHeadingTwo.ChildMenus)
+                                                                {
+                                                                    <li><a href="@subChildTwo.Url"><i class="fa fa-circle"></i>@subChildTwo.Tittle</a></li>
+                                                                }
+                                                            }
+                                                        </ul>
+                                                </li>
+                                                }
+                                            }
+                                           
+                                        </ul>
+                                    </li>
+
+                                }
+                            }
+                        }
+                        else
+                        {
+                            @if (heading.ChildMenus != null && heading.ChildMenus.Any())
+                            {
+                                @foreach (var Child in heading.ChildMenus)
+                                {
+                                    <li><a href="@Child.Url"><i class="fa fa-circle"></i>@Child.Tittle</a></li>
+                                }
+                            }
+                        }
+                    </ul>
+                </li>
+            }
+        </ul>
+    </div>
+</div>

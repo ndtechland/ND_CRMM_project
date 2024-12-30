@@ -252,43 +252,48 @@ namespace CRM.Controllers
         public async Task<ActionResult> ShowSidebarMenus()
         {
             string Username = HttpContext.Session.GetString("UserName");
-            //var SubHeadingTwoQuery = string.Empty;
-            //IEnumerable<SoftwareLinkDTO> SubHeadingTwoList;
-            //var SubHeadingQuery = string.Empty;
-            //List<SoftwareLinkDTO> SubHeadingList = new List<SoftwareLinkDTO>(); 
-            //var HeadingQuery = string.Empty;
-            //IEnumerable<SoftwareLinkDTO> HeadingList;
             if (Username?.ToLower() == "admin")
             {
-                 var HeadingQuery = @"select * from SoftwareLink where  IsHeading=1 and Isvendor = 0";
+                var HeadingQuery = @"select * from SoftwareLink where  IsHeading=1 and Isvendor = 0";
                 using (var con = new SqlConnection(_context.Database.GetConnectionString()))
                 {
                     await con.OpenAsync();
                     var HeadingList = await con.QueryAsync<SoftwareLinkDTO>(HeadingQuery, commandType: CommandType.Text);
                     foreach (var item in HeadingList)
                     {
-                        var SubHeadingQuery = @"select * from SoftwareLink where  IsSubHeading=1 and Isvendor = 0 and ParentID = "+item.Id+"";
-                        item.SubHeading = (IEnumerable<Softwarelink>)await con.QueryAsync<SoftwareLinkDTO>(SubHeadingQuery, commandType: CommandType.Text);
-                       
-                        foreach (var item1 in item.SubHeading)
-                        {
-                            var SubHeadingTwoQuery = @"select * from SoftwareLink where  IsSubHeadingTwo=1 and Isvendor = 0 and ParentID = " + item1.Id + "";
-                            item1.IsSubHeadingTwo = await con.QueryAsync<SoftwareLinkDTO>(SubHeadingQuery, commandType: CommandType.Text);
-                        }
-                    }
-                    
-                }
-                //var softwareLinks = _context<SoftwareLinkDTO>(query).ToList();
-                //var softwareLinks1=_context.Softwarelinks.Where(x=>x.Isheading=true);
-                //foreach (var item in softwareLinks)
-                //{
-                //    var q = @"select * from SoftwareLink where  Par_context_Id=" + item.Id + "";
-                //    var l = _context.Database.SqlQuery<Softwarelink>(q).ToList();
-                //    item.ChildMenus = l;
-                //}
-                //return PartialView(softwareLinks);
-            }
+                        var SubHeadingQuery = @"select * from SoftwareLink where IsSubHeading=1 and Isvendor = 0 and ParentID = " + item.Id + "";
+                        var SubHeadingList = await con.QueryAsync<SubSoftwarelink>(SubHeadingQuery, commandType: CommandType.Text);
+                        item.SubHeading = SubHeadingList;
 
+                        foreach (var item2 in item.SubHeading)
+                        {
+                            var SubHeadingTwoQuery = @"select * from SoftwareLink where IsSubHeadingTwo=1 and Isvendor = 0 and ParentID = " + item2.Id + "";
+                            var SubHeadingTwoList = await con.QueryAsync<SubSoftwarelinkTwo>(SubHeadingTwoQuery, commandType: CommandType.Text);
+                            item2.SubHeadingTwo = SubHeadingTwoList;
+
+                            foreach (var item3 in item2.SubHeadingTwo)
+                            {
+                                var SubHeadingTwoChildQuery = @"select * from SoftwareLink where Isvendor = 0 and ParentID = " + item2.Id + "";
+                                var SubHeadingTwoChildList = await con.QueryAsync<Softwarelink>(SubHeadingTwoChildQuery, commandType: CommandType.Text);
+                                item2.ChildMenus = SubHeadingTwoChildList;
+                            }
+
+                        }
+                        foreach (var item4 in item.SubHeading)
+                        {
+                            var SubHeadingChildQuery = @"select * from SoftwareLink where Isvendor = 0 and ParentID = " + item4.Id + "";
+                            var SubHeadingChildList = await con.QueryAsync<Softwarelink>(SubHeadingChildQuery, commandType: CommandType.Text);
+                            item4.ChildMenus = SubHeadingChildList;
+                        }
+                        var HeadingChildQuery = @"select * from SoftwareLink where Isvendor = 0 and ParentID = " + item.Id + "";
+                        var HeadingChildList = await con.QueryAsync<Softwarelink>(HeadingChildQuery, commandType: CommandType.Text);
+                        item.ChildMenus = HeadingChildList;
+                    }
+
+                    return PartialView(HeadingList);
+
+                }
+            }
             return View();
         }
     }
