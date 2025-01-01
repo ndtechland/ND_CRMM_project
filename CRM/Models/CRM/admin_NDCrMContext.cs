@@ -109,6 +109,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<StateMaster> StateMasters { get; set; } = null!;
         public virtual DbSet<TErrorLog> TErrorLogs { get; set; } = null!;
         public virtual DbSet<TaskStatus> TaskStatuses { get; set; } = null!;
+        public virtual DbSet<UserRole> UserRoles { get; set; } = null!;
         public virtual DbSet<VendorBankDetail> VendorBankDetails { get; set; } = null!;
         public virtual DbSet<VendorCategoryMaster> VendorCategoryMasters { get; set; } = null!;
         public virtual DbSet<VendorProductMaster> VendorProductMasters { get; set; } = null!;
@@ -2064,6 +2065,15 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.StatusName).HasMaxLength(200);
             });
 
+            modelBuilder.Entity<UserRole>(entity =>
+            {
+                entity.ToTable("UserRole");
+
+                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.RoleName).HasMaxLength(300);
+            });
+
             modelBuilder.Entity<VendorBankDetail>(entity =>
             {
                 entity.ToTable("VendorBankDetail");
@@ -2167,6 +2177,8 @@ namespace CRM.Models.Crm
                     .HasMaxLength(255)
                     .HasColumnName("Mobile_number");
 
+                entity.Property(e => e.Notes).HasMaxLength(250);
+
                 entity.Property(e => e.ProductDetails)
                     .HasMaxLength(255)
                     .HasColumnName("Product_Details");
@@ -2197,6 +2209,8 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.State).HasMaxLength(255);
 
                 entity.Property(e => e.StateId).HasColumnName("stateId");
+
+                entity.Property(e => e.Terms).HasMaxLength(250);
 
                 entity.Property(e => e.VendorSingature).HasMaxLength(250);
             });
