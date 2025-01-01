@@ -1115,3 +1115,273 @@
 2024-12-30 15:24:05.5402 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=E:\NDConnect\CRM\bin\Debug\net6.0\nlog.config
 2024-12-30 15:24:05.5616 Info Configuration initialized.
 2024-12-30 15:24:07.0745 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=E:\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 10:22:24.4302 Info Registered target NLog.Targets.FileTarget(Name=alldata)
+2024-12-31 10:22:24.4615 Info Registered target NLog.Targets.FileTarget(Name=otherFile-web)
+2024-12-31 10:22:24.5037 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2024-12-31 10:22:24.5774 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 10:22:24.6617 Info Configuration initialized.
+2024-12-31 10:22:29.0926 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 11:23:32.3262 Info Registered target NLog.Targets.FileTarget(Name=alldata)
+2024-12-31 11:23:32.3589 Info Registered target NLog.Targets.FileTarget(Name=otherFile-web)
+2024-12-31 11:23:32.4043 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2024-12-31 11:23:32.4529 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 11:23:32.4919 Info Configuration initialized.
+2024-12-31 11:23:35.9485 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 11:44:47.7353 Info Registered target NLog.Targets.FileTarget(Name=alldata)
+2024-12-31 11:44:47.7641 Info Registered target NLog.Targets.FileTarget(Name=otherFile-web)
+2024-12-31 11:44:47.7980 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2024-12-31 11:44:47.8506 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 11:44:47.8896 Info Configuration initialized.
+2024-12-31 11:44:49.5450 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 11:48:07.6867 Info Registered target NLog.Targets.FileTarget(Name=alldata)
+2024-12-31 11:48:07.7096 Info Registered target NLog.Targets.FileTarget(Name=otherFile-web)
+2024-12-31 11:48:07.7422 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2024-12-31 11:48:07.8005 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 11:48:07.8557 Info Configuration initialized.
+2024-12-31 11:48:09.5551 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 11:49:53.6042 Warn Exception in NLog.LayoutRenderers.ExceptionLayoutRenderer.AppendToString(): System.TypeLoadException. Exception: System.TypeLoadException: Could not load type 'AspNetCoreGeneratedDocument.Views_Administrator_CreateRole+<ExecuteAsync>d__12#1' from assembly 'CRM, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null'.
+   at System.Reflection.CustomAttribute._CreateCaObject(RuntimeModule pModule, RuntimeType type, IRuntimeMethodInfo pCtor, Byte** ppBlob, Byte* pEndBlob, Int32* pcNamedArgs)
+   at System.Reflection.CustomAttribute.CreateCaObject(RuntimeModule module, RuntimeType type, IRuntimeMethodInfo ctor, IntPtr& blob, IntPtr blobEnd, Int32& namedArgs)
+   at System.Reflection.CustomAttribute.AddCustomAttributes(ListBuilder`1& attributes, RuntimeModule decoratedModule, Int32 decoratedMetadataToken, RuntimeType attributeFilterType, Boolean mustBeInheritable, ListBuilder`1 derivedAttributes)
+   at System.Reflection.CustomAttribute.GetCustomAttributes(RuntimeModule decoratedModule, Int32 decoratedMetadataToken, Int32 pcaCount, RuntimeType attributeFilterType)
+   at System.Reflection.CustomAttribute.GetCustomAttributes(RuntimeMethodInfo method, RuntimeType caType, Boolean inherit)
+   at System.Reflection.RuntimeMethodInfo.GetCustomAttributes(Type attributeType, Boolean inherit)
+   at System.Attribute.GetCustomAttributes(MemberInfo element, Type attributeType, Boolean inherit)
+   at System.Reflection.CustomAttributeExtensions.GetCustomAttributes[T](MemberInfo element, Boolean inherit)
+   at System.Diagnostics.StackTrace.TryResolveStateMachineMethod(MethodBase& method, Type& declaringType)
+   at System.Diagnostics.StackTrace.ToString(TraceFormat traceFormat, StringBuilder sb)
+   at System.Diagnostics.StackTrace.ToString(TraceFormat traceFormat)
+   at System.Exception.get_StackTrace()
+   at System.Exception.ToString()
+   at NLog.LayoutRenderers.ExceptionLayoutRenderer.AppendToString(StringBuilder sb, Exception ex)
+2024-12-31 11:49:53.6088 Warn Exception in NLog.LayoutRenderers.ExceptionLayoutRenderer.AppendToString(): System.TypeLoadException. Exception: System.TypeLoadException: Could not load type 'AspNetCoreGeneratedDocument.Views_Administrator_CreateRole+<ExecuteAsync>d__12#1' from assembly 'CRM, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null'.
+   at System.Reflection.CustomAttribute._CreateCaObject(RuntimeModule pModule, RuntimeType type, IRuntimeMethodInfo pCtor, Byte** ppBlob, Byte* pEndBlob, Int32* pcNamedArgs)
+   at System.Reflection.CustomAttribute.CreateCaObject(RuntimeModule module, RuntimeType type, IRuntimeMethodInfo ctor, IntPtr& blob, IntPtr blobEnd, Int32& namedArgs)
+   at System.Reflection.CustomAttribute.AddCustomAttributes(ListBuilder`1& attributes, RuntimeModule decoratedModule, Int32 decoratedMetadataToken, RuntimeType attributeFilterType, Boolean mustBeInheritable, ListBuilder`1 derivedAttributes)
+   at System.Reflection.CustomAttribute.GetCustomAttributes(RuntimeModule decoratedModule, Int32 decoratedMetadataToken, Int32 pcaCount, RuntimeType attributeFilterType)
+   at System.Reflection.CustomAttribute.GetCustomAttributes(RuntimeMethodInfo method, RuntimeType caType, Boolean inherit)
+   at System.Reflection.RuntimeMethodInfo.GetCustomAttributes(Type attributeType, Boolean inherit)
+   at System.Attribute.GetCustomAttributes(MemberInfo element, Type attributeType, Boolean inherit)
+   at System.Reflection.CustomAttributeExtensions.GetCustomAttributes[T](MemberInfo element, Boolean inherit)
+   at System.Diagnostics.StackTrace.TryResolveStateMachineMethod(MethodBase& method, Type& declaringType)
+   at System.Diagnostics.StackTrace.ToString(TraceFormat traceFormat, StringBuilder sb)
+   at System.Diagnostics.StackTrace.ToString(TraceFormat traceFormat)
+   at System.Exception.get_StackTrace()
+   at System.Exception.ToString()
+   at NLog.LayoutRenderers.ExceptionLayoutRenderer.AppendToString(StringBuilder sb, Exception ex)
+2024-12-31 11:49:53.8754 Warn Exception in NLog.LayoutRenderers.ExceptionLayoutRenderer.AppendToString(): System.TypeLoadException. Exception: System.TypeLoadException: Could not load type 'AspNetCoreGeneratedDocument.Views_Administrator_CreateRole+<ExecuteAsync>d__12#1' from assembly 'CRM, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null'.
+   at System.Reflection.CustomAttribute._CreateCaObject(RuntimeModule pModule, RuntimeType type, IRuntimeMethodInfo pCtor, Byte** ppBlob, Byte* pEndBlob, Int32* pcNamedArgs)
+   at System.Reflection.CustomAttribute.CreateCaObject(RuntimeModule module, RuntimeType type, IRuntimeMethodInfo ctor, IntPtr& blob, IntPtr blobEnd, Int32& namedArgs)
+   at System.Reflection.CustomAttribute.AddCustomAttributes(ListBuilder`1& attributes, RuntimeModule decoratedModule, Int32 decoratedMetadataToken, RuntimeType attributeFilterType, Boolean mustBeInheritable, ListBuilder`1 derivedAttributes)
+   at System.Reflection.CustomAttribute.GetCustomAttributes(RuntimeModule decoratedModule, Int32 decoratedMetadataToken, Int32 pcaCount, RuntimeType attributeFilterType)
+   at System.Reflection.CustomAttribute.GetCustomAttributes(RuntimeMethodInfo method, RuntimeType caType, Boolean inherit)
+   at System.Reflection.RuntimeMethodInfo.GetCustomAttributes(Type attributeType, Boolean inherit)
+   at System.Attribute.GetCustomAttributes(MemberInfo element, Type attributeType, Boolean inherit)
+   at System.Reflection.CustomAttributeExtensions.GetCustomAttributes[T](MemberInfo element, Boolean inherit)
+   at System.Diagnostics.StackTrace.TryResolveStateMachineMethod(MethodBase& method, Type& declaringType)
+   at System.Diagnostics.StackTrace.ToString(TraceFormat traceFormat, StringBuilder sb)
+   at System.Diagnostics.StackTrace.ToString(TraceFormat traceFormat)
+   at System.Exception.get_StackTrace()
+   at System.Exception.ToString()
+   at NLog.LayoutRenderers.ExceptionLayoutRenderer.AppendToString(StringBuilder sb, Exception ex)
+2024-12-31 11:49:53.8754 Warn Exception in NLog.LayoutRenderers.ExceptionLayoutRenderer.AppendToString(): System.TypeLoadException. Exception: System.TypeLoadException: Could not load type 'AspNetCoreGeneratedDocument.Views_Administrator_CreateRole+<ExecuteAsync>d__12#1' from assembly 'CRM, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null'.
+   at System.Reflection.CustomAttribute._CreateCaObject(RuntimeModule pModule, RuntimeType type, IRuntimeMethodInfo pCtor, Byte** ppBlob, Byte* pEndBlob, Int32* pcNamedArgs)
+   at System.Reflection.CustomAttribute.CreateCaObject(RuntimeModule module, RuntimeType type, IRuntimeMethodInfo ctor, IntPtr& blob, IntPtr blobEnd, Int32& namedArgs)
+   at System.Reflection.CustomAttribute.AddCustomAttributes(ListBuilder`1& attributes, RuntimeModule decoratedModule, Int32 decoratedMetadataToken, RuntimeType attributeFilterType, Boolean mustBeInheritable, ListBuilder`1 derivedAttributes)
+   at System.Reflection.CustomAttribute.GetCustomAttributes(RuntimeModule decoratedModule, Int32 decoratedMetadataToken, Int32 pcaCount, RuntimeType attributeFilterType)
+   at System.Reflection.CustomAttribute.GetCustomAttributes(RuntimeMethodInfo method, RuntimeType caType, Boolean inherit)
+   at System.Reflection.RuntimeMethodInfo.GetCustomAttributes(Type attributeType, Boolean inherit)
+   at System.Attribute.GetCustomAttributes(MemberInfo element, Type attributeType, Boolean inherit)
+   at System.Reflection.CustomAttributeExtensions.GetCustomAttributes[T](MemberInfo element, Boolean inherit)
+   at System.Diagnostics.StackTrace.TryResolveStateMachineMethod(MethodBase& method, Type& declaringType)
+   at System.Diagnostics.StackTrace.ToString(TraceFormat traceFormat, StringBuilder sb)
+   at System.Diagnostics.StackTrace.ToString(TraceFormat traceFormat)
+   at System.Exception.get_StackTrace()
+   at System.Exception.ToString()
+   at NLog.LayoutRenderers.ExceptionLayoutRenderer.AppendToString(StringBuilder sb, Exception ex)
+2024-12-31 11:49:58.4561 Warn Exception in NLog.LayoutRenderers.ExceptionLayoutRenderer.AppendToString(): System.TypeLoadException. Exception: System.TypeLoadException: Could not load type 'AspNetCoreGeneratedDocument.Views_Administrator_CreateRole+<ExecuteAsync>d__12#1' from assembly 'CRM, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null'.
+   at System.Reflection.CustomAttribute._CreateCaObject(RuntimeModule pModule, RuntimeType type, IRuntimeMethodInfo pCtor, Byte** ppBlob, Byte* pEndBlob, Int32* pcNamedArgs)
+   at System.Reflection.CustomAttribute.CreateCaObject(RuntimeModule module, RuntimeType type, IRuntimeMethodInfo ctor, IntPtr& blob, IntPtr blobEnd, Int32& namedArgs)
+   at System.Reflection.CustomAttribute.AddCustomAttributes(ListBuilder`1& attributes, RuntimeModule decoratedModule, Int32 decoratedMetadataToken, RuntimeType attributeFilterType, Boolean mustBeInheritable, ListBuilder`1 derivedAttributes)
+   at System.Reflection.CustomAttribute.GetCustomAttributes(RuntimeModule decoratedModule, Int32 decoratedMetadataToken, Int32 pcaCount, RuntimeType attributeFilterType)
+   at System.Reflection.CustomAttribute.GetCustomAttributes(RuntimeMethodInfo method, RuntimeType caType, Boolean inherit)
+   at System.Reflection.RuntimeMethodInfo.GetCustomAttributes(Type attributeType, Boolean inherit)
+   at System.Attribute.GetCustomAttributes(MemberInfo element, Type attributeType, Boolean inherit)
+   at System.Reflection.CustomAttributeExtensions.GetCustomAttributes[T](MemberInfo element, Boolean inherit)
+   at System.Diagnostics.StackTrace.TryResolveStateMachineMethod(MethodBase& method, Type& declaringType)
+   at System.Diagnostics.StackTrace.ToString(TraceFormat traceFormat, StringBuilder sb)
+   at System.Diagnostics.StackTrace.ToString(TraceFormat traceFormat)
+   at System.Exception.get_StackTrace()
+   at System.Exception.ToString()
+   at NLog.LayoutRenderers.ExceptionLayoutRenderer.AppendToString(StringBuilder sb, Exception ex)
+2024-12-31 11:49:58.4697 Warn Exception in NLog.LayoutRenderers.ExceptionLayoutRenderer.AppendToString(): System.TypeLoadException. Exception: System.TypeLoadException: Could not load type 'AspNetCoreGeneratedDocument.Views_Administrator_CreateRole+<ExecuteAsync>d__12#1' from assembly 'CRM, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null'.
+   at System.Reflection.CustomAttribute._CreateCaObject(RuntimeModule pModule, RuntimeType type, IRuntimeMethodInfo pCtor, Byte** ppBlob, Byte* pEndBlob, Int32* pcNamedArgs)
+   at System.Reflection.CustomAttribute.CreateCaObject(RuntimeModule module, RuntimeType type, IRuntimeMethodInfo ctor, IntPtr& blob, IntPtr blobEnd, Int32& namedArgs)
+   at System.Reflection.CustomAttribute.AddCustomAttributes(ListBuilder`1& attributes, RuntimeModule decoratedModule, Int32 decoratedMetadataToken, RuntimeType attributeFilterType, Boolean mustBeInheritable, ListBuilder`1 derivedAttributes)
+   at System.Reflection.CustomAttribute.GetCustomAttributes(RuntimeModule decoratedModule, Int32 decoratedMetadataToken, Int32 pcaCount, RuntimeType attributeFilterType)
+   at System.Reflection.CustomAttribute.GetCustomAttributes(RuntimeMethodInfo method, RuntimeType caType, Boolean inherit)
+   at System.Reflection.RuntimeMethodInfo.GetCustomAttributes(Type attributeType, Boolean inherit)
+   at System.Attribute.GetCustomAttributes(MemberInfo element, Type attributeType, Boolean inherit)
+   at System.Reflection.CustomAttributeExtensions.GetCustomAttributes[T](MemberInfo element, Boolean inherit)
+   at System.Diagnostics.StackTrace.TryResolveStateMachineMethod(MethodBase& method, Type& declaringType)
+   at System.Diagnostics.StackTrace.ToString(TraceFormat traceFormat, StringBuilder sb)
+   at System.Diagnostics.StackTrace.ToString(TraceFormat traceFormat)
+   at System.Exception.get_StackTrace()
+   at System.Exception.ToString()
+   at NLog.LayoutRenderers.ExceptionLayoutRenderer.AppendToString(StringBuilder sb, Exception ex)
+2024-12-31 11:49:58.6490 Warn Exception in NLog.LayoutRenderers.ExceptionLayoutRenderer.AppendToString(): System.TypeLoadException. Exception: System.TypeLoadException: Could not load type 'AspNetCoreGeneratedDocument.Views_Administrator_CreateRole+<ExecuteAsync>d__12#1' from assembly 'CRM, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null'.
+   at System.Reflection.CustomAttribute._CreateCaObject(RuntimeModule pModule, RuntimeType type, IRuntimeMethodInfo pCtor, Byte** ppBlob, Byte* pEndBlob, Int32* pcNamedArgs)
+   at System.Reflection.CustomAttribute.CreateCaObject(RuntimeModule module, RuntimeType type, IRuntimeMethodInfo ctor, IntPtr& blob, IntPtr blobEnd, Int32& namedArgs)
+   at System.Reflection.CustomAttribute.AddCustomAttributes(ListBuilder`1& attributes, RuntimeModule decoratedModule, Int32 decoratedMetadataToken, RuntimeType attributeFilterType, Boolean mustBeInheritable, ListBuilder`1 derivedAttributes)
+   at System.Reflection.CustomAttribute.GetCustomAttributes(RuntimeModule decoratedModule, Int32 decoratedMetadataToken, Int32 pcaCount, RuntimeType attributeFilterType)
+   at System.Reflection.CustomAttribute.GetCustomAttributes(RuntimeMethodInfo method, RuntimeType caType, Boolean inherit)
+   at System.Reflection.RuntimeMethodInfo.GetCustomAttributes(Type attributeType, Boolean inherit)
+   at System.Attribute.GetCustomAttributes(MemberInfo element, Type attributeType, Boolean inherit)
+   at System.Reflection.CustomAttributeExtensions.GetCustomAttributes[T](MemberInfo element, Boolean inherit)
+   at System.Diagnostics.StackTrace.TryResolveStateMachineMethod(MethodBase& method, Type& declaringType)
+   at System.Diagnostics.StackTrace.ToString(TraceFormat traceFormat, StringBuilder sb)
+   at System.Diagnostics.StackTrace.ToString(TraceFormat traceFormat)
+   at System.Exception.get_StackTrace()
+   at System.Exception.ToString()
+   at NLog.LayoutRenderers.ExceptionLayoutRenderer.AppendToString(StringBuilder sb, Exception ex)
+2024-12-31 11:49:58.6549 Warn Exception in NLog.LayoutRenderers.ExceptionLayoutRenderer.AppendToString(): System.TypeLoadException. Exception: System.TypeLoadException: Could not load type 'AspNetCoreGeneratedDocument.Views_Administrator_CreateRole+<ExecuteAsync>d__12#1' from assembly 'CRM, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null'.
+   at System.Reflection.CustomAttribute._CreateCaObject(RuntimeModule pModule, RuntimeType type, IRuntimeMethodInfo pCtor, Byte** ppBlob, Byte* pEndBlob, Int32* pcNamedArgs)
+   at System.Reflection.CustomAttribute.CreateCaObject(RuntimeModule module, RuntimeType type, IRuntimeMethodInfo ctor, IntPtr& blob, IntPtr blobEnd, Int32& namedArgs)
+   at System.Reflection.CustomAttribute.AddCustomAttributes(ListBuilder`1& attributes, RuntimeModule decoratedModule, Int32 decoratedMetadataToken, RuntimeType attributeFilterType, Boolean mustBeInheritable, ListBuilder`1 derivedAttributes)
+   at System.Reflection.CustomAttribute.GetCustomAttributes(RuntimeModule decoratedModule, Int32 decoratedMetadataToken, Int32 pcaCount, RuntimeType attributeFilterType)
+   at System.Reflection.CustomAttribute.GetCustomAttributes(RuntimeMethodInfo method, RuntimeType caType, Boolean inherit)
+   at System.Reflection.RuntimeMethodInfo.GetCustomAttributes(Type attributeType, Boolean inherit)
+   at System.Attribute.GetCustomAttributes(MemberInfo element, Type attributeType, Boolean inherit)
+   at System.Reflection.CustomAttributeExtensions.GetCustomAttributes[T](MemberInfo element, Boolean inherit)
+   at System.Diagnostics.StackTrace.TryResolveStateMachineMethod(MethodBase& method, Type& declaringType)
+   at System.Diagnostics.StackTrace.ToString(TraceFormat traceFormat, StringBuilder sb)
+   at System.Diagnostics.StackTrace.ToString(TraceFormat traceFormat)
+   at System.Exception.get_StackTrace()
+   at System.Exception.ToString()
+   at NLog.LayoutRenderers.ExceptionLayoutRenderer.AppendToString(StringBuilder sb, Exception ex)
+2024-12-31 11:50:30.9910 Info Registered target NLog.Targets.FileTarget(Name=alldata)
+2024-12-31 11:50:31.0684 Info Registered target NLog.Targets.FileTarget(Name=otherFile-web)
+2024-12-31 11:50:31.1138 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2024-12-31 11:50:31.2078 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 11:50:31.2571 Info Configuration initialized.
+2024-12-31 11:50:33.0570 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 12:25:01.4300 Info Registered target NLog.Targets.FileTarget(Name=alldata)
+2024-12-31 12:25:01.5567 Info Registered target NLog.Targets.FileTarget(Name=otherFile-web)
+2024-12-31 12:25:01.6098 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2024-12-31 12:25:01.7314 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 12:25:01.8690 Info Configuration initialized.
+2024-12-31 12:25:04.3010 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 12:38:13.2424 Info Registered target NLog.Targets.FileTarget(Name=alldata)
+2024-12-31 12:38:13.2716 Info Registered target NLog.Targets.FileTarget(Name=otherFile-web)
+2024-12-31 12:38:13.3083 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2024-12-31 12:38:13.3657 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 12:38:13.4078 Info Configuration initialized.
+2024-12-31 12:38:15.1123 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 13:15:42.5101 Info Registered target NLog.Targets.FileTarget(Name=alldata)
+2024-12-31 13:15:42.5392 Info Registered target NLog.Targets.FileTarget(Name=otherFile-web)
+2024-12-31 13:15:42.5744 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2024-12-31 13:15:42.6297 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 13:15:42.6879 Info Configuration initialized.
+2024-12-31 13:15:44.4918 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 14:14:20.9918 Info Registered target NLog.Targets.FileTarget(Name=alldata)
+2024-12-31 14:14:21.0143 Info Registered target NLog.Targets.FileTarget(Name=otherFile-web)
+2024-12-31 14:14:21.0503 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2024-12-31 14:14:21.1075 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 14:14:21.1763 Info Configuration initialized.
+2024-12-31 14:14:23.4754 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 14:15:25.5637 Info Registered target NLog.Targets.FileTarget(Name=alldata)
+2024-12-31 14:15:25.5873 Info Registered target NLog.Targets.FileTarget(Name=otherFile-web)
+2024-12-31 14:15:25.6162 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2024-12-31 14:15:25.6636 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 14:15:25.7008 Info Configuration initialized.
+2024-12-31 14:15:27.1192 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 14:28:54.9300 Info Registered target NLog.Targets.FileTarget(Name=alldata)
+2024-12-31 14:28:54.9819 Info Registered target NLog.Targets.FileTarget(Name=otherFile-web)
+2024-12-31 14:28:55.0107 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2024-12-31 14:28:55.0721 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 14:28:55.1340 Info Configuration initialized.
+2024-12-31 14:28:56.7922 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 14:56:26.5414 Info Registered target NLog.Targets.FileTarget(Name=alldata)
+2024-12-31 14:56:26.7557 Info Registered target NLog.Targets.FileTarget(Name=otherFile-web)
+2024-12-31 14:56:26.8018 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2024-12-31 14:56:26.8965 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 14:56:26.9478 Info Configuration initialized.
+2024-12-31 14:56:29.0390 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 15:01:19.3743 Info Registered target NLog.Targets.FileTarget(Name=alldata)
+2024-12-31 15:01:19.3936 Info Registered target NLog.Targets.FileTarget(Name=otherFile-web)
+2024-12-31 15:01:19.4284 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2024-12-31 15:01:19.4937 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 15:01:19.5422 Info Configuration initialized.
+2024-12-31 15:01:20.9338 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 15:17:43.6229 Info Registered target NLog.Targets.FileTarget(Name=alldata)
+2024-12-31 15:17:43.6480 Info Registered target NLog.Targets.FileTarget(Name=otherFile-web)
+2024-12-31 15:17:43.6731 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2024-12-31 15:17:43.7987 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 15:17:43.8607 Info Configuration initialized.
+2024-12-31 15:17:45.3393 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 15:27:15.4673 Info Registered target NLog.Targets.FileTarget(Name=alldata)
+2024-12-31 15:27:15.4962 Info Registered target NLog.Targets.FileTarget(Name=otherFile-web)
+2024-12-31 15:27:15.5264 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2024-12-31 15:27:15.5894 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 15:27:15.6229 Info Configuration initialized.
+2024-12-31 15:27:17.2726 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 15:38:23.9469 Info Registered target NLog.Targets.FileTarget(Name=alldata)
+2024-12-31 15:38:23.9713 Info Registered target NLog.Targets.FileTarget(Name=otherFile-web)
+2024-12-31 15:38:24.0080 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2024-12-31 15:38:24.0615 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 15:38:24.1135 Info Configuration initialized.
+2024-12-31 15:38:26.0208 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 15:41:09.5683 Info Registered target NLog.Targets.FileTarget(Name=alldata)
+2024-12-31 15:41:10.1001 Info Registered target NLog.Targets.FileTarget(Name=otherFile-web)
+2024-12-31 15:41:10.1730 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2024-12-31 15:41:10.3348 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 15:41:10.4182 Info Configuration initialized.
+2024-12-31 15:41:12.2749 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 15:49:22.5248 Info Registered target NLog.Targets.FileTarget(Name=alldata)
+2024-12-31 15:49:22.5615 Info Registered target NLog.Targets.FileTarget(Name=otherFile-web)
+2024-12-31 15:49:22.5920 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2024-12-31 15:49:22.6442 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 15:49:22.6838 Info Configuration initialized.
+2024-12-31 15:49:24.5769 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 15:56:48.7017 Info Registered target NLog.Targets.FileTarget(Name=alldata)
+2024-12-31 15:56:48.7295 Info Registered target NLog.Targets.FileTarget(Name=otherFile-web)
+2024-12-31 15:56:48.7634 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2024-12-31 15:56:48.8157 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 15:56:48.8689 Info Configuration initialized.
+2024-12-31 15:56:50.4363 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 16:00:39.2102 Info Registered target NLog.Targets.FileTarget(Name=alldata)
+2024-12-31 16:00:39.2339 Info Registered target NLog.Targets.FileTarget(Name=otherFile-web)
+2024-12-31 16:00:39.2616 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2024-12-31 16:00:39.3097 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 16:00:39.3483 Info Configuration initialized.
+2024-12-31 16:00:41.0853 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 16:31:51.5154 Info Registered target NLog.Targets.FileTarget(Name=alldata)
+2024-12-31 16:31:51.5454 Info Registered target NLog.Targets.FileTarget(Name=otherFile-web)
+2024-12-31 16:31:51.5816 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2024-12-31 16:31:51.6449 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 16:31:51.6989 Info Configuration initialized.
+2024-12-31 16:31:53.4547 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 16:48:56.0312 Info Registered target NLog.Targets.FileTarget(Name=alldata)
+2024-12-31 16:48:56.0619 Info Registered target NLog.Targets.FileTarget(Name=otherFile-web)
+2024-12-31 16:48:56.0851 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2024-12-31 16:48:56.1344 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 16:48:56.1688 Info Configuration initialized.
+2024-12-31 16:48:59.5059 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 17:49:30.8742 Info Registered target NLog.Targets.FileTarget(Name=alldata)
+2024-12-31 17:49:30.9390 Info Registered target NLog.Targets.FileTarget(Name=otherFile-web)
+2024-12-31 17:49:30.9856 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2024-12-31 17:49:31.0768 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 17:49:31.1229 Info Configuration initialized.
+2024-12-31 17:49:32.9685 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 18:33:26.6778 Info Registered target NLog.Targets.FileTarget(Name=alldata)
+2024-12-31 18:33:27.6652 Info Registered target NLog.Targets.FileTarget(Name=otherFile-web)
+2024-12-31 18:33:27.8470 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2024-12-31 18:33:28.0738 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2024-12-31 18:33:28.1261 Info Configuration initialized.
+2024-12-31 18:33:31.3761 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2025-01-01 10:50:59.4541 Info Registered target NLog.Targets.FileTarget(Name=alldata)
+2025-01-01 10:50:59.4800 Info Registered target NLog.Targets.FileTarget(Name=otherFile-web)
+2025-01-01 10:50:59.5118 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2025-01-01 10:50:59.5679 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2025-01-01 10:50:59.6079 Info Configuration initialized.
+2025-01-01 10:51:02.4485 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
