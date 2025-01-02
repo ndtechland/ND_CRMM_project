@@ -10,7 +10,6 @@ namespace CRM.Models.DTO
         public string RoleName { get; set; }
         public Nullable<bool> IsActive { get; set; }
         public Nullable<System.DateTime> CreatedDate { get; set; }
-
         //public SelectList Companies { get; set; }
         public IEnumerable<SelectListItem> Companies { get; set; }
         public bool? IsAll { get; set; }

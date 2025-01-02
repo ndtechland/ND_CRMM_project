@@ -1385,3 +1385,57 @@
 2025-01-01 10:50:59.5679 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
 2025-01-01 10:50:59.6079 Info Configuration initialized.
 2025-01-01 10:51:02.4485 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=D:\Madhu\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2025-01-01 11:27:40.5977 Info Registered target NLog.Targets.FileTarget(Name=alldata)
+2025-01-01 11:27:40.6175 Info Registered target NLog.Targets.FileTarget(Name=otherFile-web)
+2025-01-01 11:27:40.6360 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2025-01-01 11:27:40.6773 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=E:\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2025-01-01 11:27:40.7048 Info Configuration initialized.
+2025-01-01 11:27:42.7337 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=E:\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2025-01-01 12:14:04.4212 Info Registered target NLog.Targets.FileTarget(Name=alldata)
+2025-01-01 12:14:04.4318 Info Registered target NLog.Targets.FileTarget(Name=otherFile-web)
+2025-01-01 12:14:04.4477 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2025-01-01 12:14:04.4828 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=E:\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2025-01-01 12:14:04.5144 Info Configuration initialized.
+2025-01-01 12:14:05.3444 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=E:\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2025-01-01 14:44:35.9243 Info Registered target NLog.Targets.FileTarget(Name=alldata)
+2025-01-01 14:44:35.9517 Info Registered target NLog.Targets.FileTarget(Name=otherFile-web)
+2025-01-01 14:44:35.9692 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2025-01-01 14:44:36.0370 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=E:\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2025-01-01 14:44:36.0600 Info Configuration initialized.
+2025-01-01 14:44:37.3218 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=E:\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2025-01-01 15:24:56.8375 Info Registered target NLog.Targets.FileTarget(Name=alldata)
+2025-01-01 15:24:56.8593 Info Registered target NLog.Targets.FileTarget(Name=otherFile-web)
+2025-01-01 15:24:56.8783 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2025-01-01 15:24:56.9627 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=E:\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2025-01-01 15:24:56.9953 Info Configuration initialized.
+2025-01-01 15:24:58.1008 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=E:\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2025-01-01 16:18:18.9093 Info Registered target NLog.Targets.FileTarget(Name=alldata)
+2025-01-01 16:18:18.9394 Info Registered target NLog.Targets.FileTarget(Name=otherFile-web)
+2025-01-01 16:18:18.9394 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2025-01-01 16:18:18.9906 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=E:\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2025-01-01 16:18:19.0168 Info Configuration initialized.
+2025-01-01 16:18:20.4047 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=E:\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2025-01-02 11:13:04.3181 Info Registered target NLog.Targets.FileTarget(Name=alldata)
+2025-01-02 11:13:04.3444 Info Registered target NLog.Targets.FileTarget(Name=otherFile-web)
+2025-01-02 11:13:04.3601 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2025-01-02 11:13:04.4011 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=E:\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2025-01-02 11:13:04.4270 Info Configuration initialized.
+2025-01-02 11:13:05.7876 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=E:\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2025-01-02 11:16:22.1221 Info Registered target NLog.Targets.FileTarget(Name=alldata)
+2025-01-02 11:16:22.1703 Info Registered target NLog.Targets.FileTarget(Name=otherFile-web)
+2025-01-02 11:16:22.1995 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2025-01-02 11:16:22.2548 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=E:\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2025-01-02 11:16:22.3452 Info Configuration initialized.
+2025-01-02 11:16:23.4922 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=E:\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2025-01-02 11:29:57.3462 Info Registered target NLog.Targets.FileTarget(Name=alldata)
+2025-01-02 11:29:57.3462 Info Registered target NLog.Targets.FileTarget(Name=otherFile-web)
+2025-01-02 11:29:57.3739 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2025-01-02 11:29:57.4062 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=E:\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2025-01-02 11:29:57.4402 Info Configuration initialized.
+2025-01-02 11:29:58.6001 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=E:\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2025-01-02 11:33:58.2291 Info Registered target NLog.Targets.FileTarget(Name=alldata)
+2025-01-02 11:33:58.2688 Info Registered target NLog.Targets.FileTarget(Name=otherFile-web)
+2025-01-02 11:33:58.3047 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2025-01-02 11:33:58.3457 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=E:\NDConnect\CRM\bin\Debug\net6.0\nlog.config
+2025-01-02 11:33:58.3698 Info Configuration initialized.
+2025-01-02 11:33:59.5961 Info Validating config: TargetNames=alldata, otherFile-web, ConfigItems=45, FilePath=E:\NDConnect\CRM\bin\Debug\net6.0\nlog.config
