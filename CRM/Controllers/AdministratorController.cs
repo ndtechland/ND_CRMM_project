@@ -229,7 +229,6 @@ namespace CRM.Controllers
                 {
                     await con.OpenAsync();
                     var HeadingList = await con.QueryAsync<SoftwareLinkDTO>(HeadingQuery, commandType: CommandType.Text);
-
                     foreach (var item in HeadingList)
                     {
                         var SubHeadingQuery = @"select * from SoftwareLink where IsSubHeading=1 and Isvendor=1 and ParentID=" + item.Id;
