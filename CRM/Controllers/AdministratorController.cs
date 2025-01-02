@@ -5,6 +5,7 @@ using CRM.Models.DTO;
 using CRM.Repository;
 using Dapper;
 using DocumentFormat.OpenXml.InkML;
+using DocumentFormat.OpenXml.Office2013.Drawing.ChartStyle;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -216,11 +217,54 @@ namespace CRM.Controllers
             //    Value = d.Id.ToString(),
             //    Text = d.OrgName
             //}).ToList();
-            
+
             // model.UserRoleLists = await _administrator.GetRoles();
 
             //int userId = int.Parse(User.Id_contextity.Name);
 
+            if (model.Id == 0)
+            {
+                var check = _context.UserRoles.Where(u => u.RoleName.ToLower() == model.RoleName.ToLower()).FirstOrDefault();
+                if (check != null)
+                {
+                    return View();
+                }
+                var EmpReq = new UserRole()
+                {
+                    CompanyId = model.CompanyId,
+                    RoleName = model.RoleName,
+                    IsActive = true,
+                    CreatedDate = DateTime.Now,
+                    IsHeadChecked = string.Join(",", model.IsHeadChecked),
+                    IsChildHeadChecked = string.Join(",", model.IsChildHeadChecked),
+                    IsSubHeadChecked = string.Join(",", model.IsSubHeadChecked),
+                    IsChildSubHeadChecked = string.Join(",", model.IsChildSubHeadChecked),
+                    IsSubHeadTwoChecked = string.Join(",", model.IsSubHeadTwoChecked),
+                    IsChildSubHeadTwoChecked = string.Join(",", model.IsChildSubHeadTwoChecked),
+                    IsAll = model.IsAll,
+                };
+                _context.UserRoles.Add(EmpReq);
+                _context.SaveChanges();
+            }
+            else
+            {
+                var check = _context.UserRoles.Where(u => u.RoleName.ToLower() == model.RoleName.ToLower() && u.Id != model.Id).FirstOrDefault();
+                if (check != null)
+                {
+                    return View();
+                }
+                var data = _context.UserRoles.Find(model.Id);
+                data.CompanyId = model.CompanyId;
+                data.RoleName = model.RoleName;
+                data.IsHeadChecked = string.Join(",", model.IsHeadChecked);
+                data.IsChildHeadChecked = string.Join(",", model.IsChildHeadChecked);
+                data.IsSubHeadChecked = string.Join(",", model.IsSubHeadChecked);
+                data.IsChildSubHeadChecked = string.Join(",", model.IsChildSubHeadChecked);
+                data.IsSubHeadTwoChecked = string.Join(",", model.IsSubHeadTwoChecked);
+                data.IsChildSubHeadTwoChecked = string.Join(",", model.IsChildSubHeadTwoChecked);
+                data.IsAll = model.IsAll;
+                _context.SaveChanges();
+            }
 
             if (Username?.ToLower() == "admin")
             {
