@@ -313,5 +313,67 @@ namespace CRM.Controllers
 
             return View();
         }
+        public async Task<ActionResult> AccessAssignlist()
+        {
+            string Username = HttpContext.Session.GetString("UserName");
+            var model = new UserRoleDTO();
+            //model.Companies = new SelectList(_context.Customers.Where(c => c.IsActive == true).OrderByDescending(c => c.Id).ToList(), "Id", "OrgName");
+            //model.Companies = _context.Customers.OrderByDescending(c => c.Id).Select(d => new SelectListItem
+            //{
+            //    Value = d.Id.ToString(),
+            //    Text = d.OrgName
+            //}).ToList();
+
+            // model.UserRoleLists = await _administrator.GetRoles();
+
+            //int userId = int.Parse(User.Id_contextity.Name);
+            if (Username?.ToLower() == "admin")
+            {
+                var HeadingQuery = @"select * from SoftwareLink where IsHeading=1 and Isvendor=1";
+                using (var con = new SqlConnection(_context.Database.GetConnectionString()))
+                {
+                    await con.OpenAsync();
+                    var HeadingList = await con.QueryAsync<SoftwareLinkDTO>(HeadingQuery, commandType: CommandType.Text);
+
+                    foreach (var item in HeadingList)
+                    {
+                        var SubHeadingQuery = @"select * from SoftwareLink where IsSubHeading=1 and Isvendor=1 and ParentID=" + item.Id;
+                        var SubHeadingList = await con.QueryAsync<SubSoftwarelink>(SubHeadingQuery, commandType: CommandType.Text);
+                        item.SubHeading = SubHeadingList;
+
+                        foreach (var item2 in item.SubHeading)
+                        {
+                            var SubHeadingTwoQuery = @"select * from SoftwareLink where IsSubHeadingTwo=1 and Isvendor=1 and ParentID=" + item2.Id;
+                            var SubHeadingTwoList = await con.QueryAsync<SubSoftwarelinkTwo>(SubHeadingTwoQuery, commandType: CommandType.Text);
+                            item2.SubHeadingTwo = SubHeadingTwoList;
+
+                            foreach (var item3 in item2.SubHeadingTwo)
+                            {
+                                var SubHeadingTwoChildQuery = @"select * from SoftwareLink where Isvendor=1 and ParentID=" + item3.Id;
+                                var SubHeadingTwoChildList = await con.QueryAsync<Softwarelink>(SubHeadingTwoChildQuery, commandType: CommandType.Text);
+                                item3.ChildMenus = SubHeadingTwoChildList; // Assign to item3 (SubHeadingTwo) 
+                            }
+                        }
+
+                        foreach (var item4 in item.SubHeading)
+                        {
+                            var SubHeadingChildQuery = @"select * from SoftwareLink where Isvendor=1 and ParentID=" + item4.Id;
+                            var SubHeadingChildList = await con.QueryAsync<Softwarelink>(SubHeadingChildQuery, commandType: CommandType.Text);
+                            item4.ChildMenus = SubHeadingChildList;
+                        }
+
+                        var HeadingChildQuery = @"select * from SoftwareLink where Isvendor=1 and ParentID=" + item.Id;
+                        var HeadingChildList = await con.QueryAsync<Softwarelink>(HeadingChildQuery, commandType: CommandType.Text);
+                        item.ChildMenus = HeadingChildList;
+                    }
+
+                    model.SoftwareLinkDTO = HeadingList;
+                    ViewBag.BtnTXT = "Save";
+                    return View(model);
+                }
+            }
+
+            return View();
+        }
     }
 }

@@ -73,6 +73,7 @@ namespace CRM.Controllers
                                     Text = p.ProductName,
                                 }).ToList();
 
+                            ViewBag.id = data.Id;
                             ViewBag.CustomerId = data.CustomerId;
                             ViewBag.CustomerName = _context.CustomerRegistrations.Where(x => x.Id == data.CustomerId).First().CompanyName;
                             ViewBag.InvoiceNumber = InvoiceNumber;
@@ -99,7 +100,7 @@ namespace CRM.Controllers
                     ViewBag.SGST = 0;
                     ViewBag.CGST = 0;
                     ViewBag.Dueamountdate = null;
-                    ViewBag.Invoicedate = Invoicedate.ToString("yyyy-MM-dd");
+                    ViewBag.Invoicedate = Invoicedate.ToString("yyyy-MM-dd"); 
                     ViewBag.InvoiceDuedate = InvoiceDuedate.ToString("yyyy-MM-dd");
                     ViewBag.Notes = null;
                     ViewBag.Terms = null;
@@ -444,7 +445,7 @@ namespace CRM.Controllers
 
         }
         [HttpGet]
-        public JsonResult Product(int? id)
+        public JsonResult Product(int? id, int? invoiceId)
         {
             var data = (from pm in _context.VendorProductMasters
                         join gm in _context.GstMasters on pm.Gst equals gm.Id
@@ -462,9 +463,26 @@ namespace CRM.Controllers
                 IGST = Convert.ToDecimal(x.gm.Igst),
                 ProductPrice = x.pm.ProductPrice,
                 HsnSacCode = x.pm.Hsncode,
-
             }).FirstOrDefault();
 
+            if (invoiceId != null && invoiceId != 0)
+            {
+                var invoiceProduct = _context.CustomerInvoices
+                    .FirstOrDefault(ip => ip.Id == invoiceId && ip.ProductId == id);
+
+                if (invoiceProduct != null)
+                {
+                    // Match product data from invoice
+                    data = new ProductDetailList
+                    {
+                        SGST = invoiceProduct.Sgst,
+                        CGST = invoiceProduct.Cgst,
+                        IGST = invoiceProduct.Igst,
+                        ProductPrice = invoiceProduct.ProductPrice,
+                        HsnSacCode = invoiceProduct.Hsncode,
+                    };
+                }
+            }
 
             var result = new
             {
@@ -473,6 +491,7 @@ namespace CRM.Controllers
 
             return new JsonResult(result);
         }
+
         public async Task<IActionResult> SendInvoicePDF(string InvoiceNumber, bool Ismail = false)
         {
             try
@@ -555,63 +574,59 @@ namespace CRM.Controllers
 
             return _converter.Convert(htmlToPdfDocument);
         }
-        public async Task<JsonResult> DeleteProdbyUpdate(int id)
+        public async Task<JsonResult> DeleteProdbyUpdate(int id,bool cloneId)
         {
-            if (id > 0)
+            if (id <= 0)
             {
-                try
-                {
-                    var result = _context.CustomerInvoices.FirstOrDefault(x => x.Id == id);
-                    if (result != null)
-                    {
-                        var invoicesToDelete = _context.CustomerInvoices
-                            .Where(c => c.InvoiceNumber == result.InvoiceNumber && c.Paymentstatus != 3)
-                            .ToList();
-                        if (invoicesToDelete.Any())
-                        {
-                            //decimal totalDueAmount = invoicesToDelete
-                            //                   .Where(ci => ci.DueAmount.HasValue)
-                            //                   .Select(ci => ci.DueAmount.Value)
-                            //                   .FirstOrDefault();
-
-                            //decimal dueAmount = (decimal)(result.DueAmount -
-                            //                     (result.ProductPrice) + (result.ProductPrice * (result.Igst / 100 ?? 0)) +
-                            //                      (result.ProductPrice * (result.Sgst / 100 ?? 0)) +
-                            //                      (result.ProductPrice * (result.Cgst / 100 ?? 0)));
-
-                            //foreach (var item in invoicesToDelete)
-                            //{
-                            //    item.DueAmount = dueAmount;
-                            //}
-                            // await _context.SaveChangesAsync();
-
-                            _context.CustomerInvoices.RemoveRange(result);
-                            await _context.SaveChangesAsync();
-                            //  TempData["Message"] = "Deleted Successfully.";
-                            return new JsonResult(new { success = true, message = "Deleted Successfully", redirectUrl = "/Sale/Invoice?InvoiceNumber=" + result.InvoiceNumber });
-                        }
-                        else
-                        {
-                            // TempData["Message"] = "No matching invoices found for deletion.";
-                            return new JsonResult(new { success = false, message = "No matching invoices found for deletion.", redirectUrl = "/Sale/Invoice?InvoiceNumber=" + result.InvoiceNumber });
-                        }
-                    }
-                    else
-                    {
-                        TempData["Message"] = "Invoice not found.";
-                        return new JsonResult(new { success = false, message = "Invoice not found." });
-                    }
-                }
-                catch (Exception ex)
-                {
-                    TempData["Message"] = "An error occurred while deleting the invoice.";
-                    return new JsonResult(new { success = false, message = $"An error occurred: {ex.Message}" });
-                }
-            }
-            else
-            {
-                TempData["Message"] = "Invalid ID.";
                 return new JsonResult(new { success = false, message = "Invalid ID." });
+            }
+
+            try
+            {
+                var result = await _context.CustomerInvoices.FirstOrDefaultAsync(x => x.Id == id);
+                if (result == null)
+                {
+                    return new JsonResult(new { success = false, message = "Invoice not found." });
+                }
+
+                var invoicesToDelete = await _context.CustomerInvoices
+                    .Where(c => c.InvoiceNumber == result.InvoiceNumber)
+                    .ToListAsync();
+
+                if (!invoicesToDelete.Any())
+                {
+                    return new JsonResult(new { success = false, message = "No matching invoices found for deletion." });
+                }
+
+                decimal totalDueAmount = invoicesToDelete
+                    .Select(ci => ci.DueAmount.Value)
+                    .FirstOrDefault();
+
+                decimal adjustment = (result.ProductPrice ?? 0) +
+                                     (result.ProductPrice ?? 0) * ((result.Igst ?? 0) / 100) +
+                                     (result.ProductPrice ?? 0) * ((result.Sgst ?? 0) / 100) +
+                                     (result.ProductPrice ?? 0) * ((result.Cgst ?? 0) / 100);
+
+                decimal dueAmount = totalDueAmount - adjustment;
+
+                foreach (var item in invoicesToDelete)
+                {
+                    item.DueAmount = dueAmount;
+                }
+
+                _context.CustomerInvoices.Remove(result);
+                await _context.SaveChangesAsync();
+
+                return new JsonResult(new
+                {
+                    success = true,
+                    message = "Deleted Successfully",
+                    redirectUrl = $"/Sale/Invoice?InvoiceNumber={result.InvoiceNumber}&&clone={cloneId}"
+                });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new { success = false, message = $"An error occurred: {ex.Message}" });
             }
         }
 

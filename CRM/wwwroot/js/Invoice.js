@@ -39,16 +39,18 @@
     $('#customerName').on('change', function () {
         var customerId = $(this).val();
         var cloneId = true;
+        var InvoiceID = $('#Id').val();
         if (customerId) {
-            fetchCustomerDetails(customerId, cloneId);
+            fetchCustomerDetails(customerId, cloneId, InvoiceID);
         }
     });
    
     var customerId = $("#customerId").val();
     var customerName = $("#customerName").val();
     var cloneId = $("#cloneId").val();
-    if (customerId != '' && customerName != '' && cloneId != '') {
-        selectCustomer(customerId, customerName, cloneId);
+    var InvoiceID = $('#Id').val();
+    if (customerId != '' && customerName != '' && cloneId != '' && InvoiceID != '') {
+        selectCustomer(customerId, customerName, cloneId, InvoiceID);
     }
            
 
@@ -60,10 +62,10 @@
 });
 
 // Handle customer selection
-function selectCustomer(customerId, customerName, cloneId) {
+function selectCustomer(customerId, customerName, cloneId, InvoiceID) {
     $('#customerName').val(customerName);
     $('#customerId').val(customerId);
-    var InvoiceID = $('#Id').val();
+    $('#Id').val(InvoiceID);
     $('#cloneId').val(cloneId);
     $('#customerSuggestions').empty();
     //const clone = $('#cloneId').val();
@@ -86,9 +88,9 @@ function fetchCustomerDetails(customerId, cloneId, InvoiceID) {
             $('#mobileNumberLabel').text(customerData.mobileNumber);
             $('#emailNumberLabel').text(customerData.email);
             $('#gstNumberLabel').text(customerData.gstNumber);
-            $('.billingStateId').text(customerData.billingStateId); // Set billing state ID
-            $('.InvoiceNumber').val(customerData.invoiceNumber); // Set billing state ID
-            updateTaxFields(); // Recalculate GST
+            $('.billingStateId').text(customerData.billingStateId); 
+            $('.InvoiceNumber').val(customerData.invoiceNumber); 
+                updateTaxFields(); 
             $('#customerDetailsRow').removeClass('d-none'); // Show customer details
         },
         error: function () {
@@ -103,14 +105,15 @@ function updateTaxFields() {
         var $section = $(this);
         var productId = $section.find(".ProductDetails").val();
         var billingStateId = $('.billingStateId').text(); // Common billing state ID
-
+        var InvoiceID = $section.find('#Id').val(); 
         if (!productId || !billingStateId) {
             clearTaxFields($section);
             return;
         }
 
         $.ajax({
-            url: '/Sale/product?id=' + productId,
+           // url: '/Sale/product?id=' + productId ,
+            url: '/Sale/product?id=' + productId + '&invoiceId=' + InvoiceID,
             type: 'GET',
             dataType: 'json',
             contentType: 'application/json; charset=utf-8',
@@ -155,16 +158,15 @@ function clearTaxFields($section) {
 }
 
 // Validate numeric input
-function validateNumericInput(event) {
-    var validKeys = [46, 8, 9, 27, 13];
-    if (validKeys.indexOf(event.keyCode) !== -1 || (event.keyCode == 65 && event.ctrlKey === true) || (event.keyCode >= 35 && event.keyCode <= 39)) {
-        return;
-    }
-    if ((event.shiftKey || (event.keyCode < 48 || event.keyCode > 57)) && (event.keyCode < 96 || event.keyCode > 105)) {
-        event.preventDefault();
-    }
-}
 
+function validateNumericInput(event) {
+    if ([67, 86, 88].includes(event.keyCode) && (event.ctrlKey || event.metaKey) ||
+        [32, 46, 8, 9, 27, 13].includes(event.keyCode) ||
+        (event.keyCode >= 35 && event.keyCode <= 39)) return;
+
+    if ((event.keyCode >= 48 && event.keyCode <= 57) || (event.keyCode >= 96 && event.keyCode <= 105)) return;
+    event.preventDefault();
+}
 // GST validation
 function ValidateGST() {
     var gstField = document.querySelector(".GstNumber");
@@ -178,137 +180,9 @@ function ValidateGST() {
     }
 }
 
-//document.getElementById('addSection').addEventListener('click', function () {
-//    const customerSections = document.getElementById('customerSections');
-//    const newSection = document.querySelector('.customer-section').cloneNode(true);
-
-//    // Reset values in the cloned section
-//    newSection.querySelectorAll('input').forEach(input => {
-//        if (input.type === 'date') {
-//            input.value = ''; // Clear the date input as well
-//        } else {
-//            input.value = ''; // Clear the input
-//        }
-//        input.removeAttribute('readonly'); // Ensure the fields are editable
-//    });
-
-//    // Ensure the remove button is displayed for all cloned sections
-//    newSection.querySelector('.remove-section').style.display = 'inline-block';
-
-//    // Append the cloned section to the customer sections
-//    customerSections.appendChild(newSection);
-
-//    // Show the remove button for the original section if more than one section exists
-//    if (customerSections.children.length > 1) {
-//        customerSections.querySelector('.customer-section .remove-section').style.display = 'inline-block';
-//    }
-//});
-
-//document.getElementById('customerSections').addEventListener('click', function (e) {
-//    if (e.target.classList.contains('remove-section')) {
-//        const sections = document.querySelectorAll('.customer-section');
-//        if (sections.length > 1) { // Prevent removal if only one section is left
-//            e.target.closest('.customer-section').remove();
-
-//            // Hide remove button for the remaining section if it's the only one left
-//            if (sections.length === 2) {
-//                document.querySelector('.customer-section .remove-section').style.display = 'none';
-//            }
-//        } else {
-//            alert('At least one section must remain.');
-//        }
-//    }
-//});
-
-
-// On page load, hide the remove button if only one section exists
-//window.onload = function () {
-//    const sections = document.querySelectorAll('.customer-section');
-//    if (sections.length === 1) {
-//        document.querySelector('.customer-section .remove-section').style.display = 'none';
-//    }
-//};
-
-
-
-// For renew date
-//function calculateRenewDate(event) {
-//    const $section = event.target.closest('.customer-section'); // Get the closest section
-//    const renewMonth = parseInt($section.querySelector('.NoOfRenewMonth').value); // Get renew month from that section
-//    const startDate = $section.querySelector('.StartDate').value; // Get start date from that section
-
-//    if (renewMonth && startDate) {
-//        const start = new Date(startDate);
-//        start.setMonth(start.getMonth() + renewMonth); // Add the inputted number of months
-
-//        // Format date as YYYY-MM-DD
-//        const formattedDate = start.toISOString().split('T')[0];
-
-//        const renewDateInput = $section.querySelector('.RenewDate');
-//        renewDateInput.value = formattedDate; // Set the RenewDate input
-//        renewDateInput.setAttribute('readonly', true); // Ensure RenewDate is read-only
-//    } else {
-//        $section.querySelector('.RenewDate').value = ''; // Clear RenewDate if inputs are invalid
-//    }
-//}
-
-//// Event listeners for both Start Date and Number Of Renew Month fields
-//document.getElementById('customerSections').addEventListener('input', function (event) {
-//    if (event.target.classList.contains('NoOfRenewMonth') || event.target.classList.contains('StartDate')) {
-//        calculateRenewDate(event);
-//    }
-//});
-
-
-
-//function gatherProductDetails() {
-//    const productSections = document.querySelectorAll('.customer-section');
-//    const productDetails = [];
-
-//    productSections.forEach((section, index) => {
-//        const productDetail = {
-//            CustomerId: $('#customerId').val(),
-//            ProductId: $('.ProductDetails').eq(index).val(),
-//            Description: $('.Description').eq(index).val(),
-//            ProductPrice: $('.Price').eq(index).val(),
-//            NoOfRenewMonth: $('.NoOfRenewMonth').eq(index).val(),
-//            RenewPrice: $('.RenewPrice').eq(index).val(),
-//            HsnSacCode: $('.HsnSacCode').eq(index).val(),
-//            StartDate: $('.StartDate').eq(index).val(),
-//            RenewDate: $('.RenewDate').eq(index).val(),
-//            IGST: $('.IGST').eq(index).val(),
-//            SGST: $('.SGST').eq(index).val(),
-//            CGST: $('.CGST').eq(index).val()
-//        };
-
-//        productDetails.push(productDetail);
-//    });
-
-//    return productDetails;
-//}
 
 function sendProductDetailsToAPI() {
-    const productDetails = gatherProductDetails(); // Gather product details here
-
-    //fetch('/Sale/Invoice', {
-    //    method: 'POST',
-    //    headers: {
-    //        'Content-Type': 'application/json'
-    //    },
-    //    body: JSON.stringify(productDetails) // Send the gathered details
-    //})
-    //    .then(response => {
-    //        if (!response.ok) {
-    //            throw new Error('Network response was not ok');
-    //        }
-    //        return response.json();
-    //    })
-    //    .then(data => {
-    //        console.log('Success:', data);
-    //    })
-    //    .catch(error => {
-    //        console.error('Error:', error);
-    //
+    const productDetails = gatherProductDetails(); 
 
     $.ajax({
         url: '/Sale/Invoice',
@@ -325,19 +199,6 @@ function sendProductDetailsToAPI() {
         },
         success: function (result) {
             window.location.href = result.path;
-            /*for (let k = 0; k < result.length; k++) {
-                $('tbody tr:eq(' + (result[k].employeeId - 1) + ')').css('border', '3px solid #dc3545');
-                let props = Object.entries(employees[result[k].employeeId])
-                console.log(result[k])
-                let cellIndex = props.findIndex(p => p[0] === result[k].field)
-                $('tbody tr:eq(' + (result[k].employeeId - 1) + ') td:eq(' + cellIndex + ')').css({ 'background-color': '#dc3545', 'color': '#ffffff' });
-                $('tbody tr:eq(' + (result[k].employeeId - 1) + ') td:eq(' + cellIndex + ')').attr("title", result[k].error)
-            }
-            $(".main-container").append(`
-                   <div class="alert alert-success alert-dismissible fade show" role="alert">
-                       Data Successfully imported into the database
-                   </div>
-                `)*/
         },
         error: function (result) {
             console.log(result)
@@ -363,6 +224,7 @@ var ProductList = JSON.parse(productdata);
 
 
 window.onload = function () {
+//$(document).ready(function () {
     if (ProductList && ProductList.length > 0) {
         const customerSections = document.getElementById('customerSections');
         const firstSection = document.querySelector('.customer-section');
@@ -392,7 +254,7 @@ window.onload = function () {
             newSection.querySelector('.SGST').value = product.sGST;
             newSection.querySelector('.CGST').value = product.cGST;
             //newSection.querySelector('.Dueamountdate').value = formatDateToYYYYMMDD(product.dueamountdate);
-
+           
             // Show/remove the remove button accordingly
             if (ProductList.length === 1) {
                 newSection.querySelector('.remove-section').style.display = 'none';
@@ -401,6 +263,8 @@ window.onload = function () {
             }
         });
     }
+/*});*/
+    
 };
 
 // Add new section dynamically when 'Add Product' button is clicked
@@ -480,7 +344,8 @@ document.getElementById('customerSections').addEventListener('click', function (
         const section = e.target.closest('.customer-section');
         const sectionIdInput = section.querySelector('.Id'); // Get the hidden input within the section
         const sectionIdValue = sectionIdInput ? sectionIdInput.value : 0;
-
+        var cloneId = $("#cloneId").val();
+       
         if (sections.length > 1) { // Prevent removal if only one section is left
             Swal.fire({
                 title: 'Are you sure?',
@@ -497,7 +362,7 @@ document.getElementById('customerSections').addEventListener('click', function (
                             url: '/Sale/DeleteProdbyUpdate',
                             type: 'POST',
                             dataType: 'JSON',
-                            data: { id: sectionIdValue },
+                            data: { id: sectionIdValue, clone: cloneId },
                             success: function (response) {
                                 if (response.success) {
                                     Swal.fire({
@@ -506,7 +371,10 @@ document.getElementById('customerSections').addEventListener('click', function (
                                         icon: 'success'
                                     }).then(() => {
                                         if (response.redirectUrl) {
-                                            window.location.href = response.redirectUrl; // Redirect to the provided URL
+                                            window.location.href = response.redirectUrl;
+                                         }
+                                        else {
+                                            window.location.reload();
                                         }
                                     });
                                 } else {
@@ -516,7 +384,10 @@ document.getElementById('customerSections').addEventListener('click', function (
                                         icon: 'error'
                                     }).then(() => {
                                         if (response.redirectUrl) {
-                                            window.location.href = response.redirectUrl; // Redirect to the provided URL
+                                            window.location.href = response.redirectUrl;
+                                        }
+                                        else {
+                                            window.location.reload();
                                         }
                                     });
                                 }

@@ -2089,30 +2089,29 @@ namespace CRM.Repository
                         .Select(ci => ci.Paymentstatus)
                         .FirstOrDefault() ?? 2; 
 
-                    if(Invoiceclone != null)
+                    if(Invoiceclone == "true")
                     {
                         product.Id = 0;
                     }
+                    decimal newDueAmount = 0;
 
+                    if (totalDueAmount != 0)
+                    {
+                        newDueAmount = (decimal)(totalDueAmount +
+                            product.ProductPrice +
+                            ((product.ProductPrice * (product.IGST ?? 0m)) / 100) +
+                            ((product.ProductPrice * (product.SGST ?? 0m)) / 100) +
+                            ((product.ProductPrice * (product.CGST ?? 0m)) / 100));
+                    }
+                    else
+                    {
+                        newDueAmount = (decimal)(product.ProductPrice +
+                            ((product.ProductPrice * (product.IGST ?? 0m)) / 100) +
+                            ((product.ProductPrice * (product.SGST ?? 0m)) / 100) +
+                            ((product.ProductPrice * (product.CGST ?? 0m)) / 100));
+                    }
                     if (product.Id == 0) 
                     {
-                        decimal newDueAmount = 0;
-
-                        if (totalDueAmount != 0)
-                        {
-                            newDueAmount = (decimal)(totalDueAmount +
-                                product.ProductPrice +
-                                ((product.ProductPrice * (product.IGST ?? 0m)) / 100) +
-                                ((product.ProductPrice * (product.SGST ?? 0m)) / 100) +
-                                ((product.ProductPrice * (product.CGST ?? 0m)) / 100));
-                        }
-                        else
-                        {
-                            newDueAmount = (decimal)(product.ProductPrice +
-                                ((product.ProductPrice * (product.IGST ?? 0m)) / 100) +
-                                ((product.ProductPrice * (product.SGST ?? 0m)) / 100) +
-                                ((product.ProductPrice * (product.CGST ?? 0m)) / 100));
-                        }
                         var newInvoice = new CustomerInvoice()
                         {
                             VendorId = vendorid,
@@ -2159,6 +2158,10 @@ namespace CRM.Repository
                             data.Cgst = product.CGST;
                             _context.Update(data);
                             AlreadyInvoiceNo = data.InvoiceNumber;
+                            foreach (var item in customerExistingData)
+                            {
+                                item.DueAmount = newDueAmount;
+                            }
                         }
                     }
                     if (invoicedetail != null)
@@ -2193,110 +2196,6 @@ namespace CRM.Repository
                 throw new Exception("An error occurred while processing the invoice.", ex);
             }
         }
-
-        //public async Task<bool> CustomerInvoice(List<ProductDetail> model, string InvoiceNo, int vendorid)
-        //{
-        //    try
-        //    {
-        //        var AlreadyInvoiceNo = string.Empty;
-
-        //        var allExistingData = await _context.CustomerInvoices
-        //            .Where(ci => model.Select(m => m.CustomerId).Contains(ci.CustomerId) && ci.InvoiceNumber == InvoiceNo )
-        //            .ToListAsync();
-
-        //        foreach (var product in model)
-        //        {
-        //            var existingInvoice = allExistingData
-        //                .FirstOrDefault(ci => ci.CustomerId == product.CustomerId &&
-        //                                      ci.ProductId == product.ProductId &&
-        //                                      ci.InvoiceNumber == InvoiceNo);
-
-        //            var customerExistingData = allExistingData
-        //                .Where(ci => ci.CustomerId == product.CustomerId)
-        //                .ToList();
-
-        //            if (existingInvoice != null)
-        //            {
-        //                AlreadyInvoiceNo = existingInvoice.InvoiceNumber;
-
-        //            }
-        //            decimal totalDueAmount = customerExistingData
-        //                                        .Where(ci => ci.DueAmount.HasValue)
-        //                                        .Select(ci => ci.DueAmount.Value)
-        //                                        .FirstOrDefault();
-
-        //            decimal dueAmount = (decimal)(totalDueAmount +
-        //                                 (product.ProductPrice) + (product.ProductPrice * product.IGST / 100 ?? 0) +
-        //                                 (product.ProductPrice * product.SGST / 100 ?? 0) +
-        //                                 (product.ProductPrice * product.CGST / 100 ?? 0));
-
-        //            if (product.Id == 0)
-        //            {
-        //                var newInvoice = new CustomerInvoice()
-        //                {
-        //                    VendorId = vendorid,
-        //                    CustomerId = product.CustomerId,
-        //                    ProductId = product.ProductId,
-        //                    Description = product.Description,
-        //                    ProductPrice = product.ProductPrice,
-        //                    RenewPrice = product.RenewPrice,
-        //                    NoOfRenewMonth = product.NoOfRenewMonth,
-        //                    Hsncode = product.HsnSacCode,
-        //                    StartDate = product.StartDate,
-        //                    RenewDate = product.RenewDate,
-        //                    Igst = product.IGST,
-        //                    Sgst = product.SGST,
-        //                    Cgst = product.CGST,
-        //                    InvoiceNumber = string.IsNullOrEmpty(AlreadyInvoiceNo) ? InvoiceNo : AlreadyInvoiceNo,
-        //                    CreatedDate = DateTime.Now,
-        //                    Paymentstatus = 2,
-        //                    PaidAmount = customerExistingData.FirstOrDefault(ci => ci.PaidAmount.HasValue)?.PaidAmount ?? 0,
-        //                    DueAmount = customerExistingData.FirstOrDefault(ci => ci.DueAmount.HasValue)?.DueAmount ?? 0,
-        //                    Dueamountdate = product.Dueamountdate,
-        //                };
-
-        //                _context.Add(newInvoice);
-        //                foreach (var item in customerExistingData)
-        //                {
-        //                    item.DueAmount = dueAmount;
-        //                }
-        //                await _context.SaveChangesAsync();
-        //            }
-        //            else
-        //            {
-        //                var data = allExistingData.FirstOrDefault(ci => ci.Id == product.Id);
-        //                if (data != null)
-        //                {
-        //                    data.ProductPrice = product.ProductPrice;
-        //                    data.RenewPrice = product.RenewPrice;
-        //                    data.NoOfRenewMonth = product.NoOfRenewMonth;
-        //                    data.Description = product.Description;
-        //                    data.StartDate = product.StartDate;
-        //                    data.RenewDate = product.RenewDate;
-        //                    data.Igst = product.IGST;
-        //                    data.Sgst = product.SGST;
-        //                    data.Cgst = product.CGST;
-        //                    data.Dueamountdate = product.Dueamountdate;
-
-        //                    _context.Update(data);
-        //                    foreach (var item in customerExistingData)
-        //                    {
-        //                        item.DueAmount = dueAmount;
-        //                    }
-        //                    await _context.SaveChangesAsync();
-
-        //                    AlreadyInvoiceNo = data.InvoiceNumber;
-        //                }
-        //            }
-        //        }
-
-        //        return true;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw;
-        //    }
-        //}
 
         public async Task<List<CustomerInvoiceDTO>> GetCustometInvoiceList(int vendorId)
         {
