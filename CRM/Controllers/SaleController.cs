@@ -1,7 +1,10 @@
 ﻿using CRM.Models.Crm;
 using CRM.Models.DTO;
 using CRM.Repository;
+using DinkToPdf;
+using DinkToPdf.Contracts;
 using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -16,11 +19,15 @@ namespace CRM.Controllers
         private readonly admin_NDCrMContext _context;
         private readonly ICrmrpo _ICrmrpo;
         private readonly IEmailService _IEmailService;
-        public SaleController(admin_NDCrMContext context, ICrmrpo ICrmrpo, IEmailService iEmailService)
+        private readonly IConverter _converter;
+
+        public SaleController(admin_NDCrMContext context, ICrmrpo ICrmrpo, IEmailService iEmailService, IConverter _IConverter)
         {
             _context = context;
             _ICrmrpo = ICrmrpo;
             _IEmailService = iEmailService;
+            _converter = _IConverter;
+
         }
         [HttpGet]
         public async Task<IActionResult> Invoice(string InvoiceNumber ,bool clone=false)
@@ -43,10 +50,17 @@ namespace CRM.Controllers
                    
                     if (InvoiceNumber != null)
                     {
-
-                        ViewBag.Heading = "Update Invoice";
-                        ViewBag.btnText = "Update";
-
+                        if(clone == true)
+                        {
+                            ViewBag.Heading = "Add Clone Invoice";
+                            ViewBag.btnText = "Add Clone";
+                        }
+                        else
+                        {
+                            ViewBag.Heading = "Update Invoice";
+                            ViewBag.btnText = "Update";
+                        }
+                        
                         customerInv.customerInvoice = await _context.CustomerInvoices.Where(c => c.InvoiceNumber == InvoiceNumber).ToListAsync();
                         var data = customerInv.customerInvoice.FirstOrDefault();
                         if (customerInv.customerInvoice != null && customerInv.customerInvoice.Count() > 0)
@@ -57,8 +71,7 @@ namespace CRM.Controllers
                                 {
                                     Value = p.Id.ToString(),
                                     Text = p.ProductName,
-                                })
-                                .ToList();
+                                }).ToList();
 
                             ViewBag.CustomerId = data.CustomerId;
                             ViewBag.CustomerName = _context.CustomerRegistrations.Where(x => x.Id == data.CustomerId).First().CompanyName;
@@ -113,13 +126,13 @@ namespace CRM.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> Invoice(List<ProductDetail> model, DateTime? InvoiceDate = null, DateTime? InvoiceDueDate = null, string InvoiceNotes = null, string InvoiceTerms = null)
+        public async Task<IActionResult> Invoice(List<ProductDetail> model, DateTime? InvoiceDate = null, DateTime? InvoiceDueDate = null, string InvoiceNotes = null, string InvoiceTerms = null, string Invoiceclone = null)
         {
             try
             {
                 int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.FirstOrDefaultAsync(x => x.Id == userId);
-
+                bool isclone = Convert.ToBoolean(Invoiceclone);
                 if (adminlogin == null)
                 {
                     TempData["Message"] = "Admin not found.";
@@ -135,14 +148,11 @@ namespace CRM.Controllers
                 }
 
                 var checkInvoice = await _context.CustomerInvoices
-                                                  .Where(x => x.CustomerId == customerId && x.Paymentstatus == 1)
+                                                  .Where(x => x.CustomerId == customerId)
                                                   .ToListAsync();
                 string InvoiceNo = model.FirstOrDefault()?.InvoiceNumber ?? null;
 
-                //var existingInvoice = await _context.CustomerInvoices
-                //                                     .FirstOrDefaultAsync(x => x.InvoiceNumber == InvoiceNo);
-
-                bool isSuccess = await _ICrmrpo.CustomerInvoice(model, InvoiceNo, (int)adminlogin.Vendorid, InvoiceDate, InvoiceDueDate,InvoiceNotes,InvoiceTerms);
+                bool isSuccess = await _ICrmrpo.CustomerInvoice(model, InvoiceNo, (int)adminlogin.Vendorid, InvoiceDate, InvoiceDueDate,InvoiceNotes,InvoiceTerms, Invoiceclone);
 
                 if (isSuccess)
                 {
@@ -197,11 +207,17 @@ namespace CRM.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetCustomerDetailsById(int id, bool clone = false)
+        public IActionResult GetCustomerDetailsById(int id, bool clone = false,int InvoiceID = 0)
         {
             int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
             var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
-            var existingInvoice = _context.CustomerInvoices.Where(x => x.CustomerId == id).FirstOrDefault();
+            var InvoiceDetail = _context.CustomerInvoices.Where(x =>x.Id == InvoiceID).FirstOrDefault();
+            var existingInvoice = new CustomerInvoice();
+            if (InvoiceDetail != null)
+            {
+                 existingInvoice = _context.CustomerInvoices.Where(x => x.CustomerId == id && x.InvoiceNumber == InvoiceDetail.InvoiceNumber).FirstOrDefault();
+
+            }
             string InvoiceNo = null;
             if (clone == true)
             {
@@ -209,7 +225,7 @@ namespace CRM.Controllers
             }
             else if(clone == false)
             {
-                InvoiceNo = existingInvoice != null ? existingInvoice.InvoiceNumber : GenerateInvoiceNumber();
+                InvoiceNo = existingInvoice.InvoiceNumber;
             }
             else
             {
@@ -295,14 +311,14 @@ namespace CRM.Controllers
         }
         private string GenerateInvoiceNumber()
         {
-            // Fetch the most recent invoice based on ID
-            var data = _context.CustomerInvoices
-                              .OrderByDescending(x => x.Id)
-                              .FirstOrDefault();
+            
 
             int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
             var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
 
+            var data = _context.CustomerInvoices.Where(x =>x.VendorId == adminlogin.Vendorid)
+                              .OrderByDescending(a => a.InvoiceNumber)
+                              .FirstOrDefault();
             // Initialize variables
             string invoiceid = string.Empty;
             int numericValue = 10001; // Default starting value
@@ -393,15 +409,17 @@ namespace CRM.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ProductInvoice(string InvoiceNumber)
+        public async Task<IActionResult> ProductInvoice(string InvoiceNumber, bool Ismail)
         {
             try
             {
                 if (InvoiceNumber != null)
                 {
+                    int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                     CustomerInvoiceDTO invoice = new CustomerInvoiceDTO();
-
-                    invoice = await _ICrmrpo.CustomerProductInvoice(InvoiceNumber);
+                    ViewBag.Protocol = Request.Scheme;
+                    ViewBag.Host = Request.Host.Value;
+                    invoice = await _ICrmrpo.CustomerProductInvoice(InvoiceNumber, Ismail);
                     if (invoice != null)
                     {
                         return View(invoice);
@@ -455,45 +473,88 @@ namespace CRM.Controllers
 
             return new JsonResult(result);
         }
-
-        public async Task<IActionResult> SendInvoicePDF(string InvoiceNumber)
+        public async Task<IActionResult> SendInvoicePDF(string InvoiceNumber, bool Ismail = false)
         {
             try
             {
                 string schema = Request.Scheme;
                 string host = Request.Host.Value;
                 HtmlToPdf converter = new HtmlToPdf();
-                string SlipURL = $"{schema}://{host}/Sale/ProductInvoice?InvoiceNumber={InvoiceNumber}";
+                string SlipURL = $"{schema}://{host}/Sale/ProductInvoice?InvoiceNumber={InvoiceNumber}&&Ismail={Ismail}";
                 PdfDocument doc = converter.ConvertUrl(SlipURL);
 
-                // Save the PDF to a byte array instead of a file
-                using (var memoryStream = new MemoryStream())
+                using (HttpClient client = new HttpClient())
                 {
-                    doc.Save(memoryStream);
-                    byte[] pdf = memoryStream.ToArray();
-                    doc.Close();
+                    var response = await client.GetAsync(SlipURL);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return BadRequest("Failed to retrieve content from the URL.");
+                    }
 
-                    CustomerInvoiceDTO result = new CustomerInvoiceDTO();
+                    var htmlContent = await response.Content.ReadAsStringAsync();
 
-                    result = await _ICrmrpo.CustomerProductInvoice(InvoiceNumber);
+                    // Generate PDF from HTML content
+                    byte[] pdf = GeneratePdf(htmlContent);
+                    //return File(pdf, "application/pdf", "kk.pdf");
+                    
+
+                    CustomerInvoiceDTO result = await _ICrmrpo.CustomerProductInvoice(InvoiceNumber, Ismail);
 
                     if (result == null)
                     {
-                        throw new Exception("Employee not found.");
+                        throw new Exception("Invoice not found.");
                     }
+                    // Create a unique filename for the PDF
+                    var vendor = _context.VendorRegistrations.FirstOrDefault(x => x.Id == result.VendorId);
 
-                    string Email_body = $"Hello {result.CompanyName}, please find your attached invoice.";
-                    await _IEmailService.SendInvoicePdfEmail(result.Email, Email_body, pdf, result.ProductName, "application/pdf");
-                    TempData["Message"] = "Invoice sent successfully";
-                    return RedirectToAction("CustomerInvoiceList");
+                    string pdfFileName = $"{"Invoice"}_{InvoiceNumber}.pdf";
+
+                    string filePath = Path.Combine(pdfFileName);
+
+                    // Save the PDF file
+                    await System.IO.File.WriteAllBytesAsync(filePath, pdf);
+                    string emailBody = $"Dear {result.CompanyName},We hope this email finds you well. Please find your attached invoice for the products/services provided. If you have any questions or need further assistance, feel free to reach out to us.Thank you for your business and continued support.Best regards,{result.VendorCompanyName}";
+
+                    await _IEmailService.SendInvoicePdfEmail(result.Email, emailBody, pdf, pdfFileName, "application/pdf", (int)result.VendorId);
+                    return Json(new { success = true, message = "Invoice sent successfully"});
                 }
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
+        private byte[] GeneratePdf(string htmlContent)
+        {
+            var globalSettings = new GlobalSettings
+            {
+                ColorMode = ColorMode.Color,
+                Orientation = DinkToPdf.Orientation.Portrait,
+                PaperSize = PaperKind.A4,
+                Margins = new MarginSettings { Top = 15, Bottom = 15, Left = 15, Right = 15 },
+            };
 
+            var objectSettings = new ObjectSettings
+            {
+                PagesCount = true,
+                HtmlContent = htmlContent,
+                WebSettings = { DefaultEncoding = "utf-8" },
+                FooterSettings = new FooterSettings
+                {
+                    FontName = "Arial",
+                    FontSize = 8,                 
+                },
+                LoadSettings = { BlockLocalFileAccess = false }
+            };
+
+            var htmlToPdfDocument = new HtmlToPdfDocument()
+            {
+                GlobalSettings = globalSettings,
+                Objects = { objectSettings },
+            };
+
+            return _converter.Convert(htmlToPdfDocument);
+        }
         public async Task<JsonResult> DeleteProdbyUpdate(int id)
         {
             if (id > 0)

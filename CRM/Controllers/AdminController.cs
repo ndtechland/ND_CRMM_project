@@ -238,7 +238,7 @@ namespace CRM.Controllers
         public async Task<JsonResult> getsessionkey()
         {
 
-            if (HttpContext.Session.GetString("UserName") == null)
+            if (HttpContext.Session.GetString("UserName") == null && Convert.ToInt32(HttpContext.Session.GetString("UserId")) > 0)
             {
                 return Json(false);
             }

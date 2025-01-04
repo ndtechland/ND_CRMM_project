@@ -2167,6 +2167,8 @@ namespace CRM.Models.Crm
                     .HasMaxLength(255)
                     .HasColumnName("Mobile_number");
 
+                entity.Property(e => e.Notes).HasMaxLength(250);
+
                 entity.Property(e => e.ProductDetails)
                     .HasMaxLength(255)
                     .HasColumnName("Product_Details");
@@ -2197,6 +2199,8 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.State).HasMaxLength(255);
 
                 entity.Property(e => e.StateId).HasColumnName("stateId");
+
+                entity.Property(e => e.Terms).HasMaxLength(250);
 
                 entity.Property(e => e.VendorSingature).HasMaxLength(250);
             });

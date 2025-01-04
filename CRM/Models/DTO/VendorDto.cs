@@ -43,7 +43,8 @@ namespace CRM.Models.DTO
         public double? PricePlan { get; set; }
         public DateTime Duedate { get; set; }
         public string? InvoiceNumber { get; set; }
-
+        public string? Notes { get; set; }
+        public string? Terms { get; set; }
     }
     public partial class VendorRegistrationDto
     {

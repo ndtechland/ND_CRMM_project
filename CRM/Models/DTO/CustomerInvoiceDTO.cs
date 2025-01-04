@@ -53,6 +53,10 @@ namespace CRM.Models.DTO
         public DateTime? Dueamountdate { get; set; }
         public string? Notes { get; set; }
         public string? Terms { get; set; }
+        public int? VendorId { get; set; }
+        public bool? Ismail { get; set; }
+        public bool clone { get; set; }
+
         public List<ProductDetail> ProductDetails { get; set; }
         public List<ProductDetailList> ProductDetailLists { get; set; }
         public List<CustomerInvoice> customerInvoice { get; set; }

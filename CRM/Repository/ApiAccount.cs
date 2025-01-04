@@ -18,7 +18,7 @@ namespace CRM.Repository
 			{
 				if(model !=  null)
 				{
-                    bool check = await _context.EmployeeLogins.AnyAsync(x => x.EmployeeId == model.Employee_ID && x.Password == model.Password);
+                    bool check = await _context.EmployeeLogins.AnyAsync(x => x.EmployeeId == model.Employee_ID && x.Password == model.Password );
 				    if(check)
                     {
                         return true;

@@ -277,7 +277,9 @@
                                         dateFormat: "Y-m-d",
                                     });
                                 },
+                                showCancelButton: true,
                                 confirmButtonText: 'OK',
+                                cancelButtonText: 'Cancel',
                                 preConfirm: () => {
                                     const updatedStartDate = document.getElementById('swal-start-date').value;
                                     const updatedEndDate = document.getElementById('swal-end-date').value;
@@ -294,9 +296,13 @@
                                     const { updatedStartDate, updatedEndDate } = editResult.value;
                                     updateApprovalStatus(itemId, statusId, updatedStartDate, updatedEndDate);
                                 }
+                                  else {
+                              window.location.reload();
+                            }
                             });
                         } else {
-                            updateApprovalStatus(itemId, statusId, originalStartDate, originalEndDate);
+                         window.location.reload();
+
                         }
                     });
                 } else {

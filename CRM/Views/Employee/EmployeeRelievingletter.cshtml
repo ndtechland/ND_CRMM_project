@@ -1,213 +1,531 @@
 ﻿@model CRM.Models.DTO.Relievingletters
 @{
-    Layout = "";
     DateTime date = DateTime.Now;
     string fordate = date.ToString("dd-MM-yyyy");
-
+    if (Model.Ismail == true)
+    {
+        Layout = null;
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_adminLayout.cshtml";
+    }
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Relieving Letter</title>
-    <link rel="stylesheet" href="styles.css">
-    <style>
-        body {
-            font-family: 'Times New Roman', Times, serif;
-            line-height: 1.6;
-            color: #000;
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 736px;
-            margin: 0 auto;
-            padding: 75px;
-            box-shadow: none;
-            border: none;
-        }
-
-        .header {
-            position: relative;
-            margin-bottom: 20px;
-            overflow: hidden;
-            height: 100px;
-            margin-top: -40px;
-            margin-left: -40px;
-            z-index: -1;
-        }
-
-        .logo {
-            position: absolute;
-            top: 10px;
-            right: 0;
-            width: 200px;
-        }
-
-        .header-bg {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 95%;
-            height: 50%;
-            background: linear-gradient(135deg, #173564 60%, transparent 50%);
-        }
-
-        .date {
-            position: absolute;
-            top: 45px;
-            right: 20px;
-            margin: 0;
-            color: #000;
-            font-size: 18px;
-        }
-
-        .content {
-            margin-top: 20px;
-        }
-
-        p {
-            margin: 10px 0;
-        }
-
-        .footer {
-            margin-top: 50px;
-            font-size: 0.85em;
-            color: #555;
-            text-align: center;
-            border-top: 2px solid #173564;
-            padding-top: 10px;
-            position: relative;
-        }
-
-            .footer::before {
-                content: '';
-                position: absolute;
-                top: -12px;
-                left: 0;
-                width: 100%;
-                height: 10px;
-                background-color: #173564;
-            }
-
-        .company-details {
-            margin-top: 20px;
-            text-align: center;
-            font-size: 0.85em;
-            color: #555;
-        }
-
-        .subject {
-            font-weight: bold;
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .details, .signature {
-            margin-top: 20px;
-            font-size: larger;
-        }
-
-        .signature {
-            margin-top: 40px;
-        }
-
-        /* Adjust for printing */
-        @@page {
-            size: A4;
-            margin: 30mm;
-        }
-
-        @@media print {
-            body {
-                margin: 0;
-                padding: 0;
+@if (Model.Ismail == true)
+{
+    <html lang="en">
+    <head>
+        <style>
+            .Relieving-body {
+                font-family: 'Times New Roman', Times, serif;
+                line-height: 1.6;
                 color: #000;
+                margin-top: 20px;
+                padding: 0;
+                
             }
 
-            .container {
+            .Relieving-container {
+                width: 201mm;
+                margin: 0 auto;
+                padding: 1px;
                 box-shadow: none;
                 border: none;
+                /* margin-top: 50px; */
             }
 
-            .header, .foo ter {
-                page-break-inside: avoid;
+            .header {
+                position: relative;
+                margin-bottom: 20px;
+                overflow: hidden;
+                height: 100px;
+                margin-top: 2px;
+                margin-left: -40px;
+                z-index: -1;
             }
-            /* Remove the URL from the footer */
-            @@page {
+
+            .logo {
+                position: absolute;
+                top: 10px;
+                right: 61px;
+                width: 200px;
+            }
+
+            .head-bg {
+                position: absolute;
+                top: 0;
+                right: 0;
+                width: 95%;
+                height: 50%;
+                background: linear-gradient(135deg, #173564 50%, transparent 50%);
+            }
+
+            .date {
+                position: absolute;
+                top: 45px;
+                right: 20px;
                 margin: 0;
+                color: #000;
+                font-size: 18px;
+            }
+
+            .content {
+                margin-top: -40px;
+            }
+
+            p {
+                /*    margin: 10px 0; */
+                font-size: 20px;
+            }
+
+            .Relieving-footer {
+                margin-top: 50px;
+                font-size: 22px;
+                color: #555;
+                text-align: center;
+                padding-top: 10px;
+                position: relative;
+            }
+
+                .Relieving-footer::before {
+                    content: '';
+                    position: absolute;
+                    top: -12px;
+                    left: 0;
+                    width: 100%;
+                    height: 10px;
+                    background-color: #173564;
+                }
+
+            .company-details {
+                margin-top: 20px;
+                text-align: center;
+                font-size: 0.85em;
+                color: #555;
+            }
+
+            .subject {
+                font-weight: bold;
+                text-align: center;
+                margin-top: 20px;
+            }
+
+            .details, .signature {
+                margin-top: -14px;
+                font-size: x-large;
+            }
+
+            .signature {
+                margin-top: -15px;
+            }
+
+            /* Set A4 page size for printing */
+            @@page {
+                size: A4;
+                margin: 0mm;
+                padding: 10px;
             }
 
             @@media print {
-                body {
-                    margin: 0;
+                .Relieving-body {
+                    margin: 0mm;
+                    padding: 0px;
+                    height: 0px;
+                    color: #000;
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                }
+
+                @@page {
+                    size: A4;
+                    margin: 10mm;
+                    padding: 20px;
+                    box-sizing: border-box;
+                }
+
+                .Relieving-container {
+                    width: 201mm;
+                    margin: 0 auto;
+                    padding: 1px;
+                    box-shadow: none;
+                    border: none;
+/*                     margin-top: 50px;
+ */                }
+
+                .Relieving-footer {
+                    margin-top: 12%;
+                    font-size: 22px;
+                    color: #555;
+                    text-align: center;
+                    padding-top: 10px;
+                    position: relative;
+                }
+
+                    .Relieving-footer::before {
+                        content: '';
+                        position: absolute;
+                        top: -12px;
+                        left: 0;
+                        width: 100%;
+                        height: 10px;
+                        background-color: #173564;
+                    }
+
+                .header {
+                    position: relative;
+                    margin-bottom: 20px;
+                    overflow: hidden;
+                    height: 100px;
+                    margin-top: 2px;
+                    margin-left: -40px;
+                    z-index: -1;
+                }
+
+                .logo {
+                    position: absolute;
+                    top: 10px;
+                    right: 61px;
+                    width: 200px;
+                }
+
+                .head-bg {
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    width: 95%;
+                    height: 50%;
+                    background: linear-gradient(135deg, #173564 50%, transparent 50%);
                 }
             }
+
+        </style>
+    </head>
+    <body class="Relieving-body" >
+        <div class="Relieving-container">
+            <div class="header">
+@*                 <img src="@ViewBag.Protocol://@ViewBag.Host/assets/images/layout-2/logo/logo.png" alt="Company Logo" class="logo">
+ *@                <img src="@ViewBag.Protocol://@ViewBag.Host/CompanyImage/@Model.CompanyImage" alt="Company Logo" class="logo">
+                           <img src="@ViewBag.Protocol://@ViewBag.Host/assets/images/headerimg.png" style="margin-left: 5%;" />
+            </div>
+
+            <div class="content">
+                <h4>
+                    To,<br />
+                    @Model.EmployeeName<br>
+                    Employee Code / No.: @Model.EmployeeCode<br>
+                    Current Designation: @Model.Designation<br>
+                    Residential Address: @Model.CompanyAddress
+                </h4>
+                <hr>
+                <div class="subject">
+                    <h3>Subject: Relieving Order Letter</h3>
+                </div>
+
+                <div class="details">
+                    <p>
+                        Dear <strong>@Model.EmployeeName</strong>,
+                    </p>
+                    <p>
+                        With reference to your resignation letter dated <strong>@Model.ResignationDate</strong>, from the post of <strong>@Model.Designation</strong> this is to inform you that your resignation has been accepted by the management. We have also received the Clearance Report from the concerned department regarding your full and final settlement of your accounts with our company.
+                    </p>
+                    <p>
+                        Therefore, we do hereby relieve you from all your services with our organization, effective <br /> from <strong>@Model.LastDateofEmployment</strong>.
+                    </p>
+                    <p>
+                        We thank you for your association with our company and wish you a successful future ahead.
+                    </p>
+                    <p>
+                        Yours sincerely,<br>
+                    </p>
+                    <h5>For <strong>@Model.CompanyName</strong></h5>
+
+                </div>
+                <hr>
+                <div class="signature">
+                    <p>
+                        <strong>@Model.CompanyAddress</strong><br>
+                        <strong>@Model.CompanyEmail</strong><br>
+                        <strong>@Model.CompanyPhoneNumber</strong>
+                    </p>
+                </div>
+            </div>
+             
+
+          @*   <div class="Relieving-footer">
+                <h5>
+                    N D Techland Private Limited<br>
+                    Head Office: C-53, Sector-2, Noida-201301, U.P. | Branches: Noida | Delhi | Patna | Bangalore<br>
+                    Web: www.ndtechland.com | Email: info@ndtechland.com
+                </h5>
+            </div> *@
+        </div>
+    </body>
+    </html>
+
+}
+else
+{
+    <html lang="en">
+    <head>
+        <title>Relieving Letter</title>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+        <link href="~/css/pdf-style.css" rel="stylesheet" media="all" />
+        <style>
+            .Relieving-body {
+                font-family: 'Times New Roman', Times, serif;
+                line-height: 1.6;
+                color: #000;
+                margin: 0;
+                padding: 0;
+            }
+
+            .Relieving-container {
+                width: 215mm;
+                margin: 0 auto;
+                padding: 20px;
+                box-shadow: none;
+                border: none;
+                margin-top: 30px;
+            }
+
+            .header {
+                position: relative;
+                margin-bottom: 20px;
+                overflow: hidden;
+                height: 100px;
+                margin-top: -40px;
+                margin-left: -40px;
+                z-index: -1;
+            }
+
+            .logo {
+                position: absolute;
+                top: 10px;
+                right: 61px;
+                width: 200px;
+            }
+
+            .header-bg {
+                position: absolute;
+                top: 0;
+                right: 0;
+                width: 95%;
+                height: 50%;
+                background: linear-gradient(135deg, #173564 50%, transparent 50%);
+            }
+
+            .date {
+                position: absolute;
+                top: 45px;
+                right: 20px;
+                margin: 0;
+                color: #000;
+                font-size: 18px;
+            }
+
+            .content {
+                margin-top: -40px;
+            }
+
+            p {
+                /*    margin: 10px 0; */
+                font-size: 20px;
+            }
+
+            .Relieving-footer {
+                margin-top: 50px;
+                font-size: 0.85em;
+                color: #555;
+                text-align: center;
+                padding-top: 10px;
+                position: relative;
+            }
+
+                .Relieving-footer::before {
+                    content: '';
+                    position: absolute;
+                    top: -12px;
+                    left: 0;
+                    width: 100%;
+                    height: 10px;
+                    background-color: #173564;
+                }
+
+            .company-details {
+                margin-top: 20px;
+                text-align: center;
+                font-size: 0.85em;
+                color: #555;
+            }
+
+            .subject {
+                font-weight: bold;
+                text-align: center;
+                margin-top: 20px;
+            }
+
+            .details, .signature {
+                margin-top: 10px;
+                font-size: x-large;
+            }
+
+            .signature {
+                margin-top: 10px;
+            }
+
+            /* Set A4 page size for printing */
+            @@page {
+                size: A4;
+                margin: 10mm;
+                padding: 10px;
+            }
+
+            /* Adjust for print media */
+            @@media print {
+                .Relieving-body {
+                    margin: 0mm;
+                    padding: 0px;
+                    height: 0px;
+                    color: #000;
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                }
+
+                @@page {
+                    size: A4;
+                    margin: 10mm;
+                    padding: 20px;
+                    box-sizing: border-box;
+                }
+
+                .Relieving-container {
+                    width: 100%;
+                    max-width: 736px;
+                    margin: 0 auto;
+                    padding: 20px;
+                    box-shadow: none;
+                    border: none;
+                    margin-top: 30px;
+                }
+
+                .header, .Relieving-footer {
+                    page-break-inside: avoid;
+                }
+
+                .buttons {
+                    display: none;
+                }
+            }
+
+            .buttons {
+                text-align: center;
+                margin-top: 50px;
+            }
+
+                .buttons button {
+                    margin: 50px;
+                }
+        </style>
+    </head>
+    <body class="Relieving-body">
+        @if (Model.Ismail == false)
+        {
+            <div class="buttons">
+                <button class="btn btn-primary" onclick="prepareForPrint()">Print</button>
+                <a href="/Employee/RelievingletterList" class="btn btn-secondary">Back to List</a>
+            </div>
         }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <!-- Header Section -->
-        <div class="header">
-            <img src="~/CompanyImage/@Model.CompanyImage" alt="Company Logo" class="logo">
+        <div class="Relieving-container">
+            <div class="header">
+                <img src="~/CompanyImage/@Model.CompanyImage" alt="Company Logo" class="logo">
 
-            <div class="header-bg"></div>
-        </div>
-
-
-        <div class="content">
-            <h4>
-                To,<br/>
-                <strong>[@Model.EmployeeName]</strong><br>
-                Employee Code / No.: <strong>[@Model.EmployeeCode]</strong><br>
-                Current Designation: <strong>[@Model.Designation]</strong><br>
-                Residential Address: <strong>[@Model.CompanyAddress]</strong>
-            </h4>
-            <hr>
-            <div class="subject">
-                <h2>Subject: Relieving Order Letter</h2>
+                <div class="header-bg"></div>
             </div>
-            
-            <div class="details">
-                <p>
-                    Dear <strong>[@Model.EmployeeName]</strong>,
-                </p>
-                <p>
-                    With reference to your resignation letter dated <strong>[@Model.ResignationDate]</strong>, from the post of <strong>[@Model.Designation]</strong> this is to inform you that your resignation has been this is to inform you that your resignation has been accepted by the management. We have also received the Clearance Report from the concerned department regarding your full and final settlement of your accounts with our company.
-                </p>
-                <p>
-                    Therefore, we do hereby relieve you from all your services with our organization, effective <br /> from <strong>[@Model.LastDateofEmployment]</strong>.
-                </p>
-                <p> 
-                    We thank you for your association with our company and wish you a successful future ahead.
-                </p>
-                <p>
-                    Yours sincerely,<br>
-                </p>
-                <h3>For <strong>[@Model.CompanyName]</strong></h3>
-              
-            </div>
-            <hr>
-            <div class="signature">
-                <p>
-                    <strong>@Model.CompanyAddress</strong><br>
-                    <strong>@Model.CompanyEmail</strong><br>
-                    <strong>@Model.CompanyPhoneNumber</strong>
-                </p>
-            </div>
-        </div>
 
-        <div class="footer">
-            <p>
-                N D Techland Private Limited<br>
-                Head Office: C-53, Sector-2, Noida-201301, U.P. | Branches: Noida | Delhi | Patna | Bangalore<br>
-                Web: www.ndtechland.com | Email: info@ndtechland.com
-            </p>
+            <div class="content">
+                <h4>
+                    To,<br />
+                    @Model.EmployeeName<br>
+                    Employee Code / No.: @Model.EmployeeCode<br>
+                    Current Designation: @Model.Designation<br>
+                    Residential Address: @Model.CompanyAddress
+                </h4>
+                <hr>
+                <div class="subject">
+                    <h3>Subject: Relieving Order Letter</h3>
+                </div>
+
+                <div class="details">
+                    <p>
+                        Dear <strong>@Model.EmployeeName</strong>,
+                    </p>
+                    <p>
+                        With reference to your resignation letter dated <strong>@Model.ResignationDate</strong>, from the post of <strong>@Model.Designation</strong> this is to inform you that your resignation has been accepted by the management. We have also received the Clearance Report from the concerned department regarding your full and final settlement of your accounts with our company.
+                    </p>
+                    <p>
+                        Therefore, we do hereby relieve you from all your services with our organization, effective <br /> from <strong>@Model.LastDateofEmployment</strong>.
+                    </p>
+                    <p>
+                        We thank you for your association with our company and wish you a successful future ahead.
+                    </p>
+                    <p>
+                        Yours sincerely,<br>
+                    </p>
+                    <h5>For <strong>@Model.CompanyName</strong></h5>
+
+                </div>
+                <hr>
+                <div class="signature">
+                    <p>
+                        <strong>@Model.CompanyAddress</strong><br>
+                        <strong>@Model.CompanyEmail</strong><br>
+                        <strong>@Model.CompanyPhoneNumber</strong>
+                    </p>
+                </div>
+            </div>
+
+            <div class="Relieving-footer">
+                <h5>
+                    N D Techland Private Limited<br>
+                    Head Office: C-53, Sector-2, Noida-201301, U.P. | Branches: Noida | Delhi | Patna | Bangalore<br>
+                    Web: www.ndtechland.com | Email: info@ndtechland.com
+                </h5>
+            </div>
         </div>
-    </div>
-</body>
-</html>
+    </body>
+    </html>
+    <script>
+        function prepareForPrint() {
+            const elementsToHide = ['.buttons', '.page-body-wrapper', '.page-main-header', '.page-sidebar'];
+
+            elementsToHide.forEach(selector => {
+                const element = document.querySelector(selector);
+                if (element) {
+                    element.style.display = 'none';
+                }
+            });
+
+            // Trigger the print dialog
+            window.print();
+
+            // Restore elements after print
+            setTimeout(() => {
+                elementsToHide.forEach(selector => {
+                    const element = document.querySelector(selector);
+                    if (element) {
+                        element.style.display = '';
+                    }
+                });
+            }, 500);
+        }
+
+        document.addEventListener('keydown', function (event) {
+            if (event.ctrlKey && event.key === 'p') {
+                event.preventDefault();
+                prepareForPrint();
+            }
+        });
+    </script>
+}
+

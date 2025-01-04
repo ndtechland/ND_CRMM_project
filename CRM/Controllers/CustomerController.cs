@@ -113,7 +113,7 @@ namespace CRM.Controllers
                     if (response > 0)
                     {
                         TempData["Message"] = "ok";
-                        await _emailService.CustomerWelcomeEmail(model.Email, model.CompanyName);
+                        await _emailService.CustomerWelcomeEmail(model.Email, model.CompanyName, (int)adminlogin.Vendorid);
                         return RedirectToAction("Customer", "Customer");
                     }
                     else
