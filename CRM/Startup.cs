@@ -18,6 +18,8 @@ using Microsoft.AspNetCore.Mvc;
 using CRM.Controllers;
 using Employee = CRM.Repository.Employee;
 using Hangfire;
+using DinkToPdf.Contracts;
+using DinkToPdf;
 
 namespace CRM
 {
@@ -89,6 +91,7 @@ namespace CRM
             services.AddScoped<IHome, Home>();
             services.AddScoped<Dcrypt>();
             services.AddScoped<Encrypt>();
+            services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
             ///added new 
             services.AddHostedService<ScheduledTaskService>();
             services.Configure<URL>(Configuration.GetSection("URL"));

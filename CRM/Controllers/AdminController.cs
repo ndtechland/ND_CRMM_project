@@ -3,7 +3,6 @@ using CRM.Models.Crm;
 using CRM.Models.CRM;
 using CRM.Models.DTO;
 using CRM.Repository;
-using Dapper;
 using DocumentFormat.OpenXml.InkML;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -17,8 +16,6 @@ using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using Microsoft.EntityFrameworkCore;
 using NETCore.MailKit.Core;
 using NuGet.Protocol.Plugins;
-using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.Net;
 using System.Security.Claims;
@@ -240,7 +237,8 @@ namespace CRM.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public async Task<JsonResult> getsessionkey()
         {
-            if (HttpContext.Session.GetString("UserName") == null)
+
+            if (HttpContext.Session.GetString("UserName") == null && Convert.ToInt32(HttpContext.Session.GetString("UserId")) > 0)
             {
                 return Json(false);
             }
@@ -248,53 +246,6 @@ namespace CRM.Controllers
             {
                 return Json(true);
             }
-        }
-        public async Task<ActionResult> ShowSidebarMenus()
-        {
-            string Username = HttpContext.Session.GetString("UserName");
-            if (Username?.ToLower() == "admin")
-            {
-                var HeadingQuery = @"select * from SoftwareLink where  IsHeading=1 and Isvendor = 0";
-                using (var con = new SqlConnection(_context.Database.GetConnectionString()))
-                {
-                    await con.OpenAsync();
-                    var HeadingList = await con.QueryAsync<SoftwareLinkDTO>(HeadingQuery, commandType: CommandType.Text);
-                    foreach (var item in HeadingList)
-                    {
-                        var SubHeadingQuery = @"select * from SoftwareLink where IsSubHeading=1 and Isvendor = 0 and ParentID = " + item.Id + "";
-                        var SubHeadingList = await con.QueryAsync<SubSoftwarelink>(SubHeadingQuery, commandType: CommandType.Text);
-                        item.SubHeading = SubHeadingList;
-
-                        foreach (var item2 in item.SubHeading)
-                        {
-                            var SubHeadingTwoQuery = @"select * from SoftwareLink where IsSubHeadingTwo=1 and Isvendor = 0 and ParentID = " + item2.Id + "";
-                            var SubHeadingTwoList = await con.QueryAsync<SubSoftwarelinkTwo>(SubHeadingTwoQuery, commandType: CommandType.Text);
-                            item2.SubHeadingTwo = SubHeadingTwoList;
-
-                            foreach (var item3 in item2.SubHeadingTwo)
-                            {
-                                var SubHeadingTwoChildQuery = @"select * from SoftwareLink where Isvendor = 0 and ParentID = " + item2.Id + "";
-                                var SubHeadingTwoChildList = await con.QueryAsync<Softwarelink>(SubHeadingTwoChildQuery, commandType: CommandType.Text);
-                                item2.ChildMenus = SubHeadingTwoChildList;
-                            }
-
-                        }
-                        foreach (var item4 in item.SubHeading)
-                        {
-                            var SubHeadingChildQuery = @"select * from SoftwareLink where Isvendor = 0 and ParentID = " + item4.Id + "";
-                            var SubHeadingChildList = await con.QueryAsync<Softwarelink>(SubHeadingChildQuery, commandType: CommandType.Text);
-                            item4.ChildMenus = SubHeadingChildList;
-                        }
-                        var HeadingChildQuery = @"select * from SoftwareLink where Isvendor = 0 and ParentID = " + item.Id + "";
-                        var HeadingChildList = await con.QueryAsync<Softwarelink>(HeadingChildQuery, commandType: CommandType.Text);
-                        item.ChildMenus = HeadingChildList;
-                    }
-
-                    return PartialView(HeadingList);
-
-                }
-            }
-            return View();
         }
     }
 }

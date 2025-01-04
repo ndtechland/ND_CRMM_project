@@ -63,18 +63,19 @@
 function selectCustomer(customerId, customerName, cloneId) {
     $('#customerName').val(customerName);
     $('#customerId').val(customerId);
+    var InvoiceID = $('#Id').val();
     $('#cloneId').val(cloneId);
     $('#customerSuggestions').empty();
     //const clone = $('#cloneId').val();
-    fetchCustomerDetails(customerId, cloneId);
+    fetchCustomerDetails(customerId, cloneId, InvoiceID);
 }
 
 // Fetch customer details by ID
-function fetchCustomerDetails(customerId, cloneId) {
+function fetchCustomerDetails(customerId, cloneId, InvoiceID) {
     $.ajax({
         url: '/Sale/GetCustomerDetailsById',
         type: 'GET',
-        data: { id: customerId, clone: cloneId },
+        data: { id: customerId, clone: cloneId, InvoiceID: InvoiceID },
         success: function (customerData) {
             $('#billingAddressLabel').text(customerData.billingAddress);
             $('#officeAddressLabel').text(customerData.location);
@@ -319,6 +320,8 @@ function sendProductDetailsToAPI() {
             InvoiceDueDate: $('#InvoiceDueDate').val(),
             InvoiceNotes: $('#InvoiceNotes').val(),
             InvoiceTerms: $('#InvoiceTerms').val(),
+            Invoiceclone: $('#InvoicecloneId').val(),
+
         },
         success: function (result) {
             window.location.href = result.path;

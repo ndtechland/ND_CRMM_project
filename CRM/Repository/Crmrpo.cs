@@ -1330,6 +1330,8 @@ namespace CRM.Repository
                 parameters.Add("@PricingPlanid", model.PricingPlanid);
                 parameters.Add("@InvoiceNumber", InvoiceNo);
                 parameters.Add("@duedate", model.Duedate);
+                parameters.Add("@Notes", model.Notes);
+                parameters.Add("@Terms", model.Terms);
                 parameters.Add("@CustomerId", dbType: DbType.Int32, direction: ParameterDirection.Output);
                 await connection.ExecuteAsync("VendorRegistration", parameters, commandType: CommandType.StoredProcedure);
                 int newCustomerId = parameters.Get<int>("@CustomerId");
@@ -1389,6 +1391,8 @@ namespace CRM.Repository
                 parameters.Add("@Igst", model.Igst);
                 parameters.Add("@PricingPlanid", model.PricingPlanid);
                 parameters.Add("@duedate", model.Duedate);
+                parameters.Add("@Notes", model.Notes);
+                parameters.Add("@Terms", model.Terms);
                 var result = await connection.ExecuteAsync(
                     "sp_updateVendor_Reg",
                     parameters,
@@ -2047,7 +2051,7 @@ namespace CRM.Repository
                 throw ex;
             }
         }
-        public async Task<bool> CustomerInvoice(List<ProductDetail> model, string InvoiceNo, int vendorid, DateTime? InvoiceDate = null, DateTime? InvoiceDueDate = null, string InvoiceNotes = null, string InvoiceTerms = null)
+        public async Task<bool> CustomerInvoice(List<ProductDetail> model, string InvoiceNo, int vendorid, DateTime? InvoiceDate = null, DateTime? InvoiceDueDate = null, string InvoiceNotes = null, string InvoiceTerms = null, string Invoiceclone = null)
         {
             try
             {
@@ -2084,6 +2088,11 @@ namespace CRM.Repository
                     int paymentstatus = customerExistingData
                         .Select(ci => ci.Paymentstatus)
                         .FirstOrDefault() ?? 2; 
+
+                    if(Invoiceclone != null)
+                    {
+                        product.Id = 0;
+                    }
 
                     if (product.Id == 0) 
                     {
@@ -2170,6 +2179,7 @@ namespace CRM.Repository
                             InvoiceDueDate = InvoiceDueDate,
                             Notes = InvoiceNotes,
                             Terms = InvoiceTerms,
+                            IsRenewDate = false
                         };
                         _context.Add(newinvoicedetail);
                     }
@@ -2344,7 +2354,7 @@ namespace CRM.Repository
             }
         }
 
-        public async Task<CustomerInvoiceDTO> CustomerProductInvoice(string InvoiceNumber)
+        public async Task<CustomerInvoiceDTO> CustomerProductInvoice(string InvoiceNumber, bool Ismail)
         {
             try
             {
@@ -2395,7 +2405,9 @@ namespace CRM.Repository
                                   VendorSingature = v.VendorSingature,
                                   InvoiceDueDate = ctd.InvoiceDueDate.Value.ToString("dd-MM-yyyy"),
                                   Notes = ctd.Notes,
-                                  Terms = ctd.Terms
+                                  Terms = ctd.Terms,
+                                  VendorId = v.Id,
+                                  Ismail = Ismail
                               }).FirstOrDefault();
 
                 if (invoiceDTO != null)

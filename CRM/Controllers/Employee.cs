@@ -55,6 +55,14 @@ using CRM.Utilities;
 using System.Security.Cryptography;
 using Microsoft.Extensions.Logging;
 using NLog;
+using Microsoft.DotNet.Scaffolding.Shared.CodeModifier.CodeChange;
+using Org.BouncyCastle.Asn1.Cmp;
+using Org.BouncyCastle.Asn1.Crmf;
+
+using DinkToPdf;
+using DinkToPdf.Contracts;
+using StackExchange.Profiling.Internal;
+using RestSharp;
 
 namespace CRM.Controllers
 {
@@ -65,13 +73,15 @@ namespace CRM.Controllers
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IConfiguration _configuration;
         private readonly IEmailService _IEmailService;
+        private readonly IConverter _converter;
 
-        public Employee(ICrmrpo _ICrmrpo, admin_NDCrMContext _context, IConfiguration configuration, IEmailService _IEmailService)
+        public Employee(ICrmrpo _ICrmrpo, admin_NDCrMContext _context, IConfiguration configuration, IEmailService _IEmailService, IConverter _IConverter)
         {
             this._context = _context;
             this._ICrmrpo = _ICrmrpo;
             this._IEmailService = _IEmailService;
             _configuration = configuration;
+            _converter = _IConverter;
         }
         [HttpGet, Route("Employee/EmployeeRegistration")]
         public async Task<IActionResult> EmployeeRegistration(string id)
@@ -272,16 +282,16 @@ namespace CRM.Controllers
                                 ViewBag.FixedAllowance = row["FixedAllowance"].ToString();
                                 ViewBag.MedicalAllowance = row["Medical"].ToString();
                                 ViewBag.VariablePay = row["VariablePay"].ToString();
-                                ViewBag.EmployerContribution = row["EmployerContribution"].ToString(); 
-                                ViewBag.tdsvalue = row["tdsvalue"].ToString(); 
-                                ViewBag.Basicpercentage = row["Basicpercentage"].ToString(); 
-                                ViewBag.HRApercentage = row["HRApercentage"].ToString(); 
-                                ViewBag.Conveyancepercentage = row["Conveyancepercentage"].ToString(); 
-                                ViewBag.Medicalpercentage = row["Medicalpercentage"].ToString(); 
-                                ViewBag.Variablepercentage = row["Variablepercentage"].ToString(); 
-                                ViewBag.EmployerContributionpercentage = row["EmployerContributionpercentage"].ToString(); 
-                                ViewBag.EPfpercentage = row["EPfpercentage"].ToString(); 
-                                ViewBag.Esipercentage = row["Esipercentage"].ToString(); 
+                                ViewBag.EmployerContribution = row["EmployerContribution"].ToString();
+                                ViewBag.tdsvalue = row["tdsvalue"].ToString();
+                                ViewBag.Basicpercentage = row["Basicpercentage"].ToString();
+                                ViewBag.HRApercentage = row["HRApercentage"].ToString();
+                                ViewBag.Conveyancepercentage = row["Conveyancepercentage"].ToString();
+                                ViewBag.Medicalpercentage = row["Medicalpercentage"].ToString();
+                                ViewBag.Variablepercentage = row["Variablepercentage"].ToString();
+                                ViewBag.EmployerContributionpercentage = row["EmployerContributionpercentage"].ToString();
+                                ViewBag.EPfpercentage = row["EPfpercentage"].ToString();
+                                ViewBag.Esipercentage = row["Esipercentage"].ToString();
                                 ViewBag.Emp_Reg_Code = id;
                                 ViewBag.btnText = "UPDATE";
 
@@ -575,7 +585,7 @@ namespace CRM.Controllers
                     total += (decimal)item.Grosspay;
                 }
 
-                ViewBag.TotalAmmount = total;
+                ViewBag.TotalAmmount = (decimal)total;
                 ViewBag.CustomerName = _context.CustomerRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).Select(x => new SelectListItem
                 {
                     Value = x.Id.ToString(),
@@ -876,6 +886,7 @@ namespace CRM.Controllers
                                   Email_Id = emp.WorkEmail,
                                   Month = getMonthName((int)month, true),
                                   Year = empt.Year,
+                                  vendorid = emp.Vendorid,
                               }).FirstOrDefault();
                 string uniqueFileName = $"SalarySlip_{result.Employee_ID}_{result.First_Name}_{result.Month}{result.Year}.pdf";
                 string filePath = Path.Combine(wwwRootPath, uniqueFileName);
@@ -887,10 +898,11 @@ namespace CRM.Controllers
                 {
                     string fileName = uniqueFileName;
                     string emailSubject = uniqueFileName;
-                    string emailBody = $"Hello {result.First_Name} ({result.Employee_ID}), please find your attached salary slip.";
-                    _IEmailService.SendEmailAsync(result.Email_Id, emailSubject, emailBody, pdf, fileName, "application/pdf");
+                    string emailBody = $"Dear {result.First_Name} ({result.Employee_ID}), your salary slip for this {result.Month} has been generated and is attached to this email. Please review the details and contact HR if you have any questions.";
+                    _IEmailService.SendEmailAsync(result.Email_Id, emailSubject, emailBody, pdf, fileName, "application/pdf", (int)result.vendorid);
 
-                    return Json(new { success = true, message = "Salary Slip has been Sent successfully.", fileName = fileName, pdf = Convert.ToBase64String(pdf) });
+                    return Json(new { success = true, message = "Salary Slip has been sent successfully.", fileName = fileName, pdf = Convert.ToBase64String(pdf) });
+
                 }
 
                 return Json(new { success = false, message = "Error: Employee not found." });
@@ -927,6 +939,7 @@ namespace CRM.Controllers
                                   Email_Id = emp.WorkEmail,
                                   Month = getMonthName((int)month, true),
                                   Year = empt.Year,
+                                  vendorid = emp.Vendorid,
                               }).FirstOrDefault();
                 string uniqueFileName = $"SalarySlip_{result.Employee_ID}_{result.First_Name}_{result.Month}{result.Year}.pdf";
                 string filePath = Path.Combine(wwwRootPath, uniqueFileName);
@@ -950,8 +963,8 @@ namespace CRM.Controllers
                     throw new Exception("Attendance record not found for the employee.");
                 }
                 string Email_Subject = uniqueFileName;
-                string Email_body = $"Hello {result.First_Name} ({result.Employee_ID}), please find your attached salary slip.";
-                _IEmailService.SendEmailAsync(result.Email_Id, Email_Subject, Email_body, pdf, uniqueFileName, "application/pdf");
+                string Email_body = $"Dear {result.First_Name} ({result.Employee_ID}), your salary slip for this {result.Month} has been generated and is attached to this email. Please review the details and contact HR if you have any questions.";
+                _IEmailService.SendEmailAsync(result.Email_Id, Email_Subject, Email_body, pdf, uniqueFileName, "application/pdf", (int)result.vendorid);
 
                 Console.WriteLine($"Salary slip for Employee ID {result.Employee_ID} has been saved and the Empattendance table has been updated.");
             }
@@ -1570,9 +1583,9 @@ namespace CRM.Controllers
                                .Select(e => new
                                {
                                    e.DeductionCycle,
-                                   e.EpfNumber
-                               })
-                               .ToList();
+                                   e.EpfNumber,
+                                   e.EmployerContributionRate
+                               }).ToList();
 
             var esicData = _context.EmployeeEsicPayrollInfos
                                    .FirstOrDefault(e => e.Vendorid == adminLogin.Vendorid);
@@ -1977,7 +1990,8 @@ namespace CRM.Controllers
                               {
                                   Id = off.Id,
                                   Name = off.Name,
-                                  CandidateEmail = off.CandidateEmail
+                                  CandidateEmail = off.CandidateEmail,
+                                  CompanyName = _context.VendorRegistrations.Where(x => x.Id == adminlogin.Vendorid).Select(x => x.CompanyName).FirstOrDefault()
                               }).FirstOrDefault();
                 string uniqueFileName = $"Offerletter_{Id}.pdf";
                 string filePath = Path.Combine(wwwRootPath, uniqueFileName);
@@ -1997,10 +2011,9 @@ namespace CRM.Controllers
                     empoff.OfferletterFile = uniqueFileName;
                     _context.SaveChanges();
                     string emailSubject = $"Offerletter for {result.Name}";
-                    string emailBody = $"Hello {result.Name}, please find your attached offer letter.";
-                    await _IEmailService.SendEmailAsync(result.CandidateEmail, emailSubject, emailBody, pdf, uniqueFileName, "application/pdf");
+                    string emailBody = $"Dear {result.Name},We are pleased to offer you a position at our company. Please find your attached offer letter for detailed information regarding your employment. If you have any questions or require further assistance, feel free to reach out.Best regards,{result.CompanyName}";
+                    await _IEmailService.SendEmailAsync(result.CandidateEmail, emailSubject, emailBody, pdf, uniqueFileName, "application/pdf", (int)adminlogin.Vendorid);
                     return Json(new { success = true, message = "Offer letter  has been Sent successfully.", fileName = uniqueFileName });
-
                 }
                 else
                 {
@@ -2100,7 +2113,7 @@ namespace CRM.Controllers
                 byte[] pdf = System.IO.File.ReadAllBytes(filePath);
 
                 var result = await _context.EmployeePersonalDetails.Where(x => x.EmpRegId == emp.EmployeeId).FirstOrDefaultAsync();
-
+                var companyname = await _context.VendorRegistrations.Where(x => x.Id == adminlogin.Vendorid).Select(x => x.CompanyName).FirstOrDefaultAsync();
                 if (result == null)
                 {
                     return BadRequest("Employee not found.");
@@ -2112,10 +2125,11 @@ namespace CRM.Controllers
                     empoff.Appoinmentletter = uniqueFileName;
                     _context.SaveChanges();
                     string emailSubject = $"Appointmentletter for {emp.FirstName}";
-                    string emailBody = $"Hello {emp.FirstName}, please find your attached Appointment letter.";
-                    await _IEmailService.SendEmailAsync(result.PersonalEmailAddress, emailSubject, emailBody, pdf, uniqueFileName, "application/pdf");
+                    string emailBody = $"Dear {emp.FirstName},Congratulations! We are excited to offer you a position with our organization. Please find your attached Appointment Letter, which contains all the relevant details about your employment. Should you have any questions or require further clarification, please do not hesitate to reach out to us.We look forward to having you on our team!Best regards,{companyname}";
+                    await _IEmailService.SendEmailAsync(result.PersonalEmailAddress, emailSubject, emailBody, pdf, uniqueFileName, "application/pdf", (int)adminlogin.Vendorid);
 
-                    return Json(new { success = true, message = "Appointment letter has been Sent successfully.", fileName = uniqueFileName });
+                    return Json(new { success = true, message = "Appointment letter has been sent successfully.", fileName = uniqueFileName });
+
                 }
                 else
                 {
@@ -2573,7 +2587,9 @@ namespace CRM.Controllers
                                   Id = emppp.Id,
                                   EmployeeId = er.EmployeeId,
                                   Name = er.FirstName,
-                                  WorkEmail = emp.PersonalEmailAddress
+                                  WorkEmail = emp.PersonalEmailAddress,
+                                  companyname = _context.VendorRegistrations.Where(x => x.Id == adminlogin.Vendorid).Select(x => x.CompanyName).FirstOrDefault(),
+                                  tenure = (emppp.StartDate - emppp.EndDate).Value.Days,
                               }).FirstOrDefault();
 
 
@@ -2596,10 +2612,11 @@ namespace CRM.Controllers
                 {
                     empoff.ExperienceletterFile = uniqueFileName;
                     _context.SaveChanges();
-                    string emailSubject = $"Experience letter for {result.Name}";
-                    string emailBody = $"Hello {result.Name}, please find your attached Experience letter.";
-                    await _IEmailService.SendEmailAsync(result.WorkEmail, emailSubject, emailBody, pdf, uniqueFileName, "application/pdf");
-                    return Json(new { success = true, message = "Experience letter  has been Sent successfully.", fileName = uniqueFileName });
+                    string emailSubject = $"Experience Letter for {result.Name}";
+                    string emailBody = $"Dear {result.Name},We are pleased to provide you with your Experience Letter for your tenure at {result.tenure}. Please find the attached document for your reference.If you have any questions or require further assistance, feel free to contact us.Best regards,{result.companyname}";
+                    await _IEmailService.SendEmailAsync(result.WorkEmail, emailSubject, emailBody, pdf, uniqueFileName, "application/pdf", (int)adminlogin.Vendorid);
+
+                    return Json(new { success = true, message = "Experience letter has been sent successfully.", fileName = uniqueFileName });
 
                 }
                 else
@@ -2912,7 +2929,7 @@ namespace CRM.Controllers
             }
         }
         [HttpGet, Route("/Employee/EmployeeRelievingletter")]
-        public async Task<IActionResult> EmployeeRelievingletter(int? Id = 0)
+        public async Task<IActionResult> EmployeeRelievingletter(int? Id = 0, bool Ismail = false)
         {
             try
             {
@@ -2923,6 +2940,9 @@ namespace CRM.Controllers
                 {
                     return BadRequest("Relieving letter not found");
                 }
+                ViewBag.Protocol = Request.Scheme;
+                ViewBag.Host = Request.Host.Value;
+
                 var result = new Relievingletters
                 {
                     EmployeeName = empRelievingletter.FirstName + " " + empRelievingletter.MiddleName + " " + empRelievingletter.LastName,
@@ -2935,6 +2955,7 @@ namespace CRM.Controllers
                     CompanyEmail = vendorinfo.Email,
                     CompanyPhoneNumber = vendorinfo.MobileNumber,
                     CompanyImage = vendorinfo.CompanyImage,
+                    Ismail = Ismail
                 };
                 return View(result);
             }
@@ -2944,69 +2965,101 @@ namespace CRM.Controllers
                 return BadRequest($"An error occurred: {ex.Message}");
             }
         }
-        public async Task<IActionResult> RelievingletterDocPDF(int? Id = 0)
+        public async Task<IActionResult> RelievingletterDocPDF(int? Id = 0, bool Ismail = false)
         {
             try
             {
+                // Retrieve UserId from session and validate admin login
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
-                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                var adminlogin = await _context.AdminLogins.FirstOrDefaultAsync(x => x.Id == Userid);
                 if (adminlogin == null)
                 {
                     return BadRequest("Admin login not found");
                 }
+
+                // Construct Slip URL
                 string schema = Request.Scheme;
                 string host = Request.Host.Value;
-                string SlipURL = $"{schema}://{host}/Employee/EmployeeRelievingletter?Id={Id}";
-                HtmlToPdf converter = new HtmlToPdf();
-                PdfDocument doc = converter.ConvertUrl(SlipURL);
-                string wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "EMPpdfs");
-                if (!Directory.Exists(wwwRootPath))
+                string SlipURL = $"{schema}://{host}/Employee/EmployeeRelievingletter?Id={Id}&Ismail={Ismail}";
+
+                // Fetch HTML content from SlipURL
+                using (HttpClient client = new HttpClient())
                 {
-                    Directory.CreateDirectory(wwwRootPath);
-                }
-                var result = (from er in _context.EmployeeRegistrations
-                              join emp in _context.EmployeePersonalDetails
-                              on er.EmployeeId equals emp.EmpRegId
-                              join emppp in _context.EmpRelievingletters
-                              on emp.EmpRegId equals emppp.EmployeeId
-                              where emppp.Id == Id && er.Vendorid == adminlogin.Vendorid
-                              select new
-                              {
-                                  Id = emppp.Id,
-                                  EmployeeId = er.EmployeeId,
-                                  Name = er.FirstName,
-                                  WorkEmail = emp.PersonalEmailAddress
-                              }).FirstOrDefault();
+                    var response = await client.GetAsync(SlipURL);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return BadRequest("Failed to retrieve content from the URL.");
+                    }
 
+                    var htmlContent = await response.Content.ReadAsStringAsync();
 
+                    // Generate PDF from HTML content
+                    byte[] pdf = GeneratePdf(htmlContent);
+                    return File(pdf, "application/pdf", "kk.pdf");
+                    // Define directory for saving PDF
+                    string wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "EMPpdfs");
+                    if (!Directory.Exists(wwwRootPath))
+                    {
+                        Directory.CreateDirectory(wwwRootPath);
+                    }
 
+                    // Fetch employee details for the relieving letter
+                    var result = (from er in _context.EmployeeRegistrations
+                                  join emp in _context.EmployeePersonalDetails on er.EmployeeId equals emp.EmpRegId
+                                  join emppp in _context.EmpRelievingletters on emp.EmpRegId equals emppp.EmployeeId
+                                  where emppp.Id == Id && er.Vendorid == adminlogin.Vendorid
+                                  select new
+                                  {
+                                      Id = emppp.Id,
+                                      EmployeeId = er.EmployeeId,
+                                      Name = er.FirstName,
+                                      WorkEmail = emp.PersonalEmailAddress,
+                                      companyname = _context.VendorRegistrations
+                                          .Where(x => x.Id == adminlogin.Vendorid)
+                                          .Select(x => x.CompanyName)
+                                          .FirstOrDefault(),
+                                  }).FirstOrDefault();
 
-                string uniqueFileName = $"Relievingletter_{result.EmployeeId}.pdf";
-                string filePath = Path.Combine(wwwRootPath, uniqueFileName);
-                doc.Save(filePath);
-                byte[] pdf = System.IO.File.ReadAllBytes(filePath);
+                    if (result == null)
+                    {
+                        return BadRequest("Employee not found.");
+                    }
 
+                    // Create a unique filename for the PDF
+                    string uniqueFileName = $"Relievingletter_{result.EmployeeId}.pdf";
+                    string filePath = Path.Combine(wwwRootPath, uniqueFileName);
 
+                    // Save the PDF file
+                    await System.IO.File.WriteAllBytesAsync(filePath, pdf);
 
-                if (result == null)
-                {
-                    return BadRequest("Employee not found.");
-                }
+                    // Update employee record with the generated file name
+                    var empoff = _context.EmpRelievingletters.FirstOrDefault(e => e.Id == result.Id);
+                    if (empoff != null)
+                    {
+                        empoff.RelievingletterFile = uniqueFileName;
+                        await _context.SaveChangesAsync();
 
-                var empoff = _context.EmpRelievingletters.FirstOrDefault(e => e.Id == result.Id);
-                if (result != null)
-                {
-                    empoff.RelievingletterFile = uniqueFileName;
-                    _context.SaveChanges();
-                    string emailSubject = $"Relieving letter for {result.Name}";
-                    string emailBody = $"Hello {result.Name}, please find your attached Relieving letter.";
-                    await _IEmailService.SendEmailAsync(result.WorkEmail, emailSubject, emailBody, pdf, uniqueFileName, "application/pdf");
-                    return Json(new { success = true, message = "Relieving letter  has been Sent successfully.", fileName = uniqueFileName });
+                        // Send email with the PDF attachment
+                        string emailSubject = $"Relieving Letter for {result.Name}";
+                        string emailBody = $"Dear {result.Name},\n\nWe appreciate your contributions during your time with {result.companyname}. Please find your attached Relieving Letter.";
 
-                }
-                else
-                {
-                    return Json(new { BadRequest = 404, message = "Data not found for the employee." });
+                        await _IEmailService.SendEmailAsync(
+                            result.WorkEmail,
+                            emailSubject,
+                            emailBody,
+                            pdf,
+                            uniqueFileName,
+                            "application/pdf",
+                            (int)adminlogin.Vendorid
+                        );
+
+                        // Return success message with the file name
+                        return Json(new { success = true, message = "Relieving letter has been sent successfully.", fileName = uniqueFileName });
+                    }
+                    else
+                    {
+                        return Json(new { success = false, message = "Data not found for the employee." });
+                    }
                 }
             }
             catch (Exception ex)
@@ -3015,6 +3068,44 @@ namespace CRM.Controllers
             }
         }
 
+        private byte[] GeneratePdf(string htmlContent)
+        {
+            var globalSettings = new GlobalSettings
+            {
+                ColorMode = ColorMode.Color,
+                Orientation = DinkToPdf.Orientation.Portrait,
+                PaperSize = PaperKind.A4,
+                Margins = new MarginSettings { Top = 15, Bottom = 15, Left = 15, Right = 15 },
+            };
+
+            var objectSettings = new ObjectSettings
+            {
+                PagesCount = true,
+                HtmlContent = htmlContent,
+                WebSettings = { DefaultEncoding = "utf-8" },
+                FooterSettings = new FooterSettings
+                {
+                    FontName = "Arial, Helvetica, sans-serif",
+                    //FontName = "Arial",
+                    FontSize = 8,
+                    Center = @"                
+              N D Techland Private Limited
+              Head Office: C-53, Sector-2, Noida-201301, U.P. | Branches: Noida | Delhi | Patna | Bangalore
+              Web:http://www.ndtechland.com www.ndtechland.com | Email :info@ndtechland.com
+                  
+             "
+                },
+                LoadSettings = { BlockLocalFileAccess = false }
+            };
+
+            var htmlToPdfDocument = new HtmlToPdfDocument()
+            {
+                GlobalSettings = globalSettings,
+                Objects = { objectSettings },
+            };
+
+            return _converter.Convert(htmlToPdfDocument);
+        }
         public async Task<JsonResult> getEmpattendancedays(int month)
         {
             int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
@@ -3049,7 +3140,7 @@ namespace CRM.Controllers
 
             var ctcData = await _context.EmployeeSalaryDetails
                                         .Where(x => employeeIds.Contains(x.EmployeeId))
-                                        .ToDictionaryAsync(x => x.EmployeeId, x => x.MonthlyCtc ?? 0);
+                                        .ToDictionaryAsync(x => x.EmployeeId, x => x.MonthlyGrossPay / 12 ?? 0);
 
             var leaveCounts = await _context.ApplyLeaveNews
                                              .Where(leave => employeeIds.Contains(leave.UserId) &&

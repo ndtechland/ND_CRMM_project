@@ -34,6 +34,7 @@
         public decimal? Amount { get; set; }
         public string? CompanyName { get; set; }
         public string? CompanyImage { get; set; }
+        public int? vendorid { get; set; }
     }
 }
 

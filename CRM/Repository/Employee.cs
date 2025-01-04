@@ -28,7 +28,7 @@ using System.Net.WebSockets;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
-
+using DinkToPdf;
 namespace CRM.Repository
 {
     public class Employee : IEmployee

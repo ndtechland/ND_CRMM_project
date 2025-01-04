@@ -102,6 +102,7 @@
         public string? CompanyPhoneNumber { get; set; }
         public string? CompanyImage { get; set; }
         public string? RelievingletterFile { get; set; }
+        public bool? Ismail { get; set; }
 
     }
 }

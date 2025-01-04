@@ -91,9 +91,9 @@ namespace CRM.Repository
         public Task<EmpExperienceletter> GetExperienceletterbyid(int? id);
         public Task<bool> updateExperienceletterdetail(EmpExperienceletter model);
         public Task<int> AddExperienceletterdetail(EmpExperienceletter model, int Userid);
-        Task<bool> CustomerInvoice(List<ProductDetail> model ,string InvoiceNo, int vendorid, DateTime? InvoiceDate = null, DateTime? InvoiceDueDate = null, string InvoiceNotes = null, string InvoiceTerms = null);
+        Task<bool> CustomerInvoice(List<ProductDetail> model ,string InvoiceNo, int vendorid, DateTime? InvoiceDate = null, DateTime? InvoiceDueDate = null, string InvoiceNotes = null, string InvoiceTerms = null,string Invoiceclone = null);
         Task<List<CustomerInvoiceDTO>> GetCustometInvoiceList(int vendorid);
-        Task<CustomerInvoiceDTO> CustomerProductInvoice(string InvoiceNumber);
+        Task<CustomerInvoiceDTO> CustomerProductInvoice(string InvoiceNumber, bool Ismail);
         Task<bool> AddVendorBankDeatils(VendorBankDetail model, int VendorId);
         Task<List<VendorBankDetail>> GetVendorBankDetail(int VendorId);
         Task<bool> AddOfficeEvents(OfficeEvent model, int VendorId);

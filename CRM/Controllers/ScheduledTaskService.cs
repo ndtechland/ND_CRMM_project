@@ -102,16 +102,16 @@ namespace CRM.Controllers
                             context.SaveChanges();
 
                         }
-                        if (today == lastDayOfMonth && task.IsExcute == false)
-                        {
-                            _logger.LogInformation($"Performing end-of-month operations for {today.ToString("yyyy-MM-dd")}.");
-                            task.Schedulemethod = EmpLeaveDoWork(context);
-                            task.Excutetime = DateTime.Now;
-                            task.IsExcute = true;
-                            _logger.LogInformation($"End-of-month operations completed successfully.");
-                            context.SaveChanges();
+                        //if (today == lastDayOfMonth && task.IsExcute == false)
+                        //{
+                        //    _logger.LogInformation($"Performing end-of-month operations for {today.ToString("yyyy-MM-dd")}.");
+                        //    task.Schedulemethod = EmpLeaveDoWork(context);
+                        //    task.Excutetime = DateTime.Now;
+                        //    task.IsExcute = true;
+                        //    _logger.LogInformation($"End-of-month operations completed successfully.");
+                        //    context.SaveChanges();
 
-                        }
+                        //}
                         //foreach (var employee in emplist)
                         //{
                         //    if (employee.DateOfJoining.HasValue && employee.DateOfJoining.Value.AddMonths(3) == today)
@@ -185,8 +185,8 @@ namespace CRM.Controllers
                         {
                             decimal gstMultiplier = (invoice.ProductPrice ?? 0) *
                                                     (((invoice.Igst ?? 0) + (invoice.Sgst ?? 0) + (invoice.Cgst ?? 0)) / 100);
-
-                            decimal chargeMultiplier = gstMultiplier * applicableCharge.Chargespercentage.Value / 100;
+                            decimal Productprice = gstMultiplier + (decimal)invoice.ProductPrice;
+                            decimal chargeMultiplier = Productprice * applicableCharge.Chargespercentage.Value / 100;
                             invoiceDetails.Taxamount = chargeMultiplier;
                             invoiceDetails.Taxid = applicableCharge.Id;
                         }
@@ -199,6 +199,7 @@ namespace CRM.Controllers
                     DateTime startNotificationDate = renewalDate.AddDays(-7);
                     decimal gstMultiplier = (invoice.ProductPrice ?? 0) *
                                               (((invoice.Igst ?? 0) + (invoice.Sgst ?? 0) + (invoice.Cgst ?? 0)) / 100);
+                    decimal Productprice = gstMultiplier + (decimal)invoice.ProductPrice;
                     if (customerDetails.TryGetValue((int)invoice.CustomerId, out var customerdetail) &&
                         !string.IsNullOrEmpty(customerdetail.Email))
                     {
@@ -208,13 +209,13 @@ namespace CRM.Controllers
 
                         if (DateTime.Now.Date >= startNotificationDate && DateTime.Now.Date < renewalDate)
                         {
-                            emailService.CustomerRenewalEmail(toEmail, companyName, renewalDate.ToString("dd/MM/yyyy"), productName, gstMultiplier);
+                            emailService.CustomerRenewalEmail(toEmail, companyName, renewalDate.ToString("dd/MM/yyyy"), productName, Productprice, (int)invoice.VendorId);
                             invoiceDetails.IsRenewDate = true;
 
                         }
                         else if (DateTime.Now.Date >= renewalDate && invoiceDetails.IsRenewDate == false)
                         {
-                            emailService.CustomerExpirEmail(toEmail, companyName, renewalDate.ToString("dd/MM/yyyy"), productName);
+                            emailService.CustomerExpirEmail(toEmail, companyName, renewalDate.ToString("dd/MM/yyyy"), productName, (int)invoice.VendorId);
                             invoiceDetails.IsRenewDate = true;
 
                         }
@@ -226,56 +227,56 @@ namespace CRM.Controllers
             context.SaveChanges();
             return "CustomerTaxes";
         }
-        public string EmpLeaveDoWork(admin_NDCrMContext context)
-        {
-            var leaveTypes = context.LeaveTypes.ToList();
-            var leaveMasters = context.Leavemasters.ToList();
-            foreach (var leaveMaster in leaveMasters)
-            {
-                var leaveType = leaveTypes.FirstOrDefault(x => x.Id == leaveMaster.LeavetypeId);
+        //public string EmpLeaveDoWork(admin_NDCrMContext context)
+        //{
+        //    var leaveTypes = context.LeaveTypes.ToList();
+        //    var leaveMasters = context.Leavemasters.ToList();
+        //    foreach (var leaveMaster in leaveMasters)
+        //    {
+        //        var leaveType = leaveTypes.FirstOrDefault(x => x.Id == leaveMaster.LeavetypeId);
 
-                if (leaveType != null)
-                {
-                    switch (leaveMaster.LeavetypeId)
-                    {
-                        case 1:
-                            leaveMaster.Value += leaveType.Leavevalue; 
-                            leaveMaster.LeaveUpdateDate = DateTime.Now; 
-                            break;
+        //        if (leaveType != null)
+        //        {
+        //            switch (leaveMaster.LeavetypeId)
+        //            {
+        //                case 1:
+        //                    leaveMaster.Value += leaveType.Leavevalue; 
+        //                    leaveMaster.LeaveUpdateDate = DateTime.Now; 
+        //                    break;
 
-                        default:
-                            break;
-                    }
-                }
-            }
-            context.SaveChanges();
-            return "EmpLeaveDoWork";
-        }
-        public string EmpLeaveProbationperiod(admin_NDCrMContext context, string EmployeeId)
-        {
-            var emplist = context.EmployeeRegistrations.Where(x => x.EmployeeId == EmployeeId).ToList();
-            var vendorId = emplist.FirstOrDefault()?.Vendorid;
+        //                default:
+        //                    break;
+        //            }
+        //        }
+        //    }
+        //    context.SaveChanges();
+        //    return "EmpLeaveDoWork";
+        //}
+        //public string EmpLeaveProbationperiod(admin_NDCrMContext context, string EmployeeId)
+        //{
+        //    var emplist = context.EmployeeRegistrations.Where(x => x.EmployeeId == EmployeeId).ToList();
+        //    var vendorId = emplist.FirstOrDefault()?.Vendorid;
 
-            if (vendorId.HasValue)
-            {
-                var leaveTypes = context.LeaveTypes.Where(x => x.Vendorid == vendorId.Value).ToList();
-                foreach (var leaveType in leaveTypes)
-                {
-                    Leavemaster leavemaster = new Leavemaster
-                    {
-                        EmpId = EmployeeId, 
-                        LeavetypeId = leaveType.Id, 
-                        Value = leaveType.Leavevalue, 
-                        Vendorid = vendorId.Value, 
-                        LeaveUpdateDate = DateTime.Now, 
-                        LeaveStartDate = DateTime.Now,
-                    };
-                    context.Leavemasters.Add(leavemaster);
-                }
-                context.SaveChanges();
-            }
-            return "EmpLeaveProbationperiod";
-        }
+        //    if (vendorId.HasValue)
+        //    {
+        //        var leaveTypes = context.LeaveTypes.Where(x => x.Vendorid == vendorId.Value).ToList();
+        //        foreach (var leaveType in leaveTypes)
+        //        {
+        //            Leavemaster leavemaster = new Leavemaster
+        //            {
+        //                EmpId = EmployeeId, 
+        //                LeavetypeId = leaveType.Id, 
+        //                Value = leaveType.Leavevalue, 
+        //                Vendorid = vendorId.Value, 
+        //                LeaveUpdateDate = DateTime.Now, 
+        //                LeaveStartDate = DateTime.Now,
+        //            };
+        //            context.Leavemasters.Add(leavemaster);
+        //        }
+        //        context.SaveChanges();
+        //    }
+        //    return "EmpLeaveProbationperiod";
+        //}
 
     }
 

@@ -41,6 +41,7 @@
         public string? CityName { get; set; }
         public string? InvoiceNumber { get; set; }
         public DateTime Duedate { get; set; }
-
+        public string? Notes { get; set; }
+        public string? Terms { get; set; }
     }
 }

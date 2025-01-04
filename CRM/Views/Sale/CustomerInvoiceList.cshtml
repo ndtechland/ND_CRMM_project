@@ -11,6 +11,9 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
 
 
 <style>
@@ -19,27 +22,51 @@
         padding: 24px 0.75rem !important;
     }
 </style>
-@* <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        var message = "@TempData["Message"]";
+<style>
+  .loader {
+    border: 16px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 16px solid #3498db;
+    width: 120px;
+    height: 120px;
+    animation: spin 2s linear infinite;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    display: none;
+}
 
-        if (message) {
-            Swal.fire({
-                title: 'Not Found',
-                text: message,
-                icon: 'success',
-                confirmButtonText: 'OK'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    setTimeout(function () {
-                        window.location.href = '@Url.Action("CustomerInvoiceList", "Sale")';
-                    }, 1000);
-                }
-            });
-        }
-    });
-</script> *@
-<div class="page-wrapper">
+@@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.overlay {
+    display: none;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5); /* Adjust opacity as needed */
+    z-index: 9998;
+}
+
+.blurred {
+    filter: blur(1px);
+}
+
+</style>
+<div id="content">
+<div class="page-wrapper" >
     <div class="page-body-wrapper">
         <div class="page-sidebar">
         </div>
@@ -220,19 +247,20 @@
 
                                                         <td nowrap>
                                                             <div>
-
                                                                 <a href="/Sale/Invoice?InvoiceNumber=@item.InvoiceNumber&&clone=@true" class="fa fa-solid fa-clone"></a>
                                                                 @if (item.Paymentid != 1)
                                                                 {
                                                                     <a href="/Sale/Invoice?InvoiceNumber=@item.InvoiceNumber&&clone=@false" class="fa fa-edit m-2 font-success"></a>
 
                                                                 }
-                                                                <a href="@Url.Action("SendInvoicePDF", "Sale", new { InvoiceNumber = item.InvoiceNumber })"
+                                                          <a href="javascript:void(0)" 
+   onclick="SendinvoicedownloadPDF('@item.InvoiceNumber')" 
+   class="fa fa-envelope m-2 font-info"
+                                                                       title="Send Email"></a>
+                                                                 @* <a href="@Url.Action("SendInvoicePDF", "Sale", new { InvoiceNumber = item.InvoiceNumber,Ismail = true })"
                                                                    class="fa fa-envelope m-2 font-info"
-                                                                   title="Send Email"></a>
+                                                                   title="Send Email"></a>*@
                                                                 <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteCustomerInvoice", "Sale", new { InvoiceNumber = item.InvoiceNumber })')" class="fa fa-trash font-danger"></a>
-
-
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -248,16 +276,79 @@
                     </div>
                 </div>
             </div>
-            @* <div id="pagination-container">
-            <ul id="pagination" class="pagination"></ul>
-            </div> *@
         </div>
-
-
     </div>
 
 </div>
+</div>
+<div class="overlay" id="overlay"></div>
+<div class="loader" id="loader"></div>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<script type="text/javascript">
+    function SendinvoicedownloadPDF(invoiceNumber) {
+    var url = '@Url.Action("SendInvoicePDF", "Sale")' + '?InvoiceNumber=' + encodeURIComponent(invoiceNumber) + '&Ismail=' + true;
+
+        // Show loader and apply blur
+        document.getElementById('loader').style.display = 'block';
+        document.getElementById('overlay').style.display = 'block';
+        document.getElementById('content').classList.add('blurred');
+
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Hide the loader and overlay after success or failure
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('overlay').style.display = 'none';
+                document.getElementById('content').classList.remove('blurred');
+
+                if (data.success) {
+                    Swal.fire({
+                        title: 'Success',
+                        text: data.message,
+                        icon: 'success',
+                        confirmButtonText: 'OK',
+                        allowOutsideClick: false
+                    }).then(() => {
+                        window.location.reload(); // Reload after user confirms
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: data.message,
+                        icon: 'error',
+                        confirmButtonText: 'OK',
+                        allowOutsideClick: false
+                    });
+                }
+            })
+            .catch(error => {
+                // Hide the loader and overlay on error
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('overlay').style.display = 'none';
+                document.getElementById('content').classList.remove('blurred');
+
+                Swal.fire({
+                    title: 'Error',
+                    text: 'An error occurred while processing the request.',
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                    allowOutsideClick: false
+                });
+            });
+    }
+
+</script>
 <script>
     function confirmDelete(url) {
         var result = confirm("Are you sure you want to delete?");

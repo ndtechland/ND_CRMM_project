@@ -47,8 +47,14 @@ namespace CRM.Controllers.Api
                             Employee_Name = x.MiddleName == null ? x.FirstName + " " + x.LastName : x.FirstName + " " + x.MiddleName + " " + x.LastName,
                             Employee_ID = x.EmployeeId
                         }).FirstOrDefault();
-                    
-                    if (loginProfile != null)
+                    var checkactive = _context.EmployeeRegistrations.Where(x => x.EmployeeId == loginProfile.Employee_ID).FirstOrDefault();
+                    if(checkactive.Isactive == false )
+                    {
+                        response.StatusCode = StatusCodes.Status401Unauthorized;
+                        response.Message = "Employee ID is Deactivated.";
+                        return BadRequest(response);
+                    }
+                    else if (loginProfile != null)
                     {
                         var token = _jwtToken.GenerateAccessToken(model);
                         var refreshToken = _jwtToken.GenerateRefreshToken(model);

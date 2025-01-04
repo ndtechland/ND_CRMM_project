@@ -704,7 +704,7 @@
                                 </div>
                                 <div class="col">
                                     <label>Gross Pay</label>
-                                    <input class="form-control" value='@ViewBag.MonthlyGrossPay' name="MonthlyGrossPay" placeholder="00.0" id="txtMonthlyGrossPay"  type="text" readonly>
+                                    <input class="form-control" value='@ViewBag.MonthlyGrossPay' name="MonthlyGrossPay" placeholder="00.0" id="txtMonthlyGrossPay" type="text" readonly>
                                 </div>
                             </div>
                             <br>
@@ -713,19 +713,19 @@
                                 <input class="form-control" value='@ViewBag.tdsvalue' name="tdsvalue" placeholder="00.0" id="txttdsvalue" type="text" readonly>
                                 <input name="Tdspercentage" id="txtTdspercentage" value="@ViewBag.Tdspercentage" type="hidden">
 
-                            </div> 
+                            </div>
 
                             <br>
                             <h4 class="text-danger EmployeeContribution" style="display:none;">Employee Contribution</h4>
                             <div class="row">
-                            <div class="col-md-6 txtLabelEPF" style="display:none;">
-                            <label>EPF (<span id="displayEmpEPFMaster"></span>%)</label>
-                            <input class="form-control" value='@ViewBag.EPF' name="EPF" id="txtEPF" type="text" readonly>
-                            </div>
-                            <div class="col-md-6 ESICLabel" style="display:none;">
-                            <label id="ESICLabel">ESIC (<span id="displayEmpESICMaster"></span>%)</label>
-                            <input class="form-control" value='@ViewBag.ESIC' name="ESIC" id="ESIC" type="text" readonly>
-                            </div>
+                                <div class="col-md-6 txtLabelEPF" style="display:none;">
+                                    <label>EPF (<span id="displayEmpEPFMaster"></span>%)</label>
+                                    <input class="form-control" value='@ViewBag.EPF' name="EPF" id="txtEPF" type="text" readonly>
+                                </div>
+                                <div class="col-md-6 ESICLabel" style="display:none;">
+                                    <label id="ESICLabel">ESIC (<span id="displayEmpESICMaster"></span>%)</label>
+                                    <input class="form-control" value='@ViewBag.ESIC' name="ESIC" id="ESIC" type="text" readonly>
+                                </div>
                             </div>
 
 
@@ -733,14 +733,14 @@
 
                             <h4 class="text-danger EmployerContribution" style="display:none;">Employer Contribution</h4>
                             <div class="row">
-                            <div class="col-md-6 txtLabelEmployerEPF" style="display:none;">
-                            <label>EPF (<span id="displayEPFMaster"></span>%)</label>
-                            <input class="form-control" name="EmployerContribution" placeholder="00.0" id="txtEPFMaster" type="text" value="@ViewBag.EmployerContribution" readonly>
-                            </div>
-                            <div class="col-md-6 txtLabelEmployerEsic" style="display:none;">
-                            <label>ESIC (<span id="displayESICMaster"></span>%)</label>
-                            <input class="form-control" name="ESIC_Number" id="ESICMaster" type="text" readonly>
-                            </div>
+                                <div class="col-md-6 txtLabelEmployerEPF" style="display:none;">
+                                    <label>EPF (<span id="displayEPFMaster"></span>%)</label>
+                                    <input class="form-control" name="EmployerContribution" placeholder="00.0" id="txtEPFMaster" type="text" value="@ViewBag.EmployerContribution" readonly>
+                                </div>
+                                <div class="col-md-6 txtLabelEmployerEsic" style="display:none;">
+                                    <label>ESIC (<span id="displayESICMaster"></span>%)</label>
+                                    <input class="form-control" name="ESIC_Number" id="ESICMaster" type="text" readonly>
+                                </div>
                             </div>
 
                         </div>
@@ -866,10 +866,10 @@
                                 var monthlyGrossPay = $('#txtMonthlyGrossPay').val();
                                 calculateEmployeeTax(monthlyGrossPay);
                             });
-                           
+
 
                         }
-                        
+
 
                         if (parseFloat(monthlySalaryInput.val()) > esicAmount) {
                             var basicSalary = parseFloat(basicSalaryInput.val()).toFixed(2);
@@ -877,7 +877,7 @@
                             $('#ESIC').css('display', 'none');
                             $('.ESICLabel').css('display', 'none');
                             $('#txtEpfpercentage').val(epfPercentage.toFixed(2));
-                           
+
                         } else if (parseFloat(monthlySalaryInput.val()) <= esicAmount) {
                             var basicSalary = parseFloat(basicSalaryInput.val()).toFixed(2);
                             DeductionEPFFields(epfPercentage, basicSalary);
@@ -923,18 +923,30 @@
                     console.error("Invalid response from API:", response);
                     return;
                 }
-                var epfPercentage = 0;
 
+                var epfPercentage = 0;
+                var employerContributionRate = 0;
                 response.data.forEach(function (item) {
                     if (item.deductionCycle === "EPF") {
                         epfPercentage = parseFloat(item.epfNumber) || 0;
+                        employerContributionRate = parseFloat(item.employerContributionRate) || 0;
                     }
                 });
-                var epfValue = (basicSalary * epfPercentage) / 100;
+
+                var monthlybasicSalary = basicSalary / 12;
+
+                var epfValue =0;
+                if (monthlybasicSalary <= employerContributionRate) {
+                    epfValue = (basicSalary * epfPercentage) / 100;
+                } else {
+                    epfValue = (employerContributionRate * epfPercentage) / 100;
+                }
+
                 $('#displayEPFMaster').text(epfPercentage.toFixed(2));
                 $('#txtEmployerContributionpercentage').val(epfPercentage.toFixed(2));
                 $('#txtEPFMaster').val(epfValue.toFixed(2)).show();
                 $('.txtLabelEmployerEPF').show();
+
                 if (callback && typeof callback === 'function') {
                     callback(epfValue);
                 }
@@ -968,7 +980,7 @@
                         $('.tdssection').css('display', 'none');
 
                     }
-                } 
+                }
             },
             error: function () {
                 // Swal.fire('Error', 'An error occurred while processing your request.', 'error');

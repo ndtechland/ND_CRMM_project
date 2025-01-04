@@ -35,16 +35,17 @@ namespace CRM.Repository
             _context = context;
 
         }
-
-        public async Task SendEmailAsync(string toEmail, string subject, string body, byte[] filecontent, string filename, string mimetype)
+        //Send all Employeeletters
+        public async Task SendEmailAsync(string toEmail, string subject, string body, byte[] filecontent, string filename, string mimetype, int vendorid)
         {
             try
             {
+                var vendordetails = _context.VendorRegistrations.Where(x => x.Id == vendorid).FirstOrDefault();
                 var emailMessage = new MimeMessage();
-                emailMessage.From.Add(new MailboxAddress("ND Coneect", "aastrolense@gmail.com"));
+                emailMessage.From.Add(new MailboxAddress(vendordetails.CompanyName, "care@ndtechland.com"));
                 emailMessage.To.Add(new MailboxAddress("Recipient Name", toEmail));
-                //emailMessage.Cc.Add(new MailboxAddress("Recipient Name", "ndcaretrust@gmail.com"));
-                //emailMessage.Bcc.Add(new MailboxAddress("Recipient Name", "ndinfotechteam@gmail.com"));
+                emailMessage.ReplyTo.Clear();
+                emailMessage.ReplyTo.Add(new MailboxAddress("", vendordetails.Email));
                 emailMessage.Subject = subject;
 
                 var textPart = new TextPart("plain")
@@ -69,8 +70,8 @@ namespace CRM.Repository
                 using (var client = new SmtpClient())
                 {
 
-                    await client.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
-                    await client.AuthenticateAsync("aastrolense@gmail.com", "efpbsimjkzxeoxnv");
+                    await client.ConnectAsync("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
+                    await client.AuthenticateAsync("care@ndtechland.com", "yetztyfbqlfvknyg");
                     await client.SendAsync(emailMessage);
                     await client.DisconnectAsync(true);
                 }
@@ -81,16 +82,17 @@ namespace CRM.Repository
                 throw ex;
             }
         }
-        //Emp
+        //EmployeeLoginCredentials
         public async Task SendEmailCred(EmpMultiform model, string password, int? UserId)
         {
             try
             {
-                //var empdetails = await _context.EmployeeRegistrations.Where(x => x.EmployeeId == model.EmployeeId).FirstOrDefaultAsync();
                 var vendordetails = _context.VendorRegistrations.Where(x => x.Id == UserId).FirstOrDefault();
                 var emailMessage = new MimeMessage();
-                emailMessage.From.Add(new MailboxAddress("Nd Connect", "aastrolense@gmail.com"));
+                emailMessage.From.Add(new MailboxAddress(vendordetails.CompanyName, "care@ndtechland.com"));
                 emailMessage.To.Add(new MailboxAddress("Recipient Name", model.PersonalEmailAddress));
+                emailMessage.ReplyTo.Clear();
+                emailMessage.ReplyTo.Add(new MailboxAddress("", vendordetails.Email));
                 emailMessage.Subject = "Your Employee Login Credentials";
                 var body = $@"
         Dear {model.FirstName} {model.LastName},
@@ -98,8 +100,8 @@ namespace CRM.Repository
         Username: {model.EmployeeId}
         Password: {password}
         You can log in via the web or use our mobile app for easy access. Download the N D Connect app from the links below:
-        Google Play Store: https://api.ndtechland.com/
-        Apple App Store: https://api.ndtechland.com/
+        Google Play Store: https://play.google.com/store/apps/details?id=com.ndconnect.nd_connect_techland&pcampaignid=web_share
+        Apple App Store: 
         Please use these credentials to log in to your employee portal and manage your profile, attendance, and other related features.
         Best regards,
         {vendordetails.CompanyName}
@@ -118,8 +120,8 @@ namespace CRM.Repository
 
                 using (var client = new SmtpClient())
                 {
-                    await client.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
-                    await client.AuthenticateAsync("aastrolense@gmail.com", "efpbsimjkzxeoxnv");
+                    await client.ConnectAsync("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
+                    await client.AuthenticateAsync("care@ndtechland.com", "yetztyfbqlfvknyg");
                     await client.SendAsync(emailMessage);
                     await client.DisconnectAsync(true);
                 }
@@ -134,7 +136,7 @@ namespace CRM.Repository
         {
             var emailMessage = new MimeMessage();
 
-            emailMessage.From.Add(new MailboxAddress("N D Techland Private Limited", "aastrolense@gmail.com"));
+            emailMessage.From.Add(new MailboxAddress("N D Techland Private Limited", "care@ndtechland.com"));
             emailMessage.To.Add(new MailboxAddress("", toEmail));
             emailMessage.Subject = "Welcome to N D Connect!";
 
@@ -160,8 +162,7 @@ namespace CRM.Repository
         <p>Thank you for choosing N D Connect. We look forward to working with you and supporting your success.</p>
         <p>Best regards,</p>
         <p>N D Techland Private Limited<br />
-        Phone: 0120-4354103<br />
-        <a href='https://www.ndtechland.com'>www.ndtechland.com</a></p>"
+        Phone: 0120-4354103<br />"
             };
 
             using (var client = new SmtpClient())
@@ -170,8 +171,7 @@ namespace CRM.Repository
                 {
                     // Connect to your SMTP server
                     await client.ConnectAsync("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
-                    await client.AuthenticateAsync("aastrolense@gmail.com", "efpbsimjkzxeoxnv");
-
+                    await client.AuthenticateAsync("care@ndtechland.com", "yetztyfbqlfvknyg");
                     await client.SendAsync(emailMessage);
                 }
                 finally
@@ -187,10 +187,13 @@ namespace CRM.Repository
             try
             {
                 var employee = await _context.EmployeeRegistrations.FirstOrDefaultAsync(x => x.WorkEmail == model.Email);
+                var companyname = await _context.VendorRegistrations.Where(x => x.Id == employee.Vendorid).FirstOrDefaultAsync();
                 var emailMessage = new MimeMessage();
-                emailMessage.From.Add(new MailboxAddress("ND Connect", "aastrolense@gmail.com"));
+                emailMessage.From.Add(new MailboxAddress(companyname.CompanyName, "care@ndtechland.com"));
                 emailMessage.To.Add(new MailboxAddress("Recipient Name", model.Email));
-                emailMessage.Subject = "ND Connect - Password Reset";
+                emailMessage.ReplyTo.Clear();
+                emailMessage.ReplyTo.Add(new MailboxAddress("", companyname.Email));
+                emailMessage.Subject = ""+ companyname + " - Password Reset";
                 var message = "<p><strong>Hi :</strong> " + employee.EmployeeId + "</p>" +
                               "<p>You have successfully reset your password. Your temporary password is: " +
                               "<strong style='color: black ;'>" + newPassword + "</strong></p>" +
@@ -208,7 +211,7 @@ namespace CRM.Repository
                 using (var client = new SmtpClient())
                 {
                     await client.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
-                    await client.AuthenticateAsync("aastrolense@gmail.com", "efpbsimjkzxeoxnv");
+                    await client.AuthenticateAsync("care@ndtechland.com", "yetztyfbqlfvknyg");
                     await client.SendAsync(emailMessage);
                     await client.DisconnectAsync(true);
                 }
@@ -220,15 +223,17 @@ namespace CRM.Repository
         }
 
         //CustomerInvoice
-        public async Task SendInvoicePdfEmail(string toEmail, string body, byte[] filecontent, string filename, string mimetype)
+        public async Task SendInvoicePdfEmail(string toEmail, string body, byte[] filecontent, string filename, string mimetype, int vendorid)
         {
             try
             {
+                var companyname = await _context.VendorRegistrations.Where(x => x.Id == vendorid).FirstOrDefaultAsync();
+
                 var emailMessage = new MimeMessage();
-                emailMessage.From.Add(new MailboxAddress("ND Connect", "aastrolense@gmail.com"));
+                emailMessage.From.Add(new MailboxAddress(companyname.CompanyName, "care@ndtechland.com"));
                 emailMessage.To.Add(new MailboxAddress("Recipient Name", toEmail));
-                //emailMessage.Cc.Add(new MailboxAddress("Recipient Name", "ndcaretrust@gmail.com"));
-                //emailMessage.Bcc.Add(new MailboxAddress("Recipient Name", "ndinfotechteam@gmail.com"));
+                emailMessage.ReplyTo.Clear();
+                emailMessage.ReplyTo.Add(new MailboxAddress("", companyname.Email));
                 emailMessage.Subject = "Invoice Pdf";
 
                 var textPart = new TextPart("plain")
@@ -254,7 +259,7 @@ namespace CRM.Repository
                 {
 
                     await client.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
-                    await client.AuthenticateAsync("aastrolense@gmail.com", "efpbsimjkzxeoxnv");
+                    await client.AuthenticateAsync("care@ndtechland.com", "yetztyfbqlfvknyg");
                     await client.SendAsync(emailMessage);
                     await client.DisconnectAsync(true);
                 }
@@ -265,12 +270,16 @@ namespace CRM.Repository
                 throw ex;
             }
         }
-        public async Task SendEmpLeaveApprovalEmailAsync(string ToEmpEmail, string FirstName, string MiddleName, string LastName, string Subject, string emailBody)
+        public async Task SendEmpLeaveApprovalEmailAsync(string ToEmpEmail, string FirstName, string MiddleName, string LastName, string Subject, string emailBody, int vendorid)
         {
+            var companyname = await _context.VendorRegistrations.Where(x => x.Id == vendorid).FirstOrDefaultAsync();
+
             var emailMessage = new MimeMessage();
 
-            emailMessage.From.Add(new MailboxAddress("N D Techland Private Limited", "aastrolense@gmail.com"));
-            emailMessage.To.Add(new MailboxAddress("", ToEmpEmail));
+            emailMessage.From.Add(new MailboxAddress(companyname.CompanyName, "care@ndtechland.com"));
+            emailMessage.To.Add(new MailboxAddress("Recipient Name", ToEmpEmail));
+            emailMessage.ReplyTo.Clear();
+            emailMessage.ReplyTo.Add(new MailboxAddress("", companyname.Email));
             emailMessage.Subject = Subject;
 
             emailMessage.Body = new TextPart("html")
@@ -284,7 +293,7 @@ namespace CRM.Repository
                 {
 
                     await client.ConnectAsync("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
-                    await client.AuthenticateAsync("aastrolense@gmail.com", "efpbsimjkzxeoxnv");
+                    await client.AuthenticateAsync("care@ndtechland.com", "yetztyfbqlfvknyg");
 
                     await client.SendAsync(emailMessage);
                 }
@@ -295,12 +304,15 @@ namespace CRM.Repository
                 }
             }
         }
-        public async Task SendMeetEmailAsync(string ToEmpEmail, string FirstName, string MiddleName, string LastName, string emailBody)
+        public async Task SendMeetEmailAsync(string ToEmpEmail, string FirstName, string MiddleName, string LastName, string emailBody, int vendorid)
         {
-            var emailMessage = new MimeMessage();
+            var companyname = await _context.VendorRegistrations.Where(x => x.Id == vendorid).FirstOrDefaultAsync();
 
-            emailMessage.From.Add(new MailboxAddress("N D Techland Private Limited", "aastrolense@gmail.com"));
-            emailMessage.To.Add(new MailboxAddress("", ToEmpEmail));
+            var emailMessage = new MimeMessage();
+            emailMessage.From.Add(new MailboxAddress(companyname.CompanyName, "care@ndtechland.com"));
+            emailMessage.To.Add(new MailboxAddress("Recipient Name", ToEmpEmail));
+            emailMessage.ReplyTo.Clear();
+            emailMessage.ReplyTo.Add(new MailboxAddress("", companyname.Email));
             emailMessage.Subject = "Join Our Meeting";
 
             emailMessage.Body = new TextPart("html")
@@ -314,7 +326,7 @@ namespace CRM.Repository
                 {
 
                     await client.ConnectAsync("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
-                    await client.AuthenticateAsync("aastrolense@gmail.com", "efpbsimjkzxeoxnv");
+                    await client.AuthenticateAsync("care@ndtechland.com", "yetztyfbqlfvknyg");
 
                     await client.SendAsync(emailMessage);
                 }
@@ -325,26 +337,28 @@ namespace CRM.Repository
                 }
             }
         }
-        public async Task CustomerWelcomeEmail(string toEmail, string CompanyName)
+        public async Task CustomerWelcomeEmail(string toEmail, string CompanyName, int VendorId)
         {
-            var emailMessage = new MimeMessage();
+            var companyname = await _context.VendorRegistrations.Where(x => x.Id == VendorId).FirstOrDefaultAsync();
 
-            emailMessage.From.Add(new MailboxAddress("N D Techland Private Limited", "aastrolense@gmail.com"));
+            var emailMessage = new MimeMessage();
+            emailMessage.From.Add(new MailboxAddress(companyname.CompanyName, "care@ndtechland.com"));
             emailMessage.To.Add(new MailboxAddress("", toEmail));
-            emailMessage.Subject = "Welcome to N D Connect!";
+            emailMessage.ReplyTo.Clear();
+            emailMessage.ReplyTo.Add(new MailboxAddress("", companyname.Email));
+            emailMessage.Subject = $"Welcome to {companyname.CompanyName}!";
 
             emailMessage.Body = new TextPart("html")
             {
                 Text = $@"
 <p>Dear {CompanyName},</p>
-<p>Welcome to N D Connect!</p>
-<p>We’re thrilled to have you on board. At N D Connect, we’re committed to helping you streamline your operations and achieve your business goals. Our platform provides comprehensive solutions, from customer management and invoicing to employee tracking and more.</p>
+<p>Welcome to {companyname.CompanyName}!</p>
+<p>We’re thrilled to have you on board. At {companyname.CompanyName}, we’re committed to helping you streamline your operations and achieve your business goals. Our platform provides comprehensive solutions, from customer management and invoicing to employee tracking and more.</p>
 
-<p>Thank you for choosing N D Connect. We look forward to working with you and supporting your success.</p>
+<p>Thank you for choosing {companyname.CompanyName}. We look forward to working with you and supporting your success.</p>
 <p>Best regards,</p>
-<p>N D Techland Private Limited<br />
-Phone: 0120-4354103<br />
-<a href='https://www.ndtechland.com'>www.ndtechland.com</a></p>"
+<p>{companyname.CompanyName}<br />
+Phone: {companyname.MobileNumber}<br />"
             };
 
             using (var client = new SmtpClient())
@@ -353,7 +367,7 @@ Phone: 0120-4354103<br />
                 {
                     // Connect to your SMTP server
                     await client.ConnectAsync("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
-                    await client.AuthenticateAsync("aastrolense@gmail.com", "efpbsimjkzxeoxnv");
+                    await client.AuthenticateAsync("care@ndtechland.com", "yetztyfbqlfvknyg");
 
                     await client.SendAsync(emailMessage);
                 }
@@ -364,39 +378,41 @@ Phone: 0120-4354103<br />
                 }
             }
         }
-        public async Task CustomerRenewalEmail(string toEmail, string CompanyName, string RenewalDate, string productname, decimal productAmount)
+        public async Task CustomerRenewalEmail(string toEmail, string CompanyName, string RenewalDate, string productname, decimal productAmount, int VendorId)
         {
+            var vendorrecods = _context.VendorRegistrations.Where(x => x.Id == VendorId).FirstOrDefault();
             var emailMessage = new MimeMessage();
 
-            emailMessage.From.Add(new MailboxAddress("N D Techland Private Limited", "aastrolense@gmail.com"));
+            emailMessage.From.Add(new MailboxAddress(vendorrecods.CompanyName, "care@ndtechland.com"));
             emailMessage.To.Add(new MailboxAddress("", toEmail));
-            emailMessage.Subject = "Reminder: Upcoming Renewal for Your N D Connect/N D Techland Product";
+            emailMessage.ReplyTo.Clear();
+            emailMessage.ReplyTo.Add(new MailboxAddress("", vendorrecods.Email));
+            emailMessage.Cc.Add(new MailboxAddress("", vendorrecods.Email));
+
+            emailMessage.Subject = $"Reminder: Upcoming Renewal for Your {vendorrecods.CompanyName} Product";
 
             emailMessage.Body = new TextPart("html")
             {
                 Text = $@"
-<p>Dear {CompanyName},</p>
-<p>We hope this message finds you well.</p>
-<p>This is a friendly reminder that your product subscription with N D Connect/N D Techland is approaching its renewal date on <strong>[{RenewalDate}]</strong>.
-<br/>To ensure uninterrupted service and continue enjoying our comprehensive features, please complete your renewal before the due date.</p>
+        <p>Dear {CompanyName},</p>
+        <p>This is a friendly reminder that your product subscription with {vendorrecods.CompanyName} is approaching its renewal date on <strong>{RenewalDate}</strong>.
+        <br/>To ensure uninterrupted service and continue enjoying our comprehensive features, please complete your renewal before the due date.</p>
 
-<p><strong>Subscription Details:</strong></p>
-<ul>
-    <li><strong>Product Name:</strong> [{productname}]</li>
-    <li><strong>Amount:</strong> [{productAmount}]</li>
-    <li><strong>Renewal Date:</strong> [{RenewalDate}]</li>
-</ul>
+        <p><strong>Subscription Details:</strong></p>
+        <ul>
+            <li><strong>Product Name:</strong> {productname}</li>
+            <li><strong>Amount:</strong> {productAmount}</li>
+            <li><strong>Renewal Date:</strong> {RenewalDate}</li>
+        </ul>
 
-<p>If you need any assistance with the renewal process or have any questions, please feel free to contact us at <strong>0120-4354103</strong>. We’re here to help!</p>
+        <p>If you need any assistance with the renewal process or have any questions, please feel free to contact us at <strong>{vendorrecods.MobileNumber}</strong>. We’re here to help!</p>
 
-<p>Thank you for your continued support and for choosing N D Techland.</p>
+        <p>Thank you for your continued support and for choosing {vendorrecods.CompanyName}.</p>
 
-<p>Best regards,</p>
-<p><strong>N D Techland Private Limited</strong><br />
-Phone: 0120-4354103<br />
-<a href='https://www.ndtechland.com'>www.ndtechland.com</a></p>"
+        <p>Best regards,</p>
+        <p><strong>{vendorrecods.CompanyName}</strong><br />
+        Phone: <strong>{vendorrecods.MobileNumber} </strong>"
             };
-
 
             using (var client = new SmtpClient())
             {
@@ -404,7 +420,7 @@ Phone: 0120-4354103<br />
                 {
                     // Connect to your SMTP server
                     await client.ConnectAsync("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
-                    await client.AuthenticateAsync("aastrolense@gmail.com", "efpbsimjkzxeoxnv");
+                    await client.AuthenticateAsync("care@ndtechland.com", "yetztyfbqlfvknyg");
 
                     await client.SendAsync(emailMessage);
                 }
@@ -415,12 +431,18 @@ Phone: 0120-4354103<br />
                 }
             }
         }
-        public async Task CustomerExpirEmail(string toEmail, string CompanyName, string ExpirationDate, string productName)
+
+        public async Task CustomerExpirEmail(string toEmail, string CompanyName, string ExpirationDate, string productName, int VendorId)
         {
+            var vendorrecods = _context.VendorRegistrations.Where(x => x.Id == VendorId).FirstOrDefault();
+
             var emailMessage = new MimeMessage();
 
-            emailMessage.From.Add(new MailboxAddress("N D Techland Private Limited", "aastrolense@gmail.com"));
+            emailMessage.From.Add(new MailboxAddress(vendorrecods.CompanyName, "care@ndtechland.com"));
             emailMessage.To.Add(new MailboxAddress("", toEmail));
+            emailMessage.ReplyTo.Clear();
+            emailMessage.ReplyTo.Add(new MailboxAddress("", vendorrecods.Email));
+            emailMessage.Cc.Add(new MailboxAddress("", vendorrecods.Email));
             emailMessage.Subject = $"Action Required: Your Product {productName} Has Expired";
 
             emailMessage.Body = new TextPart("html")
@@ -437,14 +459,13 @@ Phone: 0120-4354103<br />
     <li><strong>Expiration Date:</strong> {ExpirationDate}</li>
 </ul>
 
-<p>If you need assistance with renewal or have any questions, please feel free to contact us at <strong>0120-4354103</strong>. We’re here to help!</p>
+<p>If you need assistance with renewal or have any questions, please feel free to contact us at <strong>{vendorrecods.MobileNumber}</strong>. We’re here to help!</p>
 
 <p>Thank you for your prompt attention to this matter.</p>
 
 <p>Best regards,</p>
-<p><strong>N D Techland Private Limited</strong><br />
-Phone: 0120-4354103<br />
-<a href='https://www.ndtechland.com'>www.ndtechland.com</a></p>"
+<p><strong>{vendorrecods.CompanyName}</strong><br />
+        Phone: <strong>{vendorrecods.MobileNumber} </strong>"
             };
 
             using (var client = new SmtpClient())
@@ -453,7 +474,7 @@ Phone: 0120-4354103<br />
                 {
                     // Connect to your SMTP server
                     await client.ConnectAsync("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
-                    await client.AuthenticateAsync("aastrolense@gmail.com", "efpbsimjkzxeoxnv");
+                    await client.AuthenticateAsync("care@ndtechland.com", "yetztyfbqlfvknyg");
 
                     await client.SendAsync(emailMessage);
                 }
@@ -465,7 +486,50 @@ Phone: 0120-4354103<br />
             }
         }
 
+        public async Task SendVendorInvoiceEmailAsync(string toEmail, string subject, string body, byte[] filecontent, string filename, string mimetype)
+        {
+            try
+            {
+                var emailMessage = new MimeMessage();
+                emailMessage.From.Add(new MailboxAddress("N D Techland Private Limited", "care@ndtechland.com"));
+                emailMessage.To.Add(new MailboxAddress("Recipient Name", toEmail));
 
+                emailMessage.Subject = subject;
+
+                var textPart = new TextPart("plain")
+                {
+                    Text = body
+                };
+
+                var attachment = new MimePart(mimetype)
+                {
+                    Content = new MimeContent(new MemoryStream(filecontent), ContentEncoding.Default),
+                    ContentDisposition = new ContentDisposition(ContentDisposition.Attachment),
+                    ContentTransferEncoding = ContentEncoding.Base64,
+                    FileName = filename
+                };
+
+                var multipart = new Multipart("mixed");
+                multipart.Add(textPart);
+                multipart.Add(attachment);
+
+                emailMessage.Body = multipart;
+
+                using (var client = new SmtpClient())
+                {
+
+                    await client.ConnectAsync("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
+                    await client.AuthenticateAsync("care@ndtechland.com", "yetztyfbqlfvknyg");
+                    await client.SendAsync(emailMessage);
+                    await client.DisconnectAsync(true);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 
 }

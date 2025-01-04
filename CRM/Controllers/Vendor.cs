@@ -20,6 +20,7 @@ using ClosedXML.Excel;
 using Org.BouncyCastle.Ocsp;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using System.Threading.Tasks;
+using DocumentFormat.OpenXml.ExtendedProperties;
 
 namespace CRM.Controllers
 {
@@ -79,8 +80,11 @@ namespace CRM.Controllers
                         ViewBag.state = data.State;
                         ViewBag.startDate = ((DateTime)data.StartDate).ToString("yyyy-MM-dd");
                         ViewBag.renewDate = ((DateTime)data.RenewDate).ToString("yyyy-MM-dd");
-                        ViewBag.duedate = ((DateTime)data.Duedate).ToString("yyyy-MM-dd");
+                        ViewBag.duedate = (data.Duedate).ToString("yyyy-MM-dd");
                         ViewBag.Pricingplan = vendor.PricingPlanid;
+                        ViewBag.LandlineNumber = vendor.MobileNumber;
+                        ViewBag.Notes = vendor.Notes;
+                        ViewBag.Terms = vendor.Terms;
                         return View(data);
                     }
                 }
@@ -89,6 +93,7 @@ namespace CRM.Controllers
 
                 ViewBag.SelectedStateId = null;
                 ViewBag.SelectedCityId = null;
+                ViewBag.LandlineNumber = 0;
                 ViewBag.ProductDetails = _context.ProductMasters.Where(x => x.IsDeleted == false)
                     .Select(p => new SelectListItem
                     {
@@ -1013,7 +1018,7 @@ namespace CRM.Controllers
                     _context.SaveChanges();
                     string emailSubject = $"Invoice for {result.CompanyName}";
                     string emailBody = $"Hello {result.CompanyName}";
-                    await _emailService.SendEmailAsync(result.Email, emailSubject, emailBody, pdf, uniqueFileName, "application/pdf");
+                    await _emailService.SendVendorInvoiceEmailAsync(result.Email, emailSubject, emailBody, pdf, uniqueFileName, "application/pdf");
                     return Json(new { success = true, message = "Invoice  has been Sent successfully.", fileName = uniqueFileName });
 
                 }
@@ -1935,7 +1940,7 @@ namespace CRM.Controllers
             if (leave.Isapprove == 2)
             {
                 subject = "Leave Approval Accepted";
-                emailBody = $"Dear {empinfo.FirstName} {empinfo.MiddleName} {empinfo.LastName},\n\nYour leave application has been approved.";
+                emailBody = $"Dear {empinfo.FirstName} {empinfo.MiddleName} {empinfo.LastName},Your leave application has been approved.";
 
                 var TypeOfLeave = await _context.Leavemasters
                     .FirstOrDefaultAsync(x => x.LeavetypeId == leave.TypeOfLeaveId && x.EmpId == leave.UserId);
@@ -1958,15 +1963,15 @@ namespace CRM.Controllers
                     return RedirectToAction("ApprovedLeaveApply");
                 }
             }
-            else if (leave.Isapprove == 1) // Partial approval (Pending)
+            else if (leave.Isapprove == 1) 
             {
                 subject = "Leave Approval Status Update";
-                emailBody = $"Dear {empinfo.FirstName} {empinfo.MiddleName} {empinfo.LastName},\n\nWe regret to inform you that your leave application is still pending. Please reapply with your desired {StartDate.Date} and {EndDate.Date} dates for processing.";
+                emailBody = $"Dear {empinfo.FirstName} {empinfo.MiddleName} {empinfo.LastName},We regret to inform you that your leave application is still pending. Please reapply with your desired {StartDate.Date} and {EndDate.Date} dates for processing.";
             }
             else
             {
                 subject = "Leave Approval Rejected";
-                emailBody = $"Dear {empinfo.FirstName} {empinfo.MiddleName} {empinfo.LastName},\n\nWe regret to inform you that your leave application has been rejected. Please contact HR for further details.";
+                emailBody = $"Dear {empinfo.FirstName} {empinfo.MiddleName} {empinfo.LastName},We regret to inform you that your leave application has been rejected. Please contact HR for further details.";
             }
 
             var status = await _context.Approvalmasters.Where(x => x.Id == leave.Isapprove).Select(x => x.Status).FirstOrDefaultAsync();
@@ -1979,7 +1984,7 @@ namespace CRM.Controllers
                     empinfo.MiddleName,
                     empinfo.LastName,
                     subject,
-                    emailBody
+                    emailBody, (int)empinfo.Vendorid
                 );
                 TempData["msg"] = GetApprovalMessage(status);
             }
@@ -1994,8 +1999,8 @@ namespace CRM.Controllers
         {
             return status switch
             {
-                "Complete" => "Approval status updated successfully and approval email sent!",
-                "Disapprove" => "Approval status updated successfully and rejection email sent!",
+                "Complete" => "Approval status updated successfully with a Complete !",
+                "Disapprove" => "Approval status updated successfully with a Disapprove!",
                 _ => "Approval status updated successfully with a partial status!"
             };
         }
@@ -2478,7 +2483,7 @@ namespace CRM.Controllers
                                               $"<p>Thank you.</p>";
 
 
-                                await _emailService.SendMeetEmailAsync(employee.WorkEmail, employee.FirstName, employee.MiddleName, employee.LastName, emailBody);
+                                await _emailService.SendMeetEmailAsync(employee.WorkEmail, employee.FirstName, employee.MiddleName, employee.LastName, emailBody, (int)adminlogin.Vendorid);
                             }
                         }
                     }
@@ -2762,7 +2767,7 @@ namespace CRM.Controllers
 
             try
             {
-                await _emailService.SendEmpLeaveApprovalEmailAsync(emppersonalinfo.PersonalEmailAddress, empinfo.FirstName, empinfo.MiddleName, empinfo.LastName, subject, emailBody);
+                await _emailService.SendEmpLeaveApprovalEmailAsync(emppersonalinfo.PersonalEmailAddress, empinfo.FirstName, empinfo.MiddleName, empinfo.LastName, subject, emailBody,(int)empinfo.Vendorid);
                 TempData["msg"] = (bool)Overtimes.Approved
                     ? "Approval status updated successfully, and approval email sent!"
                     : "Approval status updated successfully, and rejection email sent!";
@@ -3374,7 +3379,6 @@ namespace CRM.Controllers
                     if (Approvedwfhdetail != null)
                     {
                         return View(Approvedwfhdetail);
-
                     }
                     else
                     {
@@ -3414,17 +3418,17 @@ namespace CRM.Controllers
             if (applywfh.Iswfh == 2)
             {
                 subject = "Wfh Approval Accepted";
-                emailBody = $"Dear {empinfo.FirstName} {empinfo.MiddleName} {empinfo.LastName},\n\nYour Wfh application has been approved.";
+                emailBody = $"Dear {empinfo.FirstName} {empinfo.MiddleName} {empinfo.LastName},Your Wfh application has been approved.";
             }
             else if (applywfh.Iswfh == 1) // Partial approval (Pending)
             {
                 subject = "Wfh Approval Partial";
-                emailBody = $"Dear {empinfo.FirstName} {empinfo.MiddleName} {empinfo.LastName},\n\nWe regret to inform you that your Wfh application is still pending. Please reapply with your desired {StartDate.Date} and {EndDate.Date} dates for processing.";
+                emailBody = $"Dear {empinfo.FirstName} {empinfo.MiddleName} {empinfo.LastName},We regret to inform you that your Wfh application is still pending. Please reapply with your desired {StartDate.Date} and {EndDate.Date} dates for processing.";
             }
             else
             {
                 subject = "Wfh Approval Rejected";
-                emailBody = $"Dear {empinfo.FirstName} {empinfo.MiddleName} {empinfo.LastName},\n\nWe regret to inform you that your wfh application has been rejected. Please contact HR for further details.";
+                emailBody = $"Dear {empinfo.FirstName} {empinfo.MiddleName} {empinfo.LastName},We regret to inform you that your wfh application has been rejected. Please contact HR for further details.";
             }
 
             var status = await _context.Approvalmasters.Where(x => x.Id == applywfh.Iswfh).Select(x => x.Status).FirstOrDefaultAsync();
@@ -3437,7 +3441,7 @@ namespace CRM.Controllers
                     empinfo.MiddleName,
                     empinfo.LastName,
                     subject,
-                    emailBody
+                    emailBody, (int)empinfo.Vendorid
                 );
                 TempData["msg"] = GetwfhApprovalMessage(status);
             }
@@ -3451,8 +3455,8 @@ namespace CRM.Controllers
         {
             return status switch
             {
-                "Complete" => "Approval status updated successfully and approval email sent!",
-                "Disapprove" => "Approval status updated successfully and rejection email sent!",
+                "Complete" => "Approval status updated successfully with a Complete !",
+                "Disapprove" => "Approval status updated successfully with a Disapprove!",
                 _ => "Approval status updated successfully with a partial status!"
             };
         }
