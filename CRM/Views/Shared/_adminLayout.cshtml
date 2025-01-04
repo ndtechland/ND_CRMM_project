@@ -132,7 +132,8 @@
             <!-- Page Sidebar Start-->
             @if (@ViewBag.UserName == "admin")
             {
-                <div class="page-sidebar">
+                @await Component.InvokeAsync("Sidebar")
+                @* <div class="page-sidebar">
                     <div class="sidebar custom-scrollbar">
 
                         <ul class="sidebar-menu">
@@ -200,7 +201,7 @@
                             </li>
                         </ul>
                     </div>
-                </div>
+                </div> *@
             }
             else
             {

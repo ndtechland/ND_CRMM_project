@@ -1,0 +1,528 @@
+﻿@model CRM.Models.DTO.UserRoleDTO
+@using System.Text.Json;
+@* @using System.Web.Script.Serialization *@
+@{
+    ViewBag.Title = "CreateRole";
+    Layout = "~/Views/Shared/_adminLayout.cshtml";
+
+}
+<style>
+    html, body {
+        background: #f2f2f2;
+    }
+
+    * {
+        font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+        font-size: 20px;
+    }
+
+
+
+    ul.parent {
+        background: #fafafa;
+        padding: 10px;
+        margin: 2em;
+        box-shadow: 0 14px 28px rgba(0,0,0,0.15), 0 10px 10px rgba(0,0,0,0.06);
+        border-radius: 4px;
+        border-left: 0;
+    }
+
+    ul {
+        padding-left: 0.5em;
+        margin-left: 0.3em;
+        border-left: 3px solid #c0d1d1;
+        margin-bottom: 1em;
+        color: #212b2b;
+    }
+
+    li {
+        list-style-type: none;
+        margin-bottom: 0.5em;
+        margin-top: 0.5em;
+    }
+
+    details summary {
+        cursor: pointer;
+    }
+
+    details summary {
+        color: #4C74B9;
+    }
+
+        details summary::-webkit-details-marker {
+            color: #4C74B9;
+            font-size: 18px;
+        }
+
+    details[open] > summary::-webkit-details-marker {
+        color: #2b4b82;
+    }
+
+    details[open] > summary {
+        color: #2b4b82;
+    }
+
+</style>
+<style>
+    /* Checkbox Alignment */
+    label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+    }
+
+    /* Main Module Heading */
+    .module-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 24px;
+        margin: 12px 0;
+        background-color: #4a6e86;
+        border-radius: 10px;
+        color: white;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+        .module-row:hover {
+            background-color: #3a5c73;
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+    .sub-options, .sub-Two-options {
+        margin-left: 24px;
+        padding: 12px;
+        border-left: 4px solid #3a5c73;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    .main-option-row, .sub-option-row, .sub-Two-option-row {
+        padding: 12px 24px;
+        background-color: #dae0e6;
+        border-radius: 6px;
+        margin-bottom: 8px;
+        color: #333;
+        font-size: 16px;
+        font-weight: normal;
+        transition: background-color 0.3s ease;
+    }
+
+        .main-option-row:hover, .sub-option-row:hover, .sub-Two-option-row:hover {
+            background-color: #c0c9d4;
+        }
+
+    /* Checkbox Scaling */
+    input[type="checkbox"] {
+        transform: scale(1.3);
+        cursor: pointer;
+    }
+
+        input[type="checkbox"]:hover {
+            transform: scale(1.4);
+        }
+</style>
+
+<div class="page-wrapper">
+    <div class="page-body-wrapper">
+        <div class="page-sidebar"></div>
+
+        <div class="page-body">
+            <div class="container-fluid">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="page-header-left">
+                                <h2>Create Role</h2>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <ol class="breadcrumb pull-right">
+                                <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
+                                <li class="breadcrumb-item">Create Role</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container-fluid">
+                <div class="row justify-content-center">
+                    <div class="col-xl-12">
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <form class="theme-form mega-form" action="AccessAssign" method="post" enctype="multipart/form-data">
+                                    <div class="card-body">
+                                        <input name="MenuId" type="hidden" value="@ViewBag.menuId" />
+                                        <input name="Id" type="hidden" value="@Model.Id" />
+                                        @if (TempData["msg"] != null)
+                                        {
+                                            <div class="mb-3">
+                                                <div class="alert alert-success">
+                                                    @TempData["msg"]
+                                                </div>
+                                            </div>
+                                        }
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="row">
+                                                    @* <div class="col-md-3">
+                                                <label class="form-label-title">Select Company</label>
+                                                @Html.DropDownListFor(a => a.CompanyId, Model.Companies, "--Select Company--", new { @class = "form-control", required = "required" })
+                                                <span class="text-danger">
+                                                    @Html.ValidationMessageFor(a => a.CompanyId)
+                                                </span>
+                                            </div> *@
+                                                    <div class="col-md-3">
+                                                        <label class="form-label-title">Role Name</label>
+                                                        @Html.TextBoxFor(a => a.RoleName, new { @class = "form-control", placeholder = "Role Name", required = "required" })
+                                                        <span class="text-danger">
+                                                            @Html.ValidationMessageFor(a => a.RoleName)
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row mt-3">
+                                            <div class="col-md-12">
+                                                <span style="color: #365977; font-size: 13px; font-weight: 700;">
+                                                    <span>Access Type :</span>
+                                                    <span style="color: #547171" class="ng-binding">New</span>
+                                                </span>
+                                                <div class="form-group-profile d-flex justify-content-end">
+                                                    <input type="checkbox" name="IsAll" value="true" id="fancy-checkbox-primary" autocomplete="off" class="ng-valid ng-dirty Activechecked" onclick="checkAllReadCheckboxes(this)">
+                                                    <div class="btn-group">
+                                                        <label for="fancy-checkbox-primary" style="padding: 0px 1px; font-size: 13px; margin-top: 2px;">
+                                                        </label>
+                                                        <label for="fancy-checkbox-primary" style="padding: 0px 1px; font-size: 13px; margin-top: 2px;" class="btn btn-default active">
+                                                            <i class="icon-book"></i> <b>Read All</b>
+                                                        </label>
+                                                    </div>
+                                                </div>
+
+
+                                                @if (Model != null && Model.SoftwareLinkDTO.Count() > 0)
+                                                {
+                                                    int count = 0;
+                                                    foreach (var item in Model.SoftwareLinkDTO)
+                                                    {
+                                                        count++;
+                                                        <div class="module-row" onclick="toggleSection('main-section_@count')">
+                                                            <label>
+                                                                <input name="IsHeadChecked[]" type="checkbox" value="@item.Id" class="main-read-checkbox" onclick="toggleSubOptionCheckboxes('read', this); event.stopPropagation();" />
+                                                                <span>@item.Tittle</span>
+                                                            </label>
+                                                        </div>
+
+                                                        <div class="sub-options" id="main-section_@count" style="display: none;">
+                                                            @if (item.SubHeading.Count() > 0)
+                                                            {
+                                                                int subCount = 0;
+                                                                foreach (var subHeading in item.SubHeading)
+                                                                {
+                                                                    subCount++;
+                                                                    var subSectionId = $"sub-section_{count}-{subCount}";
+                                                                    <div class="module-row" onclick="toggleSection('@subSectionId')">
+                                                                        <label>
+                                                                            <input name="IsSubHeadChecked[]" type="checkbox" value="@subHeading.Id" class="main-read-checkbox" onclick="toggleSubOptionCheckboxes('read', this); event.stopPropagation();" />
+                                                                            <span>@subHeading.Tittle</span>
+                                                                        </label>
+                                                                    </div>
+                                                                    <div class="sub-options" id="@subSectionId" style="display: none;">
+                                                                        @if (subHeading.SubHeadingTwo != null && subHeading.SubHeadingTwo.Any())
+                                                                        {
+                                                                            int subCountTwo = 0;
+                                                                            foreach (var subHeadingTwo in subHeading.SubHeadingTwo)
+                                                                            {
+                                                                                subCountTwo++;
+                                                                                var subTwoSectionId = $"sub-Two-section_{count}-{subCountTwo}";
+                                                                                <div class="module-row" onclick="toggleSection('@subTwoSectionId')">
+                                                                                    <label>
+                                                                                        <input name="IsSubHeadTwoChecked[]" type="checkbox" value="@subHeadingTwo.Id" class="main-read-checkbox" onclick="toggleSubOptionCheckboxes('read', this); event.stopPropagation();" />
+                                                                                        <span>@subHeadingTwo.Tittle</span>
+                                                                                    </label>
+                                                                                </div>
+                                                                                <div class="sub-Two-options" id="@subTwoSectionId" style="display: none;">
+                                                                                    @if (subHeadingTwo.ChildMenus != null && subHeadingTwo.ChildMenus.Any())
+                                                                                    {
+                                                                                        <div class="col-md-12">
+                                                                                            <div class="row">
+                                                                                                @foreach (var subChildTwo in subHeadingTwo.ChildMenus)
+                                                                                                {
+                                                                                                    <div class="col-md-6">
+                                                                                                        <div class="sub-Two-option-row">
+                                                                                                            <label>
+                                                                                                                <input name="IsChildSubHeadTwoChecked[]" type="checkbox" class="read-checkbox" value="@subChildTwo.Id" onclick="toggleParentReadCheckboxFromChild(this);" />
+                                                                                                                <span><b>@subChildTwo.Tittle</b></span>
+                                                                                                            </label>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                }
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    }
+                                                                                </div>
+                                                                            }
+                                                                        }
+                                                                        else if (subHeading.ChildMenus != null && subHeading.ChildMenus.Any())
+                                                                        {
+                                                                            <div class="col-md-12">
+                                                                                <div class="row">
+                                                                                    @foreach (var subChild in subHeading.ChildMenus)
+                                                                                    {
+                                                                                        <div class="col-md-6">
+                                                                                            <div class="sub-option-row">
+                                                                                                <label>
+                                                                                                    <input name="IsChildSubHeadChecked[]" type="checkbox" class="read-checkbox" value="@subChild.Id" onclick="toggleParentReadCheckboxFromChild(this);" />
+                                                                                                    <span><b>@subChild.Tittle</b></span>
+                                                                                                </label>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    }
+                                                                                </div>
+                                                                            </div>
+                                                                        }
+                                                                    </div>
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                <div class="col-md-12">
+                                                                    <div class="row">
+                                                                        @if (item.ChildMenus != null && item.ChildMenus.Any())
+                                                                        {
+                                                                            @foreach (var child in item.ChildMenus)
+                                                                            {
+                                                                                <div class="col-md-6">
+                                                                                    <div class="main-option-row">
+                                                                                        <label>
+                                                                                            <input name="IsChildHeadChecked[]" type="checkbox" class="read-checkbox" value="@child.Id" onclick="toggleParentReadCheckboxFromChild(this);" />
+                                                                                            <span><b>@child.Tittle</b></span>
+                                                                                        </label>
+                                                                                    </div>
+                                                                                </div>
+                                                                            }
+                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                            }
+                                                        </div>
+                                                    }
+                                                }
+
+
+
+
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer text-end">
+                                        <button type="submit" class="btn btn-primary">@ViewBag.BtnTXT</button>
+                                        <button type="reset" class="btn btn-outline-primary">Reset</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@* <script>
+    // Toggle the parent "Read" checkbox based on child "Read" checkboxes
+    function toggleParentReadCheckboxFromChild(childReadCheckbox) {
+        const parentSection = childReadCheckbox.closest('.sub-options');
+        if (parentSection) {
+            const parentId = parentSection.id.replace('live-tracking_', '');
+            const parentReadCheckbox = document.querySelector(`.main-read-checkbox[value="${parentId}"]`);
+
+            if (parentReadCheckbox) {
+                const allChildReadCheckboxes = parentSection.querySelectorAll('.read-checkbox');
+                const anyChecked = [...allChildReadCheckboxes].some(checkbox => checkbox.checked);
+                const allUnchecked = [...allChildReadCheckboxes].every(checkbox => !checkbox.checked);
+
+                parentReadCheckbox.checked = anyChecked; // Check parent if any child is checked
+                parentReadCheckbox.indeterminate = anyChecked && !allUnchecked; // Indeterminate if mixed states
+            }
+        }
+    }
+
+    // Synchronize the "Read" checkbox state with the "Write" checkbox
+    function syncReadCheckbox(writeCheckbox) {
+        const readCheckbox = writeCheckbox.closest('.sub-option-row')?.querySelector('.read-checkbox');
+
+        if (readCheckbox && writeCheckbox.checked) {
+            readCheckbox.checked = true; // Automatically check "Read" if "Write" is checked
+        }
+
+        // Update parent "Read" and "Write" checkboxes based on child states
+        const parentSection = writeCheckbox.closest('.sub-options');
+        if (parentSection) {
+            const parentId = parentSection.id.replace('live-tracking_', '');
+            const parentReadCheckbox = document.querySelector(`.main-read-checkbox[value="${parentId}"]`);
+            const parentWriteCheckbox = document.querySelector(`.main-write-checkbox[value="${parentId}"]`);
+
+            if (parentReadCheckbox || parentWriteCheckbox) {
+                const allWriteCheckboxes = parentSection.querySelectorAll('.write-checkbox');
+                const anyWriteChecked = [...allWriteCheckboxes].some(checkbox => checkbox.checked);
+
+                if (parentWriteCheckbox) parentWriteCheckbox.checked = anyWriteChecked;
+                if (parentReadCheckbox) parentReadCheckbox.checked = anyWriteChecked;
+            }
+        }
+    }
+
+    // Toggle all child checkboxes when the main checkbox is toggled
+    function toggleSubOptionCheckboxes(type, mainCheckbox) {
+        const subCheckboxes = mainCheckbox
+            .closest('.module-row')
+            ?.nextElementSibling.querySelectorAll(`.${type}-checkbox`);
+        subCheckboxes?.forEach(checkbox => {
+            checkbox.checked = mainCheckbox.checked;
+
+            // If it's a "write" checkbox, sync "Read" checkbox too
+            if (type === 'write') {
+                const readCheckbox = checkbox.closest('.sub-option-row')?.querySelector('.read-checkbox');
+                if (readCheckbox) {
+                    readCheckbox.checked = mainCheckbox.checked; // Sync "Read" with "Write"
+                }
+            }
+        });
+    }
+
+    // Toggle visibility of sections, ensuring only one section is visible at a time
+    function toggleSection(sectionId) {
+        const allSections = document.querySelectorAll('.sub-options');
+        allSections.forEach(section => {
+            section.style.display = section.id === sectionId ?
+                (section.style.display === 'none' ? 'block' : 'none') :
+                'none';
+        });
+    }
+
+    // Check or uncheck all "Read" checkboxes when "Read All" is toggled
+    function checkAllReadCheckboxes(mainCheckbox) {
+        const allReadCheckboxes = document.querySelectorAll('.read-checkbox, .main-read-checkbox');
+        allReadCheckboxes.forEach(checkbox => {
+            checkbox.checked = mainCheckbox.checked;
+        });
+    }
+
+    // Check or uncheck all "Write" checkboxes and sync with "Read" checkboxes
+    function checkAllWriteCheckboxes(mainCheckbox) {
+        const allWriteCheckboxes = document.querySelectorAll('.write-checkbox, .main-write-checkbox');
+        const allReadCheckboxes = document.querySelectorAll('.read-checkbox, .main-read-checkbox');
+
+        allWriteCheckboxes.forEach(checkbox => {
+            checkbox.checked = mainCheckbox.checked;
+        });
+
+        allReadCheckboxes.forEach(checkbox => {
+            checkbox.checked = mainCheckbox.checked; // Sync "Read" with "Write All"
+        });
+
+        // Sync the state of the "Read All" checkbox
+        const readAllCheckbox = document.getElementById('fancy-checkbox-primary');
+        if (readAllCheckbox) {
+            readAllCheckbox.checked = mainCheckbox.checked;
+        }
+    }
+
+</script> *@
+
+<script>
+    // Pass arrays from Razor model to JavaScript
+
+
+    const IsHeadChecked = @Html.Raw(JsonSerializer.Serialize(Model.IsHeadChecked ?? new int[0]));
+    const IsChildHeadChecked = @Html.Raw(JsonSerializer.Serialize(Model.IsChildHeadChecked ?? new int[0]));
+    const IsSubHeadChecked = @Html.Raw(JsonSerializer.Serialize(Model.IsSubHeadChecked ?? new int[0]));
+    const IsChildSubHeadChecked = @Html.Raw(JsonSerializer.Serialize(Model.IsChildSubHeadChecked ?? new int[0]));
+    const IsSubHeadTwoChecked = @Html.Raw(JsonSerializer.Serialize(Model.IsSubHeadTwoChecked ?? new int[0]));
+    const IsChildSubHeadTwoChecked = @Html.Raw(JsonSerializer.Serialize(Model.IsChildSubHeadTwoChecked ?? new int[0]));
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // Function to check checkboxes by class name and array of values
+        function checkCheckboxes(array, className) {
+            array.forEach(function (value) {
+                // Find checkbox with the specific class and value
+                const checkbox = document.querySelector(`input.${className}[value="${value}"]`);
+                if (checkbox) {
+                    checkbox.checked = true; // Check the checkbox if it exists
+                }
+            });
+        }
+
+        // Check parent-level read and write checkboxes
+        checkCheckboxes(isReadChecked, "main-read-checkbox");
+        checkCheckboxes(isWriteChecked, "main-write-checkbox");
+
+        // Check sub-level read and write checkboxes
+        checkCheckboxes(isSubReadChecked, "read-checkbox");
+        checkCheckboxes(isSubWriteChecked, "write-checkbox");
+    });
+</script>
+<script>
+
+        if ('@ViewBag.IsAllRead' == 'True') {
+            document.addEventListener("DOMContentLoaded", function (event) {
+                $('.Activechecked').attr('checked', true);
+            });
+        }
+        else {
+            document.addEventListener("DOMContentLoaded", function (event) {
+                $('.Activechecked').attr('checked', false);
+            });
+        }
+
+        if ('@ViewBag.IsAllWrite' == 'True') {
+        document.addEventListener("DOMContentLoaded", function (event) {
+            $('.Activechecked').attr('checked', true);
+        });
+    }
+    else {
+        document.addEventListener("DOMContentLoaded", function (event) {
+            $('.Activechecked').attr('checked', false);
+        });
+    }
+</script>
+<script>
+    function toggleSection(sectionId) {
+        const section = document.getElementById(sectionId);
+        if (section) {
+            section.style.display = section.style.display === 'none' ? 'block' : 'none';
+        }
+    }
+
+    function toggleSubOptionCheckboxes(type, mainCheckbox) {
+        const subCheckboxes = mainCheckbox
+            .closest('.module-row')
+            ?.nextElementSibling.querySelectorAll(`.${type}-checkbox`);
+        subCheckboxes?.forEach(checkbox => {
+            checkbox.checked = mainCheckbox.checked;
+        });
+    }
+
+    function toggleParentReadCheckboxFromChild(childCheckbox) {
+        const parentSection = childCheckbox.closest('.sub-options');
+        if (parentSection) {
+            const parentCheckbox = parentSection.previousElementSibling.querySelector('.main-read-checkbox');
+            if (parentCheckbox) {
+                const allChildCheckboxes = parentSection.querySelectorAll('.read-checkbox');
+                const anyChecked = [...allChildCheckboxes].some(checkbox => checkbox.checked);
+                parentCheckbox.checked = anyChecked;
+            }
+        }
+    }
+</script>

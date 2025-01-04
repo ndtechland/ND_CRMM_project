@@ -109,6 +109,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<StateMaster> StateMasters { get; set; } = null!;
         public virtual DbSet<TErrorLog> TErrorLogs { get; set; } = null!;
         public virtual DbSet<TaskStatus> TaskStatuses { get; set; } = null!;
+        public virtual DbSet<UserRole> UserRoles { get; set; } = null!;
         public virtual DbSet<VendorBankDetail> VendorBankDetails { get; set; } = null!;
         public virtual DbSet<VendorCategoryMaster> VendorCategoryMasters { get; set; } = null!;
         public virtual DbSet<VendorProductMaster> VendorProductMasters { get; set; } = null!;
@@ -2062,6 +2063,15 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.StatusName).HasMaxLength(200);
+            });
+
+            modelBuilder.Entity<UserRole>(entity =>
+            {
+                entity.ToTable("UserRole");
+
+                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.RoleName).HasMaxLength(300);
             });
 
             modelBuilder.Entity<VendorBankDetail>(entity =>
