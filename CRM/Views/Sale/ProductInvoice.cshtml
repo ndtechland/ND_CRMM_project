@@ -33,12 +33,14 @@
         }
 
         .invoice-container {
-            width: 267mm;
-            height: 378mm;
+           /*  width: 267mm;
+            height: 378mm; */
+            width: max-content;
+            height: max-content;
             margin: 2mm auto;
             padding: 20px;
             border: 1px solid #ccc;
-        
+
         }
 
         .header {
@@ -98,22 +100,6 @@
             font-size: 16px;
             display: block;
         }
-
-        /*         @@media screen and (max-width: 768px) {
-                            .invoice-details table, .billing-details table {
-                                width: 100%;
-                            }
-
-                            .invoice-details td, .billing-details td {
-                                display: block;
-                                width: 100%;
-                            }
-
-                            .invoice-details td {
-                                margin-bottom: 10px;
-                            }
-                        } */
-
         .invoice-table {
             width: 100%;
             border-collapse: collapse;
@@ -157,6 +143,7 @@
             text-align: right;
             opacity: 0.8;
             filter: brightness(-10.8) contrast(1.8);
+            margin-top: 95px;
         }
 
             .footer p {
@@ -175,6 +162,48 @@
             .buttons button {
                 margin: 50px;
             }
+
+             @@media (max-width: 768px) {
+            .invoice-header {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .invoice-details {
+                text-align: center;
+                margin-top: 20px;
+            }
+
+            .invoice-table {
+                font-size: 18px;
+            }
+
+            .invoice-summary {
+                font-size: 14px;
+            }
+        }
+
+        @@media (max-width: 480px) {
+            .invoice-container {
+                padding: 10px;
+            }
+
+            .company-info h1 {
+                font-size: 20px;
+            }
+
+            .invoice-details h2 {
+                font-size: 24px;
+            }
+
+            .invoice-summary p {
+                font-size: 15px;
+            }
+
+            .invoice-footer {
+                font-size: 12px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -384,7 +413,7 @@
             <h6><span>@Model.Notes</span></h6>
         </div>
         <div class="footer">
-            <img src="@ViewBag.Protocol://@ViewBag.Host/CompanyImage/@Model.VendorSingature" alt="Singature Logo">
+            <img src="@ViewBag.Protocol://@ViewBag.Host/CompanyImage/@Model.VendorSingature" alt="Singature Logo" style="background-color:transparent;">
             <p>Authorized Signatory</p>
         </div>
         <div class="bank-details">
@@ -467,16 +496,16 @@
         printStyle.type = 'text/css';
         printStyle.media = 'print';
         printStyle.innerHTML = `
-                            @@page {
-                                size: A4;
-                                margin: 10mm;
-                                padding: 20px;
-                            }
-                            body {
-                                margin: 0;
-                                padding: 0;
-                            }
-                        `;
+                                @@page {
+                                    size: A4;
+                                    margin: 10mm;
+                                    padding: 20px;
+                                }
+                                body {
+                                    margin: 0;
+                                    padding: 0;
+                                }
+                            `;
         document.head.appendChild(printStyle);
         window.print();
 
