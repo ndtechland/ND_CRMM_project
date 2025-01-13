@@ -1332,6 +1332,7 @@ namespace CRM.Repository
                 parameters.Add("@duedate", model.Duedate);
                 parameters.Add("@Notes", model.Notes);
                 parameters.Add("@Terms", model.Terms);
+                parameters.Add("@UserRoleId", model.UserRoleId);
                 parameters.Add("@CustomerId", dbType: DbType.Int32, direction: ParameterDirection.Output);
                 await connection.ExecuteAsync("VendorRegistration", parameters, commandType: CommandType.StoredProcedure);
                 int newCustomerId = parameters.Get<int>("@CustomerId");
@@ -1393,6 +1394,7 @@ namespace CRM.Repository
                 parameters.Add("@duedate", model.Duedate);
                 parameters.Add("@Notes", model.Notes);
                 parameters.Add("@Terms", model.Terms);
+                parameters.Add("@UserRoleId", model.UserRoleId);
                 var result = await connection.ExecuteAsync(
                     "sp_updateVendor_Reg",
                     parameters,
@@ -2066,6 +2068,18 @@ namespace CRM.Repository
                     .GroupBy(ci => ci.CustomerId)
                     .ToDictionary(g => g.Key, g => g.ToList());
 
+
+                decimal newDueAmount = 0;
+
+                foreach(var item in model)
+                {
+                    newDueAmount += (decimal)(
+                        item.ProductPrice +
+                        ((item.ProductPrice * (item.IGST ?? 0m)) / 100) +
+                        ((item.ProductPrice * (item.SGST ?? 0m)) / 100) +
+                        ((item.ProductPrice * (item.CGST ?? 0m)) / 100));
+                }
+                
                 foreach (var product in model)
                 {
                     var customerExistingData = groupedData.ContainsKey(product.CustomerId)
@@ -2093,22 +2107,11 @@ namespace CRM.Repository
                     {
                         product.Id = 0;
                     }
-                    decimal newDueAmount = 0;
 
-                    if (totalDueAmount != 0)
+                    newDueAmount += (newDueAmount + totalDueAmount);
+                    if(existingInvoice?.PaidAmount > 0)
                     {
-                        newDueAmount = (decimal)(totalDueAmount +
-                            product.ProductPrice +
-                            ((product.ProductPrice * (product.IGST ?? 0m)) / 100) +
-                            ((product.ProductPrice * (product.SGST ?? 0m)) / 100) +
-                            ((product.ProductPrice * (product.CGST ?? 0m)) / 100));
-                    }
-                    else
-                    {
-                        newDueAmount = (decimal)(product.ProductPrice +
-                            ((product.ProductPrice * (product.IGST ?? 0m)) / 100) +
-                            ((product.ProductPrice * (product.SGST ?? 0m)) / 100) +
-                            ((product.ProductPrice * (product.CGST ?? 0m)) / 100));
+                        newDueAmount -= (decimal)existingInvoice.PaidAmount;
                     }
                     if (product.Id == 0) 
                     {
@@ -2137,10 +2140,10 @@ namespace CRM.Repository
 
                         _context.Add(newInvoice);
 
-                        foreach (var item in customerExistingData)
-                        {
-                            item.DueAmount = newDueAmount;
-                        }
+                        //foreach (var item in customerExistingData)
+                        //{
+                        //    item.DueAmount = newDueAmount;
+                        //}
                     }
                     else 
                     {
@@ -2156,12 +2159,9 @@ namespace CRM.Repository
                             data.Igst = product.IGST;
                             data.Sgst = product.SGST;
                             data.Cgst = product.CGST;
-                            _context.Update(data);
                             AlreadyInvoiceNo = data.InvoiceNumber;
-                            foreach (var item in customerExistingData)
-                            {
-                                item.DueAmount = newDueAmount;
-                            }
+                            data.DueAmount =  newDueAmount;
+                            _context.Update(data);
                         }
                     }
                     if (invoicedetail != null)

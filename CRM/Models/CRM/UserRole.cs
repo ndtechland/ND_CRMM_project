@@ -6,7 +6,6 @@ namespace CRM.Models.Crm
     public partial class UserRole
     {
         public int Id { get; set; }
-        public int? CompanyId { get; set; }
         public string? RoleName { get; set; }
         public bool? IsAll { get; set; }
         public string? IsHeadChecked { get; set; }

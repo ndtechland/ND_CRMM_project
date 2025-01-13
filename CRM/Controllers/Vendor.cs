@@ -62,13 +62,21 @@ namespace CRM.Controllers
                                 Text = p.ProductName,
                             })
                             .ToList();
-                        ViewBag.PlanPrice = _context.PricingPlans.Where(x => x.IsActive == true)
-                .Select(p => new SelectListItem
-                {
-                    Value = p.Id.ToString(),
-                    Text = $"{p.PlanName} {' '} {p.Price}",
-                })
-                .ToList();
+                        ViewBag.PlanPrice = _context.PricingPlans
+                         .Where(x => x.IsActive == true)
+                          .Select(p => new SelectListItem
+                          {
+                              Value = p.Id.ToString(),
+                              Text = $"{p.PlanName} ({p.Price:C})"
+                          }).ToList();
+                        ViewBag.userroles = _context.UserRoles
+                        .Where(x => x.IsActive == true)
+                         .Select(p => new SelectListItem
+                         {
+                             Value = p.Id.ToString(),
+                             Text = $"{p.RoleName}",
+                         }).ToList();
+
                         ViewBag.SelectedStateId = data.StateId;
                         ViewBag.Price = vendor.Productprice;
                         ViewBag.Renewprice = data.Renewprice;
@@ -82,6 +90,7 @@ namespace CRM.Controllers
                         ViewBag.renewDate = ((DateTime)data.RenewDate).ToString("yyyy-MM-dd");
                         ViewBag.duedate = (data.Duedate).ToString("yyyy-MM-dd");
                         ViewBag.Pricingplan = vendor.PricingPlanid;
+                        ViewBag.UserRoleId = vendor.UserRoleId;
                         ViewBag.LandlineNumber = vendor.MobileNumber;
                         ViewBag.Notes = vendor.Notes;
                         ViewBag.Terms = vendor.Terms;
@@ -100,13 +109,20 @@ namespace CRM.Controllers
                         Value = p.Id.ToString(),
                         Text = p.ProductName,
                     }).ToList();
-                ViewBag.PlanPrice = _context.PricingPlans.Where(x => x.IsActive == true)
-                  .Select(p => new SelectListItem
-                  {
-                      Value = p.Id.ToString(),
-                      Text = $"{p.PlanName} {' '} {p.Price}",
-                  })
-                  .ToList();
+                ViewBag.PlanPrice = _context.PricingPlans
+                        .Where(x => x.IsActive == true)
+                         .Select(p => new SelectListItem
+                         {
+                             Value = p.Id.ToString(),
+                             Text = $"{p.PlanName} ({p.Price:C})"
+                         }).ToList();
+                ViewBag.userroles = _context.UserRoles
+                        .Where(x => x.IsActive == true)
+                         .Select(p => new SelectListItem
+                         {
+                             Value = p.Id.ToString(),
+                             Text = $"{p.RoleName}",
+                         }).ToList();
                 return View();
             }
             else
@@ -1963,7 +1979,7 @@ namespace CRM.Controllers
                     return RedirectToAction("ApprovedLeaveApply");
                 }
             }
-            else if (leave.Isapprove == 1) 
+            else if (leave.Isapprove == 1)
             {
                 subject = "Leave Approval Status Update";
                 emailBody = $"Dear {empinfo.FirstName} {empinfo.MiddleName} {empinfo.LastName},We regret to inform you that your leave application is still pending. Please reapply with your desired {StartDate.Date} and {EndDate.Date} dates for processing.";
@@ -2767,7 +2783,7 @@ namespace CRM.Controllers
 
             try
             {
-                await _emailService.SendEmpLeaveApprovalEmailAsync(emppersonalinfo.PersonalEmailAddress, empinfo.FirstName, empinfo.MiddleName, empinfo.LastName, subject, emailBody,(int)empinfo.Vendorid);
+                await _emailService.SendEmpLeaveApprovalEmailAsync(emppersonalinfo.PersonalEmailAddress, empinfo.FirstName, empinfo.MiddleName, empinfo.LastName, subject, emailBody, (int)empinfo.Vendorid);
                 TempData["msg"] = (bool)Overtimes.Approved
                     ? "Approval status updated successfully, and approval email sent!"
                     : "Approval status updated successfully, and rejection email sent!";
@@ -3244,7 +3260,7 @@ namespace CRM.Controllers
                                                        ? record.CurrentDate.Value.ToString("dd-MMM-yyyy")
                                                        : "N/A",
                                                    Workinghour = "N/A"
-                                               }).Where(x => x.EmpId == EmpId ).ToListAsync();
+                                               }).Where(x => x.EmpId == EmpId).ToListAsync();
 
                 foreach (var attendanceRecord in attendanceRecords)
                 {
@@ -3630,8 +3646,8 @@ namespace CRM.Controllers
                 var calculatedDeductions = deductions.Select(d => new
                 {
                     d.Deductiontype,
-                    d.Deductionpercentage ,
-                    CalculatedAmount = Math.Round((annualSalary * (d.Deductionpercentage ?? 0) / 100) /*/ 12*/, 2) 
+                    d.Deductionpercentage,
+                    CalculatedAmount = Math.Round((annualSalary * (d.Deductionpercentage ?? 0) / 100) /*/ 12*/, 2)
                 });
 
                 return Json(calculatedDeductions);
@@ -3670,7 +3686,7 @@ namespace CRM.Controllers
                                            where employeeIds.Contains(task.EmployeeId)
                                            select new EmptaskReplyListDto
                                            {
-                                               id= task.Id,
+                                               id = task.Id,
                                                EmployeeId = task.EmployeeId,
                                                EmployeeName = employee.FirstName,
                                                TaskName = taskDetail != null ? taskDetail.Task : "N/A",
