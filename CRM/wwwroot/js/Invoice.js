@@ -101,18 +101,18 @@ function fetchCustomerDetails(customerId, cloneId, InvoiceID) {
 
  //Update tax fields based on product and billing state
 function updateTaxFields() {
-    $('.customer-section').each(function () {
-        var $section = $(this);
+    $(document).on('change', '.ProductDetails', function () {
+        var $section = $(this).closest('.customer-section'); // Scope to the current section
         var productId = $section.find(".ProductDetails").val();
         var billingStateId = $('.billingStateId').text(); // Common billing state ID
-        var InvoiceID = $section.find('#Id').val(); 
+        var InvoiceID = $section.find('#Id').val();
+
         if (!productId || !billingStateId) {
-            clearTaxFields($section);
+            clearTaxFields($section); // Clear fields for this section only
             return;
         }
 
         $.ajax({
-           // url: '/Sale/product?id=' + productId ,
             url: '/Sale/product?id=' + productId + '&invoiceId=' + InvoiceID,
             type: 'GET',
             dataType: 'json',
@@ -123,7 +123,6 @@ function updateTaxFields() {
                     $section.find('.HsnSacCode').val(response.data.hsnSacCode).attr('readonly', true);
                     $section.find('.Price').val(response.data.productPrice);
 
-                    // Update GST fields based on state match
                     var checkVendorBillingStateId = $("#checkvendorbillingstateid").val();
 
                     if (checkVendorBillingStateId === billingStateId) {
@@ -134,18 +133,22 @@ function updateTaxFields() {
                         $section.find('.IGST').val(response.data.igst).attr('readonly', true);
                         $section.find('.CGST, .SGST').val('').attr('readonly', true); // Clear CGST and SGST
                     }
-
                 } else {
-                    clearTaxFields($section);
+                    clearTaxFields($section); // Clear fields if no data returned
                 }
             },
             error: function () {
                 alert('Error fetching data');
-                clearTaxFields($section);
+                clearTaxFields($section); // Clear fields on error
             }
         });
     });
 }
+
+function clearTaxFields($section) {
+    $section.find('.HsnSacCode, .Price, .CGST, .SGST, .IGST').val('').attr('readonly', true);
+}
+
 
 
 // Clear tax fields for a specific product section
