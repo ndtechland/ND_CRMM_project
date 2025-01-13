@@ -45,6 +45,7 @@ namespace CRM.Models.DTO
         public string? InvoiceNumber { get; set; }
         public string? Notes { get; set; }
         public string? Terms { get; set; }
+        public int? UserRoleId { get; set; }
     }
     public partial class VendorRegistrationDto
     {

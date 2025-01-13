@@ -816,15 +816,11 @@
     }
 
     function validateNumericInput(event) {
-        // Allow copy, paste, cut, space, backspace, tab, escape, enter, and arrow keys
         if ([67, 86, 88].includes(event.keyCode) && (event.ctrlKey || event.metaKey) ||
             [32, 46, 8, 9, 27, 13].includes(event.keyCode) ||
             (event.keyCode >= 35 && event.keyCode <= 39)) return;
 
-        // Allow numeric input (main keyboard and numpad)
         if ((event.keyCode >= 48 && event.keyCode <= 57) || (event.keyCode >= 96 && event.keyCode <= 105)) return;
-
-        // Prevent other inputs
         event.preventDefault();
     }
 

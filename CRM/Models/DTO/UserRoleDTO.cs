@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using CRM.Models.Crm;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace CRM.Models.DTO
 {
@@ -26,6 +27,7 @@ namespace CRM.Models.DTO
         public bool IsAllWrite { get; set; }
         public IEnumerable<SoftwareLinkDTO> SoftwareLinkDTO { get; set; }
         public IEnumerable<UserRoleList> UserRoleLists { get; set; }
+        public List<UserRole> UserRoleList { get; set; }
     }
     public class UserRoleList
     {

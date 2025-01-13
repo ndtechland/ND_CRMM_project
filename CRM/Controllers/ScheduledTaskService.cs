@@ -26,8 +26,8 @@ namespace CRM.Controllers
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _doWorkTimer = new Timer(DoWork, null, TimeSpan.Zero, _interval);
-            _updateTasksTimer = new Timer(UpdateScheduledTasksdata, null, TimeSpan.Zero, _interval);
+           // _doWorkTimer = new Timer(DoWork, null, TimeSpan.Zero, _interval);
+            //_updateTasksTimer = new Timer(UpdateScheduledTasksdata, null, TimeSpan.Zero, _interval);
             Console.WriteLine("Scheduled task started.");
             return Task.CompletedTask;
         }
