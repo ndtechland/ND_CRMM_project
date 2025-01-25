@@ -75,7 +75,9 @@
                                                 }
                                             </div>
                                         </div>
-
+                                        <button id="rowAdder" type="button" class="btn btn-dark">
+                                            <span class="fa fa-plus"></span> Add Features
+                                        </button>
                                     </div>
                                     <div class="form-group" style="display:flex; justify-content:center;">
                                         <input type="submit" value="Submit" class="btn btn-primary" />
@@ -170,8 +172,8 @@
 
             newServiceTextbox.append(
                 $("<div>").addClass("input-group m-3")
-                .append(inputTextbox)
-                .append(removeButton)
+                    .append(inputTextbox)
+                    .append(removeButton)
             );
 
             $("#serviceContainer").append(newServiceTextbox);

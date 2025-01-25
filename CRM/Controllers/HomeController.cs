@@ -541,61 +541,59 @@ namespace CRM.Controllers
         {
             if (model != null)
             {
-                if (model.Id == 0)
+                if (model.Id == 0) // Add new work location
                 {
-                    var data = new WorkLocationDTO()
+                    var newWorkLocation = new WorkLocation1
                     {
                         Customerid = model.Customerid,
                         Createdate = DateTime.Now,
                         Isactive = true
                     };
-                    _context.Add(data);
-                    _context.SaveChanges();
+                    _context.WorkLocations1.Add(newWorkLocation);
+                    await _context.SaveChangesAsync();
+
                     foreach (var item in model.WorkLocationList)
                     {
-                        AddWorkLocation features = new()
+                        var newFeature = new AddWorkLocation
                         {
-                            WorkLocationid = data.Id,
-                            WorkLocationName = item.WorkLocationName,
+                            WorkLocationid = newWorkLocation.Id,
+                            WorkLocationName = item.WorkLocationName
                         };
-                        await _context.AddWorkLocations.AddAsync(features);
-                        await _context.SaveChangesAsync();
-
+                        _context.AddWorkLocations.Add(newFeature);
                     }
-                    return View();
+                    await _context.SaveChangesAsync();
                 }
-                else
+                else // Update existing work location
                 {
-                    var existdata = _context.WorkLocations1.Find(model.Id);
-
-                    existdata.Customerid = model.Customerid;
-
-                    var existingFeature = await _context.PricingPlanFeatures
-                        .Where(s => s.PricingPlanId == existdata.Id)
-                        .ToListAsync();
-                    _context.PricingPlanFeatures.RemoveRange(existingFeature);
-
-                    // Add new feature
-                    foreach (var item in model.WorkLocationList)
+                    var existingWorkLocation = _context.WorkLocations1.Find(model.Id);
+                    if (existingWorkLocation != null)
                     {
-                        AddWorkLocation feature = new AddWorkLocation
+                        existingWorkLocation.Customerid = model.Customerid;
+                        _context.WorkLocations1.Update(existingWorkLocation);
+
+                        // Remove existing features
+                        var existingFeatures = await _context.AddWorkLocations
+                            .Where(f => f.WorkLocationid == existingWorkLocation.Id)
+                            .ToListAsync();
+                        _context.AddWorkLocations.RemoveRange(existingFeatures);
+
+                        // Add new features
+                        foreach (var item in model.WorkLocationList)
                         {
-                            WorkLocationid = existdata.Id,
-                            WorkLocationName = item.WorkLocationName,
-                        };
-                        await _context.AddWorkLocations.AddAsync(feature);
+                            var newFeature = new AddWorkLocation
+                            {
+                                WorkLocationid = existingWorkLocation.Id,
+                                WorkLocationName = item.WorkLocationName
+                            };
+                            _context.AddWorkLocations.Add(newFeature);
+                        }
+                        await _context.SaveChangesAsync();
                     }
-
-
                 }
-                _context.SaveChanges();
                 return RedirectToAction("WorkLocationlist");
             }
-            else
-            {
-                ModelState.Clear();
-                return View("WorkLocationlist");
-            }
+
+            ModelState.Clear();
             return View("WorkLocationlist");
         }
 
