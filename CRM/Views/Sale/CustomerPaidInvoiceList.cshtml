@@ -1,0 +1,170 @@
+﻿@model IEnumerable<CRM.Models.DTO.CustomerpaidInvoiceDTO>
+
+@{
+    ViewData["Title"] = "CustomerpaidInvoice";
+    Layout = "~/Views/Shared/_adminLayout.cshtml";
+}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+
+
+<style>
+    .dataTables_wrapper table.dataTable th {
+        background-color: #00baf2 !important;
+        padding: 24px 0.75rem !important;
+    }
+</style>
+
+<div id="content">
+    <div class="page-wrapper">
+        <div class="page-body-wrapper">
+            <div class="page-sidebar">
+            </div>
+            <!-- Page Sidebar Ends-->
+            <!-- Right sidebar Start-->
+            <!-- Right sidebar Ends-->
+
+            <div class="page-body">
+
+                <!-- Container-fluid starts-->
+                <div class="container-fluid">
+                    <div class="page-header">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="page-header-left">
+                                    <h2>
+                                        Paid Invoice List
+                                    </h2>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <ol class="breadcrumb pull-right">
+                                    <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
+                                    <li class="breadcrumb-item">CRM</li>
+                                    <li class="breadcrumb-item">Sales</li>
+                                    <li class="breadcrumb-item active">Paid Invoice</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <!-- Container-fluid Ends-->
+                <!-- Container-fluid starts-->
+                <div class="container-fluid">
+                    <div class="row">
+
+                        <div class="col-sm-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <img src="~/image/execimage.png" style="height:50px; margin-left:96%;width:53px;cursor:pointer" title="Export To Excel" onclick="ExportpaidinvoiceExcelfn()" />
+
+                                    <div class="table-responsive">
+                                        <table id="datatable" class="table table-hover">
+                                            <thead>
+                                                <tr style="background-color: #00baf2;">
+                                                    <th nowrap>Sl. No.</th>
+                                                    <th nowrap>Invoice Number</th>
+                                                    <th nowrap>
+                                                        Company Name
+                                                    </th>
+                                                    <th nowrap>
+                                                        Mobile Number
+                                                    </th>
+                                                    <th nowrap>
+                                                        Email Id
+                                                    </th>
+                                                    <th nowrap>
+                                                        Billing State
+                                                    </th>
+                                                    <th nowrap>
+                                                        Total Payment
+                                                    </th>
+                                                    <th nowrap>
+                                                        Paid Payment
+                                                    </th>
+                                                    <th nowrap>
+                                                        Payment Status
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @{
+                                                    var count = 0;
+                                                    foreach (var item in Model)
+                                                    {
+                                                        count++;
+                                                        <tr class="table-row" data-companyName="@item.CompanyName">
+                                                            <td>@count</td>
+                                                            <td nowrap><a href="/Sale/ProductInvoice?InvoiceNumber=@item.InvoiceNumber">@item.InvoiceNumber</a></td>
+                                                            <td nowrap>
+                                                                @Html.DisplayFor(modelItem => item.CompanyName)
+                                                            </td>
+                                                            <td nowrap>
+                                                                @Html.DisplayFor(modelItem => item.MobileNumber)
+                                                            </td>
+                                                            <td nowrap>
+                                                                @Html.DisplayFor(modelItem => item.Email)
+                                                            </td>
+                                                            <td nowrap>
+                                                                @item.BillingState
+                                                            </td>
+                                                            <td nowrap>
+                                                                @item.TotalAmount
+                                                            </td>
+
+                                                            <td nowrap>
+                                                                @item.PaidAmount
+                                                            </td>
+                                                            <td nowrap>
+                                                                @item.PaymentStatus
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                }
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#datatable').DataTable();
+    });
+
+       function ExportpaidinvoiceExcelfn() {
+        const firstRow = document.querySelector('.table-row');
+        const comname = firstRow ? firstRow.getAttribute('data-companyName') : null;
+
+        if (comname) {
+            window.location.href = '/Sale/ExportCustomerPaidInvoiceReport?CompanyName=' + comname;
+        } else {
+            alert('No Company Name found!');
+        }
+    }
+</script>
+
+
+
+

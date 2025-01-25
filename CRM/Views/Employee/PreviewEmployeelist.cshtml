@@ -1,0 +1,330 @@
+﻿@model IEnumerable<CRM.Models.DTO.Priewempdata>
+
+@{
+    ViewData["Title"] = "Employeelist";
+    Layout = "~/Views/Shared/_adminLayout.cshtml";
+}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel='stylesheet' href='https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css'>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js'></script>
+<script src='https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js'></script>
+<script src='https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js'></script>
+<script src='https://cdn.datatables.net/buttons/1.2.2/js/buttons.colVis.min.js'></script>
+<script src='https://cdn.datatables.net/buttons/1.2.2/js/buttons.html5.min.js'></script>
+<script src='https://cdn.datatables.net/buttons/1.2.2/js/buttons.print.min.js'></script>
+<script src='https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js'></script>
+<script src='https://cdn.datatables.net/buttons/1.2.2/js/buttons.bootstrap.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js'></script>
+<script src='https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js'></script>
+
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var message = "@TempData["Message"]";
+
+        if (message == "dltok") {
+            if (message) {
+
+
+                Swal.fire({
+                    title: 'Success',
+                    text: "Deleted successfully.",
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        setTimeout(function () {
+                            window.location.href = '@Url.Action("Employeelist", "Employee")';
+                        }, 1000);
+                    }
+                });
+            }
+        }
+        else {
+            if (message) {
+                Swal.fire({
+                    title: 'Failed',
+                    text: message,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        setTimeout(function () {
+                            window.location.href = '@Url.Action("Employeelist", "Employee")';
+                        }, 1000);
+                    }
+                });
+            }
+        }
+    });
+</script>
+<style>
+    .dataTables_wrapper table.dataTable th {
+        background-color: #00baf2 !important;
+        padding: 24px 0.75rem !important;
+    }
+
+    .status-checkbox {
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+        border: 2px solid gray;
+        background-color: white;
+        appearance: none;
+        cursor: pointer;
+        outline: none;
+        position: relative;
+        transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+
+        .status-checkbox:checked {
+            background-color: #25a725;
+            border-color: #25a725;
+        }
+
+        .status-checkbox:not(:checked) {
+            background-color: #db2121;
+            border-color: #db2121;
+        }
+
+        .status-checkbox::before {
+            content: '✓';
+            color: white;
+            font-size: 16px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .status-checkbox:hover {
+            border-color: black;
+        }
+
+
+</style>
+
+<div class="page-wrapper">
+    <div class="page-body-wrapper">
+        <div class="page-sidebar">
+        </div>
+        <div class="page-body">
+            <div class="container-fluid">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="page-header-left">
+                                <h3>
+                                    Employee List
+                                </h3>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <ol class="breadcrumb pull-right">
+                                <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
+                                <li class="breadcrumb-item">HR Payrole</li>
+                                <li class="breadcrumb-item active">Employee</li>
+                                <li class="breadcrumb-item active">EmployeeList</li>
+                            </ol>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Container-fluid Ends-->
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <img src="~/image/execimage.png" style="height:50px; margin-left:96%;width:53px;cursor:pointer" title="Export To Excel" onclick="ExportExcelfn()" />
+
+                                <div class="table-responsive" style="margin-top: 16px;">
+
+                                    <table id="datatable" class="table table-hover">
+                                        <thead>
+                                            <tr style="background-color: #00baf2;">
+                                                <th nowrap>
+                                                    Status
+                                                </th>
+                                                <th nowrap>
+                                                    Sl. No.
+                                                </th>
+
+                                                <th nowrap>
+                                                    Employee Name
+                                                </th>
+
+                                                <th nowrap>
+                                                    Employee ID
+                                                </th>
+
+                                                <th nowrap>
+                                                    Date Of Joining
+                                                </th>
+
+                                                <th nowrap>
+                                                    Work Email
+                                                </th>
+                                                <th nowrap>
+                                                    Department
+                                                </th>
+                                                <th nowrap>
+                                                    Designation
+                                                </th>
+                                                <th nowrap>
+                                                    AnnualCTC
+                                                </th>
+                                                <th nowrap>
+                                                    Action
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{
+                                                var count = 0;
+                                                @foreach (var item in Model)
+                                                {
+                                                    count++;
+                                                    <tr class="table-row">
+                                                       <td>
+                                                            <input type="checkbox"
+                                                                   id="empisactive_@item.Id"
+                                                                   name="Isactive"
+                                                                   value="@true"
+                                                            @(item.Isactive.HasValue && item.Isactive.Value ? "checked" : "")
+                                                                   class="status-checkbox"
+                                                                   onclick="updateEmployeeIsactive(@item.Id, this.checked)">
+                                                        </td>
+
+
+
+                                                        <td>@count</td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.FirstName) @Html.DisplayFor(modelItem => item.MiddleName)  @Html.DisplayFor(modelItem => item.LastName)
+                                                        </td>
+
+                                                        <td nowrap >
+                                                            @Html.DisplayFor(modelItem => item.Emp_Reg_ID)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @item.DateOfJoining.ToString("dd/MM/yyyy")
+                                                        </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.WorkEmail)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.DepartmentName)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.DesignationName)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.AnnualCtc)
+                                                        </td>
+                                                        <td nowrap>
+                                                            <div>
+                                                                <a href="getEmployeedata?empid=@item.Emp_Reg_ID" class="fa fa-eye m-2 font-success"></a>
+                                                                <a href="EmployeeRegistration?id=@item.Emp_Reg_ID" class="fa fa-edit m-2 font-success"></a>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+</div>
+
+<script>
+    function confirmDelete(url) {
+        var result = confirm("Are you sure you want to delete?");
+        if (result) {
+            window.location.href = url;
+        }
+    }
+    function ExportExcelfn() {
+        window.location.href = '/Employee/ExportToExcelEmployeeList';
+    }
+</script>
+
+
+
+<script>
+    $(document).ready(function () {
+        document.title = 'Employee List';
+        $('#datatable').DataTable(
+            {
+                "dom": '<"dt-buttons"Bf><"clear">lirtp',
+                "paging": true,
+                "autoWidth": true,
+                "buttons": [
+                    'colvis',
+                    'copyHtml5',
+                    'csvHtml5',
+                    'excelHtml5',
+                    'pdfHtml5',
+                    'print'
+                ]
+            }
+        );
+    });
+</script>
+<script>
+    function updateEmployeeIsactive(id, isActive) {
+        $.ajax({
+            url: '/Employee/UpdateEmployeeIsactive',
+            type: 'POST',
+            data: { id: id, isActive: isActive },
+            success: function (response) {
+                if (response.success) {
+                    Swal.fire('Success', response.message, 'success');
+                } else {
+                    Swal.fire('Error', response.message, 'error');
+                }
+                // Update the checkbox color
+                updateCheckboxColor(id, isActive);
+            },
+            error: function () {
+                Swal.fire('Error', 'An unexpected error occurred while updating the employee status.', 'error');
+                // Optionally revert the checkbox state on error
+                const checkbox = document.getElementById(`empisactive_${id}`);
+                checkbox.checked = !isActive; // Revert state
+                updateCheckboxColor(id, !isActive); // Update color
+            }
+        });
+    }
+
+    function updateCheckboxColor(id, isActive) {
+        const checkbox = document.getElementById(`empisactive_${id}`);
+        if (checkbox) {
+            checkbox.style.accentColor = isActive ? "#25a725" : "#db2121"; // Green for checked, red for unchecked
+        }
+    }
+
+    // Initialize colors when the page loads
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.status-checkbox').forEach(checkbox => {
+            const id = checkbox.id.split('_')[1];
+            updateCheckboxColor(id, checkbox.checked); // Set initial color
+        });
+    });
+
+
+
+</script>

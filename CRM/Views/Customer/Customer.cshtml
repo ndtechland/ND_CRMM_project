@@ -121,24 +121,21 @@
                                     <div class="row">
                                         <div class="form-group col-sm">
                                             <label class="control-label">State Name <span class="text-danger">*</span></label>
-                                            <div>
+                                            <div class="dropdown-container position-relative">
                                                 <select class="form-control" asp-for="StateId" asp-items="@ViewBag.StateItems" id="ddlState">
-                                                    <option value="">--Select State--</option>
+                                                    <option value="">-- Select State --</option>
                                                 </select>
-                                                @*<select class="form-control" name="StateId" id="ddlState">
-                                                <option value="">-- Select State --</option>
-                                                @foreach (var state in ViewBag.States as IEnumerable<SelectListItem>)
-                                                {
-                                                <option value="@state.Value">@state.Text</option>
-                                                }
-                                                </select>*@
+                                                <i class="dropdown-icon fa fa-caret-down position-absolute"></i>
                                             </div>
                                         </div>
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">City Name <span class="text-danger">*</span></label>
+                                            <div class="dropdown-container position-relative">
                                             <select asp-for="CityId" class="form-control" id="ddlCityid" required>
-                                                <option value="">--Select City--</option>
+                                                <option value="">-- Select City --</option>
                                             </select>
+                                                <i class="dropdown-icon fa fa-caret-down position-absolute"></i>
+                                            </div>
                                         </div>
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Mobile Number <span class="text-danger">*</span></label>
@@ -184,15 +181,21 @@
                                         </div>
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">State <span class="text-danger">*</span></label>
+                                            <div class="dropdown-container position-relative">
                                             <select asp-for="BillingStateId" asp-items="@ViewBag.StateItems" id="stateid" class="form-control" required>
-                                                <option value="">--Select State--</option>
+                                                <option value="">-- Select State --</option>
                                             </select>
+                                                <i class="dropdown-icon fa fa-caret-down position-absolute"></i>
+                                            </div>
                                         </div>
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">City <span class="text-danger">*</span></label>
+                                            <div class="dropdown-container position-relative">
                                             <select asp-for="BillingCityId" class="form-control" id="districtid" required>
-                                                <option value="">--Select City--</option>
+                                                <option value="">-- Select City --</option>
                                             </select>
+                                                <i class="dropdown-icon fa fa-caret-down position-absolute"></i>
+                                            </div>
                                         </div>
                                         @* <div class="form-group col-sm">
                                             <label for="validationCustom0">Product Details <span class="text-danger">*</span></label>

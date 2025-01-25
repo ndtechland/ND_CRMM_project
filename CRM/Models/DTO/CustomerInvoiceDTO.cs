@@ -6,6 +6,7 @@ namespace CRM.Models.DTO
     {
         public int? ProductId { get; set; }
         public decimal? ProductPrice { get; set; }
+        public int? Qty { get; set; }
         public string? Description { get; set; }
         public int InvoiceId { get; set; }
         public int? CustomerId { get; set; }
@@ -66,6 +67,7 @@ namespace CRM.Models.DTO
     {
         public int Id { get; set; }
         public int? ProductId { get; set; }
+        public int? Qty { get; set; }
         public string? Description { get; set; }
         public int? CustomerId { get; set; }
         public decimal? ProductPrice { get; set; } 
@@ -86,6 +88,8 @@ namespace CRM.Models.DTO
     {
         public int? ProductId { get; set; }
         public string? ProductName { get; set; }
+        public int? Qty { get; set; }
+        public decimal? ProductRate { get; set; }
         public decimal? ProductPrice { get; set; }
         public decimal? IGST { get; set; }
         public decimal? SGST { get; set; }
@@ -98,6 +102,25 @@ namespace CRM.Models.DTO
         public decimal? DueAmount { get; set; }
         public decimal? PaidAmount { get; set; }
         public string? Description { get; set; }
+        public decimal? TotalAmount { get; set; }
+        public string? totalInWords { get; set; }
+
+    }
+
+    public class CustomerpaidInvoiceDTO
+    {
+        public string? InvoiceNumber { get; set; }
+        public string? CompanyName { get; set; }
+        public string MobileNumber { get; set; }
+        public string Email { get; set; }
+        public string OfficeState { get; set; }
+        public string BillingState { get; set; }
+        public string BillingCity { get; set; }
+        public decimal? TotalAmount { get; set; }
+        public decimal? PaidAmount { get; set; }
+        public string PaymentStatus { get; set; }
+        public int? NoofInvoice { get; set; }
+
 
     }
 

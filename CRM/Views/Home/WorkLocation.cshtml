@@ -1,4 +1,4 @@
-﻿@model CRM.Models.Crm.WorkLocation1
+﻿@model CRM.Models.DTO.WorkLocationDTO
 
 @{
     ViewData["Title"] = "WorkLocation";
@@ -41,38 +41,39 @@
                         <div class="card">
                             <div class="card-body">
                                 <form asp-action="WorkLocation" autocomplete="off" onsubmit="return validateForm()">
-                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div> 
+                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                                     <div class="row">
                                         <div class="form-group col-sm-4">
-                                            <label class="control-label">State Name</label>
-                                            <div>
-                                                <select class="form-control" name="StateId" id="ddlState"></select>
-                                                
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="form-group col-sm-4">
-                                            <label class="control-label">City Name</label>
-                                            <div>
-                                                <select class="form-control" name="CityId" id="ddlCity">
-                                                    <option value="">-- Select City Name --</option>
+                                            <label>Company Name<span class="text-danger">*</span></label>
+                                            <div class="dropdown-container position-relative">
+                                                <select name="Customerid" class="form-control" id="ddCustomerid">
+                                                    <option value="0">-- Select Company Name --</option>
                                                 </select>
+                                                <i class="dropdown-icon fa fa-caret-down position-absolute"></i>
                                             </div>
+                                            <span id="CustomerCompanyNameError" class="text-danger" style="display:none;">Please select Company Name</span>
                                         </div>
-                                        @* <div class="form-group col-sm-4">
-                                            <label class="control-label">Address</label>
-                                            <input asp-for="AddressLine1" class="form-control" />
-                                            <span asp-validation-for="AddressLine1" class="text-danger"></span>
-                                        </div> *@
                                         <div class="form-group col-sm-4">
-                                            <label class="control-label">Commission in Percentage</label>
-                                            <div class="input-group">
-                                                <input asp-for="Commissoninpercentage" class="form-control" placeholder="Enter Commissonin Percentage " />
-                                                <div class="input-group-append">
-                                                    <span class="input-group-text">%</span>
-                                                </div>
+                                            <div id="serviceContainer">
+                                                @if (Model?.WorkLocationList != null)
+                                                {
+                                                    int featureIndex = 0;
+                                                    foreach (var feature in Model.WorkLocationList)
+                                                    {
+                                                        <div class="service-container" id="row_@featureIndex">
+                                                            <div class="input-group m-3">
+                                                                <input type="text" name="WorkLocationList[@featureIndex].WorkLocationName" value="@feature.WorkLocationName" class="form-control m-input" required />
+                                                                <div class="input-group-prepend">
+                                                                    <button class="btn btn-danger deleteRow" data-index="@featureIndex" type="button">
+                                                                        <i class="fa fa-trash"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        featureIndex++;
+                                                    }
+                                                }
                                             </div>
-                                            <span asp-validation-for="Commissoninpercentage" class="text-danger"></span>
                                         </div>
 
                                     </div>
@@ -94,64 +95,94 @@
 </div>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
-    function validateForm() {
-        var addressLine = document.getElementById('AddressLine1').value;
-        var Commissoninpercentage = document.getElementById('Commissoninpercentage').value;
-
-        if (addressLine.trim() === '') {
-            alert('Address  cannot be blank.');
-            return false;
+    function bindCustomerCompanyNameid(CustomerCompanyName) {
+        var itemsListforCustomerCompanyNameid = @Json.Serialize(ViewBag.CustomerCompanyName);
+        debugger
+        var dropdownforCustomerCompanyNameid = $("#ddCustomerid");
+        $.each(itemsListforCustomerCompanyNameid, function (index, item) {
+            dropdownforCustomerCompanyNameid.append($('<option></option>').val(item.value).text(item.text));
+        });
+        if (CustomerCompanyName != "") {
+            $("#ddCustomerid").val(CustomerCompanyName)
         }
-        if (Commissoninpercentage.trim() === '') {
-            alert('Commissoninpercentage  cannot be blank.');
-            return false;
-        }
-        return true;
+    }
+    var CustomerCompany = '@ViewBag.Customerid';
+    if (CustomerCompany != "") {
+        bindCustomerCompanyNameid(CustomerCompany);
+    }
+    else {
+        bindCustomerCompanyNameid("");
     }
 </script>
-
 <script>
     $(document).ready(function () {
-        var ddlState = $('#ddlState');
-        ddlState.append($("<option></option>").val('').html('-- Please Select State --'));
-        $.ajax({
-            url: '/Home/BindStateDetails',
-            type: 'GET',
-            dataType: 'json',
-            success: function (d) {
-                $.each(d, function (i, states) {
-                    ddlState.append($("<option></option>").val(states.id).html(states.sName));
-                });
-            },
-            error: function () {
-                alert('Error!');
-            }
-        });
-        //City Bind By satate id
-        $("#ddlState").change(function () {
-            var StateId = parseInt($(this).val());
-            if (!isNaN(StateId)) {
-                var ddlCity = $('#ddlCity');
-                ddlCity.append($("<option></option>").val('').html('Please wait ...'));
+        // Select the serviceContainer element
+        const serviceContainer = document.getElementById('serviceContainer');
 
-                debugger;
-                $.ajax({
-                    url: '/Home/BindCityDetails',
-                    type: 'GET',
-                    dataType: 'json',
-                    data: { stateId: StateId },
-                    success: function (d) {
-                        ddlCity.empty(); // Clear the plese wait
-                        ddlCity.append($("<option></option>").val('').html('-- Select City Name --'));
-                        $.each(d, function (i, cities) {
-                            ddlCity.append($("<option></option>").val(cities.id).html(cities.city1));
-                        });
-                    },
-                    error: function () {
-                        alert('Error!');
-                    }
-                });
+        // Select all children with class 'service-container'
+        const serviceRows = serviceContainer.getElementsByClassName('service-container');
+
+        // Initialize an array to store the numeric parts of the IDs
+        let indices = [];
+
+        // Loop through serviceRows and push their numeric index into the array
+        for (let i = 0; i < serviceRows.length; i++) {
+            const id = serviceRows[i].id; // Get the ID
+            const index = parseInt(id.split('_')[1], 10); // Extract the numeric index
+
+            if (!isNaN(index)) {
+                indices.push(index); // Add to the array if it's a valid number
             }
+        }
+
+        // Get the maximum index
+        const maxIndex = indices.length > 0 ? Math.max(...indices) : -1; // -1 if no valid indices found
+
+        // Calculate the next index
+        const nextIndex = maxIndex + 1;
+
+        // Output the next index
+        console.log(nextIndex); // This will be the next index to use
+
+        // Initialize serviceIndex based on the existing count of PlanFeatures
+        var serviceIndex = nextIndex;
+
+        // Add a new feature row
+        $("#rowAdder").click(function () {
+            var newServiceTextbox = $("<div>")
+                .addClass("service-container")
+                .attr("id", "row_" + serviceIndex);
+
+            var inputTextbox = $("<input>")
+                .attr("type", "text")
+                .attr("name", "PlanFeatures[" + serviceIndex + "].Feature")
+                .attr("class", "form-control m-input")
+                .attr("required", true);
+
+            var removeButton = $("<button>")
+                .addClass("btn btn-danger deleteRow")
+                .attr("type", "button")
+                .attr("data-index", serviceIndex) // Use data attribute to track the index
+                .html('<i class="fa fa-trash"></i>')
+                .click(function () {
+                    $(this).closest(".service-container").remove();
+                });
+
+            newServiceTextbox.append(
+                $("<div>").addClass("input-group m-3")
+                .append(inputTextbox)
+                .append(removeButton)
+            );
+
+            $("#serviceContainer").append(newServiceTextbox);
+
+            // Increment serviceIndex for the next new feature
+            serviceIndex++;
         });
-    })
+
+        // Delete a feature row
+        $("body").on("click", ".deleteRow", function () {
+            $(this).closest(".service-container").remove();
+        });
+    });
 </script>

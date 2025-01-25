@@ -105,9 +105,12 @@
                                         <div class="form-group col-sm">
                                             <input type="hidden" name="Id" value="@ViewBag.id" />
                                             <label for="validationCustom0">Category<span>*</span></label>
+                                            <div class="dropdown-container position-relative">
                                             <select name="Category" class="form-control" id="ddCategory">
                                                 <option value="0">-- Select Category --</option>
                                             </select>
+                                                <i class="dropdown-icon fa fa-caret-down position-absolute"></i>
+                                            </div>
                                             <span asp-validation-for="Category" class="text-danger"></span>
                                         </div>
                                         <div class="form-group col-sm">
@@ -131,9 +134,12 @@
                                     <div class="row">
                                         <div class="form-group col-sm-6">
                                             <label for="validationCustom0">GST</label>
+                                            <div class="dropdown-container position-relative">
                                             <select name="Gst" class="form-control" id="ddgstid">
                                                 <option value="0">-- Select Gst --</option>
                                             </select>
+                                                <i class="dropdown-icon fa fa-caret-down position-absolute"></i>
+                                            </div>
                                             <span asp-validation-for="Gst" class="text-danger"></span>
                                         </div>
                                     </div>

@@ -18,6 +18,7 @@ namespace CRM.Models.Crm
 
         public virtual DbSet<Aboutcompany> Aboutcompanies { get; set; } = null!;
         public virtual DbSet<AccountTypeMaster> AccountTypeMasters { get; set; } = null!;
+        public virtual DbSet<AddWorkLocation> AddWorkLocations { get; set; } = null!;
         public virtual DbSet<Additonalcontribution> Additonalcontributions { get; set; } = null!;
         public virtual DbSet<AdminLogin> AdminLogins { get; set; } = null!;
         public virtual DbSet<AggregatedCounter> AggregatedCounters { get; set; } = null!;
@@ -85,6 +86,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<OfficeBreakstatus> OfficeBreakstatuses { get; set; } = null!;
         public virtual DbSet<OfficeEvent> OfficeEvents { get; set; } = null!;
         public virtual DbSet<Officeshift> Officeshifts { get; set; } = null!;
+        public virtual DbSet<OldEmployeeSalaryDetail> OldEmployeeSalaryDetails { get; set; } = null!;
         public virtual DbSet<OtherService> OtherServices { get; set; } = null!;
         public virtual DbSet<OurCoreValue> OurCoreValues { get; set; } = null!;
         public virtual DbSet<OurExpertise> OurExpertises { get; set; } = null!;
@@ -150,6 +152,15 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.AccountType)
                     .HasMaxLength(50)
                     .HasColumnName("Account_Type");
+            });
+
+            modelBuilder.Entity<AddWorkLocation>(entity =>
+            {
+                entity.ToTable("AddWorkLocation");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.WorkLocationName).HasMaxLength(250);
             });
 
             modelBuilder.Entity<Additonalcontribution>(entity =>
@@ -1248,6 +1259,8 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Incentive).HasColumnType("decimal(18, 0)");
 
+                entity.Property(e => e.IncrementPercentage).HasColumnType("decimal(9, 2)");
+
                 entity.Property(e => e.Medical).HasColumnType("decimal(9, 0)");
 
                 entity.Property(e => e.Medicalpercentage).HasColumnType("decimal(9, 2)");
@@ -1699,6 +1712,109 @@ namespace CRM.Models.Crm
                     .HasColumnName("starttime");
             });
 
+            modelBuilder.Entity<OldEmployeeSalaryDetail>(entity =>
+            {
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.Amount)
+                    .HasColumnType("decimal(18, 0)")
+                    .HasColumnName("amount");
+
+                entity.Property(e => e.AnnualCtc)
+                    .HasColumnType("decimal(18, 0)")
+                    .HasColumnName("AnnualCTC");
+
+                entity.Property(e => e.Basic).HasColumnType("decimal(18, 0)");
+
+                entity.Property(e => e.Basicpercentage).HasColumnType("decimal(9, 2)");
+
+                entity.Property(e => e.Composite).HasColumnType("decimal(9, 0)");
+
+                entity.Property(e => e.Conveyanceallowance)
+                    .HasColumnType("decimal(9, 0)")
+                    .HasColumnName("conveyanceallowance");
+
+                entity.Property(e => e.Conveyancepercentage).HasColumnType("decimal(9, 2)");
+
+                entity.Property(e => e.Createddate)
+                    .HasColumnType("datetime")
+                    .HasColumnName("createddate");
+
+                entity.Property(e => e.EmpId).HasColumnName("EmpID");
+
+                entity.Property(e => e.EmployeeId)
+                    .HasMaxLength(120)
+                    .HasColumnName("EmployeeID");
+
+                entity.Property(e => e.EmployeeName).HasMaxLength(120);
+
+                entity.Property(e => e.EmployerContribution).HasColumnType("decimal(9, 0)");
+
+                entity.Property(e => e.EmployerContributionpercentage).HasColumnType("decimal(9, 2)");
+
+                entity.Property(e => e.Epf)
+                    .HasColumnType("decimal(18, 0)")
+                    .HasColumnName("EPF");
+
+                entity.Property(e => e.Epfpercentage)
+                    .HasColumnType("decimal(9, 2)")
+                    .HasColumnName("EPfpercentage");
+
+                entity.Property(e => e.Esic)
+                    .HasColumnType("decimal(18, 0)")
+                    .HasColumnName("ESIC");
+
+                entity.Property(e => e.Esipercentage).HasColumnType("decimal(9, 2)");
+
+                entity.Property(e => e.FixedAllowance).HasColumnType("decimal(9, 0)");
+
+                entity.Property(e => e.Gross)
+                    .HasColumnType("decimal(18, 0)")
+                    .HasColumnName("gross");
+
+                entity.Property(e => e.HouseRentAllowance).HasColumnType("decimal(18, 0)");
+
+                entity.Property(e => e.Hrapercentage)
+                    .HasColumnType("decimal(9, 2)")
+                    .HasColumnName("HRApercentage");
+
+                entity.Property(e => e.Incentive).HasColumnType("decimal(18, 0)");
+
+                entity.Property(e => e.IncrementPercentage).HasColumnType("decimal(9, 2)");
+
+                entity.Property(e => e.Medical).HasColumnType("decimal(9, 0)");
+
+                entity.Property(e => e.Medicalpercentage).HasColumnType("decimal(9, 2)");
+
+                entity.Property(e => e.MonthlyCtc)
+                    .HasColumnType("decimal(18, 0)")
+                    .HasColumnName("MonthlyCTC");
+
+                entity.Property(e => e.MonthlyGrossPay).HasColumnType("decimal(18, 0)");
+
+                entity.Property(e => e.Professionaltax).HasColumnType("decimal(18, 0)");
+
+                entity.Property(e => e.Servicecharge)
+                    .HasColumnType("decimal(18, 0)")
+                    .HasColumnName("servicecharge");
+
+                entity.Property(e => e.SpecialAllowance).HasColumnType("decimal(18, 0)");
+
+                entity.Property(e => e.Tdspercentage)
+                    .HasColumnType("decimal(18, 0)")
+                    .HasColumnName("tdspercentage");
+
+                entity.Property(e => e.Tdsvalue)
+                    .HasColumnType("decimal(9, 2)")
+                    .HasColumnName("tdsvalue");
+
+                entity.Property(e => e.TravellingAllowance).HasColumnType("decimal(18, 0)");
+
+                entity.Property(e => e.VariablePay).HasColumnType("decimal(9, 0)");
+
+                entity.Property(e => e.Variablepercentage).HasColumnType("decimal(9, 2)");
+            });
+
             modelBuilder.Entity<OtherService>(entity =>
             {
                 entity.ToTable("OtherService");
@@ -2070,8 +2186,6 @@ namespace CRM.Models.Crm
                 entity.ToTable("UserRole");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-
-                entity.Property(e => e.RoleName).HasMaxLength(300);
             });
 
             modelBuilder.Entity<VendorBankDetail>(entity =>
@@ -2236,17 +2350,9 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
-                entity.Property(e => e.CityId).HasColumnName("CityID");
-
-                entity.Property(e => e.Commissoninpercentage)
-                    .HasColumnType("decimal(18, 0)")
-                    .HasColumnName("commissoninpercentage");
-
                 entity.Property(e => e.Createdate)
                     .HasColumnType("datetime")
                     .HasColumnName("createdate");
-
-                entity.Property(e => e.StateId).HasColumnName("stateId");
             });
 
             OnModelCreatingPartial(modelBuilder);

@@ -6,7 +6,6 @@ namespace CRM.Models.Crm
     public partial class UserRole
     {
         public int Id { get; set; }
-        public string? RoleName { get; set; }
         public bool? IsAll { get; set; }
         public string? IsHeadChecked { get; set; }
         public string? IsChildHeadChecked { get; set; }
@@ -16,5 +15,6 @@ namespace CRM.Models.Crm
         public string? IsChildSubHeadTwoChecked { get; set; }
         public bool? IsActive { get; set; }
         public DateTime? CreatedDate { get; set; }
+        public int? PlanId { get; set; }
     }
 }

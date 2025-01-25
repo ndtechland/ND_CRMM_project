@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace CRM.Models.Crm
 {
-    public partial class EmployeeSalaryDetail
+    public partial class OldEmployeeSalaryDetail
     {
         public int Id { get; set; }
         public string EmployeeId { get; set; } = null!;
@@ -40,7 +40,8 @@ namespace CRM.Models.Crm
         public decimal? EmployerContributionpercentage { get; set; }
         public decimal? Epfpercentage { get; set; }
         public decimal? Esipercentage { get; set; }
-        public bool? IsIncrement { get; set; }
         public decimal? IncrementPercentage { get; set; }
+        public DateTime? Createddate { get; set; }
+        public bool? IsIncrement { get; set; }
     }
 }

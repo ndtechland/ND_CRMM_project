@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CRM.Models.DTO
 {
@@ -45,7 +46,9 @@ namespace CRM.Models.DTO
         public string? InvoiceNumber { get; set; }
         public string? Notes { get; set; }
         public string? Terms { get; set; }
-        public int? UserRoleId { get; set; }
+        public bool? SelectCompany { get; set; }
+        public SelectList Planlist { get; set; }
+
     }
     public partial class VendorRegistrationDto
     {

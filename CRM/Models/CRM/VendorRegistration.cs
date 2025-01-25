@@ -41,6 +41,6 @@ namespace CRM.Models.Crm
         public string? VendorSingature { get; set; }
         public string? Notes { get; set; }
         public string? Terms { get; set; }
-        public int? UserRoleId { get; set; }
+        public bool? SelectCompany { get; set; }
     }
 }

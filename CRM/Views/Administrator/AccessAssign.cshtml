@@ -6,6 +6,57 @@
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 
 }
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var message = "@TempData["Message"]";
+        if (message == "ok" || message == "dltok" || message == "updok") {
+            if (message) {
+                let alertText;
+
+                if (message == "dltok") {
+                    alertText = "Deleted successfully.";
+                } else if (message == "updok") {
+                    alertText = "Updated successfully.";
+                } 
+                else {
+                    alertText = "Added successfully.";
+                }
+
+                Swal.fire({
+                    title: 'Success',
+                    text: alertText,
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        setTimeout(function () {
+                            window.location.href = '@Url.Action("AccessAssign", "Administrator")';
+                        }, 1000);
+                    }
+                });
+            }
+        }
+        else {
+            if (message) {
+                Swal.fire({
+                    title: 'Failed',
+                    text: message,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        setTimeout(function () {
+                            window.location.href = '@Url.Action("AccessAssign", "Administrator")';
+                        }, 1000);
+                    }
+                });
+            }
+        }
+    });
+</script>
 <style>
     html, body {
         background: #f2f2f2;
@@ -168,31 +219,21 @@
                                     <div class="card-body">
                                         <input name="MenuId" type="hidden" value="@ViewBag.menuId" />
                                         <input name="Id" type="hidden" value="@Model.Id" />
-                                        @if (TempData["msg"] != null)
-                                        {
-                                            <div class="mb-3">
-                                                <div class="alert alert-success">
-                                                    @TempData["msg"]
-                                                </div>
-                                            </div>
-                                        }
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <div class="row">
-                                                    @* <div class="col-md-3">
-                                                    <label class="form-label-title">Select Company</label>
-                                                    @Html.DropDownListFor(a => a.CompanyId, Model.Companies, "--Select Company--", new { @class = "form-control", required = "required" })
-                                                    <span class="text-danger">
-                                                    @Html.ValidationMessageFor(a => a.CompanyId)
-                                                    </span>
-                                                    </div> *@
                                                     <div class="col-md-3">
-                                                        <label class="form-label-title">Role Name</label>
-                                                        @Html.TextBoxFor(a => a.RoleName, new { @class = "form-control", placeholder = "Role Name", required = "required" })
+                                                        <label class="form-label-title">Choose Plan</label>
+                                                        <div class="dropdown-container">
+                                                            @Html.DropDownListFor(model => model.PlanId, Model.Planlist, "--- Select Plan ---", new { @class = "form-control" })
+                                                            <i class="dropdown-icon fa fa-caret-down"></i>
+                                                        </div>
                                                         <span class="text-danger">
-                                                            @Html.ValidationMessageFor(a => a.RoleName)
+                                                            @Html.ValidationMessageFor(a => a.PlanName)
                                                         </span>
                                                     </div>
+                                                   
+
                                                 </div>
                                             </div>
                                         </div>
@@ -354,7 +395,7 @@
                                             <tr style="background-color: #4a6e86;">
                                                 <th nowrap>Sl. No.</th>
                                                 <th nowrap>
-                                                    Role Name
+                                                    Plan Name
                                                 </th>
                                                 <th nowrap>
                                                     Create Date
@@ -363,17 +404,17 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @if (Model != null && Model.UserRoleList != null)
+                                            @if (Model != null && Model.userRoleList != null)
                                             {
 
                                                 var countd = 0;
-                                                @foreach (var item in Model.UserRoleList)
+                                                @foreach (var item in Model.userRoleList)
                                                 {
                                                     countd++;
                                                     <tr class="table-row">
                                                         <td>@countd</td>
                                                         <td nowrap>
-                                                            @item.RoleName
+                                                            @item.PlanName (@item.PlanPrice)
                                                         </td>
                                                         <td nowrap>
                                                             @item.CreatedDate?.ToString("dd/MM/yyyy")

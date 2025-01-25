@@ -25,5 +25,6 @@ namespace CRM.Models.Crm
         public int? Offerletterid { get; set; }
         public long? OfficeshiftTypeid { get; set; }
         public bool? Isactive { get; set; }
+        public int? CustomerCompanyid { get; set; }
     }
 }

@@ -1,0 +1,155 @@
+﻿@model IEnumerable<CRM.Models.DTO.ApprovedwfhApplyList>
+
+@{
+    ViewData["Title"] = "TodayonWfh";
+    Layout = "~/Views/Shared/_adminLayout.cshtml";
+}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css">
+<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js"></script>
+
+<style>
+    .dataTables_wrapper table.dataTable th {
+        background-color: #00baf2 !important;
+        padding: 24px 0.75rem !important;
+    }
+</style>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var message = "@TempData["msg"]";
+
+        if (message) {
+            Swal.fire({
+                title: 'Success',
+                text: message,
+                icon: 'info',
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    setTimeout(function () {
+                        window.location.href = '@Url.Action("ApprovedWfhApply", "Vendor")';
+                    }, 1000);
+                }
+            });
+        }
+    });
+</script>
+
+<div class="page-wrapper">
+    <div class="page-body-wrapper">
+        <div class="page-sidebar">
+        </div>
+
+        <div class="page-body">
+
+            <div class="container-fluid">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="page-header-left">
+                                <h2>
+                                    Today Wfh List
+                                </h2>
+                            </div>
+                        </div>
+                    
+                    </div>
+                </div>
+            </div>
+
+            <div class="container-fluid">
+                <div class="row">
+
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <img src="~/image/execimage.png" style="height:50px; margin-left:96%;width:53px;cursor:pointer" title="Export To Excel" onclick="ExportTodayWfhApplyExcelfn()" />
+                                <div class="table-responsive">
+                                    <table id="datatable" class="table table-hover">
+                                        <thead>
+                                            <tr style="background-color: #00baf2;">
+                                                <th nowrap>Sl. No.</th>
+                                                <th nowrap>Employee ID</th>
+                                                <th nowrap>Employee Name</th>
+                                                <th nowrap>Mobile Number</th>
+                                                <th nowrap>Start Date</th>
+                                                <th nowrap>End Date</th>
+                                                <th nowrap>Total Days</th>
+                                                <th nowrap>Reason</th>
+                                                <th nowrap>Applied Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{
+                                                if (Model != null && Model.Any())
+                                                {
+                                                    var count = 0;
+                                                    foreach (var item in Model)
+                                                    {
+                                                        count++;
+                                                        <tr>
+                                                            <td>@count</td>
+                                                            <td nowrap>@item.UserId</td>
+                                                            <td nowrap>@item.EmployeeName</td>
+                                                            <td nowrap>@item.EmpMobileNumber</td>
+                                                            <td nowrap id="startDate_@item.Id" data-original-value="@item.StartDate?.ToString("yyyy-MM-dd")">
+                                                                @item.StartDate?.ToString("dd/MMM/yyyy")
+                                                            </td>
+                                                            <td nowrap id="endDate_@item.Id" data-original-value="@item.EndDate?.ToString("yyyy-MM-dd")">
+                                                                @item.EndDate?.ToString("dd/MMM/yyyy")
+                                                            </td>
+                                                            <td>@item.days</td>
+                                                            <td>@item.Reason</td>
+                                                            <td nowrap>@item.CreatedDate.ToString("dd/MMM/yyyy")</td>
+                                                        </tr>
+                                                    }
+                                                }
+                                              
+                                            }
+                                        </tbody>
+
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="pagination-container">
+                <ul id="pagination" class="pagination"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        document.title = 'ApprovedWfhlist';
+
+        // Serialize the status data from the server
+        var StatusData = @Html.Raw(Json.Serialize(ViewBag.approvestatus));
+
+        // Initialize DataTable
+        var table = $('#datatable').DataTable({
+            "dom": '<"dt-buttons"Bf><"clear">lirtp',
+            "paging": true,
+            "autoWidth": true,
+            "buttons": [
+                'colvis',
+                'copyHtml5',
+                'csvHtml5',
+                'excelHtml5',
+                'pdfHtml5',
+                'print'
+            ]
+        });
+    });
+
+    function ExportTodayWfhApplyExcelfn() {
+        window.location.href = '/Home/TodayonExportWfhApply';
+    }
+</script>
+

@@ -98,15 +98,35 @@ const validateStep2 = () => {
     }
 
     // Validate PAN number
+    //const pan = document.getElementById("PAN");
+    //const panError = document.getElementById("PANError");
+    //const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+    //if (!pan.value || !panRegex.test(pan.value)) {
+    //    panError.style.display = "block";
+    //    isValid = false;
+    //} else {
+    //    panError.style.display = "none";
+    //}
     const pan = document.getElementById("PAN");
     const panError = document.getElementById("PANError");
     const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
-    if (!pan.value || !panRegex.test(pan.value)) {
-        panError.style.display = "block";
-        isValid = false;
-    } else {
-        panError.style.display = "none";
-    }
+    pan.addEventListener('blur', function () {
+        // Convert the value to uppercase
+        pan.value = pan.value.toUpperCase();
+
+        // Validate the PAN format
+        if (!panRegex.test(pan.value)) {
+            panError.style.display = "block";  
+        } else {
+            panError.style.display = "none";  
+        }
+    });
+    pan.addEventListener('input', function () {
+        pan.value = pan.value.toUpperCase(); 
+    });
+
+
+
 
     // Validate address line 1
     const addressLine1 = document.getElementById("AddressLine1");

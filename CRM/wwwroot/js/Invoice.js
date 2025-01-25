@@ -99,7 +99,7 @@ function fetchCustomerDetails(customerId, cloneId, InvoiceID) {
     });
 }
 
- //Update tax fields based on product and billing state
+//Update tax fields based on product and billing state
 function updateTaxFields() {
     $(document).on('change', '.ProductDetails', function () {
         var $section = $(this).closest('.customer-section'); // Scope to the current section
@@ -223,7 +223,8 @@ function formatDateToYYYYMMDD(dateString) {
     return dateString.split('T')[0];
 }
 
-var ProductList = JSON.parse(productdata);
+var ProductList = JSON.parse(productdata.replace(/[\u0000-\u0019]+/g, ""));
+
 
 
 window.onload = function () {
@@ -248,14 +249,15 @@ window.onload = function () {
             newSection.querySelector('.ProductDetails').value = product.productId;
             newSection.querySelector('.Description').value = product.description;
             newSection.querySelector('.Price').value = product.productPrice;
+            newSection.querySelector('.PriceQty').value = product.productQty;
             newSection.querySelector('.NoOfRenewMonth').value = product.noOfRenewMonth;
             newSection.querySelector('.RenewPrice').value = product.renewPrice;
-            newSection.querySelector('.HsnSacCode').value = product.hsnSacCode;
+            newSection.querySelector('.HsnSacCode').value = product.hsncode;
             newSection.querySelector('.StartDate').value = formatDateToYYYYMMDD(product.startDate);
             newSection.querySelector('.RenewDate').value = formatDateToYYYYMMDD(product.renewDate);
-            newSection.querySelector('.IGST').value = product.iGST;
-            newSection.querySelector('.SGST').value = product.sGST;
-            newSection.querySelector('.CGST').value = product.cGST;
+            newSection.querySelector('.IGST').value = product.igst;
+            newSection.querySelector('.SGST').value = product.sgst;
+            newSection.querySelector('.CGST').value = product.cgst;
             //newSection.querySelector('.Dueamountdate').value = formatDateToYYYYMMDD(product.dueamountdate);
            
             // Show/remove the remove button accordingly
@@ -288,22 +290,31 @@ document.getElementById('addSection').addEventListener('click', function () {
         // Specify which fields should be read-only or editable in the new section
         newSection.querySelector('.RenewDate').setAttribute('readonly', true); // Set RenewDate as readonly
         newSection.querySelector('.ProductDetails').removeAttribute('readonly'); // Ensure ProductDetails is editable
-        newSection.querySelector('.Price'); // Ensure Price is readonly
+        newSection.querySelector('.Price'); 
+        newSection.querySelector('.PriceQty').value = '1';
         newSection.querySelector('.NoOfRenewMonth').removeAttribute('readonly'); // Ensure NoOfRenewMonth is editable
         newSection.querySelector('.RenewPrice').removeAttribute('readonly'); // Ensure RenewPrice is editable
         newSection.querySelector('.HsnSacCode').setAttribute('readonly', true); // Ensure HsnSacCode is readonly
         newSection.querySelector('.StartDate').removeAttribute('readonly'); // Ensure StartDate is editable
-        //newSection.querySelector('.Dueamountdate').removeAttribute('readonly'); // Ensure StartDate is editable
-        newSection.querySelector('.IGST').setAttribute('readonly', true); // Ensure IGST is readonly
-        newSection.querySelector('.SGST').setAttribute('readonly', true); // Ensure SGST is readonly
-        newSection.querySelector('.CGST').setAttribute('readonly', true); // Ensure CGST is readonly
-
+        newSection.querySelector('.IGST').setAttribute('readonly', true); 
+        newSection.querySelector('.SGST').setAttribute('readonly', true); 
+        newSection.querySelector('.CGST').setAttribute('readonly', true); 
+        
         // Reset any specific elements if needed
         newSection.querySelector('.RenewDate').value = ''; // Clear RenewDate specifically
         newSection.querySelector('.remove-section').style.display = 'inline-block'; // Show remove button
 
         // Append the new section to the customer sections
         customerSections.appendChild(newSection);
+        Swal.fire({
+            icon: 'success',
+            title: 'Section Added',
+            text: 'New section added successfully!',
+            timer: 2000,
+            timerProgressBar: true,
+            showConfirmButton: false 
+        });
+
     }
 });
 
@@ -457,6 +468,7 @@ function gatherProductDetails() {
             ProductId: section.querySelector('.ProductDetails').value,
             Description: section.querySelector('.Description').value,
             ProductPrice: section.querySelector('.Price').value,
+            Qty: section.querySelector('.PriceQty').value,
             NoOfRenewMonth: section.querySelector('.NoOfRenewMonth').value,
             RenewPrice: section.querySelector('.RenewPrice').value,
             HsnSacCode: section.querySelector('.HsnSacCode').value,
@@ -466,6 +478,7 @@ function gatherProductDetails() {
             IGST: section.querySelector('.IGST').value,
             SGST: section.querySelector('.SGST').value,
             CGST: section.querySelector('.CGST').value
+            
         };
 
         productDetails.push(productDetail);

@@ -20,6 +20,9 @@ using Employee = CRM.Repository.Employee;
 using Hangfire;
 using DinkToPdf.Contracts;
 using DinkToPdf;
+using jsreport.AspNetCore;
+using jsreport.Local;
+using jsreport.Binary;
 
 namespace CRM
 {
@@ -104,6 +107,10 @@ namespace CRM
                     builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
                 });
             });
+            services.AddJsReport(new LocalReporting()
+      .UseBinary(JsReportBinary.GetBinary())
+      .AsUtility()
+      .Create());
 
             //services.AddHangfire(config =>
             //{
@@ -118,9 +125,10 @@ namespace CRM
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+         
             // Use custom unauthorized middleware
             app.UseMiddleware<Unauthorized>();
-
+           
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

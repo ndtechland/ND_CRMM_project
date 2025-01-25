@@ -74,6 +74,7 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-body">
+                                <img src="~/image/execimage.png" style="height:50px; margin-left:96%;width:53px;cursor:pointer" title="Export To Excel" onclick="ExportApprovedWfhApply()" />
                                 <div class="table-responsive">
                                     <table id="datatable" class="table table-hover">
                                         <thead>
@@ -397,4 +398,8 @@
         });
     });
 
+
+    function ExportApprovedWfhApplyExcelfn() {
+        window.location.href = '/Vendor/ExportApprovedWfhApply';
+    }
 </script>
