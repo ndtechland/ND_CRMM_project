@@ -64,31 +64,31 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @{
+@*                                             @{
                                                 var count = 0;
-                                                        @foreach (var item in Model)
-                                            {
+                                                @foreach (var item in Model)
+                                                {
                                                     count++;
-                                                                <tr class="table-row">
-                                                                <td>@count</td>
-                                                                <td>
-                                                                    @Html.DisplayFor(modelItem => item.State)
-                                                                </td>
-                                                                <td>
-                                                                    @Html.DisplayFor(modelItem => item.City)
-                                                                </td>
-                                                                <td>
-                                                                   @Html.DisplayFor(modelItem => item.Commissoninpercentage)
-                                                                </td>
-                                                                <td>
-                                                                 <div>
-                                                                   <a href="#" class="fa fa-edit m-2 font-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="EditWorkLocation(@item.Id)"></a>
-                                                                    <a href="@Url.Action("DeleteWorkLocation","Home",new { id=item.Id})" class="fa fa-trash font-danger"></a>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                            }
-                                            }
+                                                    <tr class="table-row">
+                                                        <td>@count</td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.State)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.City)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.Commissoninpercentage)
+                                                        </td>
+                                                        <td>
+                                                            <div>
+                                                                <a href="#" class="fa fa-edit m-2 font-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="EditWorkLocation(@item.Id)"></a>
+                                                                <a href="@Url.Action("DeleteWorkLocation","Home",new { id=item.Id})" class="fa fa-trash font-danger"></a>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            } *@
                                         </tbody>
                                     </table>
                                 </div>
@@ -141,8 +141,8 @@
 
                                 </div>
                             </div>
-                           
-                           
+
+
                             <button class="btn btn-warning" id="btnUpdate">Update</button>
                             <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
 
@@ -153,7 +153,7 @@
         </div>
     </div>
 </div>
-<input type="hidden" id="cityId"/>
+<input type="hidden" id="cityId" />
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
     function EditWorkLocation(id) {
@@ -187,7 +187,7 @@
                             $.each(d, function (i, cities) {
                                 ddlCity.append($("<option></option>").val(cities.id).html(cities.city1));
                             });
-                            
+
                             $('#ddlCity').val($('#cityId').val());
                         },
                         error: function () {
@@ -238,7 +238,7 @@
                         $.each(d, function (i, cities) {
                             ddlCity.append($("<option></option>").val(cities.id).html(cities.city1));
                         });
-                      
+
                     },
                     error: function () {
                         alert('Error!');

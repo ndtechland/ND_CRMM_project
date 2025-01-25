@@ -48,7 +48,7 @@ namespace CRM.Repository
          public Task<List<ECS>> ESCExcel(int ? Userid);
 
         public WorkLocation1 GetWorkLocationById(int id);
-        public Task<int> updateWorkLocation(WorkLocation1 model);
+        //public Task<int> updateWorkLocation(WorkLocation1 model);
         public Task<int> updateDesignation(DesignationMaster model);
         public Task<int> updateDepartment(DepartmentMaster model);
         public Customer GetCustomerById(int id);
@@ -125,6 +125,7 @@ namespace CRM.Repository
         public Task<int> AddRelievingletterdetail(EmpRelievingletter model, int Userid);
         Task<bool> salarydeduction(Salarydeductionmaster model, int VendorId);
 
+        public Task<List<Priewempdata>> PreviewEmployeeList(int id);
 
     }
 }

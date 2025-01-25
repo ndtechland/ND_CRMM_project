@@ -118,6 +118,19 @@ namespace CRM.Controllers
         {
             string Username = HttpContext.Session.GetString("UserName");
             var model = new UserRoleDTO();
+            model.Planlist = new SelectList(
+                _context.PricingPlans
+                    .Where(a => a.IsActive ==true)
+                    .OrderByDescending(a => a.Id)
+                    .Select(a => new
+                    {
+                        a.Id,
+                        DisplayText = $"{a.PlanName} ({a.Price})"
+                    })
+                    .ToList(),
+                "Id",
+                "DisplayText"
+            );
             if (Username?.ToLower() == "admin")
             {
                 var HeadingQuery = @"select * from SoftwareLink where IsHeading=1 and Isvendor=1";
@@ -157,14 +170,22 @@ namespace CRM.Controllers
                         var HeadingChildList = await con.QueryAsync<Softwarelink>(HeadingChildQuery, commandType: CommandType.Text);
                         item.ChildMenus = HeadingChildList;
                     }
-                    model.UserRoleList = _context.UserRoles.ToList();
+                    model.userRoleList = (from ur in _context.UserRoles
+                                          join pp in _context.PricingPlans on ur.PlanId equals pp.Id
+                                          select new userRoleList
+                                          {
+                                              Id = ur.Id,
+                                              PlanName = pp.PlanName,
+                                              CreatedDate = ur.CreatedDate,
+                                              PlanPrice = pp.Price,
+                                          }).ToList();
                     model.SoftwareLinkDTO = HeadingList;
                     if (id > 0)
                     {
                         var data = _context.UserRoles.Where(x => x.Id == id).FirstOrDefault();
                         model.Id = data.Id;
                         ViewBag.IsAll = data.IsAll;
-                        model.RoleName = data.RoleName;
+                        model.PlanId = data.PlanId;
                         model.IsAllRead = (bool)data.IsAll;
                         model.IsHeadChecked = !string.IsNullOrEmpty(data.IsHeadChecked) ? StringToIntArray(data.IsHeadChecked) : null;
                         model.IsChildHeadChecked = !string.IsNullOrEmpty(data.IsChildHeadChecked) ? StringToIntArray(data.IsChildHeadChecked) : null;
@@ -180,7 +201,7 @@ namespace CRM.Controllers
                     {
                         model.Id = 0;
                         ViewBag.IsAll  = null;
-                        model.RoleName = null;
+                        model.PlanId = 0;
                         model.IsAllRead = false;
                         model.IsHeadChecked = new int[] { 0 };
                         model.IsChildHeadChecked = new int[] { 0 };
@@ -204,7 +225,19 @@ namespace CRM.Controllers
         public async Task<ActionResult> AccessAssign(UserRoleDTO model)
         {
             string Username = HttpContext.Session.GetString("UserName");
-            //model.Companies = new SelectList(_context.Customers.Where(c => c.IsActive == true).OrderByDescending(c => c.Id).ToList(), "Id", "OrgName");
+            model.Planlist = new SelectList(
+                            _context.PricingPlans
+                                .Where(a => a.IsActive == true)
+                                .OrderByDescending(a => a.Id)
+                                .Select(a => new
+                                {
+                                    a.Id,
+                                    DisplayText = $"{a.PlanName} ({a.Price})"
+                                })
+                                .ToList(),
+                            "Id",
+                            "DisplayText"
+                        );            //model.Companies = new SelectList(_context.Customers.Where(c => c.IsActive == true).OrderByDescending(c => c.Id).ToList(), "Id", "OrgName");
             //model.Companies = _context.Customers.OrderByDescending(c => c.Id).Select(d => new SelectListItem
             //{
             //    Value = d.Id.ToString(),
@@ -217,16 +250,16 @@ namespace CRM.Controllers
 
             if (model.Id == 0)
             {
-                var check = _context.UserRoles.Where(u => u.RoleName.ToLower() == model.RoleName.ToLower()).FirstOrDefault();
+                var check = _context.UserRoles.Where(u => u.PlanId == model.PlanId).FirstOrDefault();
                 if (check != null)
                 {
                     TempData["Message"] = "already exist";
-                    return View();
+                    return RedirectToAction("AccessAssign");
                 }
                 var EmpReq = new UserRole()
                 {
                    // CompanyId = model.CompanyId,
-                    RoleName = model.RoleName,
+                    PlanId = model.PlanId,
                     IsActive = true,
                     CreatedDate = DateTime.Now,
                     IsHeadChecked = string.Join(",", model.IsHeadChecked),
@@ -240,17 +273,24 @@ namespace CRM.Controllers
                 };
                 _context.UserRoles.Add(EmpReq);
                 _context.SaveChanges();
+                TempData["Message"] = "ok";
             }
             else
             {
-                var check = _context.UserRoles.Where(u => u.RoleName.ToLower() == model.RoleName.ToLower() && u.Id != model.Id).FirstOrDefault();
+                //var check = _context.UserRoles.Where(u => u.RoleName.ToLower() == model.RoleName.ToLower() && u.Id != model.Id).FirstOrDefault();
+                //if (check != null)
+                //{
+                //    return View();
+                //}
+                var check = _context.UserRoles.Where(u => u.PlanId == model.PlanId && u.Id != model.Id).FirstOrDefault();
                 if (check != null)
                 {
-                    return View();
+                    TempData["Message"] = "already exist";
+                    return RedirectToAction("AccessAssign");
                 }
                 var data = _context.UserRoles.Find(model.Id);
                 //data.CompanyId = model.CompanyId;
-                data.RoleName = model.RoleName;
+                data.PlanId = model.PlanId;
                 data.IsHeadChecked = string.Join(",", model.IsHeadChecked);
                 data.IsChildHeadChecked = string.Join(",", model.IsChildHeadChecked);
                 data.IsSubHeadChecked = string.Join(",", model.IsSubHeadChecked);
@@ -259,6 +299,7 @@ namespace CRM.Controllers
                 data.IsChildSubHeadTwoChecked = string.Join(",", model.IsChildSubHeadTwoChecked);
                 data.IsAll = model.IsAll == true ? (bool?)true : (bool?)false;
                 _context.SaveChanges();
+                TempData["Message"] = "updok";
             }
 
             if (Username?.ToLower() == "admin")
@@ -318,6 +359,7 @@ namespace CRM.Controllers
                 {
                     _context.UserRoles.Remove(data);
                     _context.SaveChanges();
+                    TempData["Message"] = "dltok";
                 }
                 return RedirectToAction("AccessAssign");
             }

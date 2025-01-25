@@ -32,7 +32,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         setTimeout(function () {
-                            window.location.href = '@Url.Action("Employeelist", "Employee")';
+                            window.location.href = '@Url.Action("PreviewEmployeelist", "Employee")';
                         }, 1000);
                     }
                 });
@@ -48,7 +48,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         setTimeout(function () {
-                            window.location.href = '@Url.Action("Employeelist", "Employee")';
+                            window.location.href = '@Url.Action("PreviewEmployeelist", "Employee")';
                         }, 1000);
                     }
                 });
@@ -316,8 +316,8 @@
         }
 
 </style>
-<link href="~/css/style.css" rel="stylesheet" />
-<div class="page-wrapper">
+@* <link href="~/css/style.css" rel="stylesheet" />
+ *@<div class="page-wrapper">
     <div class="page-body-wrapper">
         <div class="page-sidebar">
         </div>
@@ -396,6 +396,16 @@
                         <div class="mt-3">
                             <div class="row">
                                 <div class="col">
+                                    <label>Accept Offer Letter<span class="text-danger">*</span></label>
+                                    <div class="dropdown-container position-relative">
+                                    <select name="Offerletterid" class="form-control" id="ddOfferletterid">
+                                        <option value="0">-- Select Accept Offer --</option>
+                                    </select>
+                                        <i class="dropdown-icon fa fa-caret-down position-absolute"></i>
+                                    </div>
+                                    <span id="OfferLetterError" class="text-danger" style="display:none;">Please select an option</span>
+                                </div>
+                                <div class="col">
                                     <label>First Name<span class="text-danger">*</span></label>
                                     <input class="form-control" name="FirstName" value="@ViewBag.First_Name" placeholder="Enter First Name" id="FirstName" type="text">
                                     <span id="FirstNameError" class="text-danger" style="display:none;">First Name is required</span>
@@ -404,85 +414,116 @@
                                     <label>Middle Name</label>
                                     <input class="form-control" name="MiddleName" value="@ViewBag.Middle_Name" placeholder="Enter Middle Name" id="MiddleName" type="text">
                                 </div>
+
+                            </div>
+                            <br >
+                            <div class="row">
                                 <div class="col">
                                     <label>Last Name</label>
                                     <input class="form-control" name="LastName" value="@ViewBag.Last_Name" placeholder="Enter Last Name" id="LastName" type="text">
                                 </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-6">
+                                <div class="col">
                                     <label>Work Email</label>
                                     <input class="form-control" name="WorkEmail" value="@ViewBag.Work_Email" placeholder="Enter Work Email" id="WorkEmail" type="email">
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col">
                                     <label>Date Of Joining<span class="text-danger">*</span></label>
                                     <input class="form-control" name="DateOfJoining" value="@ViewBag.Date_Of_Joining" id="DateOfJoining" type="date">
                                     <span id="DateOfJoiningError" class="text-danger" style="display:none;">Date Of Joining is required</span>
                                 </div>
                             </div>
-
+                            <br>
                             <div class="row">
-                                <div class="col-md-3">
+                                <div class="col">
                                     <label>Gender<span class="text-danger">*</span></label>
+                                    <div class="dropdown-container position-relative">
                                     <select name="GenderID" id="ddlGender" class="form-control">
                                         <option value="0">-- Select Gender --</option>
                                         <option value="1">Female</option>
                                         <option value="2">Male</option>
                                         <option value="3">Other</option>
                                     </select>
+                                        <i class="dropdown-icon fa fa-caret-down position-absolute"></i>
+                                    </div>
                                     <span id="GenderError" class="text-danger" style="display:none;">Please select Gender</span>
                                 </div>
 
-                                <div class="col-md-3">
+                                <div class="col">
                                     <label>State Name<span class="text-danger">*</span></label>
+                                    <div class="dropdown-container position-relative">
                                     <select class="form-control" name="StateId" id="ddlStates">
                                         <option value="0">-- Select State --</option>
                                     </select>
+                                    <i class="dropdown-icon fa fa-caret-down position-absolute"></i>
+                                </div>
                                     <span id="StateError" class="text-danger" style="display:none;">Please select State</span>
                                 </div>
 
-                                <div class="col-md-3">
-                                    <label>Work Location<span class="text-danger">*</span></label>
+                                <div class="col">
+                                    <label>City Name<span class="text-danger">*</span></label>
+                                    <div class="dropdown-container position-relative">
                                     <select class="form-control" name="WorkLocationID" id="ddlCity">
-                                        <option value="0">-- Select Work Location --</option>
+                                            <option value="0">-- Select City --</option>
                                     </select>
+                                        <i class="dropdown-icon fa fa-caret-down position-absolute"></i>
+                                    </div>
                                     <span id="WorkLocationError" class="text-danger" style="display:none;">Please select Work Location</span>
                                 </div>
 
-                                <div class="col-md-3">
+
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col">
                                     <label>Department<span class="text-danger">*</span></label>
+                                    <div class="dropdown-container position-relative">
                                     <select name="DepartmentID" class="form-control" id="ddDepartmentID">
                                         <option value="0">-- Select Department --</option>
                                     </select>
+                                        <i class="dropdown-icon fa fa-caret-down position-absolute"></i>
+                                    </div>
                                     <span id="DepartmentError" class="text-danger" style="display:none;">Please select Department</span>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-3">
+                                <div class="col">
                                     <label>Designation<span class="text-danger">*</span></label>
+                                    <div class="dropdown-container position-relative">
                                     <select name="DesignationID" class="form-control" id="ddDesignationID">
                                         <option value="0">-- Select Designation --</option>
                                     </select>
+                                        <i class="dropdown-icon fa fa-caret-down position-absolute"></i>
+                                    </div>
                                     <span id="DesignationError" class="text-danger" style="display:none;">Please select Designation</span>
                                 </div>
-
-                                <div class="col-md-3">
-                                    <label>Accept Offer Letter<span class="text-danger">*</span></label>
-                                    <select name="Offerletterid" class="form-control" id="ddOfferletterid">
-                                        <option value="0">-- Select Accept Offer --</option>
-                                    </select>
-                                    <span id="OfferLetterError" class="text-danger" style="display:none;">Please select an option</span>
-                                </div>
-
-                                <div class="col-md-3">
+                                <div class="col">
                                     <label>Office Shift Type<span class="text-danger">*</span></label>
+                                    <div class="dropdown-container position-relative">
                                     <select name="OfficeshiftTypeid" class="form-control" id="ddshifttypeidid">
                                         <option value="0">-- Select Office Shift Type --</option>
                                     </select>
+                                        <i class="dropdown-icon fa fa-caret-down position-absolute"></i>
+                                    </div>
                                     <span id="ShiftTypeError" class="text-danger" style="display:none;">Please select Office Shift Type</span>
                                 </div>
                             </div>
+                            <br >
+                            @{
+                                var CheckSelectCompany = ViewBag.CheckSelectCompany;
+                            }
+                            @if (CheckSelectCompany == true)
+                            {
+                                <div class="mt-3">
+                                    <div class="col-6">
+                                        <label>Company Name<span class="text-danger">*</span></label>
+                                        <div class="dropdown-container position-relative">
+                                            <select name="CustomerCompanyid" class="form-control" id="ddCustomerCompanyNameid">
+                                                <option value="0">-- Select Company Name --</option>
+                                            </select>
+                                            <i class="dropdown-icon fa fa-caret-down position-absolute"></i>
+                                        </div>
+                                        <span id="CustomerCompanyNameError" class="text-danger" style="display:none;">Please select Company Name</span>
+                                    </div>
+                                </div>
+                            }
                         </div>
 
                         <div class="mt-3">
@@ -517,7 +558,7 @@
                                     <span id="DateOfBirthError" class="text-danger" style="display:none;">Please enter a valid date of birth.</span>
                                 </div>
                             </div>
-
+                            <br>
                             <div class="row">
                                 <div class="col">
                                     <label>Age</label>
@@ -536,7 +577,7 @@
                                     <span id="PANError" class="text-danger" style="display:none;">Please enter a valid PAN number.</span>
                                 </div>
                             </div>
-
+                            <br>
                             <div class="row">
                                 <div class="col">
                                     <label>Address 1<span class="text-danger">*</span></label>
@@ -551,19 +592,25 @@
 
                                 <div class="col">
                                     <label>State<span class="text-danger">*</span></label>
+                                       <div class="dropdown-container position-relative">
                                     <select class="form-control" id="ddlState" name="StateID">
                                         <option value="0">-- Select State --</option>
                                     </select>
+                                        <i class="dropdown-icon fa fa-caret-down position-absolute"></i>
+                                    </div>
                                     <span id="StateIDError" class="text-danger" style="display:none;">Please select a state.</span>
                                 </div>
                             </div>
-
+                            <br>
                             <div class="row">
                                 <div class="col">
                                     <label>City<span class="text-danger">*</span></label>
+                                    <div class="dropdown-container position-relative">
                                     <select class="form-control" name="City" id="City">
                                         <option value="0">-- Select City --</option>
                                     </select>
+                                        <i class="dropdown-icon fa fa-caret-down position-absolute"></i>
+                                    </div>
                                     <span id="CityError" class="text-danger" style="display:none;">Please select a city.</span>
                                 </div>
 
@@ -602,7 +649,7 @@
                                     <span id="AccountNumberError" class="text-danger" style="display:none;">This field is required.</span>
                                 </div>
                             </div>
-
+                            <br>
                             <div class="row">
                                 <div class="col">
                                     <label>Re-enter Account Number<span class="text-danger">*</span></label>
@@ -619,7 +666,7 @@
                                     <input class="form-control" value='@ViewBag.EPF_Number' name="EPF_Number" placeholder="Enter EPF Number" id="EPF_Number" type="text">
                                 </div>
                             </div>
-
+                            <br>
                             <div class="row">
                                 <div class="col" style="display:none">
                                     <label>Employee Contribution Rate</label>
@@ -627,18 +674,21 @@
                                 </div>
                                 <div class="col" style="display:none">
                                     <label>Deduction Cycle</label>
+                                    <div class="dropdown-container position-relative">
                                     <select id="ddlDeductionTime" name="Deduction_Cycle" class="form-control">
                                         <option value="0">-- Select Deduction --</option>
                                         <option value="M">Monthly</option>
                                         <option value="Y">Yearly</option>
                                     </select>
+                                        <i class="dropdown-icon fa fa-caret-down position-absolute"></i>
+                                    </div>
                                 </div>
                                 <div class="col-4">
                                     <label>Nominee's Name</label>
                                     <input class="form-control" value='@ViewBag.nominee' name="nominee" id="nominee" placeholder="Enter nominee name" type="text">
                                 </div>
                             </div>
-
+                            <br>
                             <div class="row">
                                 <div class="col" style="padding:20px;">
                                     <label>Account Type<span class="text-danger">*</span></label>
@@ -659,6 +709,23 @@
                     <section id="step-4" class="form-step d-none">
                         <h2 class="text-danger">Salary Details</h2>
                         <div class="mt-3">
+                            @{
+                              var isid =  ViewBag.Emp_Reg_Code;
+                            }
+                            @if (!string.IsNullOrEmpty(isid))
+                            {
+                                <input hidden name="Emp_Reg_ID" type="text" id="empid" value="@ViewBag.Emp_Reg_Code" />
+                              @*   <div class="d-flex align-items-center mb-3">
+                                    <input type="checkbox" id="IsIncrement" name="IsIncrement" style="margin-right: 10px;">
+                                    <label for="IsIncrement" class="ml-2" style="color: forestgreen;">Is Increment</label>
+                                </div> *@
+                                <div class="d-flex align-items-center justify-content-end mb-3">
+                                    <input type="checkbox" id="IsIncrement" name="IsIncrement" style="margin-right: 10px;">
+                                    <label for="IsIncrement" class="ml-2" style="color: forestgreen;margin-top: 10px;">Is Increment</label>
+                                </div>
+
+                            }
+
                             <div class="row">
                                 <div class="col">
                                     <label>Annual CTC <span class="text-danger">*</span></label>
@@ -692,6 +759,7 @@
                                 </div>
 
                             </div>
+                            <br>
                             <div class="row">
                                 <div class="col">
                                     <label>Medical Allowance</label>
@@ -935,7 +1003,7 @@
 
                 var monthlybasicSalary = basicSalary / 12;
 
-                var epfValue =0;
+                var epfValue = 0;
                 if (monthlybasicSalary <= employerContributionRate) {
                     epfValue = (basicSalary * epfPercentage) / 100;
                 } else {
@@ -987,8 +1055,6 @@
             }
         });
     }
-
-
     function UpdateSalaryCalculation() {
         var AnnualCTC = parseFloat($('#txtAnnualCTC').val());
         var basicSalaryInput = $('#txtBasicSalary');
@@ -1094,6 +1160,44 @@
         });
     }
 
+    $('#ddOfferletterid').change(function () {
+        var offerLetterId = $(this).val();
+
+        if (offerLetterId !== "0") {
+            $.ajax({
+                url: '/Employee/GetOfferLetterDetails',
+                type: 'GET',
+                data: { offerLetterId: offerLetterId },
+                success: function (response) {
+                    if (response) {
+                        $('#FirstName').val(response.firstName);
+                        $('#MiddleName').val(response.middleName);
+                        $('#LastName').val(response.lastName);
+                        $('#ddDepartmentID').val(response.departmentID);
+                        $('#ddDesignationID').val(response.designationID);
+                        $('#City').val(response.cityID);
+                        $('#ddlState').val(response.stateID);
+                        $('#AddressLine1').val(response.addressLine1);
+                        $('#AddressLine2').val(response.addressLine2);
+                        $('#PersonalEmailAddress').val(response.personalEmailAddress);
+                        $('#txtAnnualCTC').val(response.annualCTC);
+                        $('#Pincode').val(response.pincode);
+                        SalaryCalculation();
+                    } else {
+                        alert('No data found for the selected offer letter.');
+                    }
+                },
+                error: function () {
+                    alert('Error fetching offer letter details.');
+                }
+            });
+        } else {
+            $('#FirstName, #MiddleName, #LastName, #AddressLine1, #AddressLine2, #PersonalEmailAddress, #txtAnnualCTC, #Pincode').val('');
+            $('#ddDepartmentID, #ddDesignationID, #City, #ddlState').val('0');
+        }
+    });
+
+
 </script>
 
 
@@ -1190,7 +1294,17 @@
             $("#ddlState").val(StateId)
         }
     }
-
+    function bindCustomerCompanyNameid(CustomerCompanyName) {
+        var itemsListforCustomerCompanyNameid = @Json.Serialize(ViewBag.CustomerCompanyName);
+        debugger
+        var dropdownforCustomerCompanyNameid = $("#ddCustomerCompanyNameid");
+        $.each(itemsListforCustomerCompanyNameid, function (index, item) {
+            dropdownforCustomerCompanyNameid.append($('<option></option>').val(item.value).text(item.text));
+        });
+        if (CustomerCompanyName != "") {
+            $("#ddCustomerCompanyNameid").val(CustomerCompanyName)
+        }
+    }
 </script>
 
 <script>
@@ -1231,6 +1345,7 @@
     var city = '@ViewBag.City';
     var userOfferletter = '@ViewBag.Offerletters';
     var userOfficeshift = '@ViewBag.shifttype';
+    var CustomerCompany = '@ViewBag.CustomerCompany';
 
 
 
@@ -1288,7 +1403,12 @@
     else {
         bindCity("");
     }
-
+    if (CustomerCompany != "") {
+        bindCustomerCompanyNameid(CustomerCompany);
+    }
+    else {
+        bindCustomerCompanyNameid("");
+    }
     var deductiontime = '@ViewBag.Deduction_Cycle';
     if (deductiontime != "") {
         $("#ddlDeductionTime").val(deductiontime);
@@ -1474,4 +1594,66 @@
     })
 </script>
 
+<script>
+ 
+    function updateIncrementDetails(empRegId) {
+        $.ajax({
+            type: "POST",
+            url: "/Employee/UpdateIsIncrement",
+            data: { Emp_Reg_ID: empRegId },
+            dataType: 'json',
+            type: 'post',
+            success: function (msg) {
+                $('#step-4').load(location.href + " #step-4 > *");
+                console.log("increment done.");
+            }
+        });
+    }
 
+
+    function confirmUpdateIncrement(empRegId) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "Do you want to update the increment details?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, update it!",
+            cancelButtonText: "Cancel",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                updateIncrementDetails(empRegId)
+                    .then((data) => {
+                        if (data.success) {
+                            Swal.fire(
+                                "Updated!",
+                                "The increment details have been updated successfully.",
+                                "success"
+                            );
+                        } else {
+                            Swal.fire(
+                                "Failed!",
+                                "Could not update the increment details. Please try again.",
+                                "error"
+                            );
+                        }
+                    })
+                    .catch(() => {
+                        Swal.fire("Error!", "An error occurred while processing the request.", "error");
+                    });
+            } else {
+                document.getElementById("IsIncrement").checked = false; 
+            }
+        });
+    }
+    document.getElementById("IsIncrement").addEventListener("click", function () {
+        const empRegId = document.getElementById("empid").value; 
+        if (empRegId) {
+            confirmUpdateIncrement(empRegId); 
+        } else {
+            Swal.fire("Warning!", "Employee ID is missing. Please provide a valid Employee ID.", "warning");
+        }
+    });
+
+</script>

@@ -152,8 +152,18 @@
                                         <br />
                                         <form asp-action="Empattendance" autocomplete="off" method="post">
                                             <div class="row">
+                                                  <div class="form-group col-sm-2">
+                                                    <div class="dropdown-container position-relative">
+                                                    <select id="Year" class="form-control" name="Year">
+                                                        <option value="0">-- Select Year --</option>
+                                                        <!-- Year options will be dynamically added here -->
+                                                    </select>
+                                                        <i class="dropdown-icon fa fa-caret-down position-absolute"></i>
+                                                    </div>
+                                                </div>
                                                 <div class="form-group col-sm-2">
                                                     @*     <label for="validationCustom0">Month</label> *@
+                                                    <div class="dropdown-container position-relative">
                                                     <select id="Month" class="form-control" name="Month" onchange="fetchAttendance()">
                                                         <option value="0">-- Select Month --</option>
                                                         <option value="1">January</option>
@@ -169,6 +179,8 @@
                                                         <option value="11">November</option>
                                                         <option value="12">December</option>
                                                     </select>
+                                                        <i class="dropdown-icon fa fa-caret-down position-absolute"></i>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </form>
@@ -490,7 +502,7 @@
                             <div class="row">
                                 <div class="col">
                                     <label>Annual CTC</label>
-                                    <input class="form-control " name="AnnualCTC" id="txtAnnualCTC" type="text" required>
+                                    <input class="form-control " name="AnnualCTC" id="txtAnnualCTC" type="text" required readonly>
                                 </div>
                                 <div class="col">
                                     <label>Travelling Allowance</label>
@@ -654,16 +666,20 @@
     });
     function fetchAttendance() {
         var month = document.getElementById('Month').value;
+        var year = document.getElementById('Year').value;
 
         if (!month || month == "0") {
             alert("Please select a month.");
             return;
         }
-
+         if (!year || year == "0") {
+            alert("Please select a year.");
+            return;
+        }
         $.ajax({
             url: '@Url.Action("getEmpattendancedays", "Employee")',
             type: 'GET',
-            data: { month: month },
+            data: {month: month, year: year},
             success: function (response) {
                 if (response && response.employees && response.employees.length > 0) {
 
@@ -696,72 +712,6 @@
             }
         });
     }
-
-    // function fetchAttendance() {
-    //     var month = document.getElementById('Month').value;
-
-    //     if (!month || month == "0") {
-    //         alert("Please select a month.");
-    //         return;
-    //     }
-
-    //     $.ajax({
-    //         url: '@Url.Action("getEmpattendancedays", "Employee")',
-    //         type: 'GET',
-    //         data: { month: month },
-    //         success: function (response) {
-    //             if (response && response.employees && response.employees.length > 0) {
-
-    //                 $('#datatable tbody tr').each(function () {
-    //                     var employeeId = $(this).find('td:nth-child(6)').text().trim();
-    //                     var employeeData = response.employees.find(emp => emp.employeeId == employeeId);
-
-    //                     if (employeeData) {
-    //                         // Binding the values
-    //                         $(this).find('input[name="Attendance"]').val(employeeData.leaveRemaining);
-    //                         $(this).find('td:nth-child(10)').text(employeeData.monthlyPay.toFixed(2));
-    //                     } else {
-    //                         $(this).find('input[name="Attendance"]').val(0);
-    //                         $(this).find('td:nth-child(10)').text("0.00");
-    //                     }
-    //                 });
-    //              document.getElementById('dynamicTotalMonthlyPay').textContent = response.totalMonthlyPay.toFixed(2);
-    //             } else {
-    //                 alert(response.message || "No attendance data available.");
-    //                 document.getElementById('dynamicTotalMonthlyPay').textContent = "0.00";
-    //             }
-    //         },
-    //         error: function () {
-    //             // Handle error scenario
-    //             document.getElementById('dynamicTotalMonthlyPay').textContent = "0.00";
-    //             alert("An error occurred while fetching attendance data.");
-    //         }
-    //     });
-    // }
-
-    // function updateMonthlyPay() {
-    //     $('#datatable tbody').on('input', 'input[name="Attendance"]', function () {
-    //         var row = $(this).closest('tr');
-    //         var monthlyCtc = parseFloat(row.find('td:nth-child(9)').text().trim());
-    //         var nodays = @ViewBag.Nodays;
-
-    //         if (nodays > 0) {
-    //             var newMonthlyPay = monthlyCtc / nodays;
-
-    //             var attendance = parseFloat($(this).val()) || 0;
-
-    //             var totalMonthlyPay = newMonthlyPay * attendance;
-
-    //             row.find('td:nth-child(10)').text(totalMonthlyPay.toFixed(2));
-    //         } else {
-    //             row.find('td:nth-child(10)').text("0.00");
-    //         }
-    //     });
-    // }
-    // $(document).ready(function () {
-    //     updateMonthlyPay();
-    // });
-
     function updateMonthlyPay() {
         $('#datatable tbody').on('input', 'input[name="Attendance"]', function () {
             var row = $(this).closest('tr');
@@ -804,3 +754,18 @@
 
 </script>
 
+<script>
+    const currentYear = new Date().getFullYear();
+    const startYear = 2022;
+
+    // Get the dropdown element
+    const yearDropdown = document.getElementById("Year");
+
+    // Add year options from startYear to currentYear
+    for (let year = startYear; year <= currentYear; year++) {
+        const option = document.createElement("option");
+        option.value = year;
+        option.textContent = year;
+        yearDropdown.appendChild(option);
+    }
+</script>

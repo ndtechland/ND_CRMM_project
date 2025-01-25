@@ -157,7 +157,7 @@ namespace CRM.Repository
             }
             catch (Exception)
             {
-                throw; 
+                throw;
             }
         }
 
@@ -208,6 +208,7 @@ namespace CRM.Repository
                 cmd.Parameters.AddWithValue("@stateId", model.stateId);
                 cmd.Parameters.AddWithValue("@offerletterid", model.offerletterid);
                 cmd.Parameters.AddWithValue("@officeshiftTypeid", model.officeshiftTypeid);
+                cmd.Parameters.AddWithValue("@CustomerCompanyid", model.CustomerCompanyid);
 
                 //-- Salary Details
                 cmd.Parameters.AddWithValue("@AnnualCTC", model.AnnualCTC);
@@ -243,7 +244,7 @@ namespace CRM.Repository
                 cmd.Parameters.AddWithValue("@Mobile_Number", model.MobileNumber);
                 cmd.Parameters.AddWithValue("@Date_Of_Birth", model.DateOfBirth);
                 cmd.Parameters.AddWithValue("@Father_Name", model.FatherName);
-                cmd.Parameters.AddWithValue("@PAN", model.PAN);
+                cmd.Parameters.AddWithValue("@PAN", model.PAN.ToUpper());
                 cmd.Parameters.AddWithValue("@Address_Line_1", model.AddressLine1);
                 cmd.Parameters.AddWithValue("@Address_Line_2", model.AddressLine2);
                 cmd.Parameters.AddWithValue("@City", model.City);
@@ -267,6 +268,42 @@ namespace CRM.Repository
                 da.SelectCommand = cmd;
                 DataTable dt = new DataTable();
                 da.Fill(dt);
+
+                if (Mode == "UPD")
+                {
+                    var olddata = _context.OldEmployeeSalaryDetails
+                        .OrderByDescending(x => x.Id)
+                        .Where(x => x.EmployeeId == Emp_Reg_ID && x.IsIncrement == true)
+                        .FirstOrDefault();
+                    var newdata = _context.EmployeeSalaryDetails
+                        .Where(x => x.EmployeeId == Emp_Reg_ID && x.IsIncrement == true)
+                        .FirstOrDefault();
+                    if (olddata != null && newdata != null)
+                    {
+                        decimal oldCtc = (decimal)olddata.AnnualCtc;
+                        decimal newCtc = model.AnnualCTC;
+
+                        if (oldCtc != 0)
+                        {
+                            decimal percentageChange = ((newCtc - oldCtc) / oldCtc) * 100;
+                            olddata.IncrementPercentage = percentageChange;
+                            newdata.IncrementPercentage = percentageChange;
+
+                        }
+                        else
+                        {
+                            olddata.IncrementPercentage = 0;
+                            newdata.IncrementPercentage = 0;
+
+                        }
+                        _context.OldEmployeeSalaryDetails.Update(olddata);
+                        _context.SaveChanges();
+                    }
+                    else
+                    {
+                        Console.WriteLine("No existing data found for the given EmployeeId.");
+                    }
+                }
 
 
                 if (Mode == "INS")
@@ -738,20 +775,20 @@ namespace CRM.Repository
         {
             return _context.WorkLocations1.Find(id);
         }
-        public async Task<int> updateWorkLocation(WorkLocation1 model)
-        {
-            var parameter = new List<SqlParameter>();
-            parameter.Add(new SqlParameter("@id", model.Id));
-            parameter.Add(new SqlParameter("@CityID", model.CityId));
-            parameter.Add(new SqlParameter("@stateId", model.StateId));
-            parameter.Add(new SqlParameter("@Commissoninpercentage", model.Commissoninpercentage));
+        //public async Task<int> updateWorkLocation(WorkLocation1 model)
+        //{
+        //    var parameter = new List<SqlParameter>();
+        //    parameter.Add(new SqlParameter("@id", model.Id));
+        //    parameter.Add(new SqlParameter("@CityID", model.CityId));
+        //    parameter.Add(new SqlParameter("@stateId", model.StateId));
+        //    parameter.Add(new SqlParameter("@Commissoninpercentage", model.Commissoninpercentage));
 
 
-            var result = await Task.Run(() => _context.Database
-           .ExecuteSqlRawAsync(@"exec sp_updateWorkLocation @id,@CityID,@stateId,@Commissoninpercentage", parameter.ToArray()));
+        //    var result = await Task.Run(() => _context.Database
+        //   .ExecuteSqlRawAsync(@"exec sp_updateWorkLocation @id,@CityID,@stateId,@Commissoninpercentage", parameter.ToArray()));
 
-            return result;
-        }
+        //    return result;
+        //}
 
         public async Task<int> updateDesignation(DesignationMaster model)
         {
@@ -775,7 +812,7 @@ namespace CRM.Repository
 
             return result;
         }
-      
+
         public Customer GetCustomerById(int id)
         {
             try
@@ -1332,7 +1369,7 @@ namespace CRM.Repository
                 parameters.Add("@duedate", model.Duedate);
                 parameters.Add("@Notes", model.Notes);
                 parameters.Add("@Terms", model.Terms);
-                parameters.Add("@UserRoleId", model.UserRoleId);
+                parameters.Add("@SelectCompany", model.SelectCompany == true ? (bool?)true : (bool?)false);
                 parameters.Add("@CustomerId", dbType: DbType.Int32, direction: ParameterDirection.Output);
                 await connection.ExecuteAsync("VendorRegistration", parameters, commandType: CommandType.StoredProcedure);
                 int newCustomerId = parameters.Get<int>("@CustomerId");
@@ -1394,7 +1431,7 @@ namespace CRM.Repository
                 parameters.Add("@duedate", model.Duedate);
                 parameters.Add("@Notes", model.Notes);
                 parameters.Add("@Terms", model.Terms);
-                parameters.Add("@UserRoleId", model.UserRoleId);
+                parameters.Add("@SelectCompany", model.SelectCompany == true ? (bool?)true : (bool?)false);
                 var result = await connection.ExecuteAsync(
                     "sp_updateVendor_Reg",
                     parameters,
@@ -1500,7 +1537,7 @@ namespace CRM.Repository
                                        OfficeCityId = v.CityId,
                                        OfficeStateId = v.StateId,
                                        Isprofessionaltax = v.Isprofessionaltax,
-                                       VendorSingature  =v.VendorSingature
+                                       VendorSingature = v.VendorSingature
                                    }).FirstOrDefaultAsync();
                 return query;
             }
@@ -1848,7 +1885,7 @@ namespace CRM.Repository
                             DepartmentName = _context.DepartmentMasters.Where(g => g.Id == Convert.ToInt16(x.DepartmentId)).Select(g => g.DepartmentName).FirstOrDefault().Trim(),
                             DesignationName = _context.DesignationMasters.Where(g => g.Id == Convert.ToInt16(x.DesignationId)).Select(g => g.DesignationName).FirstOrDefault().Trim(),
                             Validdate = x.Validdate.GetValueOrDefault(),
-                        }).ToListAsync();
+                        }).OrderByDescending(x => x.Id).ToListAsync();
 
                     return offerletters;
                 }
@@ -2071,17 +2108,34 @@ namespace CRM.Repository
 
                 decimal newDueAmount = 0;
 
-                foreach(var item in model)
+                foreach (var item in model)
                 {
-                    newDueAmount += (decimal)(
-                        item.ProductPrice +
-                        ((item.ProductPrice * (item.IGST ?? 0m)) / 100) +
-                        ((item.ProductPrice * (item.SGST ?? 0m)) / 100) +
-                        ((item.ProductPrice * (item.CGST ?? 0m)) / 100));
+                    newDueAmount += Math.Round((decimal)(
+     (item.ProductPrice * (item.Qty ?? 1)) +
+     ((item.ProductPrice * (item.IGST.HasValue ? item.IGST.Value : 0m)) / 100) +
+     ((item.ProductPrice * (item.SGST.HasValue ? item.SGST.Value : 0m)) / 100) +
+     ((item.ProductPrice * (item.CGST.HasValue ? item.CGST.Value : 0m)) / 100)), 0, MidpointRounding.AwayFromZero);
                 }
-                
+
+                if (allExistingData.Count() > 0)
+                {
+                    newDueAmount += Math.Round(allExistingData.FirstOrDefault()?.DueAmount ?? 0m, 2);
+                    if ((allExistingData.First()?.PaidAmount ?? 0) > 0)
+                    {
+                        newDueAmount -= Math.Round(allExistingData.First()?.PaidAmount ?? 0m, MidpointRounding.AwayFromZero);
+                    }
+                }
+
+
+
+
+
                 foreach (var product in model)
                 {
+                    if (Invoiceclone == "true")
+                    {
+                        product.Id = 0;
+                    }
                     var customerExistingData = groupedData.ContainsKey(product.CustomerId)
                         ? groupedData[product.CustomerId]
                         : new List<CustomerInvoice>();
@@ -2094,32 +2148,18 @@ namespace CRM.Repository
                         AlreadyInvoiceNo = existingInvoice.InvoiceNumber;
                     }
 
-                    decimal totalDueAmount = customerExistingData
-                        .Where(ci => ci.DueAmount.HasValue)
-                        .Select(ci => ci.DueAmount.Value)
-                        .FirstOrDefault();
-
                     int paymentstatus = customerExistingData
                         .Select(ci => ci.Paymentstatus)
-                        .FirstOrDefault() ?? 2; 
+                        .FirstOrDefault() ?? 2;
 
-                    if(Invoiceclone == "true")
-                    {
-                        product.Id = 0;
-                    }
-
-                    newDueAmount += (newDueAmount + totalDueAmount);
-                    if(existingInvoice?.PaidAmount > 0)
-                    {
-                        newDueAmount -= (decimal)existingInvoice.PaidAmount;
-                    }
-                    if (product.Id == 0) 
+                    if (product.Id == 0)
                     {
                         var newInvoice = new CustomerInvoice()
                         {
                             VendorId = vendorid,
                             CustomerId = product.CustomerId,
                             ProductId = product.ProductId,
+                            ProductQty = product.Qty,
                             Description = product.Description,
                             ProductPrice = product.ProductPrice,
                             RenewPrice = product.RenewPrice,
@@ -2132,9 +2172,9 @@ namespace CRM.Repository
                             Cgst = product.CGST,
                             InvoiceNumber = string.IsNullOrEmpty(AlreadyInvoiceNo) ? InvoiceNo : AlreadyInvoiceNo,
                             CreatedDate = DateTime.Now,
-                            Paymentstatus = paymentstatus, 
+                            Paymentstatus = paymentstatus,
                             PaidAmount = customerExistingData
-                                .FirstOrDefault(ci => ci.PaidAmount.HasValue)?.PaidAmount ?? 0, 
+                                .FirstOrDefault(ci => ci.PaidAmount.HasValue)?.PaidAmount ?? 0,
                             DueAmount = newDueAmount,
                         };
 
@@ -2145,12 +2185,13 @@ namespace CRM.Repository
                         //    item.DueAmount = newDueAmount;
                         //}
                     }
-                    else 
+                    else
                     {
                         var data = allExistingData.FirstOrDefault(ci => ci.Id == product.Id);
                         if (data != null)
                         {
                             data.ProductPrice = product.ProductPrice;
+                            data.ProductQty = product.Qty;
                             data.RenewPrice = product.RenewPrice;
                             data.NoOfRenewMonth = product.NoOfRenewMonth;
                             data.Description = product.Description;
@@ -2160,7 +2201,7 @@ namespace CRM.Repository
                             data.Sgst = product.SGST;
                             data.Cgst = product.CGST;
                             AlreadyInvoiceNo = data.InvoiceNumber;
-                            data.DueAmount =  newDueAmount;
+                            data.DueAmount = newDueAmount;
                             _context.Update(data);
                         }
                     }
@@ -2189,7 +2230,7 @@ namespace CRM.Repository
                     await _context.SaveChangesAsync();
                 }
 
-              return true;
+                return true;
             }
             catch (Exception ex)
             {
@@ -2226,7 +2267,7 @@ namespace CRM.Repository
                                                  BillingAddress = grouped.First().c.BillingAddress,
                                                  BillingState = grouped.First().sb.SName,
                                                  BillingCity = grouped.First().ctb.City1,
-                                                // InvoiceDate = grouped.First().ci.CreatedDate,
+                                                 // InvoiceDate = grouped.First().ci.CreatedDate,
                                                  RenewPrice = grouped.First().ci.RenewPrice,
                                                  StartDate = grouped.First().ci.StartDate,
                                                  RenewDate = grouped.First().ci.RenewDate,
@@ -2306,7 +2347,7 @@ namespace CRM.Repository
                                   Notes = ctd.Notes,
                                   Terms = ctd.Terms,
                                   VendorId = v.Id,
-                                  Ismail = Ismail
+                                  Ismail = Ismail,
                               }).FirstOrDefault();
 
                 if (invoiceDTO != null)
@@ -2323,14 +2364,23 @@ namespace CRM.Repository
                                             StartDate = ci.StartDate,
                                             RenewDate = ci.RenewDate,
                                             HsnSacCode = ci.Hsncode,
-                                            ProductPrice = ci.ProductPrice,
+                                            ProductPrice = ci.ProductQty == null ? ci.ProductPrice * 1 : ci.ProductPrice * ci.ProductQty,
                                             DueAmount = ci.DueAmount,
                                             PaidAmount = ci.PaidAmount,
                                             Description = ci.Description,
+                                            Qty = (int)ci.ProductQty,
+                                            ProductRate = ci.ProductPrice
                                         }).ToList();
+                   
+                    foreach (var invoice in invoiceItems)
+                    {
+                        invoice.TotalAmount = await CalculateTotalAmountByInvoiceId(InvoiceNumber);
+                       
 
-                    // Add the list to the invoice DTO if needed
+                        invoice.totalInWords = ConvertNumberToWords((decimal)invoice.TotalAmount);
+                    }
                     invoiceDTO.ProductDetailLists = invoiceItems;
+
                 }
 
 
@@ -2778,7 +2828,7 @@ namespace CRM.Repository
                 var result = await (from taskList in _context.EmployeeTasksLists
                                     join empTask in _context.EmployeeTasks on taskList.Emptaskid equals empTask.Id
                                     join taskStatus in _context.TaskStatuses on taskList.TaskStatus equals taskStatus.Id
-                                    join empname in _context.EmployeeRegistrations on taskList.EmployeeId  equals empname.EmployeeId
+                                    join empname in _context.EmployeeRegistrations on taskList.EmployeeId equals empname.EmployeeId
                                     where (empTask.Vendorid == vendorid)
                                     orderby taskList.Id descending
                                     select new EmpTasknameDto
@@ -3461,7 +3511,6 @@ namespace CRM.Repository
                 throw;
             }
         }
-
         public async Task<decimal> CalculateTotalAmountByInvoiceId(string invoiceId)
         {
             try
@@ -3473,7 +3522,8 @@ namespace CRM.Repository
                                                 ProductPrice = ci.ProductPrice ?? 0,
                                                 IGST = ci.Igst ?? 0,
                                                 SGST = ci.Sgst ?? 0,
-                                                CGST = ci.Cgst ?? 0
+                                                CGST = ci.Cgst ?? 0,
+                                                ProductQty = ci.ProductQty ?? 1
                                             }).ToListAsync();
 
                 if (invoiceDetails == null || !invoiceDetails.Any())
@@ -3482,25 +3532,25 @@ namespace CRM.Repository
                 }
 
                 decimal totalAmount = 0;
+
                 foreach (var item in invoiceDetails)
                 {
-                    decimal productTotal = item.ProductPrice +
+                    decimal productTotal = (item.ProductPrice * item.ProductQty) +
                                            (item.ProductPrice * item.IGST / 100) +
                                            (item.ProductPrice * item.SGST / 100) +
                                            (item.ProductPrice * item.CGST / 100);
 
                     totalAmount += productTotal;
                 }
-
-                totalAmount = decimal.Round(totalAmount, 2, MidpointRounding.AwayFromZero);
-
-                return totalAmount;
+                decimal roundedTotal = Math.Round(totalAmount, 0, MidpointRounding.AwayFromZero);
+                return roundedTotal;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
         }
+
         public async Task<List<ApprovedwfhApplyList>> GetWfhapplydetailList(int? userId)
         {
             if (!userId.HasValue)
@@ -3681,6 +3731,96 @@ namespace CRM.Repository
                 throw;
             }
         }
-    }
+        private string ConvertNumberToWords(decimal amount)
+        {
+            if (amount == 0)
+                return "Indian Rupee Zero Only";
 
+            string words = "Indian Rupee ";
+
+            long integerPart = (long)amount;
+            int fractionalPart = (int)((amount - integerPart) * 100);
+
+            words += NumberToWords(integerPart);
+
+            if (fractionalPart > 0)
+            {
+                words += " and " + NumberToWords(fractionalPart) + " Paise";
+            }
+
+            words += " Only";
+            return words.Trim();
+        }
+
+        // Recursive method to handle number to words conversion
+        private string NumberToWords(long number)
+        {
+            if (number == 0)
+                return "";
+
+            if (number < 0)
+                return "minus " + NumberToWords(Math.Abs(number));
+
+            string words = "";
+
+            if ((number / 10000000) > 0)
+            {
+                words += NumberToWords(number / 10000000) + " Crore ";
+                number %= 10000000;
+            }
+
+            if ((number / 100000) > 0)
+            {
+                words += NumberToWords(number / 100000) + " Lakh ";
+                number %= 100000;
+            }
+
+            if ((number / 1000) > 0)
+            {
+                words += NumberToWords(number / 1000) + " Thousand ";
+                number %= 1000;
+            }
+
+            if ((number / 100) > 0)
+            {
+                words += NumberToWords(number / 100) + " Hundred ";
+                number %= 100;
+            }
+
+            if (number > 0)
+            {
+                if (words != "")
+                    words += "and ";
+
+                string[] unitsMap = { "Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten",
+                              "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen" };
+
+                string[] tensMap = { "Zero", "Ten", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety" };
+
+                if (number < 20)
+                    words += unitsMap[number];
+                else
+                {
+                    words += tensMap[number / 10];
+                    if ((number % 10) > 0)
+                        words += "-" + unitsMap[number % 10];
+                }
+            }
+
+            return words.Trim();
+        }
+        public async Task<List<Priewempdata>> PreviewEmployeeList(int id)
+        {
+            using (IDbConnection dbConnection = _context.Database.GetDbConnection())
+            {
+                if (dbConnection.State == ConnectionState.Closed)
+                    dbConnection.Open();
+                string query = "EXEC USP_GetCustomerEmployeeDetails @Id";
+                var employeeList = (await dbConnection.QueryAsync<Priewempdata>(query, new { Id = id })).ToList();
+
+                return employeeList;
+            }
+        }
+
+    }
 }

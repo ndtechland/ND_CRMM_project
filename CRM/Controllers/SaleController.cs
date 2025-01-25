@@ -1,16 +1,20 @@
-﻿using CRM.Models.Crm;
+﻿using ClosedXML.Excel;
+using CRM.Models.Crm;
 using CRM.Models.DTO;
 using CRM.Repository;
 using DinkToPdf;
 using DinkToPdf.Contracts;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Office2010.Excel;
+using jsreport.AspNetCore;
+using jsreport.Types;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Org.BouncyCastle.Ocsp;
 using SelectPdf;
 using System.Text;
+using Umbraco.Core;
 
 namespace CRM.Controllers
 {
@@ -30,7 +34,7 @@ namespace CRM.Controllers
 
         }
         [HttpGet]
-        public async Task<IActionResult> Invoice(string InvoiceNumber ,bool clone=false)
+        public async Task<IActionResult> Invoice(string InvoiceNumber, bool clone = false)
         {
             try
             {
@@ -47,10 +51,10 @@ namespace CRM.Controllers
                     DateTime InvoiceDuedate = Invoicedetail?.InvoiceDueDate ?? DateTime.Now.Date;
                     var notes = Invoicedetail?.Notes ?? null;
                     var Terms = Invoicedetail?.Terms ?? null;
-                   
+
                     if (InvoiceNumber != null)
                     {
-                        if(clone == true)
+                        if (clone == true)
                         {
                             ViewBag.Heading = "Add Clone Invoice";
                             ViewBag.btnText = "Add Clone";
@@ -60,13 +64,13 @@ namespace CRM.Controllers
                             ViewBag.Heading = "Update Invoice";
                             ViewBag.btnText = "Update";
                         }
-                        
+
                         customerInv.customerInvoice = await _context.CustomerInvoices.Where(c => c.InvoiceNumber == InvoiceNumber).ToListAsync();
                         var data = customerInv.customerInvoice.FirstOrDefault();
                         if (customerInv.customerInvoice != null && customerInv.customerInvoice.Count() > 0)
                         {
 
-                            ViewBag.ProductDetails = _context.VendorProductMasters.Where(c => c.IsActive == true)
+                            ViewBag.ProductDetails = _context.VendorProductMasters.Where(c => c.IsActive == true && c.VendorId == adminlogin.Vendorid)
                                 .Select(p => new SelectListItem
                                 {
                                     Value = p.Id.ToString(),
@@ -100,13 +104,14 @@ namespace CRM.Controllers
                     ViewBag.SGST = 0;
                     ViewBag.CGST = 0;
                     ViewBag.Dueamountdate = null;
-                    ViewBag.Invoicedate = Invoicedate.ToString("yyyy-MM-dd"); 
+                    ViewBag.Invoicedate = Invoicedate.ToString("yyyy-MM-dd");
                     ViewBag.InvoiceDuedate = InvoiceDuedate.ToString("yyyy-MM-dd");
                     ViewBag.Notes = null;
                     ViewBag.Terms = null;
                     ViewBag.InvoiceNumber = InvoiceNumber;
                     ViewBag.clone = clone;
-                    ViewBag.ProductDetails = _context.VendorProductMasters.Where(c => c.IsActive == true)
+                    ViewBag.Quantity = 1;
+                    ViewBag.ProductDetails = _context.VendorProductMasters.Where(c => c.IsActive == true && c.VendorId == adminlogin.Vendorid)
                      .Select(p => new SelectListItem
                      {
                          Value = p.Id.ToString(),
@@ -153,7 +158,7 @@ namespace CRM.Controllers
                                                   .ToListAsync();
                 string InvoiceNo = model.FirstOrDefault()?.InvoiceNumber ?? null;
 
-                bool isSuccess = await _ICrmrpo.CustomerInvoice(model, InvoiceNo, (int)adminlogin.Vendorid, InvoiceDate, InvoiceDueDate,InvoiceNotes,InvoiceTerms, Invoiceclone);
+                bool isSuccess = await _ICrmrpo.CustomerInvoice(model, InvoiceNo, (int)adminlogin.Vendorid, InvoiceDate, InvoiceDueDate, InvoiceNotes, InvoiceTerms, Invoiceclone);
 
                 if (isSuccess)
                 {
@@ -208,15 +213,15 @@ namespace CRM.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetCustomerDetailsById(int id, bool clone = false,int InvoiceID = 0)
+        public IActionResult GetCustomerDetailsById(int id, bool clone = false, int InvoiceID = 0)
         {
             int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
             var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
-            var InvoiceDetail = _context.CustomerInvoices.Where(x =>x.Id == InvoiceID).FirstOrDefault();
+            var InvoiceDetail = _context.CustomerInvoices.Where(x => x.Id == InvoiceID).FirstOrDefault();
             var existingInvoice = new CustomerInvoice();
             if (InvoiceDetail != null)
             {
-                 existingInvoice = _context.CustomerInvoices.Where(x => x.CustomerId == id && x.InvoiceNumber == InvoiceDetail.InvoiceNumber).FirstOrDefault();
+                existingInvoice = _context.CustomerInvoices.Where(x => x.CustomerId == id && x.InvoiceNumber == InvoiceDetail.InvoiceNumber).FirstOrDefault();
 
             }
             string InvoiceNo = null;
@@ -224,7 +229,7 @@ namespace CRM.Controllers
             {
                 InvoiceNo = GenerateInvoiceNumber();
             }
-            else if(clone == false)
+            else if (clone == false)
             {
                 InvoiceNo = existingInvoice.InvoiceNumber;
             }
@@ -312,12 +317,12 @@ namespace CRM.Controllers
         }
         private string GenerateInvoiceNumber()
         {
-            
+
 
             int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
             var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
 
-            var data = _context.CustomerInvoices.Where(x =>x.VendorId == adminlogin.Vendorid)
+            var data = _context.CustomerInvoices.Where(x => x.VendorId == adminlogin.Vendorid)
                               .OrderByDescending(a => a.InvoiceNumber)
                               .FirstOrDefault();
             // Initialize variables
@@ -430,6 +435,7 @@ namespace CRM.Controllers
                         TempData["msg"] = "No data found";
                         return RedirectToAction("CustomerInvoiceList");
                     }
+
                 }
                 else
                 {
@@ -444,6 +450,55 @@ namespace CRM.Controllers
 
 
         }
+        [HttpGet]
+        [MiddlewareFilter(typeof(JsReportPipeline))]
+        public async Task<IActionResult> SendProductInvoice(string InvoiceNumber, bool Ismail)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(InvoiceNumber))
+                {
+                    return RedirectToAction("CustomerInvoiceList");
+                }
+
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                CustomerInvoiceDTO invoice = await _ICrmrpo.CustomerProductInvoice(InvoiceNumber, Ismail);
+
+                if (invoice == null)
+                {
+                    TempData["msg"] = "No data found for the invoice.";
+                    return RedirectToAction("CustomerInvoiceList");
+                }
+
+                ViewBag.Protocol = Request.Scheme;
+                ViewBag.Host = Request.Host.Value;
+                if (Ismail)
+                {
+                    var jsReportFeature = HttpContext.JsReportFeature();
+                    if (jsReportFeature == null)
+                    {
+                        throw new Exception("JsReport feature is not available in the current context.");
+                    }
+
+                    jsReportFeature
+                        .Recipe(Recipe.ChromePdf)
+                        .OnAfterRender((r) =>
+                            HttpContext.Response.Headers["Content-Disposition"] = "attachment; filename=\"Invoice_" + InvoiceNumber + ".pdf\"");
+
+                    return View("ProductInvoice", invoice);
+                }
+                else
+                {
+                    return View(invoice);
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["msg"] = "An error occurred: " + ex.Message;
+                return RedirectToAction("CustomerInvoiceList");
+            }
+        }
+
         [HttpGet]
         public JsonResult Product(int? id, int? invoiceId)
         {
@@ -498,9 +553,9 @@ namespace CRM.Controllers
             {
                 string schema = Request.Scheme;
                 string host = Request.Host.Value;
-                HtmlToPdf converter = new HtmlToPdf();
-                string SlipURL = $"{schema}://{host}/Sale/ProductInvoice?InvoiceNumber={InvoiceNumber}&&Ismail={Ismail}";
-                PdfDocument doc = converter.ConvertUrl(SlipURL);
+                //  HtmlToPdf converter = new HtmlToPdf();
+                string SlipURL = $"{schema}://{host}/Sale/SendProductInvoice?InvoiceNumber={InvoiceNumber}&Ismail={Ismail}";
+                //  PdfDocument doc = converter.ConvertUrl(SlipURL);
 
                 using (HttpClient client = new HttpClient())
                 {
@@ -510,71 +565,87 @@ namespace CRM.Controllers
                         return BadRequest("Failed to retrieve content from the URL.");
                     }
 
+
+                    byte[] file = await response.Content.ReadAsByteArrayAsync();
+                    //var pdfdoc = File(pdfBytes, "application/pdf", "Invoice.pdf");
+                    //byte[] file = System.IO.File.ReadAllBytes(pdfdoc);
+
+                    // Set the appropriate content type for PDF and the file name
+                    // return File(pdfBytes, "application/pdf", "Invoice.pdf");
+
+
                     var htmlContent = await response.Content.ReadAsStringAsync();
 
-                    // Generate PDF from HTML content
-                    byte[] pdf = GeneratePdf(htmlContent);
-                    //return File(pdf, "application/pdf", "kk.pdf");
-                    
-
                     CustomerInvoiceDTO result = await _ICrmrpo.CustomerProductInvoice(InvoiceNumber, Ismail);
-
                     if (result == null)
                     {
                         throw new Exception("Invoice not found.");
                     }
-                    // Create a unique filename for the PDF
+
                     var vendor = _context.VendorRegistrations.FirstOrDefault(x => x.Id == result.VendorId);
+                    string pdfFileName = $"Invoice_{InvoiceNumber}.pdf";
+                    string wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "CustomerInvoicefile");
+                    if (!Directory.Exists(wwwRootPath))
+                    {
+                        Directory.CreateDirectory(wwwRootPath);
+                    }
 
-                    string pdfFileName = $"{"Invoice"}_{InvoiceNumber}.pdf";
+                    string filePath = Path.Combine(wwwRootPath, pdfFileName);
+                    await System.IO.File.WriteAllBytesAsync(filePath, file);
 
-                    string filePath = Path.Combine(pdfFileName);
+                    string emailBody = $"Dear {result.CompanyName}," +
+                                       $"We hope this email finds you well. Please find your attached invoice for the products/services provided." +
+                                       $"If you have any questions or need further assistance, feel free to reach out to us." +
+                                       $"Thank you for your business and continued support." +
+                                       $"Best regards,{result.VendorCompanyName}";
 
-                    // Save the PDF file
-                    await System.IO.File.WriteAllBytesAsync(filePath, pdf);
-                    string emailBody = $"Dear {result.CompanyName},We hope this email finds you well. Please find your attached invoice for the products/services provided. If you have any questions or need further assistance, feel free to reach out to us.Thank you for your business and continued support.Best regards,{result.VendorCompanyName}";
+                    await _IEmailService.SendInvoicePdfEmail(result.Email, emailBody, file, pdfFileName, "application/pdf", (int)result.VendorId);
 
-                    await _IEmailService.SendInvoicePdfEmail(result.Email, emailBody, pdf, pdfFileName, "application/pdf", (int)result.VendorId);
-                    return Json(new { success = true, message = "Invoice sent successfully"});
+                    return Json(new { success = true, message = "Invoice sent successfully" });
                 }
+
+
+
             }
             catch (Exception ex)
             {
                 throw;
             }
         }
-        private byte[] GeneratePdf(string htmlContent)
-        {
-            var globalSettings = new GlobalSettings
-            {
-                ColorMode = ColorMode.Color,
-                Orientation = DinkToPdf.Orientation.Portrait,
-                PaperSize = PaperKind.A4,
-                Margins = new MarginSettings { Top = 15, Bottom = 15, Left = 15, Right = 15 },
-            };
+        //private byte[] GeneratePdf(string htmlContent)
+        //{
+        //    var globalSettings = new GlobalSettings
+        //    {
+        //        ColorMode = ColorMode.Color,
+        //        Orientation = DinkToPdf.Orientation.Portrait,
+        //        PaperSize = PaperKind.A4,
+        //        Margins = new MarginSettings { Top = 15, Bottom = 10, Left = 15, Right = 15 },
+        //    };
 
-            var objectSettings = new ObjectSettings
-            {
-                PagesCount = true,
-                HtmlContent = htmlContent,
-                WebSettings = { DefaultEncoding = "utf-8" },
-                FooterSettings = new FooterSettings
-                {
-                    FontName = "Arial",
-                    FontSize = 8,                 
-                },
-                LoadSettings = { BlockLocalFileAccess = false }
-            };
+        //    var objectSettings = new ObjectSettings
+        //    {
+        //        PagesCount = true,
+        //        HtmlContent = htmlContent,
+        //        WebSettings = { DefaultEncoding = "utf-8" },
+        //        FooterSettings = new FooterSettings
+        //        {
+        //            FontName = "Arial,sans-serif ",
+        //            FontSize = 15,
+        //            Line = true,
+        //        },
+        //        LoadSettings = { BlockLocalFileAccess = false }
+        //    };
 
-            var htmlToPdfDocument = new HtmlToPdfDocument()
-            {
-                GlobalSettings = globalSettings,
-                Objects = { objectSettings },
-            };
+        //    var htmlToPdfDocument = new HtmlToPdfDocument()
+        //    {
+        //        GlobalSettings = globalSettings,
+        //        Objects = { objectSettings },
+        //    };
 
-            return _converter.Convert(htmlToPdfDocument);
-        }
-        public async Task<JsonResult> DeleteProdbyUpdate(int id,bool cloneId)
+        //    return _converter.Convert(htmlToPdfDocument);
+        //}
+
+        public async Task<JsonResult> DeleteProdbyUpdate(int id, bool cloneId)
         {
             if (id <= 0)
             {
@@ -599,15 +670,19 @@ namespace CRM.Controllers
                 }
 
                 decimal totalDueAmount = invoicesToDelete
-                    .Select(ci => ci.DueAmount.Value)
+                    .Select(ci => ci.DueAmount ?? 0) // Handle potential nulls
                     .FirstOrDefault();
 
-                decimal adjustment = (result.ProductPrice ?? 0) +
-                                     (result.ProductPrice ?? 0) * ((result.Igst ?? 0) / 100) +
-                                     (result.ProductPrice ?? 0) * ((result.Sgst ?? 0) / 100) +
-                                     (result.ProductPrice ?? 0) * ((result.Cgst ?? 0) / 100);
+                // Ensure null handling for ProductPrice and ProductQty
+                decimal productQty = result.ProductQty ?? 1; // Default to 1 if ProductQty is null
+                decimal productPrice = result.ProductPrice ?? 0;
 
-                decimal dueAmount = totalDueAmount - adjustment;
+                decimal adjustment = (productPrice * productQty) +
+                                     (productPrice * (result.Igst ?? 0) / 100) +
+                                     (productPrice * (result.Sgst ?? 0) / 100) +
+                                     (productPrice * (result.Cgst ?? 0) / 100);
+
+                decimal dueAmount = totalDueAmount > 0 ? totalDueAmount - adjustment : totalDueAmount;
 
                 foreach (var item in invoicesToDelete)
                 {
@@ -629,6 +704,69 @@ namespace CRM.Controllers
                 return new JsonResult(new { success = false, message = $"An error occurred: {ex.Message}" });
             }
         }
+
+        //public async Task<JsonResult> DeleteProdbyUpdate(int id, bool cloneId)
+        //{
+        //    if (id <= 0)
+        //    {
+        //        return new JsonResult(new { success = false, message = "Invalid ID." });
+        //    }
+
+        //    try
+        //    {
+        //        var result = await _context.CustomerInvoices.FirstOrDefaultAsync(x => x.Id == id);
+        //        if (result == null)
+        //        {
+        //            return new JsonResult(new { success = false, message = "Invoice not found." });
+        //        }
+
+        //        var invoicesToDelete = await _context.CustomerInvoices
+        //            .Where(c => c.InvoiceNumber == result.InvoiceNumber)
+        //            .ToListAsync();
+
+        //        if (!invoicesToDelete.Any())
+        //        {
+        //            return new JsonResult(new { success = false, message = "No matching invoices found for deletion." });
+        //        }
+
+        //        decimal totalDueAmount = invoicesToDelete
+        //            .Select(ci => ci.DueAmount.Value)
+        //            .FirstOrDefault();
+
+        //        decimal adjustment = (result.ProductPrice * result.ProductQty == null ?? 1 : result.ProductQty ?? 0) +
+        //                             (result.ProductPrice ?? 0) * ((result.Igst ?? 0) / 100) +
+        //                             (result.ProductPrice ?? 0) * ((result.Sgst ?? 0) / 100) +
+        //                             (result.ProductPrice ?? 0) * ((result.Cgst ?? 0) / 100);
+        //        decimal dueAmount = 0;
+        //        if (totalDueAmount != 0)
+        //        {
+        //            dueAmount = totalDueAmount - adjustment;
+
+        //        }
+        //        else
+        //        {
+        //            dueAmount = totalDueAmount;
+        //        }
+        //        foreach (var item in invoicesToDelete)
+        //        {
+        //            item.DueAmount = dueAmount;
+        //        }
+
+        //        _context.CustomerInvoices.Remove(result);
+        //        await _context.SaveChangesAsync();
+
+        //        return new JsonResult(new
+        //        {
+        //            success = true,
+        //            message = "Deleted Successfully",
+        //            redirectUrl = $"/Sale/Invoice?InvoiceNumber={result.InvoiceNumber}&&clone={cloneId}"
+        //        });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return new JsonResult(new { success = false, message = $"An error occurred: {ex.Message}" });
+        //    }
+        //}
 
         [HttpPost]
         public async Task<JsonResult> UpdateCustomerInvoiceamount(int InvoiceId, int Paymentid, decimal PaidAmount)
@@ -694,10 +832,11 @@ namespace CRM.Controllers
                                                 ProductPrice = ci.ProductPrice ?? 0,
                                                 IGST = ci.Igst ?? 0,
                                                 SGST = ci.Sgst ?? 0,
-                                                CGST = ci.Cgst ?? 0
+                                                CGST = ci.Cgst ?? 0,
+                                                ProductQty = ci.ProductQty ?? 1
                                             }).ToListAsync();
 
-                if (!invoiceDetails.Any())
+                if (invoiceDetails == null || !invoiceDetails.Any())
                 {
                     return 0;
                 }
@@ -705,22 +844,210 @@ namespace CRM.Controllers
                 decimal totalAmount = 0;
                 foreach (var item in invoiceDetails)
                 {
-                    decimal productTotal = (item.ProductPrice + (item.ProductPrice * item.IGST / 100) +
+                    decimal productTotal = (item.ProductPrice * item.ProductQty) +
+                                           (item.ProductPrice * item.IGST / 100) +
                                            (item.ProductPrice * item.SGST / 100) +
-                                           (item.ProductPrice * item.CGST / 100));
+                                           (item.ProductPrice * item.CGST / 100);
 
                     totalAmount += productTotal;
                 }
 
-                totalAmount = decimal.Round(totalAmount, 2, MidpointRounding.AwayFromZero);
+                decimal roundedTotal = Math.Round(totalAmount, 0, MidpointRounding.AwayFromZero);
+                return roundedTotal;
 
-                return totalAmount;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return 0;
+                throw;
             }
         }
 
+        public async Task<IActionResult> CustomerInvoicePaidList()
+        {
+            try
+            {
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
+                List<CustomerpaidInvoiceDTO> data = await (from ci in _context.CustomerInvoices
+                                                           join c in _context.CustomerRegistrations on ci.CustomerId equals c.Id
+                                                           join p in _context.VendorProductMasters on ci.ProductId equals p.Id
+                                                           join s in _context.States on c.StateId equals s.Id
+                                                           join ct in _context.Cities on c.CityId equals ct.Id
+                                                           join sb in _context.States on c.BillingStateId equals sb.Id
+                                                           join ctb in _context.Cities on c.BillingCityId equals ctb.Id
+                                                           join pm in _context.Paymentmodes on ci.Paymentstatus equals pm.Id
+                                                           where c.Vendorid == adminlogin.Vendorid && ci.Paymentstatus == 1
+                                                           //group new { ci, c, p, s, ct, sb, ctb, pm } by ci.InvoiceNumber into grouped
+                                                           select new CustomerpaidInvoiceDTO
+                                                           {
+                                                               CompanyName = c.CompanyName,
+                                                               MobileNumber = c.MobileNumber,
+                                                               Email = c.Email,
+                                                               BillingState = sb.SName,
+                                                               BillingCity = ctb.City1,
+                                                               NoofInvoice = _context.CustomerInvoices.Where(x=>x.CustomerId == c.Id && x.Paymentstatus == 1).Count()
+                                                           }).Distinct().ToListAsync();
+
+                if (data.Count > 0)
+                {
+                    return View(data);
+
+                }
+                else
+                {
+                    return View(null);
+                }
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        public async Task<IActionResult> CustomerPaidInvoiceList(string CompanyName)
+        {
+            try
+            {
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
+                List<CustomerpaidInvoiceDTO> data = await (from ci in _context.CustomerInvoices
+                                                           join c in _context.CustomerRegistrations on ci.CustomerId equals c.Id
+                                                           join p in _context.VendorProductMasters on ci.ProductId equals p.Id
+                                                           join s in _context.States on c.StateId equals s.Id
+                                                           join ct in _context.Cities on c.CityId equals ct.Id
+                                                           join sb in _context.States on c.BillingStateId equals sb.Id
+                                                           join ctb in _context.Cities on c.BillingCityId equals ctb.Id
+                                                           join pm in _context.Paymentmodes on ci.Paymentstatus equals pm.Id
+                                                           where c.CompanyName == CompanyName && ci.Paymentstatus == 1
+                                                           group new { ci, c, p, s, ct, sb, ctb, pm } by ci.InvoiceNumber into grouped
+                                                           select new CustomerpaidInvoiceDTO
+                                                           {
+
+                                                               CompanyName = grouped.First().c.CompanyName,
+                                                               MobileNumber = grouped.First().c.MobileNumber,
+                                                               Email = grouped.First().c.Email,
+                                                               BillingState = grouped.First().sb.SName,
+                                                               BillingCity = grouped.First().ctb.City1,
+                                                               InvoiceNumber = grouped.Key,
+                                                               PaymentStatus = grouped.First().pm.PaymentType,
+                                                               PaidAmount = grouped.First().ci.PaidAmount ?? 0,
+                                                           }).OrderByDescending(ci => ci.InvoiceNumber).ToListAsync();
+                foreach (var invoice in data)
+                {
+                    invoice.TotalAmount = await CalculateTotalAmountByInvoiceId(invoice.InvoiceNumber);
+                }
+                if (data.Count > 0)
+                {
+                    return View(data);
+
+                }
+                else
+                {
+                    return View(null);
+                }
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        public async Task<IActionResult> ExportCustomerPaidInvoiceReport(string CompanyName)
+        {
+            try
+            {
+                int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminLogin = await _context.AdminLogins.FirstOrDefaultAsync(x => x.Id == userId);
+
+                if (adminLogin == null)
+                    return NotFound("Admin not found.");
+
+                List<CustomerpaidInvoiceDTO> data = await (from ci in _context.CustomerInvoices
+                                                           join c in _context.CustomerRegistrations on ci.CustomerId equals c.Id
+                                                           join p in _context.VendorProductMasters on ci.ProductId equals p.Id
+                                                           join s in _context.States on c.StateId equals s.Id
+                                                           join ct in _context.Cities on c.CityId equals ct.Id
+                                                           join sb in _context.States on c.BillingStateId equals sb.Id
+                                                           join ctb in _context.Cities on c.BillingCityId equals ctb.Id
+                                                           join pm in _context.Paymentmodes on ci.Paymentstatus equals pm.Id
+                                                           where c.CompanyName == CompanyName && ci.Paymentstatus == 1
+                                                           group new { ci, c, p, s, ct, sb, ctb, pm } by ci.InvoiceNumber into grouped
+                                                           select new CustomerpaidInvoiceDTO
+                                                           {
+
+                                                               CompanyName = grouped.First().c.CompanyName,
+                                                               MobileNumber = grouped.First().c.MobileNumber,
+                                                               Email = grouped.First().c.Email,
+                                                               BillingState = grouped.First().sb.SName,
+                                                               BillingCity = grouped.First().ctb.City1,
+                                                               InvoiceNumber = grouped.Key,
+                                                               PaymentStatus = grouped.First().pm.PaymentType,
+                                                               PaidAmount = grouped.First().ci.PaidAmount ?? 0,
+                                                           }).OrderByDescending(ci => ci.InvoiceNumber).ToListAsync();
+                foreach (var invoice in data)
+                {
+                    invoice.TotalAmount = await CalculateTotalAmountByInvoiceId(invoice.InvoiceNumber);
+                }
+                using (var workbook = new XLWorkbook())
+                {
+                    var worksheet = workbook.Worksheets.Add("Invoice Paid Report");
+
+                    int currentwork = 1;
+                    worksheet.Cell(currentwork, 1).Value = "Sr.No.";
+                    worksheet.Cell(currentwork, 1).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 2).Value = "Invoice Number";
+                    worksheet.Cell(currentwork, 2).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 3).Value = "Company Name";
+                    worksheet.Cell(currentwork, 3).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 4).Value = "Mobile Number";
+                    worksheet.Cell(currentwork, 4).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 5).Value = "Email Id";
+                    worksheet.Cell(currentwork, 5).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 6).Value = "Billing State";
+                    worksheet.Cell(currentwork, 6).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 7).Value = "Total Payment";
+                    worksheet.Cell(currentwork, 7).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 8).Value = "Paid Payment";
+                    worksheet.Cell(currentwork, 8).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 9).Value = "Payment Status";
+                    worksheet.Cell(currentwork, 9).Style.Fill.BackgroundColor = XLColor.Yellow;
+
+                    currentwork++;
+
+                    var row = 1;
+                    foreach (var record in data)
+                    {
+                        worksheet.Cell(currentwork, 1).Value = row++;
+                        worksheet.Cell(currentwork, 2).Value = record.InvoiceNumber;
+                        worksheet.Cell(currentwork, 3).Value = record.CompanyName;
+                        worksheet.Cell(currentwork, 4).Value = record.MobileNumber;
+                        worksheet.Cell(currentwork, 5).Value = record.Email;
+                        worksheet.Cell(currentwork, 6).Value = record.BillingState;
+                        worksheet.Cell(currentwork, 7).Value = record.TotalAmount;
+                        worksheet.Cell(currentwork, 8).Value = record.PaidAmount;
+                        worksheet.Cell(currentwork, 9).Value = record.PaymentStatus;
+
+                        currentwork++;
+                    }
+
+                    worksheet.Columns().AdjustToContents();
+
+                    using (var stream = new MemoryStream())
+                    {
+                        workbook.SaveAs(stream);
+                        var fileContent = stream.ToArray();
+                        return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Invoice Paid Report.xlsx");
+                    }
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
     }
 }

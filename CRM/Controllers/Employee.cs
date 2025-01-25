@@ -63,6 +63,8 @@ using DinkToPdf;
 using DinkToPdf.Contracts;
 using StackExchange.Profiling.Internal;
 using RestSharp;
+using jsreport.AspNetCore;
+using jsreport.Types;
 
 namespace CRM.Controllers
 {
@@ -92,6 +94,8 @@ namespace CRM.Controllers
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 ViewBag.userId = adminlogin.Vendorid;
+                var checkvendor = await _context.VendorRegistrations.Where(x => x.Id == adminlogin.Vendorid).FirstOrDefaultAsync();
+
                 ViewBag.WorkLocation = _context.Cities
                 .Select(w => new SelectListItem
                 {
@@ -149,7 +153,15 @@ namespace CRM.Controllers
                     Value = x.Id.ToString(),
                     Text = $"{x.Starttime} - {x.Endtime} - {x.ShiftTypeid}"
                 }).ToList();
-
+                if (checkvendor.SelectCompany == true)
+                {
+                    ViewBag.CustomerCompanyName = _context.CustomerRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).Select(x => new SelectListItem
+                    {
+                        Value = x.Id.ToString(),
+                        Text = $"{x.CompanyName}"
+                    }).ToList();
+                }
+                ViewBag.CheckSelectCompany = checkvendor.SelectCompany;
                 ViewBag.Emp_Reg_Code = "";
                 ViewBag.First_Name = "";
                 ViewBag.Middle_Name = "";
@@ -212,6 +224,7 @@ namespace CRM.Controllers
                 ViewBag.EmployerContributionpercentage = "";
                 ViewBag.EPfpercentage = "";
                 ViewBag.Esipercentage = "";
+                ViewBag.CustomerCompany = "";
                 ViewBag.btnText = "SAVE";
 
                 if (id != null)
@@ -292,6 +305,7 @@ namespace CRM.Controllers
                                 ViewBag.EmployerContributionpercentage = row["EmployerContributionpercentage"].ToString();
                                 ViewBag.EPfpercentage = row["EPfpercentage"].ToString();
                                 ViewBag.Esipercentage = row["Esipercentage"].ToString();
+                                ViewBag.CustomerCompany  = row["CustomerCompanyid"].ToString();
                                 ViewBag.Emp_Reg_Code = id;
                                 ViewBag.btnText = "UPDATE";
 
@@ -302,7 +316,7 @@ namespace CRM.Controllers
                     else
                     {
                         TempData["Message"] = "Invalid Employee Id";
-                        return RedirectToAction("Employeelist");
+                        return RedirectToAction("PreviewEmployeelist");
                     }
                 }
                 return View();
@@ -373,22 +387,75 @@ namespace CRM.Controllers
             }
         }
 
-        [HttpGet, Route("Employee/Employeelist")]
-        public async Task<IActionResult> Employeelist()
+        //[HttpGet, Route("Employee/Employeelist")]
+        //public async Task<IActionResult> Employeelist()
+        //{
+        //    try
+        //    {
+
+        //        List<EmployeeImportExcel> response = new List<EmployeeImportExcel>();
+        //        if (HttpContext.Session.GetString("UserName") != null)
+        //        {
+        //            string userIdString = HttpContext.Session.GetString("UserId");
+        //            var adminlogin = await _context.AdminLogins.Where(x => x.Id == Convert.ToInt16(userIdString)).FirstOrDefaultAsync();
+        //            ViewBag.officeshift = _context.Officeshifts.Where(x => x.Vendorid == adminlogin.Vendorid).Select(x => new SelectListItem
+        //            {
+        //                Value = x.Id.ToString(),
+        //                Text = $"{x.Starttime} - {x.Endtime} - {x.ShiftTypeid}"
+        //            }).ToList();
+        //            if (!string.IsNullOrEmpty(userIdString) && int.TryParse(userIdString, out int id))
+        //            {
+        //                if (id == 1)
+        //                {
+        //                    response = await _ICrmrpo.EmployeeList();
+        //                }
+        //                else
+        //                {
+        //                    response = await _ICrmrpo.CustomerEmployeeList(id);
+        //                    foreach (var item in response)
+        //                    {
+        //                        ViewBag.shiftlist = item.ShiftTypeid;
+        //                        ViewBag.Isactive = item.Isactive;
+        //                    }
+        //                }
+
+        //                ViewBag.UserName = HttpContext.Session.GetString("UserName");
+        //                return View(response);
+        //            }
+        //            response = await _ICrmrpo.EmployeeList();
+        //            ViewBag.UserName = HttpContext.Session.GetString("UserName");
+        //            return View(response);
+        //        }
+
+        //        return RedirectToAction("Login", "Admin");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception("Error: " + ex.Message);
+        //    }
+        //}
+        [HttpGet, Route("Employee/getEmployeedata")]
+        public async Task<IActionResult> Employeelist(string empid)
         {
             try
             {
-
                 List<EmployeeImportExcel> response = new List<EmployeeImportExcel>();
                 if (HttpContext.Session.GetString("UserName") != null)
                 {
                     string userIdString = HttpContext.Session.GetString("UserId");
-                    var adminlogin = await _context.AdminLogins.Where(x => x.Id == Convert.ToInt16(userIdString)).FirstOrDefaultAsync();
-                    ViewBag.officeshift = _context.Officeshifts.Where(x => x.Vendorid == adminlogin.Vendorid).Select(x => new SelectListItem
-                    {
-                        Value = x.Id.ToString(),
-                        Text = $"{x.Starttime} - {x.Endtime} - {x.ShiftTypeid}"
-                    }).ToList();
+                    var adminlogin = await _context.AdminLogins
+                        .Where(x => x.Id == Convert.ToInt16(userIdString))
+                        .FirstOrDefaultAsync();
+
+                    ViewBag.officeshift = _context.Officeshifts
+                        .Where(x => x.Vendorid == adminlogin.Vendorid)
+                        .Select(x => new SelectListItem
+                        {
+                            Value = x.Id.ToString(),
+                            Text = $"{x.Starttime} - {x.Endtime} - {x.ShiftTypeid}"
+                        })
+                        .ToList();
+
                     if (!string.IsNullOrEmpty(userIdString) && int.TryParse(userIdString, out int id))
                     {
                         if (id == 1)
@@ -398,19 +465,21 @@ namespace CRM.Controllers
                         else
                         {
                             response = await _ICrmrpo.CustomerEmployeeList(id);
-                            foreach (var item in response)
-                            {
-                                ViewBag.shiftlist = item.ShiftTypeid;
-                                ViewBag.Isactive = item.Isactive;
-                            }
+                        }
+                        if (!string.IsNullOrEmpty(empid))
+                        {
+                            response = response.Where(e => e.EmpRegId == empid).ToList();
+                        }
+
+                        foreach (var item in response)
+                        {
+                            ViewBag.shiftlist = item.ShiftTypeid;
+                            ViewBag.Isactive = item.Isactive;
                         }
 
                         ViewBag.UserName = HttpContext.Session.GetString("UserName");
                         return View(response);
                     }
-                    response = await _ICrmrpo.EmployeeList();
-                    ViewBag.UserName = HttpContext.Session.GetString("UserName");
-                    return View(response);
                 }
 
                 return RedirectToAction("Login", "Admin");
@@ -561,7 +630,7 @@ namespace CRM.Controllers
         }
         [HttpGet]
         [Route("Employee/salarydetail")]
-        public async Task<IActionResult> salarydetail(int month = 0)
+        public async Task<IActionResult> salarydetail(int month = 0, int year = 0)
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
@@ -1068,16 +1137,16 @@ namespace CRM.Controllers
             var data = _ICrmrpo.GetempSalaryDetailtById(EmployeeId);
             empSalaryDetail.EmployeeId = data.EmployeeId;
             empSalaryDetail.AnnualCtc = data.AnnualCtc;
-            empSalaryDetail.Esic = data.Esic;
+            empSalaryDetail.Esic = data.Esic / 12;
             empSalaryDetail.TravellingAllowance = data.TravellingAllowance;
-            empSalaryDetail.Professionaltax = data.Professionaltax;
-            empSalaryDetail.Basic = data.Basic;
-            empSalaryDetail.HouseRentAllowance = data.HouseRentAllowance;
-            empSalaryDetail.Epf = data.Epf;
+            empSalaryDetail.Professionaltax = data.Professionaltax / 12;
+            empSalaryDetail.Basic = data.Basic / 12;
+            empSalaryDetail.HouseRentAllowance = data.HouseRentAllowance / 12;
+            empSalaryDetail.Epf = data.Epf / 12;
             empSalaryDetail.MonthlyCtc = data.MonthlyCtc;
-            empSalaryDetail.MonthlyGrossPay = data.MonthlyGrossPay;
+            empSalaryDetail.MonthlyGrossPay = data.MonthlyGrossPay / 12;
             empSalaryDetail.Incentive = data.Incentive;
-            empSalaryDetail.TravellingAllowance = data.TravellingAllowance;
+            empSalaryDetail.TravellingAllowance = data.TravellingAllowance / 12;
             var result = new
             {
                 empSalaryDetail = empSalaryDetail,
@@ -2642,7 +2711,7 @@ namespace CRM.Controllers
                 ViewBag.EmployeeId = _context.EmployeeRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid && x.IsDeleted == false).Select(D => new SelectListItem
                 {
                     Value = D.EmployeeId.ToString(),
-                    Text = D.EmployeeId
+                    Text = $"{D.EmployeeId} {' '} ({D.FirstName})"
 
                 }).ToList();
 
@@ -2755,7 +2824,7 @@ namespace CRM.Controllers
                                           WorkEmail = emp.WorkEmail,
                                           ExperienceletterFile = exp.ExperienceletterFile,
                                           HrDesignation = exp.HrDesignation,
-                                      }).ToListAsync();
+                                      }).OrderByDescending(x => x.Id).ToListAsync();
 
                 return View(response);
             }
@@ -2795,7 +2864,7 @@ namespace CRM.Controllers
                 ViewBag.EmployeeId = _context.EmployeeRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid && x.IsDeleted == false).Select(D => new SelectListItem
                 {
                     Value = D.EmployeeId.ToString(),
-                    Text = D.EmployeeId
+                    Text = $"{D.EmployeeId} {' '} ({D.FirstName})"
 
                 }).ToList();
 
@@ -2901,7 +2970,7 @@ namespace CRM.Controllers
                                           ResignationDate = exp.ResignationDate.Value.ToString("dd/MM/yyyy"),
                                           LastDateofEmployment = exp.LastDateofEmployment.Value.ToString("dd/MM/yyyy"),
                                           WorkEmail = emp.WorkEmail,
-                                      }).ToListAsync();
+                                      }).OrderByDescending(x => x.Id).ToListAsync();
 
                 return View(response);
             }
@@ -2995,7 +3064,7 @@ namespace CRM.Controllers
 
                     // Generate PDF from HTML content
                     byte[] pdf = GeneratePdf(htmlContent);
-                    return File(pdf, "application/pdf", "kk.pdf");
+                    //return File(pdf, "application/pdf", "kk.pdf");
                     // Define directory for saving PDF
                     string wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "EMPpdfs");
                     if (!Directory.Exists(wwwRootPath))
@@ -3106,19 +3175,18 @@ namespace CRM.Controllers
 
             return _converter.Convert(htmlToPdfDocument);
         }
-        public async Task<JsonResult> getEmpattendancedays(int month)
+
+        public async Task<JsonResult> getEmpattendancedays(int month, int year)
         {
             int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
-            var adminLogin = await _context.AdminLogins
-                                           .FirstOrDefaultAsync(x => x.Id == userId);
+            var adminLogin = await _context.AdminLogins.FirstOrDefaultAsync(x => x.Id == userId);
 
             if (adminLogin == null)
             {
                 return new JsonResult(new { success = false, message = "Admin login not found" });
             }
 
-            var attendanceDays = await _context.Attendancedays
-                                               .FirstOrDefaultAsync(x => x.Vendorid == adminLogin.Vendorid);
+            var attendanceDays = await _context.Attendancedays.FirstOrDefaultAsync(x => x.Vendorid == adminLogin.Vendorid);
 
             if (attendanceDays == null)
             {
@@ -3145,50 +3213,103 @@ namespace CRM.Controllers
             var leaveCounts = await _context.ApplyLeaveNews
                                              .Where(leave => employeeIds.Contains(leave.UserId) &&
                                                              leave.Isapprove == 2 &&
+                                                             leave.StartDate.Year == year &&
                                                              leave.StartDate.Month == month &&
+                                                             leave.EndDate.Year == year &&
                                                              leave.EndDate.Month == month)
                                              .GroupBy(leave => leave.UserId)
                                              .Select(g => new
                                              {
                                                  UserId = g.Key,
                                                  TotalLeave = g.Sum(leave => leave.CountLeave)
-                                             })
-                                             .ToListAsync();
+                                             }).ToListAsync();
 
-            var leaveDetails = leaveCounts.Select(leave =>
-            {
-                ctcData.TryGetValue(leave.UserId, out var monthlyCtc);
-                var adjustedPay = monthlyCtc - decimal.Round((monthlyCtc / noOfDays) * leave.TotalLeave, 2);
-
-                return new
-                {
-                    leave.UserId,
-                    leave.TotalLeave,
-                    MonthlyPay = adjustedPay
-                };
-            }).ToList();
+            var shiftTimes = await _context.Officeshifts
+                                            .Where(x => x.Vendorid == adminLogin.Vendorid)
+                                            .ToListAsync();
 
             decimal totalMonthlyPay = 0.00M;
-            var result = employees.Select(emp =>
-            {
-                var leaveData = leaveCounts.FirstOrDefault(l => l.UserId == emp.EmployeeId);
-                var totalLeave = leaveData?.TotalLeave ?? 0;
-                var monthlyPay = leaveData != null
-                    ? leaveDetails.FirstOrDefault(ld => ld.UserId == emp.EmployeeId)?.MonthlyPay ?? 0
-                    : ctcData.TryGetValue(emp.EmployeeId, out var baseMonthlyCtc) ? baseMonthlyCtc : 0;
+            var result = new List<object>();
 
+            foreach (var employeesdata in employees)
+            {
+                var leaveData = leaveCounts.FirstOrDefault(l => l.UserId == employeesdata.EmployeeId);
+                var totalLeave = leaveData?.TotalLeave ?? 0;
+
+                var EmpTotalWorkingHours = _context.EmployeeCheckInRecords
+                    .Where(att => att.EmpId == employeesdata.EmployeeId &&
+                                  att.CheckIntime.HasValue &&
+                                  att.CheckOuttime.HasValue &&
+                                  att.CheckIntime.Value.Year == year &&
+                                  att.CheckIntime.Value.Month == month).ToList();
+ 
+
+            var shiftTime = shiftTimes.FirstOrDefault(st => st.Id == employeesdata.OfficeshiftTypeid);
+
+                decimal shiftworkingHours = 0;
+                decimal NumberOfLateMarks = 0;
+                decimal salaryDeductionDays = 0;
+                decimal TotalsalaryDeduction = 0;
+
+                TimeSpan lateThreshold = TimeSpan.FromMinutes(30);
+                TimeSpan halfDayThreshold = TimeSpan.FromHours(2);
+
+                if (shiftTime != null)
+                {
+                    DateTime startTime = DateTime.Parse(shiftTime.Starttime);
+                    DateTime endTime = DateTime.Parse(shiftTime.Endtime);
+                    TimeSpan shiftDuration = endTime - startTime;
+                    shiftworkingHours = Math.Max((decimal)shiftDuration.TotalHours, 0);
+                }
+                int lateMarkCount = 0;
+                bool ischeck = false;
+                foreach (var item in EmpTotalWorkingHours)
+                {
+                    decimal TotalWorkingHours = (decimal)Math.Round((item.CheckOuttime.Value - item.CheckIntime.Value).TotalHours, 2);
+                    decimal totalLateHours = shiftworkingHours - TotalWorkingHours;
+
+                    if (shiftworkingHours > TotalWorkingHours)
+                    {
+                        lateMarkCount += (int)(totalLateHours / 0.5m);
+                        if (totalLateHours >= 0.5m)
+                        {
+                            if (lateMarkCount == 3 && ischeck == false)
+                            {
+                                NumberOfLateMarks += 1;
+                                ischeck = true;
+                            }
+                            else if (lateMarkCount > 3)
+                            {
+                                NumberOfLateMarks += (1 / 3.0m);
+                            }
+                        }
+
+                    }
+                }
+
+                TotalsalaryDeduction = Math.Round((noOfDays - totalLeave - NumberOfLateMarks),2);
+                decimal monthlyPay = 0;
+                if (TotalsalaryDeduction > 0 && ctcData.TryGetValue(employeesdata.EmployeeId, out var monthlyCtc))
+                {
+                    monthlyPay = decimal.Round((monthlyCtc / noOfDays) * TotalsalaryDeduction, 2);
+                }
                 totalMonthlyPay += monthlyPay;
 
-                return new
+                result.Add(new
                 {
-                    EmployeeId = emp.EmployeeId,
-                    LeaveRemaining = noOfDays - totalLeave,
-                    MonthlyPay = monthlyPay
-                };
-            }).ToList();
+                    EmployeeId = employeesdata.EmployeeId,
+                    LeaveRemaining = TotalsalaryDeduction,
+                    MonthlyPay = monthlyPay,
+                    SalaryDeductionDays = salaryDeductionDays,
+                    NumberOfLateMarks = NumberOfLateMarks
+                });
+            }
 
             return new JsonResult(new { Employees = result, TotalMonthlyPay = totalMonthlyPay });
         }
+
+
+
         public JsonResult EmpEpfesilist()
         {
             int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
@@ -3272,8 +3393,175 @@ namespace CRM.Controllers
 
             return new JsonResult(new { success = true, result });
         }
+        public JsonResult GetOfferLetterDetails(int offerLetterId)
+        {
+            var offerLetter = _context.Offerletters
+                .Where(o => o.Id == offerLetterId)
+                .Select(o => new
+                {
+                    FullName = o.Name,
+                    DepartmentID = o.DepartmentId,
+                    DesignationID = o.DesignationId,
+                    CityID = o.CityId,
+                    StateID = o.StateId,
+                    AddressLine1 = o.CandidateAddress,
+                    AddressLine2 = o.CandidateAddress,
+                    PersonalEmailAddress = o.CandidateEmail,
+                    AnnualCTC = o.AnnualCtc,
+                    Pincode = o.CandidatePincode,
+                }).FirstOrDefault();
+
+            if (offerLetter == null)
+            {
+                return Json(null);
+            }
+
+            var nameParts = (offerLetter.FullName ?? "").Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            string firstName = nameParts.Length > 0 ? nameParts[0] : "";
+            string middleName = nameParts.Length > 2 ? nameParts[1] : "";
+            string lastName = nameParts.Length > 1 ? nameParts[^1] : "";
+
+            return Json(new
+            {
+                FirstName = firstName,
+                MiddleName = middleName,
+                LastName = lastName,
+                DepartmentID = offerLetter.DepartmentID,
+                DesignationID = offerLetter.DesignationID,
+                CityID = offerLetter.CityID,
+                StateID = offerLetter.StateID,
+                AddressLine1 = offerLetter.AddressLine1,
+                AddressLine2 = offerLetter.AddressLine2,
+                PersonalEmailAddress = offerLetter.PersonalEmailAddress,
+                AnnualCTC = offerLetter.AnnualCTC,
+                Pincode = offerLetter.Pincode,
+            });
+        }
+        [HttpGet, Route("Employee/PreviewEmployeelist")]
+        public async Task<IActionResult> PreviewEmployeelist()
+        {
+            try
+            {
+                if (HttpContext.Session.GetString("UserName") == null)
+                {
+                    return RedirectToAction("Login", "Admin");
+                }
+
+                string userIdString = HttpContext.Session.GetString("UserId");
+                if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out int userId))
+                {
+                    return RedirectToAction("Login", "Admin");
+                }
+                List<Priewempdata> response = await _ICrmrpo.PreviewEmployeeList(userId);
+
+                ViewBag.Isactive = response.FirstOrDefault()?.Isactive;
+                ViewBag.UserName = HttpContext.Session.GetString("UserName");
+
+                return View(response);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error: " + ex.Message);
+            }
+        }
+        [HttpPost, Route("Employee/UpdateIsIncrement")]
+        public JsonResult UpdateIsIncrement(string Emp_Reg_ID)
+        {
+            var privioussalarydetail = _context.EmployeeSalaryDetails
+                .Where(x => x.EmployeeId == Emp_Reg_ID)
+                .FirstOrDefault();
+
+            if (privioussalarydetail == null)
+            {
+                return Json(null);
+            }
+            OldEmployeeSalaryDetail osd = new OldEmployeeSalaryDetail
+            {
+                EmployeeId = privioussalarydetail.EmployeeId,
+                EmployeeName = privioussalarydetail.EmployeeName,
+                Basic = privioussalarydetail.Basic,
+                HouseRentAllowance = privioussalarydetail.HouseRentAllowance,
+                TravellingAllowance = privioussalarydetail.TravellingAllowance,
+                Esic = privioussalarydetail.Esic,
+                Epf = privioussalarydetail.Epf,
+                IsDeleted = privioussalarydetail.IsDeleted,
+                MonthlyGrossPay = privioussalarydetail.MonthlyGrossPay,
+                MonthlyCtc = privioussalarydetail.MonthlyCtc,
+                EmpId = privioussalarydetail.EmpId,
+                AnnualCtc = privioussalarydetail.AnnualCtc,
+                Professionaltax = privioussalarydetail.Professionaltax,
+                Incentive = privioussalarydetail.Incentive,
+                Servicecharge = privioussalarydetail.Servicecharge,
+                SpecialAllowance = privioussalarydetail.SpecialAllowance,
+                Gross = privioussalarydetail.Gross,
+                Amount = privioussalarydetail.Amount,
+                Tdspercentage = privioussalarydetail.Tdspercentage,
+                Conveyanceallowance = privioussalarydetail.Conveyanceallowance,
+                FixedAllowance = privioussalarydetail.FixedAllowance,
+                Medical = privioussalarydetail.Medical,
+                Composite = privioussalarydetail.Composite,
+                VariablePay = privioussalarydetail.VariablePay,
+                EmployerContribution = privioussalarydetail.EmployerContribution,
+                Tdsvalue = privioussalarydetail.Tdsvalue,
+                Basicpercentage = privioussalarydetail.Basicpercentage,
+                Hrapercentage = privioussalarydetail.Hrapercentage,
+                Conveyancepercentage = privioussalarydetail.Conveyancepercentage,
+                Medicalpercentage = privioussalarydetail.Medicalpercentage,
+                Variablepercentage = privioussalarydetail.Variablepercentage,
+                EmployerContributionpercentage = privioussalarydetail.EmployerContributionpercentage,
+                Epfpercentage = privioussalarydetail.Epfpercentage,
+                Esipercentage = privioussalarydetail.Esipercentage,
+                IncrementPercentage = privioussalarydetail.IncrementPercentage,
+                Createddate = DateTime.Now.Date,
+                IsIncrement = true
+            };
+
+            _context.OldEmployeeSalaryDetails.Add(osd);
+
+            if (privioussalarydetail.EmployeeId != null)
+            {
+                privioussalarydetail.IsIncrement = true;
+                privioussalarydetail.Basic = 0;
+                privioussalarydetail.HouseRentAllowance = 0;
+                privioussalarydetail.TravellingAllowance = 0;
+                privioussalarydetail.Esic = 0;
+                privioussalarydetail.Epf = 0;
+                privioussalarydetail.MonthlyGrossPay = 0;
+                privioussalarydetail.MonthlyCtc = 0;
+                privioussalarydetail.EmpId = 0;
+                privioussalarydetail.AnnualCtc = 0;
+                privioussalarydetail.Professionaltax = 0;
+                privioussalarydetail.Incentive = 0;
+                privioussalarydetail.Servicecharge = 0;
+                privioussalarydetail.SpecialAllowance = 0;
+                privioussalarydetail.Gross = 0;
+                privioussalarydetail.Amount = 0;
+                privioussalarydetail.Tdspercentage = 0;
+                privioussalarydetail.Conveyanceallowance = 0;
+                privioussalarydetail.FixedAllowance = 0;
+                privioussalarydetail.Medical = 0;
+                privioussalarydetail.Composite = 0;
+                privioussalarydetail.VariablePay = 0;
+                privioussalarydetail.EmployerContribution = 0;
+                privioussalarydetail.Tdsvalue = 0;
+                privioussalarydetail.Basicpercentage = 0;
+                privioussalarydetail.Hrapercentage = 0;
+                privioussalarydetail.Conveyancepercentage = 0;
+                privioussalarydetail.Medicalpercentage = 0;
+                privioussalarydetail.Variablepercentage = 0;
+                privioussalarydetail.EmployerContributionpercentage = 0;
+                privioussalarydetail.Epfpercentage = 0;
+                privioussalarydetail.Esipercentage = 0;
+                privioussalarydetail.IncrementPercentage = 0;
+                _context.EmployeeSalaryDetails.Update(privioussalarydetail);
+            }
 
 
+            _context.SaveChanges();
+
+            return Json(new { success = true });
+        }
+        
     }
 }
 

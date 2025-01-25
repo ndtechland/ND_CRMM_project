@@ -83,5 +83,8 @@ namespace CRM.Models.DTO
         public decimal? Amount { get; set; }
 
         public int? RoleId { get; set; }
+        public bool? IsIncrement { get; set; }
+        public int? CustomerCompanyid { get; set; }
+
     }
 }

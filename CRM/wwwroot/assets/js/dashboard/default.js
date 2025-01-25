@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const overdueCounts = data.map(item => item.overduecount || 0); // Ensure matching field names
             const paidAmounts = data.map(item => item.paidAmt || 0);
             const unpaidAmounts = data.map(item => item.unPaidAmt || 0);
-            const partialAmounts = data.map(item => item.partialAmt || 0);
+            const partialAmounts = data.map(item => item.PartialAmt || 0);
             const overdueAmounts = data.map(item => item.overdueamount || 0);
 
             // Create the chart
