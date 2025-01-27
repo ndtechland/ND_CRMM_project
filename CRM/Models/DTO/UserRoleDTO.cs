@@ -25,16 +25,28 @@ namespace CRM.Models.DTO
         public string WritePermissions { get; set; }
         public bool IsAllRead { get; set; }
         public bool IsAllWrite { get; set; }
+        public int? PlanId { get; set; }
+        public string PlanName { get; set; }
+
         public IEnumerable<SoftwareLinkDTO> SoftwareLinkDTO { get; set; }
         public IEnumerable<UserRoleList> UserRoleLists { get; set; }
         public List<UserRole> UserRoleList { get; set; }
+        public List<userRoleList> userRoleList { get; set; }
+        public SelectList Planlist { get; set; }
     }
     public class UserRoleList
     {
         public int Id { get; set; }
-        public string RoleName { get; set; }
+        public string PlanName { get; set; }
         public string CompanyName { get; set; }
         public string OrgName { get; set; }
 
+    }
+    public class userRoleList
+    {
+        public int Id { get; set; }
+        public string PlanName { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public decimal? PlanPrice { get; set; }
     }
 }

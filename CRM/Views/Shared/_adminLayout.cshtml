@@ -1,5 +1,4 @@
 ﻿@{
-    var pp = ViewBag.Professional;
     var addedBy = Context.Session.GetString("UserName");
     if (!string.IsNullOrEmpty(addedBy))
     {
@@ -10,6 +9,7 @@
         ViewBag.UserName = "";
     }
 }
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -57,6 +57,44 @@
 
     <link rel="stylesheet" type="text/css" href="../assets/css/datatables.css">
 
+    <style>
+        .dropdown-container {
+            position: relative;
+            width: 100%;
+        }
+
+        .dropdown-with-icon {
+            width: 100%;
+            appearance: none; /* Removes the default arrow */
+            padding-right: 2.5rem; /* Adds space for the icon */
+        }
+
+        .dropdown-icon {
+            position: absolute;
+            top: 50%;
+            right: 1rem;
+            transform: translateY(-50%);
+            pointer-events: none; /* Ensures the icon doesn't interfere with clicks */
+            color: #6c757d; /* Icon color */
+        }
+
+        #footer {
+            position: relative;
+        }
+
+            #footer .woman-image {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                z-index: -1;
+            }
+
+            #footer .text-overlay {
+                position: relative;
+                z-index: 1;
+            }
+    </style>
 </head>
 
 <body>
@@ -225,6 +263,7 @@
                                             <li><a href="/Customer/Customer"><i class="fa fa-circle"></i>Customer Registration</a></li>
                                             <li><a href="/Customer/CustomerList"><i class="fa fa-circle"></i>Customer List </a></li>
                                             <li><a href="/Sale/CustomerInvoiceList"><i class="fa fa-circle"></i>Invoice </a></li>
+                                            <li><a href="/Sale/CustomerInvoicePaidList"><i class="fa fa-circle"></i>Paid Invoice List </a></li>
                                         </ul>
                                     </li>
                                 </ul>
@@ -237,7 +276,7 @@
                                         <ul class="sidebar-submenu">
 
                                             <li><a href="/Employee/EmployeeRegistration"><i class="fa fa-circle"></i>Employee Registration</a></li>
-                                            <li><a href="/Employee/Employeelist"><i class="fa fa-circle"></i>Employee List </a></li>
+                                            <li><a href="/Employee/PreviewEmployeelist"><i class="fa fa-circle"></i>Employee List </a></li>
                                             <li><a href="/Employee/salarydetail"><i class="fa fa-circle"></i>Generate Salary  </a></li>
                                             <li><a href="/Employee/GenerateSalary"><i class="fa fa-circle"></i>Generated Salary Slip </a></li>
                                             <li><a href="/Vendor/EmployeeEpf"><i class="fa fa-circle"></i>Employee EPF </a></li>
@@ -342,6 +381,9 @@
                                     <li><a href="/Employee/Employer"><i class="fa fa-circle"></i>Emp EPF & ESIC</a></li>
                                     <li><a href="/Vendor/EventsScheduler" title="Schedule events"><i class="fa fa-circle"></i>Event Schedule</a></li>
                                     <li><a href="/Vendor/EventsScheduleList" title="List Schedule events"><i class="fa fa-circle"></i>Event Schedule List</a></li>
+                                    @{
+                                        var pp = ViewBag.Professional;
+                                    }
                                     @if (pp == true)
                                     {
                                         <li><a href="/Home/ProfessionalTDStax"><i class="fa fa-circle"></i>Professional Tax</a></li>
@@ -358,11 +400,6 @@
             }
 
             <!-- Page Sidebar Ends-->
-
-
-            <div class="page-body">
-            </div>
-
             <!-- footer start-->
             <footer id="footer" class="footer" style="margin-top:18rem;text-align:center">
                 <div class="copyright">

@@ -163,7 +163,11 @@
                                     <div class="row">
                                         <div class="form-group col-sm">
                                             <label class="control-label">Choose Plan<span class="text-danger">*</span></label>
-                                            <div>
+                                          @*   <div class="dropdown-container">
+                                                @Html.DropDownListFor(model => model.PricingPlanid, (SelectList)Model.Planlist, "-- Select Plan --", new { @class = "form-control" })
+                                                <i class="dropdown-icon fa fa-caret-down"></i>
+                                            </div> *@
+                                            <div class="dropdown-container position-relative">
                                                 <select class="form-control" name="PricingPlanid" id="PlanPrice">
                                                     <option value="">-- Select Plan --</option>
                                                     @foreach (var state in ViewBag.PlanPrice as IEnumerable<SelectListItem>)
@@ -171,18 +175,7 @@
                                                 <option value="@state.Value">@state.Text</option>
                                                 }
                                                 </select>
-                                            </div>
-                                        </div>
-                                        <div class="form-group col-sm">
-                                            <label class="control-label">Choose Role<span class="text-danger">*</span></label>
-                                            <div>
-                                                <select class="form-control" name="UserRoleId" id="userRoleId">
-                                                    <option value="">-- Select Role --</option>
-                                                    @foreach (var state in ViewBag.userroles as IEnumerable<SelectListItem>)
-                                                    {
-                                                        <option value="@state.Value">@state.Text</option>
-                                                    }
-                                                </select>
+                                                <i class="dropdown-icon fa fa-caret-down position-absolute"></i>
                                             </div>
                                         </div>
                                         <div class="form-group col-sm">
@@ -202,10 +195,11 @@
                                     <div class="row">
                                         <div class="form-group col-sm">
                                             <label class="control-label">State Name <span class="text-danger">*</span></label>
-                                            <div>
+                                            <div class="dropdown-container position-relative">
                                                 <select class="form-control" asp-for="StateId" asp-items="@ViewBag.StateItems" id="ddlState">
                                                     <option value="">-- Select State --</option>
                                                 </select>
+                                                <i class="dropdown-icon fa fa-caret-down position-absolute"></i>
                                               @*   <select class="form-control" name="StateId" id="ddlState">
                                                 </select> *@
                                                 @*<select class="form-control" name="StateId" id="ddlState">
@@ -219,13 +213,14 @@
                                         </div>
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">City Name <span class="text-danger">*</span></label>
-                                            <div>
+                                            <div class="dropdown-container position-relative">
                                                 @* <select class="form-control js-select2" multiple="multiple" name="WorkLocation" id="ddlCity" onchange="validateWorkLocation(this)" oninvalid="this.setCustomValidity('Please select WorkLocation')" oninput="this.setCustomValidity('')" autocomplete="off">
                                                     <option value="">-- Select City Name --</option>
                                                 </select> *@
                                                 <select class="form-control" name="CityId" id="ddlCityid">
                                                     <option value="">-- Select City --</option>
                                                 </select>
+                                                <i class="dropdown-icon fa fa-caret-down position-absolute"></i>
                                             </div>
                                             <span asp-validation-for="CityId" class="text-danger"></span>
                                         </div>
@@ -284,21 +279,29 @@
                                         </div>
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">State <span class="text-danger">*</span></label>
+                                            <div class="dropdown-container position-relative">
                                             <select asp-for="BillingStateId" asp-items="@ViewBag.StateItems" id="stateid" class="form-control" required>
-                                                <option value="">--Select State--</option>
+                                                <option value="">-- Select State --</option>
                                             </select>
+                                                <i class="dropdown-icon fa fa-caret-down"></i>
+                                            </div>
                                         </div>
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">City <span class="text-danger">*</span></label>
+                                            <div class="dropdown-container position-relative">
                                             <select asp-for="BillingCityId" class="form-control" id="districtid" required>
-                                                <option value="">--Select City--</option>
+                                                <option value="">-- Select City --</option>
                                             </select>
+                                            <i class="dropdown-icon fa fa-caret-down"></i>
+                                            </div>
                                         </div>
                                         <div class="form-group col-sm">
+                                         
                                             <label for="validationCustom0">Product Details <span class="text-danger">*</span></label>
-
+                                            <div class="dropdown-container position-relative">
                                             @Html.DropDownListFor(model => model.ProductDetails, new SelectList(ViewBag.ProductDetails, "Value", "Text"), "-- Select Product --", new { @class = "form-control", onchange = "onProductChange()", required = "required", oninvalid = "this.setCustomValidity('Please select ProductDetails')", oninput = "this.setCustomValidity('')" })
-
+                                                <i class="dropdown-icon fa fa-caret-down"></i>
+                                            </div>
                                             <span asp-validation-for="ProductDetails" class="text-danger"></span>
                                         </div>
                                     </div>
@@ -374,6 +377,13 @@
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">CGST</label>
                                             <input type="Cgst" asp-for="Cgst" id="CGST" placeholder="00.0" class="form-control" readonly />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-sm">
+                                            <label for="SelectCompany">
+                                                <input type="checkbox" id="SelectCompany" name="SelectCompany" value="true" @(Model.SelectCompany == true ? "checked" : "")> Allow Customer List
+                                            </label>
                                         </div>
                                     </div>
                                     <div class="form-group" style="display:flex; justify-content:center;">
@@ -620,7 +630,7 @@
                 loadDistricts(stateId); // On change, no need to pass selectedDistrictId
             } else {
                 $('#ddlCityid').empty();
-                $('#ddlCityid').append('<option value="">--Select City--</option>');
+                $('#ddlCityid').append('<option value="">-- Select City --</option>');
             }
         });
 
@@ -632,7 +642,7 @@
                 data: { stateId: stateId },
                 success: function (data) {
                     $('#ddlCityid').empty();
-                    $('#ddlCityid').append('<option value="">--Select City--</option>');
+                    $('#ddlCityid').append('<option value="">-- Select City --</option>');
 
                     $.each(data, function (index, item) {
                         var isSelected = selectedDistrictId && item.id == selectedDistrictId ? 'selected' : '';
@@ -670,7 +680,7 @@
                 loadDistricts(stateId); // On change, no need to pass selectedDistrictId
             } else {
                 $('#districtid').empty();
-                $('#districtid').append('<option value="">--Select City--</option>');
+                $('#districtid').append('<option value="">-- Select City --</option>');
             }
         });
 
@@ -682,7 +692,7 @@
                 data: { stateId: stateId },
                 success: function (data) {
                     $('#districtid').empty();
-                    $('#districtid').append('<option value="">--Select City--</option>');
+                    $('#districtid').append('<option value="">-- Select City --</option>');
 
                     $.each(data, function (index, item) {
                         var isSelected = selectedDistrictId && item.id == selectedDistrictId ? 'selected' : '';

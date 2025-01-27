@@ -448,6 +448,10 @@
 	  <PackageReference Include="Hangfire" Version="1.8.12" />
 	  <PackageReference Include="HtmlAgilityPack.NetCore" Version="1.5.0.1" />
 	  <PackageReference Include="IronPdf" Version="5.2.0.1" />
+	  <PackageReference Include="jsreport.AspNetCore" Version="3.8.1" />
+	  <PackageReference Include="jsreport.Binary" Version="4.4.0" />
+	  <PackageReference Include="jsreport.Local" Version="3.8.2" />
+	  <PackageReference Include="jsreport.Types" Version="3.9.4" />
     <PackageReference Include="MailKit" Version="4.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
@@ -491,6 +495,7 @@
     <Folder Include="wwwroot\ChequeImage\" />
     <Folder Include="wwwroot\EMPpdfs\" />
     <Folder Include="wwwroot\EMPpdfs\" />
+    <Folder Include="wwwroot\CustomerInvoicefile\" />
     <Folder Include="wwwroot\TutorialVideos\" />
     <Folder Include="wwwroot\VendorInvoicefile\" />
   </ItemGroup>

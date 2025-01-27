@@ -6,6 +6,7 @@
     if (Model.Ismail == true)
     {
         Layout = null;
+
     }
     else
     {
@@ -21,26 +22,24 @@
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            padding: 0;
-            /*   background-color: #f2f2f2; */
+            padding: 0;          
         }
 
         @@page {
             size: A4;
             margin: 10mm;
-            padding: 10px;
-            box-sizing: border-box;
-        }
+            padding: 40px;
+/*             border: 1px solid #ccc;
+ */        }
 
         .invoice-container {
-           /*  width: 267mm;
-            height: 378mm; */
-            width: max-content;
+            /*  width: 267mm;
+              height: 378mm; */
+            width: 210mm;
             height: max-content;
             margin: 2mm auto;
             padding: 20px;
             border: 1px solid #ccc;
-
         }
 
         .header {
@@ -78,7 +77,7 @@
             }
 
             .invoice-details td, .billing-details td {
-                padding: 12px;
+                padding: 10px;
                 vertical-align: top;
                 border: 1px solid #ccc;
                 font-size: 14px;
@@ -100,6 +99,7 @@
             font-size: 16px;
             display: block;
         }
+
         .invoice-table {
             width: 100%;
             border-collapse: collapse;
@@ -134,8 +134,14 @@
 
         .bank-details {
             margin-top: -136px;
-            padding-top: 10px;
+            padding-top: 32px;
             font-size: medium;
+        }
+
+        h6 {
+            font-size: 14px;
+            margin-bottom: 0;
+            font-weight: 400;
         }
 
         .footer {
@@ -163,12 +169,27 @@
                 margin: 50px;
             }
 
-             @@media (max-width: 768px) {
+        @@media (max-width: 768px) {
             .invoice-header {
                 flex-direction: column;
                 align-items: center;
             }
 
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 2px solid black;
+                padding-bottom: 10px;
+            }
+
+                .header img {
+                    max-height: 60px;
+                }
+
+                .header div {
+                    text-align: right;
+                }
             .invoice-details {
                 text-align: center;
                 margin-top: 20px;
@@ -185,7 +206,7 @@
 
         @@media (max-width: 480px) {
             .invoice-container {
-                padding: 10px;
+                padding: 15px;
             }
 
             .company-info h1 {
@@ -204,6 +225,21 @@
                 font-size: 12px;
             }
         }
+
+        thead {
+            display: table-header-group;
+        }
+
+        tfoot {
+            display: table-row-group;
+        }
+
+        tr {
+            page-break-inside: avoid;
+        }
+
+
+
     </style>
 </head>
 <body>
@@ -212,15 +248,15 @@
     {
         <div class="buttons">
             <button class="btn btn-primary" onclick="prepareForPrint()">Print</button>
-            <a href="/Sale/CustomerInvoiceList" class="btn btn-secondary">Back to List</a>
+            <button onclick="history.back()" class="btn btn-secondary">Back to List</button>
         </div>
     }
 
     <div class="invoice-container">
 
         <div class="header">
-            @*             <img src="https://api.ndtechland.com/CompanyImage/638702230297411301.png" alt="Company Logo" class="logo">
-            *@            <img src="@ViewBag.Protocol://@ViewBag.Host/CompanyImage/@Model.CompanyLogo" alt="Company Logo">
+            @*             <img src="https://api.ndtechland.com/CompanyImage/638702230297411301.png" alt="Company Logo" class="logo"> *@
+            <img src="@ViewBag.Protocol://@ViewBag.Host/CompanyImage/@Model.CompanyLogo" alt="Company Logo">
             <div>
                 <h3>@Model.VendorCompanyName</h3>
                 <p>
@@ -230,6 +266,7 @@
                     @Model.VendorGstNumber
                 </p>
             </div>
+
         </div>
 
         <h1>Tax Invoice</h1>
@@ -284,6 +321,7 @@
             decimal? roundedTotal = 0;
             decimal? dueamount = 0;
             decimal? paidamount = 0;
+            string? totalAmountwords = null;
 
             foreach (var item in Model.ProductDetailLists)
             {
@@ -294,27 +332,34 @@
                 cgstper = item.CGST;
                 dueamount = item.DueAmount;
                 paidamount = item.PaidAmount;
+                totalAmountwords = item.totalInWords;
                 // Calculate CGST and SGST if applicable
                 if (item.CGST != null && item.SGST != null)
                 {
-                    cgstAmount += (item.ProductPrice * item.CGST / 100);
-                    sgstAmount += (item.ProductPrice * item.SGST / 100);
+                    cgstAmount += (item.ProductRate * item.CGST / 100);
+                    sgstAmount += (item.ProductRate * item.SGST / 100);
                 }
 
                 // Calculate IGST if applicable
                 if (item.IGST != null)
                 {
-                    igstAmount += (item.ProductPrice * item.IGST / 100);
+                    igstAmount += (item.ProductRate * item.IGST / 100);
                 }
             }
 
             // Calculate total amount before rounding
-            totalAmount = subtotal + cgstAmount + sgstAmount + igstAmount;
+            totalAmount = (subtotal ?? 0) + (cgstAmount ?? 0) + (sgstAmount ?? 0) + (igstAmount ?? 0);
+
             // Round the total amount
             roundedTotal = Math.Round((decimal)totalAmount, 0, MidpointRounding.AwayFromZero);
+
             // Calculate rounding difference (absolute value ensures it's always positive)
             rounding = Math.Abs((decimal)roundedTotal - (decimal)totalAmount);
+
+            // Ensure totalAmount is rounded to two decimal places if required
             totalAmount = Math.Round((decimal)totalAmount, 2);
+
+
         }
 
         <table class="invoice-table" border="1" cellpadding="5" cellspacing="0">
@@ -323,6 +368,8 @@
                     <th>#</th>
                     <th>Item & Description</th>
                     <th>HSN/SAC</th>
+                    <th>Qty</th>
+                    <th>Rate</th>
                     @if (igstper == null || igstper == 0)
                     {
                         <th>CGST</th>
@@ -344,18 +391,21 @@
                         <td>@count</td>
                         <td>@item.ProductName<br /><h6>@item.Description</h6></td>
                         <td>@item.HsnSacCode</td>
+                        <td>@item.Qty</td>
+                        <td>₹ @String.Format("{0:0.00}", item.ProductRate)</td>
                         @if (igstper == null || igstper == 0)
                         {
-                            <td>@(item.CGST != null ? $"{item.CGST}% ₹ {item.ProductPrice * item.CGST / 100}" : "0% ₹ 0.00")</td>
-                            <td>@(item.SGST != null ? $"{item.SGST}% ₹ {item.ProductPrice * item.SGST / 100}" : "0% ₹ 0.00")</td>
+                            <td>@(item.CGST != null ? $"{item.CGST}% ₹ {item.ProductRate * item.CGST / 100}" : "0% ₹ 0.00")</td>
+                            <td>@(item.SGST != null ? $"{item.SGST}% ₹ {item.ProductRate * item.SGST / 100}" : "0% ₹ 0.00")</td>
                         }
                         else
                         {
-                            <td>@(item.IGST != null ? $"{item.IGST}% ₹ {item.ProductPrice * item.IGST / 100}" : "0% ₹ 0.00")</td>
+                            <td>@(item.IGST != null ? $"{item.IGST}% ₹ {item.ProductRate * item.IGST / 100}" : "0% ₹ 0.00")</td>
                         }
                         <td>₹ @String.Format("{0:0.00}", item.ProductPrice)</td>
                     </tr>
                 </tbody>
+
             }
         </table>
 
@@ -402,16 +452,17 @@
             </table>
         </div>
         <div>
-            <h6><strong>Total in Words</strong></h6>
-            <h6><strong><span id="totalInWords"></span></strong></h6>
+            <h6><strong>Total in Words<br /><span>@totalAmountwords</span></strong></h6>
         </div>
         <br />
-        <div>
-            <h6><strong>Terms</strong></h6>
-            <h6><span>@Model.Terms</span></h6>
-            <h6><strong>Notes</strong></h6>
-            <h6><span>@Model.Notes</span></h6>
-        </div>
+        @if (!string.IsNullOrEmpty(@Model.Terms) && !string.IsNullOrEmpty(@Model.Notes))
+        {
+            <div>
+                <h6><strong>Terms<br /><span>@Model.Terms</span></strong></h6>
+                <h6><strong>Notes<br /><span>@Model.Notes</span></strong></h6>
+            </div>
+        }
+       
         <div class="footer">
             <img src="@ViewBag.Protocol://@ViewBag.Host/CompanyImage/@Model.VendorSingature" alt="Singature Logo" style="background-color:transparent;">
             <p>Authorized Signatory</p>
@@ -432,7 +483,10 @@
 
 </body>
 </html>
-<script>
+
+
+
+@* <script>
     document.addEventListener('DOMContentLoaded', function () {
         const totalText = document.getElementById('total')?.textContent?.replace('₹', '').trim() || '0';
 
@@ -477,7 +531,7 @@
             return `${ones[Math.floor(num / 100)]} Hundred ${convertHundreds(num % 100)}`.trim();
         }
     });
-</script>
+</script> *@
 <script>
     function prepareForPrint() {
         const elementsToHide = ['.buttons', '.page-body-wrapper', '.page-main-header', '.page-sidebar'];
@@ -496,16 +550,16 @@
         printStyle.type = 'text/css';
         printStyle.media = 'print';
         printStyle.innerHTML = `
-                                @@page {
-                                    size: A4;
-                                    margin: 10mm;
-                                    padding: 20px;
-                                }
-                                body {
-                                    margin: 0;
-                                    padding: 0;
-                                }
-                            `;
+                                            @@page {
+                                                size: A4;
+                                                margin: 10mm;
+                                                padding: 20px;
+                                            }
+                                            body {
+                                                margin: 0;
+                                                padding: 0;
+                                            }
+                                        `;
         document.head.appendChild(printStyle);
         window.print();
 
@@ -530,6 +584,7 @@
             prepareForPrint();
         }
     });
+
 </script>
 
 

@@ -131,6 +131,7 @@
                                         <div class="form-group col-lg-6">
                                             <input type="hidden" name="Id" value="@ViewBag.id" />
                                             <label for="TxtEmployeeId">Employee Id</label>
+                                           
                                             <select id="TxtEmployeeId" name="EmployeeId" class="form-control select2" required>
                                                 <option value="">-- Select EmployeeId --</option>
                                                 @foreach (var item in ViewBag.EmployeeId)
@@ -138,13 +139,17 @@
                                                     <option value="@item.Value">@item.Text</option>
                                                 }
                                             </select>
+                                          
                                         </div>
                                         <div class="form-group col-lg-6">
                                             <label for="TxttaskId">Project Name</label>
+                                            <div class="dropdown-container position-relative">
                                             <select id="TxttaskId" name="Emptask" class="form-control" required>
                                                 <option value="">-- Select Project Name --</option>
                                                 <!-- Populate tasks if needed -->
                                             </select>
+                                                <i class="dropdown-icon fa fa-caret-down position-absolute"></i>
+                                            </div>
                                         </div>
                                         @if (ViewBag.id == null)
                                         {

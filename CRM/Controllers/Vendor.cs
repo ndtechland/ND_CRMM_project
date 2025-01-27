@@ -45,6 +45,7 @@ namespace CRM.Controllers
 
                 var items = _context.States.ToList();
                 ViewBag.StateItems = new SelectList(items, "Id", "SName");
+              var model = new VendorDto();
                 if (id != 0)
                 {
                     ViewBag.Heading = "Vendor Registration";
@@ -67,16 +68,8 @@ namespace CRM.Controllers
                           .Select(p => new SelectListItem
                           {
                               Value = p.Id.ToString(),
-                              Text = $"{p.PlanName} ({p.Price:C})"
+                              Text = $"{p.PlanName} ({p.Price})"
                           }).ToList();
-                        ViewBag.userroles = _context.UserRoles
-                        .Where(x => x.IsActive == true)
-                         .Select(p => new SelectListItem
-                         {
-                             Value = p.Id.ToString(),
-                             Text = $"{p.RoleName}",
-                         }).ToList();
-
                         ViewBag.SelectedStateId = data.StateId;
                         ViewBag.Price = vendor.Productprice;
                         ViewBag.Renewprice = data.Renewprice;
@@ -90,7 +83,7 @@ namespace CRM.Controllers
                         ViewBag.renewDate = ((DateTime)data.RenewDate).ToString("yyyy-MM-dd");
                         ViewBag.duedate = (data.Duedate).ToString("yyyy-MM-dd");
                         ViewBag.Pricingplan = vendor.PricingPlanid;
-                        ViewBag.UserRoleId = vendor.UserRoleId;
+                        ViewBag.SelectCompany = vendor.SelectCompany;
                         ViewBag.LandlineNumber = vendor.MobileNumber;
                         ViewBag.Notes = vendor.Notes;
                         ViewBag.Terms = vendor.Terms;
@@ -114,16 +107,9 @@ namespace CRM.Controllers
                          .Select(p => new SelectListItem
                          {
                              Value = p.Id.ToString(),
-                             Text = $"{p.PlanName} ({p.Price:C})"
+                             Text = $"{p.PlanName} ({p.Price})"
                          }).ToList();
-                ViewBag.userroles = _context.UserRoles
-                        .Where(x => x.IsActive == true)
-                         .Select(p => new SelectListItem
-                         {
-                             Value = p.Id.ToString(),
-                             Text = $"{p.RoleName}",
-                         }).ToList();
-                return View();
+                return View(model);
             }
             else
             {
@@ -1943,7 +1929,6 @@ namespace CRM.Controllers
             {
                 return Json(new { success = false, message = "Data not found!" });
             }
-
             leave.Isapprove = Isapprove;
             await _context.SaveChangesAsync();
 
@@ -1970,8 +1955,7 @@ namespace CRM.Controllers
                     TypeOfLeave.Value -= deductedLeave;
                     leave.CountLeave = deductedLeave;
 
-                    _context.Entry(TypeOfLeave).State = EntityState.Modified;
-                    _context.Entry(leave).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
                 }
                 else
                 {
@@ -3219,7 +3203,7 @@ namespace CRM.Controllers
                     {
                         workbook.SaveAs(stream);
                         var fileContent = stream.ToArray();
-                        return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "EmployeeBreakReport.xlsx");
+                        return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Employee Break Report.xlsx");
                     }
 
                 }
@@ -3317,7 +3301,7 @@ namespace CRM.Controllers
                     {
                         workbook.SaveAs(stream);
                         var fileContent = stream.ToArray();
-                        return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "EmployeeAttendanceReport.xlsx");
+                        return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Employee Attendance Report.xlsx");
                     }
 
                 }
@@ -3733,6 +3717,85 @@ namespace CRM.Controllers
             }
             return Json(success);
         }
+        public async Task<IActionResult> ExportApprovedWfhApply()
+        {
+            try
+            {
+                int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminLogin = await _context.AdminLogins.FirstOrDefaultAsync(x => x.Id == userId);
+
+                if (adminLogin == null)
+                {
+                    return NotFound("Admin not found.");
+                }
+
+                var empDetails = await _context.EmployeeRegistrations
+                    .Where(x => x.Vendorid == adminLogin.Vendorid && x.IsDeleted == false)
+                    .ToListAsync();
+
+                if (empDetails == null || empDetails.Count == 0)
+                {
+                    return NotFound("Employee not found.");
+                }
+
+                var Approvedwfhdetail = await _ICrmrpo.GetWfhapplydetailList(adminLogin.Vendorid);
+
+                using (var workbook = new XLWorkbook())
+                {
+                    var worksheet = workbook.Worksheets.Add("Employee Break Report");
+
+                    int currentwork = 1;
+                    worksheet.Cell(currentwork, 1).Value = "Sr.No.";
+                    worksheet.Cell(currentwork, 1).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 2).Value = "Employee ID";
+                    worksheet.Cell(currentwork, 2).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 3).Value = "Employee Name";
+                    worksheet.Cell(currentwork, 3).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 4).Value = "Mobile Number";
+                    worksheet.Cell(currentwork, 4).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 5).Value = "Start Date";
+                    worksheet.Cell(currentwork, 5).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 6).Value = "End Date";
+                    worksheet.Cell(currentwork, 6).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 7).Value = "Total Days";
+                    worksheet.Cell(currentwork, 7).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 9).Value = "Applied Date";
+                    worksheet.Cell(currentwork, 9).Style.Fill.BackgroundColor = XLColor.Yellow;
+                   
+                    currentwork++;
+
+                    var row = 1;
+                    foreach (var record in Approvedwfhdetail) 
+                    {
+                        worksheet.Cell(currentwork, 1).Value = row++;
+                        worksheet.Cell(currentwork, 2).Value = record.UserId;
+                        worksheet.Cell(currentwork, 3).Value = record.EmployeeName;
+                        worksheet.Cell(currentwork, 4).Value = record.EmpMobileNumber;
+                        worksheet.Cell(currentwork, 5).Value = record.StartDate;
+                        worksheet.Cell(currentwork, 6).Value = record.EndDate;
+                        worksheet.Cell(currentwork, 7).Value = record.days;
+                        worksheet.Cell(currentwork, 8).Value = record.Reason;
+                        worksheet.Cell(currentwork, 9).Value = record.CreatedDate;
+
+                        currentwork++;
+                    }
+
+                    worksheet.Columns().AdjustToContents();
+
+                    using (var stream = new MemoryStream())
+                    {
+                        workbook.SaveAs(stream);
+                        var fileContent = stream.ToArray();
+                        return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Employee Break Report.xlsx");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
     }
 }
 

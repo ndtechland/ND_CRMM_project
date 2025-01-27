@@ -91,8 +91,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="container-fluid">
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="card">
@@ -102,14 +100,15 @@
                                     <div class="form-group col-sm-4">
                                         <label class="control-label">Company Name<span class="text-danger">*</span></label>
                                         <input type="hidden" name="Id" value="@Model.Id" />
-                                        <div>
+                                        <div class="dropdown-container position-relative">
                                             <select class="form-control" name="Vendorid" id="ddlVendorid">
-                                                <option value="">-- Select CompanyName --</option>
+                                                <option value="">-- Select Company Name --</option>
                                                 @foreach (var state in ViewBag.vendorid)
                                                 {
                                                     <option value="@state.Value">@state.Text</option>
                                                 }
                                             </select>
+                                            <i class="dropdown-icon fa fa-caret-down position-absolute"></i>
                                         </div>
                                     </div>
                                     @if (ViewBag.id > 0)
@@ -132,8 +131,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="container-fluid">
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="card">

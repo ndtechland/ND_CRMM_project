@@ -66,44 +66,6 @@
         background-color: #00baf2 !important;
         padding: 24px 0.75rem !important;
     }
-
-    .status-checkbox {
-        width: 20px;
-        height: 20px;
-        border-radius: 4px;
-        border: 2px solid gray;
-        background-color: white;
-        appearance: none;
-        cursor: pointer;
-        outline: none;
-        position: relative;
-        transition: background-color 0.3s ease, border-color 0.3s ease;
-    }
-        .status-checkbox:checked {
-            background-color: green;
-            border-color: green;
-        }
-
-        .status-checkbox:not(:checked) {
-            background-color: red;
-            border-color: red;
-        }
-
-        .status-checkbox::before {
-            content: '✓'; 
-            color: white; 
-            font-size: 16px;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .status-checkbox:hover {
-            border-color: black;
-        }
-
-
 </style>
 
 <div class="page-wrapper">
@@ -114,7 +76,7 @@
             <div class="container-fluid">
                 <div class="page-header">
                     <div class="row">
-                        <div class="col-lg-6">
+                       @*  <div class="col-lg-6">
                             <div class="page-header-left">
                                 <h3>
                                     Employee List
@@ -129,7 +91,7 @@
                                 <li class="breadcrumb-item active">EmployeeList</li>
                             </ol>
 
-                        </div>
+                        </div> *@
                     </div>
                 </div>
             </div>
@@ -140,16 +102,12 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-body">
-                                <img src="~/image/execimage.png" style="height:50px; margin-left:96%;width:53px;cursor:pointer" title="Export To Excel" onclick="ExportExcelfn()" />
 
                                 <div class="table-responsive" style="margin-top: 16px;">
 
-                                    <table id="datatable" class="table table-hover">
+                                    <table class="table table-hover">
                                         <thead>
                                             <tr style="background-color: #00baf2;">
-                                                <th nowrap>
-                                                   Status
-                                                </th>
                                                 <th nowrap>
                                                     Sl. No.
                                                 </th>
@@ -323,23 +281,6 @@
                                                 {
                                                     count++;
                                                     <tr class="table-row">
-                                                       @* <td>
-                                                            <input type="checkbox" id="empisactive_@item.Id" name="Isactive" value="true"
-                                                            @(item.Isactive.HasValue && item.Isactive.Value ? "checked" : "")
-                                                                   onclick="updateEmployeeIsactive(@item.Id, this.checked)">
-                                                        </td>*@
-                                                        <td>
-                                                            <input type="checkbox"
-                                                                   id="empisactive_@item.Id"
-                                                                   name="Isactive"
-                                                                   value="@true"
-                                                            @(item.Isactive.HasValue && item.Isactive.Value ? "checked" : "")
-                                                                   class="status-checkbox"
-                                                                   onclick="updateEmployeeIsactive(@item.Id, this.checked)">
-                                                        </td>
-
-
-
                                                         <td>@count</td>
                                                         <td nowrap>
                                                             @Html.DisplayFor(modelItem => item.FirstName) @Html.DisplayFor(modelItem => item.MiddleName)  @Html.DisplayFor(modelItem => item.LastName)
@@ -616,65 +557,5 @@
             });
         });
     });
-    function ExportExcelfn() {
-        window.location.href = '/Employee/ExportToExcelEmployeeList';
-    }
-
-//  function updateEmployeeIsactive(id, isActive) {
-//     $.ajax({
-//         url: '/Employee/UpdateEmployeeIsactive',
-//         type: 'POST',
-//         data: { id: id, isActive: isActive },
-//         success: function (response) {
-//             if (response.success) {
-//                 Swal.fire('Success', response.message, 'success');
-//             } else {
-//                 Swal.fire('Error', response.message, 'error');
-//             }
-//         },
-//         error: function () {
-//             Swal.fire('Error', 'An unexpected error occurred while updating the employee status.', 'error');
-//         }
-//     });
-// }
-    function updateEmployeeIsactive(id, isActive) {
-        $.ajax({
-            url: '/Employee/UpdateEmployeeIsactive',
-            type: 'POST',
-            data: { id: id, isActive: isActive },
-            success: function (response) {
-                if (response.success) {
-                    Swal.fire('Success', response.message, 'success');
-                } else {
-                    Swal.fire('Error', response.message, 'error');
-                }
-                // Update the checkbox color
-                updateCheckboxColor(id, isActive);
-            },
-            error: function () {
-                Swal.fire('Error', 'An unexpected error occurred while updating the employee status.', 'error');
-                // Optionally revert the checkbox state on error
-                const checkbox = document.getElementById(`empisactive_${id}`);
-                checkbox.checked = !isActive; // Revert state
-                updateCheckboxColor(id, !isActive); // Update color
-            }
-        });
-    }
-
-    function updateCheckboxColor(id, isActive) {
-        const checkbox = document.getElementById(`empisactive_${id}`);
-        if (checkbox) {
-            checkbox.style.accentColor = isActive ? "green" : "red"; // Green for checked, red for unchecked
-        }
-    }
-
-    // Initialize colors when the page loads
-    document.addEventListener('DOMContentLoaded', function () {
-        document.querySelectorAll('.status-checkbox').forEach(checkbox => {
-            const id = checkbox.id.split('_')[1];
-            updateCheckboxColor(id, checkbox.checked); // Set initial color
-        });
-    });
-
 
 </script>

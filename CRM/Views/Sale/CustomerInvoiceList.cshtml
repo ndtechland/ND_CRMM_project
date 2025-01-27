@@ -23,188 +23,204 @@
     }
 </style>
 <style>
-  .loader {
-    border: 16px solid #f3f3f3;
-    border-radius: 50%;
-    border-top: 16px solid #3498db;
-    width: 120px;
-    height: 120px;
-    animation: spin 2s linear infinite;
-    position: fixed;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 9999;
-    display: none;
-}
-
-@@keyframes spin {
-    0% {
-        transform: rotate(0deg);
+    .loader {
+        border: 16px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 16px solid #3498db;
+        width: 120px;
+        height: 120px;
+        animation: spin 2s linear infinite;
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 9999;
+        display: none;
     }
-    100% {
-        transform: rotate(360deg);
+
+    @@keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
     }
-}
 
-.overlay {
-    display: none;
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5); /* Adjust opacity as needed */
-    z-index: 9998;
-}
+    .overlay {
+        display: none;
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5); /* Adjust opacity as needed */
+        z-index: 9998;
+    }
 
-.blurred {
-    filter: blur(1px);
-}
+    .blurred {
+        filter: blur(1px);
+    }
 
 </style>
 <div id="content">
-<div class="page-wrapper" >
-    <div class="page-body-wrapper">
-        <div class="page-sidebar">
-        </div>
-        <!-- Page Sidebar Ends-->
-        <!-- Right sidebar Start-->
-        <!-- Right sidebar Ends-->
+    <div class="page-wrapper">
+        <div class="page-body-wrapper">
+            <div class="page-sidebar">
+            </div>
+            <!-- Page Sidebar Ends-->
+            <!-- Right sidebar Start-->
+            <!-- Right sidebar Ends-->
 
-        <div class="page-body">
+            <div class="page-body">
 
-            <!-- Container-fluid starts-->
-            <div class="container-fluid">
-                <div class="page-header">
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="page-header-left">
-                                <h2>
-                                    Invoice List
-                                </h2>
+                <!-- Container-fluid starts-->
+                <div class="container-fluid">
+                    <div class="page-header">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="page-header-left">
+                                    <h2>
+                                        Invoice List
+                                    </h2>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <ol class="breadcrumb pull-right">
+                                    <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
+                                    <li class="breadcrumb-item">Sales</li>
+                                    <li class="breadcrumb-item active">Invoice</li>
+                                </ol>
                             </div>
                         </div>
-                        <div class="col-lg-6">
-                            <ol class="breadcrumb pull-right">
-                                <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
-                                <li class="breadcrumb-item">Sales</li>
-                                <li class="breadcrumb-item active">Invoice</li>
-                            </ol>
-                        </div>
+                        <a href="/Sale/Invoice?InvoiceNumber=@null&&clone=@true" class="btn btn-primary"><i class="fa fa-plus"></i> Add More</a>
                     </div>
-                    <a href="/Sale/Invoice?InvoiceNumber=@null&&clone=@true" class="btn btn-primary"><i class="fa fa-plus"></i> Add More</a>
+
                 </div>
 
-            </div>
 
+                <!-- Container-fluid Ends-->
+                <!-- Container-fluid starts-->
+                <div class="container-fluid">
+                    <div class="row">
 
-            <!-- Container-fluid Ends-->
-            <!-- Container-fluid starts-->
-            <div class="container-fluid">
-                <div class="row">
+                        <div class="col-sm-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table id="datatable" class="table table-hover">
+                                            <thead>
+                                                <tr style="background-color: #00baf2;">
+                                                    <th nowrap>Sl. No.</th>
+                                                    <th nowrap>Invoice Number</th>
+                                                    <th nowrap>
+                                                        Company Name
+                                                    </th>
+                                                    <th nowrap>
+                                                        Mobile Number
+                                                    </th>
+                                                    @*   <th nowrap>
+                                                    Alternate Number
+                                                    </th> *@
+                                                    <th nowrap>
+                                                        Email Id
+                                                    </th>
+                                                    <th nowrap>
+                                                        Office State
+                                                    </th>
+                                                    <th nowrap>
+                                                        Billing State
+                                                    </th>
+                                                    <th nowrap>
+                                                        Total Payment
+                                                    </th>
 
-                    <div class="col-sm-12">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table id="datatable" class="table table-hover">
-                                        <thead>
-                                            <tr style="background-color: #00baf2;">
-                                                <th nowrap>Sl. No.</th>
-                                                <th nowrap>Invoice Number</th>
-                                                <th nowrap>
-                                                    Company Name
-                                                </th>
-                                                <th nowrap>
-                                                    Mobile Number
-                                                </th>
-                                                @*   <th nowrap>
-                                                Alternate Number
-                                                </th> *@
-                                                <th nowrap>
-                                                    Email Id
-                                                </th>
-                                                <th nowrap>
-                                                    Office State
-                                                </th>
-                                                <th nowrap>
-                                                    Billing State
-                                                </th>
-                                                <th nowrap>
-                                                    Total Payment
-                                                </th>
+                                                    <th nowrap>
+                                                        Due Payment
+                                                    </th>
+                                                    <th nowrap>
+                                                        Paid Payment
+                                                    </th>
+                                                    <th nowrap>
+                                                        Update Payment Status
+                                                    </th>
+                                                    <th nowrap>
 
-                                                <th nowrap>
-                                                    Due Payment
-                                                </th>
-                                                <th nowrap>
-                                                    Paid Payment
-                                                </th>
-                                                <th nowrap>
-                                                    Update Payment Status
-                                                </th>
-                                                <th nowrap>
+                                                    </th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @{
+                                                    var count = 0;
+                                                    foreach (var item in Model)
+                                                    {
+                                                        count++;
+                                                        <tr class="table-row">
+                                                            <td>@count</td>
+                                                            <td nowrap><a href="/Sale/ProductInvoice?InvoiceNumber=@item.InvoiceNumber">@item.InvoiceNumber</a></td>
+                                                            <td nowrap>
+                                                                @Html.DisplayFor(modelItem => item.CompanyName)
+                                                            </td>
+                                                            <td nowrap>
+                                                                @Html.DisplayFor(modelItem => item.MobileNumber)
+                                                            </td>
+                                                            @* <td nowrap>
+                                                    @Html.DisplayFor(modelItem => item.AlternateNumber)
+                                                    </td>*@
+                                                            <td nowrap>
+                                                                @Html.DisplayFor(modelItem => item.Email)
+                                                            </td>
+                                                            <td nowrap>
+                                                                @item.OfficeState
+                                                            </td>
 
-                                                </th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @{
-                                                var count = 0;
-                                                foreach (var item in Model)
-                                                {
-                                                    count++;
-                                                    <tr class="table-row">
-                                                        <td>@count</td>
-                                                        <td nowrap><a href="/Sale/ProductInvoice?InvoiceNumber=@item.InvoiceNumber">@item.InvoiceNumber</a></td>
-                                                        <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.CompanyName)
-                                                        </td>
-                                                        <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.MobileNumber)
-                                                        </td>
-                                                        @* <td nowrap>
-                                                @Html.DisplayFor(modelItem => item.AlternateNumber)
-                                                </td>*@
-                                                        <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.Email)
-                                                        </td>
-                                                        <td nowrap>
-                                                            @item.OfficeState
-                                                        </td>
-
-                                                        <td nowrap>
-                                                            @item.BillingState
-                                                        </td>
-                                                        <td nowrap>
-                                                            @item.TotalAmount
-                                                        </td>
-                                                        <td nowrap>
-                                                            @item.DueAmount
-                                                        </td>
-                                                        <td nowrap>
-                                                            @item.PaidAmount
-                                                        </td>
-                                                        <td>
-                                                            @if (item.Paymentid != 1)
-                                                            {
-                                                                if (item.Paymentid == 2 || item.Paymentid == 4)
+                                                            <td nowrap>
+                                                                @item.BillingState
+                                                            </td>
+                                                            <td nowrap>
+                                                                @item.TotalAmount
+                                                            </td>
+                                                            <td nowrap>
+                                                                @item.DueAmount
+                                                            </td>
+                                                            <td nowrap>
+                                                                @item.PaidAmount
+                                                            </td>
+                                                            <td>
+                                                                @if (item.Paymentid != 1)
                                                                 {
-                                                                    <select name="Paymentstatus"
-                                                                            class="form-control Paymentmode-dropdown"
-                                                                            id="ddPaymentmodeid_@item.InvoiceId"
-                                                                            style="height: 40px; width: 139px;"
-                                                                            onchange="handlePaymentTypeChange(@item.InvoiceId)">
-                                                                        <option value="0">-- Select Payment Type --</option>
-                                                                        @foreach (var shift in ViewBag.Paymentmode)
-                                                                        {
-                                                                            <option value="@shift.Value">@shift.Text</option>
-                                                                        }
-                                                                    </select>
+                                                                    if (item.Paymentid == 2 || item.Paymentid == 4)
+                                                                    {
+                                                                        <select name="Paymentstatus"
+                                                                                class="form-control Paymentmode-dropdown"
+                                                                                id="ddPaymentmodeid_@item.InvoiceId"
+                                                                                style="height: 40px; width: 139px;"
+                                                                                onchange="handlePaymentTypeChange(@item.InvoiceId)">
+                                                                            <option value="0">-- Select Payment Type --</option>
+                                                                            @foreach (var shift in ViewBag.Paymentmode)
+                                                                            {
+                                                                                <option value="@shift.Value">@shift.Text</option>
+                                                                            }
+                                                                        </select>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <select name="Paymentstatus"
+                                                                                class="form-control Paymentmode-dropdown"
+                                                                                id="ddPaymentmodeid_@item.InvoiceId"
+                                                                                style="height: 40px; width: 139px;"
+                                                                                onchange="handlePaymentTypeChange(@item.InvoiceId)">
+                                                                            <option value="0">-- Select Payment Type --</option>
+                                                                            @foreach (var shift in ViewBag.Paymentmode)
+                                                                            {
+                                                                                <option value="@shift.Value">@shift.Text</option>
+                                                                            }
+                                                                        </select>
+                                                                    }
                                                                 }
                                                                 else
                                                                 {
@@ -212,7 +228,7 @@
                                                                             class="form-control Paymentmode-dropdown"
                                                                             id="ddPaymentmodeid_@item.InvoiceId"
                                                                             style="height: 40px; width: 139px;"
-                                                                            onchange="handlePaymentTypeChange(@item.InvoiceId)">
+                                                                            disabled>
                                                                         <option value="0">-- Select Payment Type --</option>
                                                                         @foreach (var shift in ViewBag.Paymentmode)
                                                                         {
@@ -220,66 +236,51 @@
                                                                         }
                                                                     </select>
                                                                 }
-                                                            }
-                                                            else
-                                                            {
-                                                                <select name="Paymentstatus"
-                                                                        class="form-control Paymentmode-dropdown"
-                                                                        id="ddPaymentmodeid_@item.InvoiceId"
-                                                                        style="height: 40px; width: 139px;"
-                                                                        disabled>
-                                                                    <option value="0">-- Select Payment Type --</option>
-                                                                    @foreach (var shift in ViewBag.Paymentmode)
+
+                                                            </td>
+
+                                                            <td>
+                                                                <form autocomplete="off">
+                                                                    <input type="text" id="inputBox_@item.InvoiceId" style="display:none; width: 100px; height: 30px;" placeholder="Enter Amount" onkeyup="fncamount(this, @item.TotalAmount, @item.DueAmount)" required />
+                                                                    <button type="button" class="btn btn-primary submit-payment" id="submitBtn_@item.InvoiceId" data-invoiceid="@item.InvoiceId" style="height: 40px; display:none;" onclick="updateCustomerInvoiceAmount(@item.InvoiceId)">Submit</button>
+                                                                </form>
+                                                            </td>
+
+                                                            <td nowrap>
+                                                                <div>
+                                                                    <a href="/Sale/Invoice?InvoiceNumber=@item.InvoiceNumber&&clone=@true" class="fa fa-solid fa-clone"></a>
+                                                                    @if (item.Paymentid != 1)
                                                                     {
-                                                                        <option value="@shift.Value">@shift.Text</option>
+                                                                        <a href="/Sale/Invoice?InvoiceNumber=@item.InvoiceNumber&&clone=@false" class="fa fa-edit m-2 font-success"></a>
+
                                                                     }
-                                                                </select>
-                                                            }
-
-                                                        </td>
-
-                                                        <td>
-                                                            <form autocomplete="off">
-                                                                <input type="text" id="inputBox_@item.InvoiceId" style="display:none; width: 100px; height: 30px;" placeholder="Enter Amount" onkeyup="fncamount(this, @item.TotalAmount, @item.DueAmount)" required />
-                                                                <button type="button" class="btn btn-primary submit-payment" id="submitBtn_@item.InvoiceId" data-invoiceid="@item.InvoiceId" style="height: 40px; display:none;" onclick="updateCustomerInvoiceAmount(@item.InvoiceId)">Submit</button>
-                                                            </form>
-                                                        </td>
-
-                                                        <td nowrap>
-                                                            <div>
-                                                                <a href="/Sale/Invoice?InvoiceNumber=@item.InvoiceNumber&&clone=@true" class="fa fa-solid fa-clone"></a>
-                                                                @if (item.Paymentid != 1)
-                                                                {
-                                                                    <a href="/Sale/Invoice?InvoiceNumber=@item.InvoiceNumber&&clone=@false" class="fa fa-edit m-2 font-success"></a>
-
-                                                                }
-                                                          <a href="javascript:void(0)" 
-   onclick="SendinvoicedownloadPDF('@item.InvoiceNumber')" 
-   class="fa fa-envelope m-2 font-info"
+                                                                    <a href="javascript:void(0)"
+                                                                       onclick="SendinvoicedownloadPDF('@item.InvoiceNumber')"
+                                                                       class="fa fa-envelope m-2 font-info"
                                                                        title="Send Email"></a>
-                                                                 @* <a href="@Url.Action("SendInvoicePDF", "Sale", new { InvoiceNumber = item.InvoiceNumber,Ismail = true })"
-                                                                   class="fa fa-envelope m-2 font-info"
-                                                                   title="Send Email"></a>*@
-                                                                <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteCustomerInvoice", "Sale", new { InvoiceNumber = item.InvoiceNumber })')" class="fa fa-trash font-danger"></a>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
+                                                                    @* <a href="@Url.Action("SendInvoicePDF", "Sale", new { InvoiceNumber = item.InvoiceNumber,Ismail = true })"
+                                                            class="fa fa-envelope m-2 font-info"
+                                                            title="Send Email"></a>*@
+                                                                    <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteCustomerInvoice", "Sale", new { InvoiceNumber = item.InvoiceNumber })')" class="fa fa-trash font-danger"></a>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    }
                                                 }
-                                            }
 
-                                        </tbody>
-                                    </table>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
                                 </div>
-
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-</div>
+    </div>
 </div>
 <div class="overlay" id="overlay"></div>
 <div class="loader" id="loader"></div>
@@ -287,7 +288,7 @@
 
 <script type="text/javascript">
     function SendinvoicedownloadPDF(invoiceNumber) {
-    var url = '@Url.Action("SendInvoicePDF", "Sale")' + '?InvoiceNumber=' + encodeURIComponent(invoiceNumber) + '&Ismail=' + true;
+        var url = '@Url.Action("SendInvoicePDF", "Sale")' + '?InvoiceNumber=' + encodeURIComponent(invoiceNumber) + '&Ismail=' + true;
 
         // Show loader and apply blur
         document.getElementById('loader').style.display = 'block';
@@ -449,18 +450,28 @@
         });
     }
 
-   
+
 </script>
 
 <script>
+   
+
     $(document).ready(function () {
+        var table = $('#datatable').DataTable();
     @foreach (var item in Model)
     {
         <text>
                     bindpaymenttype('@item.Paymentid', '@item.InvoiceId');
         </text>
     }
-
+            table.on('draw', function () {
+    @foreach (var item in Model)
+    {
+        <text>
+                            bindpaymenttype('@item.Paymentid', '@item.InvoiceId');
+        </text>
+    }
+                });
             $(".Paymentmode-dropdown").change(function () {
                 var itemId = $(this).attr('id').split('_')[1];
                 toggleInputBoxBasedOnPaymentType(itemId);
