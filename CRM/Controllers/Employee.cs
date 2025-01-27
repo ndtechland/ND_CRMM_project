@@ -3615,14 +3615,14 @@ namespace CRM.Controllers
             "FirstName", "MiddleName", "LastName",
             "DateOfJoining", "WorkEmail", "GenderID", "WorkLocationID", "DesignationID", "DepartmentID",
             "ComstateId", "offerletterid", "officeshiftTypeid", "AnnualCTC", "Basic", "HouseRentAllowance",
-            "TravellingAllowance", "ESIC", "EPF", "MonthlyGrossPay", "MonthlyCTC", "Professionaltax",
-            "servicecharge", "SpecialAllowance", "gross", "amount", "tdspercentage", "conveyanceallowance",
+            "TravellingAllowance", "ESIC", "EPF", "MonthlyGrossPay", "MonthlyCTC",
+            "SpecialAllowance", "tdspercentage", "conveyanceallowance",
             "Medical", "VariablePay", "EmployerContribution", "tdsvalue", "Basicpercentage", "HRApercentage",
             "Conveyancepercentage", "Medicalpercentage", "Variablepercentage", "EmployerContributionpercentage",
             "EPfpercentage", "Esipercentage", "Personal_Email_Address", "Mobile_Number", "Date_Of_Birth",
             "Father_Name", "PAN", "Address_Line_1", "Address_Line_2", "City", "State_ID", "Pincode",
             "Account_Holder_Name", "Bank_Name", "Account_Number", "Re_Enter_Account_Number", "IFSC", "EPF_Number",
-            "Deduction_Cycle", "Employee_Contribution_Rate", "Account_Type_ID", "nominee"
+             "Employee_Contribution_Rate", "Account_Type_ID", "nominee"
         };
 
                 foreach (var column in columns)
@@ -3664,11 +3664,7 @@ namespace CRM.Controllers
             { "EPF", "EPF Contribution" },
             { "MonthlyGrossPay", "Monthly Gross Pay" },
             { "MonthlyCTC", "Monthly CTC" },
-            { "Professionaltax", "Professional Tax" },
-            { "servicecharge", "Service Charge" },
             { "SpecialAllowance", "Special Allowance" },
-            { "gross", "Gross Salary" },
-            { "amount", "Amount" },
             { "tdspercentage", "TDS Percentage" },
             { "conveyanceallowance", "Conveyance Allowance" },
             { "Medical", "Medical Allowance" },
@@ -3699,7 +3695,6 @@ namespace CRM.Controllers
             { "Re_Enter_Account_Number", "Re-enter Account Number" },
             { "IFSC", "IFSC Code" },
             { "EPF_Number", "EPF Number" },
-            { "Deduction_Cycle", "Deduction Cycle" },
             { "Employee_Contribution_Rate", "Employee Contribution Rate" },
             { "Account_Type_ID", "Account Type ID" },
             { "nominee", "Nominee Name" }
@@ -3847,43 +3842,42 @@ namespace CRM.Controllers
                     model.MonthlyGrossPay = row[18] != DBNull.Value ? Convert.ToDecimal(row[18]) : (decimal?)null;
                     model.MonthlyCTC = row[19] != DBNull.Value ? Convert.ToDecimal(row[19]) : 0;
                     model.SpecialAllowance = row[20] != DBNull.Value ? Convert.ToDecimal(row[20]) : (decimal?)null;
-                    model.Gross = row[21] != DBNull.Value ? Convert.ToDecimal(row[21]) : (decimal?)null;
-                    model.Conveyanceallowance = row[22] != DBNull.Value ? Convert.ToDecimal(row[22]) : (decimal?)null;
-                    model.Medical = row[23] != DBNull.Value ? Convert.ToDecimal(row[23]) : (decimal?)null;
-                    model.VariablePay = row[24] != DBNull.Value ? Convert.ToDecimal(row[24]) : (decimal?)null;
-                    model.EmployerContribution = row[25] != DBNull.Value ? Convert.ToDecimal(row[25]) : (decimal?)null;
-                    model.Tdsvalue = row[26] != DBNull.Value ? Convert.ToDecimal(row[26]) : (decimal?)null;
-                    model.Basicpercentage = row[27] != DBNull.Value ? Convert.ToDecimal(row[27]) : (decimal?)null;
-                    model.Hrapercentage = row[28] != DBNull.Value ? Convert.ToDecimal(row[28]) : (decimal?)null;
-                    model.Conveyancepercentage = row[29] != DBNull.Value ? Convert.ToDecimal(row[29]) : (decimal?)null;
-                    model.Medicalpercentage = row[30] != DBNull.Value ? Convert.ToDecimal(row[30]) : (decimal?)null;
-                    model.Variablepercentage = row[31] != DBNull.Value ? Convert.ToDecimal(row[31]) : (decimal?)null;
-                    model.EmployerContributionpercentage = row[32] != DBNull.Value ? Convert.ToDecimal(row[32]) : (decimal?)null;
-                    model.Epfpercentage = row[33] != DBNull.Value ? Convert.ToDecimal(row[33]) : (decimal?)null;
-                    model.Esipercentage = row[34] != DBNull.Value ? Convert.ToDecimal(row[34]) : (decimal?)null;
+                    model.Conveyanceallowance = row[21] != DBNull.Value ? Convert.ToDecimal(row[21]) : (decimal?)null;
+                    model.Medical = row[22] != DBNull.Value ? Convert.ToDecimal(row[22]) : (decimal?)null;
+                    model.VariablePay = row[23] != DBNull.Value ? Convert.ToDecimal(row[23]) : (decimal?)null;
+                    model.EmployerContribution = row[24] != DBNull.Value ? Convert.ToDecimal(row[24]) : (decimal?)null;
+                    model.Tdsvalue = row[25] != DBNull.Value ? Convert.ToDecimal(row[25]) : (decimal?)null;
+                    model.Basicpercentage = row[26] != DBNull.Value ? Convert.ToDecimal(row[26]) : (decimal?)null;
+                    model.Hrapercentage = row[27] != DBNull.Value ? Convert.ToDecimal(row[27]) : (decimal?)null;
+                    model.Conveyancepercentage = row[28] != DBNull.Value ? Convert.ToDecimal(row[28]) : (decimal?)null;
+                    model.Medicalpercentage = row[29] != DBNull.Value ? Convert.ToDecimal(row[29]) : (decimal?)null;
+                    model.Variablepercentage = row[30] != DBNull.Value ? Convert.ToDecimal(row[30]) : (decimal?)null;
+                    model.EmployerContributionpercentage = row[31] != DBNull.Value ? Convert.ToDecimal(row[31]) : (decimal?)null;
+                    model.Epfpercentage = row[32] != DBNull.Value ? Convert.ToDecimal(row[32]) : (decimal?)null;
+                    model.Esipercentage = row[33] != DBNull.Value ? Convert.ToDecimal(row[33]) : (decimal?)null;
 
                     // Personal Info
-                    model.PersonalEmailAddress = row[35]?.ToString();
-                    model.MobileNumber = row[36] != DBNull.Value ? Convert.ToInt64(row[36]) : 0;
-                    model.DateOfBirth = row[37] != DBNull.Value ? Convert.ToDateTime(row[37]) : DateTime.MinValue;
-                    model.FatherName = row[38]?.ToString();
-                    model.PAN = row[39]?.ToString();
-                    model.AddressLine1 = row[40]?.ToString();
-                    model.AddressLine2 = row[41]?.ToString();
-                    model.City = row[42]?.ToString();
-                    model.StateID = row[43]?.ToString();
-                    model.Pincode = row[44]?.ToString();
+                    model.PersonalEmailAddress = row[34]?.ToString();
+                    model.MobileNumber = row[35] != DBNull.Value ? (long.TryParse(row[35]?.ToString(), out long result) ? result : 0) : 0;
+                    model.DateOfBirth = row[36] != DBNull.Value ? Convert.ToDateTime(row[36]) : DateTime.MinValue;
+                    model.FatherName = row[37]?.ToString();
+                    model.PAN = row[38]?.ToString();
+                    model.AddressLine1 = row[39]?.ToString();
+                    model.AddressLine2 = row[40]?.ToString();
+                    model.City = row[41]?.ToString();
+                    model.StateID = row[42]?.ToString();
+                    model.Pincode = row[43]?.ToString();
 
                     // Bank Details
-                    model.AccountHolderName = row[45]?.ToString();
-                    model.BankName = row[46]?.ToString();
-                    model.AccountNumber = row[47]?.ToString();
-                    model.ReEnterAccountNumber = row[48]?.ToString();
-                    model.IFSC = row[49]?.ToString();
-                    model.EPF_Number = row[50]?.ToString();
-                    model.Employee_Contribution_Rate = row[51]?.ToString();
-                    model.AccountTypeID = row[52] != DBNull.Value ? Convert.ToInt32(row[52]) : 0;
-                    model.nominee = row[53]?.ToString();
+                    model.AccountHolderName = row[44]?.ToString();
+                    model.BankName = row[45]?.ToString();
+                    model.AccountNumber = row[46]?.ToString();
+                    model.ReEnterAccountNumber = row[47]?.ToString();
+                    model.IFSC = row[48]?.ToString();
+                    model.EPF_Number = row[49]?.ToString();
+                    model.Employee_Contribution_Rate = row[50]?.ToString();
+                    model.AccountTypeID = row[51] != DBNull.Value ? Convert.ToInt32(row[51]) : 0;
+                    model.nominee = row[52]?.ToString();
 
                     if (model != null)
                     {
