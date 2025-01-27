@@ -253,10 +253,10 @@
                                                             <td>
                                                                 @Html.DisplayFor(modelItem => item.Grosspay)
                                                             </td>
-                                                            @*<td>
-                                                @Html.DisplayFor(modelItem => item.MonthlyPay)
-                                                </td>*@
+                                                  
                                                             <td class="monthly-pay">@Html.DisplayFor(modelItem => item.MonthlyPay)</td>
+                                                            <td class="Epf-pay">@Html.DisplayFor(modelItem => item.EmployeeEpf)</td>
+                                                            <td class="Esi-pay">@Html.DisplayFor(modelItem => item.EmployeeEsi)</td>
                                                             <td>
                                                                 <input type="text" id="Attendance" name="Attendance" class="form-control attnd" minlength="1" maxlength="2" style="height: 40px; width: 94px;" onkeyup="fnc(this)" onchange="updateMonthlyPay(this)" />
                                                             </td>
@@ -682,16 +682,25 @@
                     table.rows().every(function (rowIdx, tableLoop, rowLoop) {
                         var row = this.node();
                         var employeeId = $(row).find('td:nth-child(6)').text().trim();
-                        var employeeData = response.employees.find(emp => emp.employeeId == employeeId);
+                        var employeeData = response.employees.find(emp => emp.EmployeeId == employeeId);
 
                         if (employeeData) {
-                            $(row).find('input[name="Attendance"]').val(employeeData.leaveRemaining);
-                            $(row).find('td:nth-child(10)').text(employeeData.monthlyPay.toFixed(2));
+                            // Update Attendance and Monthly Pay
+                            $(row).find('input[name="Attendance"]').val(employeeData.LeaveRemaining);
+                            $(row).find('td:nth-child(10)').text(employeeData.MonthlyPay.toFixed(2));
+
+                            // Update EPF and ESI values
+                            $(row).find('td.Epf-pay').text(employeeData.EmployeeEpf.toFixed(2));
+                            $(row).find('td.Esi-pay').text(employeeData.EmployeeEsi.toFixed(2));
                         } else {
+                            // Default values if no data found
                             $(row).find('input[name="Attendance"]').val(0);
                             $(row).find('td:nth-child(10)').text("0.00");
+                            $(row).find('td.Epf-pay').text("0.00");
+                            $(row).find('td.Esi-pay').text("0.00");
                         }
                     });
+
                     document.getElementById('dynamicTotalMonthlyPay').textContent = response.totalMonthlyPay.toFixed(2);
                     table.draw();
 

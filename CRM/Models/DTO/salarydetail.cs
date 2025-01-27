@@ -14,6 +14,8 @@
         public decimal? Incentive { get; set; }
         public decimal? TravellingAllowance { get; set; }
         public decimal? MonthlyPay { get; set; }
+        public decimal? EmployeeEpf { get; set; }
+        public decimal? EmployeeEsi { get; set; }
 
     }
 }

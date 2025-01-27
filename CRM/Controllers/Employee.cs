@@ -66,6 +66,8 @@ using RestSharp;
 using DocumentFormat.OpenXml.Office.Word;
 using jsreport.AspNetCore;
 using jsreport.Types;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Engineering;
+using Org.BouncyCastle.Ocsp;
 
 
 namespace CRM.Controllers
@@ -3223,6 +3225,12 @@ namespace CRM.Controllers
             var ctcData = await _context.EmployeeSalaryDetails
                                         .Where(x => employeeIds.Contains(x.EmployeeId))
                                         .ToDictionaryAsync(x => x.EmployeeId, x => x.AnnualCtc / 12 ?? 0);
+            var EmployeeEpfData = await _context.EmployeeSalaryDetails
+                                     .Where(x => employeeIds.Contains(x.EmployeeId))
+                                     .ToDictionaryAsync(x => x.EmployeeId, x => x.Epfpercentage ?? 0);
+            var EmployeeEsiData = await _context.EmployeeSalaryDetails
+                                    .Where(x => employeeIds.Contains(x.EmployeeId))
+                                    .ToDictionaryAsync(x => x.EmployeeId, x => x.Esipercentage ?? 0);
 
             var leaveCounts = await _context.ApplyLeaveNews
                                              .Where(leave => employeeIds.Contains(leave.UserId) &&
@@ -3264,6 +3272,8 @@ namespace CRM.Controllers
                 decimal NumberOfLateMarks = 0;
                 decimal salaryDeductionDays = 0;
                 decimal TotalsalaryDeduction = 0;
+                decimal EmployeeEpf = 0;
+                decimal EmployeeEsi = 0;
 
                 TimeSpan lateThreshold = TimeSpan.FromMinutes(30);
                 TimeSpan halfDayThreshold = TimeSpan.FromHours(2);
@@ -3307,15 +3317,35 @@ namespace CRM.Controllers
                 {
                     monthlyPay = decimal.Round((monthlyCtc / noOfDays) * TotalsalaryDeduction, 2);
                 }
-                totalMonthlyPay += monthlyPay;
+                if (monthlyPay > 0)
+                {
+                    EmployeeEpf = 0;
+                    EmployeeEsi = 0;
 
+                    if (EmployeeEpfData.TryGetValue(employeesdata.EmployeeId, out var epfPercentage))
+                    {
+                        EmployeeEpf = decimal.Round((monthlyPay * epfPercentage) / 100, 2);
+                        monthlyPay -= EmployeeEpf;  
+                    }
+
+                    if (EmployeeEsiData.TryGetValue(employeesdata.EmployeeId, out var esiPercentage))
+                    {
+                        EmployeeEsi = decimal.Round((monthlyPay * esiPercentage) / 100, 2);
+                        monthlyPay -= EmployeeEsi;  
+                    }
+                }
+
+                totalMonthlyPay += monthlyPay;
+                
                 result.Add(new
                 {
                     EmployeeId = employeesdata.EmployeeId,
                     LeaveRemaining = TotalsalaryDeduction,
                     MonthlyPay = monthlyPay,
                     SalaryDeductionDays = salaryDeductionDays,
-                    NumberOfLateMarks = NumberOfLateMarks
+                    NumberOfLateMarks = NumberOfLateMarks,
+                    EmployeeEpf = EmployeeEpf,
+                    EmployeeEsi = EmployeeEsi
                 });
             }
 
