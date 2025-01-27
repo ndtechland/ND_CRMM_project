@@ -3572,9 +3572,6 @@ namespace CRM.Controllers
             return Json(new { success = true });
         }
 
-
-    }
-
         public async Task<IActionResult> ExportToExcel()
         {
             try
@@ -3859,7 +3856,7 @@ namespace CRM.Controllers
                     model.AccountTypeID = row["Account_Type_ID"] != DBNull.Value ? Convert.ToInt32(row["Account_Type_ID"]) : 0;
                     model.nominee = row["nominee"]?.ToString();
 
-                    if(model != null)
+                    if (model != null)
                     {
                         var response = await _ICrmrpo.EmpRegistration(model, Mode, Empid, Userid);
                     }
@@ -3871,9 +3868,9 @@ namespace CRM.Controllers
                 return Json(new { Success = false, Message = "Error: " + ex.Message });
             }
         }
-            
-        }
+    }
 
+       
 }
 
 
