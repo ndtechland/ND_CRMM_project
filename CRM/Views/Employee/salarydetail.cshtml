@@ -126,8 +126,6 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class=" table-responsive">
-                                    @if (Model != null && Model.Any())
-                                    {
                                         <div style="text-align: right;">
                                             <button type="button" class="btn btn-primary" id="downloadExcel" style="color: black; border: 2px solid black;" onclick="ExportExcelfn()">
                                                 Export
@@ -210,6 +208,12 @@
                                                     <th nowrap>
                                                         MonthlyPay
                                                     </th>
+                                                    <th nowrap>
+                                                        Employee Epf
+                                                    </th>
+                                                    <th nowrap>
+                                                        Employee Esi
+                                                    </th>
                                                     <th nowrap>Attendance</th>
                                                     <th nowrap>Action</th>
                                                 </tr>
@@ -218,7 +222,8 @@
                                                 @{
                                                     var count = 0;
                                                     decimal? TotalAmt = 0;
-
+                                                    if (Model != null && Model.Any())
+                                                    {
                                                     @foreach (var item in Model)
                                                     {
                                                         count++;
@@ -263,17 +268,9 @@
                                                         </tr>
                                                         TotalAmt += Math.Round((decimal)item.Grosspay, 2);
                                                     }
+                                                    }
                                                 }
                                             </tbody>
-                                            @* <tfoot>
-                                        <tr>
-                                        <td colspan="4" class="text-right" style="text-align:right;"><strong>Total :</strong></td>
-                                        <td>
-                                        @TotalAmt
-                                        </td>
-                                        <td id="totalMonthlyPay"></td>
-                                        </tr>
-                                        </tfoot> *@
                                             <tfoot>
                                                 <tr>
                                                     <td colspan="4" class="text-right" style="text-align:right;"><strong>Total:</strong></td>
@@ -282,11 +279,7 @@
                                                 </tr>
                                             </tfoot>
                                         </table>
-                                    }
-                                    else
-                                    {
-                                        <script>alert('No salary details found.');</script>
-                                    }
+                         
                                 </div>
                             </div>
                         </div>
@@ -668,21 +661,22 @@
         var month = document.getElementById('Month').value;
         var year = document.getElementById('Year').value;
 
+        if (!year || year == "0") {
+            alert("Please select a year first.");
+            return;
+        }
+
         if (!month || month == "0") {
             alert("Please select a month.");
             return;
         }
-         if (!year || year == "0") {
-            alert("Please select a year.");
-            return;
-        }
+
         $.ajax({
             url: '@Url.Action("getEmpattendancedays", "Employee")',
             type: 'GET',
-            data: {month: month, year: year},
+            data: { month: month, year: year },
             success: function (response) {
                 if (response && response.employees && response.employees.length > 0) {
-
                     var table = $('#datatable').DataTable();
 
                     table.rows().every(function (rowIdx, tableLoop, rowLoop) {
@@ -712,6 +706,24 @@
             }
         });
     }
+
+    // Event listener to ensure the month is enabled after selecting the year
+    document.getElementById('Year').addEventListener('change', function () {
+        var year = this.value;
+        var monthSelect = document.getElementById('Month');
+        if (year && year !== "0") {
+            monthSelect.disabled = false;  // Enable month selection
+        } else {
+            monthSelect.disabled = true;   
+        }
+    });
+
+    // Initialize the month dropdown as disabled until a year is selected
+    document.addEventListener('DOMContentLoaded', function () {
+        var monthSelect = document.getElementById('Month');
+        monthSelect.disabled = true;  // Disable month selection by default
+    });
+
     function updateMonthlyPay() {
         $('#datatable tbody').on('input', 'input[name="Attendance"]', function () {
             var row = $(this).closest('tr');

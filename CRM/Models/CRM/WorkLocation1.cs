@@ -9,5 +9,6 @@ namespace CRM.Models.Crm
         public DateTime? Createdate { get; set; }
         public bool? Isactive { get; set; }
         public int? Customerid { get; set; }
+        public int? Vendorid { get; set; }
     }
 }

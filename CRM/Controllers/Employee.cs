@@ -307,7 +307,7 @@ namespace CRM.Controllers
                                 ViewBag.EmployerContributionpercentage = row["EmployerContributionpercentage"].ToString();
                                 ViewBag.EPfpercentage = row["EPfpercentage"].ToString();
                                 ViewBag.Esipercentage = row["Esipercentage"].ToString();
-                                ViewBag.CustomerCompany  = row["CustomerCompanyid"].ToString();
+                                ViewBag.CustomerCompany = row["CustomerCompanyid"].ToString();
                                 ViewBag.Emp_Reg_Code = id;
                                 ViewBag.btnText = "UPDATE";
 
@@ -639,9 +639,14 @@ namespace CRM.Controllers
 
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
-                var attt = await _context.Attendancedays.Where(x => x.Vendorid == adminlogin.Vendorid).FirstOrDefaultAsync();
+                var attt = await _context.Attendancedays
+     .Where(x => x.Vendorid == adminlogin.Vendorid)
+     .FirstOrDefaultAsync();
 
-                ViewBag.Nodays = attt.Nodays;
+                ViewBag.Nodays = attt == null || string.IsNullOrEmpty(attt.Nodays)
+                    ? 0
+                    : int.Parse(attt.Nodays);
+
                 string AddedBy = HttpContext.Session.GetString("UserName");
                 TempData["UserName"] = AddedBy;
                 if (!string.IsNullOrEmpty(AddedBy))
@@ -3187,6 +3192,13 @@ namespace CRM.Controllers
             {
                 return new JsonResult(new { success = false, message = "Admin login not found" });
             }
+            var currentMonth = DateTime.Now.Month;
+            var currentYear = DateTime.Now.Year;
+
+            if (year > currentYear || (year == currentYear && month > currentMonth))
+            {
+                return new JsonResult(new { success = false, message = "Attendance data for the selected month is not available." });
+            }
 
             var attendanceDays = await _context.Attendancedays.FirstOrDefaultAsync(x => x.Vendorid == adminLogin.Vendorid);
 
@@ -3210,7 +3222,7 @@ namespace CRM.Controllers
 
             var ctcData = await _context.EmployeeSalaryDetails
                                         .Where(x => employeeIds.Contains(x.EmployeeId))
-                                        .ToDictionaryAsync(x => x.EmployeeId, x => x.MonthlyGrossPay / 12 ?? 0);
+                                        .ToDictionaryAsync(x => x.EmployeeId, x => x.AnnualCtc / 12 ?? 0);
 
             var leaveCounts = await _context.ApplyLeaveNews
                                              .Where(leave => employeeIds.Contains(leave.UserId) &&
@@ -3244,9 +3256,9 @@ namespace CRM.Controllers
                                   att.CheckOuttime.HasValue &&
                                   att.CheckIntime.Value.Year == year &&
                                   att.CheckIntime.Value.Month == month).ToList();
- 
 
-            var shiftTime = shiftTimes.FirstOrDefault(st => st.Id == employeesdata.OfficeshiftTypeid);
+
+                var shiftTime = shiftTimes.FirstOrDefault(st => st.Id == employeesdata.OfficeshiftTypeid);
 
                 decimal shiftworkingHours = 0;
                 decimal NumberOfLateMarks = 0;
@@ -3289,7 +3301,7 @@ namespace CRM.Controllers
                     }
                 }
 
-                TotalsalaryDeduction = Math.Round((noOfDays - totalLeave - NumberOfLateMarks),2);
+                TotalsalaryDeduction = Math.Round((noOfDays - totalLeave - NumberOfLateMarks), 2);
                 decimal monthlyPay = 0;
                 if (TotalsalaryDeduction > 0 && ctcData.TryGetValue(employeesdata.EmployeeId, out var monthlyCtc))
                 {
@@ -3309,9 +3321,6 @@ namespace CRM.Controllers
 
             return new JsonResult(new { Employees = result, TotalMonthlyPay = totalMonthlyPay });
         }
-
-
-
         public JsonResult EmpEpfesilist()
         {
             int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
@@ -3562,6 +3571,10 @@ namespace CRM.Controllers
 
             return Json(new { success = true });
         }
+
+
+    }
+
         public async Task<IActionResult> ExportToExcel()
         {
             try
@@ -3860,6 +3873,7 @@ namespace CRM.Controllers
         }
             
         }
+
 }
 
 

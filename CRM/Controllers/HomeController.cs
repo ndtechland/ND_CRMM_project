@@ -49,6 +49,8 @@ namespace CRM.Controllers
 
                 //VendorDashboard
                 ViewBag.Professional = await _context.VendorRegistrations.Where(x => x.Id == adminlogin.Vendorid).Select(x => x.Isprofessionaltax).FirstOrDefaultAsync();
+                //WorkLocations
+                ViewBag.WorkLocations = await _context.VendorRegistrations.Where(x => x.Id == adminlogin.Vendorid).Select(x => x.SelectCompany).FirstOrDefaultAsync();
                 // Customerlist
                 ViewBag.Customer = await _context.CustomerRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).CountAsync();
                 // VendorInvoice
@@ -96,7 +98,7 @@ namespace CRM.Controllers
                && y.Isapprove == 2
                && y.StartDate.Date <= DateTime.Now.Date
                && y.EndDate.Date >= DateTime.Now.Date));
-               
+
                 var today = DateTime.Today;
                 var firstDayOfMonth = new DateTime(today.Year, today.Month, 1);
 
@@ -130,9 +132,9 @@ namespace CRM.Controllers
                 //        (record.CheckOuttime.HasValue && record.CheckIntime.HasValue)
                 //        ? Math.Max(0, (record.CheckOuttime.Value - record.CheckIntime.Value).TotalHours)
                 //        : 0));
-                var workingHoursDates = allDates.Select(date => date.Day.ToString()).ToList(); 
+                var workingHoursDates = allDates.Select(date => date.Day.ToString()).ToList();
                 var workingHoursData = allDates.Select(date =>
-                    records.ContainsKey(date) ? records[date] : 0 
+                    records.ContainsKey(date) ? records[date] : 0
                 ).ToList();
                 int currentMonth = today.Month;
                 ViewBag.WorkingHoursDates = workingHoursDates;
@@ -488,13 +490,13 @@ namespace CRM.Controllers
                 throw new Exception("An error occurred while deleting the DeleteQuationList:" + ex.Message);
             }
         }
-        [HttpGet]
-        public IActionResult WorkLocation(int id )
+        [HttpGet, Route("Home/WorkLocation")]
+        public IActionResult WorkLocation(int id)
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
-                var adminlogin =  _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
+                var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
                 ViewBag.CustomerCompanyName = _context.CustomerRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).Select(x => new SelectListItem
                 {
                     Value = x.Id.ToString(),
@@ -502,7 +504,25 @@ namespace CRM.Controllers
                 }).ToList();
 
                 WorkLocationDTO model = new WorkLocationDTO();
-                model.WorkLocation1List = _context.WorkLocations1.OrderByDescending(x => x.Id).ToList();
+                model.WorkLocation1List = _context.WorkLocations1
+     .Select(x => new WorkLocationListDTO
+     {
+         Id = x.Id,
+         Vendorid = x.Vendorid,
+         WorkLocationName = string.Join(", ", _context.AddWorkLocations
+             .Where(c => c.WorkLocationid == x.Id)
+             .Select(c => c.WorkLocationName)
+             .ToList()),
+         CustomerName = _context.CustomerRegistrations
+             .Where(c => c.Id == x.Customerid)
+             .Select(c => c.CompanyName)
+             .FirstOrDefault() ?? string.Empty,
+     }).OrderByDescending(x => x.Id).Where(x=>x.Vendorid == adminlogin.Vendorid)
+     .ToList();
+
+
+
+
                 int iId = (int)(id == null ? 0 : id);
                 ViewBag.id = 0;
                 ViewBag.Customerid = "";
@@ -512,7 +532,7 @@ namespace CRM.Controllers
                 {
                     var data = _context.WorkLocations1.Find(iId);
 
-                    var existingfeatures =  _context.AddWorkLocations
+                    var existingfeatures = _context.AddWorkLocations
                         .Where(s => s.WorkLocationid == data.Id)
                         .ToList();
                     if (data != null)
@@ -541,13 +561,16 @@ namespace CRM.Controllers
         {
             if (model != null)
             {
-                if (model.Id == 0) // Add new work location
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
+                if (model.Id == 0)
                 {
                     var newWorkLocation = new WorkLocation1
                     {
                         Customerid = model.Customerid,
                         Createdate = DateTime.Now,
-                        Isactive = true
+                        Isactive = true,
+                        Vendorid = adminlogin.Vendorid,
                     };
                     _context.WorkLocations1.Add(newWorkLocation);
                     await _context.SaveChangesAsync();
@@ -562,22 +585,20 @@ namespace CRM.Controllers
                         _context.AddWorkLocations.Add(newFeature);
                     }
                     await _context.SaveChangesAsync();
+                    TempData["Message"] = "ok";
                 }
-                else // Update existing work location
+                else
                 {
                     var existingWorkLocation = _context.WorkLocations1.Find(model.Id);
                     if (existingWorkLocation != null)
                     {
                         existingWorkLocation.Customerid = model.Customerid;
                         _context.WorkLocations1.Update(existingWorkLocation);
-
-                        // Remove existing features
                         var existingFeatures = await _context.AddWorkLocations
                             .Where(f => f.WorkLocationid == existingWorkLocation.Id)
                             .ToListAsync();
                         _context.AddWorkLocations.RemoveRange(existingFeatures);
 
-                        // Add new features
                         foreach (var item in model.WorkLocationList)
                         {
                             var newFeature = new AddWorkLocation
@@ -588,61 +609,40 @@ namespace CRM.Controllers
                             _context.AddWorkLocations.Add(newFeature);
                         }
                         await _context.SaveChangesAsync();
+                        TempData["Message"] = "updok";
                     }
                 }
-                return RedirectToAction("WorkLocationlist");
+                return RedirectToAction("WorkLocation");
             }
-
-            ModelState.Clear();
-            return View("WorkLocationlist");
+            return View("WorkLocation");
         }
-
-        //[HttpGet]
-        //public IActionResult WorkLocationlist()
-        //{
-        //    if (HttpContext.Session.GetString("UserName") != null)
-        //    {
-        //        var result = from wl in _context.WorkLocations1
-        //                     join ct in _context.Cities on wl.CityId equals ct.Id into cityGroup
-        //                     from city in cityGroup.DefaultIfEmpty()
-        //                     join st in _context.States on wl.StateId equals st.Id into stateGroup
-        //                     from state in stateGroup.DefaultIfEmpty()
-        //                     select new WorkLocationDTO
-        //                     {
-        //                         Id = wl.Id,
-        //                         State = state.SName,
-        //                         City = city.City1,
-        //                         Commissoninpercentage = Convert.ToInt32(wl.Commissoninpercentage)
-        //                     };
-
-
-
-        //        return View(result);
-
-        //    }
-        //    else
-        //    {
-        //        return RedirectToAction("Login", "Admin");
-        //    }
-        //}
 
         public async Task<IActionResult> DeleteWorkLocation(int id)
         {
             try
             {
-                var data = _context.WorkLocations.Find(id);
+                var data = await _context.WorkLocations1.FindAsync(id);
                 if (data != null)
                 {
-                    _context.WorkLocations.Remove(data);
-                    _context.SaveChanges();
+                    var workLocationNameList = await _context.AddWorkLocations
+                        .Where(x => x.WorkLocationid == id)
+                        .ToListAsync();
+
+                    _context.AddWorkLocations.RemoveRange(workLocationNameList);
+
+                    _context.WorkLocations1.Remove(data);
+
+                    await _context.SaveChangesAsync();
                 }
-                return RedirectToAction("WorkLocationlist");
+                return RedirectToAction("WorkLocation");
             }
             catch (Exception ex)
             {
-                throw new Exception();
+                TempData["Message"] = "An error occurred while deleting the work location.";
+                return RedirectToAction("WorkLocation");
             }
         }
+
 
         [HttpGet, Route("Home/Designation")]
         public IActionResult Designation(int? id = 0)
@@ -763,45 +763,6 @@ namespace CRM.Controllers
 
             return new JsonResult(result);
         }
-
-        //public JsonResult EditWorkLocation(int id)
-        //{
-        //    var loc = new WorkLocation1();
-        //    var data = _ICrmrpo.GetWorkLocationById(id);
-        //    loc.Id = data.Id;
-        //    loc.CityId = data.CityId;
-        //    loc.StateId = data.StateId;
-        //    loc.Commissoninpercentage = data.Commissoninpercentage;
-
-        //    var result = new
-        //    {
-        //        loc = loc,
-        //    };
-        //    return new JsonResult(result);
-        //}
-        //[HttpPost]
-        //public async Task<IActionResult> EditWorkLocation(WorkLocation1 model)
-        //{
-        //    try
-        //    {
-        //        var Location = await _ICrmrpo.updateWorkLocation(model);
-        //        if (Location != null)
-        //        {
-        //            TempData["ErrorMessage"] = "Work Location update Successfully.";
-        //            return RedirectToAction("WorkLocationlist", "Home");
-        //        }
-        //        else
-        //        {
-        //            TempData["ErrorMessage"] = "Work Location not update.";
-        //            ModelState.Clear();
-        //            return View();
-        //        }
-        //    }
-        //    catch (Exception Ex)
-        //    {
-        //        throw new Exception("Error:" + Ex.Message);
-        //    }
-        //}
         public IActionResult ProfessionalTDStax(int id)
         {
             try
@@ -2431,7 +2392,7 @@ namespace CRM.Controllers
                                   where invoice.CreatedDate.HasValue
                                         && invoice.CreatedDate.Value.Year == currentYear
                                         && invoice.VendorId == adminLogin.Vendorid
-                                  group new { invoice, mode ,ctd} by new
+                                  group new { invoice, mode, ctd } by new
                                   {
                                       Month = invoice.CreatedDate.Value.Month,
                                       invoice.Paymentstatus,
@@ -2518,7 +2479,7 @@ namespace CRM.Controllers
                              };
                 model.taxlist = result.ToList();
 
-                ViewBag.vendorid = _context.VendorRegistrations.Where(x=>x.Isactive == true)
+                ViewBag.vendorid = _context.VendorRegistrations.Where(x => x.Isactive == true)
                     .Select(p => new SelectListItem
                     {
                         Value = p.Id.ToString(),
@@ -3175,7 +3136,7 @@ namespace CRM.Controllers
                 }
 
                 var leaveDetails = new List<ApprovedwfhApplyList>();
-                var currentDate = DateTime.Now.Date; 
+                var currentDate = DateTime.Now.Date;
 
                 foreach (var emp in empList)
                 {

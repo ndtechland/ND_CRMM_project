@@ -91,28 +91,31 @@
                                             </thead>
                                             <tbody>
                                                 @{
-                                                    var count = 0;
-                                                    foreach (var item in Model)
+                                                    if (Model != null && Model.Any())
                                                     {
-                                                        count++;
-                                                        <tr class="table-row">
-                                                            <td>@count</td>
-                                                            <td nowrap>
-                                                                <a href="/Sale/CustomerPaidInvoiceList?CompanyName=@item.CompanyName">@item.CompanyName</a>
-                                                            </td>
-                                                            <td nowrap>
-                                                                @Html.DisplayFor(modelItem => item.MobileNumber)
-                                                            </td>
-                                                            <td nowrap>
-                                                                @Html.DisplayFor(modelItem => item.Email)
-                                                            </td>
-                                                            <td nowrap>
-                                                                @Html.DisplayFor(modelItem => item.NoofInvoice)
-                                                            </td>
-                                                            <td nowrap>
-                                                                @item.BillingState
-                                                            </td>
-                                                        </tr>
+                                                        var count = 0;
+                                                        foreach (var item in Model)
+                                                        {
+                                                            count++;
+                                                            <tr class="table-row">
+                                                                <td>@count</td>
+                                                                <td nowrap>
+                                                                    <a href="/Sale/CustomerPaidInvoiceList?CompanyName=@item.CompanyName">@item.CompanyName</a>
+                                                                </td>
+                                                                <td nowrap>
+                                                                    @Html.DisplayFor(modelItem => item.MobileNumber)
+                                                                </td>
+                                                                <td nowrap>
+                                                                    @Html.DisplayFor(modelItem => item.Email)
+                                                                </td>
+                                                                <td nowrap>
+                                                                    @Html.DisplayFor(modelItem => item.NoofInvoice)
+                                                                </td>
+                                                                <td nowrap>
+                                                                    @item.BillingState
+                                                                </td>
+                                                            </tr>
+                                                        }
                                                     }
                                                 }
 
