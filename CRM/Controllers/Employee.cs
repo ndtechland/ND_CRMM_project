@@ -3556,8 +3556,12 @@ namespace CRM.Controllers
                 privioussalarydetail.Esipercentage = 0;
                 privioussalarydetail.IncrementPercentage = 0;
                 _context.EmployeeSalaryDetails.Update(privioussalarydetail);
+               
             }
+            _context.SaveChanges();
 
+            return Json(new { success = true });
+        }
         public async Task<IActionResult> ExportToExcel()
         {
             try
@@ -3854,11 +3858,8 @@ namespace CRM.Controllers
                 return Json(new { Success = false, Message = "Error: " + ex.Message });
             }
         }
-            _context.SaveChanges();
-
-            return Json(new { success = true });
+            
         }
-    }
 }
 
 
