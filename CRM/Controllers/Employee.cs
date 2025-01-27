@@ -63,8 +63,10 @@ using DinkToPdf;
 using DinkToPdf.Contracts;
 using StackExchange.Profiling.Internal;
 using RestSharp;
+using DocumentFormat.OpenXml.Office.Word;
 using jsreport.AspNetCore;
 using jsreport.Types;
+
 
 namespace CRM.Controllers
 {
@@ -3563,16 +3565,317 @@ namespace CRM.Controllers
                 privioussalarydetail.Esipercentage = 0;
                 privioussalarydetail.IncrementPercentage = 0;
                 _context.EmployeeSalaryDetails.Update(privioussalarydetail);
+               
             }
-
-
             _context.SaveChanges();
 
             return Json(new { success = true });
         }
 
+
     }
+
+        public async Task<IActionResult> ExportToExcel()
+        {
+            try
+            {
+                // Step 1: Create a DataTable and add columns
+                DataTable dt = new DataTable();
+
+                // Define all columns (original names)
+                var columns = new List<string>
+        {
+            "FirstName", "MiddleName", "LastName",
+            "DateOfJoining", "WorkEmail", "GenderID", "WorkLocationID", "DesignationID", "DepartmentID",
+            "stateId", "offerletterid", "officeshiftTypeid", "AnnualCTC", "Basic", "HouseRentAllowance",
+            "TravellingAllowance", "ESIC", "EPF", "MonthlyGrossPay", "MonthlyCTC", "Professionaltax",
+            "servicecharge", "SpecialAllowance", "gross", "amount", "tdspercentage", "conveyanceallowance",
+            "Medical", "VariablePay", "EmployerContribution", "tdsvalue", "Basicpercentage", "HRApercentage",
+            "Conveyancepercentage", "Medicalpercentage", "Variablepercentage", "EmployerContributionpercentage",
+            "EPfpercentage", "Esipercentage", "Personal_Email_Address", "Mobile_Number", "Date_Of_Birth",
+            "Father_Name", "PAN", "Address_Line_1", "Address_Line_2", "City", "State_ID", "Pincode",
+            "Account_Holder_Name", "Bank_Name", "Account_Number", "Re_Enter_Account_Number", "IFSC", "EPF_Number",
+            "Deduction_Cycle", "Employee_Contribution_Rate", "Account_Type_ID", "nominee"
+        };
+
+                foreach (var column in columns)
+                {
+                    dt.Columns.Add(column);
+                }
+
+                // Step 2: Add sample data
+                for (int i = 1; i <= 2; i++) // Add 10 rows of sample data
+                {
+                    DataRow row = dt.NewRow();
+                    foreach (var column in columns)
+                    {
+                        row[column] = $"{column}_SampleData_{i}";
+                    }
+                    dt.Rows.Add(row);
+                }
+
+                // Step 3: Define custom headers
+                Dictionary<string, string> customHeaders = new Dictionary<string, string>
+        {
+            { "FirstName", "First Name" },
+            { "MiddleName", "Middle Name" },
+            { "LastName", "Last Name" },
+            { "DateOfJoining", "Date of Joining" },
+            { "WorkEmail", "Work Email" },
+            { "GenderID", "Gender" },
+            { "WorkLocationID", "Work Location" },
+            { "DesignationID", "Designation" },
+            { "DepartmentID", "Department" },
+            { "stateId", "State ID" },
+            { "offerletterid", "Offer Letter ID" },
+            { "officeshiftTypeid", "Office Shift Type ID" },
+            { "AnnualCTC", "Annual CTC" },
+            { "Basic", "Basic Salary" },
+            { "HouseRentAllowance", "House Rent Allowance" },
+            { "TravellingAllowance", "Travelling Allowance" },
+            { "ESIC", "ESIC Contribution" },
+            { "EPF", "EPF Contribution" },
+            { "MonthlyGrossPay", "Monthly Gross Pay" },
+            { "MonthlyCTC", "Monthly CTC" },
+            { "Professionaltax", "Professional Tax" },
+            { "servicecharge", "Service Charge" },
+            { "SpecialAllowance", "Special Allowance" },
+            { "gross", "Gross Salary" },
+            { "amount", "Amount" },
+            { "tdspercentage", "TDS Percentage" },
+            { "conveyanceallowance", "Conveyance Allowance" },
+            { "Medical", "Medical Allowance" },
+            { "VariablePay", "Variable Pay" },
+            { "EmployerContribution", "Employer Contribution" },
+            { "tdsvalue", "TDS Value" },
+            { "Basicpercentage", "Basic Percentage" },
+            { "HRApercentage", "HRA Percentage" },
+            { "Conveyancepercentage", "Conveyance Percentage" },
+            { "Medicalpercentage", "Medical Percentage" },
+            { "Variablepercentage", "Variable Percentage" },
+            { "EmployerContributionpercentage", "Employer Contribution Percentage" },
+            { "EPfpercentage", "EPF Percentage" },
+            { "Esipercentage", "ESI Percentage" },
+            { "Personal_Email_Address", "Personal Email Address" },
+            { "Mobile_Number", "Mobile Number" },
+            { "Date_Of_Birth", "Date of Birth" },
+            { "Father_Name", "Father's Name" },
+            { "PAN", "PAN Number" },
+            { "Address_Line_1", "Address Line 1" },
+            { "Address_Line_2", "Address Line 2" },
+            { "City", "City" },
+            { "State_ID", "State ID" },
+            { "Pincode", "Pincode" },
+            { "Account_Holder_Name", "Account Holder Name" },
+            { "Bank_Name", "Bank Name" },
+            { "Account_Number", "Account Number" },
+            { "Re_Enter_Account_Number", "Re-enter Account Number" },
+            { "IFSC", "IFSC Code" },
+            { "EPF_Number", "EPF Number" },
+            { "Deduction_Cycle", "Deduction Cycle" },
+            { "Employee_Contribution_Rate", "Employee Contribution Rate" },
+            { "Account_Type_ID", "Account Type ID" },
+            { "nominee", "Nominee Name" }
+        };
+
+                // Step 4: Create an Excel workbook
+                using (var workbook = new XLWorkbook())
+                {
+                    var worksheet = workbook.Worksheets.Add("Employee Data");
+
+                    // Step 5: Add headers with custom names
+                    int colIndex = 1;
+                    foreach (var column in columns)
+                    {
+                        string header = customHeaders.ContainsKey(column) ? customHeaders[column] : column;
+                        worksheet.Cell(1, colIndex).Value = header; // Use custom header or fallback to original name
+                        worksheet.Cell(1, colIndex).Style.Font.Bold = true;
+                        worksheet.Cell(1, colIndex).Style.Fill.BackgroundColor = XLColor.LightGray;
+                        worksheet.Cell(1, colIndex).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                        colIndex++;
+                    }
+
+                    // Step 6: Add rows
+                    for (int rowIndex = 0; rowIndex < dt.Rows.Count; rowIndex++)
+                    {
+                        colIndex = 1;
+                        foreach (var column in columns)
+                        {
+                            worksheet.Cell(rowIndex + 2, colIndex).Value = dt.Rows[rowIndex][column];
+                            colIndex++;
+                        }
+                    }
+
+                    // Step 7: Auto-fit columns
+                    worksheet.Columns().AdjustToContents();
+
+                    // Step 8: Export the Excel file
+                    using (var stream = new MemoryStream())
+                    {
+                        workbook.SaveAs(stream);
+                        var content = stream.ToArray();
+                        return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "EmployeeDetails.xlsx");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Server Error: " + ex.Message);
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> ImportFromExcel(IFormFile file)
+        {
+            try
+            {
+                var model = new EmpMultiform();
+                if (file == null || file.Length == 0)
+                {
+                    throw new Exception("No file uploaded or the file is empty.");
+                }
+
+                string fileExtension = Path.GetExtension(file.FileName);
+                if (fileExtension != ".xlsx" && fileExtension != ".xls")
+                {
+                    throw new Exception("Invalid file format. Please upload an Excel file (.xlsx or .xls).");
+                }
+
+
+                DataTable dataTable = new DataTable();
+
+                // Read Excel file
+                using (var stream = file.OpenReadStream())
+                using (var workbook = new XLWorkbook(stream))
+                {
+                    var worksheet = workbook.Worksheet(1); // Read the first worksheet
+                    var rows = worksheet.RowsUsed();
+
+                    // Read headers from the first row and create DataTable columns
+                    var headers = rows.First().Cells().Select(cell => cell.Value.ToString()).ToArray();
+                    foreach (var header in headers)
+                    {
+                        dataTable.Columns.Add(header);
+                    }
+
+                    // Populate DataTable rows
+                    foreach (var row in rows.Skip(1)) // Skip header row
+                    {
+                        var dataRow = dataTable.NewRow();
+                        for (int i = 0; i < headers.Length; i++)
+                        {
+                            dataRow[i] = row.Cell(i + 1).Value; // Excel is 1-based index
+                        }
+                        dataTable.Rows.Add(dataRow);
+                    }
+                }
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                string Mode = "INS";
+                string Empid = "";
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                //if (!string.IsNullOrEmpty(model.Emp_Reg_ID))
+                //{
+                //    Mode = "UPD";
+                //    Empid = model.Emp_Reg_ID;
+                //}
+                //else
+                //{
+                //    Empid = GenerateEmployeeId();
+                //    model.EmployeeId = Empid;
+
+                //    var existingEmployee = _context.EmployeeRegistrations.FirstOrDefault(x => x.WorkEmail == model.WorkEmail);
+                //    if (existingEmployee != null)
+                //    {
+                //        TempData["Message"] = "WorkEmail already exists";
+                //        return View();
+                //    }
+                //}
+
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    Empid = GenerateEmployeeId();
+                    model.EmployeeId = Empid;
+                    model.Vendorid = adminlogin.Vendorid != 0 ? adminlogin.Vendorid : 0;
+                    model.FirstName = row["FirstName"]?.ToString();
+                    model.MiddleName = row["MiddleName"]?.ToString();
+                    model.LastName = row["LastName"]?.ToString();
+                    model.DateOfJoining = row["DateOfJoining"] != DBNull.Value ? Convert.ToDateTime(row["DateOfJoining"]) : DateTime.MinValue;
+                    model.WorkEmail = row["WorkEmail"]?.ToString();
+                    model.GenderID = row["GenderID"] != DBNull.Value ? Convert.ToInt32(row["GenderID"]) : (int?)null;
+                    model.WorkLocationID = row["WorkLocationID"] != DBNull.Value ? Convert.ToInt32(row["WorkLocationID"]) : 0;
+                    model.DesignationID = row["DesignationID"] != DBNull.Value ? Convert.ToInt32(row["DesignationID"]) : 0;
+                    model.DepartmentID = row["DepartmentID"] != DBNull.Value ? Convert.ToInt32(row["DepartmentID"]) : 0;
+                    model.Emp_Reg_ID = row["Emp_RegID"]?.ToString();
+                    model.stateId = row["stateId"] != DBNull.Value ? Convert.ToInt32(row["stateId"]) : 0;
+                    model.officeshiftTypeid = row["officeshiftTypeid"] != DBNull.Value ? Convert.ToInt32(row["officeshiftTypeid"]) : 0;
+                    model.offerletterid = row["offerletterid"] != DBNull.Value ? Convert.ToInt32(row["offerletterid"]) : 0;
+
+                    // Salary Details
+                    model.AnnualCTC = row["AnnualCTC"] != DBNull.Value ? Convert.ToDecimal(row["AnnualCTC"]) : 0;
+                    model.Basic = row["Basic"] != DBNull.Value ? Convert.ToDecimal(row["Basic"]) : (decimal?)null;
+                    model.HouseRentAllowance = row["HouseRentAllowance"] != DBNull.Value ? Convert.ToDecimal(row["HouseRentAllowance"]) : (decimal?)null;
+                    model.TravellingAllowance = row["TravellingAllowance"] != DBNull.Value ? Convert.ToDecimal(row["TravellingAllowance"]) : (decimal?)null;
+                    model.ESIC = row["ESIC"] != DBNull.Value ? Convert.ToDecimal(row["ESIC"]) : (decimal?)null;
+                    model.EPF = row["EPF"] != DBNull.Value ? Convert.ToDecimal(row["EPF"]) : (decimal?)null;
+                    model.MonthlyGrossPay = row["MonthlyGrossPay"] != DBNull.Value ? Convert.ToDecimal(row["MonthlyGrossPay"]) : (decimal?)null;
+                    model.MonthlyCTC = row["MonthlyCTC"] != DBNull.Value ? Convert.ToDecimal(row["MonthlyCTC"]) : 0;
+                    model.Servicecharge = row["Servicecharge"] != DBNull.Value ? Convert.ToDecimal(row["Servicecharge"]) : (decimal?)null;
+                    model.SpecialAllowance = row["SpecialAllowance"] != DBNull.Value ? Convert.ToDecimal(row["SpecialAllowance"]) : (decimal?)null;
+                    model.Gross = row["Gross"] != DBNull.Value ? Convert.ToDecimal(row["Gross"]) : (decimal?)null;
+                    model.Conveyanceallowance = row["Conveyanceallowance"] != DBNull.Value ? Convert.ToDecimal(row["Conveyanceallowance"]) : (decimal?)null;
+                    model.Medical = row["Medical"] != DBNull.Value ? Convert.ToDecimal(row["Medical"]) : (decimal?)null;
+                    model.VariablePay = row["VariablePay"] != DBNull.Value ? Convert.ToDecimal(row["VariablePay"]) : (decimal?)null;
+                    model.EmployerContribution = row["EmployerContribution"] != DBNull.Value ? Convert.ToDecimal(row["EmployerContribution"]) : (decimal?)null;
+                    model.Tdsvalue = row["Tdsvalue"] != DBNull.Value ? Convert.ToDecimal(row["Tdsvalue"]) : (decimal?)null;
+                    model.Basicpercentage = row["Basicpercentage"] != DBNull.Value ? Convert.ToDecimal(row["Basicpercentage"]) : (decimal?)null;
+                    model.Hrapercentage = row["Hrapercentage"] != DBNull.Value ? Convert.ToDecimal(row["Hrapercentage"]) : (decimal?)null;
+                    model.Conveyancepercentage = row["Conveyancepercentage"] != DBNull.Value ? Convert.ToDecimal(row["Conveyancepercentage"]) : (decimal?)null;
+                    model.Medicalpercentage = row["Medicalpercentage"] != DBNull.Value ? Convert.ToDecimal(row["Medicalpercentage"]) : (decimal?)null;
+                    model.Variablepercentage = row["Variablepercentage"] != DBNull.Value ? Convert.ToDecimal(row["Variablepercentage"]) : (decimal?)null;
+                    model.EmployerContributionpercentage = row["EmployerContributionpercentage"] != DBNull.Value ? Convert.ToDecimal(row["EmployerContributionpercentage"]) : (decimal?)null;
+                    model.Epfpercentage = row["EPFpercentage"] != DBNull.Value ? Convert.ToDecimal(row["EPFpercentage"]) : (decimal?)null;
+                    model.Esipercentage = row["Esipercentage"] != DBNull.Value ? Convert.ToDecimal(row["Esipercentage"]) : (decimal?)null;
+
+                    // Personal Info
+                    model.PersonalEmailAddress = row["Personal_Email_Address"]?.ToString();
+                    model.MobileNumber = row["Mobile_Number"] != DBNull.Value ? Convert.ToInt64(row["Mobile_Number"]) : 0;
+                    model.DateOfBirth = row["Date_Of_Birth"] != DBNull.Value ? Convert.ToDateTime(row["Date_Of_Birth"]) : DateTime.MinValue;
+                    model.FatherName = row["Father_Name"]?.ToString();
+                    model.PAN = row["PAN"]?.ToString();
+                    model.AddressLine1 = row["Address_Line_1"]?.ToString();
+                    model.AddressLine2 = row["Address_Line_2"]?.ToString();
+                    model.City = row["City"]?.ToString();
+                    model.StateID = row["State_ID"]?.ToString();
+                    model.Pincode = row["Pincode"]?.ToString();
+
+                    // Bank Details
+                    model.AccountHolderName = row["Account_Holder_Name"]?.ToString();
+                    model.BankName = row["Bank_Name"]?.ToString();
+                    model.AccountNumber = row["Account_Number"]?.ToString();
+                    model.ReEnterAccountNumber = row["Re_Enter_Account_Number"]?.ToString();
+                    model.IFSC = row["IFSC"]?.ToString();
+                    model.EPF_Number = row["EPF_Number"]?.ToString();
+                    model.Deduction_Cycle = row["Deduction_Cycle"]?.ToString();
+                    model.Employee_Contribution_Rate = row["Employee_Contribution_Rate"]?.ToString();
+                    model.AccountTypeID = row["Account_Type_ID"] != DBNull.Value ? Convert.ToInt32(row["Account_Type_ID"]) : 0;
+                    model.nominee = row["nominee"]?.ToString();
+
+                    if(model != null)
+                    {
+                        var response = await _ICrmrpo.EmpRegistration(model, Mode, Empid, Userid);
+                    }
+                }
+                return Json(new { Success = true, Message = "Data imported successfully." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { Success = false, Message = "Error: " + ex.Message });
+            }
+        }
+            
+        }
+
 }
+
 
 
 
