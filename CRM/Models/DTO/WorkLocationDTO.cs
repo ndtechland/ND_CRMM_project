@@ -8,7 +8,7 @@ namespace CRM.Models.DTO
         public DateTime? Createdate { get; set; }
         public bool? Isactive { get; set; }
         public int? Customerid { get; set; }
-        public List<WorkLocation1> WorkLocation1List { get; set; }
+        public List<WorkLocationListDTO> WorkLocation1List { get; set; }
 
         public List<AddWorkLocationNameDTO> WorkLocationList { get; set; }
 
@@ -18,5 +18,14 @@ namespace CRM.Models.DTO
         public int Id { get; set; }
         public int WorkLocationId { get; set; }
         public string WorkLocationName { get; set; }
+    }
+
+    public class WorkLocationListDTO
+    {
+        public int Id { get; set; }
+        public string WorkLocationName { get; set; }
+        public string CustomerName { get; set; }
+        public int? Vendorid { get; set; }
+
     }
 }

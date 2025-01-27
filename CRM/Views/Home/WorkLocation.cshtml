@@ -4,7 +4,67 @@
     ViewData["Title"] = "WorkLocation";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 
+<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs5.min.css'>
+<style>
+    .dataTables_wrapper table.dataTable th {
+        background-color: #00baf2 !important;
+        padding: 24px 0.75rem !important;
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var message = "@TempData["Message"]";
+
+        if (message == "ok" || message == "dltok" || message == "updok") {
+            if (message) {
+                let alertText;
+
+            if (message == "dltok") {
+                alertText = "Deleted successfully.";
+            } else if (message == "updok") {
+                alertText = "Updated successfully.";
+            } else {
+                alertText = "Added successfully.";
+            }
+
+            Swal.fire({
+                title: 'Success',
+                text: alertText,
+                icon: 'success',
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    setTimeout(function () {
+                        window.location.href = '@Url.Action("WorkLocation", "Home")';
+                    }, 1000);
+                    }
+                });
+            }
+        }
+    else {
+        if (message) {
+                Swal.fire({
+                title: 'Failed',
+                text: message,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        setTimeout(function () {
+                                    window.location.href = '@Url.Action("WorkLocation", "Home")';
+                    }, 1000);
+                }
+            });
+            }
+    }
+    });
+</script>
 <div class="page-wrapper">
     <div class="page-body-wrapper">
         <div class="page-sidebar">
@@ -40,19 +100,21 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-body">
-                                <form asp-action="WorkLocation" autocomplete="off" onsubmit="return validateForm()">
+                                <form action="/Home/WorkLocation" method="post" autocomplete="off" onsubmit="return validateForm()">
                                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                                     <div class="row">
                                         <div class="form-group col-sm-4">
                                             <label>Company Name<span class="text-danger">*</span></label>
+                                            <input value="@ViewBag.id" name="Id" hidden />
                                             <div class="dropdown-container position-relative">
-                                                <select name="Customerid" class="form-control" id="ddCustomerid">
+                                                <select name="Customerid" class="form-control" id="ddCustomerid" required>
                                                     <option value="0">-- Select Company Name --</option>
                                                 </select>
                                                 <i class="dropdown-icon fa fa-caret-down position-absolute"></i>
                                             </div>
-                                            <span id="CustomerCompanyNameError" class="text-danger" style="display:none;">Please select Company Name</span>
-                                        </div>
+                                        <span id="CustomerCompanyNameError" class="text-danger" style="display:none;">Please select a Company Name</span>                                        </div>
+                                    </div>
+                                    <div class="row">
                                         <div class="form-group col-sm-4">
                                             <div id="serviceContainer">
                                                 @if (Model?.WorkLocationList != null)
@@ -61,26 +123,27 @@
                                                     foreach (var feature in Model.WorkLocationList)
                                                     {
                                                         <div class="service-container" id="row_@featureIndex">
-                                                            <div class="input-group m-3">
-                                                                <input type="text" name="WorkLocationList[@featureIndex].WorkLocationName" value="@feature.WorkLocationName" class="form-control m-input" required />
-                                                                <div class="input-group-prepend">
-                                                                    <button class="btn btn-danger deleteRow" data-index="@featureIndex" type="button">
-                                                                        <i class="fa fa-trash"></i>
-                                                                    </button>
-                                                                </div>
-                                                            </div>
+                                                            <input type="text" name="WorkLocationList[@featureIndex].WorkLocationName" value="@feature.WorkLocationName" class="form-control m-input" required />
+                                                            <button class="btn btn-danger deleteRow" data-index="@featureIndex" type="button">
+                                                                <i class="fa fa-trash"></i>
+                                                            </button>
                                                         </div>
                                                         featureIndex++;
                                                     }
                                                 }
                                             </div>
+                                            <button id="rowAdder" type="button" class="btn btn-secondary">
+                                                <span class="fa fa-plus"></span> Add WorkLocation Name
+                                            </button>
+
                                         </div>
-                                        <button id="rowAdder" type="button" class="btn btn-dark">
-                                            <span class="fa fa-plus"></span> Add Features
-                                        </button>
-                                    </div>
-                                    <div class="form-group" style="display:flex; justify-content:center;">
-                                        <input type="submit" value="Submit" class="btn btn-primary" />
+                                        <div class="form-group" style="display:flex; justify-content:center;">
+                                            <button type="submit" class="btn btn-primary">Submit</button>
+                                            @if (ViewBag.id > 0)
+                                            {
+                                                <a href="/Home/WorkLocation" class="btn btn-danger">Cancel</a>
+                                            }
+                                        </div>
                                     </div>
                                 </form>
                             </div>
@@ -88,103 +151,121 @@
                     </div>
                 </div>
             </div>
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class=" table-responsive">
+                                    <table id="datatable" class="table table-responsive">
+                                        <thead>
+                                            <tr>
+                                                <th nowrap>Sl. No.</th>
+                                                <th nowrap>Customer Name</th>
+                                                <th nowrap>WorkLocation Name</th>
+                                                <th>Edit</th>
+                                                <th>Delete</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{
+                                            if (Model.WorkLocation1List != null && Model.WorkLocation1List.Count() > 0)
+                                            {
+                                                var count = 0;
+                                                foreach (var item in Model.WorkLocation1List)
+                                                {
+                                                    count++;
 
+                                                    <tr class="table-row">
+                                                        <td>@count</td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.CustomerName)
+                                                        </td>
+                                                       <td>@item.WorkLocationName</td>
+                                                        <td>
+                                                            <a href="/Home/WorkLocation?Id=@item.Id" class="fa fa-edit m-2 font-success"></a>
+                                                        </td>
+                                                        <td>
+                                                            <a href="/Home/DeleteWorkLocation?Id=@item.Id" onclick="return confirm('Are you sure want to delete?')" class="fa fa-trash m-2 font-danger"></a>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
 
     </div>
 
 </div>
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
-    function bindCustomerCompanyNameid(CustomerCompanyName) {
-        var itemsListforCustomerCompanyNameid = @Json.Serialize(ViewBag.CustomerCompanyName);
-        debugger
-        var dropdownforCustomerCompanyNameid = $("#ddCustomerid");
+function bindCustomerCompanyNameid(CustomerCompanyName) {
+    // Get the company list from ViewBag
+    var itemsListforCustomerCompanyNameid = @Html.Raw(Json.Serialize(ViewBag.CustomerCompanyName));
+    var dropdownforCustomerCompanyNameid = $("#ddCustomerid");
+
+    // Clear existing options
+    dropdownforCustomerCompanyNameid.empty();
+
+    // Add a default placeholder
+    dropdownforCustomerCompanyNameid.append(
+        $('<option></option>').val("").text("-- Select Company Name --").prop("disabled", true).prop("selected", true)
+    );
+
+    // Populate the dropdown
+    if (itemsListforCustomerCompanyNameid && itemsListforCustomerCompanyNameid.length > 0) {
         $.each(itemsListforCustomerCompanyNameid, function (index, item) {
-            dropdownforCustomerCompanyNameid.append($('<option></option>').val(item.value).text(item.text));
+            dropdownforCustomerCompanyNameid.append(
+                $('<option></option>').val(item.value).text(item.text)
+            );
         });
-        if (CustomerCompanyName != "") {
-            $("#ddCustomerid").val(CustomerCompanyName)
-        }
     }
-    var CustomerCompany = '@ViewBag.Customerid';
-    if (CustomerCompany != "") {
-        bindCustomerCompanyNameid(CustomerCompany);
+
+    // Set selected value if provided
+    if (CustomerCompanyName) {
+        dropdownforCustomerCompanyNameid.val(CustomerCompanyName);
     }
-    else {
-        bindCustomerCompanyNameid("");
-    }
+}
+
+// Get the company ID to pre-select
+var CustomerCompany = '@ViewBag.Customerid';
+if (CustomerCompany) {
+    bindCustomerCompanyNameid(CustomerCompany);
+} else {
+    bindCustomerCompanyNameid("");
+}
+
 </script>
 <script>
     $(document).ready(function () {
-        // Select the serviceContainer element
-        const serviceContainer = document.getElementById('serviceContainer');
+        var serviceIndex = $("#serviceContainer .service-container").length;
 
-        // Select all children with class 'service-container'
-        const serviceRows = serviceContainer.getElementsByClassName('service-container');
-
-        // Initialize an array to store the numeric parts of the IDs
-        let indices = [];
-
-        // Loop through serviceRows and push their numeric index into the array
-        for (let i = 0; i < serviceRows.length; i++) {
-            const id = serviceRows[i].id; // Get the ID
-            const index = parseInt(id.split('_')[1], 10); // Extract the numeric index
-
-            if (!isNaN(index)) {
-                indices.push(index); // Add to the array if it's a valid number
-            }
-        }
-
-        // Get the maximum index
-        const maxIndex = indices.length > 0 ? Math.max(...indices) : -1; // -1 if no valid indices found
-
-        // Calculate the next index
-        const nextIndex = maxIndex + 1;
-
-        // Output the next index
-        console.log(nextIndex); // This will be the next index to use
-
-        // Initialize serviceIndex based on the existing count of PlanFeatures
-        var serviceIndex = nextIndex;
-
-        // Add a new feature row
         $("#rowAdder").click(function () {
-            var newServiceTextbox = $("<div>")
-                .addClass("service-container")
-                .attr("id", "row_" + serviceIndex);
-
-            var inputTextbox = $("<input>")
-                .attr("type", "text")
-                .attr("name", "PlanFeatures[" + serviceIndex + "].Feature")
-                .attr("class", "form-control m-input")
-                .attr("required", true);
-
-            var removeButton = $("<button>")
-                .addClass("btn btn-danger deleteRow")
-                .attr("type", "button")
-                .attr("data-index", serviceIndex) // Use data attribute to track the index
-                .html('<i class="fa fa-trash"></i>')
-                .click(function () {
-                    $(this).closest(".service-container").remove();
-                });
-
-            newServiceTextbox.append(
-                $("<div>").addClass("input-group m-3")
-                    .append(inputTextbox)
-                    .append(removeButton)
-            );
-
-            $("#serviceContainer").append(newServiceTextbox);
-
-            // Increment serviceIndex for the next new feature
+            var newRow = `
+                        <div class="service-container" id="row_${serviceIndex}">
+                            <input type="text" name="WorkLocationList[${serviceIndex}].WorkLocationName" class="form-control m-input" required />
+                            <button class="btn btn-danger deleteRow" data-index="${serviceIndex}" type="button">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </div>`;
+            $("#serviceContainer").append(newRow);
             serviceIndex++;
         });
 
-        // Delete a feature row
-        $("body").on("click", ".deleteRow", function () {
+        $(document).on("click", ".deleteRow", function () {
             $(this).closest(".service-container").remove();
         });
+    });
+       $(document).ready(function () {
+        $('#datatable').DataTable();
     });
 </script>

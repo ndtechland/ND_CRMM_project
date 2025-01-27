@@ -383,6 +383,7 @@
                                     <li><a href="/Vendor/EventsScheduleList" title="List Schedule events"><i class="fa fa-circle"></i>Event Schedule List</a></li>
                                     @{
                                         var pp = ViewBag.Professional;
+                                        var ShowWorkLocations = ViewBag.WorkLocations;
                                     }
                                     @if (pp == true)
                                     {
@@ -391,6 +392,11 @@
                                     }
                                     <li><a href="/Vendor/LeaveTypemaster" title="List Schedule LeaveType"><i class="fa fa-circle"></i>Leave Type</a></li>
                                     <li><a href="/Vendor/salarydeduction" title="List Schedule salarydeduction"><i class="fa fa-circle"></i>Salary Deduction</a></li>
+                                    @if (ShowWorkLocations == true)
+                                    {
+                                        <li><a href="/Home/WorkLocation" title="List Schedule WorkLocation"><i class="fa fa-circle"></i>Add WorkLocation</a></li>
+
+                                    }
 
                                 </ul>
                             </li>
