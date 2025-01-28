@@ -1028,7 +1028,7 @@
                 if (monthlybasicSalary <= employerContributionRate) {
                     epfValue = (basicSalary * epfPercentage) / 100;
                 } else {
-                    epfValue = (employerContributionRate * epfPercentage) / 100;
+                    epfValue = (employerContributionRate * epfPercentage) / 100 * 12;
                 }
 
                 $('#displayEPFMaster').text(epfPercentage.toFixed(2));
