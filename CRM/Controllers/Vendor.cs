@@ -3350,7 +3350,7 @@ namespace CRM.Controllers
                 MobileNumber = x.PersonalDetails?.MobileNumber,
                 EmailId = x.PersonalDetails?.PersonalEmailAddress,
                 JoiningDate = x.DateOfJoining.HasValue ? x.DateOfJoining.Value.ToString("dd-MMM-yyyy") : "N/A"
-            }).ToList();
+            }).OrderByDescending(x=>x.EmpId).ToList();
 
             var model = new showallemployeelisteDto
             {

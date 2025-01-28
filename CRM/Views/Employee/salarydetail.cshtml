@@ -258,7 +258,7 @@
                                                             <td class="Epf-pay">@Html.DisplayFor(modelItem => item.EmployeeEpf)</td>
                                                             <td class="Esi-pay">@Html.DisplayFor(modelItem => item.EmployeeEsi)</td>
                                                             <td>
-                                                                <input type="text" id="Attendance" name="Attendance" class="form-control attnd" minlength="1" maxlength="2" style="height: 40px; width: 94px;" onkeyup="fnc(this)" onchange="updateMonthlyPay(this)" />
+                                                                <input type="text" id="Attendance" name="Attendance" class="form-control attnd" minlength="1" maxlength="2" style="height: 40px; width: 94px;" onkeyup="fnc(this)" onchange="fetchAttendance(this)" onkeydown="validateNumericInput(event)" />
                                                             </td>
                                                             <td>
                                                                 <a href="#" class="fa fa-edit m-2 font-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="EditSalaryDetails('@item.EmployeeId')">
@@ -660,6 +660,7 @@
     function fetchAttendance() {
         var month = document.getElementById('Month').value;
         var year = document.getElementById('Year').value;
+        var noOfDays = document.getElementById('Attendance').value;
 
         if (!year || year == "0") {
             alert("Please select a year first.");
@@ -674,7 +675,7 @@
         $.ajax({
             url: '@Url.Action("getEmpattendancedays", "Employee")',
             type: 'GET',
-            data: { month: month, year: year },
+            data: { month: month, year: year, noOfDays: noOfDays },
             success: function (response) {
                 if (response && response.employees && response.employees.length > 0) {
                     var table = $('#datatable').DataTable();
@@ -682,28 +683,23 @@
                     table.rows().every(function (rowIdx, tableLoop, rowLoop) {
                         var row = this.node();
                         var employeeId = $(row).find('td:nth-child(6)').text().trim();
-                        var employeeData = response.employees.find(emp => emp.EmployeeId == employeeId);
+                        var employeeData = response.employees.find(emp => emp.employeeId == employeeId);
 
                         if (employeeData) {
-                            // Update Attendance and Monthly Pay
-                            $(row).find('input[name="Attendance"]').val(employeeData.LeaveRemaining);
-                            $(row).find('td:nth-child(10)').text(employeeData.MonthlyPay.toFixed(2));
-
-                            // Update EPF and ESI values
-                            $(row).find('td.Epf-pay').text(employeeData.EmployeeEpf.toFixed(2));
-                            $(row).find('td.Esi-pay').text(employeeData.EmployeeEsi.toFixed(2));
+                            $(row).find('input[name="Attendance"]').val(employeeData.leaveRemaining);
+                            $(row).find('td:nth-child(10)').text(employeeData.monthlyPay.toFixed(2)); 
+                            $(row).find('td:nth-child(11)').text(employeeData.employeeEpf.toFixed(2)); 
+                            $(row).find('td:nth-child(12)').text(employeeData.employeeEsi.toFixed(2)); 
                         } else {
-                            // Default values if no data found
                             $(row).find('input[name="Attendance"]').val(0);
-                            $(row).find('td:nth-child(10)').text("0.00");
-                            $(row).find('td.Epf-pay').text("0.00");
-                            $(row).find('td.Esi-pay').text("0.00");
+                            $(row).find('td:nth-child(10)').text("0.00"); 
+                            $(row).find('td:nth-child(11)').text("0.00"); 
+                            $(row).find('td:nth-child(12)').text("0.00"); 
                         }
                     });
 
                     document.getElementById('dynamicTotalMonthlyPay').textContent = response.totalMonthlyPay.toFixed(2);
                     table.draw();
-
                 } else {
                     alert(response.message || "No attendance data available.");
                     document.getElementById('dynamicTotalMonthlyPay').textContent = "0.00";
@@ -721,7 +717,7 @@
         var year = this.value;
         var monthSelect = document.getElementById('Month');
         if (year && year !== "0") {
-            monthSelect.disabled = false;  // Enable month selection
+            monthSelect.disabled = false;  
         } else {
             monthSelect.disabled = true;   
         }
@@ -732,47 +728,55 @@
         var monthSelect = document.getElementById('Month');
         monthSelect.disabled = true;  // Disable month selection by default
     });
+  
 
-    function updateMonthlyPay() {
-        $('#datatable tbody').on('input', 'input[name="Attendance"]', function () {
-            var row = $(this).closest('tr');
-            var monthlyCtc = parseFloat(row.find('td:nth-child(9)').text().trim());
-            var nodays = @ViewBag.Nodays;
+    // function updateMonthlyPay() {
+    //     $('#datatable tbody').on('input', 'input[name="Attendance"]', function () {
+    //         var row = $(this).closest('tr');
+    //         var monthlyCtc = parseFloat(row.find('td:nth-child(9)').text().trim());
+    //         var nodays = @ViewBag.Nodays;
 
-            if (nodays > 0) {
-                var newMonthlyPay = monthlyCtc / nodays;
+    //         if (nodays > 0) {
+    //             var newMonthlyPay = monthlyCtc / nodays;
 
-                var attendance = parseFloat($(this).val()) || 0;
+    //             var attendance = parseFloat($(this).val()) || 0;
 
-                var totalMonthlyPay = newMonthlyPay * attendance;
+    //             var totalMonthlyPay = newMonthlyPay * attendance;
 
-                row.find('td:nth-child(10)').text(totalMonthlyPay.toFixed(2));
-            } else {
-                row.find('td:nth-child(10)').text("0.00");
-            }
+    //             row.find('td:nth-child(10)').text(totalMonthlyPay.toFixed(2));
+    //         } else {
+    //             row.find('td:nth-child(10)').text("0.00");
+    //         }
 
-            // Calculate the total of all rows and update the dynamicTotalMonthlyPay field
-            updateTotalMonthlyPay();
-        });
+    //         // Calculate the total of all rows and update the dynamicTotalMonthlyPay field
+    //         updateTotalMonthlyPay();
+    //     });
+    // }
+
+    // function updateTotalMonthlyPay() {
+    //     var totalMonthlyPay = 0;
+
+    //     // Sum the monthly pay from each row
+    //     $('#datatable tbody tr').each(function () {
+    //         var rowPay = parseFloat($(this).find('td:nth-child(10)').text()) || 0;
+    //         totalMonthlyPay += rowPay;
+    //     });
+
+    //     // Update the dynamicTotalMonthlyPay field
+    //     $('#dynamicTotalMonthlyPay').text(totalMonthlyPay.toFixed(2));
+    // }
+
+    // $(document).ready(function () {
+    //     updateMonthlyPay();
+    // });
+    function validateNumericInput(event) {
+        if ([67, 86, 88].includes(event.keyCode) && (event.ctrlKey || event.metaKey) ||
+            [32, 46, 8, 9, 27, 13].includes(event.keyCode) ||
+            (event.keyCode >= 35 && event.keyCode <= 39)) return;
+
+        if ((event.keyCode >= 48 && event.keyCode <= 57) || (event.keyCode >= 96 && event.keyCode <= 105)) return;
+        event.preventDefault();
     }
-
-    function updateTotalMonthlyPay() {
-        var totalMonthlyPay = 0;
-
-        // Sum the monthly pay from each row
-        $('#datatable tbody tr').each(function () {
-            var rowPay = parseFloat($(this).find('td:nth-child(10)').text()) || 0;
-            totalMonthlyPay += rowPay;
-        });
-
-        // Update the dynamicTotalMonthlyPay field
-        $('#dynamicTotalMonthlyPay').text(totalMonthlyPay.toFixed(2));
-    }
-
-    $(document).ready(function () {
-        updateMonthlyPay();
-    });
-
 </script>
 
 <script>

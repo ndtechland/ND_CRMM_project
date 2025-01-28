@@ -3184,7 +3184,6 @@ namespace CRM.Controllers
 
             return _converter.Convert(htmlToPdfDocument);
         }
-
         public async Task<JsonResult> getEmpattendancedays(int month, int year)
         {
             int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
@@ -3194,6 +3193,7 @@ namespace CRM.Controllers
             {
                 return new JsonResult(new { success = false, message = "Admin login not found" });
             }
+
             var currentMonth = DateTime.Now.Month;
             var currentYear = DateTime.Now.Year;
 
@@ -3208,9 +3208,11 @@ namespace CRM.Controllers
             {
                 return new JsonResult(new { success = false, message = "Attendance days not found or invalid" });
             }
-
-            decimal noOfDays = Convert.ToDecimal(attendanceDays.Nodays);
-
+            decimal noOfDays = 0;
+            if (noOfDays == 0)
+            {
+                noOfDays = Convert.ToDecimal(attendanceDays.Nodays);
+            }
             var employees = await _context.EmployeeRegistrations
                                           .Where(x => x.Vendorid == adminLogin.Vendorid && x.IsDeleted == false)
                                           .ToListAsync();
@@ -3226,11 +3228,11 @@ namespace CRM.Controllers
                                         .Where(x => employeeIds.Contains(x.EmployeeId))
                                         .ToDictionaryAsync(x => x.EmployeeId, x => x.AnnualCtc / 12 ?? 0);
             var EmployeeEpfData = await _context.EmployeeSalaryDetails
-                                     .Where(x => employeeIds.Contains(x.EmployeeId))
-                                     .ToDictionaryAsync(x => x.EmployeeId, x => x.Epfpercentage ?? 0);
+                                                 .Where(x => employeeIds.Contains(x.EmployeeId))
+                                                 .ToDictionaryAsync(x => x.EmployeeId, x => x.Epfpercentage ?? 0);
             var EmployeeEsiData = await _context.EmployeeSalaryDetails
-                                    .Where(x => employeeIds.Contains(x.EmployeeId))
-                                    .ToDictionaryAsync(x => x.EmployeeId, x => x.Esipercentage ?? 0);
+                                                 .Where(x => employeeIds.Contains(x.EmployeeId))
+                                                 .ToDictionaryAsync(x => x.EmployeeId, x => x.Esipercentage ?? 0);
 
             var leaveCounts = await _context.ApplyLeaveNews
                                              .Where(leave => employeeIds.Contains(leave.UserId) &&
@@ -3265,92 +3267,277 @@ namespace CRM.Controllers
                                   att.CheckIntime.Value.Year == year &&
                                   att.CheckIntime.Value.Month == month).ToList();
 
-
-                var shiftTime = shiftTimes.FirstOrDefault(st => st.Id == employeesdata.OfficeshiftTypeid);
-
-                decimal shiftworkingHours = 0;
-                decimal NumberOfLateMarks = 0;
-                decimal salaryDeductionDays = 0;
-                decimal TotalsalaryDeduction = 0;
-                decimal EmployeeEpf = 0;
-                decimal EmployeeEsi = 0;
-
-                TimeSpan lateThreshold = TimeSpan.FromMinutes(30);
-                TimeSpan halfDayThreshold = TimeSpan.FromHours(2);
-
-                if (shiftTime != null)
+                if (!EmpTotalWorkingHours.Any())
                 {
-                    DateTime startTime = DateTime.Parse(shiftTime.Starttime);
-                    DateTime endTime = DateTime.Parse(shiftTime.Endtime);
-                    TimeSpan shiftDuration = endTime - startTime;
-                    shiftworkingHours = Math.Max((decimal)shiftDuration.TotalHours, 0);
-                }
-                int lateMarkCount = 0;
-                bool ischeck = false;
-                foreach (var item in EmpTotalWorkingHours)
-                {
-                    decimal TotalWorkingHours = (decimal)Math.Round((item.CheckOuttime.Value - item.CheckIntime.Value).TotalHours, 2);
-                    decimal totalLateHours = shiftworkingHours - TotalWorkingHours;
-
-                    if (shiftworkingHours > TotalWorkingHours)
+                    // Handle employees with no check-in records
+                    var defaultLeaveRemaining = noOfDays - totalLeave; // Adjust logic as needed
+                    result.Add(new
                     {
-                        lateMarkCount += (int)(totalLateHours / 0.5m);
-                        if (totalLateHours >= 0.5m)
+                        EmployeeId = employeesdata.EmployeeId,
+                        LeaveRemaining = defaultLeaveRemaining,
+                        MonthlyPay = 0, // No pay if no working hours
+                        SalaryDeductionDays = 0,
+                        NumberOfLateMarks = 0,
+                        EmployeeEpf = 0,
+                        EmployeeEsi = 0
+                    });
+                }
+                else
+                {
+                    var shiftTime = shiftTimes.FirstOrDefault(st => st.Id == employeesdata.OfficeshiftTypeid);
+
+                    decimal shiftworkingHours = 0;
+                    decimal NumberOfLateMarks = 0;
+                    decimal salaryDeductionDays = 0;
+                    decimal TotalsalaryDeduction = 0;
+                    decimal EmployeeEpf = 0;
+                    decimal EmployeeEsi = 0;
+
+                    TimeSpan lateThreshold = TimeSpan.FromMinutes(30);
+                    TimeSpan halfDayThreshold = TimeSpan.FromHours(2);
+
+                    if (shiftTime != null)
+                    {
+                        DateTime startTime = DateTime.Parse(shiftTime.Starttime);
+                        DateTime endTime = DateTime.Parse(shiftTime.Endtime);
+                        TimeSpan shiftDuration = endTime - startTime;
+                        shiftworkingHours = Math.Max((decimal)shiftDuration.TotalHours, 0);
+                    }
+
+                    int lateMarkCount = 0;
+                    bool ischeck = false;
+                    foreach (var item in EmpTotalWorkingHours)
+                    {
+                        decimal TotalWorkingHours = (decimal)Math.Round((item.CheckOuttime.Value - item.CheckIntime.Value).TotalHours, 2);
+                        decimal totalLateHours = shiftworkingHours - TotalWorkingHours;
+
+                        if (shiftworkingHours > TotalWorkingHours)
                         {
-                            if (lateMarkCount == 3 && ischeck == false)
+                            lateMarkCount += (int)(totalLateHours / 0.5m);
+                            if (totalLateHours >= 0.5m)
                             {
-                                NumberOfLateMarks += 1;
-                                ischeck = true;
-                            }
-                            else if (lateMarkCount > 3)
-                            {
-                                NumberOfLateMarks += (1 / 3.0m);
+                                if (lateMarkCount == 3 && ischeck == false)
+                                {
+                                    NumberOfLateMarks += 1;
+                                    ischeck = true;
+                                }
+                                else if (lateMarkCount > 3)
+                                {
+                                    NumberOfLateMarks += (1 / 3.0m);
+                                }
                             }
                         }
-
                     }
-                }
+                    TotalsalaryDeduction = Math.Round((noOfDays - totalLeave - NumberOfLateMarks), 2);
 
-                TotalsalaryDeduction = Math.Round((noOfDays - totalLeave - NumberOfLateMarks), 2);
-                decimal monthlyPay = 0;
-                if (TotalsalaryDeduction > 0 && ctcData.TryGetValue(employeesdata.EmployeeId, out var monthlyCtc))
-                {
-                    monthlyPay = decimal.Round((monthlyCtc / noOfDays) * TotalsalaryDeduction, 2);
-                }
-                if (monthlyPay > 0)
-                {
-                    EmployeeEpf = 0;
-                    EmployeeEsi = 0;
-
-                    if (EmployeeEpfData.TryGetValue(employeesdata.EmployeeId, out var epfPercentage))
+                    decimal monthlyPay = 0;
+                    if (TotalsalaryDeduction > 0 && ctcData.TryGetValue(employeesdata.EmployeeId, out var monthlyCtc))
                     {
-                        EmployeeEpf = decimal.Round((monthlyPay * epfPercentage) / 100, 2);
-                        monthlyPay -= EmployeeEpf;  
+                        monthlyPay = decimal.Round((monthlyCtc / noOfDays) * TotalsalaryDeduction, 2);
+                        if (monthlyPay > 0)
+                        {
+                            EmployeeEpf = 0;
+                            EmployeeEsi = 0;
+
+                            if (EmployeeEpfData.TryGetValue(employeesdata.EmployeeId, out var epfPercentage))
+                            {
+                                EmployeeEpf = decimal.Round((monthlyPay * epfPercentage) / 100, 2);
+                                monthlyPay -= EmployeeEpf;
+                            }
+
+                            if (EmployeeEsiData.TryGetValue(employeesdata.EmployeeId, out var esiPercentage))
+                            {
+                                EmployeeEsi = decimal.Round((monthlyPay * esiPercentage) / 100, 2);
+                                monthlyPay -= EmployeeEsi;
+                            }
+                        }
                     }
 
-                    if (EmployeeEsiData.TryGetValue(employeesdata.EmployeeId, out var esiPercentage))
+                    totalMonthlyPay += monthlyPay;
+
+                    result.Add(new
                     {
-                        EmployeeEsi = decimal.Round((monthlyPay * esiPercentage) / 100, 2);
-                        monthlyPay -= EmployeeEsi;  
-                    }
+                        EmployeeId = employeesdata.EmployeeId,
+                        LeaveRemaining = TotalsalaryDeduction,
+                        MonthlyPay = monthlyPay,
+                        SalaryDeductionDays = salaryDeductionDays,
+                        NumberOfLateMarks = NumberOfLateMarks,
+                        EmployeeEpf = EmployeeEpf,
+                        EmployeeEsi = EmployeeEsi
+                    });
                 }
-
-                totalMonthlyPay += monthlyPay;
-                
-                result.Add(new
-                {
-                    EmployeeId = employeesdata.EmployeeId,
-                    LeaveRemaining = TotalsalaryDeduction,
-                    MonthlyPay = monthlyPay,
-                    SalaryDeductionDays = salaryDeductionDays,
-                    NumberOfLateMarks = NumberOfLateMarks,
-                    EmployeeEpf = EmployeeEpf,
-                    EmployeeEsi = EmployeeEsi
-                });
             }
 
             return new JsonResult(new { Employees = result, TotalMonthlyPay = totalMonthlyPay });
         }
+
+        //public async Task<JsonResult> getEmpattendancedays(int month, int year)
+        //{
+        //    int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+        //    var adminLogin = await _context.AdminLogins.FirstOrDefaultAsync(x => x.Id == userId);
+
+        //    if (adminLogin == null)
+        //    {
+        //        return new JsonResult(new { success = false, message = "Admin login not found" });
+        //    }
+        //    var currentMonth = DateTime.Now.Month;
+        //    var currentYear = DateTime.Now.Year;
+
+        //    if (year > currentYear || (year == currentYear && month > currentMonth))
+        //    {
+        //        return new JsonResult(new { success = false, message = "Attendance data for the selected month is not available." });
+        //    }
+
+        //    var attendanceDays = await _context.Attendancedays.FirstOrDefaultAsync(x => x.Vendorid == adminLogin.Vendorid);
+
+        //    if (attendanceDays == null)
+        //    {
+        //        return new JsonResult(new { success = false, message = "Attendance days not found or invalid" });
+        //    }
+
+        //    decimal noOfDays = Convert.ToDecimal(attendanceDays.Nodays);
+
+        //    var employees = await _context.EmployeeRegistrations
+        //                                  .Where(x => x.Vendorid == adminLogin.Vendorid && x.IsDeleted == false)
+        //                                  .ToListAsync();
+
+        //    if (!employees.Any())
+        //    {
+        //        return new JsonResult(new { success = false, message = "No employees found for the vendor" });
+        //    }
+
+        //    var employeeIds = employees.Select(e => e.EmployeeId).ToList();
+
+        //    var ctcData = await _context.EmployeeSalaryDetails
+        //                                .Where(x => employeeIds.Contains(x.EmployeeId))
+        //                                .ToDictionaryAsync(x => x.EmployeeId, x => x.AnnualCtc / 12 ?? 0);
+        //    var EmployeeEpfData = await _context.EmployeeSalaryDetails
+        //                             .Where(x => employeeIds.Contains(x.EmployeeId))
+        //                             .ToDictionaryAsync(x => x.EmployeeId, x => x.Epfpercentage ?? 0);
+        //    var EmployeeEsiData = await _context.EmployeeSalaryDetails
+        //                            .Where(x => employeeIds.Contains(x.EmployeeId))
+        //                            .ToDictionaryAsync(x => x.EmployeeId, x => x.Esipercentage ?? 0);
+
+        //    var leaveCounts = await _context.ApplyLeaveNews
+        //                                     .Where(leave => employeeIds.Contains(leave.UserId) &&
+        //                                                     leave.Isapprove == 2 &&
+        //                                                     leave.StartDate.Year == year &&
+        //                                                     leave.StartDate.Month == month &&
+        //                                                     leave.EndDate.Year == year &&
+        //                                                     leave.EndDate.Month == month)
+        //                                     .GroupBy(leave => leave.UserId)
+        //                                     .Select(g => new
+        //                                     {
+        //                                         UserId = g.Key,
+        //                                         TotalLeave = g.Sum(leave => leave.CountLeave)
+        //                                     }).ToListAsync();
+
+        //    var shiftTimes = await _context.Officeshifts
+        //                                    .Where(x => x.Vendorid == adminLogin.Vendorid)
+        //                                    .ToListAsync();
+
+        //    decimal totalMonthlyPay = 0.00M;
+        //    var result = new List<object>();
+
+        //    foreach (var employeesdata in employees)
+        //    {
+        //        var leaveData = leaveCounts.FirstOrDefault(l => l.UserId == employeesdata.EmployeeId);
+        //        var totalLeave = leaveData?.TotalLeave ?? 0;
+
+        //        var EmpTotalWorkingHours = _context.EmployeeCheckInRecords
+        //            .Where(att => att.EmpId == employeesdata.EmployeeId &&
+        //                          att.CheckIntime.HasValue &&
+        //                          att.CheckOuttime.HasValue &&
+        //                          att.CheckIntime.Value.Year == year &&
+        //                          att.CheckIntime.Value.Month == month).ToList();
+
+
+        //        var shiftTime = shiftTimes.FirstOrDefault(st => st.Id == employeesdata.OfficeshiftTypeid);
+
+        //        decimal shiftworkingHours = 0;
+        //        decimal NumberOfLateMarks = 0;
+        //        decimal salaryDeductionDays = 0;
+        //        decimal TotalsalaryDeduction = 0;
+        //        decimal EmployeeEpf = 0;
+        //        decimal EmployeeEsi = 0;
+
+        //        TimeSpan lateThreshold = TimeSpan.FromMinutes(30);
+        //        TimeSpan halfDayThreshold = TimeSpan.FromHours(2);
+
+        //        if (shiftTime != null)
+        //        {
+        //            DateTime startTime = DateTime.Parse(shiftTime.Starttime);
+        //            DateTime endTime = DateTime.Parse(shiftTime.Endtime);
+        //            TimeSpan shiftDuration = endTime - startTime;
+        //            shiftworkingHours = Math.Max((decimal)shiftDuration.TotalHours, 0);
+        //        }
+        //        int lateMarkCount = 0;
+        //        bool ischeck = false;
+        //        foreach (var item in EmpTotalWorkingHours)
+        //        {
+        //            decimal TotalWorkingHours = (decimal)Math.Round((item.CheckOuttime.Value - item.CheckIntime.Value).TotalHours, 2);
+        //            decimal totalLateHours = shiftworkingHours - TotalWorkingHours;
+
+        //            if (shiftworkingHours > TotalWorkingHours)
+        //            {
+        //                lateMarkCount += (int)(totalLateHours / 0.5m);
+        //                if (totalLateHours >= 0.5m)
+        //                {
+        //                    if (lateMarkCount == 3 && ischeck == false)
+        //                    {
+        //                        NumberOfLateMarks += 1;
+        //                        ischeck = true;
+        //                    }
+        //                    else if (lateMarkCount > 3)
+        //                    {
+        //                        NumberOfLateMarks += (1 / 3.0m);
+        //                    }
+        //                }
+
+        //            }
+        //        }
+
+        //        TotalsalaryDeduction = Math.Round((noOfDays - totalLeave - NumberOfLateMarks), 2);
+        //        decimal monthlyPay = 0;
+        //        if (TotalsalaryDeduction > 0 && ctcData.TryGetValue(employeesdata.EmployeeId, out var monthlyCtc))
+        //        {
+        //            monthlyPay = decimal.Round((monthlyCtc / noOfDays) * TotalsalaryDeduction, 2);
+        //            if (monthlyPay > 0)
+        //            {
+        //                EmployeeEpf = 0;
+        //                EmployeeEsi = 0;
+
+        //                if (EmployeeEpfData.TryGetValue(employeesdata.EmployeeId, out var epfPercentage))
+        //                {
+        //                    EmployeeEpf = decimal.Round((monthlyPay * epfPercentage) / 100, 2);
+        //                    monthlyPay -= EmployeeEpf;
+        //                }
+
+        //                if (EmployeeEsiData.TryGetValue(employeesdata.EmployeeId, out var esiPercentage))
+        //                {
+        //                    EmployeeEsi = decimal.Round((monthlyPay * esiPercentage) / 100, 2);
+        //                    monthlyPay -= EmployeeEsi;
+        //                }
+        //            }
+        //        }
+
+
+        //        totalMonthlyPay += monthlyPay;
+
+        //        result.Add(new
+        //        {
+        //            EmployeeId = employeesdata.EmployeeId,
+        //            LeaveRemaining = TotalsalaryDeduction,
+        //            MonthlyPay = monthlyPay,
+        //            SalaryDeductionDays = salaryDeductionDays,
+        //            NumberOfLateMarks = NumberOfLateMarks,
+        //            EmployeeEpf = EmployeeEpf,
+        //            EmployeeEsi = EmployeeEsi
+        //        });
+        //    }
+
+        //    return new JsonResult(new { Employees = result, TotalMonthlyPay = totalMonthlyPay });
+        //}
         public JsonResult EmpEpfesilist()
         {
             int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
