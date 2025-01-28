@@ -258,9 +258,10 @@
                                                             <td class="Epf-pay">@Html.DisplayFor(modelItem => item.EmployeeEpf)</td>
                                                             <td class="Esi-pay">@Html.DisplayFor(modelItem => item.EmployeeEsi)</td>
                                                             <td>
-                                                                <input type="text" id="Attendance" name="Attendance" class="form-control attnd" minlength="1" maxlength="2" style="height: 40px; width: 94px;" onkeyup="fnc(this)" onchange="fetchAttendance(this)" onkeydown="validateNumericInput(event)" />
+                                                                <input type="text" id="Attendance" name="Attendance" class="form-control attnd" minlength="1" maxlength="2" style="height: 40px; width: 94px;" onkeyup="fnc(this)"  onkeydown="validateNumericInput(event)" />
                                                             </td>
                                                             <td>
+                                                                @*onchange="fetchAttendance(this)"*@
                                                                 <a href="#" class="fa fa-edit m-2 font-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="EditSalaryDetails('@item.EmployeeId')">
                                                                     Edit Salary
                                                                 </a>
