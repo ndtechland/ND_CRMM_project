@@ -258,7 +258,7 @@
                                                             <td class="Epf-pay">@Html.DisplayFor(modelItem => item.EmployeeEpf)</td>
                                                             <td class="Esi-pay">@Html.DisplayFor(modelItem => item.EmployeeEsi)</td>
                                                             <td>
-                                                                <input type="text" id="Attendance" name="Attendance" class="form-control attnd" minlength="1" maxlength="2" style="height: 40px; width: 94px;" onkeyup="fnc(this)"  onkeydown="validateNumericInput(event)" />
+                                                                <input type="text" id="Attendance" name="Attendance" class="form-control attnd" minlength="1" maxlength="2" style="height: 40px; width: 94px;" onkeyup="fnc(this)" onchange="MonthlyadjustmentAttendance(this)" onkeydown="validateNumericInput(event)" />
                                                             </td>
                                                             <td>
                                                                 @*onchange="fetchAttendance(this)"*@
@@ -309,8 +309,8 @@
         var check = true;
         var tbody = $("#datatable tbody");
         var modelCount = @Model.Count();
-
-        var selectedMonth = $("#Month").val();
+        var selectedMonth = $('#Month').val();
+        var year = $('#Year').val();
         if (!selectedMonth) {
             Swal.fire({
                 title: 'Error',
@@ -320,20 +320,43 @@
             });
             return;
         }
-
+        if (!year) {
+            Swal.fire({
+                title: 'Error',
+                text: "Please select a year.",
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
         if (tbody.children().length > 0) {
             var modeldata = [];
             $('#datatable tbody tr').each(function () {
+                var row = $(this).closest('tr');
+
+                // var customer = {
+                //     Id: $(this).find('td:eq(1)').text().trim(),
+                //     CustomerID: $(this).find('td:eq(2)').text().trim(),
+                //     FatherName: $(this).find('td:eq(4)').text().trim(),
+                //     EmployeeId: $(this).find('td:eq(5)').text().trim(),
+                //     Incentive: $(this).find('td:eq(6)').text().trim(),
+                //     TravellingAllowance: $(this).find('td:eq(7)').text().trim(),
+                //     Attendance: $(this).find('input[name="Attendance"]').val(),
+                //     EmployeeEpf: $(this).find('td:eq(11)').text().trim(),
+                //     EmployeeEsi: $(this).find('td:eq(12)').text().trim()
+                // };
                 var customer = {
                     Id: $(this).find('td:eq(1)').text().trim(),
-                    CustomerID: $(this).find('td:eq(2)').text().trim(),
-                    FatherName: $(this).find('td:eq(4)').text().trim(),
-                    EmployeeId: $(this).find('td:eq(5)').text().trim(),
-                    Incentive: $(this).find('td:eq(6)').text().trim(),
-                    TravellingAllowance: $(this).find('td:eq(7)').text().trim(),
-                    Attendance: $(this).find('input[name="Attendance"]').val()
+                    EmployeeId: row.find('td:nth-child(6)').text().trim(),
+                    Month: selectedMonth,
+                    Year: year,
+                    Attendance: row.find('input[name="Attendance"]').val(),
+                    Incentive: row.find('td:nth-child(8)').text().trim(),
+                    TravellingAllowance: row.find('td:nth-child(7)').text().trim(),
+                    GenerateSalary: row.find('td:nth-child(10)').text().trim(),
+                    EmpEpfvalue: row.find('td:nth-child(11)').text().trim(),
+                    EmpEsivalue: row.find('td:nth-child(12)').text().trim()
                 };
-
                 if (customer.Attendance === "") {
                     Swal.fire({
                         title: 'Error',
@@ -661,7 +684,6 @@
     function fetchAttendance() {
         var month = document.getElementById('Month').value;
         var year = document.getElementById('Year').value;
-        var noOfDays = document.getElementById('Attendance').value;
 
         if (!year || year == "0") {
             alert("Please select a year first.");
@@ -676,7 +698,7 @@
         $.ajax({
             url: '@Url.Action("getEmpattendancedays", "Employee")',
             type: 'GET',
-            data: { month: month, year: year, noOfDays: noOfDays },
+            data: { month: month, year: year},
             success: function (response) {
                 if (response && response.employees && response.employees.length > 0) {
                     var table = $('#datatable').DataTable();
@@ -770,6 +792,55 @@
     // $(document).ready(function () {
     //     updateMonthlyPay();
     // });
+    function MonthlyadjustmentAttendance() {
+        $('#datatable tbody').on('input', 'input[name="Attendance"]', function () {
+            var row = $(this).closest('tr'); 
+            var month = $('#Month').val();
+            var year = $('#Year').val();
+            var employeeId = row.find('td:nth-child(6)').text().trim();
+            var attendance = parseFloat($(this).val()) || 0;
+
+            if (!year || year === "0") {
+                alert("Please select a year first.");
+                return;
+            }
+
+            if (!month || month === "0") {
+                alert("Please select a month.");
+                return;
+            }
+
+            $.ajax({
+                url: '@Url.Action("EmpMonthlyadjustmentAttendance", "Employee")',
+                type: 'POST',  
+                data: {
+                    month: month,
+                    year: year,
+                    employeeId: employeeId,
+                    NoOfDays: attendance
+                },
+                success: function (response) {
+                    if (response && response.employeeId) {
+                        row.find('input[name="Attendance"]').val(response.leaveRemaining);
+                        row.find('td:nth-child(10)').text(response.monthlyPay.toFixed(2));
+                        row.find('td:nth-child(11)').text(response.employeeEpf.toFixed(2));
+                        row.find('td:nth-child(12)').text(response.employeeEsi.toFixed(2));
+                    } else {
+                        alert(response.message || "No attendance data available.");
+                    }
+                },
+                error: function () {
+                    alert("An error occurred while fetching attendance data.");
+                }
+            });
+        });
+    }
+
+    $(document).ready(function () {
+        MonthlyadjustmentAttendance();
+    });
+
+
     function validateNumericInput(event) {
         if ([67, 86, 88].includes(event.keyCode) && (event.ctrlKey || event.metaKey) ||
             [32, 46, 8, 9, 27, 13].includes(event.keyCode) ||
