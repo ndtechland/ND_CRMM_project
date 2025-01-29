@@ -715,7 +715,13 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
-                entity.Property(e => e.Attendance).HasColumnName("attendance");
+                entity.Property(e => e.Attendance)
+                    .HasColumnType("decimal(9, 2)")
+                    .HasColumnName("attendance");
+
+                entity.Property(e => e.EmpEpfvalue).HasColumnType("decimal(9, 2)");
+
+                entity.Property(e => e.EmpEsivalue).HasColumnType("decimal(9, 2)");
 
                 entity.Property(e => e.EmployeeId)
                     .HasMaxLength(95)
