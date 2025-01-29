@@ -68,7 +68,7 @@ using jsreport.AspNetCore;
 using jsreport.Types;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.Engineering;
 using Org.BouncyCastle.Ocsp;
-
+using Umbraco.Core;
 
 namespace CRM.Controllers
 {
@@ -3606,11 +3606,15 @@ namespace CRM.Controllers
         {
             try
             {
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                bool checktomulticustomer = _context.VendorRegistrations.Any(x => x.Id == adminlogin.Vendorid && x.SelectCompany == true);
                 // Step 1: Create a DataTable and add columns
                 DataTable dt = new DataTable();
-
-                // Define all columns (original names)
-                var columns = new List<string>
+                
+                
+                    // Define all columns (original names)
+                    var columns = new List<string>
         {
             "FirstName", "MiddleName", "LastName",
             "DateOfJoining", "WorkEmail", "GenderID", "WorkLocationID", "DesignationID", "DepartmentID",
@@ -3624,6 +3628,12 @@ namespace CRM.Controllers
             "Account_Holder_Name", "Bank_Name", "Account_Number", "Re_Enter_Account_Number", "IFSC", "EPF_Number",
              "Employee_Contribution_Rate", "Account_Type_ID", "nominee"
         };
+                if (checktomulticustomer)
+                {
+                    columns.Add("Customer Name");
+                    columns.Add("Customer Location");
+                }
+
 
                 foreach (var column in columns)
                 {
@@ -3699,6 +3709,11 @@ namespace CRM.Controllers
             { "Account_Type_ID", "Account Type ID" },
             { "nominee", "Nominee Name" }
         };
+                if (checktomulticustomer)
+{
+    customHeaders.Add("CustomerCode", "Customer Name");
+    customHeaders.Add("CustomerName", "Customer Location");
+}
 
                 // Step 4: Create an Excel workbook
                 using (var workbook = new XLWorkbook())
@@ -3794,6 +3809,9 @@ namespace CRM.Controllers
                 string Mode = "INS";
                 string Empid = "";
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                bool checktomulticustomer = _context.VendorRegistrations.Any(x => x.Id == adminlogin.Vendorid && x.SelectCompany == true);
+
+
                 //if (!string.IsNullOrEmpty(model.Emp_Reg_ID))
                 //{
                 //    Mode = "UPD";
@@ -3811,29 +3829,43 @@ namespace CRM.Controllers
                 //        return View();
                 //    }
                 //}
-
+                var count = 0;
+                List<ExcelErrorModel> excelErrorModels = new List<ExcelErrorModel>();
                 foreach (DataRow row in dataTable.Rows)
                 {
+                    if (string.IsNullOrWhiteSpace(row[0]?.ToString() ?? row[0]?.ToString()))
+                    {
+                        
+                    }
+
+                }
+                    foreach (DataRow row in dataTable.Rows)
+                {
                     Empid = GenerateEmployeeId();
-                    string gender = row[38]?.ToString();
                     model.EmployeeId = Empid;
                     model.Vendorid = adminlogin.Vendorid != 0 ? adminlogin.Vendorid : 0;
-                    model.CustomerCompanyid = 1;
+                    model.CustomerCompanyid = 27;
                     // Bind data using column indexes (replace hardcoded column numbers as necessary)
                     model.FirstName = row[0]?.ToString();
                     model.MiddleName = row[1]?.ToString();
                     model.LastName = row[2]?.ToString();
                     model.DateOfJoining = row[3] != DBNull.Value ? Convert.ToDateTime(row[3]) : DateTime.MinValue;
                     model.WorkEmail = row[4]?.ToString();
-                    //model.GenderID = row[5] != DBNull.Value ? Convert.ToInt32(_context.GenderMasters.Where(x =>x.GenderName.ToLower() == row[5].ToString().ToLower()).FirstOrDefault().Id) : (int?)null;
-                    model.GenderID = row[5] != DBNull.Value ? Convert.ToInt32(row[5]) : (int?)null;
-                    model.WorkLocationID = row[6] != DBNull.Value ? Convert.ToInt32(row[6]) : 0;
-                    model.DesignationID = row[7] != DBNull.Value ? Convert.ToInt32(row[7]) : 0;
-                    model.DepartmentID = row[8] != DBNull.Value ? Convert.ToInt32(row[8]) : 0;
-                    model.stateId = row[9] != DBNull.Value ? Convert.ToInt32(row[9]) : 0;
-                    model.offerletterid = row[10] != DBNull.Value ? Convert.ToInt32(row[10]) : 0;
+                    model.GenderID = row[5] != DBNull.Value ? Convert.ToInt32(_context.GenderMasters.Where(x =>x.GenderName.ToLower() == row[5].ToString().ToLower()).FirstOrDefault().Id) : (int?)null;
+                    //model.GenderID = row[5] != DBNull.Value ? Convert.ToInt32(row[5]) : (int?)null;
+                    model.WorkLocationID = row[6] != DBNull.Value ? Convert.ToInt32(_context.Cities.Where(x => x.City1.ToLower() == row[6].ToString().ToLower()).FirstOrDefault().Id) : 0;
+                    //model.WorkLocationID = row[6] != DBNull.Value ? Convert.ToInt32(row[6]) : 0;
+                    model.DesignationID = row[7] != DBNull.Value ? Convert.ToInt32(_context.DesignationMasters.Where(x => x.DesignationName.ToLower() == row[7].ToString().ToLower()).FirstOrDefault().Id) : 0;
+                    //model.DesignationID = row[7] != DBNull.Value ? Convert.ToInt32(row[7]) : 0;
+                    model.DepartmentID = row[8] != DBNull.Value ? Convert.ToInt32(_context.DepartmentMasters.Where(x => x.DepartmentName.ToLower() == row[8].ToString().ToLower()).FirstOrDefault().Id) : 0;
+                    //model.DepartmentID = row[8] != DBNull.Value ? Convert.ToInt32(row[8]) : 0;
+                    model.stateId = row[9] != DBNull.Value ? Convert.ToInt32(_context.StateMasters.Where(x => x.StateName.ToLower() == row[9].ToString().ToLower()).FirstOrDefault().Id) : 0;
+                    //model.stateId = row[9] != DBNull.Value ? Convert.ToInt32(row[9]) : 0;
+                    model.offerletterid = row[10] != DBNull.Value ? Convert.ToInt32(_context.Offerletters.Where(x => x.Name.ToLower() == row[10].ToString().ToLower()).FirstOrDefault().Id) : 0;
+                    //model.offerletterid = row[10] != DBNull.Value ? Convert.ToInt32(row[10]) : 0;
 
                     model.officeshiftTypeid = row[11] != DBNull.Value ? Convert.ToInt32(row[11]) : 0;
+                    //model.officeshiftTypeid = row[11] != DBNull.Value ? Convert.ToInt32(row[11]) : 0;
 
                     // Salary Details
                     model.AnnualCTC = row[12] != DBNull.Value ? Convert.ToDecimal(row[12]) : 0;
@@ -3868,8 +3900,10 @@ namespace CRM.Controllers
                     model.PAN = row[39]?.ToString();
                     model.AddressLine1 = row[40]?.ToString();
                     model.AddressLine2 = row[41]?.ToString();
-                    model.City = row[42]?.ToString();
-                    model.StateID = row[43]?.ToString();
+                    model.City = row[42] != DBNull.Value ? Convert.ToString(_context.Cities.Where(x => x.City1.ToLower() == row[42].ToString().ToLower()).FirstOrDefault().Id) : "0";
+                    //model.City = row[42]?.ToString();
+                    model.StateID = row[43] != DBNull.Value ? Convert.ToString(_context.StateMasters.Where(x => x.StateName.ToLower() == row[43].ToString().ToLower()).FirstOrDefault().Id) : "0";
+                    //model.StateID = row[43]?.ToString();
                     model.Pincode = row[44]?.ToString();
 
                     // Bank Details
@@ -3882,12 +3916,17 @@ namespace CRM.Controllers
                     model.Employee_Contribution_Rate = row[51]?.ToString();
                     model.AccountTypeID = row[52] != DBNull.Value ? Convert.ToInt32(row[52]) : 0;
                     model.nominee = row[53]?.ToString();
-
+                    if (checktomulticustomer)
+                    {
+                        model.CustomerCompanyid = row[54] != DBNull.Value ? Convert.ToInt32(row[52]) : 0;
+                        //model. = row[55]?.ToString();
+                    }
                     if (model != null)
                     {
                         var response = await _ICrmrpo.EmpRegistration(model, Mode, Empid, Userid);
                     }
                 }
+                TempData["Message"] = "WorkEmail already exists";
                 return Json(new { Success = true, Message = "Data imported successfully." });
             }
             catch (Exception ex)
