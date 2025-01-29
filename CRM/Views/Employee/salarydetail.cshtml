@@ -2,8 +2,8 @@
 
 
 @{
-    ViewData["Title"] = "salarydetail";
-    Layout = "~/Views/Shared/_adminLayout.cshtml";
+	ViewData["Title"] = "salarydetail";
+	Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
@@ -15,63 +15,63 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
 
 <style>
-    .dataTables_wrapper table.dataTable th {
-        background-color: #00baf2 !important;
-        padding: 24px 0.75rem !important;
-    }
+	.dataTables_wrapper table.dataTable th {
+		background-color: #00baf2 !important;
+		padding: 24px 0.75rem !important;
+	}
 </style>
 <style>
-    .button {
-        width: 124px;
-        margin-left: 0px;
-        height: 38px;
-        margin-top: 33px;
-    }
+	.button {
+		width: 124px;
+		margin-left: 0px;
+		height: 38px;
+		margin-top: 33px;
+	}
 </style>
 <style>
-    .loader {
-        border: 16px solid #f3f3f3;
-        border-radius: 50%;
-        border-top: 16px solid #3498db;
-        width: 120px;
-        height: 120px;
-        animation: spin 2s linear infinite;
-        position: fixed;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 9999;
-        display: none;
-    }
+	.loader {
+		border: 16px solid #f3f3f3;
+		border-radius: 50%;
+		border-top: 16px solid #3498db;
+		width: 120px;
+		height: 120px;
+		animation: spin 2s linear infinite;
+		position: fixed;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -50%);
+		z-index: 9999;
+		display: none;
+	}
 
-    @@keyframes spin {
-        0% {
-            transform: rotate(0deg);
-        }
+	@@keyframes spin {
+		0% {
+			transform: rotate(0deg);
+		}
 
-        100% {
-            transform: rotate(360deg);
-        }
-    }
+		100% {
+			transform: rotate(360deg);
+		}
+	}
 
-    /* Overlay style */
-    .overlay {
-        display: none;
-        position: fixed;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: rgba(0, 0, 0, 0);
-        z-index: 9998;
-    }
+	/* Overlay style */
+	.overlay {
+		display: none;
+		position: fixed;
+		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background-color: rgba(0, 0, 0, 0);
+		z-index: 9998;
+	}
 
-    /* Add blur to content when loader is active */
-    .blurred {
-        filter: blur(1px);
-    }
+	/* Add blur to content when loader is active */
+	.blurred {
+		filter: blur(1px);
+	}
 </style>
 @* <style>
     .se-pre-con {
@@ -90,210 +90,210 @@
 
 
 <div class="page-wrapper" id="content">
-    <div class="page-body-wrapper">
-        <div class="page-sidebar">
-        </div>
+	<div class="page-body-wrapper">
+		<div class="page-sidebar">
+		</div>
 
-        <div class="page-body">
-            <div id="dvloader" class="se-pre-con" style="display:none"></div>
+		<div class="page-body">
+			<div id="dvloader" class="se-pre-con" style="display:none"></div>
 
-            <div class="container-fluid">
-                <div class="page-header">
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="page-header-left">
-                                <h2>
-                                    Salary Detail
-                                </h2>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <ol class="breadcrumb pull-right">
-                                <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
-                                <li class="breadcrumb-item">HR Payrole</li>
-                                <li class="breadcrumb-item active">Employee</li>
-                                <li class="breadcrumb-item active">Salarydetail list</li>
-                            </ol>
-                        </div>
-                    </div>
-                </div>
-            </div>
+			<div class="container-fluid">
+				<div class="page-header">
+					<div class="row">
+						<div class="col-lg-6">
+							<div class="page-header-left">
+								<h2>
+									Salary Detail
+								</h2>
+							</div>
+						</div>
+						<div class="col-lg-6">
+							<ol class="breadcrumb pull-right">
+								<li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
+								<li class="breadcrumb-item">HR Payrole</li>
+								<li class="breadcrumb-item active">Employee</li>
+								<li class="breadcrumb-item active">Salarydetail list</li>
+							</ol>
+						</div>
+					</div>
+				</div>
+			</div>
 
-            <div class="container-fluid">
-                <div class="row">
+			<div class="container-fluid">
+				<div class="row">
 
-                    <div class="col-sm-12">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class=" table-responsive">
-                                        <div style="text-align: right;">
-                                            <button type="button" class="btn btn-primary" id="downloadExcel" style="color: black; border: 2px solid black;" onclick="ExportExcelfn()">
-                                                Export
-                                            </button>
-                                            @* <button type="button" class="btn btn-primary" id="downloadButton" style="color: black; border: 2px solid black;" onclick="ESCExcelfn()">
+					<div class="col-sm-12">
+						<div class="card">
+							<div class="card-body">
+								<div class=" table-responsive">
+									<div style="text-align: right;">
+										<button type="button" class="btn btn-primary" id="downloadExcel" style="color: black; border: 2px solid black;" onclick="ExportExcelfn()">
+											Export
+										</button>
+										@* <button type="button" class="btn btn-primary" id="downloadButton" style="color: black; border: 2px solid black;" onclick="ESCExcelfn()">
                                         ECS
                                         </button> *@
-                                            <button type="submit" class="btn btn-primary" id="myButton" style="color: black; border: 2px solid black;" onclick="gensal();">
-                                                <i class="fa fa-plus"></i> Generate Salary
-                                            </button>
+										<button type="submit" class="btn btn-primary" id="myButton" style="color: black; border: 2px solid black;" onclick="gensal();">
+											<i class="fa fa-plus"></i> Generate Salary
+										</button>
 
-                                        </div>
-                                        <div>
-                                            <label for="file-upload" class="file-upload-label">
-                                                <span><b>Excel Import</b></span>
-                                                <input type="file" id="file-upload" name="upload" accept=".xlsx, .xls" required />
-                                            </label>
-                                            <button type="submit" value="Submit" class="btn btn-primary" onclick="showLoading()">Upload</button>
-                                        </div>
+									</div>
+									<div>
+										<label for="file-upload" class="file-upload-label">
+											<span><b>Excel Import</b></span>
+											<input type="file" id="file-upload" name="upload" accept=".xlsx, .xls" required />
+										</label>
+										<button type="submit" value="Submit" class="btn btn-primary" onclick="showLoading()">Upload</button>
+									</div>
 
 
-                                        <br />
-                                        <form asp-action="Empattendance" autocomplete="off" method="post">
-                                            <div class="row">
-                                                  <div class="form-group col-sm-2">
-                                                    <div class="dropdown-container position-relative">
-                                                    <select id="Year" class="form-control" name="Year">
-                                                        <option value="0">-- Select Year --</option>
-                                                        <!-- Year options will be dynamically added here -->
-                                                    </select>
-                                                        <i class="dropdown-icon fa fa-caret-down position-absolute"></i>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group col-sm-2">
-                                                    @*     <label for="validationCustom0">Month</label> *@
-                                                    <div class="dropdown-container position-relative">
-                                                    <select id="Month" class="form-control" name="Month" onchange="fetchAttendance()">
-                                                        <option value="0">-- Select Month --</option>
-                                                        <option value="1">January</option>
-                                                        <option value="2">February</option>
-                                                        <option value="3">March</option>
-                                                        <option value="4">April</option>
-                                                        <option value="5">May</option>
-                                                        <option value="6">June</option>
-                                                        <option value="7">July</option>
-                                                        <option value="8">August</option>
-                                                        <option value="9">Septemper</option>
-                                                        <option value="10">October</option>
-                                                        <option value="11">November</option>
-                                                        <option value="12">December</option>
-                                                    </select>
-                                                        <i class="dropdown-icon fa fa-caret-down position-absolute"></i>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </form>
+									<br />
+									<form asp-action="Empattendance" autocomplete="off" method="post">
+										<div class="row">
+											<div class="form-group col-sm-2">
+												<div class="dropdown-container position-relative">
+													<select id="Year" class="form-control" name="Year">
+														<option value="0">-- Select Year --</option>
+														<!-- Year options will be dynamically added here -->
+													</select>
+													<i class="dropdown-icon fa fa-caret-down position-absolute"></i>
+												</div>
+											</div>
+											<div class="form-group col-sm-2">
+												@*     <label for="validationCustom0">Month</label> *@
+												<div class="dropdown-container position-relative">
+													<select id="Month" class="form-control" name="Month" onchange="fetchAttendance()">
+														<option value="0">-- Select Month --</option>
+														<option value="1">January</option>
+														<option value="2">February</option>
+														<option value="3">March</option>
+														<option value="4">April</option>
+														<option value="5">May</option>
+														<option value="6">June</option>
+														<option value="7">July</option>
+														<option value="8">August</option>
+														<option value="9">Septemper</option>
+														<option value="10">October</option>
+														<option value="11">November</option>
+														<option value="12">December</option>
+													</select>
+													<i class="dropdown-icon fa fa-caret-down position-absolute"></i>
+												</div>
+											</div>
+										</div>
+									</form>
 
-                                        <table id="datatable" class="table table-responsive">
-                                            <thead>
-                                                <tr style="background-color: #00baf2;">
-                                                    <th hidden>
-                                                        ID
-                                                    </th>
-                                                    <th hidden></th>
-                                                    <th hidden></th>
-                                                    <th hidden></th>
-                                                    <th nowrap>Sl. No.</th>
-                                                    <th nowrap>
-                                                        Employee Name
-                                                    </th>
-                                                    <th nowrap>
-                                                        Father Name
-                                                    </th>
-                                                    <th nowrap>
-                                                        Employee Id
-                                                    </th>
-                                                    <th nowrap>
-                                                        Gross Pay
-                                                    </th>
-                                                    <th nowrap>
-                                                        MonthlyPay
-                                                    </th>
-                                                    <th nowrap>
-                                                        Employee Epf
-                                                    </th>
-                                                    <th nowrap>
-                                                        Employee Esi
-                                                    </th>
-                                                    <th nowrap>Attendance</th>
-                                                    <th nowrap>Action</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @{
-                                                    var count = 0;
-                                                    decimal? TotalAmt = 0;
-                                                    if (Model != null && Model.Any())
-                                                    {
-                                                    @foreach (var item in Model)
-                                                    {
-                                                        count++;
-                                                        <tr class="table-row">
-                                                            <td>@count</td>
-                                                            <td style="display:none">
-                                                                @item.Id
-                                                            </td>
-                                                            <td style="display:none">
-                                                                @item.CustomerID
-                                                            </td>
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.FirstName)
-                                                            </td>
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.FatherName)
-                                                            </td>
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.EmployeeId)
-                                                            </td>
-                                                            <td style="display:none" id="hiddenIncentive">
-                                                                @item.Incentive
-                                                            </td>
-                                                            <td style="display:none" id="hiddenTravellingAllowance">
-                                                                @item.TravellingAllowance
-                                                            </td>
-                                                            <td>
-                                                                @Html.DisplayFor(modelItem => item.Grosspay)
-                                                            </td>
-                                                  
-                                                            <td class="monthly-pay">@Html.DisplayFor(modelItem => item.MonthlyPay)</td>
-                                                            <td class="Epf-pay">@Html.DisplayFor(modelItem => item.EmployeeEpf)</td>
-                                                            <td class="Esi-pay">@Html.DisplayFor(modelItem => item.EmployeeEsi)</td>
-                                                            <td>
-                                                                <input type="text" id="Attendance" name="Attendance" class="form-control attnd" minlength="1" maxlength="2" style="height: 40px; width: 94px;" onkeyup="fnc(this)" onchange="MonthlyadjustmentAttendance(this)" onkeydown="validateNumericInput(event)" />
-                                                            </td>
-                                                            <td>
-                                                                @*onchange="fetchAttendance(this)"*@
-                                                                <a href="#" class="fa fa-edit m-2 font-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="EditSalaryDetails('@item.EmployeeId')">
-                                                                    Edit Salary
-                                                                </a>
-                                                            </td>
-                                                        </tr>
-                                                        TotalAmt += Math.Round((decimal)item.Grosspay, 2);
-                                                    }
-                                                    }
-                                                }
-                                            </tbody>
-                                            <tfoot>
-                                                <tr>
-                                                    <td colspan="4" class="text-right" style="text-align:right;"><strong>Total:</strong></td>
-                                                    <td>@TotalAmt</td>
-                                                    <td id="dynamicTotalMonthlyPay"></td>
-                                                </tr>
-                                            </tfoot>
-                                        </table>
-                         
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            @* <div id="pagination-container">
+									<table id="datatable" class="table table-responsive">
+										<thead>
+											<tr style="background-color: #00baf2;">
+												<th hidden>
+													ID
+												</th>
+												<th hidden></th>
+												<th hidden></th>
+												<th hidden></th>
+												<th nowrap>Sl. No.</th>
+												<th nowrap>
+													Employee Name
+												</th>
+												<th nowrap>
+													Father Name
+												</th>
+												<th nowrap>
+													Employee Id
+												</th>
+												<th nowrap>
+													Gross Pay
+												</th>
+												<th nowrap>
+													MonthlyPay
+												</th>
+												<th nowrap>
+													Employee Epf
+												</th>
+												<th nowrap>
+													Employee Esi
+												</th>
+												<th nowrap>Attendance</th>
+												<th nowrap>Action</th>
+											</tr>
+										</thead>
+										<tbody>
+											@{
+												var count = 0;
+												decimal? TotalAmt = 0;
+												if (Model != null && Model.Any())
+												{
+													@foreach (var item in Model)
+													{
+														count++;
+														<tr class="table-row">
+															<td>@count</td>
+															<td style="display:none">
+																@item.Id
+															</td>
+															<td style="display:none">
+																@item.CustomerID
+															</td>
+															<td>
+																@Html.DisplayFor(modelItem => item.FirstName)
+															</td>
+															<td>
+																@Html.DisplayFor(modelItem => item.FatherName)
+															</td>
+															<td>
+																@Html.DisplayFor(modelItem => item.EmployeeId)
+															</td>
+															<td style="display:none" id="hiddenIncentive">
+																@item.Incentive
+															</td>
+															<td style="display:none" id="hiddenTravellingAllowance">
+																@item.TravellingAllowance
+															</td>
+															<td>
+																@Html.DisplayFor(modelItem => item.Grosspay)
+															</td>
+
+															<td class="monthly-pay">@Html.DisplayFor(modelItem => item.MonthlyPay)</td>
+															<td class="Epf-pay">@Html.DisplayFor(modelItem => item.EmployeeEpf)</td>
+															<td class="Esi-pay">@Html.DisplayFor(modelItem => item.EmployeeEsi)</td>
+															<td>
+																<input type="text" id="Attendance" name="Attendance" class="form-control attnd" minlength="1" maxlength="2" style="height: 40px; width: 94px;"  onchange="MonthlyadjustmentAttendance(this)" onkeydown="validateNumericInput(event)" />
+															</td>
+															<td>
+																@*onchange="fetchAttendance(this)" onkeyup="fnc(this)"*@
+																<a href="#" class="fa fa-edit m-2 font-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="EditSalaryDetails('@item.EmployeeId')">
+																	Edit Salary
+																</a>
+															</td>
+														</tr>
+														TotalAmt += Math.Round((decimal)item.Grosspay, 2);
+													}
+												}
+											}
+										</tbody>
+										<tfoot>
+											<tr>
+												<td colspan="4" class="text-right" style="text-align:right;"><strong>Total:</strong></td>
+												<td>@TotalAmt</td>
+												<td id="dynamicTotalMonthlyPay"></td>
+											</tr>
+										</tfoot>
+									</table>
+
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			@* <div id="pagination-container">
             <ul id="pagination" class="pagination"></ul>
             </div> *@
-        </div>
+		</div>
 
 
-    </div>
+	</div>
 
 </div>
 <div class="overlay" id="overlay"></div>
@@ -301,568 +301,603 @@
 <input hidden type="text" id="custid" value="@Context.Session.GetString("custid")" />
 <input hidden type="text" id="locid" value="@Context.Session.GetString("locid")" />
 <script>
-    function ESCExcelfn() {
-        window.location.href = '/Employee/ESCDownloadExcel';
-    }
+	function ESCExcelfn() {
+		window.location.href = '/Employee/ESCDownloadExcel';
+	}
 
-    async function gensal() {
-        var check = true;
-        var tbody = $("#datatable tbody");
-        var modelCount = @Model.Count();
-        var selectedMonth = $('#Month').val();
-        var year = $('#Year').val();
-        if (!selectedMonth) {
-            Swal.fire({
-                title: 'Error',
-                text: "Please select a month.",
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-            return;
-        }
-        if (!year) {
-            Swal.fire({
-                title: 'Error',
-                text: "Please select a year.",
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-            return;
-        }
-        if (tbody.children().length > 0) {
-            var modeldata = [];
-            $('#datatable tbody tr').each(function () {
-                var row = $(this).closest('tr');
+	async function gensal() {
+		var check = true;
+		var tbody = $("#datatable tbody");
+		var modelCount = @Model.Count();
+		var selectedMonth = $('#Month').val();
+		var year = $('#Year').val();
+		if (!selectedMonth) {
+			Swal.fire({
+				title: 'Error',
+				text: "Please select a month.",
+				icon: 'error',
+				confirmButtonText: 'OK'
+			});
+			return;
+		}
+		if (!year) {
+			Swal.fire({
+				title: 'Error',
+				text: "Please select a year.",
+				icon: 'error',
+				confirmButtonText: 'OK'
+			});
+			return;
+		}
+		if (tbody.children().length > 0) {
+			var modeldata = [];
+			$('#datatable tbody tr').each(function () {
+				var row = $(this).closest('tr');
 
-                // var customer = {
-                //     Id: $(this).find('td:eq(1)').text().trim(),
-                //     CustomerID: $(this).find('td:eq(2)').text().trim(),
-                //     FatherName: $(this).find('td:eq(4)').text().trim(),
-                //     EmployeeId: $(this).find('td:eq(5)').text().trim(),
-                //     Incentive: $(this).find('td:eq(6)').text().trim(),
-                //     TravellingAllowance: $(this).find('td:eq(7)').text().trim(),
-                //     Attendance: $(this).find('input[name="Attendance"]').val(),
-                //     EmployeeEpf: $(this).find('td:eq(11)').text().trim(),
-                //     EmployeeEsi: $(this).find('td:eq(12)').text().trim()
-                // };
-                var customer = {
-                    Id: $(this).find('td:eq(1)').text().trim(),
-                    EmployeeId: row.find('td:nth-child(6)').text().trim(),
-                    Month: selectedMonth,
-                    Year: year,
-                    Attendance: row.find('input[name="Attendance"]').val(),
-                    Incentive: row.find('td:nth-child(8)').text().trim(),
-                    TravellingAllowance: row.find('td:nth-child(7)').text().trim(),
-                    GenerateSalary: row.find('td:nth-child(10)').text().trim(),
-                    EmpEpfvalue: row.find('td:nth-child(11)').text().trim(),
-                    EmpEsivalue: row.find('td:nth-child(12)').text().trim()
-                };
-                if (customer.Attendance === "") {
-                    Swal.fire({
-                        title: 'Error',
-                        text: "Please fill in all Attendance fields.",
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
-                    check = false;
-                    return false;
-                }
-                modeldata.push(customer);
-            });
+				// var customer = {
+				//     Id: $(this).find('td:eq(1)').text().trim(),
+				//     CustomerID: $(this).find('td:eq(2)').text().trim(),
+				//     FatherName: $(this).find('td:eq(4)').text().trim(),
+				//     EmployeeId: $(this).find('td:eq(5)').text().trim(),
+				//     Incentive: $(this).find('td:eq(6)').text().trim(),
+				//     TravellingAllowance: $(this).find('td:eq(7)').text().trim(),
+				//     Attendance: $(this).find('input[name="Attendance"]').val(),
+				//     EmployeeEpf: $(this).find('td:eq(11)').text().trim(),
+				//     EmployeeEsi: $(this).find('td:eq(12)').text().trim()
+				// };
+				var customer = {
+					Id: $(this).find('td:eq(1)').text().trim(),
+					EmployeeId: row.find('td:nth-child(6)').text().trim(),
+					Month: selectedMonth,
+					Year: year,
+					Attendance: row.find('input[name="Attendance"]').val(),
+					Incentive: row.find('td:nth-child(8)').text().trim(),
+					TravellingAllowance: row.find('td:nth-child(7)').text().trim(),
+					GenerateSalary: row.find('td:nth-child(10)').text().trim(),
+					EmpEpfvalue: row.find('td:nth-child(11)').text().trim(),
+					EmpEsivalue: row.find('td:nth-child(12)').text().trim()
+				};
+				if (customer.Attendance === "") {
+					Swal.fire({
+						title: 'Error',
+						text: "Please fill in all Attendance fields.",
+						icon: 'error',
+						confirmButtonText: 'OK'
+					});
+					check = false;
+					return false;
+				}
+				modeldata.push(customer);
+			});
 
-            if (check) {
-                $("#loader").show();
-                $("#overlay").show();
-                $("#content").addClass('blurred');
+			if (check) {
+				$("#loader").show();
+				$("#overlay").show();
+				$("#content").addClass('blurred');
 
-                try {
-                    let response = await $.ajax({
-                        url: '/Employee/Empattendance',
-                        data: { customers: modeldata, month: selectedMonth },
-                        dataType: 'json',
-                        type: 'POST',
-                    });
+				try {
+					let response = await $.ajax({
+						url: '/Employee/Empattendance',
+						data: { customers: modeldata, month: selectedMonth },
+						dataType: 'json',
+						type: 'POST',
+					});
 
-                    $("#overlay").hide();
-                    $("#loader").hide();
-                    $("#content").removeClass('blurred');
+					$("#overlay").hide();
+					$("#loader").hide();
+					$("#content").removeClass('blurred');
 
-                    if (response.data === true) {
-                        $(".attnd").val("");
-                        Swal.fire({
-                            title: 'Info',
-                            text: "Your salary has already been generated for this month.",
-                            icon: 'info',
-                            confirmButtonText: 'OK'
-                        });
-                        return;
-                    }
-                    else {
-                        $(".attnd").val("");
-                        Swal.fire({
-                            title: 'Success',
-                            text: "Salary generated successfully.",
-                            icon: 'success',
-                            confirmButtonText: 'OK'
-                        });
-                        return;
-                    }
+					if (response.data === true) {
+						$(".attnd").val("");
+						Swal.fire({
+							title: 'Info',
+							text: "Your salary has already been generated for this month.",
+							icon: 'info',
+							confirmButtonText: 'OK'
+						});
+						return;
+					}
+					else {
+						$(".attnd").val("");
+						Swal.fire({
+							title: 'Success',
+							text: "Salary generated successfully.",
+							icon: 'success',
+							confirmButtonText: 'OK'
+						});
+						return;
+					}
 
-                } catch (err) {
-                    console.error("Error during AJAX:", err);
-                    $("#overlay").hide();
-                    $("#loader").hide();
-                    $("#content").removeClass('blurred');
+				} catch (err) {
+					console.error("Error during AJAX:", err);
+					$("#overlay").hide();
+					$("#loader").hide();
+					$("#content").removeClass('blurred');
 
-                    Swal.fire({
-                        title: 'Error',
-                        text: "An error occurred while generating the salary.",
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
-                }
-            }
-        } else {
-            Swal.fire({
-                title: 'Warning',
-                text: "No data available for salary generation.",
-                icon: 'warning',
-                confirmButtonText: 'OK'
-            });
-        }
-    }
+					Swal.fire({
+						title: 'Error',
+						text: "An error occurred while generating the salary.",
+						icon: 'error',
+						confirmButtonText: 'OK'
+					});
+				}
+			}
+		} else {
+			Swal.fire({
+				title: 'Warning',
+				text: "No data available for salary generation.",
+				icon: 'warning',
+				confirmButtonText: 'OK'
+			});
+		}
+	}
 
 </script>
 
 <script type="text/javascript">
-    var maxLimit = @ViewBag.Nodays;
+	var maxLimit = @ViewBag.Nodays;
 
-    function fnc(inputElement) {
-        var value = inputElement.value;
+	function fnc(inputElement) {
+		var value = inputElement.value;
 
-        if (parseInt(value) < 0 || isNaN(value)) {
-            inputElement.value = '';
-        } else if (parseInt(value) > maxLimit) {
-            Swal.fire({
-                title: 'Error',
-                text: "Number is greater than " + maxLimit,
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-            inputElement.value = '';
-        }
-    }
+		if (parseInt(value) < 0 || isNaN(value)) {
+			inputElement.value = '';
+		} else if (parseInt(value) > maxLimit) {
+			Swal.fire({
+				title: 'Error',
+				text: "Number is greater than " + maxLimit,
+				icon: 'error',
+				confirmButtonText: 'OK'
+			});
+			inputElement.value = '';
+		}
+	}
 </script>
 
 <script type="text/javascript">
 
-    $(document).ajaxStart(function () {
-        $("#dvloader").css("display", "block");
-    });
+	$(document).ajaxStart(function () {
+		$("#dvloader").css("display", "block");
+	});
 
-    $(document).ajaxStop(function () {
-        $(".se-pre-con").fadeOut("slow");
+	$(document).ajaxStop(function () {
+		$(".se-pre-con").fadeOut("slow");
 
-    });
-    $(document).ajaxError(function () {
-        $(".se-pre-con").fadeOut("slow");
+	});
+	$(document).ajaxError(function () {
+		$(".se-pre-con").fadeOut("slow");
 
-    });
+	});
 </script>
 
 <script>
-    function EditSalaryDetails(EmployeeId) {
-        debugger;
-        $.ajax({
-            url: '/Employee/EditSalaryDetails?EmployeeId=' + EmployeeId,
-            type: 'GET',
-            dataType: 'json',
-            contentType: 'application/json; charset=utf-8',
-            success: function (response) {
-                debugger;
-                $('#Employee').val(response.empSalaryDetail.employeeId);
-                $('#txtAnnualCTC').val(response.empSalaryDetail.annualCtc);
-                $('#TravellingAllowance').val(response.empSalaryDetail.travellingAllowance);
-                $('#ESIC').val(response.empSalaryDetail.esic);
-                $('#Professionaltax').val(response.empSalaryDetail.professionaltax);
-                $('#txtBasicSalary').val(response.empSalaryDetail.basic);
-                $('#txtHouseRentAllowance').val(response.empSalaryDetail.houseRentAllowance);
-                $('#txtMonthlyCTC').val(response.empSalaryDetail.monthlyCtc);
-                $('#txtMonthlyGrossPay').val(response.empSalaryDetail.monthlyGrossPay);
-                $('#txtEPF').val(response.empSalaryDetail.epf);
-                $('#txtIncentive').val(response.empSalaryDetail.incentive);
-                $('#hiddenIncentive').text(response.empSalaryDetail.incentive);
-                $('#hiddenTravellingAllowance').text(response.empSalaryDetail.travellingAllowance);
-                $('#staticBackdrop').modal('show');
+	function EditSalaryDetails(EmployeeId) {
+		debugger;
+		$.ajax({
+			url: '/Employee/EditSalaryDetails?EmployeeId=' + EmployeeId,
+			type: 'GET',
+			dataType: 'json',
+			contentType: 'application/json; charset=utf-8',
+			success: function (response) {
+				debugger;
+				$('#Employee').val(response.empSalaryDetail.employeeId);
+				$('#txtAnnualCTC').val(response.empSalaryDetail.annualCtc);
+				$('#TravellingAllowance').val(response.empSalaryDetail.travellingAllowance);
+				$('#ESIC').val(response.empSalaryDetail.esic);
+				$('#Professionaltax').val(response.empSalaryDetail.professionaltax);
+				$('#txtBasicSalary').val(response.empSalaryDetail.basic);
+				$('#txtHouseRentAllowance').val(response.empSalaryDetail.houseRentAllowance);
+				$('#txtMonthlyCTC').val(response.empSalaryDetail.monthlyCtc);
+				$('#txtMonthlyGrossPay').val(response.empSalaryDetail.monthlyGrossPay);
+				$('#txtEPF').val(response.empSalaryDetail.epf);
+				$('#txtIncentive').val(response.empSalaryDetail.incentive);
+				$('#hiddenIncentive').text(response.empSalaryDetail.incentive);
+				$('#hiddenTravellingAllowance').text(response.empSalaryDetail.travellingAllowance);
+				$('#staticBackdrop').modal('show');
 
-            },
-            error: function () {
-                alert('Data not found');
-            }
-        });
-    }
+			},
+			error: function () {
+				alert('Data not found');
+			}
+		});
+	}
 </script>
 <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="staticBackdropLabel">Edit Salary Details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-12">
-                        <form action="EditSalaryDetails" method="post" autocomplete="off">
-                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                            <input name="EmployeeId" type="text" id="Employee" style="display:none">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="staticBackdropLabel">Edit Salary Details</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="row">
+					<div class="col-md-12">
+						<form action="EditSalaryDetails" method="post" autocomplete="off">
+							<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+							<input name="EmployeeId" type="text" id="Employee" style="display:none">
 
-                            <div class="row">
-                                <div class="col">
-                                    <label>Annual CTC</label>
-                                    <input class="form-control " name="AnnualCTC" id="txtAnnualCTC" type="text" required readonly>
-                                </div>
-                                <div class="col">
-                                    <label>Travelling Allowance</label>
-                                    <input class="form-control " name="TravellingAllowance" id="TravellingAllowance" type="text" required="">
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col">
-                                    <label>ESIC</label>
-                                    <input class="form-control " name="ESIC" id="ESIC" type="text" required="" readonly>
-                                </div>
-                                <div class="col">
-                                    <label>Professional tax</label>
-                                    <input class="form-control " name="Professionaltax" id="Professionaltax" type="text" required="" readonly>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col">
-                                    <label>Basic</label>
-                                    <input class="form-control " name="Basic" placeholder="00.0" id="txtBasicSalary" type="text" required="" readonly>
-                                </div>
-                                <div class="col">
-                                    <label>HouseRent Allowance</label>
-                                    <input class="form-control " name="HouseRentAllowance" placeholder="00.0" id="txtHouseRentAllowance" type="text" required="" readonly>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col">
-                                    <label>EPF</label>
-                                    <input class="form-control " name="EPF" placeholder="00.0" id="txtEPF" type="text" required="" readonly>
-                                </div>
-                                <div class="col">
-                                    <label>Monthly CTC</label>
-                                    <input class="form-control " name="MonthlyCTC" placeholder="00.0" id="txtMonthlyCTC" type="text" required="" readonly>
-                                </div>
-                            </div>
-                            <div class="row">
+							<div class="row">
+								<div class="col">
+									<label>Annual CTC</label>
+									<input class="form-control " name="AnnualCTC" id="txtAnnualCTC" type="text" required readonly>
+								</div>
+								<div class="col">
+									<label>Travelling Allowance</label>
+									<input class="form-control " name="TravellingAllowance" id="TravellingAllowance" type="text" required="">
+								</div>
+							</div>
+							<div class="row">
+								<div class="col">
+									<label>ESIC</label>
+									<input class="form-control " name="ESIC" id="ESIC" type="text" required="" readonly>
+								</div>
+								<div class="col">
+									<label>Professional tax</label>
+									<input class="form-control " name="Professionaltax" id="Professionaltax" type="text" required="" readonly>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col">
+									<label>Basic</label>
+									<input class="form-control " name="Basic" placeholder="00.0" id="txtBasicSalary" type="text" required="" readonly>
+								</div>
+								<div class="col">
+									<label>HouseRent Allowance</label>
+									<input class="form-control " name="HouseRentAllowance" placeholder="00.0" id="txtHouseRentAllowance" type="text" required="" readonly>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col">
+									<label>EPF</label>
+									<input class="form-control " name="EPF" placeholder="00.0" id="txtEPF" type="text" required="" readonly>
+								</div>
+								<div class="col">
+									<label>Monthly CTC</label>
+									<input class="form-control " name="MonthlyCTC" placeholder="00.0" id="txtMonthlyCTC" type="text" required="" readonly>
+								</div>
+							</div>
+							<div class="row">
 
-                                <div class="col">
-                                    <label>Monthly GrossPay</label>
-                                    <input class="form-control " name="MonthlyGrossPay" placeholder="00.0" id="txtMonthlyGrossPay" type="text" required="" readonly>
-                                </div>
-                                <div class="col">
-                                    <label>Incentive / Advance </label>
-                                    <input class="form-control " name="Incentive" placeholder="00.0" id="txtIncentive" type="text" required="">
-                                </div>
+								<div class="col">
+									<label>Monthly GrossPay</label>
+									<input class="form-control " name="MonthlyGrossPay" placeholder="00.0" id="txtMonthlyGrossPay" type="text" required="" readonly>
+								</div>
+								<div class="col">
+									<label>Incentive / Advance </label>
+									<input class="form-control " name="Incentive" placeholder="00.0" id="txtIncentive" type="text" required="">
+								</div>
 
-                            </div>
-                            <div style="margin-top: 15px">
-                                <button class="btn btn-warning" id="btnUpdate">Update</button>
-                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                            </div>
+							</div>
+							<div style="margin-top: 15px">
+								<button class="btn btn-warning" id="btnUpdate">Update</button>
+								<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+							</div>
 
 
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 
 <script>
-    $(document).ready(function () {
-        var annualSalaryInput = $('#txtAnnualCTC');
-        var monthlySalaryInput = $('#txtMonthlyCTC');
-        var basicSalaryInput = $('#txtBasicSalary');
-        var basicSalaryInput = $('#txtBasicSalary');
-        var HouseRentAllowanceInput = $('#txtHouseRentAllowance');
-        var EPFInput = $('#txtEPF');
-        var MonthlyGrossPayInput = $('#txtMonthlyGrossPay');
-        var ESICInput = $('#ESIC');
-        var ProfessionaltaxInput = $('#Professionaltax');
-        annualSalaryInput.on('input', function () {
-            var annualSalary = parseFloat($(this).val());
-            if (!isNaN(annualSalary)) {
-                var monthlySalary = annualSalary / 12;
-                var basicSalary = annualSalary / 2;
-                var houseRent = basicSalary / 2;
-                var EPFCalculation = monthlySalary * 12 / 100;
-                var MonthlyGross = monthlySalary - EPFCalculation;
-                var ESIC = monthlySalary * 0.75 / 100;
-                var professionaltax;
-                switch (true) {
-                    case monthlySalary < 2001:
-                        professionaltax = 200;
-                        break;
-                    case monthlySalary < 15001:
-                        professionaltax = 0;
-                        break;
-                    case monthlySalary > 15000:
-                        professionaltax = 150;
-                        break;
-                    default:
-                        professionaltax = 0;
-                }
-                monthlySalaryInput.val(monthlySalary.toFixed(2));
-                basicSalaryInput.val(basicSalary.toFixed(2));
-                HouseRentAllowanceInput.val(houseRent.toFixed(2));
-                EPFInput.val(EPFCalculation.toFixed(2));
-                MonthlyGrossPayInput.val(MonthlyGross.toFixed(2));
-                ESICInput.val(ESIC.toFixed(2));
-                ProfessionaltaxInput.val(professionaltax.toFixed(2));
-            } else {
-                monthlySalaryInput.val('');
-                basicSalaryInput.val('');
-                HouseRentAllowanceInput.val('');
-                EPFInput.val('');
-                MonthlyGrossPayInput.val('');
-                ESICInput.val('');
-                ProfessionaltaxInput.val('');
-            }
-        });
-    });
+	$(document).ready(function () {
+		var annualSalaryInput = $('#txtAnnualCTC');
+		var monthlySalaryInput = $('#txtMonthlyCTC');
+		var basicSalaryInput = $('#txtBasicSalary');
+		var basicSalaryInput = $('#txtBasicSalary');
+		var HouseRentAllowanceInput = $('#txtHouseRentAllowance');
+		var EPFInput = $('#txtEPF');
+		var MonthlyGrossPayInput = $('#txtMonthlyGrossPay');
+		var ESICInput = $('#ESIC');
+		var ProfessionaltaxInput = $('#Professionaltax');
+		annualSalaryInput.on('input', function () {
+			var annualSalary = parseFloat($(this).val());
+			if (!isNaN(annualSalary)) {
+				var monthlySalary = annualSalary / 12;
+				var basicSalary = annualSalary / 2;
+				var houseRent = basicSalary / 2;
+				var EPFCalculation = monthlySalary * 12 / 100;
+				var MonthlyGross = monthlySalary - EPFCalculation;
+				var ESIC = monthlySalary * 0.75 / 100;
+				var professionaltax;
+				switch (true) {
+					case monthlySalary < 2001:
+						professionaltax = 200;
+						break;
+					case monthlySalary < 15001:
+						professionaltax = 0;
+						break;
+					case monthlySalary > 15000:
+						professionaltax = 150;
+						break;
+					default:
+						professionaltax = 0;
+				}
+				monthlySalaryInput.val(monthlySalary.toFixed(2));
+				basicSalaryInput.val(basicSalary.toFixed(2));
+				HouseRentAllowanceInput.val(houseRent.toFixed(2));
+				EPFInput.val(EPFCalculation.toFixed(2));
+				MonthlyGrossPayInput.val(MonthlyGross.toFixed(2));
+				ESICInput.val(ESIC.toFixed(2));
+				ProfessionaltaxInput.val(professionaltax.toFixed(2));
+			} else {
+				monthlySalaryInput.val('');
+				basicSalaryInput.val('');
+				HouseRentAllowanceInput.val('');
+				EPFInput.val('');
+				MonthlyGrossPayInput.val('');
+				ESICInput.val('');
+				ProfessionaltaxInput.val('');
+			}
+		});
+	});
 
 
-    function ExportExcelfn() {
-        window.location.href = '/Employee/ImportToExcelAttendance';
-    }
+	function ExportExcelfn() {
+		window.location.href = '/Employee/ImportToExcelAttendance';
+	}
 
 </script>
 
 
 <script>
-    function showLoading() {
-        var formData = new FormData();
-        formData.append('upload', $('#file-upload')[0].files[0]);
+	function showLoading() {
+		var formData = new FormData();
+		formData.append('upload', $('#file-upload')[0].files[0]);
 
-        $.ajax({
-            url: '/Employee/ImportProductionExcel',
-            type: 'post',
-            data: formData,
-            cache: false,
-            contentType: false,
-            processData: false,
-            success: function (data) {
-                if (data != null || data.length != 0) {
-                    data.forEach(function (item) {
-                        var $row = $("td:contains('" + item.employeeId + "')").closest('tr');
-                        if ($row.length) {
-                            if (parseInt(item.attendance) < 30) {
-                                $row.find(".attnd").val(item.attendance);
-                            } else {
-                                $row.find(".attnd").val(30);
-                            }
+		$.ajax({
+			url: '/Employee/ImportProductionExcel',
+			type: 'post',
+			data: formData,
+			cache: false,
+			contentType: false,
+			processData: false,
+			success: function (data) {
+				if (data != null || data.length != 0) {
+					data.forEach(function (item) {
+						var $row = $("td:contains('" + item.employeeId + "')").closest('tr');
+						if ($row.length) {
+							if (parseInt(item.attendance) < 30) {
+								$row.find(".attnd").val(item.attendance);
+							} else {
+								$row.find(".attnd").val(30);
+							}
 
-                        }
-                    });
-                }
-                alert("Upload successful");
-            },
-            error: function () {
-                alert("Error uploading file");
-            }
-        });
-    }
+						}
+					});
+				}
+				alert("Upload successful");
+			},
+			error: function () {
+				alert("Error uploading file");
+			}
+		});
+	}
 </script>
 <script>
-    $(document).ready(function () {
-        $('#datatable').DataTable();
-    });
-    function fetchAttendance() {
-        var month = document.getElementById('Month').value;
-        var year = document.getElementById('Year').value;
+	$(document).ready(function () {
+		$('#datatable').DataTable();
+	});
+	function fetchAttendance() {
+		var month = document.getElementById('Month').value;
+		var year = document.getElementById('Year').value;
 
-        if (!year || year == "0") {
-            alert("Please select a year first.");
-            return;
-        }
+		if (!year || year == "0") {
+			alert("Please select a year first.");
+			return;
+		}
 
-        if (!month || month == "0") {
-            alert("Please select a month.");
-            return;
-        }
+		if (!month || month == "0") {
+			alert("Please select a month.");
+			return;
+		}
 
-        $.ajax({
-            url: '@Url.Action("getEmpattendancedays", "Employee")',
-            type: 'GET',
-            data: { month: month, year: year},
-            success: function (response) {
-                if (response && response.employees && response.employees.length > 0) {
-                    var table = $('#datatable').DataTable();
+		$.ajax({
+			url: '@Url.Action("getEmpattendancedays", "Employee")',
+			type: 'GET',
+			data: { month: month, year: year},
+			success: function (response) {
+				if (response && response.employees && response.employees.length > 0) {
+					var table = $('#datatable').DataTable();
 
-                    table.rows().every(function (rowIdx, tableLoop, rowLoop) {
-                        var row = this.node();
-                        var employeeId = $(row).find('td:nth-child(6)').text().trim();
-                        var employeeData = response.employees.find(emp => emp.employeeId == employeeId);
+					table.rows().every(function (rowIdx, tableLoop, rowLoop) {
+						var row = this.node();
+						var employeeId = $(row).find('td:nth-child(6)').text().trim();
+						var employeeData = response.employees.find(emp => emp.employeeId == employeeId);
 
-                        if (employeeData) {
-                            $(row).find('input[name="Attendance"]').val(employeeData.leaveRemaining);
-                            $(row).find('td:nth-child(10)').text(employeeData.monthlyPay.toFixed(2)); 
-                            $(row).find('td:nth-child(11)').text(employeeData.employeeEpf.toFixed(2)); 
-                            $(row).find('td:nth-child(12)').text(employeeData.employeeEsi.toFixed(2)); 
-                        } else {
-                            $(row).find('input[name="Attendance"]').val(0);
-                            $(row).find('td:nth-child(10)').text("0.00"); 
-                            $(row).find('td:nth-child(11)').text("0.00"); 
-                            $(row).find('td:nth-child(12)').text("0.00"); 
-                        }
-                    });
+						if (employeeData) {
+							$(row).find('input[name="Attendance"]').val(employeeData.leaveRemaining);
+							$(row).find('td:nth-child(10)').text(employeeData.monthlyPay.toFixed(2));
+							$(row).find('td:nth-child(11)').text(employeeData.employeeEpf.toFixed(2));
+							$(row).find('td:nth-child(12)').text(employeeData.employeeEsi.toFixed(2));
+						} else {
+							$(row).find('input[name="Attendance"]').val(0);
+							$(row).find('td:nth-child(10)').text("0.00");
+							$(row).find('td:nth-child(11)').text("0.00");
+							$(row).find('td:nth-child(12)').text("0.00");
+						}
+					});
 
-                    document.getElementById('dynamicTotalMonthlyPay').textContent = response.totalMonthlyPay.toFixed(2);
-                    table.draw();
-                } else {
-                    alert(response.message || "No attendance data available.");
-                    document.getElementById('dynamicTotalMonthlyPay').textContent = "0.00";
-                }
-            },
-            error: function () {
-                document.getElementById('dynamicTotalMonthlyPay').textContent = "0.00";
-                alert("An error occurred while fetching attendance data.");
-            }
-        });
-    }
+					document.getElementById('dynamicTotalMonthlyPay').textContent = response.totalMonthlyPay.toFixed(2);
+					table.draw();
+				} else {
+					alert(response.message || "No attendance data available.");
+					document.getElementById('dynamicTotalMonthlyPay').textContent = "0.00";
+				}
+			},
+			error: function () {
+				document.getElementById('dynamicTotalMonthlyPay').textContent = "0.00";
+				alert("An error occurred while fetching attendance data.");
+			}
+		});
+	}
 
-    // Event listener to ensure the month is enabled after selecting the year
-    document.getElementById('Year').addEventListener('change', function () {
-        var year = this.value;
-        var monthSelect = document.getElementById('Month');
-        if (year && year !== "0") {
-            monthSelect.disabled = false;  
-        } else {
-            monthSelect.disabled = true;   
-        }
-    });
+	// Event listener to ensure the month is enabled after selecting the year
+	document.getElementById('Year').addEventListener('change', function () {
+		var year = this.value;
+		var monthSelect = document.getElementById('Month');
+		if (year && year !== "0") {
+			monthSelect.disabled = false;
+		} else {
+			monthSelect.disabled = true;
+		}
+	});
 
-    // Initialize the month dropdown as disabled until a year is selected
-    document.addEventListener('DOMContentLoaded', function () {
-        var monthSelect = document.getElementById('Month');
-        monthSelect.disabled = true;  // Disable month selection by default
-    });
-  
-
-    // function updateMonthlyPay() {
-    //     $('#datatable tbody').on('input', 'input[name="Attendance"]', function () {
-    //         var row = $(this).closest('tr');
-    //         var monthlyCtc = parseFloat(row.find('td:nth-child(9)').text().trim());
-    //         var nodays = @ViewBag.Nodays;
-
-    //         if (nodays > 0) {
-    //             var newMonthlyPay = monthlyCtc / nodays;
-
-    //             var attendance = parseFloat($(this).val()) || 0;
-
-    //             var totalMonthlyPay = newMonthlyPay * attendance;
-
-    //             row.find('td:nth-child(10)').text(totalMonthlyPay.toFixed(2));
-    //         } else {
-    //             row.find('td:nth-child(10)').text("0.00");
-    //         }
-
-    //         // Calculate the total of all rows and update the dynamicTotalMonthlyPay field
-    //         updateTotalMonthlyPay();
-    //     });
-    // }
-
-    // function updateTotalMonthlyPay() {
-    //     var totalMonthlyPay = 0;
-
-    //     // Sum the monthly pay from each row
-    //     $('#datatable tbody tr').each(function () {
-    //         var rowPay = parseFloat($(this).find('td:nth-child(10)').text()) || 0;
-    //         totalMonthlyPay += rowPay;
-    //     });
-
-    //     // Update the dynamicTotalMonthlyPay field
-    //     $('#dynamicTotalMonthlyPay').text(totalMonthlyPay.toFixed(2));
-    // }
-
-    // $(document).ready(function () {
-    //     updateMonthlyPay();
-    // });
-    function MonthlyadjustmentAttendance() {
-        $('#datatable tbody').on('input', 'input[name="Attendance"]', function () {
-            var row = $(this).closest('tr'); 
-            var month = $('#Month').val();
-            var year = $('#Year').val();
-            var employeeId = row.find('td:nth-child(6)').text().trim();
-            var attendance = parseFloat($(this).val()) || 0;
-
-            if (!year || year === "0") {
-                alert("Please select a year first.");
-                return;
-            }
-
-            if (!month || month === "0") {
-                alert("Please select a month.");
-                return;
-            }
-
-            $.ajax({
-                url: '@Url.Action("EmpMonthlyadjustmentAttendance", "Employee")',
-                type: 'POST',  
-                data: {
-                    month: month,
-                    year: year,
-                    employeeId: employeeId,
-                    NoOfDays: attendance
-                },
-                success: function (response) {
-                    if (response && response.employeeId) {
-                        row.find('input[name="Attendance"]').val(response.leaveRemaining);
-                        row.find('td:nth-child(10)').text(response.monthlyPay.toFixed(2));
-                        row.find('td:nth-child(11)').text(response.employeeEpf.toFixed(2));
-                        row.find('td:nth-child(12)').text(response.employeeEsi.toFixed(2));
-                    } else {
-                        alert(response.message || "No attendance data available.");
-                    }
-                },
-                error: function () {
-                    alert("An error occurred while fetching attendance data.");
-                }
-            });
-        });
-    }
-
-    $(document).ready(function () {
-        MonthlyadjustmentAttendance();
-    });
+	// Initialize the month dropdown as disabled until a year is selected
+	document.addEventListener('DOMContentLoaded', function () {
+		var monthSelect = document.getElementById('Month');
+		monthSelect.disabled = true;  // Disable month selection by default
+	});
 
 
-    function validateNumericInput(event) {
-        if ([67, 86, 88].includes(event.keyCode) && (event.ctrlKey || event.metaKey) ||
-            [32, 46, 8, 9, 27, 13].includes(event.keyCode) ||
-            (event.keyCode >= 35 && event.keyCode <= 39)) return;
+	// function updateMonthlyPay() {
+	//     $('#datatable tbody').on('input', 'input[name="Attendance"]', function () {
+	//         var row = $(this).closest('tr');
+	//         var monthlyCtc = parseFloat(row.find('td:nth-child(9)').text().trim());
+	//         var nodays = @ViewBag.Nodays;
 
-        if ((event.keyCode >= 48 && event.keyCode <= 57) || (event.keyCode >= 96 && event.keyCode <= 105)) return;
-        event.preventDefault();
-    }
+	//         if (nodays > 0) {
+	//             var newMonthlyPay = monthlyCtc / nodays;
+
+	//             var attendance = parseFloat($(this).val()) || 0;
+
+	//             var totalMonthlyPay = newMonthlyPay * attendance;
+
+	//             row.find('td:nth-child(10)').text(totalMonthlyPay.toFixed(2));
+	//         } else {
+	//             row.find('td:nth-child(10)').text("0.00");
+	//         }
+
+	//         // Calculate the total of all rows and update the dynamicTotalMonthlyPay field
+	//         updateTotalMonthlyPay();
+	//     });
+	// }
+
+	// function updateTotalMonthlyPay() {
+	//     var totalMonthlyPay = 0;
+
+	//     // Sum the monthly pay from each row
+	//     $('#datatable tbody tr').each(function () {
+	//         var rowPay = parseFloat($(this).find('td:nth-child(10)').text()) || 0;
+	//         totalMonthlyPay += rowPay;
+	//     });
+
+	//     // Update the dynamicTotalMonthlyPay field
+	//     $('#dynamicTotalMonthlyPay').text(totalMonthlyPay.toFixed(2));
+	// }
+
+	// $(document).ready(function () {
+	//     updateMonthlyPay();
+	// });
+	function MonthlyadjustmentAttendance() {
+		$('#datatable tbody').on('input', 'input[name="Attendance"]', function () {
+			var row = $(this).closest('tr');
+			var month = $('#Month').val();
+			var year = $('#Year').val();
+			var employeeId = row.find('td:nth-child(6)').text().trim();
+			var attendance = parseFloat($(this).val()) || 0;
+
+			if (!year || year === "0") {
+				alert("Please select a year first.");
+				return;
+			}
+
+			if (!month || month === "0") {
+				alert("Please select a month.");
+				return;
+			}
+
+			$.ajax({
+				url: '@Url.Action("EmpMonthlyadjustmentAttendance", "Employee")',
+				type: 'POST',
+				data: {
+					month: month,
+					year: year,
+					employeeId: employeeId,
+					NoOfDays: attendance
+				},
+				// success: function (response) {
+				// 	if (response && response.employeeId) {
+				// 		row.find('input[name="Attendance"]').val(response.leaveRemaining);
+				// 		row.find('td:nth-child(10)').text(response.monthlyPay.toFixed(2));
+				// 		row.find('td:nth-child(11)').text(response.employeeEpf.toFixed(2));
+				// 		row.find('td:nth-child(12)').text(response.employeeEsi.toFixed(2));
+				// 	} else {
+				// 		alert(response.message || "No attendance data available.");
+				// 	}
+				// },
+				// error: function () {
+				// 	alert("An error occurred while fetching attendance data.");
+				// }
+						success: function (response) {
+		console.log("AJAX Response:", response); // Debugging
+
+		if (response && response.employeeId) {
+			row.find('input[name="Attendance"]').val(response.leaveRemaining);
+			row.find('td:nth-child(10)').text(response.monthlyPay.toFixed(2));
+			row.find('td:nth-child(11)').text(response.employeeEpf.toFixed(2));
+			row.find('td:nth-child(12)').text(response.employeeEsi.toFixed(2));
+
+		} else {
+			Swal.fire({
+				title: 'Warning',
+				text: response.message || "No attendance data available.",
+				icon: 'warning',
+				confirmButtonText: 'OK'
+			}).then(() => {
+				row.find('input[name="Attendance"]').val(0);
+				row.find('td:nth-child(10)').text('0.00');
+				row.find('td:nth-child(11)').text('0.00');
+				row.find('td:nth-child(12)').text('0.00');
+			});
+		}
+	},
+
+	error: function (xhr, status, error) {
+		console.log("AJAX Error:", error); // Debugging
+
+		Swal.fire({
+			title: 'Error',
+			text: 'An error occurred while fetching attendance data. Please try again.',
+			icon: 'error',
+			confirmButtonText: 'OK'
+		});
+	}
+
+			});
+		});
+	}
+
+	$(document).ready(function () {
+		MonthlyadjustmentAttendance();
+	});
+
+
+	function validateNumericInput(event) {
+		if ([67, 86, 88].includes(event.keyCode) && (event.ctrlKey || event.metaKey) ||
+			[32, 46, 8, 9, 27, 13].includes(event.keyCode) ||
+			(event.keyCode >= 35 && event.keyCode <= 39)) return;
+
+		if ((event.keyCode >= 48 && event.keyCode <= 57) || (event.keyCode >= 96 && event.keyCode <= 105)) return;
+		event.preventDefault();
+	}
 </script>
 
 <script>
-    const currentYear = new Date().getFullYear();
-    const startYear = 2022;
+	const currentYear = new Date().getFullYear();
+	const startYear = 2022;
 
-    // Get the dropdown element
-    const yearDropdown = document.getElementById("Year");
+	// Get the dropdown element
+	const yearDropdown = document.getElementById("Year");
 
-    // Add year options from startYear to currentYear
-    for (let year = startYear; year <= currentYear; year++) {
-        const option = document.createElement("option");
-        option.value = year;
-        option.textContent = year;
-        yearDropdown.appendChild(option);
-    }
+	// Add year options from startYear to currentYear
+	for (let year = startYear; year <= currentYear; year++) {
+		const option = document.createElement("option");
+		option.value = year;
+		option.textContent = year;
+		yearDropdown.appendChild(option);
+	}
 </script>
