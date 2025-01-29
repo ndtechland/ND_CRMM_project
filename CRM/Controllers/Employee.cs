@@ -3345,12 +3345,13 @@ namespace CRM.Controllers
                         {
                             EmployeeEpf = 0;
                             EmployeeEsi = 0;
-                            if (EmployeebasicData.TryGetValue(employeesdata.EmployeeId, out var basic))
-                            {
-                                empbasic = decimal.Round((basic / noOfDays) * TotalsalaryDeduction, 2);
-                            }
+                          
                             if (totalsalary < Esidata.EsicAmount)
                             {
+                                if (EmployeebasicData.TryGetValue(employeesdata.EmployeeId, out var basic))
+                                {
+                                    empbasic = decimal.Round((basic / noOfDays) * TotalsalaryDeduction, 2);
+                                }
                                 if (EmployeeEpfData.TryGetValue(employeesdata.EmployeeId, out var epfPercentage))
                                 {
                                     EmployeeEpf = decimal.Round((empbasic * epfPercentage) / 100, 2);
@@ -3999,11 +4000,14 @@ namespace CRM.Controllers
             {
                 return new JsonResult(new { success = false, message = "Attendance days not found or invalid" });
             }
+            decimal monthlyPay = 0;
             decimal TotalnoOfDays = 0;
             TotalnoOfDays = Convert.ToDecimal(attendanceDays.Nodays);
             if (noOfDays > TotalnoOfDays)
             {
                 noOfDays = 0;
+                return new JsonResult(new { success = false, message = "Number is greater than " + TotalnoOfDays });
+
             }
             else
             {
@@ -4095,7 +4099,6 @@ namespace CRM.Controllers
 
                 TotalsalaryDeduction = (noOfDays == 0) ? 0 : noOfDays;
 
-            decimal monthlyPay = 0;
             if (TotalsalaryDeduction > 0)
             {
                 monthlyPay = decimal.Round((ctcData / TotalnoOfDays) * TotalsalaryDeduction, 2);
