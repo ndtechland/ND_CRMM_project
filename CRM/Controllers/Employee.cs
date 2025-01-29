@@ -3206,6 +3206,7 @@ namespace CRM.Controllers
             }
 
             var attendanceDays = await _context.Attendancedays.FirstOrDefaultAsync(x => x.Vendorid == adminLogin.Vendorid);
+            var Esidata = await _context.EmployeeEsicPayrollInfos.FirstOrDefaultAsync(x => x.Vendorid == adminLogin.Vendorid);
 
             if (attendanceDays == null)
             {
@@ -3338,6 +3339,7 @@ namespace CRM.Controllers
                     if (TotalsalaryDeduction > 0 && ctcData.TryGetValue(employeesdata.EmployeeId, out var monthlyCtc))
                     {
                         monthlyPay = decimal.Round((monthlyCtc / noOfDays) * TotalsalaryDeduction, 2);
+                        decimal totalsalary = decimal.Round((monthlyCtc), 2);
 
                         if (monthlyPay > 0)
                         {
@@ -3347,17 +3349,27 @@ namespace CRM.Controllers
                             {
                                 empbasic = decimal.Round((basic / noOfDays) * TotalsalaryDeduction, 2);
                             }
-                            if (EmployeeEpfData.TryGetValue(employeesdata.EmployeeId, out var epfPercentage))
+                            if (totalsalary < Esidata.EsicAmount)
                             {
-                                EmployeeEpf = decimal.Round((empbasic * epfPercentage) / 100, 2);
-                                monthlyPay -= EmployeeEpf;
+                                if (EmployeeEpfData.TryGetValue(employeesdata.EmployeeId, out var epfPercentage))
+                                {
+                                    EmployeeEpf = decimal.Round((empbasic * epfPercentage) / 100, 2);
+                                    monthlyPay -= EmployeeEpf;
+                                    EmployeeEsi = 0;
+                                }
                             }
+                            else
+                            {
+                                if (EmployeeEsiData.TryGetValue(employeesdata.EmployeeId, out var esiPercentage))
+                                {
+                                    EmployeeEsi = decimal.Round((empbasic * esiPercentage) / 100, 2);
+                                    monthlyPay -= EmployeeEsi;
+                                    EmployeeEpf = 0;
+                                }
+                            }
+                           
 
-                            if (EmployeeEsiData.TryGetValue(employeesdata.EmployeeId, out var esiPercentage))
-                            {
-                                EmployeeEsi = decimal.Round((empbasic * esiPercentage) / 100, 2);
-                                monthlyPay -= EmployeeEsi;
-                            }
+                           
                         }
                     }
 
@@ -3981,6 +3993,7 @@ namespace CRM.Controllers
             }
 
             var attendanceDays = await _context.Attendancedays.FirstOrDefaultAsync(x => x.Vendorid == adminLogin.Vendorid);
+            var Esidata = await _context.EmployeeEsicPayrollInfos.FirstOrDefaultAsync(x => x.Vendorid == adminLogin.Vendorid);
 
             if (attendanceDays == null)
             {
@@ -4087,14 +4100,21 @@ namespace CRM.Controllers
             {
                 monthlyPay = decimal.Round((ctcData / TotalnoOfDays) * TotalsalaryDeduction, 2);
                 decimal empbasic = decimal.Round((EmployeebasicData / TotalnoOfDays) * TotalsalaryDeduction, 2);
-
+                decimal totalsalary = decimal.Round((ctcData), 2);
                 if (monthlyPay > 0)
                 {
-                    EmployeeEpf = decimal.Round((empbasic * EmployeeEpfData) / 100, 2);
-                    monthlyPay -= EmployeeEpf;
-
-                    EmployeeEsi = decimal.Round((empbasic * EmployeeEsiData) / 100, 2);
-                    monthlyPay -= EmployeeEsi;
+                    if(totalsalary < Esidata.EsicAmount)
+                    {
+                        EmployeeEsi = decimal.Round((empbasic * EmployeeEsiData) / 100, 2);
+                        monthlyPay -= EmployeeEsi;
+                        EmployeeEpf =0;
+                    }
+                    else
+                    {
+                        EmployeeEpf = decimal.Round((empbasic * EmployeeEpfData) / 100, 2);
+                        monthlyPay -= EmployeeEpf;
+                        EmployeeEsi = 0;
+                    }
                 }
             }
 
