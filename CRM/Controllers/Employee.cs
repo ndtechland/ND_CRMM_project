@@ -69,6 +69,7 @@ using jsreport.Types;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.Engineering;
 using Org.BouncyCastle.Ocsp;
 using Umbraco.Core;
+using System.Text.RegularExpressions;
 
 namespace CRM.Controllers
 {
@@ -3879,13 +3880,99 @@ namespace CRM.Controllers
                 List<ExcelErrorModel> excelErrorModels = new List<ExcelErrorModel>();
                 foreach (DataRow row in dataTable.Rows)
                 {
-                    if (string.IsNullOrWhiteSpace(row[0]?.ToString() ?? row[0]?.ToString()))
+                    //290125
+                    count++;
+                    var mobno = row[36]?.ToString() ?? string.Empty;
+
+                    if (string.IsNullOrWhiteSpace(row[0]?.ToString()))
                     {
-                        
+                        excelErrorModels.Add(new ExcelErrorModel
+                        {
+                            ErrorType = "First Name",
+                            AffectedRow = count,
+                            Description = $"First Name can not be empty"
+                        });
+                    }
+                    if (!mobno.All(char.IsDigit))
+                    {
+                        excelErrorModels.Add(new ExcelErrorModel
+                        {
+                            ErrorType = "Mobile Number",
+                            AffectedRow = count,
+                            Description = $"Mobile Number {mobno} contains invalid characters. Only digits are allowed."
+                        });
+                    }
+                    else if (_context.EmployeePersonalDetails.Any(e => e.MobileNumber == mobno))
+                    {
+                        excelErrorModels.Add(new ExcelErrorModel
+                        {
+                            ErrorType = "Mobile Number",
+                            AffectedRow = count,
+                            Description = $"Mobile Number {mobno} already exists."
+                        });
+                    }
+                    else if (mobno.ToString().Length != 10)
+                    {
+                        excelErrorModels.Add(new ExcelErrorModel
+                        {
+                            ErrorType = "Mobile Number",
+                            AffectedRow = count,
+                            Description = $"Mobile no. {mobno} must be exactly 10 digits."
+                        });
+                    }
+                    // Email Validation
+                    var workemail = row[4]?.ToString() ?? string.Empty;
+
+                    if (!Regex.IsMatch(workemail, @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", RegexOptions.IgnoreCase))
+                    {
+                        excelErrorModels.Add(new ExcelErrorModel
+                        {
+                            ErrorType = "Work Email Address",
+                            AffectedRow = count,
+                            Description = $"Work email address {workemail} is invalid. Please provide a valid email."
+                        });
+                    }
+                    var validGenders = new List<string> { "male", "female", "other" };
+                    // Validate Gender
+                    if (!validGenders.Contains(row[5]?.ToString().ToLower()))
+                    {
+                        excelErrorModels.Add(new ExcelErrorModel
+                        {
+                            ErrorType = "Gender",
+                            AffectedRow = count,
+                            Description = $"Kindly check the employee Gender: {row[5]?.ToString()}."
+                        });
+                    }
+                    // Validate for pincode
+                    if ((bool)row[44]?.ToString().Any(c => !char.IsDigit(c)))
+                    {
+                        excelErrorModels.Add(new ExcelErrorModel
+                        {
+                            ErrorType = "Pincode",
+                            AffectedRow = count,
+                            Description = $"Pincode {row[44]?.ToString()} contains invalid characters. Only digits are allowed."
+                        });
+                    }
+                    else if (row[44]?.ToString().Length != 6)
+                    {
+                        excelErrorModels.Add(new ExcelErrorModel
+                        {
+                            ErrorType = "Pincode",
+                            AffectedRow = count,
+                            Description = $"Pincode {row[44]?.ToString()} must be exactly 6 digits."
+                        });
                     }
 
                 }
-                    foreach (DataRow row in dataTable.Rows)
+
+                if (excelErrorModels.Any())
+                {
+                    TempData["HasErrors"] = true;
+                    TempData["ExcelErrors"] = Newtonsoft.Json.JsonConvert.SerializeObject(excelErrorModels);
+                    return RedirectToAction("EmployeeRegistration");
+                }
+                //end 290125
+                foreach (DataRow row in dataTable.Rows)
                 {
                     Empid = GenerateEmployeeId();
                     model.EmployeeId = Empid;
@@ -3967,6 +4054,7 @@ namespace CRM.Controllers
                         model.CustomerCompanyid = row[54] != DBNull.Value ? Convert.ToInt32(row[52]) : 0;
                         //model. = row[55]?.ToString();
                     }
+                   
                     if (model != null)
                     {
                         var response = await _ICrmrpo.EmpRegistration(model, Mode, Empid, Userid);
