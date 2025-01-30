@@ -746,92 +746,180 @@
                                 </div>
 
                             }
-
-                            <div class="row">
-                                <div class="col">
-                                    <label>Annual CTC <span class="text-danger">*</span></label>
-                                    <input class="form-control" value='@ViewBag.AnnualCTC' name="AnnualCTC" placeholder="Enter Annual CTC" onkeyup="SalaryCalculation();" id="txtAnnualCTC" type="text">
-                                    <span id="AnnualCTCError" class="text-danger" style="display:none;">Annual CTC is required and must contain a decimal point.</span>
-                                </div>
-                                <div class="col">
-                                    <label>Monthly CTC </label>
-                                    <input class="form-control" value='@ViewBag.MonthlyCTC' name="MonthlyCTC" placeholder="Enter Monthly CTC" id="txtMonthlyCTC" readonly type="text">
-                                </div>
-                                <div class="col">
-                                    <label>Basic</label>
-                                    <input class="form-control" value='@ViewBag.Basic' name="Basic" placeholder="00.0" id="txtBasicSalary" type="text" readonly>
-                                </div>
-                            </div>
-
-                            <br>
-
-                            <div class="row">
-                                <div class="col">
-                                    <label>House Rent Allowance</label>
-                                    <input class="form-control" value='@ViewBag.HouseRentAllowance' name="HouseRentAllowance" placeholder="00.0" id="txtHouseRentAllowance" type="text" readonly>
-                                </div>
-                                <div class="col">
-                                    <label>Special Allowance</label>
-                                    <input class="form-control" value='@ViewBag.specialallowance' name="SpecialAllowance" id="SpecialAllowance" placeholder="Enter Special Allowance" type="text" readonly>
-                                </div>
-                                <div class="col">
-                                    <label>Conveyance allowance</label>
-                                    <input class="form-control" value='@ViewBag.Conveyanceallowance' name="Conveyanceallowance" placeholder="00.0" id="txtConveyanceallowance" type="text" readonly>
+                            @if (CheckSelectCompany == false)
+                            {
+                                <div class="row">
+                                    <div class="col">
+                                        <label>Annual CTC <span class="text-danger">*</span></label>
+                                        <input class="form-control" value='@ViewBag.AnnualCTC' name="AnnualCTC" placeholder="Enter Annual CTC" onkeyup="SalaryCalculation();" id="txtAnnualCTC" type="text">
+                                        <span id="AnnualCTCError" class="text-danger" style="display:none;">Annual CTC is required and must contain a decimal point.</span>
+                                    </div>
+                                    <div class="col">
+                                        <label>Monthly CTC </label>
+                                        <input class="form-control" value='@ViewBag.MonthlyCTC' name="MonthlyCTC" placeholder="Enter Monthly CTC" id="txtMonthlyCTC" readonly type="text">
+                                    </div>
+                                    <div class="col">
+                                        <label>Basic</label>
+                                        <input class="form-control" value='@ViewBag.Basic' name="Basic" placeholder="00.0" id="txtBasicSalary" type="text" readonly>
+                                    </div>
                                 </div>
 
-                            </div>
-                            <br>
-                            <div class="row">
-                                <div class="col">
-                                    <label>Medical Allowance</label>
-                                    <input class="form-control" value='@ViewBag.MedicalAllowance ' name="Medical" placeholder="00.0" id="txtMedical" type="text" readonly>
+                                <br>
+
+                                <div class="row">
+                                    <div class="col">
+                                        <label>House Rent Allowance</label>
+                                        <input class="form-control" value='@ViewBag.HouseRentAllowance' name="HouseRentAllowance" placeholder="00.0" id="txtHouseRentAllowance" type="text" readonly>
+                                    </div>
+                                    <div class="col">
+                                        <label>Special Allowance</label>
+                                        <input class="form-control" value='@ViewBag.specialallowance' name="SpecialAllowance" id="SpecialAllowance" placeholder="Enter Special Allowance" type="text" readonly>
+                                    </div>
+                                    <div class="col">
+                                        <label>Conveyance allowance</label>
+                                        <input class="form-control" value='@ViewBag.Conveyanceallowance' name="Conveyanceallowance" placeholder="00.0" id="txtConveyanceallowance" type="text" readonly>
+                                    </div>
 
                                 </div>
-                                <div class="col">
-                                    <label>Variable Pay</label>
-                                    <input class="form-control" value='@ViewBag.VariablePay ' name="VariablePay" placeholder="00.0" id="txtVariablePay" type="text" readonly>
-                                </div>
-                                <div class="col">
-                                    <label>Gross Pay</label>
-                                    <input class="form-control" value='@ViewBag.MonthlyGrossPay' name="MonthlyGrossPay" placeholder="00.0" id="txtMonthlyGrossPay" type="text" readonly>
-                                </div>
-                            </div>
-                            <br>
-                            <div class="col-md-2 tdssection" style="display:none;">
-                                <label>TDS (<span id="displayTdsPercentage"></span>%)</label>
-                                <input class="form-control" value='@ViewBag.tdsvalue' name="tdsvalue" placeholder="00.0" id="txttdsvalue" type="text" readonly>
-                                <input name="Tdspercentage" id="txtTdspercentage" value="@ViewBag.Tdspercentage" type="hidden">
+                                <br>
+                                <div class="row">
+                                    <div class="col">
+                                        <label>Medical Allowance</label>
+                                        <input class="form-control" value='@ViewBag.MedicalAllowance ' name="Medical" placeholder="00.0" id="txtMedical" type="text" readonly>
 
-                            </div>
-
-                            <br>
-                            <h4 class="text-danger EmployeeContribution" style="display:none;">Employee Contribution</h4>
-                            <div class="row">
-                                <div class="col-md-6 txtLabelEPF" style="display:none;">
-                                    <label>EPF (<span id="displayEmpEPFMaster"></span>%)</label>
-                                    <input class="form-control" value='@ViewBag.EPF' name="EPF" id="txtEPF" type="text" readonly>
+                                    </div>
+                                    <div class="col">
+                                        <label>Variable Pay</label>
+                                        <input class="form-control" value='@ViewBag.VariablePay ' name="VariablePay" placeholder="00.0" id="txtVariablePay" type="text" readonly>
+                                    </div>
+                                    <div class="col">
+                                        <label>Gross Pay</label>
+                                        <input class="form-control" value='@ViewBag.MonthlyGrossPay' name="MonthlyGrossPay" placeholder="00.0" id="txtMonthlyGrossPay" type="text" readonly>
+                                    </div>
                                 </div>
-                                <div class="col-md-6 ESICLabel" style="display:none;">
-                                    <label id="ESICLabel">ESIC (<span id="displayEmpESICMaster"></span>%)</label>
-                                    <input class="form-control" value='@ViewBag.ESIC' name="ESIC" id="ESIC" type="text" readonly>
+                                <br>
+                                <div class="col-md-2 tdssection" style="display:none;">
+                                    <label>TDS (<span id="displayTdsPercentage"></span>%)</label>
+                                    <input class="form-control" value='@ViewBag.tdsvalue' name="tdsvalue" placeholder="00.0" id="txttdsvalue" type="text" readonly>
+                                    <input name="Tdspercentage" id="txtTdspercentage" value="@ViewBag.Tdspercentage" type="hidden">
+
                                 </div>
-                            </div>
 
-
-                            <br>
-
-                            <h4 class="text-danger EmployerContribution" style="display:none;">Employer Contribution</h4>
-                            <div class="row">
-                                <div class="col-md-6 txtLabelEmployerEPF" style="display:none;">
-                                    <label>EPF (<span id="displayEPFMaster"></span>%)</label>
-                                    <input class="form-control" name="EmployerContribution" placeholder="00.0" id="txtEPFMaster" type="text" value="@ViewBag.EmployerContribution" readonly>
+                                <br>
+                                <h4 class="text-danger EmployeeContribution" style="display:none;">Employee Contribution</h4>
+                                <div class="row">
+                                    <div class="col-md-6 txtLabelEPF" style="display:none;">
+                                        <label>EPF (<span id="displayEmpEPFMaster"></span>%)</label>
+                                        <input class="form-control" value='@ViewBag.EPF' name="EPF" id="txtEPF" type="text" readonly>
+                                    </div>
+                                    <div class="col-md-6 ESICLabel" style="display:none;">
+                                        <label id="ESICLabel">ESIC (<span id="displayEmpESICMaster"></span>%)</label>
+                                        <input class="form-control" value='@ViewBag.ESIC' name="ESIC" id="ESIC" type="text" readonly>
+                                    </div>
                                 </div>
-                                <div class="col-md-6 txtLabelEmployerEsic" style="display:none;">
-                                    <label>ESIC (<span id="displayESICMaster"></span>%)</label>
-                                    <input class="form-control" name="ESIC_Number" id="ESICMaster" type="text" readonly>
-                                </div>
-                            </div>
 
+
+                                <br>
+
+                                <h4 class="text-danger EmployerContribution" style="display:none;">Employer Contribution</h4>
+                                <div class="row">
+                                    <div class="col-md-6 txtLabelEmployerEPF" style="display:none;">
+                                        <label>EPF (<span id="displayEPFMaster"></span>%)</label>
+                                        <input class="form-control" name="EmployerContribution" placeholder="00.0" id="txtEPFMaster" type="text" value="@ViewBag.EmployerContribution" readonly>
+                                    </div>
+                                    <div class="col-md-6 txtLabelEmployerEsic" style="display:none;">
+                                        <label>ESIC (<span id="displayESICMaster"></span>%)</label>
+                                        <input class="form-control" name="ESIC_Number" id="ESICMaster" type="text" readonly>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="row">
+                                    <div class="col">
+                                        <label>Annual CTC <span class="text-danger">*</span></label>
+                                        <input class="form-control" value='@ViewBag.AnnualCTC' name="AnnualCTC" placeholder="Enter Annual CTC" @* onkeyup="SalaryCalculation();" *@ id="txtAnnualCTC" type="text">
+                                        <span id="AnnualCTCError" class="text-danger" style="display:none;">Annual CTC is required and must contain a decimal point.</span>
+                                    </div>
+                                    <div class="col">
+                                        <label>Monthly CTC </label>
+                                        <input class="form-control" value='@ViewBag.MonthlyCTC' name="MonthlyCTC" placeholder="Enter Monthly CTC" id="txtMonthlyCTC" type="text">
+                                    </div>
+                                    <div class="col">
+                                        <label>Basic</label>
+                                        <input class="form-control" value='@ViewBag.Basic' name="Basic" placeholder="00.0" id="txtBasicSalary" type="text">
+                                    </div>
+                                </div>
+
+                                <br>
+
+                                <div class="row">
+                                    <div class="col">
+                                        <label>House Rent Allowance</label>
+                                        <input class="form-control" value='@ViewBag.HouseRentAllowance' name="HouseRentAllowance" placeholder="00.0" id="txtHouseRentAllowance" type="text">
+                                    </div>
+                                    <div class="col">
+                                        <label>Special Allowance</label>
+                                        <input class="form-control" value='@ViewBag.specialallowance' name="SpecialAllowance" id="SpecialAllowance" placeholder="Enter Special Allowance" type="text">
+                                    </div>
+                                    <div class="col">
+                                        <label>Conveyance allowance</label>
+                                        <input class="form-control" value='@ViewBag.Conveyanceallowance' name="Conveyanceallowance" placeholder="00.0" id="txtConveyanceallowance" type="text">
+                                    </div>
+
+                                </div>
+                                <br>
+                                <div class="row">
+                                    <div class="col">
+                                        <label>Medical Allowance</label>
+                                        <input class="form-control" value='@ViewBag.MedicalAllowance ' name="Medical" placeholder="00.0" id="txtMedical" type="text">
+
+                                    </div>
+                                    <div class="col">
+                                        <label>Variable Pay</label>
+                                        <input class="form-control" value='@ViewBag.VariablePay ' name="VariablePay" placeholder="00.0" id="txtVariablePay" type="text">
+                                    </div>
+                                    <div class="col">
+                                        <label>Gross Pay</label>
+                                        <input class="form-control" value='@ViewBag.MonthlyGrossPay' name="MonthlyGrossPay" placeholder="00.0" id="txtMonthlyGrossPay" type="text">
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="col-md-2 tdssection" style="display:none;">
+                                    <label>TDS (<span id="displayTdsPercentage"></span>%)</label>
+                                    <input class="form-control" value='@ViewBag.tdsvalue' name="tdsvalue" placeholder="00.0" id="txttdsvalue" type="text">
+                                    <input name="Tdspercentage" id="txtTdspercentage" value="@ViewBag.Tdspercentage" type="hidden">
+
+                                </div>
+
+                                <br>
+                                <h4 class="text-danger EmployeeContribution" style="display:none;">Employee Contribution</h4>
+                                <div class="row">
+                                    <div class="col-md-6 txtLabelEPF" style="display:none;">
+                                        <label>EPF (<span id="displayEmpEPFMaster"></span>%)</label>
+                                        <input class="form-control" value='@ViewBag.EPF' name="EPF" id="txtEPF" type="text">
+                                    </div>
+                                    <div class="col-md-6 ESICLabel" style="display:none;">
+                                        <label id="ESICLabel">ESIC (<span id="displayEmpESICMaster"></span>%)</label>
+                                        <input class="form-control" value='@ViewBag.ESIC' name="ESIC" id="ESIC" type="text">
+                                    </div>
+                                </div>
+
+
+                                <br>
+
+                                <h4 class="text-danger EmployerContribution" style="display:none;">Employer Contribution</h4>
+                                <div class="row">
+                                    <div class="col-md-6 txtLabelEmployerEPF" style="display:none;">
+                                        <label>EPF (<span id="displayEPFMaster"></span>%)</label>
+                                        <input class="form-control" name="EmployerContribution" placeholder="00.0" id="txtEPFMaster" type="text" value="@ViewBag.EmployerContribution">
+                                    </div>
+                                    <div class="col-md-6 txtLabelEmployerEsic" style="display:none;">
+                                        <label>ESIC (<span id="displayESICMaster"></span>%)</label>
+                                        <input class="form-control" name="ESIC_Number" id="ESICMaster" type="text">
+                                    </div>
+                                </div>
+                            }
                         </div>
                         <input name="EmployerContributionpercentage" id="txtEmployerContributionpercentage" value="@ViewBag.EmployerContributionpercentage" type="hidden">
                         <input name="Epfpercentage" id="txtEpfpercentage" value="@ViewBag.EPfpercentage" type="hidden">
