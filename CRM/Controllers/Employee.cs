@@ -689,7 +689,8 @@ namespace CRM.Controllers
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 var attendanceDays = await _context.Attendancedays.FirstOrDefaultAsync(x => x.Vendorid == adminlogin.Vendorid);
-
+                decimal noOfDays = 0;
+                noOfDays = Convert.ToDecimal(attendanceDays.Nodays);
                 foreach (Empattendance empattendance in customers)
                 {
                     var months = await _context.Empattendances.Where(x => x.Month == month && x.Year == DateTime.Now.Year && x.EmployeeId == empattendance.EmployeeId).ToListAsync();
@@ -719,9 +720,15 @@ namespace CRM.Controllers
                                         await _context.SaveChangesAsync();
                                     }
                                 }
-                                decimal totalsalary = decimal.Round((decimal)(ctc.AnnualCtc / 12), 2);
-                                //decimal totalhra = decimal.Round((decimal)(ctc.HouseRentAllowance / 12) * attendanceDays.Nodays, 2);
+                                decimal totalsalary = Math.Round((decimal)(ctc.AnnualCtc / 12), 2);
+                                decimal totalBasicsalary = Math.Round((((decimal)(ctc.Basic) / noOfDays) * (decimal)item.Attendance) / 12, 2);
+                                decimal totalhra = Math.Round((((decimal)(ctc.HouseRentAllowance) / noOfDays) * (decimal)item.Attendance) / 12, 2) ;
+                                decimal totalSpecialAllowance = Math.Round((((decimal)(ctc.SpecialAllowance) / noOfDays) * (decimal)item.Attendance) / 12, 2);
+                                decimal totalConveyanceallowance = Math.Round((((decimal)(ctc.Conveyanceallowance) / noOfDays) * (decimal)item.Attendance) / 12, 2) ;
+                                decimal totalMedicalAllowance = Math.Round((((decimal)(ctc.Medical) / noOfDays) * (decimal)item.Attendance)/ 12, 2)  ;
+                                decimal totalVariablePay = Math.Round((((decimal)(ctc.VariablePay) / noOfDays) * (decimal)item.Attendance) / 12, 2) ;
 
+                                decimal checknum = noOfDays - (decimal)item.Attendance;
                                 if (item.Id != 0)
                                 {
                                     Empattendance emp = new Empattendance
@@ -733,11 +740,16 @@ namespace CRM.Controllers
                                         Entry = DateTime.Now,
                                         Incentive = item.Incentive,
                                         TravellingAllowance = item.TravellingAllowance,
-                                        GenerateSalary = item.GenerateSalary,
-                                        Lop = totalsalary - item.GenerateSalary - item.EmpEpfvalue - item.EmpEsivalue,
-                                       // Lop = 0,
+                                        GenerateSalary =  item.GenerateSalary ,
+                                        Lop = (checknum > 0) ? Math.Round(((totalsalary / noOfDays) * checknum), 2) : 0,
                                         EmpEpfvalue = item.EmpEpfvalue,
                                         EmpEsivalue = item.EmpEsivalue,
+                                        Basicsalary = totalBasicsalary,
+                                        Hra = totalhra,
+                                        SpecialAllowance = totalSpecialAllowance,
+                                        Conveyanceallowance = totalConveyanceallowance,
+                                        MedicalAllowance = totalMedicalAllowance,
+                                        VariablePay = totalVariablePay,
                                     };
 
                                     _context.Empattendances.Add(emp);
@@ -795,7 +807,7 @@ namespace CRM.Controllers
                 }
                 else
                 {
-                    TempData["Message"] = "No data found for the selected month and year.";
+                    //TempData["Message"] = "No data found for the selected month and year.";
                     return View();
                 }
 
@@ -836,20 +848,23 @@ namespace CRM.Controllers
                                         Employee_ID = emp.EmployeeId,
                                         First_Name = emp.FirstName,
                                         Address_Line_1 = worklocation.City1,
-                                        Epf = empsalary.Epf,
                                         Designation_Name = designation.DesignationName,
                                         Bank_Name = empbank.BankName,
                                         Account_Number = empbank.AccountNumber,
-                                        Basic = empsalary.Basic,
                                         EPF_Number = empbank.EpfNumber,
                                         Month = getMonthName((int)empatt.Month, false),
-                                        Year = empatt.Year,
-                                        HouseRentAllowance = empsalary.HouseRentAllowance,
+                                        Year = empatt.Year,                          
                                         Lop = empatt.Lop,
                                         Professionaltax = empsalary.Professionaltax,
                                         TravellingAllowance = empatt.TravellingAllowance,
-                                        SpecialAllowance = empsalary.SpecialAllowance,
-                                        Esic = empsalary.Esic,
+                                        Esic = empatt.EmpEsivalue,
+                                        Epf = empatt.EmpEpfvalue,
+                                        Basic = empatt.Basicsalary,
+                                        HouseRentAllowance = empatt.Hra,
+                                        SpecialAllowance = empatt.SpecialAllowance,
+                                        Conveyanceallowance = empatt.Conveyanceallowance,
+                                        MA = empatt.MedicalAllowance,
+                                        VariablePay = empatt.VariablePay,
                                         //Amount = tds.Amount,
                                         CompanyName = vrs.CompanyName,
                                         CompanyImage = vrs.CompanyImage
@@ -3359,12 +3374,12 @@ namespace CRM.Controllers
                                 if (EmployeeEsiData.TryGetValue(employeesdata.EmployeeId, out var esiPercentage))
                                 {
                                     EmployeeEsi = decimal.Round((empbasic * esiPercentage) / 100, 2);
-                                    monthlyPay -= EmployeeEsi;
+                                    //monthlyPay -= EmployeeEsi;
                                 }
                                 if (EmployeeEpfData.TryGetValue(employeesdata.EmployeeId, out var epfPercentage))
                                 {
                                     EmployeeEpf = decimal.Round((empbasic * epfPercentage) / 100, 2);
-                                    monthlyPay -= EmployeeEpf;
+                                    //monthlyPay -= EmployeeEpf;
                                 }
                             }
                             else 
@@ -3373,7 +3388,7 @@ namespace CRM.Controllers
                                 if (EmployeeEpfData.TryGetValue(employeesdata.EmployeeId, out var epfPercentage))
                                 {
                                     EmployeeEpf = decimal.Round((empbasic * epfPercentage) / 100, 2);
-                                    monthlyPay -= EmployeeEpf;
+                                    //monthlyPay -= EmployeeEpf;
                                 }
                                 EmployeeEsi = 0;
                             }
@@ -4115,15 +4130,15 @@ namespace CRM.Controllers
                     if(totalsalary < Esidata.EsicAmount)
                     {
                         EmployeeEsi = decimal.Round((empbasic * EmployeeEsiData) / 100, 2);
-                        monthlyPay -= EmployeeEsi;
+                        //monthlyPay -= EmployeeEsi;
 
                         EmployeeEpf = decimal.Round((empbasic * EmployeeEpfData) / 100, 2);
-                        monthlyPay -= EmployeeEpf;
+                        //monthlyPay -= EmployeeEpf;
                     }
                     else
                     {
                         EmployeeEpf = decimal.Round((empbasic * EmployeeEpfData) / 100, 2);
-                        monthlyPay -= EmployeeEpf;
+                        //monthlyPay -= EmployeeEpf;
                         EmployeeEsi = 0;
                     }
                 }

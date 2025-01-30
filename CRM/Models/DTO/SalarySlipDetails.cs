@@ -15,7 +15,7 @@
         public string? DA { get; set; }
         public decimal? HouseRentAllowance { get; set; }
         public string? WA { get; set; }       
-        public string? MA { get; set; }        
+        public decimal? MA { get; set; }        
         public string? TotalEarning { get; set; }
         public string? NetPay { get; set; }
         public string? InWords { get; set; }
@@ -35,6 +35,10 @@
         public string? CompanyName { get; set; }
         public string? CompanyImage { get; set; }
         public int? vendorid { get; set; }
+        public decimal? Conveyanceallowance { get; set; }
+        public decimal? VariablePay { get; set; }
+        public decimal? Incentive { get; set; }
+
     }
 }
 
