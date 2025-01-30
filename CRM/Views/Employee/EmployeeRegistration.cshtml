@@ -1125,12 +1125,17 @@
                     var epfMaster = parseFloat($('#txtEPFMaster').val()) || 0;
                     var Esi = parseFloat($('#ESIC').val()) || 0;
                     var EsiMaster = parseFloat($('#ESICMaster').val()) || 0;
+                     var special = parseFloat($('#SpecialAllowance').val()) || 0;
 
-                    var totalSpecial = AnnualCTC - BasicSalary - Hra - Conveyance - Medical - VariablePay - epf - epfMaster - Esi - EsiMaster;
-                    var monthlyGrossPay = BasicSalary + Hra + totalSpecial + Conveyance + Medical + VariablePay;
+                    // if(special > 0)
+                    // {
+                    //     var totalSpecial = AnnualCTC - BasicSalary - Hra - Conveyance - Medical - VariablePay - epf - epfMaster - Esi - EsiMaster;
+                    //     var monthlyGrossPay = BasicSalary + Hra + totalSpecial + Conveyance + Medical + VariablePay;
 
-                    $('#SpecialAllowance').val(totalSpecial.toFixed(2));
-                    $('#txtMonthlyGrossPay').val(monthlyGrossPay.toFixed(2));
+                    //     $('#SpecialAllowance').val(totalSpecial.toFixed(2));
+                    //     $('#txtMonthlyGrossPay').val(monthlyGrossPay.toFixed(2));
+                    // }
+                   
 
                 }
 
