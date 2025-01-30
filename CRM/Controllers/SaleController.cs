@@ -583,7 +583,7 @@ namespace CRM.Controllers
                     }
 
                     var vendor = _context.VendorRegistrations.FirstOrDefault(x => x.Id == result.VendorId);
-                    string pdfFileName = $"Invoice_{InvoiceNumber}.pdf";
+                    string pdfFileName = $"{InvoiceNumber}.pdf";
                     string wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "CustomerInvoicefile");
                     if (!Directory.Exists(wwwRootPath))
                     {
