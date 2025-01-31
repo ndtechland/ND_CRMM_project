@@ -70,6 +70,7 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.Engineering;
 using Org.BouncyCastle.Ocsp;
 using Umbraco.Core;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace CRM.Controllers
 {
@@ -1303,7 +1304,7 @@ namespace CRM.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GenerateSalaryReport(string customerId, int Month, int year, string WorkLocation)
+        public async Task<IActionResult> GenerateSalaryReport(int customerId = 0, int Month = 0, int year = 0, int WorkLocation = 0)
         {
             try
             {
@@ -1313,16 +1314,23 @@ namespace CRM.Controllers
                 ViewBag.yearid = year;
                 if (customerId != null && Month != null && year != null && WorkLocation != null)
                 {
-                    ViewBag.CustomerName = _context.CustomerRegistrations.Select(x => new SelectListItem
+                    int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                    var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
+                    var checkvendor = _context.VendorRegistrations.Where(x => x.Id == adminlogin.Vendorid).FirstOrDefault();
+                    ViewBag.CheckSelectCompany = checkvendor.SelectCompany;
+                    if (checkvendor.SelectCompany == true)
                     {
-                        Value = x.Id.ToString(),
-                        Text = x.CompanyName
-                    }).ToList();
+                        ViewBag.CustomerName = _context.CustomerRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).Select(x => new SelectListItem
+                        {
+                            Value = x.Id.ToString(),
+                            Text = x.CompanyName
+                        }).ToList();
+                    }
                     GenerateSalaryReportDTO salary = new GenerateSalaryReportDTO();
 
 
 
-                    salary.GenerateSalaryReports = await _ICrmrpo.GenerateSalaryReport(customerId, Month, year, WorkLocation);
+                    salary.GenerateSalaryReports = await _ICrmrpo.GenerateSalaryReport(customerId, Month, year, WorkLocation, (int)adminlogin.Vendorid);
                     decimal total = 0.00M;
                     foreach (var item in salary.GenerateSalaryReports)
                     {
@@ -4269,6 +4277,22 @@ namespace CRM.Controllers
                 EmployeeEsi = EmployeeEsi
             });
         }
+        public JsonResult GetLocationsByCustomer(int customerId)
+        {
+            var worklocationIds = _context.WorkLocations1
+                .Where(x => x.Customerid == customerId)
+                .Select(x => x.Id)  
+                .ToList();  
+
+            var worklocationnamelist = _context.AddWorkLocations
+                .Where(x => worklocationIds.Contains((int)x.WorkLocationid))  
+                .Select(x => new { Value = x.WorkLocationid, Text = x.WorkLocationName })
+                .ToList();
+
+            return Json(worklocationnamelist);
+        }
+
+
 
     }
 
