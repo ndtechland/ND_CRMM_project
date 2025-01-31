@@ -694,7 +694,7 @@ namespace CRM.Controllers
                 noOfDays = Convert.ToDecimal(attendanceDays.Nodays);
                 foreach (Empattendance empattendance in customers)
                 {
-                    var months = await _context.Empattendances.Where(x => x.Month == month && x.Year == DateTime.Now.Year && x.EmployeeId == empattendance.EmployeeId).ToListAsync();
+                    var months = await _context.Empattendances.Where(x => x.Month == empattendance.Month && x.Year == empattendance.Year && x.EmployeeId == empattendance.EmployeeId).ToListAsync();
                     if (months.Count > 0)
                     {
                         isActive = true;
@@ -721,7 +721,7 @@ namespace CRM.Controllers
                                         await _context.SaveChangesAsync();
                                     }
                                 }
-                                decimal totalsalary = Math.Round((decimal)(ctc.AnnualCtc / 12), 2);
+                                decimal totalsalary = Math.Round((decimal)(ctc.MonthlyGrossPay / 12), 2);
                                 decimal totalBasicsalary = Math.Round((((decimal)(ctc.Basic) / noOfDays) * (decimal)item.Attendance) / 12, 2);
                                 decimal totalhra = Math.Round((((decimal)(ctc.HouseRentAllowance) / noOfDays) * (decimal)item.Attendance) / 12, 2) ;
                                 decimal totalSpecialAllowance = Math.Round((((decimal)(ctc.SpecialAllowance) / noOfDays) * (decimal)item.Attendance) / 12, 2);
@@ -735,8 +735,8 @@ namespace CRM.Controllers
                                     Empattendance emp = new Empattendance
                                     {
                                         EmployeeId = item.EmployeeId,
-                                        Month = month,
-                                        Year = DateTime.Now.Year,
+                                        Month = item.Month,
+                                        Year = item.Year,
                                         Attendance = item.Attendance,
                                         Entry = DateTime.Now,
                                         Incentive = item.Incentive,
@@ -1278,13 +1278,19 @@ namespace CRM.Controllers
         {
             try
             {
-
-
-                ViewBag.CustomerName = _context.CustomerRegistrations.Select(x => new SelectListItem
-                {
-                    Value = x.Id.ToString(),
-                    Text = x.CompanyName
-                }).ToList();
+				int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+				var adminlogin =  _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
+				var checkvendor =  _context.VendorRegistrations.Where(x => x.Id == adminlogin.Vendorid).FirstOrDefault();
+                ViewBag.CheckSelectCompany = checkvendor.SelectCompany;
+                if (checkvendor.SelectCompany == true)
+				{
+					ViewBag.CustomerName = _context.CustomerRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).Select(x => new SelectListItem
+					{
+						Value = x.Id.ToString(),
+						Text = x.CompanyName
+					}).ToList();
+				}
+				
                 ViewBag.ErrorMessage = TempData["ErrorMessage"];
                 return View();
 
@@ -1707,7 +1713,7 @@ namespace CRM.Controllers
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var data = _ICrmrpo.salarydetail(Userid).Result;
                 var response = _ICrmrpo.ImportToExcelAttendance(data);
-                return File(response, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Employee_Attandence_List.xlsx");
+                return File(response, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "EmployeeSalaryDetails.xlsx");
             }
             catch (Exception Ex)
             {
@@ -1814,7 +1820,19 @@ namespace CRM.Controllers
                                 {
                                     attend.Grosspay = Convert.ToInt32(row[col].ToString());
                                 }
-                                else if (col.Caption == "Attendance")
+								//else if (col.Caption == "MonthlyPay")
+								//{
+								//	attend.Grosspay = Convert.ToInt32(row[col].ToString());
+								//}
+								//else if (col.Caption == "Employee Epf")
+								//{
+								//	attend.Grosspay = Convert.ToInt32(row[col].ToString());
+								//}
+								//else if (col.Caption == "Employee Esi")
+								//{
+								//	attend.Grosspay = Convert.ToInt32(row[col].ToString());
+								//}
+								else if (col.Caption == "Attendance")
                                 {
                                     attend.Attendance = Convert.ToInt32(row[col].ToString());
                                 }
@@ -3245,7 +3263,7 @@ namespace CRM.Controllers
 
             var ctcData = await _context.EmployeeSalaryDetails
                                         .Where(x => employeeIds.Contains(x.EmployeeId))
-                                        .ToDictionaryAsync(x => x.EmployeeId, x => x.AnnualCtc / 12 ?? 0);
+                                        .ToDictionaryAsync(x => x.EmployeeId, x => x.MonthlyGrossPay / 12 ?? 0);
             var EmployeeEpfData = await _context.EmployeeSalaryDetails
                                                  .Where(x => employeeIds.Contains(x.EmployeeId))
                                                  .ToDictionaryAsync(x => x.EmployeeId, x => x.Epfpercentage ?? 0);
@@ -3255,7 +3273,9 @@ namespace CRM.Controllers
             var EmployeebasicData = await _context.EmployeeSalaryDetails
                                                 .Where(x => employeeIds.Contains(x.EmployeeId))
                                                 .ToDictionaryAsync(x => x.EmployeeId, x => (x.Basic) / 12);
-
+            var EmployeeMonthlyCtc = await _context.EmployeeSalaryDetails
+                                                .Where(x => employeeIds.Contains(x.EmployeeId))
+                                                .ToDictionaryAsync(x => x.EmployeeId, x => x.MonthlyCtc);
             var leaveCounts = await _context.ApplyLeaveNews
                                              .Where(leave => employeeIds.Contains(leave.UserId) &&
                                                              leave.Isapprove == 2 &&
@@ -3354,9 +3374,9 @@ namespace CRM.Controllers
 
                     decimal monthlyPay = 0;
                     decimal empbasic = 0;
+                    decimal totalSalary = 0;
                     if (TotalsalaryDeduction > 0 && ctcData.TryGetValue(employeesdata.EmployeeId, out var monthlyCtc))
                     {
-                        decimal totalSalary = decimal.Round(monthlyCtc, 2);
                         monthlyPay = decimal.Round((monthlyCtc / noOfDays) * TotalsalaryDeduction, 2);
 
                         if (monthlyPay > 0)
@@ -3369,18 +3389,21 @@ namespace CRM.Controllers
                             {
                                 empbasic = decimal.Round((basic / noOfDays) * TotalsalaryDeduction, 2);
                             }
-
+                            if (EmployeeMonthlyCtc.TryGetValue(employeesdata.EmployeeId, out var MonthlyCtc))
+                            {
+                                totalSalary = decimal.Round((decimal)MonthlyCtc, 2);
+                            }
                             if (totalSalary < Esidata.EsicAmount) 
                             {
                                 if (EmployeeEsiData.TryGetValue(employeesdata.EmployeeId, out var esiPercentage))
                                 {
                                     EmployeeEsi = decimal.Round((empbasic * esiPercentage) / 100, 2);
-                                    //monthlyPay -= EmployeeEsi;
+                                    monthlyPay -= EmployeeEsi;
                                 }
                                 if (EmployeeEpfData.TryGetValue(employeesdata.EmployeeId, out var epfPercentage))
                                 {
                                     EmployeeEpf = decimal.Round((empbasic * epfPercentage) / 100, 2);
-                                    //monthlyPay -= EmployeeEpf;
+                                    monthlyPay -= EmployeeEpf;
                                 }
                             }
                             else 
@@ -3389,7 +3412,7 @@ namespace CRM.Controllers
                                 if (EmployeeEpfData.TryGetValue(employeesdata.EmployeeId, out var epfPercentage))
                                 {
                                     EmployeeEpf = decimal.Round((empbasic * epfPercentage) / 100, 2);
-                                    //monthlyPay -= EmployeeEpf;
+                                    monthlyPay -= EmployeeEpf;
                                 }
                                 EmployeeEsi = 0;
                             }
@@ -4135,7 +4158,7 @@ namespace CRM.Controllers
 
             var ctcData = await _context.EmployeeSalaryDetails
                                         .Where(x => x.EmployeeId == employeeId)
-                                        .Select(x => x.AnnualCtc / 12 ?? 0)
+                                        .Select(x => x.MonthlyGrossPay / 12 ?? 0)
                                         .FirstOrDefaultAsync();
 
             var EmployeeEpfData = await _context.EmployeeSalaryDetails
@@ -4151,7 +4174,10 @@ namespace CRM.Controllers
                                    .Where(x => x.EmployeeId == employeeId)
                                    .Select(x => (x.Basic) / 12) 
                                    .FirstOrDefaultAsync();
-
+            var EmployeeMonthlyCtc = await _context.EmployeeSalaryDetails
+                                   .Where(x => x.EmployeeId == employeeId)
+                                   .Select(x => x.MonthlyCtc)
+                                   .FirstOrDefaultAsync();
 
 
             var shiftTime = await _context.Officeshifts
@@ -4212,21 +4238,21 @@ namespace CRM.Controllers
             {
                 monthlyPay = decimal.Round((ctcData / TotalnoOfDays) * TotalsalaryDeduction, 2);
                 decimal empbasic = decimal.Round((EmployeebasicData / TotalnoOfDays) * TotalsalaryDeduction, 2);
-                decimal totalsalary = decimal.Round((ctcData), 2);
+                decimal totalsalary = decimal.Round(((decimal)EmployeeMonthlyCtc), 2);
                 if (monthlyPay > 0)
                 {
                     if(totalsalary < Esidata.EsicAmount)
                     {
                         EmployeeEsi = decimal.Round((empbasic * EmployeeEsiData) / 100, 2);
-                        //monthlyPay -= EmployeeEsi;
+                        monthlyPay -= EmployeeEsi;
 
                         EmployeeEpf = decimal.Round((empbasic * EmployeeEpfData) / 100, 2);
-                        //monthlyPay -= EmployeeEpf;
+                        monthlyPay -= EmployeeEpf;
                     }
                     else
                     {
                         EmployeeEpf = decimal.Round((empbasic * EmployeeEpfData) / 100, 2);
-                        //monthlyPay -= EmployeeEpf;
+                        monthlyPay -= EmployeeEpf;
                         EmployeeEsi = 0;
                     }
                 }

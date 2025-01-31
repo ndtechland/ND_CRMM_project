@@ -311,24 +311,26 @@
 		var modelCount = @Model.Count();
 		var selectedMonth = $('#Month').val();
 		var year = $('#Year').val();
-		if (!selectedMonth) {
+		if (!year || year == "0") {
 			Swal.fire({
-				title: 'Error',
+				icon: "warning",
+				title: "Year Missing",
+				text: "Please select a year first.",
+				confirmButtonText: "OK",
+			});
+			return;
+		}
+
+		if (!selectedMonth || selectedMonth == "0") {
+			Swal.fire({
+				icon: "warning",
+				title: "Month Missing",
 				text: "Please select a month.",
-				icon: 'error',
-				confirmButtonText: 'OK'
+				confirmButtonText: "OK",
 			});
 			return;
 		}
-		if (!year) {
-			Swal.fire({
-				title: 'Error',
-				text: "Please select a year.",
-				icon: 'error',
-				confirmButtonText: 'OK'
-			});
-			return;
-		}
+
 		if (tbody.children().length > 0) {
 			var modeldata = [];
 			$('#datatable tbody tr').each(function () {
@@ -637,6 +639,29 @@
 
 
 	function ExportExcelfn() {
+		var month = document.getElementById('Month').value;
+		var year = document.getElementById('Year').value;
+
+		if (!year || year == "0") {
+			Swal.fire({
+				icon: "warning",
+				title: "Year Missing",
+				text: "Please select a year first.",
+				confirmButtonText: "OK",
+			});
+			return;
+		}
+
+		if (!month || month == "0") {
+			Swal.fire({
+				icon: "warning",
+				title: "Month Missing",
+				text: "Please select a month.",
+				confirmButtonText: "OK",
+			});
+			return;
+		}
+
 		window.location.href = '/Employee/ImportToExcelAttendance';
 	}
 
@@ -645,6 +670,29 @@
 
 <script>
 	function showLoading() {
+		var month = document.getElementById('Month').value;
+		var year = document.getElementById('Year').value;
+
+		if (!year || year == "0") {
+			Swal.fire({
+				icon: "warning",
+				title: "Year Missing",
+				text: "Please select a year first.",
+				confirmButtonText: "OK",
+			});
+			return;
+		}
+
+		if (!month || month == "0") {
+			Swal.fire({
+				icon: "warning",
+				title: "Month Missing",
+				text: "Please select a month.",
+				confirmButtonText: "OK",
+			});
+			return;
+		}
+
 		var formData = new FormData();
 		formData.append('upload', $('#file-upload')[0].files[0]);
 
@@ -656,26 +704,33 @@
 			contentType: false,
 			processData: false,
 			success: function (data) {
-				if (data != null || data.length != 0) {
+				// Corrected condition: Ensure data is not null and has content
+				if (data != null && data.length != 0) {
 					data.forEach(function (item) {
 						var $row = $("td:contains('" + item.employeeId + "')").closest('tr');
 						if ($row.length) {
+							// Ensure attendance is capped at 30 if the value exceeds
 							if (parseInt(item.attendance) < 30) {
 								$row.find(".attnd").val(item.attendance);
+								
 							} else {
 								$row.find(".attnd").val(30);
+								
 							}
-
+							$row.find('input[name="Attendance"]').trigger('input');
 						}
 					});
+					alert("Upload successful");
+
+					//MonthlyadjustmentAttendance();  
 				}
-				alert("Upload successful");
 			},
 			error: function () {
 				alert("Error uploading file");
 			}
 		});
 	}
+
 </script>
 <script>
 	$(document).ready(function () {
@@ -686,14 +741,25 @@
 		var year = document.getElementById('Year').value;
 
 		if (!year || year == "0") {
-			alert("Please select a year first.");
+			Swal.fire({
+				icon: "warning",
+				title: "Year Missing",
+				text: "Please select a year first.",
+				confirmButtonText: "OK",
+			});
 			return;
 		}
 
 		if (!month || month == "0") {
-			alert("Please select a month.");
+			Swal.fire({
+				icon: "warning",
+				title: "Month Missing",
+				text: "Please select a month.",
+				confirmButtonText: "OK",
+			});
 			return;
 		}
+
 
 		$.ajax({
 			url: '@Url.Action("getEmpattendancedays", "Employee")',
@@ -792,7 +858,7 @@
 	// $(document).ready(function () {
 	//     updateMonthlyPay();
 	// });
-	function MonthlyadjustmentAttendance() {
+	function OnExcelImportadjustmentAttendance() {
 		$('#datatable tbody').on('input', 'input[name="Attendance"]', function () {
 			var row = $(this).closest('tr');
 			var month = $('#Month').val();
@@ -800,16 +866,25 @@
 			var employeeId = row.find('td:nth-child(6)').text().trim();
 			var attendance = parseFloat($(this).val()) || 0;
 
-			if (!year || year === "0") {
-				alert("Please select a year first.");
+			if (!year || year == "0") {
+				Swal.fire({
+					icon: "warning",
+					title: "Year Missing",
+					text: "Please select a year first.",
+					confirmButtonText: "OK",
+				});
 				return;
 			}
 
-			if (!month || month === "0") {
-				alert("Please select a month.");
+			if (!month || month == "0") {
+				Swal.fire({
+					icon: "warning",
+					title: "Month Missing",
+					text: "Please select a month.",
+					confirmButtonText: "OK",
+				});
 				return;
 			}
-
 			$.ajax({
 				url: '@Url.Action("EmpMonthlyadjustmentAttendance", "Employee")',
 				type: 'POST',
@@ -875,6 +950,93 @@
 		MonthlyadjustmentAttendance();
 	});
 
+	function MonthlyadjustmentAttendance() {
+		$('#datatable tbody').on('input', 'input[name="Attendance"]', function () {
+			var row = $(this).closest('tr');
+			var month = $('#Month').val();
+			var year = $('#Year').val();
+			var employeeId = row.find('td:nth-child(6)').text().trim();
+			var attendance = parseFloat($(this).val()) || 0;
+
+			if (!year || year == "0") {
+				Swal.fire({
+					icon: "warning",
+					title: "Year Missing",
+					text: "Please select a year first.",
+					confirmButtonText: "OK",
+				});
+				return;
+			}
+
+			if (!month || month == "0") {
+				Swal.fire({
+					icon: "warning",
+					title: "Month Missing",
+					text: "Please select a month.",
+					confirmButtonText: "OK",
+				});
+				return;
+			}
+			$.ajax({
+				url: '@Url.Action("EmpMonthlyadjustmentAttendance", "Employee")',
+				type: 'POST',
+				data: {
+					month: month,
+					year: year,
+					employeeId: employeeId,
+					NoOfDays: attendance
+				},
+				// success: function (response) {
+				// 	if (response && response.employeeId) {
+				// 		row.find('input[name="Attendance"]').val(response.leaveRemaining);
+				// 		row.find('td:nth-child(10)').text(response.monthlyPay.toFixed(2));
+				// 		row.find('td:nth-child(11)').text(response.employeeEpf.toFixed(2));
+				// 		row.find('td:nth-child(12)').text(response.employeeEsi.toFixed(2));
+				// 	} else {
+				// 		alert(response.message || "No attendance data available.");
+				// 	}
+				// },
+				// error: function () {
+				// 	alert("An error occurred while fetching attendance data.");
+				// }
+				success: function (response) {
+					console.log("AJAX Response:", response); // Debugging
+
+					if (response && response.employeeId) {
+						row.find('input[name="Attendance"]').val(response.leaveRemaining);
+						row.find('td:nth-child(10)').text(response.monthlyPay.toFixed(2));
+						row.find('td:nth-child(11)').text(response.employeeEpf.toFixed(2));
+						row.find('td:nth-child(12)').text(response.employeeEsi.toFixed(2));
+
+					} else {
+						Swal.fire({
+							title: 'Warning',
+							text: response.message || "No attendance data available.",
+							icon: 'warning',
+							confirmButtonText: 'OK'
+						}).then(() => {
+							row.find('input[name="Attendance"]').val(0);
+							row.find('td:nth-child(10)').text('0.00');
+							row.find('td:nth-child(11)').text('0.00');
+							row.find('td:nth-child(12)').text('0.00');
+						});
+					}
+				},
+
+				error: function (xhr, status, error) {
+					console.log("AJAX Error:", error); // Debugging
+
+					Swal.fire({
+						title: 'Error',
+						text: 'An error occurred while fetching attendance data. Please try again.',
+						icon: 'error',
+						confirmButtonText: 'OK'
+					});
+				}
+
+			});
+		});
+	}
 
 	function validateNumericInput(event) {
 		if ([67, 86, 88].includes(event.keyCode) && (event.ctrlKey || event.metaKey) ||
@@ -888,7 +1050,7 @@
 
 <script>
 	const currentYear = new Date().getFullYear();
-	const startYear = 2022;
+	const startYear = 2023;
 
 	// Get the dropdown element
 	const yearDropdown = document.getElementById("Year");
