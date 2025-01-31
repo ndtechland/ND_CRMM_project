@@ -946,43 +946,36 @@ namespace CRM.Repository
         //    }
         //}
 
-        public async Task<List<GenerateSalaryReportDTO>> GenerateSalaryReport(string customerId, int Month, int year, string WorkLocation)
+        public async Task<List<GenerateSalaryReportDTO>> GenerateSalaryReport(int customerId =0, int Month=0, int year=0, int WorkLocation=0 ,int userid = 0)
         {
             try
             {
-                SqlConnection con = new SqlConnection(_context.Database.GetConnectionString());
-                SqlCommand cmd = new SqlCommand("GetGenerateSalary_Report", con);
-                cmd.Parameters.Add(new SqlParameter("@CustomerID", SqlDbType.Int) { Value = Convert.ToInt32(customerId) });
-                cmd.Parameters.Add(new SqlParameter("@Month", SqlDbType.Int) { Value = Convert.ToInt32(Month) });
-                cmd.Parameters.Add(new SqlParameter("@year", SqlDbType.Int) { Value = Convert.ToInt32(year) });
-                cmd.Parameters.Add(new SqlParameter("@WorkLocation", SqlDbType.Int) { Value = Convert.ToInt32(WorkLocation) });
-                cmd.CommandType = CommandType.StoredProcedure;
-                con.Open();
-                SqlDataReader rdr = cmd.ExecuteReader();
-                List<GenerateSalaryReportDTO> emp = new List<GenerateSalaryReportDTO>();
-                while (rdr.Read())
+                using (var con = new SqlConnection(_context.Database.GetConnectionString()))
                 {
-                    var emps = new GenerateSalaryReportDTO()
+                    var parameters = new
                     {
-                        Id = Convert.ToInt32(rdr["id"]),
-                        EmployeeId = Convert.ToString(rdr["Employee_ID"]),
-                        EmployeeName = Convert.ToString(rdr["First_Name"]),
-                        MonthlyGrossPay = Convert.ToDecimal(rdr["MonthlyGrossPay"]),
-                        MonthlyCtc = Convert.ToDecimal(rdr["MonthlyCTC"]),
-                        GenerateSalary = Convert.ToDecimal(rdr["GenerateSalary"]),
-                        EPF = Convert.ToDecimal(rdr["EPF"]),
-                        ESIC = Convert.ToDecimal(rdr["ESIC"])
+                        CustomerID = customerId,
+                        Month = Month,
+                        Year = year,
+                        WorkLocation = WorkLocation,
+                        userid = userid 
                     };
 
-                    emp.Add(emps);
+                    string storedProcedure = "GetGenerateSalary_Report";
+
+                    var result = await con.QueryAsync<GenerateSalaryReportDTO>(
+                        storedProcedure,
+                        parameters,
+                        commandType: CommandType.StoredProcedure
+                    );
+
+                    return result.ToList();
                 }
-                return emp;
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("Error generating salary report", ex);
             }
-
         }
 
         public async Task<List<EPFReportDTO>> EPFReport(string customerId, int Month, int year, string WorkLocation)
