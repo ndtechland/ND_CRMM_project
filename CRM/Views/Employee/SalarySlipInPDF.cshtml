@@ -94,8 +94,8 @@
                                 <tr>
                                     <th scope="row">Medical Allowance</th>
                                     <td>@(Model.MA ?? 0)</td>
-                                    <td>PT</td>
-                                    <td>@(Model.Professionaltax ?? 0)</td>
+                                    <td></td>
+                                    <td></td>
                                 </tr>
                                 <tr>
                                     <th>Variable Pay</th>
@@ -103,18 +103,24 @@
                                      <td></td>
                                      <td></td>
                                 </tr>
-                                <tr>
-                                    <th>TA</th>
-                                  <td>@(Model.TravellingAllowance ?? 0)</td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
+                                @if (Model.TravellingAllowance != null)
+                                {
+                                    <tr>
+                                        <th>TA</th>
+                                        <td>@(Model.TravellingAllowance ?? 0)</td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                }
+                                @if (Model.Incentive != null)
+                                {
                                 <tr>
                                     <th>Incentive Pay</th>
                                     <td>@(Model.Incentive ?? 0)</td>
                                     <td></td>
                                     <td></td>
                                 </tr>
+                                }
                                 <tr class="border-top">
                                     <th scope="row">Total Earning</th>
                                     <td>
@@ -136,8 +142,8 @@
                                             decimal totaldeductions = (Model.Epf ?? 0m) +
                                             (Model.Esic ?? 0m) +
                                             (Model.Amount ?? 0m) +
-                                            (Model.Lop ?? 0m) +
-                                            (Model.Professionaltax ?? 0m) ;
+                                            (Model.Lop ?? 0m) 
+                                            ;
 
                                             @totaldeductions
                                         }
@@ -150,7 +156,7 @@
                     <div class="row">
                         <div class="col-md-4">
                             <br>
-                            <span id="totalAmount"><b>Net Pay:</b> @(totalEarning)</span>
+                            <span id="totalAmount"><b>Net Pay:</b> @(totalEarning - totaldeductions)</span>
                         </div>
                     </div>
                     <div id="result"></div>
@@ -160,7 +166,8 @@
                       <div class="d-flex flex-column mt-2">
                             <span class="fw-bolder">@Model.CompanyName</span>
                           <span class="mt-4">Authorised Signatory</span>
-                            <img src="~/assets/images/layout-2/logo/signature.png" alt="Signature Image" />
+                            @*                             <img src="~/assets/images/layout-2/logo/signature.png" alt="Signature Image" />*@
+                            <img src="~/assets/images/CompanyImage/@Model.CompanyImage" alt="Signature Image" />
 
                        </div>
                       </div>

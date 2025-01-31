@@ -41,21 +41,28 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-body">
-                                
+
                                 <div></div>
                                 <form asp-action="GenerateSalaryReport" autocomplete="off" method="post">
                                     <div class="row">
-                                        <div class="form-group col-md-3">
-                                            <label for="validationCustom0">Company Name</label>
-                                            <select class="form-control" id="CustomerID" name="CustomerID" onchange="Locations()">
-                                                <option value="">-- Select Company --</option>
+                                        @{
+                                            var CheckSelectCompany = ViewBag.CheckSelectCompany;
+                                        }
+                                        @if (CheckSelectCompany == true)
+                                        {
+                                            <div class="form-group col-md-3">
 
-                                                @foreach (var item in ViewBag.CustomerName)
-                                                {
-                                                    <option value="@item.Value">@item.Text</option>
-                                                }
-                                            </select>
-                                        </div>
+                                                <label for="validationCustom0">Company Name</label>
+                                                <select class="form-control" id="CustomerID" name="CustomerID" onchange="Locations()">
+                                                    <option value="">-- Select Company --</option>
+
+                                                    @foreach (var item in ViewBag.CustomerName)
+                                                    {
+                                                        <option value="@item.Value">@item.Text</option>
+                                                    }
+                                                </select>
+                                            </div>
+                                       
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Work Location</label>
                                             <select class="form-control col-md-" id="LocationID" name="WorkLocation">
@@ -63,6 +70,7 @@
 
                                             </select>
                                         </div>
+                                        }
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Month</label>
                                             <select id="Month" class="form-control" name="Month">
@@ -86,9 +94,7 @@
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">Year</label>
                                             <select id="Year" class="form-control col-md-" name="Year">
-                                                <option value="">-- Select Year --</option>
-                                                <option value="2023">2023</option>
-                                                <option value="2024">2024</option>
+                                                <option value="0">-- Select Year --</option>
                                             </select>
                                         </div>
                                     </div>
@@ -170,9 +176,9 @@
                                                                 </tbody>
                                                             </table>
                                                         }
-                                                          @*else
+                                                        @*else
                                                         {
-                                                           <script>alert('No salary details found.');</script>
+                                                        <script>alert('No salary details found.');</script>
                                                         }*@
                                                     </div>
                                                     @if (Model != null)
@@ -356,5 +362,20 @@
             window.location.href = '/Employee/Invoice?customerId=' + CustomerID + '&Month=' + Month + '&year=' + Year + '&WorkLocation=' + WorkLocation;
         }
 
+    }
+</script>
+<script>
+    const currentYear = new Date().getFullYear();
+    const startYear = 2023;
+
+    // Get the dropdown element
+    const yearDropdown = document.getElementById("Year");
+
+    // Add year options from startYear to currentYear
+    for (let year = startYear; year <= currentYear; year++) {
+        const option = document.createElement("option");
+        option.value = year;
+        option.textContent = year;
+        yearDropdown.appendChild(option);
     }
 </script>
