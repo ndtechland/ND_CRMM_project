@@ -80,7 +80,7 @@
                                     <td>@(Model.Esic ?? 0)</td>
                                 </tr>
                                 <tr>
-                                    <th scope="row">SPL. Deduction</th>
+                                    <th scope="row">Special Allowance</th>
                                     <td>@(Model.SpecialAllowance ?? 0)</td>
                                     <td>TDS</td>
                                     <td>@(Model.Amount ?? 0)</td>
@@ -92,16 +92,10 @@
                                     <td>@(Model.Lop ?? 0)</td>
                                 </tr>
                                 <tr>
-                                    <th scope="row">Medical Allowance</th>
-                                    <td>@(Model.MA ?? 0)</td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                                <tr>
                                     <th>Variable Pay</th>
                                     <td>@(Model.VariablePay ?? 0)</td>
-                                     <td></td>
-                                     <td></td>
+                                    <td> Medical Allowance</td>
+                                    <td>@(Model.MA ?? 0)</td>
                                 </tr>
                                 @if (Model.TravellingAllowance != null)
                                 {
@@ -129,7 +123,6 @@
                                             (Model.HouseRentAllowance ?? 0m) +
                                             (Model.SpecialAllowance ?? 0m) +
                                             (Model.Conveyanceallowance ?? 0m) +
-                                            (Model.MA ?? 0m) +
                                             (Model.VariablePay ?? 0m);
 
                                             @totalEarning
@@ -142,8 +135,7 @@
                                             decimal totaldeductions = (Model.Epf ?? 0m) +
                                             (Model.Esic ?? 0m) +
                                             (Model.Amount ?? 0m) +
-                                            (Model.Lop ?? 0m) 
-                                            ;
+                                            (Model.Lop ?? 0m) + (Model.MA ?? 0m);
 
                                             @totaldeductions
                                         }
