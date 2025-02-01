@@ -68,7 +68,9 @@ using jsreport.AspNetCore;
 using jsreport.Types;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.Engineering;
 using Org.BouncyCastle.Ocsp;
-
+using Umbraco.Core;
+using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace CRM.Controllers
 {
@@ -689,10 +691,11 @@ namespace CRM.Controllers
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 var attendanceDays = await _context.Attendancedays.FirstOrDefaultAsync(x => x.Vendorid == adminlogin.Vendorid);
-
+                decimal noOfDays = 0;
+                noOfDays = Convert.ToDecimal(attendanceDays.Nodays);
                 foreach (Empattendance empattendance in customers)
                 {
-                    var months = await _context.Empattendances.Where(x => x.Month == month && x.Year == DateTime.Now.Year && x.EmployeeId == empattendance.EmployeeId).ToListAsync();
+                    var months = await _context.Empattendances.Where(x => x.Month == empattendance.Month && x.Year == empattendance.Year && x.EmployeeId == empattendance.EmployeeId).ToListAsync();
                     if (months.Count > 0)
                     {
                         isActive = true;
@@ -719,23 +722,36 @@ namespace CRM.Controllers
                                         await _context.SaveChangesAsync();
                                     }
                                 }
-                                decimal totalsalary = (decimal)(Convert.ToDecimal(attendanceDays.Nodays) * item.GenerateSalary);
+                                decimal totalsalary = Math.Round((decimal)(ctc.MonthlyGrossPay / 12), 2);
+                                decimal totalBasicsalary = Math.Round((((decimal)(ctc.Basic) / noOfDays) * (decimal)item.Attendance) / 12, 2);
+                                decimal totalhra = Math.Round((((decimal)(ctc.HouseRentAllowance) / noOfDays) * (decimal)item.Attendance) / 12, 2) ;
+                                decimal totalSpecialAllowance = Math.Round((((decimal)(ctc.SpecialAllowance) / noOfDays) * (decimal)item.Attendance) / 12, 2);
+                                decimal totalConveyanceallowance = Math.Round((((decimal)(ctc.Conveyanceallowance) / noOfDays) * (decimal)item.Attendance) / 12, 2) ;
+                                decimal totalMedicalAllowance = Math.Round((((decimal)(ctc.Medical) / noOfDays) * (decimal)item.Attendance)/ 12, 2)  ;
+                                decimal totalVariablePay = Math.Round((((decimal)(ctc.VariablePay) / noOfDays) * (decimal)item.Attendance) / 12, 2) ;
+
+                                decimal checknum = noOfDays - (decimal)item.Attendance;
                                 if (item.Id != 0)
                                 {
                                     Empattendance emp = new Empattendance
                                     {
                                         EmployeeId = item.EmployeeId,
-                                        Month = month,
-                                        Year = DateTime.Now.Year,
+                                        Month = item.Month,
+                                        Year = item.Year,
                                         Attendance = item.Attendance,
                                         Entry = DateTime.Now,
                                         Incentive = item.Incentive,
                                         TravellingAllowance = item.TravellingAllowance,
-                                        GenerateSalary = item.GenerateSalary,
-                                       // Lop = totalsalary - item.GenerateSalary,
-                                        Lop = 0,
+                                        GenerateSalary =  item.GenerateSalary ,
+                                        Lop = (checknum > 0) ? Math.Round(((totalsalary / noOfDays) * checknum), 2) : 0,
                                         EmpEpfvalue = item.EmpEpfvalue,
                                         EmpEsivalue = item.EmpEsivalue,
+                                        Basicsalary = totalBasicsalary,
+                                        Hra = totalhra,
+                                        SpecialAllowance = totalSpecialAllowance,
+                                        Conveyanceallowance = totalConveyanceallowance,
+                                        MedicalAllowance = totalMedicalAllowance,
+                                        VariablePay = totalVariablePay,
                                     };
 
                                     _context.Empattendances.Add(emp);
@@ -793,7 +809,7 @@ namespace CRM.Controllers
                 }
                 else
                 {
-                    TempData["Message"] = "No data found for the selected month and year.";
+                    //TempData["Message"] = "No data found for the selected month and year.";
                     return View();
                 }
 
@@ -834,20 +850,23 @@ namespace CRM.Controllers
                                         Employee_ID = emp.EmployeeId,
                                         First_Name = emp.FirstName,
                                         Address_Line_1 = worklocation.City1,
-                                        Epf = empsalary.Epf,
                                         Designation_Name = designation.DesignationName,
                                         Bank_Name = empbank.BankName,
                                         Account_Number = empbank.AccountNumber,
-                                        Basic = empsalary.Basic,
                                         EPF_Number = empbank.EpfNumber,
                                         Month = getMonthName((int)empatt.Month, false),
-                                        Year = empatt.Year,
-                                        HouseRentAllowance = empsalary.HouseRentAllowance,
+                                        Year = empatt.Year,                          
                                         Lop = empatt.Lop,
                                         Professionaltax = empsalary.Professionaltax,
                                         TravellingAllowance = empatt.TravellingAllowance,
-                                        SpecialAllowance = empsalary.SpecialAllowance,
-                                        Esic = empsalary.Esic,
+                                        Esic = empatt.EmpEsivalue,
+                                        Epf = empatt.EmpEpfvalue,
+                                        Basic = empatt.Basicsalary,
+                                        HouseRentAllowance = empatt.Hra,
+                                        SpecialAllowance = empatt.SpecialAllowance,
+                                        Conveyanceallowance = empatt.Conveyanceallowance,
+                                        MA = empatt.MedicalAllowance,
+                                        VariablePay = empatt.VariablePay,
                                         //Amount = tds.Amount,
                                         CompanyName = vrs.CompanyName,
                                         CompanyImage = vrs.CompanyImage
@@ -1260,13 +1279,19 @@ namespace CRM.Controllers
         {
             try
             {
-
-
-                ViewBag.CustomerName = _context.CustomerRegistrations.Select(x => new SelectListItem
-                {
-                    Value = x.Id.ToString(),
-                    Text = x.CompanyName
-                }).ToList();
+				int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+				var adminlogin =  _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
+				var checkvendor =  _context.VendorRegistrations.Where(x => x.Id == adminlogin.Vendorid).FirstOrDefault();
+                ViewBag.CheckSelectCompany = checkvendor.SelectCompany;
+                if (checkvendor.SelectCompany == true)
+				{
+					ViewBag.CustomerName = _context.CustomerRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).Select(x => new SelectListItem
+					{
+						Value = x.Id.ToString(),
+						Text = x.CompanyName
+					}).ToList();
+				}
+				
                 ViewBag.ErrorMessage = TempData["ErrorMessage"];
                 return View();
 
@@ -1279,7 +1304,7 @@ namespace CRM.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GenerateSalaryReport(string customerId, int Month, int year, string WorkLocation)
+        public async Task<IActionResult> GenerateSalaryReport(int customerId = 0, int Month = 0, int year = 0, int WorkLocation = 0)
         {
             try
             {
@@ -1289,16 +1314,23 @@ namespace CRM.Controllers
                 ViewBag.yearid = year;
                 if (customerId != null && Month != null && year != null && WorkLocation != null)
                 {
-                    ViewBag.CustomerName = _context.CustomerRegistrations.Select(x => new SelectListItem
+                    int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                    var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
+                    var checkvendor = _context.VendorRegistrations.Where(x => x.Id == adminlogin.Vendorid).FirstOrDefault();
+                    ViewBag.CheckSelectCompany = checkvendor.SelectCompany;
+                    if (checkvendor.SelectCompany == true)
                     {
-                        Value = x.Id.ToString(),
-                        Text = x.CompanyName
-                    }).ToList();
+                        ViewBag.CustomerName = _context.CustomerRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).Select(x => new SelectListItem
+                        {
+                            Value = x.Id.ToString(),
+                            Text = x.CompanyName
+                        }).ToList();
+                    }
                     GenerateSalaryReportDTO salary = new GenerateSalaryReportDTO();
 
 
 
-                    salary.GenerateSalaryReports = await _ICrmrpo.GenerateSalaryReport(customerId, Month, year, WorkLocation);
+                    salary.GenerateSalaryReports = await _ICrmrpo.GenerateSalaryReport(customerId, Month, year, WorkLocation, (int)adminlogin.Vendorid);
                     decimal total = 0.00M;
                     foreach (var item in salary.GenerateSalaryReports)
                     {
@@ -1689,7 +1721,7 @@ namespace CRM.Controllers
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var data = _ICrmrpo.salarydetail(Userid).Result;
                 var response = _ICrmrpo.ImportToExcelAttendance(data);
-                return File(response, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Employee_Attandence_List.xlsx");
+                return File(response, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "EmployeeSalaryDetails.xlsx");
             }
             catch (Exception Ex)
             {
@@ -1796,7 +1828,19 @@ namespace CRM.Controllers
                                 {
                                     attend.Grosspay = Convert.ToInt32(row[col].ToString());
                                 }
-                                else if (col.Caption == "Attendance")
+								//else if (col.Caption == "MonthlyPay")
+								//{
+								//	attend.Grosspay = Convert.ToInt32(row[col].ToString());
+								//}
+								//else if (col.Caption == "Employee Epf")
+								//{
+								//	attend.Grosspay = Convert.ToInt32(row[col].ToString());
+								//}
+								//else if (col.Caption == "Employee Esi")
+								//{
+								//	attend.Grosspay = Convert.ToInt32(row[col].ToString());
+								//}
+								else if (col.Caption == "Attendance")
                                 {
                                     attend.Attendance = Convert.ToInt32(row[col].ToString());
                                 }
@@ -3206,6 +3250,7 @@ namespace CRM.Controllers
             }
 
             var attendanceDays = await _context.Attendancedays.FirstOrDefaultAsync(x => x.Vendorid == adminLogin.Vendorid);
+            var Esidata = await _context.EmployeeEsicPayrollInfos.FirstOrDefaultAsync(x => x.Vendorid == adminLogin.Vendorid);
 
             if (attendanceDays == null)
             {
@@ -3226,7 +3271,7 @@ namespace CRM.Controllers
 
             var ctcData = await _context.EmployeeSalaryDetails
                                         .Where(x => employeeIds.Contains(x.EmployeeId))
-                                        .ToDictionaryAsync(x => x.EmployeeId, x => x.AnnualCtc / 12 ?? 0);
+                                        .ToDictionaryAsync(x => x.EmployeeId, x => x.MonthlyGrossPay / 12 ?? 0);
             var EmployeeEpfData = await _context.EmployeeSalaryDetails
                                                  .Where(x => employeeIds.Contains(x.EmployeeId))
                                                  .ToDictionaryAsync(x => x.EmployeeId, x => x.Epfpercentage ?? 0);
@@ -3236,7 +3281,9 @@ namespace CRM.Controllers
             var EmployeebasicData = await _context.EmployeeSalaryDetails
                                                 .Where(x => employeeIds.Contains(x.EmployeeId))
                                                 .ToDictionaryAsync(x => x.EmployeeId, x => (x.Basic) / 12);
-
+            var EmployeeMonthlyCtc = await _context.EmployeeSalaryDetails
+                                                .Where(x => employeeIds.Contains(x.EmployeeId))
+                                                .ToDictionaryAsync(x => x.EmployeeId, x => x.MonthlyCtc);
             var leaveCounts = await _context.ApplyLeaveNews
                                              .Where(leave => employeeIds.Contains(leave.UserId) &&
                                                              leave.Isapprove == 2 &&
@@ -3335,6 +3382,7 @@ namespace CRM.Controllers
 
                     decimal monthlyPay = 0;
                     decimal empbasic = 0;
+                    decimal totalSalary = 0;
                     if (TotalsalaryDeduction > 0 && ctcData.TryGetValue(employeesdata.EmployeeId, out var monthlyCtc))
                     {
                         monthlyPay = decimal.Round((monthlyCtc / noOfDays) * TotalsalaryDeduction, 2);
@@ -3343,20 +3391,38 @@ namespace CRM.Controllers
                         {
                             EmployeeEpf = 0;
                             EmployeeEsi = 0;
+                            empbasic = 0;
+
                             if (EmployeebasicData.TryGetValue(employeesdata.EmployeeId, out var basic))
                             {
                                 empbasic = decimal.Round((basic / noOfDays) * TotalsalaryDeduction, 2);
                             }
-                            if (EmployeeEpfData.TryGetValue(employeesdata.EmployeeId, out var epfPercentage))
+                            if (EmployeeMonthlyCtc.TryGetValue(employeesdata.EmployeeId, out var MonthlyCtc))
                             {
-                                EmployeeEpf = decimal.Round((empbasic * epfPercentage) / 100, 2);
-                                monthlyPay -= EmployeeEpf;
+                                totalSalary = decimal.Round((decimal)MonthlyCtc, 2);
                             }
-
-                            if (EmployeeEsiData.TryGetValue(employeesdata.EmployeeId, out var esiPercentage))
+                            if (totalSalary < Esidata.EsicAmount) 
                             {
-                                EmployeeEsi = decimal.Round((empbasic * esiPercentage) / 100, 2);
-                                monthlyPay -= EmployeeEsi;
+                                if (EmployeeEsiData.TryGetValue(employeesdata.EmployeeId, out var esiPercentage))
+                                {
+                                    EmployeeEsi = decimal.Round((empbasic * esiPercentage) / 100, 2);
+                                    monthlyPay -= EmployeeEsi;
+                                }
+                                if (EmployeeEpfData.TryGetValue(employeesdata.EmployeeId, out var epfPercentage))
+                                {
+                                    EmployeeEpf = decimal.Round((empbasic * epfPercentage) / 100, 2);
+                                    monthlyPay -= EmployeeEpf;
+                                }
+                            }
+                            else 
+                            {
+                               
+                                if (EmployeeEpfData.TryGetValue(employeesdata.EmployeeId, out var epfPercentage))
+                                {
+                                    EmployeeEpf = decimal.Round((empbasic * epfPercentage) / 100, 2);
+                                    monthlyPay -= EmployeeEpf;
+                                }
+                                EmployeeEsi = 0;
                             }
                         }
                     }
@@ -3633,11 +3699,15 @@ namespace CRM.Controllers
         {
             try
             {
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                bool checktomulticustomer = _context.VendorRegistrations.Any(x => x.Id == adminlogin.Vendorid && x.SelectCompany == true);
                 // Step 1: Create a DataTable and add columns
                 DataTable dt = new DataTable();
-
-                // Define all columns (original names)
-                var columns = new List<string>
+                
+                
+                    // Define all columns (original names)
+                    var columns = new List<string>
         {
             "FirstName", "MiddleName", "LastName",
             "DateOfJoining", "WorkEmail", "GenderID", "WorkLocationID", "DesignationID", "DepartmentID",
@@ -3651,6 +3721,12 @@ namespace CRM.Controllers
             "Account_Holder_Name", "Bank_Name", "Account_Number", "Re_Enter_Account_Number", "IFSC", "EPF_Number",
              "Employee_Contribution_Rate", "Account_Type_ID", "nominee" ,"EmployeeId"
         };
+                if (checktomulticustomer)
+                {
+                    columns.Add("Customer Name");
+                    columns.Add("Customer Location");
+                }
+
 
                 foreach (var column in columns)
                 {
@@ -3727,6 +3803,11 @@ namespace CRM.Controllers
             { "nominee", "Nominee Name" },
             { "EmployeeId", "Employee Id" }
         };
+                if (checktomulticustomer)
+{
+    customHeaders.Add("CustomerCode", "Customer Name");
+    customHeaders.Add("CustomerName", "Customer Location");
+}
 
                 // Step 4: Create an Excel workbook
                 using (var workbook = new XLWorkbook())
@@ -3822,6 +3903,9 @@ namespace CRM.Controllers
                 string Mode = "INS";
                 string Empid = "";
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                bool checktomulticustomer = _context.VendorRegistrations.Any(x => x.Id == adminlogin.Vendorid && x.SelectCompany == true);
+
+
                 //if (!string.IsNullOrEmpty(model.Emp_Reg_ID))
                 //{
                 //    Mode = "UPD";
@@ -3839,12 +3923,112 @@ namespace CRM.Controllers
                 //        return View();
                 //    }
                 //}
-
+                var count = 0;
+                List<ExcelErrorModel> excelErrorModels = new List<ExcelErrorModel>();
                 foreach (DataRow row in dataTable.Rows)
                 {
+                    //290125
+                    count++;
+                    var mobno = row[36]?.ToString() ?? string.Empty;
+
+                    if (string.IsNullOrWhiteSpace(row[0]?.ToString()))
+                    {
+                        excelErrorModels.Add(new ExcelErrorModel
+                        {
+                            ErrorType = "First Name",
+                            AffectedRow = count,
+                            Description = $"First Name can not be empty"
+                        });
+                    }
+                    if (!mobno.All(char.IsDigit))
+                    {
+                        excelErrorModels.Add(new ExcelErrorModel
+                        {
+                            ErrorType = "Mobile Number",
+                            AffectedRow = count,
+                            Description = $"Mobile Number {mobno} contains invalid characters. Only digits are allowed."
+                        });
+                    }
+                    else if (_context.EmployeePersonalDetails.Any(e => e.MobileNumber == mobno))
+                    {
+                        excelErrorModels.Add(new ExcelErrorModel
+                        {
+                            ErrorType = "Mobile Number",
+                            AffectedRow = count,
+                            Description = $"Mobile Number {mobno} already exists."
+                        });
+                    }
+                    else if (mobno.ToString().Length != 10)
+                    {
+                        excelErrorModels.Add(new ExcelErrorModel
+                        {
+                            ErrorType = "Mobile Number",
+                            AffectedRow = count,
+                            Description = $"Mobile no. {mobno} must be exactly 10 digits."
+                        });
+                    }
+                    // Email Validation
+                    var workemail = row[4]?.ToString() ?? string.Empty;
+
+                    if (!Regex.IsMatch(workemail, @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", RegexOptions.IgnoreCase))
+                    {
+                        excelErrorModels.Add(new ExcelErrorModel
+                        {
+                            ErrorType = "Work Email Address",
+                            AffectedRow = count,
+                            Description = $"Work email address {workemail} is invalid. Please provide a valid email."
+                        });
+                    }
+                    var validGenders = new List<string> { "male", "female", "other" };
+                    // Validate Gender
+                    if (!validGenders.Contains(row[5]?.ToString().ToLower()))
+                    {
+                        excelErrorModels.Add(new ExcelErrorModel
+                        {
+                            ErrorType = "Gender",
+                            AffectedRow = count,
+                            Description = $"Kindly check the employee Gender: {row[5]?.ToString()}."
+                        });
+                    }
+                    // Validate for pincode
+                    if ((bool)row[44]?.ToString().Any(c => !char.IsDigit(c)))
+                    {
+                        excelErrorModels.Add(new ExcelErrorModel
+                        {
+                            ErrorType = "Pincode",
+                            AffectedRow = count,
+                            Description = $"Pincode {row[44]?.ToString()} contains invalid characters. Only digits are allowed."
+                        });
+                    }
+                    else if (row[44]?.ToString().Length != 6)
+                    {
+                        excelErrorModels.Add(new ExcelErrorModel
+                        {
+                            ErrorType = "Pincode",
+                            AffectedRow = count,
+                            Description = $"Pincode {row[44]?.ToString()} must be exactly 6 digits."
+                        });
+                    }
+
+                }
+
+                if (excelErrorModels.Any())
+                {
+                    TempData["HasErrors"] = true;
+                    TempData["ExcelErrors"] = Newtonsoft.Json.JsonConvert.SerializeObject(excelErrorModels);
+                    return RedirectToAction("EmployeeRegistration");
+                }
+                //end 290125
+                foreach (DataRow row in dataTable.Rows)
+                {
+
                   //  Empid = GenerateEmployeeId();
                     //string gender = row[38]?.ToString();
                     //model.EmployeeId = Empid;
+
+                    Empid = GenerateEmployeeId();
+                    model.EmployeeId = Empid;
+
                     model.Vendorid = adminlogin.Vendorid != 0 ? adminlogin.Vendorid : 0;
                     model.CustomerCompanyid = 27;
                     // Bind data using column indexes (replace hardcoded column numbers as necessary)
@@ -3853,15 +4037,21 @@ namespace CRM.Controllers
                     model.LastName = row[2]?.ToString();
                     model.DateOfJoining = row[3] != DBNull.Value ? Convert.ToDateTime(row[3]) : DateTime.MinValue;
                     model.WorkEmail = row[4]?.ToString();
-                    //model.GenderID = row[5] != DBNull.Value ? Convert.ToInt32(_context.GenderMasters.Where(x =>x.GenderName.ToLower() == row[5].ToString().ToLower()).FirstOrDefault().Id) : (int?)null;
-                    model.GenderID = row[5] != DBNull.Value ? Convert.ToInt32(row[5]) : (int?)null;
-                    model.WorkLocationID = row[6] != DBNull.Value ? Convert.ToInt32(row[6]) : 0;
-                    model.DesignationID = row[7] != DBNull.Value ? Convert.ToInt32(row[7]) : 0;
-                    model.DepartmentID = row[8] != DBNull.Value ? Convert.ToInt32(row[8]) : 0;
-                    model.stateId = row[9] != DBNull.Value ? Convert.ToInt32(row[9]) : 0;
-                    model.offerletterid = row[10] != DBNull.Value ? Convert.ToInt32(row[10]) : 0;
+                    model.GenderID = row[5] != DBNull.Value ? Convert.ToInt32(_context.GenderMasters.Where(x =>x.GenderName.ToLower() == row[5].ToString().ToLower()).FirstOrDefault().Id) : (int?)null;
+                    //model.GenderID = row[5] != DBNull.Value ? Convert.ToInt32(row[5]) : (int?)null;
+                    model.WorkLocationID = row[6] != DBNull.Value ? Convert.ToInt32(_context.Cities.Where(x => x.City1.ToLower() == row[6].ToString().ToLower()).FirstOrDefault().Id) : 0;
+                    //model.WorkLocationID = row[6] != DBNull.Value ? Convert.ToInt32(row[6]) : 0;
+                    model.DesignationID = row[7] != DBNull.Value ? Convert.ToInt32(_context.DesignationMasters.Where(x => x.DesignationName.ToLower() == row[7].ToString().ToLower()).FirstOrDefault().Id) : 0;
+                    //model.DesignationID = row[7] != DBNull.Value ? Convert.ToInt32(row[7]) : 0;
+                    model.DepartmentID = row[8] != DBNull.Value ? Convert.ToInt32(_context.DepartmentMasters.Where(x => x.DepartmentName.ToLower() == row[8].ToString().ToLower()).FirstOrDefault().Id) : 0;
+                    //model.DepartmentID = row[8] != DBNull.Value ? Convert.ToInt32(row[8]) : 0;
+                    model.stateId = row[9] != DBNull.Value ? Convert.ToInt32(_context.StateMasters.Where(x => x.StateName.ToLower() == row[9].ToString().ToLower()).FirstOrDefault().Id) : 0;
+                    //model.stateId = row[9] != DBNull.Value ? Convert.ToInt32(row[9]) : 0;
+                    model.offerletterid = row[10] != DBNull.Value ? Convert.ToInt32(_context.Offerletters.Where(x => x.Name.ToLower() == row[10].ToString().ToLower()).FirstOrDefault().Id) : 0;
+                    //model.offerletterid = row[10] != DBNull.Value ? Convert.ToInt32(row[10]) : 0;
 
                     model.officeshiftTypeid = row[11] != DBNull.Value ? Convert.ToInt32(row[11]) : 0;
+                    //model.officeshiftTypeid = row[11] != DBNull.Value ? Convert.ToInt32(row[11]) : 0;
 
                     // Salary Details
                     model.AnnualCTC = row[12] != DBNull.Value ? Convert.ToDecimal(row[12]) : 0;
@@ -3896,8 +4086,10 @@ namespace CRM.Controllers
                     model.PAN = row[39]?.ToString();
                     model.AddressLine1 = row[40]?.ToString();
                     model.AddressLine2 = row[41]?.ToString();
-                    model.City = row[42]?.ToString();
-                    model.StateID = row[43]?.ToString();
+                    model.City = row[42] != DBNull.Value ? Convert.ToString(_context.Cities.Where(x => x.City1.ToLower() == row[42].ToString().ToLower()).FirstOrDefault().Id) : "0";
+                    //model.City = row[42]?.ToString();
+                    model.StateID = row[43] != DBNull.Value ? Convert.ToString(_context.StateMasters.Where(x => x.StateName.ToLower() == row[43].ToString().ToLower()).FirstOrDefault().Id) : "0";
+                    //model.StateID = row[43]?.ToString();
                     model.Pincode = row[44]?.ToString();
 
                     // Bank Details
@@ -3910,14 +4102,23 @@ namespace CRM.Controllers
                     model.Employee_Contribution_Rate = row[51]?.ToString();
                     model.AccountTypeID = row[52] != DBNull.Value ? Convert.ToInt32(row[52]) : 0;
                     model.nominee = row[53]?.ToString();
+
                     model.EmployeeId = row[54]?.ToString();
                       Empid = model.EmployeeId;
+
+
+                    if (checktomulticustomer)
+                    {
+                        model.CustomerCompanyid = row[54] != DBNull.Value ? Convert.ToInt32(row[52]) : 0;
+                        //model. = row[55]?.ToString();
+                    }
 
                     if (model != null)
                     {
                         var response = await _ICrmrpo.EmpRegistration(model, Mode, Empid, Userid);
                     }
                 }
+                TempData["Message"] = "WorkEmail already exists";
                 return Json(new { Success = true, Message = "Data imported successfully." });
             }
             catch (Exception ex)
@@ -3945,16 +4146,20 @@ namespace CRM.Controllers
             }
 
             var attendanceDays = await _context.Attendancedays.FirstOrDefaultAsync(x => x.Vendorid == adminLogin.Vendorid);
+            var Esidata = await _context.EmployeeEsicPayrollInfos.FirstOrDefaultAsync(x => x.Vendorid == adminLogin.Vendorid);
 
             if (attendanceDays == null)
             {
                 return new JsonResult(new { success = false, message = "Attendance days not found or invalid" });
             }
+            decimal monthlyPay = 0;
             decimal TotalnoOfDays = 0;
             TotalnoOfDays = Convert.ToDecimal(attendanceDays.Nodays);
             if (noOfDays > TotalnoOfDays)
             {
                 noOfDays = 0;
+                return new JsonResult(new { success = false, message = "Number is greater than " + TotalnoOfDays });
+
             }
             else
             {
@@ -3973,7 +4178,7 @@ namespace CRM.Controllers
 
             var ctcData = await _context.EmployeeSalaryDetails
                                         .Where(x => x.EmployeeId == employeeId)
-                                        .Select(x => x.AnnualCtc / 12 ?? 0)
+                                        .Select(x => x.MonthlyGrossPay / 12 ?? 0)
                                         .FirstOrDefaultAsync();
 
             var EmployeeEpfData = await _context.EmployeeSalaryDetails
@@ -3989,7 +4194,10 @@ namespace CRM.Controllers
                                    .Where(x => x.EmployeeId == employeeId)
                                    .Select(x => (x.Basic) / 12) 
                                    .FirstOrDefaultAsync();
-
+            var EmployeeMonthlyCtc = await _context.EmployeeSalaryDetails
+                                   .Where(x => x.EmployeeId == employeeId)
+                                   .Select(x => x.MonthlyCtc)
+                                   .FirstOrDefaultAsync();
 
 
             var shiftTime = await _context.Officeshifts
@@ -4046,19 +4254,27 @@ namespace CRM.Controllers
 
                 TotalsalaryDeduction = (noOfDays == 0) ? 0 : noOfDays;
 
-            decimal monthlyPay = 0;
             if (TotalsalaryDeduction > 0)
             {
                 monthlyPay = decimal.Round((ctcData / TotalnoOfDays) * TotalsalaryDeduction, 2);
                 decimal empbasic = decimal.Round((EmployeebasicData / TotalnoOfDays) * TotalsalaryDeduction, 2);
-
+                decimal totalsalary = decimal.Round(((decimal)EmployeeMonthlyCtc), 2);
                 if (monthlyPay > 0)
                 {
-                    EmployeeEpf = decimal.Round((empbasic * EmployeeEpfData) / 100, 2);
-                    monthlyPay -= EmployeeEpf;
+                    if(totalsalary < Esidata.EsicAmount)
+                    {
+                        EmployeeEsi = decimal.Round((empbasic * EmployeeEsiData) / 100, 2);
+                        monthlyPay -= EmployeeEsi;
 
-                    EmployeeEsi = decimal.Round((empbasic * EmployeeEsiData) / 100, 2);
-                    monthlyPay -= EmployeeEsi;
+                        EmployeeEpf = decimal.Round((empbasic * EmployeeEpfData) / 100, 2);
+                        monthlyPay -= EmployeeEpf;
+                    }
+                    else
+                    {
+                        EmployeeEpf = decimal.Round((empbasic * EmployeeEpfData) / 100, 2);
+                        monthlyPay -= EmployeeEpf;
+                        EmployeeEsi = 0;
+                    }
                 }
             }
 
@@ -4073,6 +4289,22 @@ namespace CRM.Controllers
                 EmployeeEsi = EmployeeEsi
             });
         }
+        public JsonResult GetLocationsByCustomer(int customerId)
+        {
+            var worklocationIds = _context.WorkLocations1
+                .Where(x => x.Customerid == customerId)
+                .Select(x => x.Id)  
+                .ToList();  
+
+            var worklocationnamelist = _context.AddWorkLocations
+                .Where(x => worklocationIds.Contains((int)x.WorkLocationid))  
+                .Select(x => new { Value = x.WorkLocationid, Text = x.WorkLocationName })
+                .ToList();
+
+            return Json(worklocationnamelist);
+        }
+
+
 
     }
 

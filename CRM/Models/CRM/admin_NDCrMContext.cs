@@ -719,6 +719,10 @@ namespace CRM.Models.Crm
                     .HasColumnType("decimal(9, 2)")
                     .HasColumnName("attendance");
 
+                entity.Property(e => e.Basicsalary).HasColumnType("decimal(9, 2)");
+
+                entity.Property(e => e.Conveyanceallowance).HasColumnType("decimal(9, 2)");
+
                 entity.Property(e => e.EmpEpfvalue).HasColumnType("decimal(9, 2)");
 
                 entity.Property(e => e.EmpEsivalue).HasColumnType("decimal(9, 2)");
@@ -731,13 +735,23 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.GenerateSalary).HasColumnType("decimal(18, 2)");
 
+                entity.Property(e => e.Hra)
+                    .HasColumnType("decimal(9, 2)")
+                    .HasColumnName("hra");
+
                 entity.Property(e => e.Incentive).HasColumnType("decimal(18, 0)");
 
                 entity.Property(e => e.Lop).HasColumnType("decimal(18, 2)");
 
+                entity.Property(e => e.MedicalAllowance).HasColumnType("decimal(9, 2)");
+
                 entity.Property(e => e.SalarySlip).HasMaxLength(250);
 
+                entity.Property(e => e.SpecialAllowance).HasColumnType("decimal(9, 2)");
+
                 entity.Property(e => e.TravellingAllowance).HasColumnType("decimal(18, 0)");
+
+                entity.Property(e => e.VariablePay).HasColumnType("decimal(9, 2)");
 
                 entity.Property(e => e.Year).HasColumnName("year");
             });

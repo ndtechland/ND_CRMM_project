@@ -74,52 +74,63 @@
                                     <td>@(Model.Epf ?? 0)</td>
                                 </tr>
                                 <tr>
-                                    <th scope="row">DA</th>
-                                    <td>550.00</td>
+                                    <th scope="row">HRA</th>
+                                    <td>@(Model.HouseRentAllowance ?? 0)</td>
                                     <td>ESI</td>
                                     <td>@(Model.Esic ?? 0)</td>
                                 </tr>
                                 <tr>
-                                    <th scope="row">HRA</th>
-                                    <td>@(Model.HouseRentAllowance ?? 0)</td>
+                                    <th scope="row">SPL. Deduction</th>
+                                    <td>@(Model.SpecialAllowance ?? 0)</td>
                                     <td>TDS</td>
                                     <td>@(Model.Amount ?? 0)</td>
                                 </tr>
                                 <tr>
-                                    <th scope="row">WA</th>
-                                    <td>120.00 </td>
+                                    <th scope="row">Conveyance allowance</th>
+                                    <td>@(Model.Conveyanceallowance ?? 0)</td>
                                     <td>LOP</td>
                                     <td>@(Model.Lop ?? 0)</td>
                                 </tr>
                                 <tr>
-                                    <th scope="row">SPL. Deduction</th>
-                                    <td>@(Model.SpecialAllowance ?? 0)</td>
-                                    <td>PT</td>
-                                    <td>@(Model.Professionaltax ?? 0)</td>
-                                </tr>
-                                <tr>
-                                    <th>MA</th>
-                                    <td>3000.00</td>
-                                     <td></td>
-                                     <td></td>
-                                </tr>
-                                <tr>
-                                    <th>TA</th>
-                                  <td>@(Model.TravellingAllowance ?? 0)</td>
+                                    <th scope="row">Medical Allowance</th>
+                                    <td>@(Model.MA ?? 0)</td>
                                     <td></td>
                                     <td></td>
                                 </tr>
+                                <tr>
+                                    <th>Variable Pay</th>
+                                    <td>@(Model.VariablePay ?? 0)</td>
+                                     <td></td>
+                                     <td></td>
+                                </tr>
+                                @if (Model.TravellingAllowance != null)
+                                {
+                                    <tr>
+                                        <th>TA</th>
+                                        <td>@(Model.TravellingAllowance ?? 0)</td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                }
+                                @if (Model.Incentive != null)
+                                {
+                                <tr>
+                                    <th>Incentive Pay</th>
+                                    <td>@(Model.Incentive ?? 0)</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                }
                                 <tr class="border-top">
                                     <th scope="row">Total Earning</th>
                                     <td>
                                         @{
                                             decimal totalEarning = (Model.Basic ?? 0m) +
-                                            550.00m +
                                             (Model.HouseRentAllowance ?? 0m) +
-                                            120.00m +
                                             (Model.SpecialAllowance ?? 0m) +
-                                            3000.00m +
-                                            (Model.TravellingAllowance ?? 0m);
+                                            (Model.Conveyanceallowance ?? 0m) +
+                                            (Model.MA ?? 0m) +
+                                            (Model.VariablePay ?? 0m);
 
                                             @totalEarning
                                         }
@@ -131,8 +142,8 @@
                                             decimal totaldeductions = (Model.Epf ?? 0m) +
                                             (Model.Esic ?? 0m) +
                                             (Model.Amount ?? 0m) +
-                                            (Model.Lop ?? 0m) +
-                                            (Model.Professionaltax ?? 0m) ;
+                                            (Model.Lop ?? 0m) 
+                                            ;
 
                                             @totaldeductions
                                         }
@@ -150,12 +161,12 @@
                     </div>
                     <div id="result"></div>
 
-
                     <div class="d-flex justify-content-end">
                       <div class="d-flex flex-column mt-2">
                             <span class="fw-bolder">@Model.CompanyName</span>
                           <span class="mt-4">Authorised Signatory</span>
-                            <img src="~/assets/images/layout-2/logo/signature.png" alt="Signature Image" />
+                            @*                             <img src="~/assets/images/layout-2/logo/signature.png" alt="Signature Image" />*@
+                            <img src="~/CompanyImage/@Model.CompanyImage" alt="Signature Image" />
 
                        </div>
                       </div>

@@ -55,7 +55,7 @@ namespace CRM.Repository
         public EmployeeSalaryDetail GetempSalaryDetailtById(string EmployeeId);
         public Task<int> updateSalaryDetail(EmployeeSalaryDetail model);
         public Task<int> updateCustomerReg(Customer model);
-        public Task<List<GenerateSalaryReportDTO>> GenerateSalaryReport(string customerId, int Month, int year, string WorkLocation);
+        public Task<List<GenerateSalaryReportDTO>> GenerateSalaryReport(int customerId = 0, int Month = 0, int year = 0, int WorkLocation = 0,int userid = 0);
         public Task<List<EPFReportDTO>> EPFReport(string customerId, int Month, int year, string WorkLocation);
         public Task<List<EPFReportDTO>> ESIReport(string customerId, int Month, int year, string WorkLocation);
         public EmployeerEpf GetEmployer(int id);

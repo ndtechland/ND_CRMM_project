@@ -124,8 +124,6 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class=" table-responsive" >
-                                    @if (Model != null && Model.GeneratedSalaries.Count > 0)
-                                    {
                                         <table id="datatable" class="table table-responsive">
                                             <thead>
                                                 <tr style="background-color: #00baf2;">
@@ -154,7 +152,9 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @{
+                                            @{
+                                                if (Model != null && Model.GeneratedSalaries.Count > 0)
+                                                {
                                                     var count = 0;
                                                     foreach (var item in Model.GeneratedSalaries)
                                                     {
@@ -185,10 +185,10 @@
                                                         </tr>
                                                     }
                                                 }
-
+                                            }
                                             </tbody>
                                         </table>
-                                    }
+                                   
                                 </div>
                             </div>
                         </div>
@@ -227,6 +227,9 @@
     });
 </script>
 <script type="text/javascript">
+    // $(document).ready(function () {
+    //     $('#datatable').DataTable();
+    // });
     function downloadPDF(id, month) {
         // Update URL to include the 'month' parameter
         var url = '@Url.Action("DocPDF", "Employee")' + '?id=' + id + '&month=' + month;
@@ -290,74 +293,8 @@
     }
 </script>
 
-<script>
-    $('.select2').select2();
-</script>
 
 
-<script>
-    var currentPage = 1;
-    var rowsPerPage = 5;
-    $(document).ready(function () {
-        function paginateTable() {
-            var table = $('#datatable');
-            var rows = table.find('tbody tr');
-
-
-            var totalPages = Math.ceil(rows.length / rowsPerPage);
-
-
-            var pagination = $('#pagination');
-            pagination.empty();
-
-            for (var i = 1; i <= totalPages; i++) {
-                var link = $('<li class="page-item"><a class="page-link" href="#">' + i + '</a></li>');
-
-
-                if (i === currentPage) {
-                    link.addClass('active');
-                }
-
-                pagination.append(link);
-            }
-
-
-            var startIndex = (currentPage - 1) * rowsPerPage;
-            var endIndex = startIndex + rowsPerPage;
-
-            rows.hide().slice(startIndex, endIndex).show();
-        }
-
-
-        paginateTable();
-
-        $(document).on('click', '#pagination li a', function (event) {
-            event.preventDefault();
-
-            var clickedPage = parseInt($(this).text());
-
-
-            currentPage = clickedPage;
-            paginateTable();
-
-
-            $('html, body').animate({ scrollTop: $('#table-container').offset().top }, 'slow');
-        });
-    });
-
-</script>
-<script>
-
-    $(document).ready(function () {
-
-        $("#Month").val($("#monthid").val());
-        $("#Year").val($("#yearid").val());
-        $("#EmployeeId").val($("#empid").val());
-        Locations();
-    });
-
-    
-</script>
 <script>
     function validateForm() {
         var Month = document.getElementById('Month').value;

@@ -3,10 +3,25 @@
     ViewData["Title"] = "GenerateSalaryReport";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
-@if (ViewBag.ErrorMessage != null)
+@* @if (ViewBag.ErrorMessage != null)
 {
     <script>alert('@ViewBag.ErrorMessage');</script>
-}
+} *@
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+
+<style>
+    .dataTables_wrapper table.dataTable th {
+        background-color: #00baf2 !important;
+        padding: 24px 0.75rem !important;
+    }
+</style>
 <div class="page-wrapper">
     <div class="page-body-wrapper">
         <div class="page-sidebar">
@@ -19,7 +34,7 @@
                         <div class="col-lg-6">
                             <div class="page-header-left">
                                 <h2>
-                                    Generate Salary Report
+                                    Monthly pay
                                 </h2>
                             </div>
                         </div>
@@ -41,61 +56,78 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-body">
-                                
+
                                 <div></div>
                                 <form asp-action="GenerateSalaryReport" autocomplete="off" method="post">
                                     <div class="row">
-                                        <div class="form-group col-md-3">
-                                            <label for="validationCustom0">Company Name</label>
-                                            <select class="form-control" id="CustomerID" name="CustomerID" onchange="Locations()">
-                                                <option value="">-- Select Company --</option>
+                                        @{
+                                            var CheckSelectCompany = ViewBag.CheckSelectCompany;
+                                        }
+                                        @if (CheckSelectCompany == true)
+                                        {
+                                            <div class="form-group col-md-3">
+                                                <div class="dropdown-container position-relative" style="margin-top: 9px;">
+                                                <label for="validationCustom0">Company Name</label>
+                                                <select class="form-control" id="CustomerID" name="CustomerID" onchange="Locations()">
+                                                    <option value="">-- Select Company --</option>
 
-                                                @foreach (var item in ViewBag.CustomerName)
-                                                {
-                                                    <option value="@item.Value">@item.Text</option>
-                                                }
-                                            </select>
-                                        </div>
+                                                    @foreach (var item in ViewBag.CustomerName)
+                                                    {
+                                                        <option value="@item.Value">@item.Text</option>
+                                                    }
+                                                </select>
+                                                <i class="dropdown-icon fa fa-caret-down position-absolute"></i>
+                                            </div>
+                                            </div>
+
+                                            <div class="form-group col-sm">
+                                                <div class="dropdown-container position-relative" style="margin-top: 9px;">
+                                                <label for="validationCustom0">Work Location</label>
+                                                <select class="form-control col-md-" id="LocationID" name="WorkLocation">
+                                                    <option value="">-- Select WorkLocation--</option>
+
+                                                </select>
+                                                    <i class="dropdown-icon fa fa-caret-down position-absolute"></i>
+                                                </div>
+                                            </div>
+                                        }
                                         <div class="form-group col-sm">
-                                            <label for="validationCustom0">Work Location</label>
-                                            <select class="form-control col-md-" id="LocationID" name="WorkLocation">
-                                                <option value="">--Select WorkLocation--</option>
+                                            <div class="dropdown-container position-relative" style="margin-top: 9px;">
+                                                <label for="validationCustom0">Month</label>
+                                                <select id="Month" class="form-control" name="Month">
 
-                                            </select>
-                                        </div>
-                                        <div class="form-group col-sm">
-                                            <label for="validationCustom0">Month</label>
-                                            <select id="Month" class="form-control" name="Month">
-
-                                                <option value="">-- Select Month --</option>
-                                                <option value="1">January</option>
-                                                <option value="2">February</option>
-                                                <option value="3">March</option>
-                                                <option value="4">April</option>
-                                                <option value="5">May</option>
-                                                <option value="6">Jun</option>
-                                                <option value="7">July</option>
-                                                <option value="8">August</option>
-                                                <option value="9">Septemper</option>
-                                                <option value="10">Octobar</option>
-                                                <option value="11">November</option>
-                                                <option value="12">December</option>
-                                            </select>
+                                                    <option value="">-- Select Month --</option>
+                                                    <option value="1">January</option>
+                                                    <option value="2">February</option>
+                                                    <option value="3">March</option>
+                                                    <option value="4">April</option>
+                                                    <option value="5">May</option>
+                                                    <option value="6">Jun</option>
+                                                    <option value="7">July</option>
+                                                    <option value="8">August</option>
+                                                    <option value="9">Septemper</option>
+                                                    <option value="10">Octobar</option>
+                                                    <option value="11">November</option>
+                                                    <option value="12">December</option>
+                                                </select>
+                                                <i class="dropdown-icon fa fa-caret-down position-absolute"></i>
+                                            </div>
                                         </div>
 
                                         <div class="form-group col-sm">
-                                            <label for="validationCustom0">Year</label>
-                                            <select id="Year" class="form-control col-md-" name="Year">
-                                                <option value="">-- Select Year --</option>
-                                                <option value="2023">2023</option>
-                                                <option value="2024">2024</option>
-                                            </select>
+                                            <div class="dropdown-container position-relative" style="margin-top: 9px;">
+                                                <label for="validationCustom0">Year</label>
+                                                <select id="Year" class="form-control col-md-" name="Year">
+                                                    <option value="">-- Select Year --</option>
+                                                </select>
+                                                <i class="dropdown-icon fa fa-caret-down position-absolute"></i>
+                                            </div>
                                         </div>
                                     </div>
 
 
                                     <div class="form-button" style="display:flex; justify-content:center;">
-                                        <input type="submit" value="Search" class="btn btn-primary" onclick="return validateForm()" />
+                                        <input type="submit" value="Search" class="btn btn-primary" @* onclick="return validateForm()" *@ />
                                     </div>
                                 </form>
                                 <div class="container-fluid">
@@ -105,87 +137,130 @@
                                             <div class="card">
                                                 <div class="card-body">
                                                     <div class=" table-responsive">
-                                                        @if (Model != null && Model.GenerateSalaryReports.Count > 0)
-                                                        {
-                                                            <table id="datatable" class="table table-responsive">
-                                                                <thead>
-                                                                    <tr style="background-color: #00baf2;">
-                                                                        <th hidden>
-                                                                            ID
-                                                                        </th>
-                                                                        <th nowrap>Sl. No.</th>
-                                                                        <th>
-                                                                            EmployeeId
-                                                                        </th>
-                                                                        <th>
-                                                                            EmployeeName
-                                                                        </th>
-                                                                        <th>
-                                                                            MonthlyCtc
-                                                                        </th>
-                                                                        <th>
-                                                                            MonthlyGrossPay
-                                                                        </th>
-                                                                        <th>
-                                                                            EPF
-                                                                        </th>
-                                                                        <th>
-                                                                            ESIC
-                                                                        </th>
-                                                                        <th>
-                                                                            Generated Salary
-                                                                        </th>
 
-                                                                        <th>Action</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    @{
+                                                        <table id="datatable" class="table table-responsive">
+                                                            <thead>
+                                                                <tr style="background-color: #00baf2;">
+                                                                    <th hidden>
+                                                                        ID
+                                                                    </th>
+                                                                    <th nowrap>Sl. No.</th>
+                                                                    <th nowrap>
+                                                                        EmployeeId
+                                                                    </th>
+                                                                    <th nowrap>
+                                                                        EmployeeName
+                                                                    </th>
+                                                                    <th nowrap>
+                                                                        MonthlyCtc
+                                                                    </th>
+                                                                    <th nowrap>
+                                                                        MonthlyGrossPay
+                                                                    </th>
+                                                                    <th nowrap>
+                                                                        EPF
+                                                                    </th>
+                                                                    <th nowrap>
+                                                                        ESIC
+                                                                    </th>
+                                                                    <th nowrap>
+                                                                        Generated Salary
+                                                                    </th>
+                                                                    <th nowrap>
+                                                                        Basic Salary
+                                                                    </th>
+                                                                    <th nowrap>
+                                                                        House Rent Allowance
+                                                                    </th>
+                                                                    <th nowrap>
+                                                                        Special Allowance
+                                                                    </th>
+                                                                    <th nowrap>
+                                                                        Conveyance allowance
+                                                                    </th>
+                                                                    <th nowrap>
+                                                                        Medical Allowance
+                                                                    </th>
+                                                                    <th nowrap>
+                                                                        Variable Pay
+                                                                    </th>
+                                                                    <th nowrap>
+                                                                        Travelling Allowance
+                                                                    </th>
+                                                                    <th nowrap>
+                                                                        Incentive
+                                                                    </th>
+                                                                    <th nowrap>
+                                                                        Attendance
+                                                                    </th>
+                                                                    @*<th>Action</th>*@
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @{
+                                                                    if (Model != null && Model.GenerateSalaryReports.Count > 0)
+                                                                    {
                                                                         var count = 0;
                                                                         foreach (var item in Model.GenerateSalaryReports)
                                                                         {
                                                                             count++;
                                                                             <tr>
-                                                                                <td>@count</td>
+                                                                                <td nowrap>@count</td>
                                                                                 <td style="display:none">
                                                                                     @item.Id
                                                                                 </td>
-                                                                                <td>@item.EmployeeId</td>
-                                                                                <td>@item.EmployeeName</td>
-                                                                                <td>@item.MonthlyCtc</td>
-                                                                                <td>@item.MonthlyGrossPay</td>
-                                                                                <td>@item.EPF</td>
-                                                                                <td>@item.ESIC</td>
-                                                                                <td>@item.GenerateSalary</td>
-                                                                                <td>
+                                                                                <td nowrap>@item.EmployeeId</td>
+                                                                                <td nowrap>@item.EmployeeName</td>
+                                                                                <td nowrap>@item.MonthlyCtc</td>
+                                                                                <td nowrap>@item.MonthlyGrossPay</td>
+                                                                                <td nowrap>@item.EPF</td>
+                                                                                <td nowrap>@item.ESIC</td>
+                                                                                <td nowrap>@Math.Round(item.GenerateSalary, 2)</td>
+                                                                                <td nowrap>@item.Basicsalary</td>
+                                                                                <td nowrap>@item.Hra</td>
+                                                                                <td nowrap>@item.SpecialAllowance</td>
+                                                                                <td nowrap>@item.Conveyanceallowance</td>
+                                                                                <td nowrap>@item.MedicalAllowance</td>
+                                                                                <td nowrap>@item.VariablePay</td>
+                                                                                <td nowrap>@item.TravellingAllowance</td>
+                                                                                <td nowrap>@item.Incentive</td>
+                                                                                <td nowrap>@item.Attendance</td>
+                                                                                @*<td>
                                                                                     <div>
                                                                                         <a href="@Url.Action("DocPDF","Employee",new { id=item.Id})" class="fa fa-file-pdf-o font-danger"></a>
 
                                                                                     </div>
-                                                                                </td>
+                                                                                </td>*@
                                                                             </tr>
                                                                         }
                                                                     }
-
-                                                                </tbody>
-                                                            </table>
-                                                        }
-                                                          @*else
-                                                        {
-                                                           <script>alert('No salary details found.');</script>
-                                                        }*@
-                                                    </div>
-                                                    @if (Model != null)
-                                                    {
-                                                        <div class="row">
+                                                                }
+                                                            </tbody>
+                                                            @if (Model != null)
+                                                            {
+                                                                <tfoot>
+                                                                    <tr>
+                                                                        <td colspan="7" class="text-right" style="text-align:right;"><strong>Total:</strong></td>
+                                                                        <td>@ViewBag.TotalAmmount</td>
+                                                                    </tr>
+                                                                </tfoot>
+                                                                @*  <div class="row">
                                                             <div class="col-md-8">
-                                                                <label class="form-group">Total CTC</label>
+                                                            <label class="form-group">Total CTC</label>
                                                             </div>
                                                             <div class="col-md-4">
-                                                                <input type="text" id="TotalAmount" value="@ViewBag.TotalAmmount" class="form-group" style="border: none;margin-left: 87px;" readonly />
+                                                            <input type="text" id="TotalAmount" value="@ViewBag.TotalAmmount" class="form-group" style="border: none;margin-left: 87px;" readonly />
                                                             </div>
-                                                        </div>
-                                                    }
+                                                            </div> *@
+                                                            }
+                                                            @*else
+                                                            {
+                                                            <script>alert('No salary details found.');</script>
+                                                            }*@
+                                                        </table>
+                                                       
+                                                    </div>
+                                                    
                                                 </div>
                                             </div>
                                         </div>
@@ -208,55 +283,9 @@
 <input hidden type="text" id="yearid" value="@ViewBag.yearid" />
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
-    var currentPage = 1;
-    var rowsPerPage = 5;
     $(document).ready(function () {
-        function paginateTable() {
-            var table = $('#datatable');
-            var rows = table.find('tbody tr');
-
-
-            var totalPages = Math.ceil(rows.length / rowsPerPage);
-
-
-            var pagination = $('#pagination');
-            pagination.empty();
-
-            for (var i = 1; i <= totalPages; i++) {
-                var link = $('<li class="page-item"><a class="page-link" href="#">' + i + '</a></li>');
-
-
-                if (i === currentPage) {
-                    link.addClass('active');
-                }
-
-                pagination.append(link);
-            }
-
-
-            var startIndex = (currentPage - 1) * rowsPerPage;
-            var endIndex = startIndex + rowsPerPage;
-
-            rows.hide().slice(startIndex, endIndex).show();
-        }
-
-
-        paginateTable();
-
-        $(document).on('click', '#pagination li a', function (event) {
-            event.preventDefault();
-
-            var clickedPage = parseInt($(this).text());
-
-
-            currentPage = clickedPage;
-            paginateTable();
-
-
-            $('html, body').animate({ scrollTop: $('#table-container').offset().top }, 'slow');
-        });
+        $('#datatable').DataTable();
     });
-
 </script>
 <script>
 
@@ -285,16 +314,16 @@
             });
         } else {
             $("#LocationID").empty();
-            $("#LocationID").append('<option value="">--Select WorkLocation--</option>');
+            $("#LocationID").append('<option value="">-- Select WorkLocation --</option>');
         }
     }
 
     function populateLocations(response) {
         $("#LocationID").empty();
-        $("#LocationID").append('<option value="">--Select WorkLocation--</option>');
+        $("#LocationID").append('<option value="">-- Select WorkLocation --</option>');
 
         $.each(response, function (i, response) {
-            $("#LocationID").append('<option value="' + response.text + '">' + response.value + '</option>');
+            $("#LocationID").append('<option value="' + response.value + '">' + response.text + '</option>');
         });
 
 
@@ -356,5 +385,20 @@
             window.location.href = '/Employee/Invoice?customerId=' + CustomerID + '&Month=' + Month + '&year=' + Year + '&WorkLocation=' + WorkLocation;
         }
 
+    }
+</script>
+<script>
+    const currentYear = new Date().getFullYear();
+    const startYear = 2023;
+
+    // Get the dropdown element
+    const yearDropdown = document.getElementById("Year");
+
+    // Add year options from startYear to currentYear
+    for (let year = startYear; year <= currentYear; year++) {
+        const option = document.createElement("option");
+        option.value = year;
+        option.textContent = year;
+        yearDropdown.appendChild(option);
     }
 </script>

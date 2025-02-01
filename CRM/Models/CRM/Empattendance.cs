@@ -18,5 +18,11 @@ namespace CRM.Models.Crm
         public string? SalarySlip { get; set; }
         public decimal? EmpEpfvalue { get; set; }
         public decimal? EmpEsivalue { get; set; }
+        public decimal? Basicsalary { get; set; }
+        public decimal? Hra { get; set; }
+        public decimal? SpecialAllowance { get; set; }
+        public decimal? Conveyanceallowance { get; set; }
+        public decimal? MedicalAllowance { get; set; }
+        public decimal? VariablePay { get; set; }
     }
 }
