@@ -3649,7 +3649,7 @@ namespace CRM.Controllers
             "EPfpercentage", "Esipercentage", "Personal_Email_Address", "Mobile_Number", "Date_Of_Birth",
             "Father_Name", "PAN", "Address_Line_1", "Address_Line_2", "City", "StateID", "Pincode",
             "Account_Holder_Name", "Bank_Name", "Account_Number", "Re_Enter_Account_Number", "IFSC", "EPF_Number",
-             "Employee_Contribution_Rate", "Account_Type_ID", "nominee"
+             "Employee_Contribution_Rate", "Account_Type_ID", "nominee" ,"EmployeeId"
         };
 
                 foreach (var column in columns)
@@ -3724,7 +3724,8 @@ namespace CRM.Controllers
             { "EPF_Number", "EPF Number" },
             { "Employee_Contribution_Rate", "Employee Contribution Rate" },
             { "Account_Type_ID", "Account Type ID" },
-            { "nominee", "Nominee Name" }
+            { "nominee", "Nominee Name" },
+            { "EmployeeId", "Employee Id" }
         };
 
                 // Step 4: Create an Excel workbook
@@ -3841,11 +3842,11 @@ namespace CRM.Controllers
 
                 foreach (DataRow row in dataTable.Rows)
                 {
-                    Empid = GenerateEmployeeId();
-                    string gender = row[38]?.ToString();
-                    model.EmployeeId = Empid;
+                  //  Empid = GenerateEmployeeId();
+                    //string gender = row[38]?.ToString();
+                    //model.EmployeeId = Empid;
                     model.Vendorid = adminlogin.Vendorid != 0 ? adminlogin.Vendorid : 0;
-                    model.CustomerCompanyid = 1;
+                    model.CustomerCompanyid = 27;
                     // Bind data using column indexes (replace hardcoded column numbers as necessary)
                     model.FirstName = row[0]?.ToString();
                     model.MiddleName = row[1]?.ToString();
@@ -3909,6 +3910,8 @@ namespace CRM.Controllers
                     model.Employee_Contribution_Rate = row[51]?.ToString();
                     model.AccountTypeID = row[52] != DBNull.Value ? Convert.ToInt32(row[52]) : 0;
                     model.nominee = row[53]?.ToString();
+                    model.EmployeeId = row[54]?.ToString();
+                      Empid = model.EmployeeId;
 
                     if (model != null)
                     {
