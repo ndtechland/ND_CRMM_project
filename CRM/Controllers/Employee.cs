@@ -3719,7 +3719,7 @@ namespace CRM.Controllers
             "EPfpercentage", "Esipercentage", "Personal_Email_Address", "Mobile_Number", "Date_Of_Birth",
             "Father_Name", "PAN", "Address_Line_1", "Address_Line_2", "City", "StateID", "Pincode",
             "Account_Holder_Name", "Bank_Name", "Account_Number", "Re_Enter_Account_Number", "IFSC", "EPF_Number",
-             "Employee_Contribution_Rate", "Account_Type_ID", "nominee"
+             "Employee_Contribution_Rate", "Account_Type_ID", "nominee" ,"EmployeeId"
         };
                 if (checktomulticustomer)
                 {
@@ -3800,7 +3800,8 @@ namespace CRM.Controllers
             { "EPF_Number", "EPF Number" },
             { "Employee_Contribution_Rate", "Employee Contribution Rate" },
             { "Account_Type_ID", "Account Type ID" },
-            { "nominee", "Nominee Name" }
+            { "nominee", "Nominee Name" },
+            { "EmployeeId", "Employee Id" }
         };
                 if (checktomulticustomer)
 {
@@ -4020,8 +4021,14 @@ namespace CRM.Controllers
                 //end 290125
                 foreach (DataRow row in dataTable.Rows)
                 {
+
+                  //  Empid = GenerateEmployeeId();
+                    //string gender = row[38]?.ToString();
+                    //model.EmployeeId = Empid;
+
                     Empid = GenerateEmployeeId();
                     model.EmployeeId = Empid;
+
                     model.Vendorid = adminlogin.Vendorid != 0 ? adminlogin.Vendorid : 0;
                     model.CustomerCompanyid = 27;
                     // Bind data using column indexes (replace hardcoded column numbers as necessary)
@@ -4095,12 +4102,17 @@ namespace CRM.Controllers
                     model.Employee_Contribution_Rate = row[51]?.ToString();
                     model.AccountTypeID = row[52] != DBNull.Value ? Convert.ToInt32(row[52]) : 0;
                     model.nominee = row[53]?.ToString();
+
+                    model.EmployeeId = row[54]?.ToString();
+                      Empid = model.EmployeeId;
+
+
                     if (checktomulticustomer)
                     {
                         model.CustomerCompanyid = row[54] != DBNull.Value ? Convert.ToInt32(row[52]) : 0;
                         //model. = row[55]?.ToString();
                     }
-                   
+
                     if (model != null)
                     {
                         var response = await _ICrmrpo.EmpRegistration(model, Mode, Empid, Userid);
