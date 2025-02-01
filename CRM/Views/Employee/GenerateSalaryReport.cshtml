@@ -145,29 +145,55 @@
                                                                         ID
                                                                     </th>
                                                                     <th nowrap>Sl. No.</th>
-                                                                    <th>
+                                                                    <th nowrap>
                                                                         EmployeeId
                                                                     </th>
-                                                                    <th>
+                                                                    <th nowrap>
                                                                         EmployeeName
                                                                     </th>
-                                                                    <th>
+                                                                    <th nowrap>
                                                                         MonthlyCtc
                                                                     </th>
-                                                                    <th>
+                                                                    <th nowrap>
                                                                         MonthlyGrossPay
                                                                     </th>
-                                                                    <th>
+                                                                    <th nowrap>
                                                                         EPF
                                                                     </th>
-                                                                    <th>
+                                                                    <th nowrap>
                                                                         ESIC
                                                                     </th>
-                                                                    <th>
+                                                                    <th nowrap>
                                                                         Generated Salary
                                                                     </th>
-
-                                                                    <th>Action</th>
+                                                                    <th nowrap>
+                                                                        Basic Salary
+                                                                    </th>
+                                                                    <th nowrap>
+                                                                        House Rent Allowance
+                                                                    </th>
+                                                                    <th nowrap>
+                                                                        Special Allowance
+                                                                    </th>
+                                                                    <th nowrap>
+                                                                        Conveyance allowance
+                                                                    </th>
+                                                                    <th nowrap>
+                                                                        Medical Allowance
+                                                                    </th>
+                                                                    <th nowrap>
+                                                                        Variable Pay
+                                                                    </th>
+                                                                    <th nowrap>
+                                                                        Travelling Allowance
+                                                                    </th>
+                                                                    <th nowrap>
+                                                                        Incentive
+                                                                    </th>
+                                                                    <th nowrap>
+                                                                        Attendance
+                                                                    </th>
+                                                                    @*<th>Action</th>*@
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
@@ -179,23 +205,32 @@
                                                                         {
                                                                             count++;
                                                                             <tr>
-                                                                                <td>@count</td>
+                                                                                <td nowrap>@count</td>
                                                                                 <td style="display:none">
                                                                                     @item.Id
                                                                                 </td>
-                                                                                <td>@item.EmployeeId</td>
-                                                                                <td>@item.EmployeeName</td>
-                                                                                <td>@item.MonthlyCtc</td>
-                                                                                <td>@item.MonthlyGrossPay</td>
-                                                                                <td>@item.EPF</td>
-                                                                                <td>@item.ESIC</td>
-                                                                                <td>@item.GenerateSalary</td>
-                                                                                <td>
+                                                                                <td nowrap>@item.EmployeeId</td>
+                                                                                <td nowrap>@item.EmployeeName</td>
+                                                                                <td nowrap>@item.MonthlyCtc</td>
+                                                                                <td nowrap>@item.MonthlyGrossPay</td>
+                                                                                <td nowrap>@item.EPF</td>
+                                                                                <td nowrap>@item.ESIC</td>
+                                                                                <td nowrap>@Math.Round(item.GenerateSalary, 2)</td>
+                                                                                <td nowrap>@item.Basicsalary</td>
+                                                                                <td nowrap>@item.Hra</td>
+                                                                                <td nowrap>@item.SpecialAllowance</td>
+                                                                                <td nowrap>@item.Conveyanceallowance</td>
+                                                                                <td nowrap>@item.MedicalAllowance</td>
+                                                                                <td nowrap>@item.VariablePay</td>
+                                                                                <td nowrap>@item.TravellingAllowance</td>
+                                                                                <td nowrap>@item.Incentive</td>
+                                                                                <td nowrap>@item.Attendance</td>
+                                                                                @*<td>
                                                                                     <div>
                                                                                         <a href="@Url.Action("DocPDF","Employee",new { id=item.Id})" class="fa fa-file-pdf-o font-danger"></a>
 
                                                                                     </div>
-                                                                                </td>
+                                                                                </td>*@
                                                                             </tr>
                                                                         }
                                                                     }
