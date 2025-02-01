@@ -729,6 +729,7 @@ namespace CRM.Controllers
                                 decimal totalConveyanceallowance = Math.Round((((decimal)(ctc.Conveyanceallowance) / noOfDays) * (decimal)item.Attendance) / 12, 2) ;
                                 decimal totalMedicalAllowance = Math.Round((((decimal)(ctc.Medical) / noOfDays) * (decimal)item.Attendance)/ 12, 2)  ;
                                 decimal totalVariablePay = Math.Round((((decimal)(ctc.VariablePay) / noOfDays) * (decimal)item.Attendance) / 12, 2) ;
+                               // decimal totalVariablePay = Math.Round((((decimal)(ctc.VariablePay) / noOfDays) * (decimal)item.Attendance) / 12, 2) ;
 
                                 decimal checknum = noOfDays - (decimal)item.Attendance;
                                 if (item.Id != 0)
@@ -742,7 +743,7 @@ namespace CRM.Controllers
                                         Entry = DateTime.Now,
                                         Incentive = item.Incentive,
                                         TravellingAllowance = item.TravellingAllowance,
-                                        GenerateSalary =  item.GenerateSalary ,
+                                        GenerateSalary =  item.GenerateSalary - totalMedicalAllowance,
                                         Lop = (checknum > 0) ? Math.Round(((totalsalary / noOfDays) * checknum), 2) : 0,
                                         EmpEpfvalue = item.EmpEpfvalue,
                                         EmpEsivalue = item.EmpEsivalue,
@@ -761,10 +762,10 @@ namespace CRM.Controllers
 
                             transaction.Commit();
 
-                            //foreach (var item in customers)
-                            //{
-                            //    SendPDF(item.Id, month);
-                            //}
+                            foreach (var item in customers)
+                            {
+                                SendPDF(item.Id, (int)item.Month ,(int)item.Year);
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -988,7 +989,7 @@ namespace CRM.Controllers
                                   Year = empt.Year,
                                   vendorid = emp.Vendorid,
                               }).FirstOrDefault();
-                string uniqueFileName = $"SalarySlip_{result.Employee_ID}_{result.First_Name}_{result.Month}{result.Year}.pdf";
+                string uniqueFileName = $"{result.Employee_ID}_{result.First_Name}_{result.Month}{result.Year}";
                 string filePath = Path.Combine(wwwRootPath, uniqueFileName);
                 doc.Save(filePath);
                 byte[] pdf = System.IO.File.ReadAllBytes(filePath);
@@ -1012,7 +1013,7 @@ namespace CRM.Controllers
                 return Json(new { success = false, message = $"Error: {ex.Message}" });
             }
         }
-        public void SendPDF(int id, int month)
+        public void SendPDF(int id, int month ,int Year)
         {
             try
             {
@@ -1041,7 +1042,7 @@ namespace CRM.Controllers
                                   Year = empt.Year,
                                   vendorid = emp.Vendorid,
                               }).FirstOrDefault();
-                string uniqueFileName = $"SalarySlip_{result.Employee_ID}_{result.First_Name}_{result.Month}{result.Year}.pdf";
+                string uniqueFileName = $"{result.Employee_ID}_{result.First_Name}_{result.Month}{result.Year}";
                 string filePath = Path.Combine(wwwRootPath, uniqueFileName);
                 doc.Save(filePath);
                 byte[] pdf = System.IO.File.ReadAllBytes(filePath);
@@ -1052,7 +1053,7 @@ namespace CRM.Controllers
                 {
                     throw new Exception("Employee not found.");
                 }
-                var empAttendance = _context.Empattendances.FirstOrDefault(e => e.EmployeeId == result.Employee_ID && e.Month == month && e.Year == DateTime.Now.Year);
+                var empAttendance = _context.Empattendances.FirstOrDefault(e => e.EmployeeId == result.Employee_ID && e.Month == month && e.Year == Year);
                 if (empAttendance != null)
                 {
                     empAttendance.SalarySlip = savedFileName;
