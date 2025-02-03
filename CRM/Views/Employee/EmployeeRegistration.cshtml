@@ -885,21 +885,28 @@
                                     </div>
                                 </div>
                                 <br>
-                                <div class="col-md-2 tdssection" style="display:none;">
+                                <div class="row">
+                                <div class="col tdssection">
+                                    <label>Professional Tax (<span id="displayProfessionalPercentage"></span>%)</label>
+                                    <input class="form-control" value='@ViewBag.tdsvalue' name="Professionalvalue" placeholder="00.0" id="txtProfessionalvalue" type="text">
+                                    <input name="Professionalpercentage" id="txtProfessionalpercentage" value="@ViewBag.Tdspercentage" type="hidden">
+
+                                </div>
+                                <div class="col tdssection">
                                     <label>TDS (<span id="displayTdsPercentage"></span>%)</label>
                                     <input class="form-control" value='@ViewBag.tdsvalue' name="tdsvalue" placeholder="00.0" id="txttdsvalue" type="text">
                                     <input name="Tdspercentage" id="txtTdspercentage" value="@ViewBag.Tdspercentage" type="hidden">
 
                                 </div>
-
+                                </div>
                                 <br>
-                                <h4 class="text-danger EmployeeContribution" style="display:none;">Employee Contribution</h4>
+                                <h4 class="text-danger EmployeeContribution">Employee Contribution</h4>
                                 <div class="row">
-                                    <div class="col-md-6 txtLabelEPF" style="display:none;">
+                                    <div class="col-md-6 txtLabelEPF">
                                         <label>EPF (<span id="displayEmpEPFMaster"></span>%)</label>
                                         <input class="form-control" value='@ViewBag.EPF' name="EPF" id="txtEPF" type="text">
                                     </div>
-                                    <div class="col-md-6 ESICLabel" style="display:none;">
+                                    <div class="col-md-6 ESICLabel">
                                         <label id="ESICLabel">ESIC (<span id="displayEmpESICMaster"></span>%)</label>
                                         <input class="form-control" value='@ViewBag.ESIC' name="ESIC" id="ESIC" type="text">
                                     </div>
@@ -908,9 +915,9 @@
 
                                 <br>
 
-                                <h4 class="text-danger EmployerContribution" style="display:none;">Employer Contribution</h4>
+                                <h4 class="text-danger EmployerContribution">Employer Contribution</h4>
                                 <div class="row">
-                                    <div class="col-md-6 txtLabelEmployerEPF" style="display:none;">
+                                    <div class="col-md-6 txtLabelEmployerEPF">
                                         <label>EPF (<span id="displayEPFMaster"></span>%)</label>
                                         <input class="form-control" name="EmployerContribution" placeholder="00.0" id="txtEPFMaster" type="text" value="@ViewBag.EmployerContribution">
                                     </div>
@@ -1358,7 +1365,9 @@
                         $('#PersonalEmailAddress').val(response.personalEmailAddress);
                         $('#txtAnnualCTC').val(response.annualCTC);
                         $('#Pincode').val(response.pincode);
-                        SalaryCalculation();
+                        if ('@ViewBag.CheckSelectCompany' == 'true') {
+                            SalaryCalculation();
+                        }
                     } else {
                         alert('No data found for the selected offer letter.');
                     }
