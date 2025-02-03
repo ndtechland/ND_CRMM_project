@@ -38,6 +38,7 @@
         public decimal? Conveyanceallowance { get; set; }
         public decimal? VariablePay { get; set; }
         public decimal? Incentive { get; set; }
+        public string? Companysignature { get; set; }
 
     }
 }

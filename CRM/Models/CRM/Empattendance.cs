@@ -24,5 +24,7 @@ namespace CRM.Models.Crm
         public decimal? Conveyanceallowance { get; set; }
         public decimal? MedicalAllowance { get; set; }
         public decimal? VariablePay { get; set; }
+        public decimal? Tds { get; set; }
+        public decimal? Professionaltax { get; set; }
     }
 }

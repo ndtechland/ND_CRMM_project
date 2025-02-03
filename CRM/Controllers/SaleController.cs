@@ -885,7 +885,7 @@ namespace CRM.Controllers
                                                                Email = c.Email,
                                                                BillingState = sb.SName,
                                                                BillingCity = ctb.City1,
-                                                               NoofInvoice = _context.CustomerInvoices.Where(x=>x.CustomerId == c.Id && x.Paymentstatus == 1).Count()
+                                                               NoofInvoice = _context.CustomerInvoices.Where(x=>x.CustomerId == c.Id && x.Paymentstatus == ci.Paymentstatus).Count()
                                                            }).Distinct().ToListAsync();
 
                 if (data.Count > 0)
@@ -996,23 +996,23 @@ namespace CRM.Controllers
 
                     int currentwork = 1;
                     worksheet.Cell(currentwork, 1).Value = "Sr.No.";
-                    worksheet.Cell(currentwork, 1).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 1).Style.Fill.BackgroundColor = XLColor.LightGray;
                     worksheet.Cell(currentwork, 2).Value = "Invoice Number";
-                    worksheet.Cell(currentwork, 2).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 2).Style.Fill.BackgroundColor = XLColor.LightGray;
                     worksheet.Cell(currentwork, 3).Value = "Company Name";
-                    worksheet.Cell(currentwork, 3).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 3).Style.Fill.BackgroundColor = XLColor.LightGray;
                     worksheet.Cell(currentwork, 4).Value = "Mobile Number";
-                    worksheet.Cell(currentwork, 4).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 4).Style.Fill.BackgroundColor = XLColor.LightGray;
                     worksheet.Cell(currentwork, 5).Value = "Email Id";
-                    worksheet.Cell(currentwork, 5).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 5).Style.Fill.BackgroundColor = XLColor.LightGray;
                     worksheet.Cell(currentwork, 6).Value = "Billing State";
-                    worksheet.Cell(currentwork, 6).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 6).Style.Fill.BackgroundColor = XLColor.LightGray;
                     worksheet.Cell(currentwork, 7).Value = "Total Payment";
-                    worksheet.Cell(currentwork, 7).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 7).Style.Fill.BackgroundColor = XLColor.LightGray;
                     worksheet.Cell(currentwork, 8).Value = "Paid Payment";
-                    worksheet.Cell(currentwork, 8).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 8).Style.Fill.BackgroundColor = XLColor.LightGray;
                     worksheet.Cell(currentwork, 9).Value = "Payment Status";
-                    worksheet.Cell(currentwork, 9).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 9).Style.Fill.BackgroundColor = XLColor.LightGray;
 
                     currentwork++;
 

@@ -394,15 +394,22 @@ namespace CRM.Repository
             leavedto GetleaveList = new leavedto();
             GetleaveList.GetLeaveTypeList = (from lm in _context.Leavemasters
                                              join lty in _context.LeaveTypes on lm.LeavetypeId equals lty.Id
-                                             where lm.EmpId == userid && lm.IsActive == true
+                                             where lm.EmpId == userid && lm.IsActive == true  
+                                             && lm.Vendorid == lty.Vendorid
                                              select new LeaveTypeValue
                                              {
                                                  Id = lm.LeavetypeId,
-                                                 leavetype = lty.Leavetype1,
-                                                 leaveValue = (decimal)lm.Value,
+                                                 leavetype = lty.Leavetype1 ,
+                                                 leaveValue = lm.Value ?? 0m ,
                                                  Isactive = lm.IsActive
                                              }).ToList();
-
+            if (!GetleaveList.GetLeaveTypeList.Any())
+            {
+                GetleaveList.GetLeaveTypeList.Add(new LeaveTypeValue
+                {
+                    leaveValue = 0m,         
+                });
+            }
             GetleaveList.GetLeaveList = _context.Leaves.Where(x => x.Isactive == true).ToList();
             return GetleaveList;
         }

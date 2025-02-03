@@ -250,7 +250,7 @@ namespace CRM.Controllers
                     // Applying style to header
                     for (int col = 1; col <= 14; col++)
                     {
-                        worksheet.Cell(currentRow, col).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, col).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, col).Style.Font.Bold = true;
                     }
 
