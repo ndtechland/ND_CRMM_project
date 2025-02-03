@@ -308,6 +308,7 @@ namespace CRM.Repository
 
                 if (Mode == "INS")
                 {
+                   // string password = GeneratePassword(model);
                     EmployeeRole employeeRole = new()
                     {
                         EmployeeRegistrationId = model.EmployeeId,
@@ -712,7 +713,7 @@ namespace CRM.Repository
                 for (int i = 0; i < headers.Length; i++)
                 {
                     worksheet.Cell(currentwork, i + 1).Value = headers[i];
-                    worksheet.Cell(currentwork, i + 1).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, i + 1).Style.Fill.BackgroundColor = XLColor.LightGray;
                 }
 
                 currentwork++;
@@ -1066,17 +1067,17 @@ namespace CRM.Repository
                 var worksheet = workbook.Worksheets.Add("EmployeeList");
                 var currentwork = 1;
                 worksheet.Cell(currentwork, 1).Value = "Sr.No.";
-                worksheet.Cell(currentwork, 1).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 1).Style.Fill.BackgroundColor = XLColor.LightGray;
                 worksheet.Cell(currentwork, 2).Value = "Employee Name";
-                worksheet.Cell(currentwork, 2).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 2).Style.Fill.BackgroundColor = XLColor.LightGray;
                 worksheet.Cell(currentwork, 3).Value = "Father Name";
-                worksheet.Cell(currentwork, 3).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 3).Style.Fill.BackgroundColor = XLColor.LightGray;
                 worksheet.Cell(currentwork, 4).Value = "Employee Id";
-                worksheet.Cell(currentwork, 4).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 4).Style.Fill.BackgroundColor = XLColor.LightGray;
                 worksheet.Cell(currentwork, 5).Value = "Gross Pay";
-                worksheet.Cell(currentwork, 5).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 5).Style.Fill.BackgroundColor = XLColor.LightGray;
                 worksheet.Cell(currentwork, 6).Value = "Attendance";
-                worksheet.Cell(currentwork, 6).Style.Fill.BackgroundColor = XLColor.Yellow;
+                worksheet.Cell(currentwork, 6).Style.Fill.BackgroundColor = XLColor.LightGray;
 
                 currentwork++;
 
@@ -3813,6 +3814,14 @@ namespace CRM.Repository
 
                 return employeeList;
             }
+        }
+        public string GeneratePassword(Model model)
+        {
+            Random random = new Random();
+            int randomNumber = random.Next(1000, 9999);  
+            string randomString = Path.GetRandomFileName().Replace(".", "").Substring(0, 6); 
+
+            return $"{randomNumber}{randomString}";
         }
 
     }

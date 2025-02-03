@@ -101,7 +101,7 @@ namespace CRM.Repository
         Password: {password}
         You can log in via the web or use our mobile app for easy access. Download the N D Connect app from the links below:
         Google Play Store: https://play.google.com/store/apps/details?id=com.ndconnect.nd_connect_techland&pcampaignid=web_share
-        Apple App Store: https://play.google.com/store/apps/details?id=com.ndconnect.nd_connect_techland&pcampaignid=web_share
+        Apple App Store: https://apps.apple.com/us/app/nd-connect/id6737547872
         Please use these credentials to log in to your employee portal and manage your profile, attendance, and other related features.
         Best regards,
         {vendordetails.CompanyName}

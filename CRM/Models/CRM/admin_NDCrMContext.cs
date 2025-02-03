@@ -745,9 +745,15 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.MedicalAllowance).HasColumnType("decimal(9, 2)");
 
+                entity.Property(e => e.Professionaltax).HasColumnType("decimal(9, 2)");
+
                 entity.Property(e => e.SalarySlip).HasMaxLength(250);
 
                 entity.Property(e => e.SpecialAllowance).HasColumnType("decimal(9, 2)");
+
+                entity.Property(e => e.Tds)
+                    .HasColumnType("decimal(9, 2)")
+                    .HasColumnName("TDS");
 
                 entity.Property(e => e.TravellingAllowance).HasColumnType("decimal(18, 0)");
 

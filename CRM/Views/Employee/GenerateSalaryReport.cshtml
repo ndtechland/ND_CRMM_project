@@ -3,10 +3,6 @@
     ViewData["Title"] = "GenerateSalaryReport";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
 }
-@* @if (ViewBag.ErrorMessage != null)
-{
-    <script>alert('@ViewBag.ErrorMessage');</script>
-} *@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -22,6 +18,26 @@
         padding: 24px 0.75rem !important;
     }
 </style>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var message = "@TempData["Message"]";
+
+        if (message) {
+            Swal.fire({
+                title: 'Failed',
+                text: message,
+                icon: 'error',
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    setTimeout(function () {
+                        window.location.href = '@Url.Action("GenerateSalaryReport", "Employee")';
+                    }, 1000);
+                }
+            });
+        }
+    });
+</script>
 <div class="page-wrapper">
     <div class="page-body-wrapper">
         <div class="page-sidebar">
@@ -52,13 +68,10 @@
 
             <div class="container-fluid">
                 <div class="row">
-
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-body">
-
-                                <div></div>
-                                <form asp-action="GenerateSalaryReport" autocomplete="off" method="post">
+                                <form asp-action="GenerateSalaryReport" autocomplete="off" method="post" >
                                     <div class="row">
                                         @{
                                             var CheckSelectCompany = ViewBag.CheckSelectCompany;
@@ -67,26 +80,26 @@
                                         {
                                             <div class="form-group col-md-3">
                                                 <div class="dropdown-container position-relative" style="margin-top: 9px;">
-                                                <label for="validationCustom0">Company Name</label>
-                                                <select class="form-control" id="CustomerID" name="CustomerID" onchange="Locations()">
-                                                    <option value="">-- Select Company --</option>
+                                                    <label for="validationCustom0">Company Name</label>
+                                                    <select class="form-control" id="CustomerID" name="CustomerID" onchange="Locations()">
+                                                        <option value="0" selected disabled>-- Select Company --</option>
 
-                                                    @foreach (var item in ViewBag.CustomerName)
-                                                    {
-                                                        <option value="@item.Value">@item.Text</option>
-                                                    }
-                                                </select>
-                                                <i class="dropdown-icon fa fa-caret-down position-absolute"></i>
-                                            </div>
+                                                        @foreach (var item in ViewBag.CustomerName)
+                                                        {
+                                                            <option value="@item.Value">@item.Text</option>
+                                                        }
+                                                    </select>
+                                                    <i class="dropdown-icon fa fa-caret-down position-absolute"></i>
+                                                </div>
                                             </div>
 
                                             <div class="form-group col-sm">
                                                 <div class="dropdown-container position-relative" style="margin-top: 9px;">
-                                                <label for="validationCustom0">Work Location</label>
-                                                <select class="form-control col-md-" id="LocationID" name="WorkLocation">
-                                                    <option value="">-- Select WorkLocation--</option>
+                                                    <label for="validationCustom0">Work Location</label>
+                                                    <select class="form-control col-md-" id="LocationID" name="WorkLocation">
+                                                        <option value="0" selected disabled>-- Select WorkLocation--</option>
 
-                                                </select>
+                                                    </select>
                                                     <i class="dropdown-icon fa fa-caret-down position-absolute"></i>
                                                 </div>
                                             </div>
@@ -96,7 +109,7 @@
                                                 <label for="validationCustom0">Month</label>
                                                 <select id="Month" class="form-control" name="Month">
 
-                                                    <option value="">-- Select Month --</option>
+                                                    <option value="" selected disabled>-- Select Month --</option>
                                                     <option value="1">January</option>
                                                     <option value="2">February</option>
                                                     <option value="3">March</option>
@@ -118,7 +131,7 @@
                                             <div class="dropdown-container position-relative" style="margin-top: 9px;">
                                                 <label for="validationCustom0">Year</label>
                                                 <select id="Year" class="form-control col-md-" name="Year">
-                                                    <option value="">-- Select Year --</option>
+                                                    <option value="" selected disabled>-- Select Year --</option>
                                                 </select>
                                                 <i class="dropdown-icon fa fa-caret-down position-absolute"></i>
                                             </div>
@@ -126,163 +139,112 @@
                                     </div>
 
 
-                                    <div class="form-button" style="display:flex; justify-content:center;">
-                                        <input type="submit" value="Search" class="btn btn-primary" @* onclick="return validateForm()" *@ />
+                                    <div class="form-button" style="display:flex; justify-content:center;" >
+                                        <input type="submit" value="Search" class="btn btn-primary" onclick="return validateForm();" />
                                     </div>
                                 </form>
-                                <div class="container-fluid">
-                                    <div class="row">
-
-                                        <div class="col-sm-12">
-                                            <div class="card">
-                                                <div class="card-body">
-                                                    <div class=" table-responsive">
-
-                                                        <table id="datatable" class="table table-responsive">
-                                                            <thead>
-                                                                <tr style="background-color: #00baf2;">
-                                                                    <th hidden>
-                                                                        ID
-                                                                    </th>
-                                                                    <th nowrap>Sl. No.</th>
-                                                                    <th nowrap>
-                                                                        EmployeeId
-                                                                    </th>
-                                                                    <th nowrap>
-                                                                        EmployeeName
-                                                                    </th>
-                                                                    <th nowrap>
-                                                                        MonthlyCtc
-                                                                    </th>
-                                                                    <th nowrap>
-                                                                        MonthlyGrossPay
-                                                                    </th>
-                                                                    <th nowrap>
-                                                                        EPF
-                                                                    </th>
-                                                                    <th nowrap>
-                                                                        ESIC
-                                                                    </th>
-                                                                    <th nowrap>
-                                                                        Generated Salary
-                                                                    </th>
-                                                                    <th nowrap>
-                                                                        Basic Salary
-                                                                    </th>
-                                                                    <th nowrap>
-                                                                        House Rent Allowance
-                                                                    </th>
-                                                                    <th nowrap>
-                                                                        Special Allowance
-                                                                    </th>
-                                                                    <th nowrap>
-                                                                        Conveyance allowance
-                                                                    </th>
-                                                                    <th nowrap>
-                                                                        Medical Allowance
-                                                                    </th>
-                                                                    <th nowrap>
-                                                                        Variable Pay
-                                                                    </th>
-                                                                    <th nowrap>
-                                                                        Travelling Allowance
-                                                                    </th>
-                                                                    <th nowrap>
-                                                                        Incentive
-                                                                    </th>
-                                                                    <th nowrap>
-                                                                        Attendance
-                                                                    </th>
-                                                                    @*<th>Action</th>*@
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                @{
-                                                                    if (Model != null && Model.GenerateSalaryReports.Count > 0)
-                                                                    {
-                                                                        var count = 0;
-                                                                        foreach (var item in Model.GenerateSalaryReports)
-                                                                        {
-                                                                            count++;
-                                                                            <tr>
-                                                                                <td nowrap>@count</td>
-                                                                                <td style="display:none">
-                                                                                    @item.Id
-                                                                                </td>
-                                                                                <td nowrap>@item.EmployeeId</td>
-                                                                                <td nowrap>@item.EmployeeName</td>
-                                                                                <td nowrap>@item.MonthlyCtc</td>
-                                                                                <td nowrap>@item.MonthlyGrossPay</td>
-                                                                                <td nowrap>@item.EPF</td>
-                                                                                <td nowrap>@item.ESIC</td>
-                                                                                <td nowrap>@Math.Round((decimal)item.GenerateSalary, 2)</td>
-                                                                                <td nowrap>@item.Basicsalary</td>
-                                                                                <td nowrap>@item.Hra</td>
-                                                                                <td nowrap>@item.SpecialAllowance</td>
-                                                                                <td nowrap>@item.Conveyanceallowance</td>
-                                                                                <td nowrap>@item.MedicalAllowance</td>
-                                                                                <td nowrap>@item.VariablePay</td>
-                                                                                <td nowrap>@item.TravellingAllowance</td>
-                                                                                <td nowrap>@item.Incentive</td>
-                                                                                <td nowrap>@item.Attendance</td>
-                                                                                @*<td>
-                                                                                    <div>
-                                                                                        <a href="@Url.Action("DocPDF","Employee",new { id=item.Id})" class="fa fa-file-pdf-o font-danger"></a>
-
-                                                                                    </div>
-                                                                                </td>*@
-                                                                            </tr>
-                                                                        }
-                                                                    }
-                                                                }
-                                                            </tbody>
-                                                            @if (Model != null)
-                                                            {
-                                                                <tfoot>
-                                                                    <tr>
-                                                                        <td colspan="7" class="text-right" style="text-align:right;"><strong>Total:</strong></td>
-                                                                        <td>@ViewBag.TotalAmmount</td>
-                                                                    </tr>
-                                                                </tfoot>
-                                                                @*  <div class="row">
-                                                            <div class="col-md-8">
-                                                            <label class="form-group">Total CTC</label>
-                                                            </div>
-                                                            <div class="col-md-4">
-                                                            <input type="text" id="TotalAmount" value="@ViewBag.TotalAmmount" class="form-group" style="border: none;margin-left: 87px;" readonly />
-                                                            </div>
-                                                            </div> *@
-                                                            }
-                                                            @*else
-                                                            {
-                                                            <script>alert('No salary details found.');</script>
-                                                            }*@
-                                                        </table>
-                                                       
-                                                    </div>
-                                                    
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div id="pagination-container">
-                                    <ul id="pagination" class="pagination"></ul>
-                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            <div class="container-fluid">
+                <div class="row">
+
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <img src="~/image/execimage.png" style="height:50px; margin-left:96%;width:53px;cursor:pointer" title="Export To Excel" onclick="MonthlypayExportExcelfn()" />
+                                <div class=" table-responsive">
+                                    <table id="datatable" class="table table-responsive">
+                                        <thead>
+                                            <tr style="background-color: #00baf2;">
+                                                <th hidden>ID</th>
+                                                <th nowrap>Sl. No.</th>
+                                                <th nowrap>EmpId</th>
+                                                <th nowrap>EmpName</th>
+                                                <th nowrap>MonthlyCTC</th>
+                                                <th nowrap>Basic Salary</th>
+                                                <th nowrap>HRA</th>
+                                                <th nowrap>SA</th>
+                                                <th nowrap>CA</th>
+                                                <th nowrap>MA</th>
+                                                <th nowrap>Variable Pay</th>
+                                                <th nowrap>EPF</th>
+                                                <th nowrap>ESIC</th>
+                                                <th nowrap>Generated Salary</th>
+                                                <th nowrap>TA</th>
+                                                <th nowrap>Incentive</th>
+                                                <th nowrap>TDS</th>
+                                                <th nowrap>Professional tax</th>
+                                                <th nowrap>Attendance</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{
+                                                if (Model?.GenerateSalaryReports?.Count > 0)  // Added null-check for safety
+                                                {
+                                                    var count = 0;
+                                                    foreach (var item in Model.GenerateSalaryReports)
+                                                    {
+                                                        count++;
+                                                        <tr>
+                                                            <td nowrap>@count</td>
+                                                            <td style="display:none">@item.Id</td>  <!-- Hidden ID -->
+                                                            <td nowrap>@item.EmployeeId</td>
+                                                            <td nowrap>@item.EmployeeName</td>
+                                                            <td nowrap>@item.MonthlyCtc</td>
+                                                            <td nowrap>@item.Basicsalary</td>
+                                                            <td nowrap>@item.Hra</td>
+                                                            <td nowrap>@item.SpecialAllowance</td>
+                                                            <td nowrap>@item.Conveyanceallowance</td>
+                                                            <td nowrap>@item.MedicalAllowance</td>
+                                                            <td nowrap>@item.VariablePay</td>
+                                                            <td nowrap>@item.EPF</td>
+                                                            <td nowrap>@item.ESIC</td>
+                                                            <td nowrap>@Math.Round(item.GenerateSalary ?? 0, 2)</td>  <!-- Added null handling for GenerateSalary -->
+                                                            <td nowrap>@item.TravellingAllowance</td>
+                                                            <td nowrap>@item.Incentive</td>
+                                                            <td nowrap>@item.Tds</td>
+                                                            <td nowrap>@item.Professionaltax</td>
+                                                            <td nowrap>@item.Attendance</td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            }
+                                        </tbody>
+                                        @if (Model != null)
+                                        {
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="6" class="text-right" style="text-align:right;"><strong>Total:</strong></td>
+                                                    <td>@ViewBag.TotalAmmount</td>
+                                                </tr>
+                                            </tfoot>
+                                        }
+                                    </table>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="pagination-container">
+                <ul id="pagination" class="pagination"></ul>
+            </div>
         </div>
     </div>
 </div>
+
 <input hidden type="text" id="custid" value="@ViewBag.custid" />
 <input hidden type="text" id="locid" value="@ViewBag.locid" />
 <input hidden type="text" id="monthid" value="@ViewBag.monthid" />
 <input hidden type="text" id="yearid" value="@ViewBag.yearid" />
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script>
+<input hidden type="text" id="CheckSelectCompany" value="@ViewBag.CheckSelectCompany" />
+@* <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+ *@<script>
     $(document).ready(function () {
         $('#datatable').DataTable();
     });
@@ -335,58 +297,56 @@
 </script>
 <script>
     function validateForm() {
-        var CustomerID = document.getElementById('CustomerID').value;
-        var Month = document.getElementById('Month').value;
-        var Year = document.getElementById('Year').value;
-        var WorkLocation = document.getElementById('LocationID').value;
+        var CheckSelectCompanyElement = $("#CheckSelectCompany").val();
+        var CustomerID = $("#CustomerID").val(); //document.getElementById('CustomerID').val().trim();
+        var Month = $("#Month").val(); //document.getElementById('Month').value.trim();
+        var Year = $("#Year").val(); //document.getElementById('Year').value.trim();
+        var WorkLocation = $("#LocationID").val(); //document.getElementById('LocationID').value.trim();
 
-        if (CustomerID === '') {
-            alert("Please select Company.");
+        if (CheckSelectCompanyElement == "True") {
+            if (CustomerID == undefined || CustomerID == "") {
+                Swal.fire({
+                    title: 'Failed',
+                    icon: 'error',
+                    text: 'Please select Company.',
+                    confirmButtonText: 'OK'
+                });
+                return false;
+            }
+            if (WorkLocation == undefined || WorkLocation == "") {
+                Swal.fire({
+                    title: 'Failed',
+                    icon: 'error',
+                    text: 'Please select Work Location.',
+                    confirmButtonText: 'OK'
+                });
+                return false;
+            }
+        }
+        if (Month == undefined || Month == "") {
+            Swal.fire({
+                title: 'Failed',
+                icon: 'error',
+                text: 'Please select Month.',
+                confirmButtonText: 'OK'
+            });
             return false;
         }
-        if (WorkLocation === '') {
-            alert("Please select WorkLocation.");
-            return false;
-        }
-        if (Month === '') {
-            alert("Please select Month.");
-            return false;
-        }
-        if (Year === '') {
-            alert("Please select Year.");
+        if (Year == undefined || Year == "") {
+            Swal.fire({
+                title: 'Failed',
+                icon: 'error',
+                text: 'Please select Year.',
+                confirmButtonText: 'OK'
+            });
             return false;
         }
 
+        return true; 
     }
-</script>
-<script>
-    function generateInvoice() {
-        var CustomerID = $("#CustomerID").val();
-        var Month = $("#Month").val();
-        var Year = $("#Year").val();
-        var WorkLocation = $("#LocationID").val();
-        if (CustomerID === '') {
-            alert("Please select Company.");
-            return false;
-        }
-        if (WorkLocation === '') {
-            alert("Please select WorkLocation.");
-            return false;
-        }
-        if (Month === '') {
-            alert("Please select Month.");
-            return false;
-        }
-        if (Year === '') {
-            alert("Please select Year.");
-            return false;
-        }
-        if (CustomerID != null || Month != null || Year != null || WorkLocation != null) {
-            window.location.href = '/Employee/Invoice?customerId=' + CustomerID + '&Month=' + Month + '&year=' + Year + '&WorkLocation=' + WorkLocation;
-        }
 
-    }
 </script>
+
 <script>
     const currentYear = new Date().getFullYear();
     const startYear = 2023;
@@ -401,4 +361,62 @@
         option.textContent = year;
         yearDropdown.appendChild(option);
     }
+
+    function MonthlypayExportExcelfn() {
+        var CheckSelectCompanyElement = $("#CheckSelectCompany").val();
+        var CustomerID = $("#CustomerID").val();
+        var Month = $("#Month").val();
+        var Year = $("#Year").val();
+        var WorkLocation = $("#LocationID").val();
+
+        if (CheckSelectCompanyElement == "True") {
+            if (CustomerID == undefined || CustomerID == "") {
+                Swal.fire({
+                    title: 'Failed',
+                    icon: 'error',
+                    text: 'Please select Company.',
+                    confirmButtonText: 'OK'
+                });
+                return false;
+            }
+            if (WorkLocation == undefined || WorkLocation == "") {
+                Swal.fire({
+                    title: 'Failed',
+                    icon: 'error',
+                    text: 'Please select Work Location.',
+                    confirmButtonText: 'OK'
+                });
+                return false;
+            }
+        }
+        if (Month == undefined || Month == "") {
+            Swal.fire({
+                title: 'Failed',
+                icon: 'error',
+                text: 'Please select Month.',
+                confirmButtonText: 'OK'
+            });
+            return false;
+        }
+        if (Year == undefined || Year == "") {
+            Swal.fire({
+                title: 'Failed',
+                icon: 'error',
+                text: 'Please select Year.',
+                confirmButtonText: 'OK'
+            });
+            return false;
+        }
+        if (CustomerID || Month || Year || WorkLocation) {
+            window.location.href = '/Employee/MonthlypayExportSalaryReport?CustomerID=' + CustomerID + '&Month=' + Month + '&Year=' + Year + '&WorkLocation=' + WorkLocation;
+        } else {
+            Swal.fire({
+                title: 'Failed',
+                icon: 'error',
+                text: 'Please fill all required fields before exporting!',
+                confirmButtonText: 'OK'
+            });
+        }
+    }
+
 </script>

@@ -722,14 +722,24 @@ namespace CRM.Controllers
                                         await _context.SaveChangesAsync();
                                     }
                                 }
-                                decimal totalsalary = Math.Round((decimal)(ctc.MonthlyGrossPay / 12), 2);
+                                //decimal totalsalary = Math.Round((decimal)(ctc.MonthlyGrossPay / 12), 2);
+                                //decimal totalBasicsalary = Math.Round((((decimal)(ctc.Basic) / noOfDays) * (decimal)item.Attendance) / 12, 2);
+                                //decimal totalhra = Math.Round((((decimal)(ctc.HouseRentAllowance) / noOfDays) * (decimal)item.Attendance) / 12, 2) ;
+                                //decimal totalSpecialAllowance = Math.Round((((decimal)(ctc.SpecialAllowance) / noOfDays) * (decimal)item.Attendance) / 12, 2);
+                                //decimal totalConveyanceallowance = Math.Round((((decimal)(ctc.Conveyanceallowance) / noOfDays) * (decimal)item.Attendance) / 12, 2) ;
+                                //decimal totalMedicalAllowance = Math.Round((((decimal)(ctc.Medical) / noOfDays) * (decimal)item.Attendance)/ 12, 2)  ;
+                                //decimal totalVariablePay = Math.Round((((decimal)(ctc.VariablePay) / noOfDays) * (decimal)item.Attendance) / 12, 2) ;
+                                //decimal totalProfessionaltax = Math.Round((((decimal)(ctc.Professionaltax) / noOfDays) * (decimal)item.Attendance) / 12, 2);
+                                //decimal totalTds = Math.Round((((decimal)(ctc.Tdsvalue) / noOfDays) * (decimal)item.Attendance) / 12, 2);
+                                decimal totalsalary = Math.Round((decimal)(ctc.MonthlyGrossPay ?? 0) / 12, 2);
                                 decimal totalBasicsalary = Math.Round((((decimal)(ctc.Basic) / noOfDays) * (decimal)item.Attendance) / 12, 2);
                                 decimal totalhra = Math.Round((((decimal)(ctc.HouseRentAllowance) / noOfDays) * (decimal)item.Attendance) / 12, 2) ;
-                                decimal totalSpecialAllowance = Math.Round((((decimal)(ctc.SpecialAllowance) / noOfDays) * (decimal)item.Attendance) / 12, 2);
-                                decimal totalConveyanceallowance = Math.Round((((decimal)(ctc.Conveyanceallowance) / noOfDays) * (decimal)item.Attendance) / 12, 2) ;
-                                decimal totalMedicalAllowance = Math.Round((((decimal)(ctc.Medical) / noOfDays) * (decimal)item.Attendance)/ 12, 2)  ;
-                                decimal totalVariablePay = Math.Round((((decimal)(ctc.VariablePay) / noOfDays) * (decimal)item.Attendance) / 12, 2) ;
-                               // decimal totalVariablePay = Math.Round((((decimal)(ctc.VariablePay) / noOfDays) * (decimal)item.Attendance) / 12, 2) ;
+                                decimal totalSpecialAllowance = Math.Round((((decimal)(ctc.SpecialAllowance ?? 0) / noOfDays) * (decimal)(item.Attendance ?? 0)) / 12, 2);
+                                decimal totalConveyanceallowance = Math.Round((((decimal)(ctc.Conveyanceallowance ?? 0) / noOfDays) * (decimal)(item.Attendance ?? 0)) / 12, 2);
+                                decimal totalMedicalAllowance = Math.Round((((decimal)(ctc.Medical ?? 0) / noOfDays) * (decimal)(item.Attendance ?? 0)) / 12, 2);
+                                decimal totalVariablePay = Math.Round((((decimal)(ctc.VariablePay ?? 0) / noOfDays) * (decimal)(item.Attendance ?? 0)) / 12, 2);
+                                decimal totalProfessionaltax = Math.Round((((decimal)(ctc.Professionaltax ?? 0) / noOfDays) * (decimal)(item.Attendance ?? 0)) / 12, 2);
+                                decimal totalTds = Math.Round((((decimal)(ctc.Tdsvalue ?? 0) / noOfDays) * (decimal)(item.Attendance ?? 0)) / 12, 2);
 
                                 decimal checknum = noOfDays - (decimal)item.Attendance;
                                 if (item.Id != 0)
@@ -753,6 +763,8 @@ namespace CRM.Controllers
                                         Conveyanceallowance = totalConveyanceallowance,
                                         MedicalAllowance = totalMedicalAllowance,
                                         VariablePay = totalVariablePay,
+                                        Professionaltax = totalProfessionaltax,
+                                        Tds = totalTds,
                                     };
 
                                     _context.Empattendances.Add(emp);
@@ -870,7 +882,8 @@ namespace CRM.Controllers
                                         VariablePay = empatt.VariablePay,
                                         //Amount = tds.Amount,
                                         CompanyName = vrs.CompanyName,
-                                        CompanyImage = vrs.CompanyImage
+                                        CompanyImage = vrs.CompanyImage,
+                                        Companysignature = vrs.VendorSingature,
                                     }).FirstOrDefaultAsync();
 
                 if (result != null)
@@ -988,8 +1001,10 @@ namespace CRM.Controllers
                                   Month = getMonthName((int)month, true),
                                   Year = empt.Year,
                                   vendorid = emp.Vendorid,
+                                  CompanyName = _context.VendorRegistrations.Where(x => x.Id == emp.Vendorid).Select(x => x.CompanyName).FirstOrDefault()
+
                               }).FirstOrDefault();
-                string uniqueFileName = $"{result.Employee_ID}_{result.First_Name}_{result.Month}{result.Year}";
+                string uniqueFileName = $"{result.Employee_ID}_{result.First_Name}_{result.Month}{result.Year}.pdf";
                 string filePath = Path.Combine(wwwRootPath, uniqueFileName);
                 doc.Save(filePath);
                 byte[] pdf = System.IO.File.ReadAllBytes(filePath);
@@ -998,8 +1013,15 @@ namespace CRM.Controllers
                 if (result != null)
                 {
                     string fileName = uniqueFileName;
-                    string emailSubject = uniqueFileName;
-                    string emailBody = $"Dear {result.First_Name} ({result.Employee_ID}), your salary slip for this {result.Month} has been generated and is attached to this email. Please review the details and contact HR if you have any questions.";
+                    string emailSubject = $"Salary Slip for {result.Month} {result.Year}";
+                    string emailBody = $"Dear {result.First_Name},\n\n"
+                 + $"Please find attached your salary slip for the month of {result.Month}, {result.Year}. "
+                 + "If you have any questions or require any clarification, feel free to reach out.\n\n"
+                 + "Thank you for your hard work and dedication. We truly appreciate your contribution to the team.\n\n"
+                 + $"Best regards,\n{result.CompanyName}";
+
+
+                    // string emailBody = $"Dear {result.First_Name} ({result.Employee_ID}), your salary slip for this {result.Month} has been generated and is attached to this email. Please review the details and contact HR if you have any questions.";
                     _IEmailService.SendEmailAsync(result.Email_Id, emailSubject, emailBody, pdf, fileName, "application/pdf", (int)result.vendorid);
 
                     return Json(new { success = true, message = "Salary Slip has been sent successfully.", fileName = fileName, pdf = Convert.ToBase64String(pdf) });
@@ -1041,8 +1063,9 @@ namespace CRM.Controllers
                                   Month = getMonthName((int)month, true),
                                   Year = empt.Year,
                                   vendorid = emp.Vendorid,
+                                  CompanyName = _context.VendorRegistrations.Where(x=>x.Id == emp.Vendorid).Select(x=>x.CompanyName).FirstOrDefault()
                               }).FirstOrDefault();
-                string uniqueFileName = $"{result.Employee_ID}_{result.First_Name}_{result.Month}{result.Year}";
+                string uniqueFileName = $"{result.Employee_ID}_{result.First_Name}_{result.Month}{result.Year}.pdf";
                 string filePath = Path.Combine(wwwRootPath, uniqueFileName);
                 doc.Save(filePath);
                 byte[] pdf = System.IO.File.ReadAllBytes(filePath);
@@ -1064,7 +1087,11 @@ namespace CRM.Controllers
                     throw new Exception("Attendance record not found for the employee.");
                 }
                 string Email_Subject = uniqueFileName;
-                string Email_body = $"Dear {result.First_Name} ({result.Employee_ID}), your salary slip for this {result.Month} has been generated and is attached to this email. Please review the details and contact HR if you have any questions.";
+                string Email_body = $"Dear {result.First_Name},\n\n"
+                 + $"Please find attached your salary slip for the month of {result.Month}, {result.Year}. "
+                 + "If you have any questions or require any clarification, feel free to reach out.\n\n"
+                 + "Thank you for your hard work and dedication. We truly appreciate your contribution to the team.\n\n"
+                 + $"Best regards,\n{result.CompanyName}";
                 _IEmailService.SendEmailAsync(result.Email_Id, Email_Subject, Email_body, pdf, uniqueFileName, "application/pdf", (int)result.vendorid);
 
                 Console.WriteLine($"Salary slip for Employee ID {result.Employee_ID} has been saved and the Empattendance table has been updated.");
@@ -1225,17 +1252,17 @@ namespace CRM.Controllers
                         var currentRow = 1;
 
                         worksheet.Cell(currentRow, 1).Value = "Sr.No.";
-                        worksheet.Cell(currentRow, 1).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 1).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 2).Value = "Employee ID";
-                        worksheet.Cell(currentRow, 2).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 2).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 3).Value = "Employee Name";
-                        worksheet.Cell(currentRow, 3).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 3).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 4).Value = "Account Number";
-                        worksheet.Cell(currentRow, 4).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 4).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 5).Value = "IFSC";
-                        worksheet.Cell(currentRow, 5).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 5).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 6).Value = "netpayment";
-                        worksheet.Cell(currentRow, 6).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 6).Style.Fill.BackgroundColor = XLColor.LightGray;
 
                         currentRow++;
 
@@ -1293,7 +1320,7 @@ namespace CRM.Controllers
 					}).ToList();
 				}
 				
-                ViewBag.ErrorMessage = TempData["ErrorMessage"];
+               
                 return View();
 
             }
@@ -1313,24 +1340,21 @@ namespace CRM.Controllers
                 ViewBag.locid = WorkLocation;
                 ViewBag.monthid = Month;
                 ViewBag.yearid = year;
-                if (customerId != null && Month != null && year != null && WorkLocation != null)
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
+                var checkvendor = _context.VendorRegistrations.Where(x => x.Id == adminlogin.Vendorid).FirstOrDefault();
+                ViewBag.CheckSelectCompany = checkvendor.SelectCompany;
+                if (checkvendor.SelectCompany == true)
                 {
-                    int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
-                    var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
-                    var checkvendor = _context.VendorRegistrations.Where(x => x.Id == adminlogin.Vendorid).FirstOrDefault();
-                    ViewBag.CheckSelectCompany = checkvendor.SelectCompany;
-                    if (checkvendor.SelectCompany == true)
+                    ViewBag.CustomerName = _context.CustomerRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).Select(x => new SelectListItem
                     {
-                        ViewBag.CustomerName = _context.CustomerRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).Select(x => new SelectListItem
-                        {
-                            Value = x.Id.ToString(),
-                            Text = x.CompanyName
-                        }).ToList();
-                    }
+                        Value = x.Id.ToString(),
+                        Text = x.CompanyName
+                    }).ToList();
+                }
+                if (customerId != 0 || Month != 0 || year != 0 || WorkLocation != 0)
+                {
                     GenerateSalaryReportDTO salary = new GenerateSalaryReportDTO();
-
-
-
                     salary.GenerateSalaryReports = await _ICrmrpo.GenerateSalaryReport(customerId, Month, year, WorkLocation, (int)adminlogin.Vendorid);
                     decimal total = 0.00M;
                     foreach (var item in salary.GenerateSalaryReports)
@@ -1339,13 +1363,12 @@ namespace CRM.Controllers
                     }
                     ViewBag.TotalAmmount = total;
                     if (salary.GenerateSalaryReports.Count > 0)
-
                     {
                         return View(salary);
                     }
                     else
                     {
-                        ViewBag.ErrorMessage = "No data found";
+                        TempData["Message"] = "No data found";
                         return View();
                     }
                 }
@@ -1890,87 +1913,87 @@ namespace CRM.Controllers
                         var currentRow = 1;
 
                         worksheet.Cell(currentRow, 1).Value = "Sr.No.";
-                        worksheet.Cell(currentRow, 2).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 2).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 2).Value = "First Name";
-                        worksheet.Cell(currentRow, 3).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 3).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 3).Value = "Middle Name";
-                        worksheet.Cell(currentRow, 4).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 4).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 4).Value = "Company Name";
-                        worksheet.Cell(currentRow, 5).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 5).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 5).Value = "Date Of Joining";
-                        worksheet.Cell(currentRow, 6).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 6).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 6).Value = "Work Email";
-                        worksheet.Cell(currentRow, 7).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 7).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 7).Value = "Gender";
-                        worksheet.Cell(currentRow, 8).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 8).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 8).Value = "Work Location";
-                        worksheet.Cell(currentRow, 9).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 9).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 9).Value = "Designation";
-                        worksheet.Cell(currentRow, 10).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 10).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 10).Value = "Department";
-                        worksheet.Cell(currentRow, 11).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 11).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 11).Value = "Emp_Reg_ID";
-                        worksheet.Cell(currentRow, 12).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 12).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 12).Value = "Annual CTC";
-                        worksheet.Cell(currentRow, 13).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 13).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 13).Value = "Basic";
-                        worksheet.Cell(currentRow, 14).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 14).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 14).Value = "HouseRent Allowance";
-                        worksheet.Cell(currentRow, 15).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 15).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 15).Value = "Travelling Allowance";
-                        worksheet.Cell(currentRow, 16).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 16).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 16).Value = "ESIC";
-                        worksheet.Cell(currentRow, 17).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 17).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 17).Value = "EPF";
-                        worksheet.Cell(currentRow, 18).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 18).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 18).Value = "Monthly Gross Pay";
-                        worksheet.Cell(currentRow, 19).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 19).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 19).Value = "Monthly CTC";
-                        worksheet.Cell(currentRow, 20).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 20).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 20).Value = "Special Allowance";
-                        worksheet.Cell(currentRow, 21).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 21).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 21).Value = "Gross";
-                        worksheet.Cell(currentRow, 22).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 22).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 22).Value = "Personal Email Address";
-                        worksheet.Cell(currentRow, 23).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 23).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 23).Value = "Mobile";
-                        worksheet.Cell(currentRow, 24).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 24).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 24).Value = "Date Of Birth";
-                        worksheet.Cell(currentRow, 25).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 25).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 25).Value = "Age";
-                        worksheet.Cell(currentRow, 26).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 26).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 26).Value = "Father Name";
-                        worksheet.Cell(currentRow, 27).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 27).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 27).Value = "PAN";
-                        worksheet.Cell(currentRow, 28).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 28).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 28).Value = "Address Line 1";
-                        worksheet.Cell(currentRow, 29).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 29).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 29).Value = "Address Line 2";
-                        worksheet.Cell(currentRow, 30).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 30).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 30).Value = "City";
-                        worksheet.Cell(currentRow, 31).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 31).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 31).Value = "State";
-                        worksheet.Cell(currentRow, 32).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 32).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 32).Value = "PinCode";
-                        worksheet.Cell(currentRow, 33).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 33).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 33).Value = "Account Holder Name";
-                        worksheet.Cell(currentRow, 34).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 34).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 34).Value = "Bank Name";
-                        worksheet.Cell(currentRow, 35).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 35).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 35).Value = "Account Number";
-                        worksheet.Cell(currentRow, 36).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 36).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 36).Value = "Re-enter Account Number";
-                        worksheet.Cell(currentRow, 37).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 37).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 37).Value = "IFSC";
-                        worksheet.Cell(currentRow, 38).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 38).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 38).Value = "Account Type";
-                        worksheet.Cell(currentRow, 39).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 39).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 39).Value = "EPF Number";
-                        worksheet.Cell(currentRow, 40).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 40).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 40).Value = "Deduction Cycle";
-                        worksheet.Cell(currentRow, 41).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 41).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 41).Value = "Employee Contribution Rate";
-                        worksheet.Cell(currentRow, 42).Style.Fill.BackgroundColor = XLColor.Yellow;
+                        worksheet.Cell(currentRow, 42).Style.Fill.BackgroundColor = XLColor.LightGray;
                         worksheet.Cell(currentRow, 42).Value = "Nominee";
 
 
@@ -3234,6 +3257,8 @@ namespace CRM.Controllers
         }
         public async Task<JsonResult> getEmpattendancedays(int month, int year)
         {
+            try
+            {
             int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
             var adminLogin = await _context.AdminLogins.FirstOrDefaultAsync(x => x.Id == userId);
 
@@ -3269,23 +3294,49 @@ namespace CRM.Controllers
             }
 
             var employeeIds = employees.Select(e => e.EmployeeId).ToList();
+                var ctcData = (await _context.EmployeeSalaryDetails
+     .Where(x => employeeIds.Contains(x.EmployeeId))
+     .ToListAsync())  
+     .GroupBy(x => x.EmployeeId)
+     .ToDictionary(g => g.Key, g => g.First().MonthlyGrossPay / 12 ?? 0);
 
-            var ctcData = await _context.EmployeeSalaryDetails
-                                        .Where(x => employeeIds.Contains(x.EmployeeId))
-                                        .ToDictionaryAsync(x => x.EmployeeId, x => x.MonthlyGrossPay / 12 ?? 0);
-            var EmployeeEpfData = await _context.EmployeeSalaryDetails
-                                                 .Where(x => employeeIds.Contains(x.EmployeeId))
-                                                 .ToDictionaryAsync(x => x.EmployeeId, x => x.Epfpercentage ?? 0);
-            var EmployeeEsiData = await _context.EmployeeSalaryDetails
-                                                 .Where(x => employeeIds.Contains(x.EmployeeId))
-                                                 .ToDictionaryAsync(x => x.EmployeeId, x => x.Esipercentage ?? 0);
-            var EmployeebasicData = await _context.EmployeeSalaryDetails
-                                                .Where(x => employeeIds.Contains(x.EmployeeId))
-                                                .ToDictionaryAsync(x => x.EmployeeId, x => (x.Basic) / 12);
-            var EmployeeMonthlyCtc = await _context.EmployeeSalaryDetails
-                                                .Where(x => employeeIds.Contains(x.EmployeeId))
-                                                .ToDictionaryAsync(x => x.EmployeeId, x => x.MonthlyCtc);
-            var leaveCounts = await _context.ApplyLeaveNews
+                //var ctcData = await _context.EmployeeSalaryDetails
+                //                        .Where(x => employeeIds.Contains(x.EmployeeId))
+                //                        .ToDictionaryAsync(g => g.EmployeeId, x => x.MonthlyGrossPay / 12 ?? 0);
+                //    var EmployeeEpfData = await _context.EmployeeSalaryDetails
+                //                                     .Where(x => employeeIds.Contains(x.EmployeeId))
+                //                                     .ToDictionaryAsync(x => x.EmployeeId, x => x.Epfpercentage ?? 0);
+                //var EmployeeEsiData = await _context.EmployeeSalaryDetails
+                //                                     .Where(x => employeeIds.Contains(x.EmployeeId))
+                //                                     .ToDictionaryAsync(x => x.EmployeeId, x => x.Esipercentage ?? 0);
+                //var EmployeebasicData = await _context.EmployeeSalaryDetails
+                //                                    .Where(x => employeeIds.Contains(x.EmployeeId))
+                //                                    .ToDictionaryAsync(x => x.EmployeeId, x => (x.Basic) / 12);
+                //var EmployeeMonthlyCtc = await _context.EmployeeSalaryDetails
+                //                                    .Where(x => employeeIds.Contains(x.EmployeeId))
+                //                                    .ToDictionaryAsync(x => x.EmployeeId, x => x.MonthlyCtc);
+                var employeeSalaryDetails = await _context.EmployeeSalaryDetails
+     .Where(x => employeeIds.Contains(x.EmployeeId))
+     .ToListAsync(); // Fetch data once
+
+                var EmployeeEpfData = employeeSalaryDetails
+                    .GroupBy(x => x.EmployeeId)
+                    .ToDictionary(g => g.Key, g => g.First().Epfpercentage ?? 0);
+
+                var EmployeeEsiData = employeeSalaryDetails
+                    .GroupBy(x => x.EmployeeId)
+                    .ToDictionary(g => g.Key, g => g.First().Esipercentage ?? 0);
+
+                var EmployeebasicData = employeeSalaryDetails
+                    .GroupBy(x => x.EmployeeId)
+                    .ToDictionary(g => g.Key, g => g.First().Basic / 12); 
+
+                var EmployeeMonthlyCtc = employeeSalaryDetails
+                    .GroupBy(x => x.EmployeeId)
+                    .ToDictionary(g => g.Key, g => g.First().MonthlyCtc ?? 0);
+
+
+                var leaveCounts = await _context.ApplyLeaveNews
                                              .Where(leave => employeeIds.Contains(leave.UserId) &&
                                                              leave.Isapprove == 2 &&
                                                              leave.StartDate.Year == year &&
@@ -3444,6 +3495,11 @@ namespace CRM.Controllers
             }
 
             return new JsonResult(new { Employees = result, TotalMonthlyPay = totalMonthlyPay });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error: " + ex.Message);
+            }
         }
         public JsonResult EmpEpfesilist()
         {
@@ -4305,8 +4361,178 @@ namespace CRM.Controllers
             return Json(worklocationnamelist);
         }
 
+        public IActionResult SalaryslipDownloadPDF(int id, int month)
+        {
+            try
+            {
+                string schema = Request.Scheme;
+                string host = Request.Host.Value;
+                HtmlToPdf converter = new HtmlToPdf();
+                string SlipURL = $"{schema}://{host}/Employee/SalarySlipInPDF?id={id}&&month={month}";
+                PdfDocument doc = converter.ConvertUrl(SlipURL);
 
+                //string wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "EMPpdfs");
+                //if (!Directory.Exists(wwwRootPath))
+                //{
+                //    Directory.CreateDirectory(wwwRootPath);
+                //}
 
+                var result = (from emp in _context.EmployeeRegistrations
+                              join empt in _context.Empattendances
+                              on emp.EmployeeId equals empt.EmployeeId
+                              where emp.Id == id && empt.Month == month
+                              select new SalarySlipDetails
+                              {
+                                  Id = emp.Id,
+                                  Employee_ID = emp.EmployeeId,
+                                  First_Name = emp.FirstName,
+                                  Email_Id = emp.WorkEmail,
+                                  Month = getMonthName((int)month, true),
+                                  Year = empt.Year,
+                                  vendorid = emp.Vendorid,
+                                  CompanyName = _context.VendorRegistrations.Where(x => x.Id == emp.Vendorid).Select(x => x.CompanyName).FirstOrDefault()
+                              }).FirstOrDefault();
+
+                if (result == null)
+                {
+                    return Json(new { success = false, message = "Error: Employee not found." });
+                }
+
+                string uniqueFileName = $"{result.Employee_ID}_{result.First_Name}_{result.Month}{result.Year}.pdf";
+                string filePath = Path.Combine(uniqueFileName);
+                doc.Save(filePath);
+
+                byte[] pdfBytes = System.IO.File.ReadAllBytes(filePath);
+                doc.Close();
+
+                return File(pdfBytes, "application/pdf", uniqueFileName);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Error: {ex.Message}" });
+            }
+        }
+        public async Task<IActionResult> MonthlypayExportSalaryReport(int customerId = 0, int Month = 0, int year = 0, int WorkLocation = 0)
+        {
+            try
+            {
+                ViewBag.custid = customerId;
+                ViewBag.locid = WorkLocation;
+                ViewBag.monthid = Month;
+                ViewBag.yearid = year;
+                GenerateSalaryReportDTO salary = new GenerateSalaryReportDTO();
+
+                if (customerId != null && Month != null && year != null && WorkLocation != null)
+                {
+                    int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                    var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
+
+                    salary.GenerateSalaryReports = await _ICrmrpo.GenerateSalaryReport(customerId, Month, year, WorkLocation, (int)adminlogin.Vendorid);
+                   
+                }
+                using (var workbook = new XLWorkbook())
+                {
+                    var worksheet = workbook.Worksheets.Add("Employee Break Report");
+
+                    int currentwork = 1;
+                    worksheet.Cell(currentwork, 1).Value = "Sr.No.";
+                    worksheet.Cell(currentwork, 1).Style.Fill.BackgroundColor = XLColor.LightGray;
+
+                    worksheet.Cell(currentwork, 2).Value = "EmpId";
+                    worksheet.Cell(currentwork, 2).Style.Fill.BackgroundColor = XLColor.LightGray;
+
+                    worksheet.Cell(currentwork, 3).Value = "EmpName";
+                    worksheet.Cell(currentwork, 3).Style.Fill.BackgroundColor = XLColor.LightGray;
+
+                    worksheet.Cell(currentwork, 4).Value = "MonthlyCTC";
+                    worksheet.Cell(currentwork, 4).Style.Fill.BackgroundColor = XLColor.LightGray;
+
+                    worksheet.Cell(currentwork, 5).Value = "Basic Salary";
+                    worksheet.Cell(currentwork, 5).Style.Fill.BackgroundColor = XLColor.LightGray;
+
+                    worksheet.Cell(currentwork, 6).Value = "HRA";
+                    worksheet.Cell(currentwork, 6).Style.Fill.BackgroundColor = XLColor.LightGray;
+
+                    worksheet.Cell(currentwork, 7).Value = "EPF";
+                    worksheet.Cell(currentwork, 7).Style.Fill.BackgroundColor = XLColor.LightGray;
+
+                    worksheet.Cell(currentwork, 8).Value = "ESIC";
+                    worksheet.Cell(currentwork, 8).Style.Fill.BackgroundColor = XLColor.LightGray;
+
+                    worksheet.Cell(currentwork, 9).Value = "Generated Salary";
+                    worksheet.Cell(currentwork, 9).Style.Fill.BackgroundColor = XLColor.LightGray;
+
+                    worksheet.Cell(currentwork, 10).Value = "SA";
+                    worksheet.Cell(currentwork, 10).Style.Fill.BackgroundColor = XLColor.LightGray;
+
+                    worksheet.Cell(currentwork, 11).Value = "CA";
+                    worksheet.Cell(currentwork, 11).Style.Fill.BackgroundColor = XLColor.LightGray;
+
+                    worksheet.Cell(currentwork, 12).Value = "MA";
+                    worksheet.Cell(currentwork, 12).Style.Fill.BackgroundColor = XLColor.LightGray;
+
+                    worksheet.Cell(currentwork, 13).Value = "Variable Pay";
+                    worksheet.Cell(currentwork, 13).Style.Fill.BackgroundColor = XLColor.LightGray;
+
+                    worksheet.Cell(currentwork, 14).Value = "TA";
+                    worksheet.Cell(currentwork, 14).Style.Fill.BackgroundColor = XLColor.LightGray;
+
+                    worksheet.Cell(currentwork, 15).Value = "Incentive";
+                    worksheet.Cell(currentwork, 15).Style.Fill.BackgroundColor = XLColor.LightGray;
+
+                    worksheet.Cell(currentwork, 16).Value = "TDS";
+                    worksheet.Cell(currentwork, 16).Style.Fill.BackgroundColor = XLColor.LightGray;
+
+                    worksheet.Cell(currentwork, 17).Value = "Professional tax";
+                    worksheet.Cell(currentwork, 17).Style.Fill.BackgroundColor = XLColor.LightGray;
+
+                    worksheet.Cell(currentwork, 18).Value = "Attendance";
+                    worksheet.Cell(currentwork, 18).Style.Fill.BackgroundColor = XLColor.LightGray;
+
+                    currentwork++;
+
+                    var row = 1;
+                    foreach (var record in salary.GenerateSalaryReports)
+                    {
+                        worksheet.Cell(row, 1).Value = row - 1;  // Sr. No.
+                        worksheet.Cell(row, 2).Value = record.EmployeeId;
+                        worksheet.Cell(row, 3).Value = record.EmployeeName;
+                        worksheet.Cell(row, 4).Value = record.MonthlyCtc;
+                        worksheet.Cell(row, 5).Value = record.EPF;
+                        worksheet.Cell(row, 6).Value = record.ESIC;
+                        worksheet.Cell(row, 7).Value = record.GenerateSalary;
+                        worksheet.Cell(row, 8).Value = record.Basicsalary;
+                        worksheet.Cell(row, 9).Value = record.Hra;
+                        worksheet.Cell(row, 10).Value = record.SpecialAllowance;
+                        worksheet.Cell(row, 11).Value = record.Conveyanceallowance;
+                        worksheet.Cell(row, 12).Value = record.MedicalAllowance;
+                        worksheet.Cell(row, 13).Value = record.VariablePay;
+                        worksheet.Cell(row, 14).Value = record.TravellingAllowance;
+                        worksheet.Cell(row, 15).Value = record.Incentive;
+                        worksheet.Cell(row, 16).Value = record.Tds;
+                        worksheet.Cell(row, 17).Value = record.Professionaltax;
+                        worksheet.Cell(row, 18).Value = record.Attendance;
+
+                        currentwork++;
+                    }
+
+                    worksheet.Columns().AdjustToContents();
+
+                    using (var stream = new MemoryStream())
+                    {
+                        workbook.SaveAs(stream);
+                        var fileContent = stream.ToArray();
+                        return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Employee_Salary_Report.xlsx");
+                    }
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
     }
 
 

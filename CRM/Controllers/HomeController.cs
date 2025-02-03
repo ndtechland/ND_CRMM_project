@@ -2760,19 +2760,19 @@ namespace CRM.Controllers
 
                     int currentwork = 1;
                     worksheet.Cell(currentwork, 1).Value = "Sr.No.";
-                    worksheet.Cell(currentwork, 1).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 1).Style.Fill.BackgroundColor = XLColor.LightGray;
                     worksheet.Cell(currentwork, 2).Value = "Employee ID";
-                    worksheet.Cell(currentwork, 2).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 2).Style.Fill.BackgroundColor = XLColor.LightGray;
                     worksheet.Cell(currentwork, 3).Value = "Employee Name";
-                    worksheet.Cell(currentwork, 3).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 3).Style.Fill.BackgroundColor = XLColor.LightGray;
                     worksheet.Cell(currentwork, 4).Value = "Break-In Time";
-                    worksheet.Cell(currentwork, 4).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 4).Style.Fill.BackgroundColor = XLColor.LightGray;
                     worksheet.Cell(currentwork, 5).Value = "Break-Out Time";
-                    worksheet.Cell(currentwork, 5).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 5).Style.Fill.BackgroundColor = XLColor.LightGray;
                     worksheet.Cell(currentwork, 6).Value = "Break Hours";
-                    worksheet.Cell(currentwork, 6).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 6).Style.Fill.BackgroundColor = XLColor.LightGray;
                     worksheet.Cell(currentwork, 7).Value = "Date";
-                    worksheet.Cell(currentwork, 7).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 7).Style.Fill.BackgroundColor = XLColor.LightGray;
 
                     currentwork++;
 
@@ -2960,19 +2960,19 @@ namespace CRM.Controllers
 
                     int currentwork = 1;
                     worksheet.Cell(currentwork, 1).Value = "Sr.No.";
-                    worksheet.Cell(currentwork, 1).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 1).Style.Fill.BackgroundColor = XLColor.LightGray;
                     worksheet.Cell(currentwork, 2).Value = "Employee ID";
-                    worksheet.Cell(currentwork, 2).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 2).Style.Fill.BackgroundColor = XLColor.LightGray;
                     worksheet.Cell(currentwork, 3).Value = "Employee Name";
-                    worksheet.Cell(currentwork, 3).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 3).Style.Fill.BackgroundColor = XLColor.LightGray;
                     worksheet.Cell(currentwork, 4).Value = "Check-In Time";
-                    worksheet.Cell(currentwork, 4).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 4).Style.Fill.BackgroundColor = XLColor.LightGray;
                     worksheet.Cell(currentwork, 5).Value = "Check-Out Time";
-                    worksheet.Cell(currentwork, 5).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 5).Style.Fill.BackgroundColor = XLColor.LightGray;
                     worksheet.Cell(currentwork, 6).Value = "Working Hours";
-                    worksheet.Cell(currentwork, 6).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 6).Style.Fill.BackgroundColor = XLColor.LightGray;
                     worksheet.Cell(currentwork, 7).Value = "Date";
-                    worksheet.Cell(currentwork, 7).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 7).Style.Fill.BackgroundColor = XLColor.LightGray;
 
                     currentwork++;
 
@@ -3216,21 +3216,21 @@ namespace CRM.Controllers
 
                     int currentwork = 1;
                     worksheet.Cell(currentwork, 1).Value = "Sr.No.";
-                    worksheet.Cell(currentwork, 1).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 1).Style.Fill.BackgroundColor = XLColor.LightGray;
                     worksheet.Cell(currentwork, 2).Value = "Employee ID";
-                    worksheet.Cell(currentwork, 2).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 2).Style.Fill.BackgroundColor = XLColor.LightGray;
                     worksheet.Cell(currentwork, 3).Value = "Employee Name";
-                    worksheet.Cell(currentwork, 3).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 3).Style.Fill.BackgroundColor = XLColor.LightGray;
                     worksheet.Cell(currentwork, 4).Value = "Mobile Number";
-                    worksheet.Cell(currentwork, 4).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 4).Style.Fill.BackgroundColor = XLColor.LightGray;
                     worksheet.Cell(currentwork, 5).Value = "Start Date";
-                    worksheet.Cell(currentwork, 5).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 5).Style.Fill.BackgroundColor = XLColor.LightGray;
                     worksheet.Cell(currentwork, 6).Value = "End Date";
-                    worksheet.Cell(currentwork, 6).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 6).Style.Fill.BackgroundColor = XLColor.LightGray;
                     worksheet.Cell(currentwork, 7).Value = "Total Days";
-                    worksheet.Cell(currentwork, 7).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 7).Style.Fill.BackgroundColor = XLColor.LightGray;
                     worksheet.Cell(currentwork, 9).Value = "Applied Date";
-                    worksheet.Cell(currentwork, 9).Style.Fill.BackgroundColor = XLColor.Yellow;
+                    worksheet.Cell(currentwork, 9).Style.Fill.BackgroundColor = XLColor.LightGray;
 
                     currentwork++;
 
