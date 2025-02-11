@@ -172,17 +172,18 @@
                                                 <th nowrap>Variable Pay</th>
                                                 <th nowrap>EPF</th>
                                                 <th nowrap>ESIC</th>
-                                                <th nowrap>Generated Salary</th>
                                                 <th nowrap>TA</th>
                                                 <th nowrap>Incentive</th>
                                                 <th nowrap>TDS</th>
                                                 <th nowrap>Professional tax</th>
+                                                <th nowrap>Lop</th>
+                                                <th nowrap>Generated Salary</th>
                                                 <th nowrap>Attendance</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @{
-                                                if (Model?.GenerateSalaryReports?.Count > 0)  // Added null-check for safety
+                                                if (Model?.GenerateSalaryReports?.Count > 0)  
                                                 {
                                                     var count = 0;
                                                     foreach (var item in Model.GenerateSalaryReports)
@@ -190,7 +191,7 @@
                                                         count++;
                                                         <tr>
                                                             <td nowrap>@count</td>
-                                                            <td style="display:none">@item.Id</td>  <!-- Hidden ID -->
+                                                            <td style="display:none">@item.Id</td>  
                                                             <td nowrap>@item.EmployeeId</td>
                                                             <td nowrap>@item.EmployeeName</td>
                                                             <td nowrap>@item.MonthlyCtc</td>
@@ -202,11 +203,12 @@
                                                             <td nowrap>@item.VariablePay</td>
                                                             <td nowrap>@item.EPF</td>
                                                             <td nowrap>@item.ESIC</td>
-                                                            <td nowrap>@Math.Round(item.GenerateSalary ?? 0, 2)</td>  <!-- Added null handling for GenerateSalary -->
                                                             <td nowrap>@item.TravellingAllowance</td>
                                                             <td nowrap>@item.Incentive</td>
                                                             <td nowrap>@item.Tds</td>
                                                             <td nowrap>@item.Professionaltax</td>
+                                                            <td nowrap>@item.Lop</td>
+                                                            <td nowrap>@Math.Round(item.GenerateSalary ?? 0, 2)</td> 
                                                             <td nowrap>@item.Attendance</td>
                                                         </tr>
                                                     }
@@ -217,7 +219,7 @@
                                         {
                                             <tfoot>
                                                 <tr>
-                                                    <td colspan="6" class="text-right" style="text-align:right;"><strong>Total:</strong></td>
+                                                    <td colspan="17" class="text-right" style="text-align:right;"><strong>Total:</strong></td>
                                                     <td>@ViewBag.TotalAmmount</td>
                                                 </tr>
                                             </tfoot>

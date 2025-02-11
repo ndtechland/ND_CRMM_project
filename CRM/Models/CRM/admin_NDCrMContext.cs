@@ -103,6 +103,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<Salarydeductionmaster> Salarydeductionmasters { get; set; } = null!;
         public virtual DbSet<ScheduledTask> ScheduledTasks { get; set; } = null!;
         public virtual DbSet<Schema> Schemas { get; set; } = null!;
+        public virtual DbSet<Selfassesstmentadmin> Selfassesstmentadmins { get; set; } = null!;
         public virtual DbSet<Server> Servers { get; set; } = null!;
         public virtual DbSet<Set> Sets { get; set; } = null!;
         public virtual DbSet<Softwarelink> Softwarelinks { get; set; } = null!;
@@ -481,6 +482,10 @@ namespace CRM.Models.Crm
 
                 entity.Property(e => e.PaidAmount).HasColumnType("decimal(18, 2)");
 
+                entity.Property(e => e.Paymentdate)
+                    .HasColumnType("datetime")
+                    .HasColumnName("paymentdate");
+
                 entity.Property(e => e.Paymentstatus).HasColumnName("paymentstatus");
 
                 entity.Property(e => e.ProductPrice).HasColumnType("decimal(18, 0)");
@@ -509,6 +514,8 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.InvoiceNumber).HasMaxLength(200);
 
                 entity.Property(e => e.Notes).HasMaxLength(200);
+
+                entity.Property(e => e.ServiceCharge).HasColumnType("decimal(9, 2)");
 
                 entity.Property(e => e.Taxamount)
                     .HasColumnType("decimal(9, 2)")
@@ -2086,6 +2093,23 @@ namespace CRM.Models.Crm
                 entity.ToTable("Schema", "HangFire");
 
                 entity.Property(e => e.Version).ValueGeneratedNever();
+            });
+
+            modelBuilder.Entity<Selfassesstmentadmin>(entity =>
+            {
+                entity.ToTable("Selfassesstmentadmin");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.CreatedDate)
+                    .HasColumnType("date")
+                    .HasColumnName("createdDate");
+
+                entity.Property(e => e.Pointname).HasMaxLength(250);
+
+                entity.Property(e => e.SubTittle).HasMaxLength(250);
+
+                entity.Property(e => e.Tittle).HasMaxLength(250);
             });
 
             modelBuilder.Entity<Server>(entity =>

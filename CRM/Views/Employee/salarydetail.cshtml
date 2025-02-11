@@ -194,25 +194,28 @@
 												<th hidden></th>
 												<th nowrap>Sl. No.</th>
 												<th nowrap>
+													Employee Id
+												</th>
+												<th nowrap>
 													Employee Name
 												</th>
 												<th nowrap>
 													Father Name
 												</th>
 												<th nowrap>
-													Employee Id
-												</th>
-												<th nowrap>
 													Gross Pay
 												</th>
 												<th nowrap>
-													MonthlyPay
+													Lop
 												</th>
 												<th nowrap>
 													Employee Epf
 												</th>
 												<th nowrap>
 													Employee Esi
+												</th>
+												<th nowrap>
+													Net Pay
 												</th>
 												<th nowrap>Attendance</th>
 												<th nowrap>Action</th>
@@ -253,15 +256,14 @@
 															<td>
 																@Html.DisplayFor(modelItem => item.Grosspay)
 															</td>
-
-															<td class="monthly-pay">@Html.DisplayFor(modelItem => item.MonthlyPay)</td>
+															<td class="lop-pay">@Html.DisplayFor(modelItem => item.lop)</td>
 															<td class="Epf-pay">@Html.DisplayFor(modelItem => item.EmployeeEpf)</td>
 															<td class="Esi-pay">@Html.DisplayFor(modelItem => item.EmployeeEsi)</td>
+															<td class="monthly-pay">@Html.DisplayFor(modelItem => item.MonthlyPay)</td>
 															<td>
 																<input type="text" id="Attendance" name="Attendance" class="form-control attnd" minlength="1" maxlength="2" style="height: 40px; width: 94px;"  onchange="MonthlyadjustmentAttendance(this)" onkeydown="validateNumericInput(event)" />
 															</td>
 															<td>
-																@*onchange="fetchAttendance(this)" onkeyup="fnc(this)"*@
 																<a href="#" class="fa fa-edit m-2 font-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="EditSalaryDetails('@item.EmployeeId')">
 																	Edit Salary
 																</a>
@@ -276,7 +278,7 @@
 											<tr>
 												<td colspan="4" class="text-right" style="text-align:right;"><strong>Total:</strong></td>
 												<td>@TotalAmt</td>
-												<td id="dynamicTotalMonthlyPay"></td>
+												<td colspan="4" class="text-right" style="text-align:right;" id="dynamicTotalMonthlyPay"></td>
 											</tr>
 										</tfoot>
 									</table>
@@ -335,29 +337,32 @@
 			var modeldata = [];
 			$('#datatable tbody tr').each(function () {
 				var row = $(this).closest('tr');
-
-				// var customer = {
-				//     Id: $(this).find('td:eq(1)').text().trim(),
-				//     CustomerID: $(this).find('td:eq(2)').text().trim(),
-				//     FatherName: $(this).find('td:eq(4)').text().trim(),
-				//     EmployeeId: $(this).find('td:eq(5)').text().trim(),
-				//     Incentive: $(this).find('td:eq(6)').text().trim(),
-				//     TravellingAllowance: $(this).find('td:eq(7)').text().trim(),
-				//     Attendance: $(this).find('input[name="Attendance"]').val(),
-				//     EmployeeEpf: $(this).find('td:eq(11)').text().trim(),
-				//     EmployeeEsi: $(this).find('td:eq(12)').text().trim()
-				// };
 				var customer = {
-					Id: $(this).find('td:eq(1)').text().trim(),
-					EmployeeId: row.find('td:nth-child(6)').text().trim(),
+					// Id: $(this).find('td:eq(1)').text().trim(),
+					// EmployeeId: row.find('td:nth-child(6)').text().trim(),
+					// Month: selectedMonth,
+					// Year: year,
+					// Attendance: row.find('input[name="Attendance"]').val(),
+					// Incentive: row.find('td:nth-child(8)').text().trim(),
+					// TravellingAllowance: row.find('td:nth-child(7)').text().trim(),
+					// GenerateSalary: row.find('td:nth-child(10)').text().trim(),
+					// EmpEpfvalue: row.find('td:nth-child(11)').text().trim(),
+					// EmpEsivalue: row.find('td:nth-child(12)').text().trim()
+					Id: row.find('td:eq(1)').text().trim(), // Hidden Id
 					Month: selectedMonth,
 					Year: year,
-					Attendance: row.find('input[name="Attendance"]').val(),
-					Incentive: row.find('td:nth-child(8)').text().trim(),
-					TravellingAllowance: row.find('td:nth-child(7)').text().trim(),
-					GenerateSalary: row.find('td:nth-child(10)').text().trim(),
-					EmpEpfvalue: row.find('td:nth-child(11)').text().trim(),
-					EmpEsivalue: row.find('td:nth-child(12)').text().trim()
+					CustomerID: row.find('td:eq(2)').text().trim(),
+					FirstName: row.find('td:eq(3)').text().trim(),
+					FatherName: row.find('td:eq(4)').text().trim(),
+					EmployeeId: row.find('td:eq(5)').text().trim(),
+					Incentive: row.find('td:eq(6)').text().trim(),
+					TravellingAllowance: row.find('td:eq(7)').text().trim(),
+					Grosspay: row.find('td:eq(8)').text().trim(),
+					lop: row.find('td:eq(9)').text().trim(),
+					EmpEpfvalue: row.find('td:eq(10)').text().trim(),
+					EmpEsivalue: row.find('td:eq(11)').text().trim(),
+					GenerateSalary: row.find('td:eq(12)').text().trim(),
+					Attendance: row.find('input[name="Attendance"]').val()
 				};
 				if (customer.Attendance === "") {
 					Swal.fire({
@@ -774,17 +779,32 @@
 						var employeeId = $(row).find('td:nth-child(6)').text().trim();
 						var employeeData = response.employees.find(emp => emp.employeeId == employeeId);
 
+						// if (employeeData) {
+						// 	$(row).find('input[name="Attendance"]').val(employeeData.leaveRemaining);
+						// 	$(row).find('td:nth-child(10)').text(employeeData.monthlyPay.toFixed(2));
+						// 	$(row).find('td:nth-child(11)').text(employeeData.employeeEpf.toFixed(2));
+						// 	$(row).find('td:nth-child(12)').text(employeeData.employeeEsi.toFixed(2));
+						// } else {
+						// 	$(row).find('input[name="Attendance"]').val(0);
+						// 	$(row).find('td:nth-child(10)').text("0.00");
+						// 	$(row).find('td:nth-child(11)').text("0.00");
+						// 	$(row).find('td:nth-child(12)').text("0.00");
+						// }
 						if (employeeData) {
 							$(row).find('input[name="Attendance"]').val(employeeData.leaveRemaining);
-							$(row).find('td:nth-child(10)').text(employeeData.monthlyPay.toFixed(2));
-							$(row).find('td:nth-child(11)').text(employeeData.employeeEpf.toFixed(2));
-							$(row).find('td:nth-child(12)').text(employeeData.employeeEsi.toFixed(2));
+							$(row).find('td:eq(9)').text(employeeData.lop ? employeeData.lop.toFixed(2) : "0.00"); 
+							$(row).find('td:eq(10)').text(employeeData.employeeEpf.toFixed(2));  
+							$(row).find('td:eq(11)').text(employeeData.employeeEsi.toFixed(2));  
+							$(row).find('td:eq(12)').text(employeeData.monthlyPay.toFixed(2));  
 						} else {
 							$(row).find('input[name="Attendance"]').val(0);
-							$(row).find('td:nth-child(10)').text("0.00");
-							$(row).find('td:nth-child(11)').text("0.00");
-							$(row).find('td:nth-child(12)').text("0.00");
+							$(row).find('td:eq(9)').text("0.00"); 
+							$(row).find('td:eq(10)').text("0.00"); 
+							$(row).find('td:eq(11)').text("0.00"); 
+							$(row).find('td:eq(12)').text("0.00"); 
 						}
+
+
 					});
 
 					document.getElementById('dynamicTotalMonthlyPay').textContent = response.totalMonthlyPay.toFixed(2);
@@ -907,29 +927,54 @@
 				// error: function () {
 				// 	alert("An error occurred while fetching attendance data.");
 				// }
-						success: function (response) {
-		console.log("AJAX Response:", response); // Debugging
+				success: function (response) {
+					console.log("AJAX Response:", response); // Debugging
 
-		if (response && response.employeeId) {
-			row.find('input[name="Attendance"]').val(response.leaveRemaining);
-			row.find('td:nth-child(10)').text(response.monthlyPay.toFixed(2));
-			row.find('td:nth-child(11)').text(response.employeeEpf.toFixed(2));
-			row.find('td:nth-child(12)').text(response.employeeEsi.toFixed(2));
+					if (response && response.employeeId) {
+						row.find('input[name="Attendance"]').val(response.leaveRemaining);
+						row.find('td:eq(9)').text(response.lop ? response.lop.toFixed(2) : "0.00");  // LOP
+						row.find('td:eq(10)').text(response.monthlyPay.toFixed(2));  // Monthly Pay
+						row.find('td:eq(11)').text(response.employeeEpf.toFixed(2)); // Employee EPF
+						row.find('td:eq(12)').text(response.employeeEsi.toFixed(2)); // Employee ESI
+					} else {
+						Swal.fire({
+							title: 'Warning',
+							text: response.message || "No attendance data available.",
+							icon: 'warning',
+							confirmButtonText: 'OK'
+						}).then(() => {
+							row.find('input[name="Attendance"]').val(0);
+							row.find('td:eq(9)').text("0.00");  // LOP Default
+							row.find('td:eq(10)').text("0.00"); // Monthly Pay Default
+							row.find('td:eq(11)').text("0.00"); // Employee EPF Default
+							row.find('td:eq(12)').text("0.00"); // Employee ESI Default
+						});
+					}
+				},
 
-		} else {
-			Swal.fire({
-				title: 'Warning',
-				text: response.message || "No attendance data available.",
-				icon: 'warning',
-				confirmButtonText: 'OK'
-			}).then(() => {
-				row.find('input[name="Attendance"]').val(0);
-				row.find('td:nth-child(10)').text('0.00');
-				row.find('td:nth-child(11)').text('0.00');
-				row.find('td:nth-child(12)').text('0.00');
-			});
-		}
-	},
+	// 					success: function (response) {
+	// 	console.log("AJAX Response:", response); // Debugging
+
+	// 	if (response && response.employeeId) {
+	// 		row.find('input[name="Attendance"]').val(response.leaveRemaining);
+	// 		row.find('td:nth-child(10)').text(response.monthlyPay.toFixed(2));
+	// 		row.find('td:nth-child(11)').text(response.employeeEpf.toFixed(2));
+	// 		row.find('td:nth-child(12)').text(response.employeeEsi.toFixed(2));
+
+	// 	} else {
+	// 		Swal.fire({
+	// 			title: 'Warning',
+	// 			text: response.message || "No attendance data available.",
+	// 			icon: 'warning',
+	// 			confirmButtonText: 'OK'
+	// 		}).then(() => {
+	// 			row.find('input[name="Attendance"]').val(0);
+	// 			row.find('td:nth-child(10)').text('0.00');
+	// 			row.find('td:nth-child(11)').text('0.00');
+	// 			row.find('td:nth-child(12)').text('0.00');
+	// 		});
+	// 	}
+	// },
 
 	error: function (xhr, status, error) {
 		console.log("AJAX Error:", error); // Debugging
@@ -1004,10 +1049,10 @@
 
 					if (response && response.employeeId) {
 						row.find('input[name="Attendance"]').val(response.leaveRemaining);
-						row.find('td:nth-child(10)').text(response.monthlyPay.toFixed(2));
-						row.find('td:nth-child(11)').text(response.employeeEpf.toFixed(2));
-						row.find('td:nth-child(12)').text(response.employeeEsi.toFixed(2));
-
+						row.find('td:eq(9)').text(response.lop ? response.lop.toFixed(2) : "0.00");  
+						row.find('td:eq(10)').text(response.employeeEpf.toFixed(2));
+						row.find('td:eq(11)').text(response.employeeEsi.toFixed(2));
+						row.find('td:eq(12)').text(response.monthlyPay.toFixed(2));
 					} else {
 						Swal.fire({
 							title: 'Warning',
@@ -1016,15 +1061,16 @@
 							confirmButtonText: 'OK'
 						}).then(() => {
 							row.find('input[name="Attendance"]').val(0);
-							row.find('td:nth-child(10)').text('0.00');
-							row.find('td:nth-child(11)').text('0.00');
-							row.find('td:nth-child(12)').text('0.00');
+							row.find('td:eq(9)').text("0.00");  
+							row.find('td:eq(10)').text("0.00"); 
+							row.find('td:eq(11)').text("0.00"); 
+							row.find('td:eq(12)').text("0.00"); 
 						});
 					}
 				},
 
 				error: function (xhr, status, error) {
-					console.log("AJAX Error:", error); // Debugging
+					console.log("AJAX Error:", error); 
 
 					Swal.fire({
 						title: 'Error',

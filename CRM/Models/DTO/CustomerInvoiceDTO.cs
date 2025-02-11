@@ -57,6 +57,9 @@ namespace CRM.Models.DTO
         public int? VendorId { get; set; }
         public bool? Ismail { get; set; }
         public bool clone { get; set; }
+        public decimal? ServiceCharge { get; set; }
+        public string? Paymentdate { get; set; }
+        public bool? selectcompany { get; set; }
 
         public List<ProductDetail> ProductDetails { get; set; }
         public List<ProductDetailList> ProductDetailLists { get; set; }
@@ -104,11 +107,13 @@ namespace CRM.Models.DTO
         public string? Description { get; set; }
         public decimal? TotalAmount { get; set; }
         public string? totalInWords { get; set; }
+        public decimal? ServiceCharge { get; set; }
 
     }
 
     public class CustomerpaidInvoiceDTO
     {
+        public int? id { get; set; }
         public string? InvoiceNumber { get; set; }
         public string? CompanyName { get; set; }
         public string MobileNumber { get; set; }

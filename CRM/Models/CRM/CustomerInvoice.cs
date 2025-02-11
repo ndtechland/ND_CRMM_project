@@ -25,5 +25,6 @@ namespace CRM.Models.Crm
         public decimal? DueAmount { get; set; }
         public decimal? PaidAmount { get; set; }
         public int? ProductQty { get; set; }
+        public DateTime? Paymentdate { get; set; }
     }
 }

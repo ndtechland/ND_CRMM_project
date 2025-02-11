@@ -51,6 +51,8 @@ namespace CRM.Controllers
                     DateTime InvoiceDuedate = Invoicedetail?.InvoiceDueDate ?? DateTime.Now.Date;
                     var notes = Invoicedetail?.Notes ?? null;
                     var Terms = Invoicedetail?.Terms ?? null;
+                    var ServiceCharge = Invoicedetail?.ServiceCharge ?? null;
+                    ViewBag.allowServiceCharge = _context.VendorRegistrations.Where(v => v.Id == adminlogin.Vendorid).FirstOrDefault().SelectCompany == true;
 
                     if (InvoiceNumber != null)
                     {
@@ -86,6 +88,7 @@ namespace CRM.Controllers
                             ViewBag.Notes = notes;
                             ViewBag.Terms = Terms;
                             ViewBag.clone = clone;
+                            ViewBag.ServiceCharges = ServiceCharge;
                             return View(customerInv);
                         }
 
@@ -108,6 +111,7 @@ namespace CRM.Controllers
                     ViewBag.InvoiceDuedate = InvoiceDuedate.ToString("yyyy-MM-dd");
                     ViewBag.Notes = null;
                     ViewBag.Terms = null;
+                    ViewBag.ServiceCharges = null;
                     ViewBag.InvoiceNumber = InvoiceNumber;
                     ViewBag.clone = clone;
                     ViewBag.Quantity = 1;
@@ -132,7 +136,7 @@ namespace CRM.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> Invoice(List<ProductDetail> model, DateTime? InvoiceDate = null, DateTime? InvoiceDueDate = null, string InvoiceNotes = null, string InvoiceTerms = null, string Invoiceclone = null)
+        public async Task<IActionResult> Invoice(List<ProductDetail> model, DateTime? InvoiceDate = null, DateTime? InvoiceDueDate = null, string InvoiceNotes = null, string InvoiceTerms = null, string Invoiceclone = null, decimal ServiceCharges = 0)
         {
             try
             {
@@ -158,7 +162,7 @@ namespace CRM.Controllers
                                                   .ToListAsync();
                 string InvoiceNo = model.FirstOrDefault()?.InvoiceNumber ?? null;
 
-                bool isSuccess = await _ICrmrpo.CustomerInvoice(model, InvoiceNo, (int)adminlogin.Vendorid, InvoiceDate, InvoiceDueDate, InvoiceNotes, InvoiceTerms, Invoiceclone);
+                bool isSuccess = await _ICrmrpo.CustomerInvoice(model, InvoiceNo, (int)adminlogin.Vendorid, InvoiceDate, InvoiceDueDate, InvoiceNotes, InvoiceTerms, Invoiceclone, ServiceCharges);
 
                 if (isSuccess)
                 {
@@ -612,39 +616,6 @@ namespace CRM.Controllers
                 throw;
             }
         }
-        //private byte[] GeneratePdf(string htmlContent)
-        //{
-        //    var globalSettings = new GlobalSettings
-        //    {
-        //        ColorMode = ColorMode.Color,
-        //        Orientation = DinkToPdf.Orientation.Portrait,
-        //        PaperSize = PaperKind.A4,
-        //        Margins = new MarginSettings { Top = 15, Bottom = 10, Left = 15, Right = 15 },
-        //    };
-
-        //    var objectSettings = new ObjectSettings
-        //    {
-        //        PagesCount = true,
-        //        HtmlContent = htmlContent,
-        //        WebSettings = { DefaultEncoding = "utf-8" },
-        //        FooterSettings = new FooterSettings
-        //        {
-        //            FontName = "Arial,sans-serif ",
-        //            FontSize = 15,
-        //            Line = true,
-        //        },
-        //        LoadSettings = { BlockLocalFileAccess = false }
-        //    };
-
-        //    var htmlToPdfDocument = new HtmlToPdfDocument()
-        //    {
-        //        GlobalSettings = globalSettings,
-        //        Objects = { objectSettings },
-        //    };
-
-        //    return _converter.Convert(htmlToPdfDocument);
-        //}
-
         public async Task<JsonResult> DeleteProdbyUpdate(int id, bool cloneId)
         {
             if (id <= 0)
@@ -704,72 +675,8 @@ namespace CRM.Controllers
                 return new JsonResult(new { success = false, message = $"An error occurred: {ex.Message}" });
             }
         }
-
-        //public async Task<JsonResult> DeleteProdbyUpdate(int id, bool cloneId)
-        //{
-        //    if (id <= 0)
-        //    {
-        //        return new JsonResult(new { success = false, message = "Invalid ID." });
-        //    }
-
-        //    try
-        //    {
-        //        var result = await _context.CustomerInvoices.FirstOrDefaultAsync(x => x.Id == id);
-        //        if (result == null)
-        //        {
-        //            return new JsonResult(new { success = false, message = "Invoice not found." });
-        //        }
-
-        //        var invoicesToDelete = await _context.CustomerInvoices
-        //            .Where(c => c.InvoiceNumber == result.InvoiceNumber)
-        //            .ToListAsync();
-
-        //        if (!invoicesToDelete.Any())
-        //        {
-        //            return new JsonResult(new { success = false, message = "No matching invoices found for deletion." });
-        //        }
-
-        //        decimal totalDueAmount = invoicesToDelete
-        //            .Select(ci => ci.DueAmount.Value)
-        //            .FirstOrDefault();
-
-        //        decimal adjustment = (result.ProductPrice * result.ProductQty == null ?? 1 : result.ProductQty ?? 0) +
-        //                             (result.ProductPrice ?? 0) * ((result.Igst ?? 0) / 100) +
-        //                             (result.ProductPrice ?? 0) * ((result.Sgst ?? 0) / 100) +
-        //                             (result.ProductPrice ?? 0) * ((result.Cgst ?? 0) / 100);
-        //        decimal dueAmount = 0;
-        //        if (totalDueAmount != 0)
-        //        {
-        //            dueAmount = totalDueAmount - adjustment;
-
-        //        }
-        //        else
-        //        {
-        //            dueAmount = totalDueAmount;
-        //        }
-        //        foreach (var item in invoicesToDelete)
-        //        {
-        //            item.DueAmount = dueAmount;
-        //        }
-
-        //        _context.CustomerInvoices.Remove(result);
-        //        await _context.SaveChangesAsync();
-
-        //        return new JsonResult(new
-        //        {
-        //            success = true,
-        //            message = "Deleted Successfully",
-        //            redirectUrl = $"/Sale/Invoice?InvoiceNumber={result.InvoiceNumber}&&clone={cloneId}"
-        //        });
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return new JsonResult(new { success = false, message = $"An error occurred: {ex.Message}" });
-        //    }
-        //}
-
         [HttpPost]
-        public async Task<JsonResult> UpdateCustomerInvoiceamount(int InvoiceId, int Paymentid, decimal PaidAmount)
+        public async Task<JsonResult> UpdateCustomerInvoiceamount(int InvoiceId, int Paymentid, decimal PaidAmount, DateTime PaymentDate)
         {
             var invoiceNumber = await _context.CustomerInvoices
                 .Where(x => x.Id == InvoiceId)
@@ -801,6 +708,7 @@ namespace CRM.Controllers
                 {
                     invoice.PaidAmount = previousTotalPaidAmount + PaidAmount;
                     invoice.DueAmount = totalAmount - invoice.PaidAmount;
+                    invoice.Paymentdate = PaymentDate;
                 }
                 else
                 {
@@ -813,8 +721,8 @@ namespace CRM.Controllers
                     invoice.DueAmount = 0;
                 }
 
-                invoice.CreatedDate = DateTime.Now;
                 invoice.Paymentstatus = Paymentid;
+               
             }
 
             await _context.SaveChangesAsync();
@@ -826,14 +734,16 @@ namespace CRM.Controllers
             try
             {
                 var invoiceDetails = await (from ci in _context.CustomerInvoices
+                                            join cid in _context.CustomerInvoicedetails on ci.InvoiceNumber equals cid.InvoiceNumber
                                             where ci.InvoiceNumber == invoiceId
                                             select new
                                             {
-                                                ProductPrice = ci.ProductPrice ?? 0,
-                                                IGST = ci.Igst ?? 0,
-                                                SGST = ci.Sgst ?? 0,
-                                                CGST = ci.Cgst ?? 0,
-                                                ProductQty = ci.ProductQty ?? 1
+                                                ProductPrice = (decimal?)ci.ProductPrice ?? 0,
+                                                IGST = (decimal?)ci.Igst ?? 0,
+                                                SGST = (decimal?)ci.Sgst ?? 0,
+                                                CGST = (decimal?)ci.Cgst ?? 0,
+                                                ProductQty = (int?)ci.ProductQty ?? 1,
+                                                ServiceCharges = (decimal?)cid.ServiceCharge ?? 0
                                             }).ToListAsync();
 
                 if (invoiceDetails == null || !invoiceDetails.Any())
@@ -842,6 +752,8 @@ namespace CRM.Controllers
                 }
 
                 decimal totalAmount = 0;
+                decimal serviceCharge = 0;
+
                 foreach (var item in invoiceDetails)
                 {
                     decimal productTotal = (item.ProductPrice * item.ProductQty) +
@@ -849,7 +761,13 @@ namespace CRM.Controllers
                                            (item.ProductPrice * item.SGST / 100) +
                                            (item.ProductPrice * item.CGST / 100);
 
-                    totalAmount += productTotal;
+                    serviceCharge = ((item.ProductPrice * item.ProductQty) +
+                                    (item.ProductPrice * item.IGST / 100) +
+                                    (item.ProductPrice * item.SGST / 100) +
+                                    (item.ProductPrice * item.CGST / 100))
+                                    * (item.ServiceCharges / 100);
+
+                    totalAmount += productTotal + serviceCharge;
                 }
 
                 decimal roundedTotal = Math.Round(totalAmount, 0, MidpointRounding.AwayFromZero);
@@ -868,6 +786,7 @@ namespace CRM.Controllers
             {
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
+              
                 List<CustomerpaidInvoiceDTO> data = await (from ci in _context.CustomerInvoices
                                                            join c in _context.CustomerRegistrations on ci.CustomerId equals c.Id
                                                            join p in _context.VendorProductMasters on ci.ProductId equals p.Id
@@ -877,16 +796,19 @@ namespace CRM.Controllers
                                                            join ctb in _context.Cities on c.BillingCityId equals ctb.Id
                                                            join pm in _context.Paymentmodes on ci.Paymentstatus equals pm.Id
                                                            where c.Vendorid == adminlogin.Vendorid && ci.Paymentstatus == 1
-                                                           //group new { ci, c, p, s, ct, sb, ctb, pm } by ci.InvoiceNumber into grouped
+                                                           group new { ci, c, sb, ctb }
+                                                           by new { c.Id, c.CompanyName, c.MobileNumber, c.Email, sb.SName, ctb.City1 } into grouped
                                                            select new CustomerpaidInvoiceDTO
                                                            {
-                                                               CompanyName = c.CompanyName,
-                                                               MobileNumber = c.MobileNumber,
-                                                               Email = c.Email,
-                                                               BillingState = sb.SName,
-                                                               BillingCity = ctb.City1,
-                                                               NoofInvoice = _context.CustomerInvoices.Where(x=>x.CustomerId == c.Id && x.Paymentstatus == ci.Paymentstatus).Count()
-                                                           }).Distinct().ToListAsync();
+                                                               id = grouped.Key.Id,
+                                                               CompanyName = grouped.Key.CompanyName,
+                                                               MobileNumber = grouped.Key.MobileNumber,
+                                                               Email = grouped.Key.Email,
+                                                               BillingState = grouped.Key.SName,
+                                                               BillingCity = grouped.Key.City1,
+                                                               NoofInvoice = grouped.Select(g => g.ci.InvoiceNumber).Distinct().Count() 
+                                                           }).Distinct().OrderByDescending(x=> x.id).ToListAsync();
+
 
                 if (data.Count > 0)
                 {
@@ -905,7 +827,7 @@ namespace CRM.Controllers
                 throw;
             }
         }
-        public async Task<IActionResult> CustomerPaidInvoiceList(string CompanyName)
+        public async Task<IActionResult> CustomerPaidInvoiceList(int id)
         {
             try
             {
@@ -919,7 +841,7 @@ namespace CRM.Controllers
                                                            join sb in _context.States on c.BillingStateId equals sb.Id
                                                            join ctb in _context.Cities on c.BillingCityId equals ctb.Id
                                                            join pm in _context.Paymentmodes on ci.Paymentstatus equals pm.Id
-                                                           where c.CompanyName == CompanyName && ci.Paymentstatus == 1
+                                                           where ci.CustomerId == id && ci.Paymentstatus == 1
                                                            group new { ci, c, p, s, ct, sb, ctb, pm } by ci.InvoiceNumber into grouped
                                                            select new CustomerpaidInvoiceDTO
                                                            {

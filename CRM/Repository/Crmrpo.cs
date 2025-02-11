@@ -308,7 +308,7 @@ namespace CRM.Repository
 
                 if (Mode == "INS")
                 {
-                   // string password = GeneratePassword(model);
+                    // string password = GeneratePassword(model);
                     EmployeeRole employeeRole = new()
                     {
                         EmployeeRegistrationId = model.EmployeeId,
@@ -947,7 +947,7 @@ namespace CRM.Repository
         //    }
         //}
 
-        public async Task<List<GenerateSalaryReportDTO>> GenerateSalaryReport(int customerId =0, int Month=0, int year=0, int WorkLocation=0 ,int userid = 0)
+        public async Task<List<GenerateSalaryReportDTO>> GenerateSalaryReport(int customerId = 0, int Month = 0, int year = 0, int WorkLocation = 0, int userid = 0)
         {
             try
             {
@@ -959,7 +959,7 @@ namespace CRM.Repository
                         Month = Month,
                         Year = year,
                         WorkLocation = WorkLocation,
-                        userid = userid 
+                        userid = userid
                     };
 
                     string storedProcedure = "GetGenerateSalary_Report";
@@ -2084,7 +2084,7 @@ namespace CRM.Repository
                 throw ex;
             }
         }
-        public async Task<bool> CustomerInvoice(List<ProductDetail> model, string InvoiceNo, int vendorid, DateTime? InvoiceDate = null, DateTime? InvoiceDueDate = null, string InvoiceNotes = null, string InvoiceTerms = null, string Invoiceclone = null)
+        public async Task<bool> CustomerInvoice(List<ProductDetail> model, string InvoiceNo, int vendorid, DateTime? InvoiceDate = null, DateTime? InvoiceDueDate = null, string InvoiceNotes = null, string InvoiceTerms = null, string Invoiceclone = null, decimal ServiceCharges = 0)
         {
             try
             {
@@ -2101,19 +2101,25 @@ namespace CRM.Repository
 
 
                 decimal newDueAmount = 0;
+                decimal servicharge = 0;
 
                 foreach (var item in model)
                 {
-                    newDueAmount += Math.Round((decimal)(
-     (item.ProductPrice * (item.Qty ?? 1)) +
-     ((item.ProductPrice * (item.IGST.HasValue ? item.IGST.Value : 0m)) / 100) +
-     ((item.ProductPrice * (item.SGST.HasValue ? item.SGST.Value : 0m)) / 100) +
-     ((item.ProductPrice * (item.CGST.HasValue ? item.CGST.Value : 0m)) / 100)), 0, MidpointRounding.AwayFromZero);
+                    newDueAmount += Math.Round((decimal)((item.ProductPrice * (item.Qty ?? 1)) +
+                  ((item.ProductPrice * (item.IGST.HasValue ? item.IGST.Value : 0m)) / 100) +
+                  ((item.ProductPrice * (item.SGST.HasValue ? item.SGST.Value : 0m)) / 100) +
+                  ((item.ProductPrice * (item.CGST.HasValue ? item.CGST.Value : 0m)) / 100)), 0, MidpointRounding.AwayFromZero);
+
+                    servicharge += Math.Round((decimal)(((item.ProductPrice * (item.Qty ?? 1)) +
+                            ((item.ProductPrice * (item.IGST.HasValue ? item.IGST.Value : 0m)) / 100) +
+                            ((item.ProductPrice * (item.SGST.HasValue ? item.SGST.Value : 0m)) / 100) +
+                            ((item.ProductPrice * (item.CGST.HasValue ? item.CGST.Value : 0m)) / 100))) * ServiceCharges / 100, 0, MidpointRounding.AwayFromZero);
                 }
 
                 if (allExistingData.Count() > 0)
                 {
-                    newDueAmount += Math.Round(allExistingData.FirstOrDefault()?.DueAmount ?? 0m, 2);
+                    /* newDueAmount += Math.Round(allExistingData.FirstOrDefault()?.DueAmount ?? 0m, 2)*/
+                    newDueAmount += servicharge;
                     if ((allExistingData.First()?.PaidAmount ?? 0) > 0)
                     {
                         newDueAmount -= Math.Round(allExistingData.First()?.PaidAmount ?? 0m, MidpointRounding.AwayFromZero);
@@ -2206,6 +2212,7 @@ namespace CRM.Repository
                         invoicedetail.InvoiceDueDate = InvoiceDueDate;
                         invoicedetail.Notes = InvoiceNotes;
                         invoicedetail.Terms = InvoiceTerms;
+                        invoicedetail.ServiceCharge = ServiceCharges;
                         _context.Update(invoicedetail);
                     }
                     else
@@ -2217,7 +2224,9 @@ namespace CRM.Repository
                             InvoiceDueDate = InvoiceDueDate,
                             Notes = InvoiceNotes,
                             Terms = InvoiceTerms,
+                            ServiceCharge = ServiceCharges,
                             IsRenewDate = false
+
                         };
                         _context.Add(newinvoicedetail);
                     }
@@ -2244,8 +2253,9 @@ namespace CRM.Repository
                                              join sb in _context.States on c.BillingStateId equals sb.Id
                                              join ctb in _context.Cities on c.BillingCityId equals ctb.Id
                                              join pm in _context.Paymentmodes on ci.Paymentstatus equals pm.Id
+                                             join cid in _context.CustomerInvoicedetails on ci.InvoiceNumber equals cid.InvoiceNumber
                                              where c.Vendorid == vendorId
-                                             group new { ci, c, p, s, ct, sb, ctb, pm } by ci.InvoiceNumber into grouped
+                                             group new { ci, c, p, s, ct, sb, ctb, pm, cid } by ci.InvoiceNumber into grouped
                                              select new CustomerInvoiceDTO
                                              {
                                                  InvoiceId = grouped.First().ci.Id,
@@ -2261,7 +2271,15 @@ namespace CRM.Repository
                                                  BillingAddress = grouped.First().c.BillingAddress,
                                                  BillingState = grouped.First().sb.SName,
                                                  BillingCity = grouped.First().ctb.City1,
-                                                 // InvoiceDate = grouped.First().ci.CreatedDate,
+                                                 InvoiceDate = grouped.First().cid.InvoiceDate != null
+                                                  ? grouped.First().cid.InvoiceDate.Value.ToString("dd/MM/yyyy")
+                                                  : null,
+                                                 InvoiceDueDate = grouped.First().cid.InvoiceDueDate != null
+                                                  ? grouped.First().cid.InvoiceDueDate.Value.ToString("dd/MM/yyyy")
+                                                  : null,
+                                                 Paymentdate = grouped.First().ci.Paymentdate != null
+                                                  ? grouped.First().ci.Paymentdate.Value.ToString("dd/MM/yyyy")
+                                                  : null,
                                                  RenewPrice = grouped.First().ci.RenewPrice,
                                                  StartDate = grouped.First().ci.StartDate,
                                                  RenewDate = grouped.First().ci.RenewDate,
@@ -2342,12 +2360,14 @@ namespace CRM.Repository
                                   Terms = ctd.Terms,
                                   VendorId = v.Id,
                                   Ismail = Ismail,
+                                  selectcompany = v.SelectCompany,
                               }).FirstOrDefault();
 
                 if (invoiceDTO != null)
                 {
                     var invoiceItems = (from ci in _context.CustomerInvoices
                                         join p in _context.VendorProductMasters on ci.ProductId equals p.Id
+                                        join cid in _context.CustomerInvoicedetails on ci.InvoiceNumber equals cid.InvoiceNumber
                                         where (ci.InvoiceNumber == InvoiceNumber)
                                         select new ProductDetailList
                                         {
@@ -2363,13 +2383,15 @@ namespace CRM.Repository
                                             PaidAmount = ci.PaidAmount,
                                             Description = ci.Description,
                                             Qty = (int)ci.ProductQty,
-                                            ProductRate = ci.ProductPrice
+                                            ProductRate = ci.ProductPrice,
+                                            ServiceCharge = ((((ci.Igst ?? 0) * (ci.ProductPrice ?? 0) / 100) + ((ci.Sgst ?? 0) * (ci.ProductPrice ?? 0) / 100) + ((ci.Cgst ?? 0) * (ci.ProductPrice ?? 0) / 100) + ((ci.ProductPrice ?? 0) * (ci.ProductQty ?? 0)))
+                                                              * (cid.ServiceCharge ?? 0) / 100),
                                         }).ToList();
-                   
+
                     foreach (var invoice in invoiceItems)
                     {
                         invoice.TotalAmount = await CalculateTotalAmountByInvoiceId(InvoiceNumber);
-                       
+
 
                         invoice.totalInWords = ConvertNumberToWords((decimal)invoice.TotalAmount);
                     }
@@ -3510,14 +3532,16 @@ namespace CRM.Repository
             try
             {
                 var invoiceDetails = await (from ci in _context.CustomerInvoices
+                                            join cid in _context.CustomerInvoicedetails on ci.InvoiceNumber equals cid.InvoiceNumber
                                             where ci.InvoiceNumber == invoiceId
                                             select new
                                             {
-                                                ProductPrice = ci.ProductPrice ?? 0,
-                                                IGST = ci.Igst ?? 0,
-                                                SGST = ci.Sgst ?? 0,
-                                                CGST = ci.Cgst ?? 0,
-                                                ProductQty = ci.ProductQty ?? 1
+                                                ProductPrice = (decimal?)ci.ProductPrice ?? 0,
+                                                IGST = (decimal?)ci.Igst ?? 0,
+                                                SGST = (decimal?)ci.Sgst ?? 0,
+                                                CGST = (decimal?)ci.Cgst ?? 0,
+                                                ProductQty = (int?)ci.ProductQty ?? 1,
+                                                ServiceCharges = (decimal?)cid.ServiceCharge ?? 0
                                             }).ToListAsync();
 
                 if (invoiceDetails == null || !invoiceDetails.Any())
@@ -3526,6 +3550,7 @@ namespace CRM.Repository
                 }
 
                 decimal totalAmount = 0;
+                decimal serviceCharge = 0;
 
                 foreach (var item in invoiceDetails)
                 {
@@ -3534,8 +3559,15 @@ namespace CRM.Repository
                                            (item.ProductPrice * item.SGST / 100) +
                                            (item.ProductPrice * item.CGST / 100);
 
-                    totalAmount += productTotal;
+                    serviceCharge = ((item.ProductPrice * item.ProductQty) +
+                                    (item.ProductPrice * item.IGST / 100) +
+                                    (item.ProductPrice * item.SGST / 100) +
+                                    (item.ProductPrice * item.CGST / 100))
+                                    * (item.ServiceCharges / 100);
+
+                    totalAmount += productTotal + serviceCharge;
                 }
+
                 decimal roundedTotal = Math.Round(totalAmount, 0, MidpointRounding.AwayFromZero);
                 return roundedTotal;
             }
@@ -3818,10 +3850,94 @@ namespace CRM.Repository
         public string GeneratePassword(Model model)
         {
             Random random = new Random();
-            int randomNumber = random.Next(1000, 9999);  
-            string randomString = Path.GetRandomFileName().Replace(".", "").Substring(0, 6); 
+            int randomNumber = random.Next(1000, 9999);
+            string randomString = Path.GetRandomFileName().Replace(".", "").Substring(0, 6);
 
             return $"{randomNumber}{randomString}";
+        }
+        public async Task<List<EmployeeApprovedPresnolInfo>> PreviousDataApprovedPresnolInfoList(int Userid)
+        {
+            try
+            {
+
+                List<EmployeeApprovedPresnolInfo> PresnolInfo = new List<EmployeeApprovedPresnolInfo>();
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                PresnolInfo = (from emp in _context.EmployeeRegistrations
+                               join personal in _context.EmployeePersonalDetails
+                               on emp.EmployeeId equals personal.EmpRegId into personalDetails
+                               from personal in personalDetails.DefaultIfEmpty()
+                               where emp.Vendorid == adminlogin.Vendorid
+                               select new EmployeeApprovedPresnolInfo
+                               {
+                                   EmployeeId = emp.EmployeeId,
+                                   FullName = emp.FirstName,
+                                   PersonalEmailAddress = personal.PersonalEmailAddress,
+                                   MobileNumber = long.Parse(personal.MobileNumber),
+                                   DateOfBirth = personal.DateOfBirth,
+                                   PAN = personal.Pan,
+                                   AddressLine1 = personal.AddressLine1,
+                                   AddressLine2 = personal.AddressLine2,
+                                   Stateid = _context.States.Where(g => g.Id == Convert.ToInt32(personal.StateId)).Select(g => g.SName).FirstOrDefault(),
+                                   cityid = _context.Cities.Where(g => g.Id == Convert.ToInt32(personal.City)).Select(g => g.City1).FirstOrDefault(),
+                                   Pincode = personal.Pincode,
+                                   AadharNo = personal.Aadharcard,
+                                   AadharOne = personal.AadharOne,
+                                   AadharTwo = personal.AadharTwo,
+                                   Panimg = personal.Panimg,
+                                   FatherName = personal.FatherName,
+                               }).ToList();
+
+                return PresnolInfo;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<List<ApprovedbankdetailList>> PreviousDataApprovedbankdetailList(int Userid)
+        {
+            try
+            {
+                List<ApprovedbankdetailList> PresnolInfo = new List<ApprovedbankdetailList>();
+
+                var adminlogin = await _context.AdminLogins
+                    .Where(x => x.Id == Userid)
+                    .FirstOrDefaultAsync();
+
+                if (adminlogin == null) return PresnolInfo;
+
+                var emplist = await (from emp in _context.EmployeeRegistrations
+                                     join appr in _context.Approvedbankdetails
+                                     on emp.EmployeeId equals appr.EmployeeId
+                                     where appr.IsApproved == false && emp.Vendorid == adminlogin.Vendorid
+                                     select emp.EmployeeId).ToListAsync();
+
+                if (emplist.Any())
+                {
+                    PresnolInfo = await _context.EmployeeBankDetails
+                        .Where(x => emplist.Contains(x.EmpId))
+                        .Select(x => new ApprovedbankdetailList
+                        {
+                            EmployeeId = x.EmpId,
+                            AccountHolderName = x.AccountHolderName,
+                            BankName = x.BankName,
+                            AccountNumber = x.AccountNumber,
+                            ReEnterAccountNumber = x.ReEnterAccountNumber,
+                            Ifsc = x.Ifsc,
+                            AccountTypeId = x.AccountTypeId == 1 ? "Current" : x.AccountTypeId == 2 ? "Savings" : "Unknown",
+                            EpfNumber = x.EpfNumber,
+                            Nominee = x.Nominee,
+                            Chequeimage = x.Chequeimage,
+                        }).ToListAsync();
+                }
+
+                return PresnolInfo;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
     }

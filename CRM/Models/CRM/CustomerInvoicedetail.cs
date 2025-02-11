@@ -14,5 +14,6 @@ namespace CRM.Models.Crm
         public decimal? Taxamount { get; set; }
         public bool? IsRenewDate { get; set; }
         public int? Taxid { get; set; }
+        public decimal? ServiceCharge { get; set; }
     }
 }

@@ -181,7 +181,7 @@
                                                 <p id="gstNumberLabel" class="form-control-static">N/A</p>
                                             </div>
                                         </div>
-                                        </div>
+                                    </div>
                                     <div class="col-sm-6">
                                         <div class="row">
                                             <div class="col-md-6">
@@ -242,15 +242,51 @@
                                         </div>
                                         <div class="form-group col-sm-2">
                                             <label for="Notes">Notes </label>
-                                            <input asp-for="Notes" id="InvoiceNotes" name="Notes" type="text" class="form-control" value="@ViewBag.Notes" />
+                                            <input asp-for="Notes" id="InvoiceNotes" name="Notes" type="text" class="form-control" value="@ViewBag.Notes" placeholder="Enter Notes" />
                                         </div>
                                         <div class="form-group col-sm-2">
                                             <label for="Terms">Terms </label>
-                                            <input asp-for="Terms" id="InvoiceTerms" name="Terms" type="text" class="form-control" value="@ViewBag.Terms" />
-                                           
-                                            <input type="text" name="clone" id="InvoicecloneId" value="@ViewBag.clone.ToString().ToLower()" hidden/>
+                                            <input asp-for="Terms" id="InvoiceTerms" name="Terms" type="text" class="form-control" value="@ViewBag.Terms" placeholder="Enter Terms" />
+
+                                            <input type="text" name="clone" id="InvoicecloneId" value="@ViewBag.clone.ToString().ToLower()" hidden />
 
                                         </div>
+                                        @{
+                                            var check = ViewBag.allowServiceCharge;
+                                            var checkServiceCharges = ViewBag.ServiceCharges;
+
+                                            if (check == true)
+                                            {
+                                                <div class="form-group col-sm-2">
+                                                    <label for="ServiceCharges">Service Charges</label>
+                                                    <div class="input-group">
+                                                        <input asp-for="ServiceCharge" id="ServiceCharges" name="ServiceCharge" type="text"
+                                                               class="form-control" value="@ViewBag.ServiceCharges"
+                                                               placeholder="Enter Service Charges" onkeydown="validateNumericInput(event)" />
+                                                        <div class="input-group-append">
+                                                            <span class="input-group-text">%</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                if (checkServiceCharges > 0)
+                                                {
+                                                    <div class="form-group col-sm-2">
+                                                        <label for="ServiceCharges">Service Charges</label>
+                                                        <div class="input-group">
+                                                            <input asp-for="ServiceCharge" id="ServiceCharges" name="ServiceCharge" type="text"
+                                                                   class="form-control" value="@ViewBag.ServiceCharges"
+                                                                   placeholder="Enter Service Charges" onkeydown="validateNumericInput(event)" />
+                                                            <div class="input-group-append">
+                                                                <span class="input-group-text">%</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            }
+                                        }
                                     </div>
                                     <div id="customerSections">
                                         <!-- Initial Customer Section -->
@@ -281,12 +317,12 @@
                                             </div>
                                             <div class="row">
                                                 <div class="form-group col-sm">
-                                                    <label for="RenewPrice">Renew Price <span class="text-danger">*</span></label>
+                                                    <label for="RenewPrice">Next Billing Price <span class="text-danger">*</span></label>
                                                     <input class="form-control RenewPrice" name="RenewPrice" value="@ViewBag.Renewprice" type="text" onkeydown="validateNumericInput(event)">
                                                     <span asp-validation-for="RenewPrice" class="text-danger"></span>
                                                 </div>
                                                 <div class="form-group col-sm">
-                                                    <label for="NoOfRenewMonth">Number Of Renew Month <span class="text-danger">*</span></label>
+                                                    <label for="NoOfRenewMonth">Tenure<span class="text-danger">*</span></label>
                                                     <input class="form-control NoOfRenewMonth" name="NoOfRenewMonth" value="@ViewBag.NoOfRenewMonth" required placeholder="1" type="text" onkeydown="validateNumericInput(event)" maxlength="2">
                                                     <span asp-validation-for="NoOfRenewMonth" class="text-danger"></span>
                                                 </div>
@@ -302,7 +338,7 @@
                                                     <span asp-validation-for="StartDate" class="text-danger"></span>
                                                 </div>
                                                 <div class="form-group col-sm">
-                                                    <label for="RenewDate">Renew Date <span class="text-danger">*</span></label>
+                                                    <label for="RenewDate">Next Billing Date <span class="text-danger">*</span></label>
                                                     <input name="RenewDate" type="date" class="form-control RenewDate" required readonly oninvalid="this.setCustomValidity('Please select RenewDate')" oninput="this.setCustomValidity('')" value="@ViewBag.renewDate" />
                                                     <span asp-validation-for="RenewDate" class="text-danger"></span>
                                                 </div>

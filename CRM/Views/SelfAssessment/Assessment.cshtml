@@ -1,0 +1,359 @@
+﻿@model CRM.Models.Crm.Selfassesstmentadmin
+
+@{
+    ViewData["Title"] = "Assessment";
+    Layout = "~/Views/Shared/_adminLayout.cshtml";
+}
+<style>
+    .bg-navy {
+        background-color: #001f3f !important;
+        border-color: darkblue !important;
+        color: white !important;
+    }
+
+</style>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs5.min.css'>
+
+<div class="page-wrapper">
+    <div class="page-body-wrapper">
+        <div class="page-sidebar">
+        </div>
+
+        <div class="page-body">
+
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="page-header-left">
+                                <h2>
+                                    Add Assessment
+                                   @*  @ViewBag.Heading *@
+                                </h2>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <ol class="breadcrumb pull-right">
+                                <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
+                                <li class="breadcrumb-item">Settings</li>
+                                <li class="breadcrumb-item active">Self-Assessment</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Container-fluid Ends-->
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <form id="assessmentForm" asp-action="/SelfAssessment/Assessment" autocomplete="off" method="post">
+                                    <div class="row">
+                                        <div class="form-group col-sm-6">
+                                            <label class="control-label">Title</label>
+                                            <input type="hidden" name="Id" id="Id" value="@ViewBag.id" />
+                                            <textarea name="Tittle" id="Tittle" class="form-control" rows="3" required>@ViewBag.Tittle</textarea>
+                                            <span name="Tittle" class="text-danger"></span>
+                                        </div>
+                                        <div class="form-group col-sm-6">
+                                            <label class="control-label">SubTitle</label>
+                                            <textarea name="SubTittle" id="SubTittle" class="form-control" rows="3" required>@ViewBag.SubTittle</textarea>
+                                            <span name="SubTittle" class="text-danger"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="row align-items-center">
+                                        <div class="col-auto">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="Ispoint" name="Ispoint" value="true" />
+                                                <label class="form-check-label" for="Ispoint">Is Point</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto" id="pointNameGroup" style="display: none;">
+                                            <label class="control-label">Point Name</label>
+                                            <input name="Pointname" id="Pointname" value="@ViewBag.Pointname" class="form-control" />
+                                            <span name="Pointname" class="text-danger"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <div class="form-button" style="display: flex; justify-content: center; gap: 10px;">
+                                            <input type="submit" onclick="btnSubmit();" value="@ViewBag.btnText" class="btn btn-primary" />
+                                        </div>
+
+                                        @if (int.TryParse(ViewBag.id?.ToString(), out int id) && id > 0)
+                                        {
+                                            <a href="/SelfAssessment/Assessment" class="btn btn-danger">Cancel</a>
+                                        }
+                                    </div>
+                                </form>
+                                <div class="form-button" style="display: flex; justify-content: center; gap: 10px;">
+                                    <button onclick="btnPrevious();" class="btn btn-secondary">Previous</button>
+                                    <button onclick="btnNext();" class="btn btn-secondary">Next</button>
+                                    <button id="btnRemove" onclick="btnRemove();" class="btn btn-danger" style="display: none;">Remove</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+</div>
+<script>
+    document.getElementById('Ispoint').addEventListener('change', function () {
+        const pointNameGroup = document.getElementById('pointNameGroup');
+        if (this.checked) {
+            pointNameGroup.style.display = 'block';
+        } else {
+            pointNameGroup.style.display = 'none';
+        }
+    });
+</script>
+@* <script>
+    function btnNext() {
+        var model = {
+            Tittle: $("#Tittle").val(),
+            SubTittle: $("#SubTittle").val(),
+            Ispoint: $('input[name="Ispoint"]:checked').val() == "true", 
+            Pointname: $("#Pointname").val()
+        };
+
+        $.ajax({
+            url: '/SelfAssessment/Assessment',
+            type: 'POST',
+            dataType: 'json',
+            contentType: 'application/json',
+            data: JSON.stringify(model), 
+            success: function (result) {
+                console.log("Success:", result);
+            },
+            error: function (xhr, status, error) {
+                console.log("Error:", xhr.responseText);
+            }
+        });
+    }
+
+</script> *@
+<script>
+    var selfAssessmentList = [];
+    var currentIndex = 0;
+
+    function btnNext() {
+        saveCurrentData();
+        currentIndex++;
+
+        if (selfAssessmentList[currentIndex]) {
+            loadFormData(selfAssessmentList[currentIndex]);
+        } else {
+            clearFormDataWithPreviousTittle();
+        }
+
+        updateRemoveButtonVisibility();
+        console.log("Current List:", selfAssessmentList);
+    }
+
+    function btnPrevious() {
+        if (currentIndex > 0) {
+            currentIndex--;
+            loadFormData(selfAssessmentList[currentIndex]);
+        } else if (selfAssessmentList.length > 0) {
+            currentIndex = 0;
+            loadFormData(selfAssessmentList[0]);
+        } else {
+            alert("You are at the first record!");
+        }
+
+        updateRemoveButtonVisibility();
+    }
+
+    function btnRemove() {
+        if (selfAssessmentList.length > 0) {
+            let removedData = selfAssessmentList[currentIndex];
+            selfAssessmentList.splice(currentIndex, 1);
+
+            if (currentIndex >= selfAssessmentList.length) {
+                currentIndex = selfAssessmentList.length - 1;
+            }
+
+            if (selfAssessmentList.length > 0 && currentIndex >= 0) {
+                loadFormData(selfAssessmentList[currentIndex]);
+            } else {
+                currentIndex = 0;
+                clearFormDataWithPreviousTittle();
+            }
+
+            alert(`Removed entry: ${removedData.Tittle || 'Untitled'}`);
+            console.log("Removed Entry:", removedData);
+        } else {
+            alert("No data available to remove.");
+        }
+
+        updateRemoveButtonVisibility();
+        console.log("Updated List:", selfAssessmentList);
+    }
+
+    function saveCurrentData() {
+        var model = {
+            Tittle: $("#Tittle").val(),
+            SubTittle: $("#SubTittle").val(),
+            Ispoint: $("#Ispoint").prop("checked"),
+            Pointname: $("#Pointname").val()
+        };
+
+        if (selfAssessmentList[currentIndex]) {
+            selfAssessmentList[currentIndex] = model;
+        } else {
+            selfAssessmentList.push(model);
+        }
+    }
+
+
+    function loadFormData(data) {
+        $("#Tittle").val(data.Tittle);
+        $("#SubTittle").val(data.SubTittle);
+        $("#Ispoint").prop("checked", data.Ispoint);
+        $("#Pointname").val(data.Pointname);
+    }
+
+    function clearFormDataWithPreviousTittle() {
+        let previousTittle = selfAssessmentList[currentIndex - 1]?.Tittle || '';
+        $("#Tittle").val(previousTittle);
+        $("#SubTittle").val('');
+        $("#Ispoint").prop("checked", false);
+        $("#Pointname").val('');
+    }
+
+    function updateRemoveButtonVisibility() {
+        if (selfAssessmentList.length > 0 || currentIndex === 0) {
+            $("#btnRemove").show();
+        } else {
+            $("#btnRemove").hide();
+        }
+    }
+    function btnSubmit() {
+        saveCurrentData(); 
+
+        if (selfAssessmentList.length === 0) {
+            alert("No data to submit.");
+            return;
+        }
+
+        var finalModel = {
+            SelfAssessmentList: selfAssessmentList
+        };
+
+        console.log("Sending Data:", finalModel); 
+
+        $.ajax({
+            url: '/SelfAssessment/Assessment',
+            type: 'POST',
+            dataType: 'json',
+            contentType: 'application/json',
+            data: JSON.stringify(finalModel),
+            success: function (result) {
+                alert("Saved successfully!");
+                console.log("Success:", result);
+            },
+            error: function (xhr, status, error) {
+                console.log("Error:", xhr.responseText);
+            }
+        });
+    }
+
+</script>
+
+
+
+@* <script>
+    var selfAssessmentList = [];
+    var currentIndex = 0; // Start at index 0
+
+    function btnNext() {
+        // Get the current form data
+        var model = {
+            Tittle: $("#Tittle").val(),
+            SubTittle: $("#SubTittle").val(),
+            Ispoint: $("#Ispoint").prop("checked"),
+            Pointname: $("#Pointname").val()
+        };
+
+        // Save the data at the current index
+        selfAssessmentList[currentIndex] = model;
+
+        // Move to the next index
+        currentIndex++;
+
+        // If next index exists, load the data
+        if (selfAssessmentList[currentIndex]) {
+            loadFormData(selfAssessmentList[currentIndex]);
+        } else {
+            clearFormDataWithPreviousTittle();
+        }
+
+        console.log("Current List:", selfAssessmentList);
+    }
+
+    function btnPrevious() {
+        if (currentIndex > 0) {
+            currentIndex--; // Move back to the previous entry
+            loadFormData(selfAssessmentList[currentIndex]);
+        } else {
+            alert("You are at the first record!");
+        }
+
+        console.log(`Current Page: ${currentIndex + 1}`);
+    }
+
+    function btnSubmit() {
+        var finalModel = {
+            SelfAssessmentList: selfAssessmentList
+        };
+
+        $.ajax({
+            url: '/SelfAssessment/SaveAssessment',
+            type: 'POST',
+            dataType: 'json',
+            contentType: 'application/json',
+            data: JSON.stringify(finalModel),
+            success: function (result) {
+                alert("Saved successfully!");
+                console.log("Success:", result);
+            },
+            error: function (xhr, status, error) {
+                console.log("Error:", xhr.responseText);
+            }
+        });
+    }
+
+    function loadFormData(data) {
+        $("#Tittle").val(data.Tittle); // Auto-fill the Tittle
+        $("#SubTittle").val(data.SubTittle); // Auto-fill the SubTittle
+        $("#Ispoint").prop("checked", data.Ispoint); // Auto-fill Ispoint checkbox
+        $("#Pointname").val(data.Pointname); // Auto-fill Pointname
+    }
+
+    function clearFormDataWithPreviousTittle() {
+        let previousTittle = selfAssessmentList[currentIndex - 1]?.Tittle || ''; // Get previous Tittle if exists
+        $("#Tittle").val(previousTittle); // Auto-fill Tittle with previous value
+        $("#SubTittle").val(''); // Clear SubTittle
+        $("#Ispoint").prop("checked", false); // Uncheck Ispoint
+        $("#Pointname").val(''); // Clear Pointname
+    }
+</script> *@
+
+
+
+
+

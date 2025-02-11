@@ -162,8 +162,7 @@
                                         </div>
                                         <div class="form-group col-sm">
                                             <label for="validationCustom0">GST Number <span class="text-danger">*</span></label>
-                                            <input asp-for="GstNumber" id="GstNumber" class="form-control" placeholder="Enter GstNumber" maxlength="15" minlength="15" onblur="ValidateGST()" required="" oninvalid="this.setCustomValidity('Please Enter GstNumber')" oninput="this.setCustomValidity('')" />
-                                            <span asp-validation-for="GstNumber" class="text-danger"></span>
+                                            <input asp-for="GstNumber" id="GstNumber" class="form-control" placeholder="Enter GstNumber" maxlength="15" minlength="15" onblur="ValidateGST()" oninvalid="this.setCustomValidity('Please Enter GstNumber')" oninput="this.setCustomValidity('')" />
                                         </div>
                                     </div>
 

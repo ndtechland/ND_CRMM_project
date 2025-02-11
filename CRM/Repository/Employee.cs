@@ -2425,8 +2425,8 @@ namespace CRM.Repository
                 {
                     Reason = x.Reason,
                     Totaldays = x.CountLeave + x.PaidCountLeave,
-                    PaidLeave = x.CountLeave,
-                    UnPaidLeave = x.PaidCountLeave,
+                    PaidLeave = x.PaidCountLeave,
+                    UnPaidLeave = x.CountLeave,
                     LeaveStartdate = x.StartDate.ToString("dd MMM yyyy"),
                     LeaveEnddate = x.EndDate.ToString("dd MMM yyyy"),
 

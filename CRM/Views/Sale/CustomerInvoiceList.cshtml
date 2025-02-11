@@ -122,9 +122,12 @@
                                                     <th nowrap>
                                                         Mobile Number
                                                     </th>
-                                                    @*   <th nowrap>
-                                                    Alternate Number
-                                                    </th> *@
+                                                    <th nowrap>
+                                                        Invoice Date
+                                                    </th>
+                                                    <th nowrap>
+                                                        InvoiceDue Date
+                                                    </th>
                                                     <th nowrap>
                                                         Email Id
                                                     </th>
@@ -143,6 +146,9 @@
                                                     </th>
                                                     <th nowrap>
                                                         Paid Payment
+                                                    </th>
+                                                    <th nowrap>
+                                                       Payment Date
                                                     </th>
                                                     <th nowrap>
                                                         Update Payment Status
@@ -168,9 +174,12 @@
                                                             <td nowrap>
                                                                 @Html.DisplayFor(modelItem => item.MobileNumber)
                                                             </td>
-                                                            @* <td nowrap>
-                                                    @Html.DisplayFor(modelItem => item.AlternateNumber)
-                                                    </td>*@
+                                                            <td nowrap>
+                                                                @Html.DisplayFor(modelItem => item.InvoiceDate)
+                                                            </td>
+                                                            <td nowrap>
+                                                                @Html.DisplayFor(modelItem => item.InvoiceDueDate)
+                                                            </td>
                                                             <td nowrap>
                                                                 @Html.DisplayFor(modelItem => item.Email)
                                                             </td>
@@ -190,6 +199,9 @@
                                                             <td nowrap>
                                                                 @item.PaidAmount
                                                             </td>
+                                                            <td nowrap>
+                                                                @item.Paymentdate
+                                                            </td>
                                                             <td>
                                                                 @if (item.Paymentid != 1)
                                                                 {
@@ -199,7 +211,7 @@
                                                                                 class="form-control Paymentmode-dropdown"
                                                                                 id="ddPaymentmodeid_@item.InvoiceId"
                                                                                 style="height: 40px; width: 139px;"
-                                                                                onchange="handlePaymentTypeChange(@item.InvoiceId)">
+                                                                                 onchange="handlePaymentTypeChange(@item.InvoiceId, @item.DueAmount)">
                                                                             <option value="0">-- Select Payment Type --</option>
                                                                             @foreach (var shift in ViewBag.Paymentmode)
                                                                             {
@@ -213,7 +225,7 @@
                                                                                 class="form-control Paymentmode-dropdown"
                                                                                 id="ddPaymentmodeid_@item.InvoiceId"
                                                                                 style="height: 40px; width: 139px;"
-                                                                                onchange="handlePaymentTypeChange(@item.InvoiceId)">
+                                                                                 onchange="handlePaymentTypeChange(@item.InvoiceId, @item.DueAmount)">
                                                                             <option value="0">-- Select Payment Type --</option>
                                                                             @foreach (var shift in ViewBag.Paymentmode)
                                                                             {
@@ -240,9 +252,10 @@
                                                             </td>
 
                                                             <td>
-                                                                <form autocomplete="off">
+                                                                <form autocomplete="off" >
                                                                     <input type="text" id="inputBox_@item.InvoiceId" style="display:none; width: 100px; height: 30px;" placeholder="Enter Amount" onkeyup="fncamount(this, @item.TotalAmount, @item.DueAmount)" required />
-                                                                    <button type="button" class="btn btn-primary submit-payment" id="submitBtn_@item.InvoiceId" data-invoiceid="@item.InvoiceId" style="height: 40px; display:none;" onclick="updateCustomerInvoiceAmount(@item.InvoiceId)">Submit</button>
+                                                                    <input type="date" id="dateInput_@item.InvoiceId" style="display:none; width: 78%; height: 30px;margin-top:7px" required />                             
+                                                                    <button type="button" class="btn btn-primary submit-payment" id="submitBtn_@item.InvoiceId" data-invoiceid="@item.InvoiceId" style="height: 40px; display:none;margin-top:7px" onclick="updateCustomerInvoiceAmount(@item.InvoiceId)">Submit</button>
                                                                 </form>
                                                             </td>
 
@@ -398,63 +411,122 @@
         }
     }
 
-    function handlePaymentTypeChange(itemId) {
-        var paymentType = $("#ddPaymentmodeid_" + itemId).val();
+//   function handlePaymentTypeChange(itemId) {
+//     var paymentType = $("#ddPaymentmodeid_" + itemId).val();
 
-        // Show or hide the amount input field based on payment type
-        if (paymentType == 1 || paymentType == 3) {
-            $("#inputBox_" + itemId).show();
-            $("#submitBtn_" + itemId).show();
-        } else {
-            $("#inputBox_" + itemId).hide();
-            $("#submitBtn_" + itemId).hide();
-            updateCustomerInvoiceAmount(itemId); // Automatically update for other payment types
+//     if (paymentType == 1 || paymentType == 3) {
+//         $("#inputBox_" + itemId).show();
+//         $("#dateInput_" + itemId).show();
+//         $("#submitBtn_" + itemId).show();
+
+//         var now = new Date();
+//         var formattedDate = now.toISOString().slice(0, 10); 
+//         $("#dateInput_" + itemId).val(formattedDate);
+//     } else {
+//         $("#inputBox_" + itemId).hide();
+//         $("#dateInput_" + itemId).hide();
+//         $("#submitBtn_" + itemId).hide();
+
+//         updateCustomerInvoiceAmount(itemId);
+//     }
+// }
+
+function handlePaymentTypeChange(itemId, dueAmount) {
+    var paymentType = $("#ddPaymentmodeid_" + itemId).val();
+
+    if (paymentType == 1 || paymentType == 3) {
+        $("#inputBox_" + itemId).show();
+        $("#dateInput_" + itemId).show();
+        $("#submitBtn_" + itemId).show();
+
+        var now = new Date();
+        var formattedDate = now.toISOString().slice(0, 10);
+        $("#dateInput_" + itemId).val(formattedDate);
+
+        if (paymentType == 1) {
+            $("#inputBox_" + itemId).val(dueAmount);
         }
+    } else {
+        $("#inputBox_" + itemId).hide();
+        $("#dateInput_" + itemId).hide();
+        $("#submitBtn_" + itemId).hide();
+
+        updateCustomerInvoiceAmount(itemId);
     }
+}
 
-    function updateCustomerInvoiceAmount(itemId) {
-        var paymentType = $("#ddPaymentmodeid_" + itemId).val();
-        var paidAmount = $("#inputBox_" + itemId).val() || 0;
-        var invoiceId = itemId;
 
-        // Check if payment type requires an amount (i.e., Paymentid 1 and 3)
-        if ((paymentType == 1 || paymentType == 3) && (isNaN(paidAmount) || paidAmount <= 0)) {
-            alert('Please enter a valid paid amount.');
-            return;
-        }
+   function updateCustomerInvoiceAmount(itemId) {
+    var paymentType = $("#ddPaymentmodeid_" + itemId).val();
+    var paidAmount = $("#inputBox_" + itemId).val() || 0;
+    var paymentDate = $("#dateInput_" + itemId).val(); // Fetch the date input
+    var invoiceId = itemId;
 
-        var data = {
-            InvoiceId: invoiceId,
-            Paymentid: paymentType,
-            PaidAmount: parseFloat(paidAmount)
-        };
-
-        console.log(data);
-
-        $.ajax({
-            url: '@Url.Action("UpdateCustomerInvoiceamount", "Sale")',
-            type: 'POST',
-            data: data,
-            success: function (response) {
-                if (response.success) {
-                    alert(response.message);
-                    location.reload(); // Reload the page to reflect changes
-                } else {
-                    alert(response.message);
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error(error);
-                alert('An error occurred while updating the payment information.');
-            }
+    if ((paymentType == 1 || paymentType == 3) && (isNaN(paidAmount) || paidAmount <= 0)) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Invalid Paid Amount',
+            text: 'Please enter a valid paid amount.',
         });
+        return;
     }
+
+    if (!paymentDate) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Missing Payment Date',
+            text: 'Please select a payment date.',
+        });
+        return;
+    }
+
+    var data = {
+        InvoiceId: invoiceId,
+        Paymentid: paymentType,
+        PaidAmount: parseFloat(paidAmount),
+        PaymentDate: paymentDate 
+    };
+
+    console.log(data);
+
+    $.ajax({
+        url: '@Url.Action("UpdateCustomerInvoiceamount", "Sale")',
+        type: 'POST',
+        data: data,
+        success: function (response) {
+            if (response.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: response.message,
+                }).then(() => {
+                    location.reload(); 
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: response.message,
+                });
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error(error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Server Error',
+                text: 'An error occurred while updating the payment information.',
+            });
+        }
+    });
+}
+
 
 
 </script>
 
 <script>
-   
+
 
     $(document).ready(function () {
         var table = $('#datatable').DataTable();
@@ -471,11 +543,11 @@
                             bindpaymenttype('@item.Paymentid', '@item.InvoiceId');
         </text>
     }
-                });
-            $(".Paymentmode-dropdown").change(function () {
-                var itemId = $(this).attr('id').split('_')[1];
-                toggleInputBoxBasedOnPaymentType(itemId);
-            });
+                    });
+        $(".Paymentmode-dropdown").change(function () {
+            var itemId = $(this).attr('id').split('_')[1];
+            toggleInputBoxBasedOnPaymentType(itemId);
+        });
 
         $(".submit-payment").click(function () {
             var itemId = $(this).data('invoiceid');
@@ -493,16 +565,23 @@
 
     function toggleInputBoxBasedOnPaymentType(itemId) {
         var selectedPaymentType = $("#ddPaymentmodeid_" + itemId).val();
-
+        var now = new Date();
+        var formattedDate = now.toISOString().slice(0, 10); 
+       
         if (parseInt(selectedPaymentType) === 1) {
             $("#inputBox_" + itemId).show();
             $("#submitBtn_" + itemId).show();
+            $("#dateInput_" + itemId).show();
+             $("#dateInput_" + itemId).val(formattedDate);
         } else if (parseInt(selectedPaymentType) === 3) {
             $("#inputBox_" + itemId).show();
             $("#submitBtn_" + itemId).show();
+            $("#dateInput_" + itemId).show();
+             $("#dateInput_" + itemId).val(formattedDate);
         } else {
             $("#inputBox_" + itemId).hide();
             $("#submitBtn_" + itemId).hide();
+            $("#dateInput_" + itemId).hide();
         }
     }
 

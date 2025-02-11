@@ -100,6 +100,8 @@
                                             </thead>
                                             <tbody>
                                                 @{
+                                                    if (Model != null && Model.Any())
+                                                    {
                                                     var count = 0;
                                                     foreach (var item in Model)
                                                     {
@@ -130,6 +132,7 @@
                                                                 @item.PaymentStatus
                                                             </td>
                                                         </tr>
+                                                    }
                                                     }
                                                 }
 
