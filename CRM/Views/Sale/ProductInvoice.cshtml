@@ -22,20 +22,22 @@
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            padding: 0;          
+            padding: 0;
         }
 
         @@page {
             size: A4;
-            margin: 10mm;
+            margin: 1mm auto;
             padding: 40px;
-/*             border: 1px solid #ccc;
- */        }
+            height: max-content;
+            /*             border: 1px solid #ccc;
+         */
+        }
 
         .invoice-container {
             /*  width: 267mm;
-              height: 378mm; */
-            width: 210mm;
+                      height: 378mm; */
+            width: 250mm;
             height: max-content;
             margin: 2mm auto;
             padding: 20px;
@@ -190,6 +192,7 @@
                 .header div {
                     text-align: right;
                 }
+
             .invoice-details {
                 text-align: center;
                 margin-top: 20px;
@@ -239,7 +242,18 @@
         }
 
 
+        table.invoice-table th {
+            padding: 3px;
+            white-space: nowrap;
+            font-weight: 600;
+            font-size: 14px;
+        }
 
+        h3 {
+            font-weight: 700;
+            margin-bottom: 0;
+            font-size: 20px;
+        }
     </style>
 </head>
 <body>
@@ -322,6 +336,7 @@
             decimal? dueamount = 0;
             decimal? paidamount = 0;
             string? totalAmountwords = null;
+            decimal? ServiceCharge = 0;
 
             foreach (var item in Model.ProductDetailLists)
             {
@@ -333,6 +348,7 @@
                 dueamount = item.DueAmount;
                 paidamount = item.PaidAmount;
                 totalAmountwords = item.totalInWords;
+                totalAmount = item.TotalAmount;
                 // Calculate CGST and SGST if applicable
                 if (item.CGST != null && item.SGST != null)
                 {
@@ -345,20 +361,21 @@
                 {
                     igstAmount += (item.ProductRate * item.IGST / 100);
                 }
+                ServiceCharge += item.ServiceCharge;
+
             }
 
             // Calculate total amount before rounding
-            totalAmount = (subtotal ?? 0) + (cgstAmount ?? 0) + (sgstAmount ?? 0) + (igstAmount ?? 0);
+            totalAmount = (totalAmount ?? 0) ;
 
-            // Round the total amount
+            // // Round the total amount
             roundedTotal = Math.Round((decimal)totalAmount, 0, MidpointRounding.AwayFromZero);
 
-            // Calculate rounding difference (absolute value ensures it's always positive)
+            // // Calculate rounding difference (absolute value ensures it's always positive)
             rounding = Math.Abs((decimal)roundedTotal - (decimal)totalAmount);
 
-            // Ensure totalAmount is rounded to two decimal places if required
-            totalAmount = Math.Round((decimal)totalAmount, 2);
-
+            // // Ensure totalAmount is rounded to two decimal places if required
+             totalAmount = Math.Round((decimal)totalAmount, 2);
 
         }
 
@@ -367,17 +384,33 @@
                 <tr>
                     <th>#</th>
                     <th>Item & Description</th>
-                    <th>HSN/SAC</th>
+                    <th>HSN<br />/SAC</th>
                     <th>Qty</th>
                     <th>Rate</th>
                     @if (igstper == null || igstper == 0)
                     {
                         <th>CGST</th>
                         <th>SGST</th>
+
                     }
                     else
                     {
                         <th>IGST</th>
+                    }
+                    @if (Model.selectcompany == true)
+                    {
+                        if (ServiceCharge > 0)
+                        {
+                            <th>S/C</th>
+                        }
+
+                    }
+                    else
+                    {
+                        if (ServiceCharge > 0)
+                        {
+                            <th>S/C</th>
+                        }
                     }
                     <th>Amount</th>
                 </tr>
@@ -385,6 +418,7 @@
 
             @foreach (var item in Model.ProductDetailLists)
             {
+            
                 count++;
                 <tbody>
                     <tr>
@@ -392,15 +426,30 @@
                         <td>@item.ProductName<br /><h6>@item.Description</h6></td>
                         <td>@item.HsnSacCode</td>
                         <td>@item.Qty</td>
-                        <td>₹ @String.Format("{0:0.00}", item.ProductRate)</td>
+                        <td>@String.Format("{0:0.00}", item.ProductRate)</td>
                         @if (igstper == null || igstper == 0)
                         {
-                            <td>@(item.CGST != null ? $"{item.CGST}% ₹ {item.ProductRate * item.CGST / 100}" : "0% ₹ 0.00")</td>
-                            <td>@(item.SGST != null ? $"{item.SGST}% ₹ {item.ProductRate * item.SGST / 100}" : "0% ₹ 0.00")</td>
+                            <td>@(item.CGST != null ? $"{item.CGST}% {item.ProductRate * item.CGST / 100}" : "0%  0.00")</td>
+                            <td>@(item.SGST != null ? $"{item.SGST}% {item.ProductRate * item.SGST / 100}" : "0%  0.00")</td>
                         }
                         else
                         {
-                            <td>@(item.IGST != null ? $"{item.IGST}% ₹ {item.ProductRate * item.IGST / 100}" : "0% ₹ 0.00")</td>
+                            <td>@(item.IGST != null ? $"{item.IGST}%  {item.ProductRate * item.IGST / 100}" : "0%  0.00")</td>
+                        }
+                        @if (Model.selectcompany == true)
+                        {
+                            if (item.ServiceCharge > 0)
+                            {
+                                <td> @String.Format("{0:0.00}", item.ServiceCharge)</td>
+                            }
+                           
+                        }
+                        else
+                        {
+                            if (ServiceCharge > 0)
+                            {
+                                <td> @String.Format("{0:0.00}", item.ServiceCharge)</td>
+                            }
                         }
                         <td>₹ @String.Format("{0:0.00}", item.ProductPrice)</td>
                     </tr>
@@ -437,9 +486,30 @@
                     <td>Rounding</td>
                     <td>₹ @String.Format("{0:0.00}", rounding)</td>
                 </tr>
+                @if (Model.selectcompany == true)
+                {
+                    if (ServiceCharge > 0)
+                    {
+                        <tr>
+                            <td>ServiceCharge</td>
+                            <td>₹ @String.Format("{0:0.00}", ServiceCharge)</td>
+                        </tr>
+                    }
+
+                }
+                else
+                {
+                    if (ServiceCharge > 0)
+                    {
+                        <tr>
+                            <td>ServiceCharge</td>
+                            <td>₹ @String.Format("{0:0.00}", ServiceCharge)</td>
+                        </tr>
+                    }
+                }
                 <tr>
                     <td><strong>Total</strong></td>
-                    <td id="total"><strong>₹ @String.Format("{0:0.00}", roundedTotal)</strong></td>
+                    <td id="total"><strong>₹ @String.Format("{0:0.00}", totalAmount)</strong></td>
                 </tr>
                 <tr>
                     <td>Payment Made</td>
@@ -462,7 +532,7 @@
                 <h6><strong>Notes<br /><span>@Model.Notes</span></strong></h6>
             </div>
         }
-       
+
         <div class="footer">
             <img src="@ViewBag.Protocol://@ViewBag.Host/CompanyImage/@Model.VendorSingature" alt="Singature Logo" style="background-color:transparent;height: 107px;width: 211px;">
             <p>Authorized Signatory</p>
@@ -550,16 +620,16 @@
         printStyle.type = 'text/css';
         printStyle.media = 'print';
         printStyle.innerHTML = `
-                                            @@page {
-                                                size: A4;
-                                                margin: 10mm;
-                                                padding: 20px;
-                                            }
-                                            body {
-                                                margin: 0;
-                                                padding: 0;
-                                            }
-                                        `;
+                                                @@page {
+                                                    size: A4;
+                                                    margin: 10mm;
+                                                    padding: 20px;
+                                                }
+                                                body {
+                                                    margin: 0;
+                                                    padding: 0;
+                                                }
+                                            `;
         document.head.appendChild(printStyle);
         window.print();
 

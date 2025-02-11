@@ -18,6 +18,12 @@
         background-color: #00baf2 !important;
         padding: 24px 0.75rem !important;
     }
+
+    .highlight {
+        color: #20130c;
+        font-weight: bold;
+    }
+
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">@if (ViewBag.BtnText == "UPDATE")
 {
@@ -239,20 +245,78 @@ else
                                                     {
                                                         @foreach (var item in Model.Approvedbankdetails)
                                                         {
+                                                            var oldData = Model.PreviousData.FirstOrDefault(x => x.EmployeeId == item.EmployeeId);
+
                                                             count++;
                                                             var isPdf = !string.IsNullOrEmpty(item.Chequeimage) && item.Chequeimage.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase);
                                                             <tr>
 
                                                                 <th scope="row">@count</th>
                                                                 <td style="white-space: nowrap">@item.EmployeeId</td>
-                                                                <td style="white-space: nowrap">@item.AccountHolderName</td>
-                                                                <td style="white-space: nowrap">@item.BankName</td>
-                                                                <td style="white-space: nowrap">@item.AccountNumber</td>
-                                                                @*<td style="white-space: nowrap">@item.ReEnterAccountNumber</td>*@
-                                                                <td style="white-space: nowrap">@item.Ifsc</td>
-                                                                <td style="white-space: nowrap">@item.EpfNumber</td>
-                                                                <td style="white-space: nowrap">@item.Nominee</td>
-                                                                <td style="white-space: nowrap">@item.AccountTypeId</td>
+                                                                @if (oldData != null && oldData.AccountHolderName != item.AccountHolderName)
+                                                                {
+                                                                    <td class="highlight" style="white-space: nowrap">@item.AccountHolderName</td>
+
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td style="white-space: nowrap">@item.AccountHolderName</td>
+                                                                }
+                                                                @if (oldData != null && oldData.BankName != item.BankName)
+                                                                {
+                                                                    <td class="highlight" style="white-space: nowrap">@item.BankName</td>
+
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td style="white-space: nowrap">@item.BankName</td>
+                                                                }
+                                                                @if (oldData != null && oldData.AccountNumber != item.AccountNumber)
+                                                                {
+                                                                    <td class="highlight" style="white-space: nowrap">@item.AccountNumber</td>
+
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td style="white-space: nowrap">@item.AccountNumber</td>
+                                                                }
+                                                                 @if (oldData != null && oldData.Ifsc != item.Ifsc)
+                                                                {
+                                                                    <td class="highlight" style="white-space: nowrap">@item.Ifsc</td>
+
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td style="white-space: nowrap">@item.Ifsc</td>
+                                                                }
+                                                                @if (oldData != null && oldData.EpfNumber != item.EpfNumber)
+                                                                {
+                                                                    <td class="highlight" style="white-space: nowrap">@item.EpfNumber</td>
+
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td style="white-space: nowrap">@item.EpfNumber</td>
+                                                                }
+                                                                @if (oldData != null && oldData.Nominee != item.Nominee)
+                                                                {
+                                                                    <td class="highlight" style="white-space: nowrap">@item.Nominee</td>
+
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td style="white-space: nowrap">@item.Nominee</td>
+                                                                }
+                                                                @if (oldData != null && oldData.AccountTypeId != item.AccountTypeId)
+                                                                {
+                                                                    <td class="highlight" style="white-space: nowrap">@item.AccountTypeId</td>
+
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td style="white-space: nowrap">@item.AccountTypeId</td>
+                                                                }
+                                                               
                                                                 <td>
                                                                     @if (isPdf)
                                                                     {

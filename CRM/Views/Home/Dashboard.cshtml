@@ -53,14 +53,10 @@
     }
 
     #paymentStatusChart {
-        height: 200%; 
-        width: 100%; 
-        max-width: 100%; 
+        height: 200%;
+        width: 100%;
+        max-width: 100%;
     }
-
-
-
-
 
 </style>
 
@@ -385,9 +381,8 @@ else
                                     </div>
                                     <div class="card-body">
                                         <div class="order-timeline">
-
                                         </div>
-                                        
+
                                     </div>
                                     <a href="/Vendor/EmpReplyTaskslist" class="btn btn-primary" style="margin-right: auto;">View All</a>
                                 </div>
@@ -402,23 +397,23 @@ else
                                         <canvas id="paymentStatusChart" height="185" width="600"></canvas>
                                     </div>
                                 </div>
-                              
+
                             </div>
 
-                     @*        <div class="col-xl-6 xl-100">
-                                <div class="card">
-                                    <div class="card-header d-flex justify-content-between align-items-center">
-                                        <h5 class="mb-0">Payment Status Value</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <!-- Chart Container -->
-                                        <div class="payment-status-chart">
-                                            <canvas id="paymentStatusChart" height="150"></canvas>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                           *@
+                            @*        <div class="col-xl-6 xl-100">
+                        <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Payment Status Value</h5>
+                        </div>
+                        <div class="card-body">
+                        <!-- Chart Container -->
+                        <div class="payment-status-chart">
+                        <canvas id="paymentStatusChart" height="150"></canvas>
+                        </div>
+                        </div>
+                        </div>
+                        </div>
+                        *@
                             <div class="col-xl-6 xl-100">
                                 <div class="card">
                                     <div class="card-header">
@@ -529,58 +524,81 @@ else
         // Dynamically generated data from ViewBag
         const labels = @Html.Raw(JsonConvert.SerializeObject(ViewBag.WorkingHoursDates ?? new List<string>()));
         const workHoursData = @Html.Raw(JsonConvert.SerializeObject(ViewBag.WorkingHoursData ?? new List<double>()));
+        const noEmpData = @Html.Raw(JsonConvert.SerializeObject(ViewBag.NoEmp ?? new List<int>()));
 
-        const data = {
-            labels: labels,
-            datasets: [{
-                label: 'Work Hours',
-                data: workHoursData,
-                borderColor: 'rgba(54, 162, 235, 1)',
-                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                borderWidth: 2,
-                tension: 0.4, // Smooth curve
-                fill: true,
-                pointBackgroundColor: 'rgba(54, 162, 235, 1)',
-                pointBorderColor: '#fff',
-                pointRadius: 5
-            }]
-        };
-
-        const config = {
-            type: 'line',
-            data: data,
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
+        // Check if data exists before rendering
+        if (labels.length && workHoursData.length && noEmpData.length) {
+            const data = {
+                labels: labels, // Set labels for the x-axis
+                datasets: [
+                    {
+                        label: 'Work Hours', // Single label
+                        data: workHoursData,
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderWidth: 2,
+                        tension: 0.4, // Smooth curve
+                        fill: true,
+                        pointBackgroundColor: 'rgba(54, 162, 235, 1)',
+                        pointBorderColor: '#fff',
+                        pointRadius: 5
                     },
-                    tooltip: {
-                        enabled: true,
+                    {
+                        label: 'Logged In Employees',
+                        data: noEmpData,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: 'rgba(75, 192, 192, 1)',
+                        pointBorderColor: '#fff',
+                        pointRadius: 5,
+                        hidden: true // Hide from legend
                     }
-                },
-                scales: {
-                    x: {
-                        type: 'category',
-                        title: {
-                            display: true,
-                            text: 'Day'
+                ]
+            };
+
+            const config = {
+                type: 'line',
+                data: data,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: true, // Show only the first dataset's legend
+                        },
+                        tooltip: {
+                            enabled: true,
                         }
                     },
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Hours'
+                    scales: {
+                        x: {
+                            type: 'category',
+                            title: {
+                                display: true,
+                                text: 'Day' // Single label for the x-axis
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Hours / Employees'
+                            }
                         }
                     }
                 }
-            }
-        };
+            };
 
-        new Chart(ctx, config);
+            // Create the chart
+            new Chart(ctx, config);
+        } else {
+            console.error('Chart data is missing or invalid.');
+        }
     });
 </script>
+
 
 
 <script>
@@ -588,23 +606,23 @@ else
         // Get the data from ViewBag or model
         const tasksList = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.TasksList));
 
-        const taskListTable = document.getElementById('taskListTable');
+    const taskListTable = document.getElementById('taskListTable');
 
-        // Function to return the color based on task status
-        function getStatusColor(status) {
+    // Function to return the color based on task status
+    function getStatusColor(status) {
             switch (status) {
                 case "Pending":
-                    return 'orange';
-                case "In Progress":
-                    return 'blue';
-                case "Completed":
-                    return 'green';
-                case "Reassigned":
-                    return 'purple';
-                case "InCompleted":
-                    return 'red';
-                default:
-                    return 'black'; // default color for unknown statuses
+    return 'orange';
+    case "In Progress":
+    return 'blue';
+    case "Completed":
+    return 'green';
+    case "Reassigned":
+    return 'purple';
+    case "InCompleted":
+    return 'red';
+    default:
+    return 'black'; // default color for unknown statuses
             }
         }
 
@@ -612,30 +630,30 @@ else
         tasksList.forEach(task => {
             const row = document.createElement('tr');
 
-            // Create cells and append data
-            const employeeIdCell = document.createElement('td');
-            employeeIdCell.textContent = task.EmployeeId;
+    // Create cells and append data
+    const employeeIdCell = document.createElement('td');
+    employeeIdCell.textContent = task.EmployeeId;
 
-            const employeeNameCell = document.createElement('td');
-            employeeNameCell.textContent = task.EmployeeName;
+    const employeeNameCell = document.createElement('td');
+    employeeNameCell.textContent = task.EmployeeName;
 
-            const taskNameCell = document.createElement('td');
-            taskNameCell.textContent = task.TaskName;
+    const taskNameCell = document.createElement('td');
+    taskNameCell.textContent = task.TaskName;
 
-            const taskStatusCell = document.createElement('td');
-            taskStatusCell.textContent = task.Taskstatus;
+    const taskStatusCell = document.createElement('td');
+    taskStatusCell.textContent = task.Taskstatus;
 
-            // Apply the text color to the taskStatus cell based on the status
-            taskStatusCell.style.color = getStatusColor(task.Taskstatus);
+    // Apply the text color to the taskStatus cell based on the status
+    taskStatusCell.style.color = getStatusColor(task.Taskstatus);
 
-            // Append cells to the row
-            row.appendChild(employeeIdCell);
-            row.appendChild(employeeNameCell);
-            row.appendChild(taskNameCell);
-            row.appendChild(taskStatusCell);
+    // Append cells to the row
+    row.appendChild(employeeIdCell);
+    row.appendChild(employeeNameCell);
+    row.appendChild(taskNameCell);
+    row.appendChild(taskStatusCell);
 
-            // Append the row to the table body
-            taskListTable.appendChild(row);
+    // Append the row to the table body
+    taskListTable.appendChild(row);
         });
     });
 </script>
@@ -645,80 +663,80 @@ else
         // Example reply task list data from ViewBag (replace with your actual data)
         const replytasklist = @Html.Raw(Json.Serialize(ViewBag.ReplyTasksList));
 
-        // Container where the tasks will be displayed
-        const timelineContainer = document.querySelector('.order-timeline');
+    // Container where the tasks will be displayed
+    const timelineContainer = document.querySelector('.order-timeline');
 
-        // Status mappings for taskstatus (support both numeric and string keys)
-        const statusMappings = {
-            1: { colorClass: 'timeline-icon-warning', icon: 'clock', label: 'Pending' },
-            2: { colorClass: 'timeline-icon-info', icon: 'refresh-cw', label: 'In Progress' },
-            3: { colorClass: 'timeline-icon-success', icon: 'check-circle', label: 'Completed' },
-            4: { colorClass: 'timeline-icon-secondary', icon: 'repeat', label: 'Reassigned' },
-            6: { colorClass: 'timeline-icon-danger', icon: 'x-circle', label: 'UnCompleted' },
-            "Pending": { colorClass: 'timeline-icon-warning', icon: 'clock', label: 'Pending' },
-            "In Progress": { colorClass: 'timeline-icon-info', icon: 'refresh-cw', label: 'In Progress' },
-            "Completed": { colorClass: 'timeline-icon-success', icon: 'check-circle', label: 'Completed' },
-            "Reassigned": { colorClass: 'timeline-icon-secondary', icon: 'repeat', label: 'Reassigned' },
-            "UnCompleted": { colorClass: 'timeline-icon-danger', icon: 'x-circle', label: 'UnCompleted' }
+    // Status mappings for taskstatus (support both numeric and string keys)
+    const statusMappings = {
+        1: {colorClass: 'timeline-icon-warning', icon: 'clock', label: 'Pending' },
+    2: {colorClass: 'timeline-icon-info', icon: 'refresh-cw', label: 'In Progress' },
+    3: {colorClass: 'timeline-icon-success', icon: 'check-circle', label: 'Completed' },
+    4: {colorClass: 'timeline-icon-secondary', icon: 'repeat', label: 'Reassigned' },
+    6: {colorClass: 'timeline-icon-danger', icon: 'x-circle', label: 'UnCompleted' },
+    "Pending": {colorClass: 'timeline-icon-warning', icon: 'clock', label: 'Pending' },
+    "In Progress": {colorClass: 'timeline-icon-info', icon: 'refresh-cw', label: 'In Progress' },
+    "Completed": {colorClass: 'timeline-icon-success', icon: 'check-circle', label: 'Completed' },
+    "Reassigned": {colorClass: 'timeline-icon-secondary', icon: 'repeat', label: 'Reassigned' },
+    "UnCompleted": {colorClass: 'timeline-icon-danger', icon: 'x-circle', label: 'UnCompleted' }
         };
 
         // Loop through the task list
         replytasklist.forEach((task) => {
             // Safely handle null or missing values
             const taskName = task.taskName || 'N/A';
-            const subTaskName = task.subTaskName || 'N/A';
-            const taskStatus = task.taskstatus || 'Unknown'; // Default to 'Unknown'
-            const taskDate = task.replydate || 'N/A';
+    const subTaskName = task.subTaskName || 'N/A';
+    const taskStatus = task.taskstatus || 'Unknown'; // Default to 'Unknown'
+    const taskDate = task.replydate || 'N/A';
 
-            // Match the taskstatus with statusMappings or use 'Unknown Status'
-            const status = statusMappings[taskStatus] || {
-                colorClass: 'timeline-icon-primary',
-                icon: 'alert-circle',
-                label: taskStatus
+    // Match the taskstatus with statusMappings or use 'Unknown Status'
+    const status = statusMappings[taskStatus] || {
+        colorClass: 'timeline-icon-primary',
+    icon: 'alert-circle',
+    label: taskStatus
             };
 
-            // Build the timeline item
-            const taskDiv = document.createElement('div');
-            taskDiv.classList.add('media');
+    // Build the timeline item
+    const taskDiv = document.createElement('div');
+    taskDiv.classList.add('media');
 
-            // Timeline line
-            const timelineLine = document.createElement('div');
-            timelineLine.classList.add('timeline-line');
-            taskDiv.appendChild(timelineLine);
+    // Timeline line
+    const timelineLine = document.createElement('div');
+    timelineLine.classList.add('timeline-line');
+    taskDiv.appendChild(timelineLine);
 
-            // Status Icon (colorClass and icon)
-            const timelineIcon = document.createElement('div');
-            timelineIcon.classList.add(status.colorClass);
-            timelineIcon.innerHTML = `<i data-feather="${status.icon}"></i>`;
-            taskDiv.appendChild(timelineIcon);
+    // Status Icon (colorClass and icon)
+    const timelineIcon = document.createElement('div');
+    timelineIcon.classList.add(status.colorClass);
+    timelineIcon.innerHTML = `<i data-feather="${status.icon}"></i>`;
+    taskDiv.appendChild(timelineIcon);
 
-            // Media body (text)
-            const mediaBody = document.createElement('div');
-            mediaBody.classList.add('media-body');
+    // Media body (text)
+    const mediaBody = document.createElement('div');
+    mediaBody.classList.add('media-body');
 
-            const statusText = document.createElement('span');
-            statusText.classList.add('font-primary');
-            statusText.textContent = `Status: ${status.label}`; // Display proper status label
-            mediaBody.appendChild(statusText);
+    const statusText = document.createElement('span');
+    statusText.classList.add('font-primary');
+    statusText.textContent = `Status: ${status.label}`; // Display proper status label
+    mediaBody.appendChild(statusText);
 
-            const taskDescription = document.createElement('p');
-            taskDescription.textContent = `Task: ${taskName}, SubTask: ${subTaskName}`;
-            mediaBody.appendChild(taskDescription);
+    const taskDescription = document.createElement('p');
+    taskDescription.textContent = `Task: ${taskName}, SubTask: ${subTaskName}`;
+    mediaBody.appendChild(taskDescription);
 
-            taskDiv.appendChild(mediaBody);
+    taskDiv.appendChild(mediaBody);
 
-            // Right-aligned task date
-            const taskDateElement = document.createElement('span');
-            taskDateElement.classList.add('pull-right', 'text-muted');
-            taskDateElement.textContent = taskDate;
-            taskDiv.appendChild(taskDateElement);
+    // Right-aligned task date
+    const taskDateElement = document.createElement('span');
+    taskDateElement.classList.add('pull-right', 'text-muted');
+    taskDateElement.textContent = taskDate;
+    taskDiv.appendChild(taskDateElement);
 
-            // Append the timeline item to the container
-            timelineContainer.appendChild(taskDiv);
+    // Append the timeline item to the container
+    timelineContainer.appendChild(taskDiv);
         });
 
-        // Re-render feather icons after dynamic HTML creation
-        feather.replace();
+    // Re-render feather icons after dynamic HTML creation
+    feather.replace();
     }
 
     // Call the function to display the timeline

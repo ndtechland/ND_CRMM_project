@@ -198,6 +198,7 @@ function sendProductDetailsToAPI() {
             InvoiceNotes: $('#InvoiceNotes').val(),
             InvoiceTerms: $('#InvoiceTerms').val(),
             Invoiceclone: $('#InvoicecloneId').val(),
+            ServiceCharges: $('#ServiceCharges').val(),
 
         },
         success: function (result) {

@@ -25,7 +25,8 @@ namespace CRM.Models.DTO
         public bool? IsApproved { get; set; }
         public DateTime? UpdateDate { get; set; }
         public List<EmployeeApprovedPresnolInfo> ApprovedPresnolInfos { get; set; }
-        
+        public List<EmployeeApprovedPresnolInfo> PreviousData { get; set; }
+
 
         [NotMapped]
         public List<IFormFile> Aadharbase64 { get; set; }
@@ -53,6 +54,5 @@ namespace CRM.Models.DTO
         public string? EmployeeId { get; set; }
         public bool? IsApproved { get; set; }
         public DateTime? UpdateDate { get; set; }
-
     }
 }

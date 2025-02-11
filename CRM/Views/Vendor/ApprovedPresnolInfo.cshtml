@@ -19,6 +19,14 @@
         background-color: #00baf2 !important;
         padding: 24px 0.75rem !important;
     }
+
+    .highlight {
+        color: #20130c;
+        font-weight: bold; 
+    }
+
+
+
 </style>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -242,13 +250,13 @@ else
                                                 <tr style="background-color: #00baf2; color: #212529" ;>
                                                     <th nowrap>Sr.No</th>
                                                     <th nowrap>
+                                                        EmployeeId
+                                                    </th>
+                                                    <th nowrap>
                                                         Full Name
                                                     </th>
                                                     <th nowrap>
                                                         Personal Email Address
-                                                    </th>
-                                                    <th nowrap>
-                                                        EmployeeId
                                                     </th>
                                                     <th nowrap>
                                                         Mobile Number
@@ -300,34 +308,131 @@ else
                                             <tbody>
                                                 @{
                                                     var count = 0;
-                                                    @if (Model != null && Model.ApprovedPresnolInfos.Count() > 0)
+                                                    if (Model != null && Model.ApprovedPresnolInfos.Count() > 0)
                                                     {
-                                                        @foreach (var item in Model.ApprovedPresnolInfos)
+                                                        foreach (var item in Model.ApprovedPresnolInfos)
                                                         {
+                                                            var oldData = Model.PreviousData.FirstOrDefault(x => x.EmployeeId == item.EmployeeId);
                                                             count++;
+
                                                             var isPdf = !string.IsNullOrEmpty(item.AadharOne) && item.AadharOne.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase);
                                                             var isPdf0 = !string.IsNullOrEmpty(item.AadharTwo) && item.AadharTwo.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase);
                                                             var isPdf1 = !string.IsNullOrEmpty(item.Panimg) && item.Panimg.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase);
                                                             <tr>
-
                                                                 <th scope="row">@count</th>
-                                                                <td style="white-space: nowrap">@item.FullName</td>
-                                                                <td style="white-space: nowrap">@item.PersonalEmailAddress</td>
                                                                 <td style="white-space: nowrap">@item.EmployeeId</td>
-                                                                <td style="white-space: nowrap">@item.MobileNumber</td>
-                                                                <td style="white-space: nowrap">@item.FatherName</td>
-                                                                <td style="white-space: nowrap">@item.DateOfBirth?.ToString("dd/MM/yyyy")</td>
-                                                                <td style="white-space: nowrap">@item.PAN</td>
-                                                                <td style="white-space: nowrap">@item.AddressLine1</td>
-                                                                <td style="white-space: nowrap">@item.AddressLine2</td>
-                                                                <td style="white-space: nowrap">@item.Stateid</td>
-                                                                <td style="white-space: nowrap">@item.cityid</td>
-                                                                <td style="white-space: nowrap">@item.Pincode</td>
-                                                                <td style="white-space: nowrap">@item.AadharNo</td>
+                                                                @if (oldData.FullName != item.FullName)
+                                                                {
+                                                                    <td class="highlight" style="white-space: nowrap">@item.FullName</td>
+
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td  style="white-space: nowrap">@item.FullName</td>
+                                                                }
+                                                                @if (oldData.PersonalEmailAddress != item.PersonalEmailAddress)
+                                                                {
+                                                                    <td class="highlight" style="white-space: nowrap">@item.PersonalEmailAddress</td>
+
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td style="white-space: nowrap">@item.PersonalEmailAddress</td>
+                                                                }
+                                                                @if (oldData.MobileNumber != item.MobileNumber)
+                                                                {
+                                                                    <td class="highlight" style="white-space: nowrap">@item.MobileNumber</td>
+
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td style="white-space: nowrap">@item.MobileNumber</td>
+                                                                }
+                                                                @if (oldData.FatherName != item.FatherName)
+                                                                {
+                                                                    <td class="highlight" style="white-space: nowrap">@item.FatherName</td>
+
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td style="white-space: nowrap">@item.FatherName</td>
+                                                                }
+                                                                @if (oldData.DateOfBirth != item.DateOfBirth)
+                                                                {
+                                                                    <td class="highlight" style="white-space: nowrap">@item.DateOfBirth?.ToString("dd/MM/yyyy")</td>
+
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td style="white-space: nowrap">@item.DateOfBirth?.ToString("dd/MM/yyyy")</td>
+                                                                }
+                                                                @if (oldData.PAN != item.PAN)
+                                                                {
+                                                                    <td class="highlight" style="white-space: nowrap">@item.PAN</td>
+
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td style="white-space: nowrap">@item.PAN</td>
+                                                                }
+                                                                @if (oldData.AddressLine1 != item.AddressLine1)
+                                                                {
+                                                                    <td class="highlight" style="white-space: nowrap">@item.AddressLine1</td>
+
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td style="white-space: nowrap">@item.AddressLine1</td>
+                                                                }
+                                                                @if (oldData.AddressLine2 != item.AddressLine2)
+                                                                {
+                                                                    <td class="highlight" style="white-space: nowrap">@item.AddressLine2</td>
+
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td style="white-space: nowrap">@item.AddressLine2</td>
+                                                                }
+                                                                @if (oldData.Stateid != item.Stateid)
+                                                                {
+                                                                    <td class="highlight" style="white-space: nowrap">@item.Stateid</td>
+
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td style="white-space: nowrap">@item.Stateid</td>
+                                                                }
+                                                                @if (oldData.cityid != item.cityid)
+                                                                {
+                                                                    <td class="highlight" style="white-space: nowrap">@item.cityid</td>
+
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td style="white-space: nowrap">@item.cityid</td>
+                                                                }
+                                                                @if (oldData.Pincode != item.Pincode)
+                                                                {
+                                                                    <td class="highlight" style="white-space: nowrap">@item.Pincode</td>
+
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td style="white-space: nowrap">@item.Pincode</td>
+                                                                }
+                                                                @if (oldData.AadharNo != item.AadharNo)
+                                                                {
+                                                                    <td class="highlight" style="white-space: nowrap">@item.AadharNo</td>
+
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td style="white-space: nowrap">@item.AadharNo</td>
+                                                                }
                                                                 <td>
                                                                     @if (isPdf)
                                                                     {
-                                                                        <a target="_blank" href="~/img1/@item.AadharOne" title="Click here to Open Document (Document will be open in new Tab)">
+                                                                        <a target="_blank" href="~/img1/@item.AadharOne">
                                                                             <img src="~/assets/images/layout-2/logo/pdf-icon-4.png" style="height:100px;width:100px" />
                                                                         </a>
                                                                     }
@@ -335,13 +440,11 @@ else
                                                                     {
                                                                         <img src='~/img1/@item.AadharOne' style="height:100px;width:100px" />
                                                                     }
-
-
                                                                 </td>
                                                                 <td>
                                                                     @if (isPdf0)
                                                                     {
-                                                                        <a target="_blank" href="~/img1/@item.AadharTwo" title="Click here to Open Document (Document will be open in new Tab)">
+                                                                        <a target="_blank" href="~/img1/@item.AadharTwo">
                                                                             <img src="~/assets/images/layout-2/logo/pdf-icon-4.png" style="height:100px;width:100px" />
                                                                         </a>
                                                                     }
@@ -353,7 +456,7 @@ else
                                                                 <td>
                                                                     @if (isPdf1)
                                                                     {
-                                                                        <a target="_blank" href="~/img1/@item.Panimg" title="Click here to Open Document (Document will be open in new Tab)">
+                                                                        <a target="_blank" href="~/img1/@item.Panimg">
                                                                             <img src="~/assets/images/layout-2/logo/pdf-icon-4.png" style="height:100px;width:100px" />
                                                                         </a>
                                                                     }
@@ -362,15 +465,14 @@ else
                                                                         <img src='~/img1/@item.Panimg' style="height:100px;width:100px" />
                                                                     }
                                                                 </td>
+
                                                                 <td style="white-space: nowrap">@item.UpdateDate?.ToString("dd/MM/yyyy")</td>
-                                                                <td style="white-space: nowrap">
-                                                                    <button type="button" class="btn @(item.IsApproved != null && item.IsApproved == true ? "btn-success" : "btn-danger")"
-                                                                            onclick="updateApprovalStatus(@item.id, @(item.IsApproved != null && item.IsApproved == true ? "false" : "true"))">
-                                                                        @(item.IsApproved != null && item.IsApproved == true ? "Disapproved" : "Approved")
+                                                                <td>
+                                                                    <button type="button" class="btn @(item.IsApproved == true ? "btn-success" : "btn-danger")"
+                                                                            onclick="updateApprovalStatus(@item.id, @(item.IsApproved == true ? "false" : "true"))">
+                                                                        @(item.IsApproved == true ? "Disapproved" : "Approved")
                                                                     </button>
                                                                 </td>
-
-
                                                                 <td>
                                                                     <div>
                                                                         <a href='@Url.Action("ApprovedPresnolInfo","Vendor",new { id=item.id})' class="fa fa-edit m-2 font-success"></a>
@@ -403,6 +505,7 @@ else
         <ul id="pagination" class="pagination"></ul>
     </div> *@
 }
+
 
 <script>
     $(document).ready(function () {

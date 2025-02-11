@@ -91,7 +91,7 @@ namespace CRM.Repository
         public Task<EmpExperienceletter> GetExperienceletterbyid(int? id);
         public Task<bool> updateExperienceletterdetail(EmpExperienceletter model);
         public Task<int> AddExperienceletterdetail(EmpExperienceletter model, int Userid);
-        Task<bool> CustomerInvoice(List<ProductDetail> model ,string InvoiceNo, int vendorid, DateTime? InvoiceDate = null, DateTime? InvoiceDueDate = null, string InvoiceNotes = null, string InvoiceTerms = null,string Invoiceclone = null);
+        Task<bool> CustomerInvoice(List<ProductDetail> model ,string InvoiceNo, int vendorid, DateTime? InvoiceDate = null, DateTime? InvoiceDueDate = null, string InvoiceNotes = null, string InvoiceTerms = null,string Invoiceclone = null, decimal ServiceCharges = 0);
         Task<List<CustomerInvoiceDTO>> GetCustometInvoiceList(int vendorid);
         Task<CustomerInvoiceDTO> CustomerProductInvoice(string InvoiceNumber, bool Ismail);
         Task<bool> AddVendorBankDeatils(VendorBankDetail model, int VendorId);
@@ -126,6 +126,8 @@ namespace CRM.Repository
         Task<bool> salarydeduction(Salarydeductionmaster model, int VendorId);
 
         public Task<List<Priewempdata>> PreviewEmployeeList(int id);
+        public Task<List<EmployeeApprovedPresnolInfo>> PreviousDataApprovedPresnolInfoList(int Userid);
+        public Task<List<ApprovedbankdetailList>> PreviousDataApprovedbankdetailList(int Userid);
 
     }
 }

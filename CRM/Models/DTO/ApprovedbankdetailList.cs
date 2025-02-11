@@ -17,6 +17,7 @@
         public bool? IsApproved { get; set; }
         public DateTime? UpdateDate { get; set; }
         public List<ApprovedbankdetailList> Approvedbankdetails { get; set; }
+        public List<ApprovedbankdetailList> PreviousData { get; set; }
 
     }
 }

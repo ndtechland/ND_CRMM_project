@@ -47,57 +47,55 @@ namespace CRM.Controllers
                 ViewBag.HelpCenters = await _context.HelpCenters.CountAsync();
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == UserId).FirstOrDefaultAsync();
 
-                //VendorDashboard
-                ViewBag.Professional = await _context.VendorRegistrations.Where(x => x.Id == adminlogin.Vendorid).Select(x => x.Isprofessionaltax).FirstOrDefaultAsync();
-                //WorkLocations
-                ViewBag.WorkLocations = await _context.VendorRegistrations.Where(x => x.Id == adminlogin.Vendorid).Select(x => x.SelectCompany).FirstOrDefaultAsync();
                 // Customerlist
                 ViewBag.Customer = await _context.CustomerRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).CountAsync();
+
                 // VendorInvoice
                 ViewBag.VendorInvoice = await _context.VendorRegistrations.Where(x => x.Isactive == true).CountAsync();
+
                 // VendorProduct
                 ViewBag.VendorProduct = await _context.VendorProductMasters.Where(x => x.VendorId == adminlogin.Vendorid && x.IsActive == true).CountAsync();
+
                 // CustomerInvoices
-                ViewBag.CustomerInvoices = await _context.CustomerInvoices.Where(x => x.VendorId == adminlogin.Vendorid).GroupBy(x => x.InvoiceNumber).CountAsync();
+                ViewBag.CustomerInvoices = await _context.CustomerInvoices.Where(x => x.VendorId == adminlogin.Vendorid)
+                    .GroupBy(x => x.InvoiceNumber).CountAsync();
 
                 var emplist = await _context.EmployeeRegistrations
-                            .Where(x => x.Vendorid == adminlogin.Vendorid && x.IsDeleted == false)
-                            .ToListAsync();
-                //onBreakList
+                    .Where(x => x.Vendorid == adminlogin.Vendorid && x.IsDeleted == false)
+                    .ToListAsync();
+
+                // onBreakList
                 ViewBag.onBreakList = emplist.Count(x => _context.EmployeeCheckIns
                     .Any(y => y.EmployeeId == x.EmployeeId && y.Breakin == true
                              && y.Currentdate.Value.Date == DateTime.Now.Date));
-                //Checkin
+
+                // Checkin
                 ViewBag.Checkin = emplist.Count(x => _context.EmployeeCheckIns
-                 .Any(y => y.EmployeeId == x.EmployeeId && y.CheckIn == true
-                          && y.Currentdate.Value.Date == DateTime.Now.Date));
+                    .Any(y => y.EmployeeId == x.EmployeeId && y.CheckIn == true
+                             && y.Currentdate.Value.Date == DateTime.Now.Date));
 
                 ViewBag.Vendorlist = await _context.VendorRegistrations.CountAsync();
-                //Employee
+
+                // Employee
                 ViewBag.Employee = emplist.Count();
-                //Holidays
+
+                // Holidays
                 ViewBag.Holidays = await _context.OfficeEvents
-                .Where(x => x.Vendorid == adminlogin.Vendorid && x.Date >= DateTime.Now.Date)
-                .Select(x => new
-                {
-                    Subtittle = x.Subtittle,
-                    Date = x.Date
-                }).Take(5).ToListAsync();
+                    .Where(x => x.Vendorid == adminlogin.Vendorid && x.Date >= DateTime.Now.Date)
+                    .Select(x => new { Subtittle = x.Subtittle, Date = x.Date })
+                    .Take(5).ToListAsync();
 
                 ViewBag.Announcements = await _context.EventsmeetSchedulers
-                .Where(x => x.Vendorid == adminlogin.Vendorid)
-                .Select(x => new
-                {
-                    Title = x.Tittle,
-                    Date = x.ScheduleDate,
-                    time = x.Time
-                }).OrderByDescending(x => x.Date).Take(5).ToListAsync();
-                //LeaveList
+                    .Where(x => x.Vendorid == adminlogin.Vendorid)
+                    .Select(x => new { Title = x.Tittle, Date = x.ScheduleDate, time = x.Time })
+                    .OrderByDescending(x => x.Date).Take(5).ToListAsync();
+
+                // LeaveList
                 ViewBag.onLeaveList = emplist.Count(x => _context.ApplyLeaveNews
-               .Any(y => y.UserId == x.EmployeeId
-               && y.Isapprove == 2
-               && y.StartDate.Date <= DateTime.Now.Date
-               && y.EndDate.Date >= DateTime.Now.Date));
+                    .Any(y => y.UserId == x.EmployeeId
+                             && y.Isapprove == 2
+                             && y.StartDate.Date <= DateTime.Now.Date
+                             && y.EndDate.Date >= DateTime.Now.Date));
 
                 var today = DateTime.Today;
                 var firstDayOfMonth = new DateTime(today.Year, today.Month, 1);
@@ -106,66 +104,77 @@ namespace CRM.Controllers
                 var allDates = Enumerable.Range(0, (today - firstDayOfMonth).Days + 1)
                     .Select(offset => firstDayOfMonth.AddDays(offset))
                     .ToList();
+
                 var employeeIdsrecords = emplist.Select(emp => emp.EmployeeId).ToList();
 
-                // Filter records to only include those matching the employee IDs in emplist
-                var records = _context.EmployeeCheckInRecords
+                // Fetch filtered records first
+                var records = await _context.EmployeeCheckInRecords
                     .Where(record => record.CurrentDate.HasValue &&
                                      record.CurrentDate.Value.Year == today.Year &&
                                      record.CurrentDate.Value.Month == today.Month &&
                                      record.CurrentDate.Value.Date <= today &&
-                                     employeeIdsrecords.Contains(record.EmpId)) // Match with emplist
-                    .AsEnumerable()
+                                     employeeIdsrecords.Contains(record.EmpId))
+                    .ToListAsync();
+
+                // Group records in memory after fetching
+                var groupedRecords = records
                     .GroupBy(record => record.CurrentDate.Value.Date)
                     .ToDictionary(group => group.Key, group => group.Sum(record =>
                         (record.CheckOuttime.HasValue && record.CheckIntime.HasValue)
                         ? Math.Max(0, (record.CheckOuttime.Value - record.CheckIntime.Value).TotalHours)
                         : 0));
-                //var records = _context.EmployeeCheckInRecords
-                //    .Where(record => record.CurrentDate.HasValue &&
-                //                     record.CurrentDate.Value.Year == today.Year &&
-                //                     record.CurrentDate.Value.Month == today.Month &&
-                //                     record.CurrentDate.Value.Date <= today) 
-                //    .AsEnumerable()
-                //    .GroupBy(record => record.CurrentDate.Value.Date)
-                //    .ToDictionary(group => group.Key, group => group.Sum(record =>
-                //        (record.CheckOuttime.HasValue && record.CheckIntime.HasValue)
-                //        ? Math.Max(0, (record.CheckOuttime.Value - record.CheckIntime.Value).TotalHours)
-                //        : 0));
+
                 var workingHoursDates = allDates.Select(date => date.Day.ToString()).ToList();
                 var workingHoursData = allDates.Select(date =>
-                    records.ContainsKey(date) ? records[date] : 0
+                    groupedRecords.ContainsKey(date) ? groupedRecords[date] : 0
                 ).ToList();
-                int currentMonth = today.Month;
+
+                // For login employee count by date
+                var loginEmpCount = records
+     .GroupBy(record => record.CurrentDate.Value.Date)
+     .ToDictionary(
+         group => group.Key.ToString("yyyy-MM-dd"),
+         group => group.Select(record => record.EmpId).Distinct().Count()
+     );
+                var noEmp = allDates.Select(date =>
+    loginEmpCount.ContainsKey(date.ToString("yyyy-MM-dd")) ? loginEmpCount[date.ToString("yyyy-MM-dd")] : 0
+).ToList();
+
+                ViewBag.NoEmp = noEmp;
                 ViewBag.WorkingHoursDates = workingHoursDates;
                 ViewBag.WorkingHoursData = workingHoursData;
 
+                var currentMonth = today.Month;
                 ViewBag.monthname = getMonthName(currentMonth);
 
+                // Number of Work From Home requests
                 ViewBag.Numberofwfh = emplist.Count(x => _context.EmpApplywfhs
-                .Any(y => y.UserId == x.EmployeeId
-                 && y.Iswfh == 2
-                 && y.Startdate.Value.Date <= DateTime.Now.Date
-                 && y.EndDate.Value.Date >= DateTime.Now.Date));
-                //tasklist
+                    .Any(y => y.UserId == x.EmployeeId
+                             && y.Iswfh == 2
+                             && y.Startdate.Value.Date <= DateTime.Now.Date
+                             && y.EndDate.Value.Date >= DateTime.Now.Date));
+
+                // Task list
                 List<TasksListDashDto> response = await _context.EmployeeTasks
-     .Where(x => x.Vendorid == adminlogin.Vendorid)
-     .OrderByDescending(x => x.Id)
-     .Select(x => new TasksListDashDto
-     {
-         EmployeeId = x.EmployeeId,
-         EmployeeName = _context.EmployeeRegistrations
-             .Where(em => em.EmployeeId == x.EmployeeId)
-             .Select(em => em.FirstName)
-             .FirstOrDefault(),
-         TaskName = x.Task,
-         Taskstatus = _context.TaskStatuses
-             .Where(a => a.Id == x.Status)
-             .Select(status => status.StatusName)
-             .FirstOrDefault(),
-     }).Take(5).ToListAsync();
+                    .Where(x => x.Vendorid == adminlogin.Vendorid)
+                    .OrderByDescending(x => x.Id)
+                    .Select(x => new TasksListDashDto
+                    {
+                        EmployeeId = x.EmployeeId,
+                        EmployeeName = _context.EmployeeRegistrations
+                            .Where(em => em.EmployeeId == x.EmployeeId)
+                            .Select(em => em.FirstName)
+                            .FirstOrDefault(),
+                        TaskName = x.Task,
+                        Taskstatus = _context.TaskStatuses
+                            .Where(a => a.Id == x.Status)
+                            .Select(status => status.StatusName)
+                            .FirstOrDefault(),
+                    }).Take(5).ToListAsync();
+
                 ViewBag.TasksList = response;
-                //replytasklist
+
+                // Reply task list
                 List<string> employeeIds = emplist.Select(emp => emp.EmployeeId).ToList();
 
                 var replytasklist = await (from task in _context.EmpTasksLists
@@ -193,17 +202,168 @@ namespace CRM.Controllers
 
                 ViewBag.ReplyTasksList = replytasklist;
 
-
-
                 return View();
             }
             else
             {
                 return RedirectToAction("Login", "Admin");
             }
-
-
         }
+
+        //   public async Task<IActionResult> Dashboard()
+        //   {
+        //       if (HttpContext.Session.GetString("UserName") != null)
+        //       {
+        //           ViewBag.ContactCount = await _context.ContactUs.CountAsync();
+        //           int UserId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+        //           ViewBag.DemoRequest = await _context.DemoRequests.CountAsync();
+        //           ViewBag.HelpCenters = await _context.HelpCenters.CountAsync();
+        //           var adminlogin = await _context.AdminLogins.Where(x => x.Id == UserId).FirstOrDefaultAsync();
+        //           // Customerlist
+        //           ViewBag.Customer = await _context.CustomerRegistrations.Where(x => x.Vendorid == adminlogin.Vendorid).CountAsync();
+        //           // VendorInvoice
+        //           ViewBag.VendorInvoice = await _context.VendorRegistrations.Where(x => x.Isactive == true).CountAsync();
+        //           // VendorProduct
+        //           ViewBag.VendorProduct = await _context.VendorProductMasters.Where(x => x.VendorId == adminlogin.Vendorid && x.IsActive == true).CountAsync();
+        //           // CustomerInvoices
+        //           ViewBag.CustomerInvoices = await _context.CustomerInvoices.Where(x => x.VendorId == adminlogin.Vendorid).GroupBy(x => x.InvoiceNumber).CountAsync();
+
+        //           var emplist = await _context.EmployeeRegistrations
+        //                       .Where(x => x.Vendorid == adminlogin.Vendorid && x.IsDeleted == false)
+        //                       .ToListAsync();
+        //           //onBreakList
+        //           ViewBag.onBreakList = emplist.Count(x => _context.EmployeeCheckIns
+        //               .Any(y => y.EmployeeId == x.EmployeeId && y.Breakin == true
+        //                        && y.Currentdate.Value.Date == DateTime.Now.Date));
+        //           //Checkin
+        //           ViewBag.Checkin = emplist.Count(x => _context.EmployeeCheckIns
+        //            .Any(y => y.EmployeeId == x.EmployeeId && y.CheckIn == true
+        //                     && y.Currentdate.Value.Date == DateTime.Now.Date));
+
+        //           ViewBag.Vendorlist = await _context.VendorRegistrations.CountAsync();
+        //           //Employee
+        //           ViewBag.Employee = emplist.Count();
+        //           //Holidays
+        //           ViewBag.Holidays = await _context.OfficeEvents
+        //           .Where(x => x.Vendorid == adminlogin.Vendorid && x.Date >= DateTime.Now.Date)
+        //           .Select(x => new
+        //           {
+        //               Subtittle = x.Subtittle,
+        //               Date = x.Date
+        //           }).Take(5).ToListAsync();
+
+        //           ViewBag.Announcements = await _context.EventsmeetSchedulers
+        //           .Where(x => x.Vendorid == adminlogin.Vendorid)
+        //           .Select(x => new
+        //           {
+        //               Title = x.Tittle,
+        //               Date = x.ScheduleDate,
+        //               time = x.Time
+        //           }).OrderByDescending(x => x.Date).Take(5).ToListAsync();
+        //           //LeaveList
+        //           ViewBag.onLeaveList = emplist.Count(x => _context.ApplyLeaveNews
+        //          .Any(y => y.UserId == x.EmployeeId
+        //          && y.Isapprove == 2
+        //          && y.StartDate.Date <= DateTime.Now.Date
+        //          && y.EndDate.Date >= DateTime.Now.Date));
+
+        //           var today = DateTime.Today;
+        //           var firstDayOfMonth = new DateTime(today.Year, today.Month, 1);
+
+        //           // Generate all dates from 1st of the month to today
+        //           var allDates = Enumerable.Range(0, (today - firstDayOfMonth).Days + 1)
+        //               .Select(offset => firstDayOfMonth.AddDays(offset))
+        //               .ToList();
+        //           var employeeIdsrecords = emplist.Select(emp => emp.EmployeeId).ToList();
+
+        //           // Filter records to only include those matching the employee IDs in emplist
+        //           var records = _context.EmployeeCheckInRecords
+        //               .Where(record => record.CurrentDate.HasValue &&
+        //                                record.CurrentDate.Value.Year == today.Year &&
+        //                                record.CurrentDate.Value.Month == today.Month &&
+        //                                record.CurrentDate.Value.Date <= today &&
+        //                                employeeIdsrecords.Contains(record.EmpId)) 
+        //               .AsEnumerable()
+        //               .GroupBy(record => record.CurrentDate.Value.Date)
+        //               .ToDictionary(group => group.Key, group => group.Sum(record =>
+        //                   (record.CheckOuttime.HasValue && record.CheckIntime.HasValue)
+        //                   ? Math.Max(0, (record.CheckOuttime.Value - record.CheckIntime.Value).TotalHours)
+        //                   : 0));
+
+        //           var workingHoursDates = allDates.Select(date => date.Day.ToString()).ToList();
+        //           var workingHoursData = allDates.Select(date =>
+        //               records.ContainsKey(date) ? records[date] : 0
+        //           ).ToList();
+
+        //           int currentMonth = today.Month;
+        //           ViewBag.WorkingHoursDates = workingHoursDates;
+        //           ViewBag.WorkingHoursData = workingHoursData;
+
+        //           ViewBag.monthname = getMonthName(currentMonth);
+
+        //           ViewBag.Numberofwfh = emplist.Count(x => _context.EmpApplywfhs
+        //           .Any(y => y.UserId == x.EmployeeId
+        //            && y.Iswfh == 2
+        //            && y.Startdate.Value.Date <= DateTime.Now.Date
+        //            && y.EndDate.Value.Date >= DateTime.Now.Date));
+        //           //tasklist
+        //           List<TasksListDashDto> response = await _context.EmployeeTasks
+        //.Where(x => x.Vendorid == adminlogin.Vendorid)
+        //.OrderByDescending(x => x.Id)
+        //.Select(x => new TasksListDashDto
+        //{
+        //    EmployeeId = x.EmployeeId,
+        //    EmployeeName = _context.EmployeeRegistrations
+        //        .Where(em => em.EmployeeId == x.EmployeeId)
+        //        .Select(em => em.FirstName)
+        //        .FirstOrDefault(),
+        //    TaskName = x.Task,
+        //    Taskstatus = _context.TaskStatuses
+        //        .Where(a => a.Id == x.Status)
+        //        .Select(status => status.StatusName)
+        //        .FirstOrDefault(),
+        //}).Take(5).ToListAsync();
+        //           ViewBag.TasksList = response;
+        //           //replytasklist
+        //           List<string> employeeIds = emplist.Select(emp => emp.EmployeeId).ToList();
+
+        //           var replytasklist = await (from task in _context.EmpTasksLists
+        //                                      join employee in _context.EmployeeRegistrations
+        //                                          on task.EmployeeId equals employee.EmployeeId
+        //                                      join status in _context.TaskStatuses
+        //                                          on task.Taskstatus equals status.Id
+        //                                      join employeeTask in _context.EmployeeTasks
+        //                                          on task.Subtaskid equals employeeTask.Id into taskDetails
+        //                                      from taskDetail in taskDetails.DefaultIfEmpty()
+        //                                      join subTask in _context.EmployeeTasksLists
+        //                                          on task.Taskid equals subTask.Id into subTaskDetails
+        //                                      from subTaskDetail in subTaskDetails.DefaultIfEmpty()
+        //                                      where employeeIds.Contains(task.EmployeeId)
+        //                                      select new TasksReplyListDashDto
+        //                                      {
+        //                                          id = task.Id,
+        //                                          TaskName = taskDetail != null ? taskDetail.Task : "N/A",
+        //                                          SubTaskName = subTaskDetail != null ? subTaskDetail.Taskname : "N/A",
+        //                                          Replydate = task.Replydate.HasValue
+        //                                              ? task.Replydate.Value.ToString("dd MMM yy")
+        //                                              : "N/A",
+        //                                          Taskstatus = status.StatusName,
+        //                                      }).OrderByDescending(task => task.id).Take(4).ToListAsync();
+
+        //           ViewBag.ReplyTasksList = replytasklist;
+
+
+
+
+        //           return View();
+        //       }
+        //       else
+        //       {
+        //           return RedirectToAction("Login", "Admin");
+        //       }
+
+
+        //   }
 
         [HttpGet]
         public IActionResult Banner()
@@ -517,7 +677,7 @@ namespace CRM.Controllers
              .Where(c => c.Id == x.Customerid)
              .Select(c => c.CompanyName)
              .FirstOrDefault() ?? string.Empty,
-     }).OrderByDescending(x => x.Id).Where(x=>x.Vendorid == adminlogin.Vendorid)
+     }).OrderByDescending(x => x.Id).Where(x => x.Vendorid == adminlogin.Vendorid)
      .ToList();
 
 

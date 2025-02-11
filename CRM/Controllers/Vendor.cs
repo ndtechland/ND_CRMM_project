@@ -324,11 +324,16 @@ namespace CRM.Controllers
                         }
                     }
                     List<EmployeeApprovedPresnolInfo> EmployeePresnolInfo = await _ICrmrpo.ApprovedPresnolInfoList(Userid);
+                    List<EmployeeApprovedPresnolInfo> PreviousData = await _ICrmrpo.PreviousDataApprovedPresnolInfoList(Userid);
+                   
                     var model = new EmployeePresnolInfoList
                     {
-                        ApprovedPresnolInfos = EmployeePresnolInfo
+                        ApprovedPresnolInfos = EmployeePresnolInfo,
+                        PreviousData = PreviousData
                     };
                     return View(model);
+
+
                 }
                 else
                 {
@@ -483,9 +488,12 @@ namespace CRM.Controllers
                         }
                     }
                     List<ApprovedbankdetailList> Approvedbankdetail = await _ICrmrpo.ApprovedbankdetailList(Userid);
+                    List<ApprovedbankdetailList> PreviousData = await _ICrmrpo.PreviousDataApprovedbankdetailList(Userid);
+
                     var model = new ApprovedbankdetailList
                     {
-                        Approvedbankdetails = Approvedbankdetail
+                        Approvedbankdetails = Approvedbankdetail,
+                        PreviousData = PreviousData,
                     };
                     return View(model);
                 }
@@ -640,7 +648,17 @@ namespace CRM.Controllers
 
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
-
+                var existingdays = await _context.Attendancedays
+                       .Where(b => b.Vendorid == adminlogin.Vendorid)
+                             .FirstOrDefaultAsync();
+                if (model.Id == 0)
+                {
+                    if (existingdays != null)
+                    {
+                        TempData["Message"] = "Already exists.";
+                        return RedirectToAction("VendorAttendancedays", "Vendor");
+                    }
+                }
 
                 if (model == null)
                 {
@@ -2337,7 +2355,17 @@ namespace CRM.Controllers
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 int vendorid = (int)adminlogin.Vendorid;
-
+                var existingabout = await _context.Aboutcompanies
+                .Where(b => b.Vendorid == vendorid)
+                  .FirstOrDefaultAsync();
+                if (model.Id == 0)
+                {
+                    if (existingabout != null)
+                    {
+                        TempData["msg"] = "Already exists.";
+                        return RedirectToAction("Aboutcompany");
+                    }
+                }
                 bool check = await _ICrmrpo.Addaddcompany(model, vendorid);
                 if (check)
                 {
@@ -3795,7 +3823,6 @@ namespace CRM.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
-
     }
 }
 
