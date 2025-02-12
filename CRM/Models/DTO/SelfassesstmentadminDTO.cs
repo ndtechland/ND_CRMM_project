@@ -4,6 +4,7 @@ namespace CRM.Models.DTO
 {
     public class SelfassesstmentadminDTO
     {
+        public int Id { get; set; }
         public string? Tittle { get; set; }
         public string? SubTittle { get; set; }
         public bool? Ispoint { get; set; }

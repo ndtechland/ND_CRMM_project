@@ -1,4 +1,4 @@
-﻿@model CRM.Models.Crm.Selfassesstmentadmin
+﻿@model CRM.Models.DTO.SelfassesstmentadminDTO
 
 @{
     ViewData["Title"] = "Assessment";
@@ -13,12 +13,68 @@
 
 </style>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 
 <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs5.min.css'>
+<style>
+    .dataTables_wrapper table.dataTable th {
+        background-color: #00baf2 !important;
+        padding: 24px 0.75rem !important;
+    }
+</style>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var message = "@TempData["Message"]";
 
+        if (message == "ok" || message == "dltok" || message == "updok") {
+            if (message) {
+                let alertText;
+
+                if (message == "dltok") {
+                    alertText = "Deleted successfully.";
+                } else if (message == "updok") {
+                    alertText = "Assessment updated successfully.";
+                } else {
+                    alertText = "Assessment added successfully.";
+                }
+
+                Swal.fire({
+                    title: 'Success',
+                    text: alertText,
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        setTimeout(function () {
+                            window.location.href = '@Url.Action("Assessment", "SelfAssessment")';
+                        }, 1000);
+                    }
+                });
+            }
+        }
+        else {
+            if (message) {
+                Swal.fire({
+                    title: 'Failed',
+                    text: message,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        setTimeout(function () {
+                            window.location.href = '@Url.Action("Assessment", "SelfAssessment")';
+                        }, 1000);
+                    }
+                });
+            }
+        }
+    });
+</script>
 <div class="page-wrapper">
     <div class="page-body-wrapper">
         <div class="page-sidebar">
@@ -33,8 +89,7 @@
                         <div class="col-lg-6">
                             <div class="page-header-left">
                                 <h2>
-                                    Add Assessment
-                                   @*  @ViewBag.Heading *@
+                                 @ViewBag.Heading
                                 </h2>
                             </div>
                         </div>
@@ -83,27 +138,74 @@
                                             <span name="Pointname" class="text-danger"></span>
                                         </div>
                                     </div>
-
-                                    <div class="form-group">
-                                        <div class="form-button" style="display: flex; justify-content: center; gap: 10px;">
-                                            <input type="submit" onclick="btnSubmit();" value="@ViewBag.btnText" class="btn btn-primary" />
-                                        </div>
-
-                                        @if (int.TryParse(ViewBag.id?.ToString(), out int id) && id > 0)
-                                        {
-                                            <a href="/SelfAssessment/Assessment" class="btn btn-danger">Cancel</a>
-                                        }
-                                    </div>
                                 </form>
                                 <div class="form-button" style="display: flex; justify-content: center; gap: 10px;">
+                                    <input type="submit" onclick="btnSubmit();" value="@ViewBag.btnText" class="btn btn-primary" />
                                     <button onclick="btnPrevious();" class="btn btn-secondary">Previous</button>
                                     <button onclick="btnNext();" class="btn btn-secondary">Next</button>
                                     <button id="btnRemove" onclick="btnRemove();" class="btn btn-danger" style="display: none;">Remove</button>
+
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="container-fluid">
+                <div class="row">
+
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class=" table-responsive">
+                                    <table id="datatable" class="table table-responsive">
+                                        <thead>
+                                            <tr style="background-color: #00baf2;">
+                                                <th nowrap>Sl. No.</th>
+                                                <th>
+                                                    Tittle
+                                                </th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{
+                                                if (Model.SelfAssessmentList.Count() > 0 && Model.SelfAssessmentList.Any())
+                                                {
+                                                    var groupedData = Model.SelfAssessmentList.GroupBy(x => x.Tittle).ToList();
+                                                    var count = 0;
+                                                    foreach (var item in Model.SelfAssessmentList)
+                                                    {
+                                                        count++;
+                                                        <tr class="table-row">
+                                                            <td>@count</td>
+                                                            <td>
+                                                                @Html.DisplayFor(modelItem => item.Tittle)
+                                                            </td>
+                                               
+                                                            <td>
+                                                                <div>
+                                                                    <a href="@Url.Action("Assessment","SelfAssessment",new { Tittle=item.Tittle})" class="fa fa-edit m-2 font-success"></a>
+                                                                    <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteAssessment", "SelfAssessment", new { id = item.Id })')" class="fa fa-trash font-danger"></a>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                }
+
+                                            }
+                                        </tbody>
+                                      
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="pagination-container">
+                <ul id="pagination" class="pagination"></ul>
             </div>
         </div>
 
@@ -111,7 +213,7 @@
     </div>
 
 </div>
-<script>
+@* <script>
     document.getElementById('Ispoint').addEventListener('change', function () {
         const pointNameGroup = document.getElementById('pointNameGroup');
         if (this.checked) {
@@ -120,37 +222,39 @@
             pointNameGroup.style.display = 'none';
         }
     });
-</script>
-@* <script>
-    function btnNext() {
-        var model = {
-            Tittle: $("#Tittle").val(),
-            SubTittle: $("#SubTittle").val(),
-            Ispoint: $('input[name="Ispoint"]:checked').val() == "true", 
-            Pointname: $("#Pointname").val()
-        };
+</script> *@
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const isPointCheckbox = document.getElementById('Ispoint');
+        const pointNameGroup = document.getElementById('pointNameGroup');
 
-        $.ajax({
-            url: '/SelfAssessment/Assessment',
-            type: 'POST',
-            dataType: 'json',
-            contentType: 'application/json',
-            data: JSON.stringify(model), 
-            success: function (result) {
-                console.log("Success:", result);
-            },
-            error: function (xhr, status, error) {
-                console.log("Error:", xhr.responseText);
+        // Serialize ViewBag.Ispoint safely
+        const isPointChecked = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.Ispoint));
+        if (isPointChecked) {
+            isPointCheckbox.checked = true;
+            pointNameGroup.style.display = 'block';
+        } else {
+            pointNameGroup.style.display = 'none';
+        }
+
+        // Add event listener for checkbox change
+        isPointCheckbox.addEventListener('change', function () {
+            if (this.checked) {
+                pointNameGroup.style.display = 'block';
+            } else {
+                pointNameGroup.style.display = 'none';
             }
         });
-    }
+    });
+</script>
 
-</script> *@
 <script>
     var selfAssessmentList = [];
     var currentIndex = 0;
 
     function btnNext() {
+        if (!validateForm()) return;
+
         saveCurrentData();
         currentIndex++;
 
@@ -172,7 +276,11 @@
             currentIndex = 0;
             loadFormData(selfAssessmentList[0]);
         } else {
-            alert("You are at the first record!");
+            Swal.fire({
+                icon: "warning",
+                title: "First Record",
+                text: "You are at the first record!",
+            });
         }
 
         updateRemoveButtonVisibility();
@@ -194,10 +302,19 @@
                 clearFormDataWithPreviousTittle();
             }
 
-            alert(`Removed entry: ${removedData.Tittle || 'Untitled'}`);
+            Swal.fire({
+                icon: "success",
+                title: "Removed",
+                text: `Removed entry: ${removedData.Tittle || 'Untitled'}`,
+            });
+
             console.log("Removed Entry:", removedData);
         } else {
-            alert("No data available to remove.");
+            Swal.fire({
+                icon: "warning",
+                title: "No Data",
+                text: "No data available to remove.",
+            });
         }
 
         updateRemoveButtonVisibility();
@@ -205,7 +322,10 @@
     }
 
     function saveCurrentData() {
+        if (!validateForm()) return;
+
         var model = {
+            Id: $("#Id").val(),
             Tittle: $("#Tittle").val(),
             SubTittle: $("#SubTittle").val(),
             Ispoint: $("#Ispoint").prop("checked"),
@@ -219,12 +339,13 @@
         }
     }
 
-
     function loadFormData(data) {
         $("#Tittle").val(data.Tittle);
         $("#SubTittle").val(data.SubTittle);
         $("#Ispoint").prop("checked", data.Ispoint);
         $("#Pointname").val(data.Pointname);
+
+        togglePointnameRequired(); 
     }
 
     function clearFormDataWithPreviousTittle() {
@@ -233,6 +354,7 @@
         $("#SubTittle").val('');
         $("#Ispoint").prop("checked", false);
         $("#Pointname").val('');
+        togglePointnameRequired(); 
     }
 
     function updateRemoveButtonVisibility() {
@@ -242,11 +364,18 @@
             $("#btnRemove").hide();
         }
     }
+
     function btnSubmit() {
-        saveCurrentData(); 
+        if (!validateForm()) return;
+
+        saveCurrentData();
 
         if (selfAssessmentList.length === 0) {
-            alert("No data to submit.");
+            Swal.fire({
+                icon: "warning",
+                title: "No Data",
+                text: "No data to submit.",
+            });
             return;
         }
 
@@ -254,7 +383,7 @@
             SelfAssessmentList: selfAssessmentList
         };
 
-        console.log("Sending Data:", finalModel); 
+        console.log("Sending Data:", finalModel);
 
         $.ajax({
             url: '/SelfAssessment/Assessment',
@@ -263,95 +392,83 @@
             contentType: 'application/json',
             data: JSON.stringify(finalModel),
             success: function (result) {
-                alert("Saved successfully!");
-                console.log("Success:", result);
+                Swal.fire({
+                    icon: "success",
+                    title: "Success",
+                    text: result.message || "Data Update successfully!",
+                }).then(() => {
+                    window.location.href = "/SelfAssessment/Assessment";
+
+                });
             },
-            error: function (xhr, status, error) {
-                console.log("Error:", xhr.responseText);
+            error: function (xhr) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: xhr.responseText || "Something went wrong!",
+                });
             }
         });
     }
+
+    function validateForm() {
+        let tittle = $("#Tittle").val().trim();
+        let subTittle = $("#SubTittle").val().trim();
+        let isPointChecked = $("#Ispoint").prop("checked");
+        let pointname = $("#Pointname").val().trim();
+
+        if (tittle === "" || subTittle === "") {
+            Swal.fire({
+                icon: "warning",
+                title: "Missing Fields",
+                text: "Please fill in all required fields before proceeding.",
+            });
+            return false;
+        }
+
+        if (isPointChecked && pointname === "") {
+            Swal.fire({
+                icon: "warning",
+                title: "Point Name Required",
+                text: "Please enter a Point Name if 'Ispoint' is checked.",
+            });
+            return false;
+        }
+
+        return true;
+    }
+
+    function togglePointnameRequired() {
+        let isChecked = $("#Ispoint").prop("checked");
+
+        if (isChecked) {
+            $("#Pointname").attr("required", true);
+        } else {
+            $("#Pointname").removeAttr("required");
+        }
+    }
+
+    $(document).ready(function () {
+        $("#Ispoint").change(function () {
+            togglePointnameRequired();
+        });
+    });
 
 </script>
 
-
-
-@* <script>
-    var selfAssessmentList = [];
-    var currentIndex = 0; // Start at index 0
-
-    function btnNext() {
-        // Get the current form data
-        var model = {
-            Tittle: $("#Tittle").val(),
-            SubTittle: $("#SubTittle").val(),
-            Ispoint: $("#Ispoint").prop("checked"),
-            Pointname: $("#Pointname").val()
-        };
-
-        // Save the data at the current index
-        selfAssessmentList[currentIndex] = model;
-
-        // Move to the next index
-        currentIndex++;
-
-        // If next index exists, load the data
-        if (selfAssessmentList[currentIndex]) {
-            loadFormData(selfAssessmentList[currentIndex]);
-        } else {
-            clearFormDataWithPreviousTittle();
+<script>
+    function confirmDelete(url) {
+        var result = confirm("Are you sure you want to delete?");
+        if (result) {
+            window.location.href = url;
         }
-
-        console.log("Current List:", selfAssessmentList);
     }
-
-    function btnPrevious() {
-        if (currentIndex > 0) {
-            currentIndex--; // Move back to the previous entry
-            loadFormData(selfAssessmentList[currentIndex]);
-        } else {
-            alert("You are at the first record!");
-        }
-
-        console.log(`Current Page: ${currentIndex + 1}`);
-    }
-
-    function btnSubmit() {
-        var finalModel = {
-            SelfAssessmentList: selfAssessmentList
-        };
-
-        $.ajax({
-            url: '/SelfAssessment/SaveAssessment',
-            type: 'POST',
-            dataType: 'json',
-            contentType: 'application/json',
-            data: JSON.stringify(finalModel),
-            success: function (result) {
-                alert("Saved successfully!");
-                console.log("Success:", result);
-            },
-            error: function (xhr, status, error) {
-                console.log("Error:", xhr.responseText);
-            }
-        });
-    }
-
-    function loadFormData(data) {
-        $("#Tittle").val(data.Tittle); // Auto-fill the Tittle
-        $("#SubTittle").val(data.SubTittle); // Auto-fill the SubTittle
-        $("#Ispoint").prop("checked", data.Ispoint); // Auto-fill Ispoint checkbox
-        $("#Pointname").val(data.Pointname); // Auto-fill Pointname
-    }
-
-    function clearFormDataWithPreviousTittle() {
-        let previousTittle = selfAssessmentList[currentIndex - 1]?.Tittle || ''; // Get previous Tittle if exists
-        $("#Tittle").val(previousTittle); // Auto-fill Tittle with previous value
-        $("#SubTittle").val(''); // Clear SubTittle
-        $("#Ispoint").prop("checked", false); // Uncheck Ispoint
-        $("#Pointname").val(''); // Clear Pointname
-    }
-</script> *@
+</script>
+<script>
+    $(document).ready(function () {
+        $('#datatable').DataTable();
+    });
+</script>
 
 
 
