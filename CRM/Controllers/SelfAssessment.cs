@@ -28,11 +28,14 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-            List<Selfassesstmentadmin> response = _context.Selfassesstmentadmins.OrderByDescending(x=>x.Id).ToList();
+                SelfassesstmentadminDTO model = new SelfassesstmentadminDTO();
+                model.SelfAssessmentList = _context.Selfassesstmentadmins.Where(x=>x.Isdelete == false).OrderByDescending(x=>x.Id).ToList();
 
                 ViewBag.id = 0;
                 ViewBag.Tittle = "";
                 ViewBag.SubTittle = "";
+                ViewBag.Ispoint = "";
+                ViewBag.Pointname = "";
                 ViewBag.Heading = "Add Assessment";
                 ViewBag.btnText = "SAVE";
                 if (id != 0)
@@ -43,11 +46,13 @@ namespace CRM.Controllers
                         ViewBag.id = data.Id;
                         ViewBag.Tittle = data.Tittle;
                         ViewBag.SubTittle = data.SubTittle;
+                        ViewBag.Ispoint = data.Ispoint;
+                        ViewBag.Pointname = data.Pointname;
                         ViewBag.Heading = "Update Assessment";
                         ViewBag.btnText = "Update";
                     }
                 }
-                return View("Assessment");
+                return View(model);
 
             }
             else
@@ -55,6 +60,7 @@ namespace CRM.Controllers
                 return RedirectToAction("Login", "Admin");
             }
         }
+       
         [HttpPost]
         public async Task<IActionResult> Assessment([FromBody] SelfassesstmentadminDTO model)
         {
@@ -65,36 +71,75 @@ namespace CRM.Controllers
                     return BadRequest("No data received.");
                 }
 
-                List<Selfassesstmentadmin> assessmentsToAdd = new List<Selfassesstmentadmin>();
+                var assessmentIds = model.SelfAssessmentList.Select(a => a.Id).ToList();
+
+                var existingRecords = _context.Selfassesstmentadmins
+                    .Where(x => assessmentIds.Contains(x.Id))
+                    .ToList();
+
+                bool isUpdated = false, isAdded = false;
 
                 foreach (var assessment in model.SelfAssessmentList)
                 {
-                    Selfassesstmentadmin entity = new Selfassesstmentadmin();
+                    var existingRecord = existingRecords.FirstOrDefault(x => x.Id == assessment.Id);
+
+                    if (existingRecord != null)
                     {
-                        entity.Tittle = assessment.Tittle;
-                        entity.SubTittle = assessment.SubTittle;
-                        entity.Ispoint = assessment.Ispoint;
-                        entity.Pointname = assessment.Pointname;
-                        entity.Isactive = true;
-                        entity.Isdelete = false;
-                        entity.CreatedDate = DateTime.Now;
+                        existingRecord.Tittle = assessment.Tittle;
+                        existingRecord.SubTittle = assessment.SubTittle;
+                        existingRecord.Ispoint = assessment.Ispoint;
+                        existingRecord.Pointname = assessment.Pointname;
+                        isUpdated = true;
                     }
-
-                    _context.Selfassesstmentadmins?.Add(entity);
-                    //_context.SaveChanges();
+                    else
+                    {
+                        Selfassesstmentadmin newEntity = new Selfassesstmentadmin
+                        {
+                            Tittle = assessment.Tittle,
+                            SubTittle = assessment.SubTittle,
+                            Ispoint = assessment.Ispoint,
+                            Pointname = assessment.Pointname,
+                            Isactive = true,
+                            Isdelete = false,
+                            CreatedDate = DateTime.Now
+                        };
+                        _context.Selfassesstmentadmins?.Add(newEntity);
+                        isAdded = true;
+                    }
                 }
-                _context.SaveChanges();
 
+                await _context.SaveChangesAsync();
 
-                return View("Assessment");
-                return Json(new { success = true, message = "Data saved successfully!" });
+                string message = isUpdated && isAdded ? "Data updated and saved successfully!": isUpdated
+                        ? "Data updated successfully!"
+                        : "Data saved successfully!";
+
+                return Json(new { success = true, message = message });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Internal Server Error: " + ex.Message);
+                return StatusCode(500, new { success = false, message = "Internal Server Error: " + ex.Message });
             }
         }
 
+        public async Task<IActionResult> DeleteAssessment(int id)
+        {
+            try
+            {
+                var data = _context.Selfassesstmentadmins.Find(id);
+                if (data != null)
+                {
+                    data.Isdelete = true;
+                    _context.SaveChanges();
+                    TempData["Message"] = "dltok";
+                }
+                return RedirectToAction("Assessment");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception();
+            }
+        }
 
     }
 }
