@@ -3939,6 +3939,49 @@ namespace CRM.Repository
                 throw;
             }
         }
-
+        public async Task<bool> Addhrsignature(HrsignatureDto model, int Userid)
+        {
+            try
+            {
+                FileOperation fileOperation = new FileOperation(_webHostEnvironment);
+                string[] allowedExtensions = { ".png" };
+                string ImagePath = "";
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
+                if (model.ImageFile != null)
+                {
+                    var fileExtension = Path.GetExtension(model.ImageFile.FileName).ToLower();
+                    if (!allowedExtensions.Contains(fileExtension))
+                    {
+                        throw new InvalidOperationException("Only  .png files are allowed.");
+                    }
+                    ImagePath = fileOperation.SaveBase64Image("CompanyImage", model.ImageFile, allowedExtensions);
+                }
+                if (model.Id == 0)
+                {
+                    Hrsignature hs = new Hrsignature()
+                    {
+                        Vendorid = adminlogin.Vendorid,
+                        HrJobTitle = model.HrJobTitle,
+                        HrName = model.HrName,
+                        HrSignature1 = ImagePath
+                    };
+                    _context.Hrsignatures.Add(hs);
+                }
+                else
+                {
+                    var existdata = _context.Hrsignatures.Find(model.Id);
+                    existdata.HrJobTitle = model.HrJobTitle;
+                    existdata.HrName = model.HrName;
+                    existdata.HrSignature1 = ImagePath;
+                }
+              
+                _context.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }

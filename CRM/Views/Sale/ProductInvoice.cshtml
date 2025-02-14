@@ -31,12 +31,12 @@
             padding: 40px;
             height: max-content;
             /*             border: 1px solid #ccc;
-         */
+                 */
         }
 
         .invoice-container {
             /*  width: 267mm;
-                      height: 378mm; */
+                              height: 378mm; */
             width: 250mm;
             height: max-content;
             margin: 2mm auto;
@@ -289,7 +289,9 @@
             <table>
                 <tr>
                     <td>
-                        <strong>Invoice Number:</strong> @Model.InvoiceNumber<br>
+@*                         <strong>Invoice Number:</strong> @Model.InvoiceNumber<br>
+ *@                        <strong>Invoice Number:</strong> <span id="invoiceNumber">@Model.InvoiceNumber</span><br>
+
                         <strong>Invoice Date:</strong> @Model.InvoiceDate <br>
                         <strong>Due Date:</strong> @Model.InvoiceDueDate
                     </td>
@@ -366,7 +368,7 @@
             }
 
             // Calculate total amount before rounding
-            totalAmount = (totalAmount ?? 0) ;
+            totalAmount = (totalAmount ?? 0);
 
             // // Round the total amount
             roundedTotal = Math.Round((decimal)totalAmount, 0, MidpointRounding.AwayFromZero);
@@ -375,7 +377,7 @@
             rounding = Math.Abs((decimal)roundedTotal - (decimal)totalAmount);
 
             // // Ensure totalAmount is rounded to two decimal places if required
-             totalAmount = Math.Round((decimal)totalAmount, 2);
+            totalAmount = Math.Round((decimal)totalAmount, 2);
 
         }
 
@@ -418,7 +420,7 @@
 
             @foreach (var item in Model.ProductDetailLists)
             {
-            
+
                 count++;
                 <tbody>
                     <tr>
@@ -442,7 +444,7 @@
                             {
                                 <td> @String.Format("{0:0.00}", item.ServiceCharge)</td>
                             }
-                           
+
                         }
                         else
                         {
@@ -525,13 +527,18 @@
             <h6><strong>Total in Words<br /><span>@totalAmountwords</span></strong></h6>
         </div>
         <br />
-        @if (!string.IsNullOrEmpty(@Model.Terms) && !string.IsNullOrEmpty(@Model.Notes))
-        {
-            <div>
+
+        <div>
+            @if (!string.IsNullOrEmpty(@Model.Terms))
+            {
                 <h6><strong>Terms<br /><span>@Model.Terms</span></strong></h6>
+            }
+            @if (!string.IsNullOrEmpty(@Model.Notes))
+            {
                 <h6><strong>Notes<br /><span>@Model.Notes</span></strong></h6>
-            </div>
-        }
+            }
+        </div>
+
 
         <div class="footer">
             <img src="@ViewBag.Protocol://@ViewBag.Host/CompanyImage/@Model.VendorSingature" alt="Singature Logo" style="background-color:transparent;height: 107px;width: 211px;">
@@ -602,10 +609,14 @@
         }
     });
 </script> *@
+
+
 <script>
     function prepareForPrint() {
         const elementsToHide = ['.buttons', '.page-body-wrapper', '.page-main-header', '.page-sidebar'];
-
+        const urlParams = new URLSearchParams(window.location.search);
+         const invoiceNumber = urlParams.get("InvoiceNumber");
+         document.title=invoiceNumber;
         elementsToHide.forEach(selector => {
             const element = document.querySelector(selector);
             if (element) {
@@ -620,16 +631,16 @@
         printStyle.type = 'text/css';
         printStyle.media = 'print';
         printStyle.innerHTML = `
-                                                @@page {
-                                                    size: A4;
-                                                    margin: 10mm;
-                                                    padding: 20px;
-                                                }
-                                                body {
-                                                    margin: 0;
-                                                    padding: 0;
-                                                }
-                                            `;
+                                                    @@page {
+                                                        size: A4;
+                                                        margin: 10mm;
+                                                        padding: 20px;
+                                                    }
+                                                    body {
+                                                        margin: 0;
+                                                        padding: 0;
+                                                    }
+                                                `;
         document.head.appendChild(printStyle);
         window.print();
 

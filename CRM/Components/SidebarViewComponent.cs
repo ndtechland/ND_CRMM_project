@@ -118,6 +118,11 @@ namespace CRM.Components
                                     var SubHeadingChildList = await con.QueryAsync<Softwarelink>(SubHeadingChildQuery, commandType: CommandType.Text);
                                     item4.ChildMenus = SubHeadingChildList;
                                 }
+                                if (string.IsNullOrEmpty(item.IsChildHeadChecked))
+                                {
+                                    item.IsChildHeadChecked = "0"; 
+                                }
+
                                 var HeadingChildQuery = @"select * from SoftwareLink where Isvendor = 1 and ParentID = " + item1.Id + " and id in(" + item.IsChildHeadChecked + ") ";
                                 var HeadingChildList = await con.QueryAsync<Softwarelink>(HeadingChildQuery, commandType: CommandType.Text);
 

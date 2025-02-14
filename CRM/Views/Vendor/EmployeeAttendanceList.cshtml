@@ -46,6 +46,30 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-body">
+                                <form method="get" id="filterForm">
+                                    <div class="row">
+                                        <div class="form-group col-sm-2">
+                                            <label for="Month">Select Month:</label>
+                                            <div class="dropdown-container position-relative">
+                                            <select id="Month" class="form-control" name="month">
+                                                <option value="">-- Select Month --</option>
+                                            </select>
+                                                <i class="dropdown-icon fa fa-caret-down position-absolute"></i>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group col-sm-2">
+                                            <label for="Year">Select Year:</label>
+                                            <div class="dropdown-container position-relative">
+                                            <select id="Year" class="form-control" name="year">
+                                                <option value="">-- Select Year --</option>
+                                            </select>
+                                            <i class="dropdown-icon fa fa-caret-down position-absolute"></i>
+                                        </div>
+                                        </div>
+                                    </div>
+                                </form>
+
                                 <img src="~/image/execimage.png" style="height:50px; margin-left:96%;width:53px;cursor:pointer" title="Export To Excel" onclick="AttendanceExportExcelfn()" />
                                 <div class=" table-responsive">
                                     <table id="datatable" class="table table-hover">
@@ -124,14 +148,24 @@
         const firstRow = document.querySelector('.table-row');
         const empId = firstRow ? firstRow.getAttribute('data-empid') : null;
 
-        if (empId) {
-            // Concatenation
-            window.location.href = '/Vendor/ExportAttendanceReport?EmpId=' + empId;
-        } else {
-            alert('No Employee ID found!');
-        }
-    }
+        const monthDropdown = document.getElementById("Month");
+        const yearDropdown = document.getElementById("Year");
 
+        const selectedMonth = monthDropdown ? monthDropdown.value : null;
+        const selectedYear = yearDropdown ? yearDropdown.value : null;
+
+        if (!empId) {
+            alert('No Employee ID found!');
+            return;
+        }
+
+        if (selectedMonth === "0" || selectedYear === "0") {
+            alert('Please select both Month and Year!');
+            return;
+        }
+
+        window.location.href = `/Vendor/ExportAttendanceReport?EmpId=${empId}&Month=${selectedMonth}&Year=${selectedYear}`;
+    }
 
 </script>
 <script>
@@ -153,3 +187,64 @@
         });
     });
 </script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const monthDropdown = document.getElementById("Month");
+        const yearDropdown = document.getElementById("Year");
+        const firstRow = document.querySelector('.table-row');
+        const empId = firstRow ? firstRow.getAttribute('data-empid') : null;
+
+        // Get preselected values from ViewBag (passed from Razor)
+        const selectedMonth = "@(ViewBag.month ?? "")";
+        const selectedYear = "@(ViewBag.year ?? "")";
+
+        const monthNames = {
+            1: "January", 2: "February", 3: "March", 4: "April",
+            5: "May", 6: "June", 7: "July", 8: "August",
+            9: "September", 10: "October", 11: "November", 12: "December"
+        };
+
+        // Populate Month Dropdown
+        for (let i = 1; i <= 12; i++) {
+            let option = document.createElement("option");
+            option.value = i;
+            option.textContent = monthNames[i];
+            if (selectedMonth && selectedMonth == i.toString()) {
+                option.selected = true;
+            }
+            monthDropdown.appendChild(option);
+        }
+
+        // Populate Year Dropdown
+        const currentYear = new Date().getFullYear();
+        const startYear = 2023;
+        for (let year = startYear; year <= currentYear; year++) {
+            let option = document.createElement("option");
+            option.value = year;
+            option.textContent = year;
+            if (selectedYear && selectedYear == year.toString()) {
+                option.selected = true;
+            }
+            yearDropdown.appendChild(option);
+        }
+
+        // Function to trigger API Call
+        function fetchAttendanceData() {
+            const month = monthDropdown.value;
+            const year = yearDropdown.value;
+
+            // Ensure both fields are selected
+            if (month && year) {
+                const url = `/Vendor/EmployeeAttendanceList?month=${month}&year=${year}&EmpId=${empId}`;
+                window.location.href = url; // Redirect to fetch data
+            }
+        }
+
+        // Event Listeners
+        monthDropdown.addEventListener("change", fetchAttendanceData);
+        yearDropdown.addEventListener("change", fetchAttendanceData);
+    });
+</script>
+
+

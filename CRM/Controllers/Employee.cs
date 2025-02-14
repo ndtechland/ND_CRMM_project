@@ -2438,7 +2438,7 @@ namespace CRM.Controllers
 			}
 		}
 
-		[HttpGet]
+		[HttpGet] 
 		public IActionResult DeletHrSignature(string FilePath, int id)
 		{
 			bool success = false;
