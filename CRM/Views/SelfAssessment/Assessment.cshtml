@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Assessment";
     Layout = "~/Views/Shared/_adminLayout.cshtml";
+    var subTitleList = ViewBag.SubTittleList as List<string> ?? new List<string>();
 }
 <style>
     .bg-navy {
@@ -120,7 +121,7 @@
                                         </div>
                                         <div class="form-group col-sm-6">
                                             <label class="control-label">SubTitle</label>
-                                            <textarea name="SubTittle" id="SubTittle" class="form-control" rows="3" required>@ViewBag.SubTittle</textarea>
+                                            <textarea name="SubTittle" id="SubTittle" class="form-control" rows="3" required></textarea>
                                             <span name="SubTittle" class="text-danger"></span>
                                         </div>
                                     </div>
@@ -139,14 +140,15 @@
                                         </div>
                                     </div>
                                 </form>
+
                                 <div class="form-button" style="display: flex; justify-content: center; gap: 10px;">
                                     <input type="submit" onclick="btnSubmit();" value="@ViewBag.btnText" class="btn btn-primary" />
-                                    <button onclick="btnPrevious();" class="btn btn-secondary">Previous</button>
-                                    <button onclick="btnNext();" class="btn btn-secondary">Next</button>
-                                    <button id="btnRemove" onclick="btnRemove();" class="btn btn-danger" style="display: none;">Remove</button>
-
+                                    <button type="button" onclick="btnPrevious();" class="btn btn-secondary">Previous</button>
+                                    <button type="button" onclick="btnNext();" class="btn btn-secondary">Next</button>
+                                    <button type="button" onclick="btnDelete();" class="btn btn-danger">Delete</button>
                                 </div>
                             </div>
+
                         </div>
                     </div>
                 </div>
@@ -249,210 +251,83 @@
 </script>
 
 <script>
-    var selfAssessmentList = [];
-    var currentIndex = 0;
+         var subTitleList = @Html.Raw(Json.Serialize(subTitleList));
+    var currentSubTitleIndex = 0;
 
+    function updateSubTitleField() {
+        if (subTitleList.length > 0 && currentSubTitleIndex < subTitleList.length) {
+            document.getElementById("SubTittle").value = subTitleList[currentSubTitleIndex];
+        } else {
+            document.getElementById("SubTittle").value = '';
+        }
+    }
+
+    // Next Subtitle
     function btnNext() {
-        if (!validateForm()) return;
-
-        saveCurrentData();
-        currentIndex++;
-
-        if (selfAssessmentList[currentIndex]) {
-            loadFormData(selfAssessmentList[currentIndex]);
+        if (currentSubTitleIndex < subTitleList.length - 1) {
+            currentSubTitleIndex++;
+            updateSubTitleField();
         } else {
-            clearFormDataWithPreviousTittle();
+            Swal.fire({
+                icon: "info",
+                title: "End of Subtitles",
+                text: "No more subtitles available.",
+            });
         }
-
-        updateRemoveButtonVisibility();
-        console.log("Current List:", selfAssessmentList);
     }
 
+    // Previous Subtitle
     function btnPrevious() {
-        if (currentIndex > 0) {
-            currentIndex--;
-            loadFormData(selfAssessmentList[currentIndex]);
-        } else if (selfAssessmentList.length > 0) {
-            currentIndex = 0;
-            loadFormData(selfAssessmentList[0]);
+        if (currentSubTitleIndex > 0) {
+            currentSubTitleIndex--;
+            updateSubTitleField();
         } else {
             Swal.fire({
-                icon: "warning",
-                title: "First Record",
-                text: "You are at the first record!",
+                icon: "info",
+                title: "First Subtitle",
+                text: "You're at the first subtitle.",
             });
         }
-
-        updateRemoveButtonVisibility();
     }
 
-    function btnRemove() {
-        if (selfAssessmentList.length > 0) {
-            let removedData = selfAssessmentList[currentIndex];
-            selfAssessmentList.splice(currentIndex, 1);
-
-            if (currentIndex >= selfAssessmentList.length) {
-                currentIndex = selfAssessmentList.length - 1;
-            }
-
-            if (selfAssessmentList.length > 0 && currentIndex >= 0) {
-                loadFormData(selfAssessmentList[currentIndex]);
-            } else {
-                currentIndex = 0;
-                clearFormDataWithPreviousTittle();
-            }
-
+    // Delete Current Subtitle
+    function btnDelete() {
+        if (subTitleList.length > 0) {
             Swal.fire({
-                icon: "success",
-                title: "Removed",
-                text: `Removed entry: ${removedData.Tittle || 'Untitled'}`,
-            });
+                title: "Are you sure?",
+                text: "Do you want to delete this subtitle?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    subTitleList.splice(currentSubTitleIndex, 1); // Remove current subtitle
 
-            console.log("Removed Entry:", removedData);
+                    if (currentSubTitleIndex >= subTitleList.length) {
+                        currentSubTitleIndex = subTitleList.length - 1; // Adjust index if needed
+                    }
+
+                    updateSubTitleField(); // Refresh subtitle field
+
+                    Swal.fire("Deleted!", "Subtitle has been removed.", "success");
+                }
+            });
         } else {
             Swal.fire({
-                icon: "warning",
-                title: "No Data",
-                text: "No data available to remove.",
+                icon: "info",
+                title: "No subtitles left",
+                text: "There are no subtitles to delete.",
             });
         }
-
-        updateRemoveButtonVisibility();
-        console.log("Updated List:", selfAssessmentList);
     }
 
-    function saveCurrentData() {
-        if (!validateForm()) return;
-
-        var model = {
-            Id: $("#Id").val(),
-            Tittle: $("#Tittle").val(),
-            SubTittle: $("#SubTittle").val(),
-            Ispoint: $("#Ispoint").prop("checked"),
-            Pointname: $("#Pointname").val()
-        };
-
-        if (selfAssessmentList[currentIndex]) {
-            selfAssessmentList[currentIndex] = model;
-        } else {
-            selfAssessmentList.push(model);
-        }
-    }
-
-    function loadFormData(data) {
-        $("#Tittle").val(data.Tittle);
-        $("#SubTittle").val(data.SubTittle);
-        $("#Ispoint").prop("checked", data.Ispoint);
-        $("#Pointname").val(data.Pointname);
-
-        togglePointnameRequired(); 
-    }
-
-    function clearFormDataWithPreviousTittle() {
-        let previousTittle = selfAssessmentList[currentIndex - 1]?.Tittle || '';
-        $("#Tittle").val(previousTittle);
-        $("#SubTittle").val('');
-        $("#Ispoint").prop("checked", false);
-        $("#Pointname").val('');
-        togglePointnameRequired(); 
-    }
-
-    function updateRemoveButtonVisibility() {
-        if (selfAssessmentList.length > 0 || currentIndex === 0) {
-            $("#btnRemove").show();
-        } else {
-            $("#btnRemove").hide();
-        }
-    }
-
-    function btnSubmit() {
-        if (!validateForm()) return;
-
-        saveCurrentData();
-
-        if (selfAssessmentList.length === 0) {
-            Swal.fire({
-                icon: "warning",
-                title: "No Data",
-                text: "No data to submit.",
-            });
-            return;
-        }
-
-        var finalModel = {
-            SelfAssessmentList: selfAssessmentList
-        };
-
-        console.log("Sending Data:", finalModel);
-
-        $.ajax({
-            url: '/SelfAssessment/Assessment',
-            type: 'POST',
-            dataType: 'json',
-            contentType: 'application/json',
-            data: JSON.stringify(finalModel),
-            success: function (result) {
-                Swal.fire({
-                    icon: "success",
-                    title: "Success",
-                    text: result.message || "Data Update successfully!",
-                }).then(() => {
-                    window.location.href = "/SelfAssessment/Assessment";
-
-                });
-            },
-            error: function (xhr) {
-                Swal.fire({
-                    icon: "error",
-                    title: "Error",
-                    text: xhr.responseText || "Something went wrong!",
-                });
-            }
-        });
-    }
-
-    function validateForm() {
-        let tittle = $("#Tittle").val().trim();
-        let subTittle = $("#SubTittle").val().trim();
-        let isPointChecked = $("#Ispoint").prop("checked");
-        let pointname = $("#Pointname").val().trim();
-
-        if (tittle === "" || subTittle === "") {
-            Swal.fire({
-                icon: "warning",
-                title: "Missing Fields",
-                text: "Please fill in all required fields before proceeding.",
-            });
-            return false;
-        }
-
-        if (isPointChecked && pointname === "") {
-            Swal.fire({
-                icon: "warning",
-                title: "Point Name Required",
-                text: "Please enter a Point Name if 'Ispoint' is checked.",
-            });
-            return false;
-        }
-
-        return true;
-    }
-
-    function togglePointnameRequired() {
-        let isChecked = $("#Ispoint").prop("checked");
-
-        if (isChecked) {
-            $("#Pointname").attr("required", true);
-        } else {
-            $("#Pointname").removeAttr("required");
-        }
-    }
-
-    $(document).ready(function () {
-        $("#Ispoint").change(function () {
-            togglePointnameRequired();
-        });
+    // Ensure subtitle is loaded on page load
+    document.addEventListener("DOMContentLoaded", function () {
+        updateSubTitleField();
     });
+
 
 </script>
 
