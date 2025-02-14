@@ -24,43 +24,94 @@ namespace CRM.Controllers
 
         }
         [HttpGet, Route("/SelfAssessment/Assessment")]
+        //public async Task<IActionResult> Assessment(int? id = 0)
+        //{
+        //    if (HttpContext.Session.GetString("UserName") != null)
+        //    {
+        //        SelfassesstmentadminDTO model = new SelfassesstmentadminDTO();
+        //        model.SelfAssessmentList = _context.Selfassesstmentadmins.Where(x=>x.Isdelete == false).OrderByDescending(x=>x.Id).ToList();
+        //        var Titlequesdata = _context.Selfassesstmentadmins.Where(a => a.Isdelete == false).FirstOrDefault();
+        //        var SubTitlequesdata = _context.Selfassesstmentadmins.Where(a => a.Isdelete == false && a.Tittle== Titlequesdata.Tittle).ToList();
+        //        ViewBag.Tittle = Titlequesdata.Tittle;
+        //        ViewBag.SubTittle = SubTitlequesdata;
+        //        ViewBag.id = 0;
+        //        //ViewBag.Tittle = "";
+        //        ViewBag.SubTittle = "";
+        //        ViewBag.Ispoint = "";
+        //        ViewBag.Pointname = "";
+        //        ViewBag.Heading = "Add Assessment";
+        //        ViewBag.btnText = "SAVE";
+        //        if (id != 0)
+        //        {
+        //            var data = _context.Selfassesstmentadmins.Where(x => x.Id == id).FirstOrDefault();
+        //            if (data != null)
+        //            {
+        //                ViewBag.id = data.Id;
+        //                ViewBag.Tittle = data.Tittle;
+        //                ViewBag.SubTittle = data.SubTittle;
+        //                ViewBag.Ispoint = data.Ispoint;
+        //                ViewBag.Pointname = data.Pointname;
+        //                ViewBag.Heading = "Update Assessment";
+        //                ViewBag.btnText = "Update";
+        //            }
+        //        }
+        //        return View(model);
+
+        //    }
+        //    else
+        //    {
+        //        return RedirectToAction("Login", "Admin");
+        //    }
+        //}
         public async Task<IActionResult> Assessment(int? id = 0)
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
                 SelfassesstmentadminDTO model = new SelfassesstmentadminDTO();
-                model.SelfAssessmentList = _context.Selfassesstmentadmins.Where(x=>x.Isdelete == false).OrderByDescending(x=>x.Id).ToList();
+                model.SelfAssessmentList = _context.Selfassesstmentadmins.Where(x => x.Isdelete == false).OrderByDescending(x => x.Id).ToList();
+
+                var Titlequesdata = _context.Selfassesstmentadmins.FirstOrDefault(a => a.Isdelete == false);
+                
+                if (Titlequesdata != null)
+                {
+                    var SubTitlequesdata = _context.Selfassesstmentadmins
+                        .Where(a => a.Isdelete == false && a.Tittle == Titlequesdata.Tittle)
+                        .Select(a => a.SubTittle)
+                        .ToList();
+
+                    ViewBag.Tittle = Titlequesdata.Tittle;
+                    ViewBag.SubTittleList = SubTitlequesdata; 
+                }
 
                 ViewBag.id = 0;
-                ViewBag.Tittle = "";
-                ViewBag.SubTittle = "";
                 ViewBag.Ispoint = "";
                 ViewBag.Pointname = "";
                 ViewBag.Heading = "Add Assessment";
                 ViewBag.btnText = "SAVE";
+
                 if (id != 0)
                 {
-                    var data = _context.Selfassesstmentadmins.Where(x => x.Id == id).FirstOrDefault();
+                    var data = _context.Selfassesstmentadmins.FirstOrDefault(x => x.Id == id);
                     if (data != null)
                     {
                         ViewBag.id = data.Id;
                         ViewBag.Tittle = data.Tittle;
-                        ViewBag.SubTittle = data.SubTittle;
+                        ViewBag.SubTittle = data.SubTittle; 
                         ViewBag.Ispoint = data.Ispoint;
                         ViewBag.Pointname = data.Pointname;
                         ViewBag.Heading = "Update Assessment";
                         ViewBag.btnText = "Update";
                     }
                 }
-                return View(model);
 
+                return View(model);
             }
             else
             {
                 return RedirectToAction("Login", "Admin");
             }
         }
-       
+
         [HttpPost]
         public async Task<IActionResult> Assessment([FromBody] SelfassesstmentadminDTO model)
         {
