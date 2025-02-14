@@ -1,4 +1,6 @@
-﻿namespace CRM.Models.DTO
+﻿using CRM.Models.Crm;
+
+namespace CRM.Models.DTO
 {
     public class empOfferletter
     {
@@ -104,5 +106,14 @@
         public string? RelievingletterFile { get; set; }
         public bool? Ismail { get; set; }
 
+    }
+    public partial class HrsignatureDto
+    {
+        public int Id { get; set; }
+        public string? HrSignature { get; set; }
+        public string? HrJobTitle { get; set; }
+        public string? HrName { get; set; }
+        public IFormFile ImageFile { get; set; }
+        public List<Hrsignature> Hrsignaturlist { get; set; }
     }
 }

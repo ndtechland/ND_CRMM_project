@@ -70,6 +70,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<GstMaster> GstMasters { get; set; } = null!;
         public virtual DbSet<Hash> Hashes { get; set; } = null!;
         public virtual DbSet<HelpCenter> HelpCenters { get; set; } = null!;
+        public virtual DbSet<Hrsignature> Hrsignatures { get; set; } = null!;
         public virtual DbSet<IndustryMaster> IndustryMasters { get; set; } = null!;
         public virtual DbSet<InvoiceChargesmaster> InvoiceChargesmasters { get; set; } = null!;
         public virtual DbSet<Job> Jobs { get; set; } = null!;
@@ -103,6 +104,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<Salarydeductionmaster> Salarydeductionmasters { get; set; } = null!;
         public virtual DbSet<ScheduledTask> ScheduledTasks { get; set; } = null!;
         public virtual DbSet<Schema> Schemas { get; set; } = null!;
+        public virtual DbSet<SelfassesstmentVendor> SelfassesstmentVendors { get; set; } = null!;
         public virtual DbSet<Selfassesstmentadmin> Selfassesstmentadmins { get; set; } = null!;
         public virtual DbSet<Server> Servers { get; set; } = null!;
         public virtual DbSet<Set> Sets { get; set; } = null!;
@@ -1480,6 +1482,21 @@ namespace CRM.Models.Crm
                     .HasDefaultValueSql("(getdate())");
             });
 
+            modelBuilder.Entity<Hrsignature>(entity =>
+            {
+                entity.ToTable("HRsignature");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.HrJobTitle).HasMaxLength(250);
+
+                entity.Property(e => e.HrName).HasMaxLength(250);
+
+                entity.Property(e => e.HrSignature1)
+                    .HasMaxLength(250)
+                    .HasColumnName("HrSignature");
+            });
+
             modelBuilder.Entity<IndustryMaster>(entity =>
             {
                 entity.ToTable("Industry_Master", "dbo");
@@ -2093,6 +2110,23 @@ namespace CRM.Models.Crm
                 entity.ToTable("Schema", "HangFire");
 
                 entity.Property(e => e.Version).ValueGeneratedNever();
+            });
+
+            modelBuilder.Entity<SelfassesstmentVendor>(entity =>
+            {
+                entity.ToTable("SelfassesstmentVendor");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.CreatedDate)
+                    .HasColumnType("date")
+                    .HasColumnName("createdDate");
+
+                entity.Property(e => e.Pointname).HasMaxLength(250);
+
+                entity.Property(e => e.SubTittle).HasMaxLength(250);
+
+                entity.Property(e => e.Tittle).HasMaxLength(250);
             });
 
             modelBuilder.Entity<Selfassesstmentadmin>(entity =>
