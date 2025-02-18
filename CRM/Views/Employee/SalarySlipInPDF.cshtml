@@ -23,7 +23,6 @@
             margin: 1mm auto;
             padding: 40px;
             height: max-content;
-  
         }
     </style>
 </head>
@@ -100,20 +99,16 @@
                                 <tr>
                                     <th scope="row">HRA</th>
                                     <td>@(Model.HouseRentAllowance ?? 0)</td>
-                                    @if (Model.Esic > 0)
-                                    {
-                                        <th scope="row">ESI</th>
-                                        <td>@(Model.Esic ?? 0)</td>
-                                    }
+                                    <th scope="row">ESI</th>
+                                    <td>@(Model.Esic ?? 0)</td>
+
                                 </tr>
                                 <tr>
                                     <th scope="row">Special Allowance</th>
                                     <td>@(Model.SpecialAllowance ?? 0)</td>
-                                    @if (decimal.TryParse(Model.TDS, out var tdsValue) && tdsValue > 0)
-                                    {
-                                        <th scope="row">TDS</th>
-                                        <td>@(Model.Amount ?? 0)</td>
-                                    }
+                                    <th scope="row">TDS</th>
+                                    <td>@(Model.Amount ?? 0)</td>
+
                                 </tr>
                                 <tr>
                                     <th scope="row">Conveyance Allowance</th>
@@ -127,24 +122,18 @@
                                     <th> Medical Allowance</th>
                                     <td>@(Model.MA ?? 0)</td>
                                 </tr>
-                                @if (Model.TravellingAllowance > 0)
-                                {
-                                    <tr>
-                                        <th>TA</th>
-                                        <td>@(Model.TravellingAllowance ?? 0)</td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                }
-                                @if (Model.Incentive > 0)
-                                {
+                                <tr>
+                                    <th>TA</th>
+                                    <td>@(Model.TravellingAllowance ?? 0)</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
                                 <tr>
                                     <th>Incentive Pay</th>
                                     <td>@(Model.Incentive ?? 0)</td>
                                     <td></td>
                                     <td></td>
                                 </tr>
-                                }
                                 <tr class="border-top">
                                     <th scope="row">Total Earning</th>
                                     <td>
@@ -184,20 +173,20 @@
                     <div id="result"></div>
 
                     <div class="d-flex justify-content-end">
-                      <div class="d-flex flex-column mt-2">
+                        <div class="d-flex flex-column mt-2">
                             <span class="fw-bolder">@Model.CompanyName</span>
-                          <span class="mt-4">Authorised Signatory</span>
+                            <span class="mt-4">Authorised Signatory</span>
                             @*                             <img src="~/assets/images/layout-2/logo/signature.png" alt="Signature Image" />*@
                             <img src="~/CompanyImage/@Model.Companysignature" alt="Signature Image" style="height: 82px;width: 185px;" />
 
-                       </div>
-                      </div>
+                        </div>
+                    </div>
 
                 </div>
             </div>
         </div>
     }
-   else
+    else
     {
         <script>alert('No data found.');</script>
     }
@@ -303,16 +292,16 @@
         printStyle.type = 'text/css';
         printStyle.media = 'print';
         printStyle.innerHTML = `
-                                                    @@page {
-                                                        size: A4;
-                                                        margin: 10mm;
-                                                        padding: 20px;
-                                                    }
-                                                    body {
-                                                        margin: 0;
-                                                        padding: 0;
-                                                    }
-                                                `;
+                                                        @@page {
+                                                            size: A4;
+                                                            margin: 10mm;
+                                                            padding: 20px;
+                                                        }
+                                                        body {
+                                                            margin: 0;
+                                                            padding: 0;
+                                                        }
+                                                    `;
         document.head.appendChild(printStyle);
         window.print();
 

@@ -52,7 +52,7 @@
                 });
             }
         }
-         
+
     });
 </script>
 <script type="text/javascript">
@@ -112,7 +112,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <form method="post" enctype="multipart/form-data" action="/Employee/AddOfferletterdetail" autocomplete="off">
-                                    <div class="container">
+                                    <div class="row">
                                         <div class="row mb-3">
                                             <div class="col-lg-4 form-group">
                                                 <input type="hidden" name="Id" value="@ViewBag.id ">
@@ -149,7 +149,7 @@
                                         <div class="row mb-3">
                                             <div class="col-lg-4 form-group">
                                                 <label for="MonthlyCtc">Monthly CTC</label>
-                                                <input class="form-control" value='@ViewBag.MonthlyCtc' name="MonthlyCtc" id="MonthlyCtc" placeholder="Enter Monthly CTC" type="text" onkeydown="validateNumericInput(event)" >
+                                                <input class="form-control" value='@ViewBag.MonthlyCtc' name="MonthlyCtc" id="MonthlyCtc" placeholder="Enter Monthly CTC" type="text" onkeydown="validateNumericInput(event)">
                                             </div>
                                             <div class="col-lg-4 form-group">
                                                 <label for="AnnualCtc">Annual CTC</label>
@@ -181,44 +181,39 @@
                                         <div class="row mb-3">
                                             <div class="col-lg-4 form-group">
                                                 <label for="HRName">HR Name</label>
-                                                <input class="form-control" value='@ViewBag.HrName' placeholder="Enter  HR Name" name="HrName" id="HrName" type="text">
+                                                <input class="form-control" value='@ViewBag.HrName' placeholder="Enter  HR Name" name="HrName" id="HrName" type="text" readonly>
                                             </div>
                                             <div class="col-lg-4 form-group">
                                                 <label for="HrJobTitle">HR JobTitle</label>
-                                                <input class="form-control" value='@ViewBag.HrJobTitle' placeholder="Enter HR JobTitle" name="HrJobTitle" id="HrJobTitle" type="text">
+                                                <input class="form-control" value='@ViewBag.HrJobTitle' placeholder="Enter HR JobTitle" name="HrJobTitle" id="HrJobTitle" type="text" readonly>
                                             </div>
                                             @if (ViewBag.HrSignature != "")
                                             {
                                                 <div class="col-lg-4 form-group">
                                                     <label for="exampleInputFile">HR Signature</label>
                                                     <input type="hidden" value='@ViewBag.id' name="Id" />
-                                                    <input type="file" accept=".png" id="ImageFile" name="ImageFile">
-                                                    <br />
                                                     <br />
                                                     <img src='../CompanyImage/@ViewBag.HrSignature' id="ImageDetails" style="height:100px;width:100px" />
-                                                    <i class="fas fa-trash-alt" id="filedelete" onclick="DeleteCompanyImageFile('@Html.Raw(ViewBag.HrSignature)', @ViewBag.id)" style="color:red"></i>
                                                     <input type="hidden" value='@ViewBag.HrSignature' id="hdnFilePath" name="FilePath" />
                                                 </div>
                                             }
                                             else
                                             {
-                                                <div class="row gx-3 mb-3">
-                                                    <div class="col-lg-4 form-group">
-                                                        <label for="exampleInputFile">HR Signature</label>
-                                                        <input type="hidden" value='@ViewBag.id' name="Id" />
-                                                        <input type="file" accept=" .png" id="ImageFile" name="ImageFile">
-                                                        <input type="hidden" value='@ViewBag.HrSignature' name="FilePath" />
-                                                    </div>
+                                                <div class="col-lg-4 form-group">
+                                                    <label for="exampleInputFile">HR Signature</label>
+                                                    <br />
+                                                    <input type="file" accept=" .png" id="ImageFile" name="ImageFile">
+                                                    <input type="hidden" value='@ViewBag.HrSignature' name="FilePath" />
                                                 </div>
                                             }
                                         </div>
                                         <div class="form-group text-center">
                                             <input type="submit" value="@ViewBag.btnText" class="btn btn-primary" />
-                                            @if(ViewBag.id>0)
+                                            @if (ViewBag.id > 0)
                                             {
                                                 <a href="/Employee/OfferletterList" class="btn btn-danger">Cancel</a>
                                             }
-                                           
+
                                         </div>
                                     </div>
                                 </form>
@@ -253,15 +248,15 @@
 
         bindDesigation(designationid);
         bindDepartment(departmentid);
-        bindStates(stateid, cityid); 
+        bindStates(stateid, cityid);
 
     });
 
     function bindCity(CityId) {
         var itemsList = @Json.Serialize(ViewBag.Cities);
         var dropdown = $("#City");
-        dropdown.empty(); 
-        dropdown.append($('<option></option>').val('0').text('-- Select City --')); 
+        dropdown.empty();
+        dropdown.append($('<option></option>').val('0').text('-- Select City --'));
         $.each(itemsList, function (index, item) {
             dropdown.append($('<option></option>').val(item.value).text(item.text));
         });
@@ -271,38 +266,38 @@
     }
 
     function bindStates(StateId, CityId) {
-        var itemsListforStates = @Json.Serialize(ViewBag.States); 
+        var itemsListforStates = @Json.Serialize(ViewBag.States);
         var dropdownforState = $("#ddlState");
-        dropdownforState.empty(); 
-        dropdownforState.append($('<option></option>').val('0').text('-- Select State --')); 
+        dropdownforState.empty();
+        dropdownforState.append($('<option></option>').val('0').text('-- Select State --'));
         $.each(itemsListforStates, function (index, item) {
             dropdownforState.append($('<option></option>').val(item.value).text(item.text));
         });
         if (StateId) {
-            $("#ddlState").val(StateId); 
-            bindCityOnStateChange(StateId, CityId); 
+            $("#ddlState").val(StateId);
+            bindCityOnStateChange(StateId, CityId);
         }
     }
 
     function bindCityOnStateChange(StateId, CityId) {
         if (!isNaN(StateId)) {
             var ddlCity = $('#City');
-            ddlCity.empty(); 
+            ddlCity.empty();
             ddlCity.append($("<option></option>").val('').html('Please wait ...'));
 
             $.ajax({
                 url: '/Home/BindCityDetails',
                 type: 'GET',
                 dataType: 'json',
-                data: { stateId: StateId }, 
+                data: { stateId: StateId },
                 success: function (d) {
-                    ddlCity.empty(); 
-                    ddlCity.append($('<option></option>').val('0').html('-- Select City --')); 
+                    ddlCity.empty();
+                    ddlCity.append($('<option></option>').val('0').html('-- Select City --'));
                     $.each(d, function (i, cities) {
                         ddlCity.append($('<option></option>').val(cities.id).html(cities.city1));
                     });
                     if (CityId) {
-                        $("#City").val(CityId); 
+                        $("#City").val(CityId);
                     }
                 },
                 error: function () {
@@ -313,28 +308,28 @@
     }
 
     function bindDesigation(DesignationID) {
-        var itemsListforDesigation = @Html.Raw(Json.Serialize(ViewBag.Designation)); 
+        var itemsListforDesigation = @Html.Raw(Json.Serialize(ViewBag.Designation));
         var dropdownforDesigation = $("#ddDesignationID");
-        dropdownforDesigation.empty(); 
-        dropdownforDesigation.append($('<option></option>').val('0').text('-- Select Designation --')); 
+        dropdownforDesigation.empty();
+        dropdownforDesigation.append($('<option></option>').val('0').text('-- Select Designation --'));
         $.each(itemsListforDesigation, function (index, item) {
             dropdownforDesigation.append($('<option></option>').val(item.value).text(item.text));
         });
         if (DesignationID) {
-            $("#ddDesignationID").val(DesignationID); 
+            $("#ddDesignationID").val(DesignationID);
         }
     }
 
     function bindDepartment(DepartmentID) {
-        var itemsListforDepartment = @Html.Raw(Json.Serialize(ViewBag.Department)); 
+        var itemsListforDepartment = @Html.Raw(Json.Serialize(ViewBag.Department));
         var dropdownforDepartment = $("#ddDepartmentID");
-        dropdownforDepartment.empty(); 
-        dropdownforDepartment.append($('<option></option>').val('0').text('-- Select Department --')); 
+        dropdownforDepartment.empty();
+        dropdownforDepartment.append($('<option></option>').val('0').text('-- Select Department --'));
         $.each(itemsListforDepartment, function (index, item) {
             dropdownforDepartment.append($('<option></option>').val(item.value).text(item.text));
         });
         if (DepartmentID) {
-            $("#ddDepartmentID").val(DepartmentID); 
+            $("#ddDepartmentID").val(DepartmentID);
         }
     }
     function validateNumericInput(event) {
@@ -367,29 +362,29 @@
             }
         });
     });
-        $("#ddlState").change(function () {
-            var StateId = parseInt($(this).val());
-            if (!isNaN(StateId)) {
-                var ddlCity = $('#City');
-                ddlCity.append($("<option></option>").val('').html('Please wait ...')); 
+    $("#ddlState").change(function () {
+        var StateId = parseInt($(this).val());
+        if (!isNaN(StateId)) {
+            var ddlCity = $('#City');
+            ddlCity.append($("<option></option>").val('').html('Please wait ...'));
 
-                $.ajax({
-                    url: '/Home/BindCityDetails', 
-                    type: 'GET',
-                    dataType: 'json',
-                    data: { stateId: StateId }, 
-                    success: function (d) {
-                        ddlCity.empty(); 
-                        ddlCity.append($("<option></option>").val('').html('-- Select City --')); 
-                        $.each(d, function (i, cities) {
-                            ddlCity.append($("<option></option>").val(cities.id).html(cities.city1));
-                        });
-                    },
-                    error: function () {
-                        alert('Error in fetching Cities!');
-                    }
-                });
-            }
-        });
-   
+            $.ajax({
+                url: '/Home/BindCityDetails',
+                type: 'GET',
+                dataType: 'json',
+                data: { stateId: StateId },
+                success: function (d) {
+                    ddlCity.empty();
+                    ddlCity.append($("<option></option>").val('').html('-- Select City --'));
+                    $.each(d, function (i, cities) {
+                        ddlCity.append($("<option></option>").val(cities.id).html(cities.city1));
+                    });
+                },
+                error: function () {
+                    alert('Error in fetching Cities!');
+                }
+            });
+        }
+    });
+
 </script>

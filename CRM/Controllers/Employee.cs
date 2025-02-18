@@ -2316,7 +2316,20 @@ namespace CRM.Controllers
 				}).ToListAsync();
 
 				var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
-				ViewBag.userId = adminlogin.Vendorid;
+				var hrdetail = await _context.Hrsignatures.Where(x => x.Vendorid == adminlogin.Vendorid).FirstOrDefaultAsync();
+				if(hrdetail != null)
+				{
+                    ViewBag.HrJobTitle = hrdetail.HrJobTitle;
+                    ViewBag.HrSignature = hrdetail.HrSignature1;
+                    ViewBag.HrName = hrdetail.HrName;
+                }
+				else
+				{
+                    ViewBag.HrJobTitle = "";
+                    ViewBag.HrSignature = "";
+                    ViewBag.HrName = "";
+                }
+                ViewBag.userId = adminlogin.Vendorid;
 				ViewBag.Heading = "Add Offerletter Detail";
 				ViewBag.btnText = "SAVE";
 				if (id != 0)
@@ -3325,7 +3338,8 @@ namespace CRM.Controllers
 											 .Select(g => new
 											 {
 												 UserId = g.Key,
-												 TotalLeave = g.Sum(leave => leave.CountLeave)
+												 TotalLeave = g.Sum(leave => leave.CountLeave),
+                                                 PaidCountLeave = g.Sum(leave => leave.PaidCountLeave),
 											 }).ToListAsync();
 
 				var shiftTimes = await _context.Officeshifts
@@ -3339,6 +3353,7 @@ namespace CRM.Controllers
 				{
 					var leaveData = leaveCounts.FirstOrDefault(l => l.UserId == employeesdata.EmployeeId);
 					var totalLeave = leaveData?.TotalLeave ?? 0;
+					var PaidtotalLeave = leaveData?.PaidCountLeave ?? 0;
 
 					var EmpTotalWorkingHours = _context.EmployeeCheckInRecords
 						.Where(att => att.EmpId == employeesdata.EmployeeId &&
@@ -3385,6 +3400,7 @@ namespace CRM.Controllers
 						}
 
 						int lateMarkCount = 0;
+						int totalpresentdays = 0;
 						bool ischeck = false;
 						foreach (var item in EmpTotalWorkingHours)
 						{
@@ -3407,8 +3423,23 @@ namespace CRM.Controllers
 									}
 								}
 							}
-						}
-						TotalsalaryDeduction = Math.Round((noOfDays - totalLeave - NumberOfLateMarks), 2);
+							totalpresentdays = EmpTotalWorkingHours.Count();
+
+                        }
+
+                        List<DateTime> sundays = new List<DateTime>();
+                        DateTime today =  DateTime.Today; 
+                        DateTime startOfMonth = new DateTime(today.Year, today.Month, 1);
+
+                        for (DateTime date = startOfMonth; date <= today; date = date.AddDays(1))
+                        {
+                            if (date.DayOfWeek == DayOfWeek.Sunday)
+                            {
+                                sundays.Add(date);
+                            }
+                        }
+                        int sundayCount = sundays.Count;
+                        TotalsalaryDeduction = Math.Round((totalpresentdays - totalLeave - NumberOfLateMarks + sundayCount), 2);
 
 						decimal monthlyPay = 0;
 						decimal empbasic = 0;

@@ -487,7 +487,7 @@ namespace CRM.Controllers
                     jsReportFeature
                         .Recipe(Recipe.ChromePdf)
                         .OnAfterRender((r) =>
-                            HttpContext.Response.Headers["Content-Disposition"] = "attachment; filename=\"Invoice_" + InvoiceNumber + ".pdf\"");
+                            HttpContext.Response.Headers["Content-Disposition"] = "attachment; filename=Invoice_" + InvoiceNumber + ".pdf");
 
                     return View("ProductInvoice", invoice);
                 }

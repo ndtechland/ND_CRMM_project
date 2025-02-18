@@ -111,26 +111,25 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-body">
-                                <form asp-action="AddHRsignature" autocomplete="off" onsubmit="return validateForm()">
+                                <form asp-action="AddHRsignature" autocomplete="off" method="post" enctype="multipart/form-data">
                                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                                     <div class="row gx-3 mb-3">
                                         <div class="row mb-3">
                                             <div class="col-lg-4 form-group">
                                                 <input type="hidden" name="Id" value="@ViewBag.id" />
                                                 <label for="HRName">HR Name</label>
-                                                <input class="form-control" value='@ViewBag.HrName' placeholder="Enter HR Name" name="HrName" id="HrName" type="text">
+                                                <input class="form-control" value='@ViewBag.HrName' placeholder="Enter HR Name" name="HrName" id="HrName" type="text" required>
                                             </div>
                                             <div class="col-lg-4 form-group">
                                                 <label for="HrJobTitle">HR JobTitle</label>
-                                                <input class="form-control" value='@ViewBag.HrJobTitle' placeholder="Enter HR JobTitle" name="HrJobTitle" id="HrJobTitle" type="text">
+                                                <input class="form-control" value='@ViewBag.HrJobTitle' placeholder="Enter HR JobTitle" name="HrJobTitle" id="HrJobTitle" type="text" required>
                                             </div>
                                             @if (ViewBag.HrSignature != "")
                                             {
                                                 <div class="col-lg-4 form-group">
                                                     <label for="exampleInputFile">HR Signature</label>
                                                     <input type="hidden" value='@ViewBag.id' name="Id" />
-                                                    <input type="file" accept=".png" id="ImageFile" name="ImageFile">
-                                                    <br />
+                                                    <input type="file" class="form-control" accept=".png" id="ImageFile" name="ImageFile">
                                                     <br />
                                                     <img src='../CompanyImage/@ViewBag.HrSignature' id="ImageDetails" style="height:100px;width:100px" />
                                                     <i class="fas fa-trash-alt" id="filedelete" onclick="DeletehrImageFile('@Html.Raw(ViewBag.HrSignature)', @ViewBag.id)" style="color:red"></i>
@@ -139,17 +138,16 @@
                                             }
                                             else
                                             {
-                                                <div class="row gx-3 mb-3">
-                                                    <div class="col-lg-4 form-group">
-                                                        <label for="exampleInputFile">HR Signature</label>
-                                                        <input type="file" accept=" .png" id="ImageFile" name="ImageFile">
-                                                        <input type="hidden" value='@ViewBag.HrSignature' name="FilePath" />
-                                                    </div>
+                                                <div class="col-lg-4 form-group">
+                                                    <label for="exampleInputFile">HR Signature</label>
+                                                    <br />
+                                                    <input type="file" class="form-control" accept=" .png" id="ImageFile" name="ImageFile">
+                                                    <input type="hidden" value='@ViewBag.HrSignature' name="FilePath" />
                                                 </div>
                                             }
                                         </div>
                                     </div>
-                                    
+
                                     <div class="form-group">
                                         <input type="submit" value="@ViewBag.btnText" class="btn btn-primary" />
                                         @if (ViewBag.id > 0)
@@ -189,31 +187,34 @@
                                         </thead>
                                         <tbody>
                                             @{
-                                                var count = 0;
-                                                foreach (var item in Model.Hrsignaturlist)
+                                                @if (Model.Hrsignaturlist.Any())
                                                 {
-                                                    count++;
-                                                    <tr class="table-row">
-                                                        <td>@count</td>
-                                                        <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.HrName)
-                                                        </td>
-                                                        <td nowrap>
-                                                            @Html.DisplayFor(modelItem => item.HrJobTitle)
-                                                        </td>
-                                                        <td nowrap>
-                                                            <img src='../CompanyImage/@item.HrSignature1' style="height:100px;width:100px" />
-                                                        </td>
-                                                        <td>
-                                                            <div>
-                                                                <a href="/Vendor/Aboutcompany?Id=@item.Id" class="fa fa-edit m-2 font-success"></a>
+                                                    var count = 0;
+                                                    foreach (var item in Model.Hrsignaturlist)
+                                                    {
+                                                        count++;
+                                                        <tr class="table-row">
+                                                            <td>@count</td>
+                                                            <td nowrap>
+                                                                @Html.DisplayFor(modelItem => item.HrName)
+                                                            </td>
+                                                            <td nowrap>
+                                                                @Html.DisplayFor(modelItem => item.HrJobTitle)
+                                                            </td>
+                                                            <td nowrap>
+                                                                <img src='../CompanyImage/@item.HrSignature1' style="height:100px;width:100px" />
+                                                            </td>
+                                                            <td>
+                                                                <div>
+                                                                    <a href="/Vendor/AddHRsignature?Id=@item.Id" class="fa fa-edit m-2 font-success"></a>
 
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteAboutcompany", "Vendor", new { id = item.Id })')" class="fa fa-trash font-danger"></a>
-                                                        </td>
-                                                    </tr>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteHRSignature", "Vendor", new { id = item.Id })')" class="fa fa-trash font-danger"></a>
+                                                            </td>
+                                                        </tr>
+                                                    }
                                                 }
                                             }
                                         </tbody>

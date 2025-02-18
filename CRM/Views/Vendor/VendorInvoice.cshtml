@@ -7,6 +7,7 @@
     decimal cgst = Model.Cgst ?? 0;
     decimal scgst = Model.Scgst ?? 0;
     decimal igst = Model.Igst ?? 0;
+    string? totalAmountwords = Model.totalInWords;
     var cgstAmount = productPrice * cgst / 100;
     var scgstAmount = productPrice * scgst / 100;
     var igstAmount = productPrice * igst / 100;
@@ -16,8 +17,17 @@
     var roundedTotal = Math.Round(totalBeforeRounding, 0, MidpointRounding.AwayFromZero);
     var rounding = roundedTotal - totalBeforeRounding;
     var totalAmount = totalBeforeRounding + rounding;
-    Layout = "~/Views/Shared/_adminLayout.cshtml";
+    if (Model.Ismail == true)
+    {
+        <div class="page-sidebar">
+        </div>
+        // Layout = null;
 
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_adminLayout.cshtml";
+    }
 }
 
 
@@ -38,16 +48,19 @@
 
         @@page {
             size: A4;
-            margin: 10mm;
-            padding: 20px;
-            box-sizing: border-box;
-            background-color: white;
-        }
+            margin: 1mm auto;
+            padding: 1px;
 
+        }
+        /*  @@page {
+                    size: A4;
+                    margin: 1mm ;
+                    padding: 10px;
+                } */
         .invoice-container {
             width: 215mm;
-            height: 315mm;
-            margin: 2mm auto;
+            height: 270mm;
+            margin: 15mm auto;
             padding: 20px;
             border: 1px solid #ccc;
         }
@@ -110,7 +123,7 @@
             display: block;
         }
 
-        @@media screen and (max-width: 768px) {
+      /*   @@media screen and (max-width: 768px) {
             .invoice-details table, .billing-details table {
                 width: 100%;
             }
@@ -123,7 +136,7 @@
             .invoice-details td {
                 margin-bottom: 10px;
             }
-        }
+        } */
 
         .invoice-table {
             width: 100%;
@@ -191,10 +204,13 @@
 </head>
 <body>
     <div>
-        <div class="buttons">
-            <button class="btn btn-primary" onclick="prepareForPrint()">Print</button>
-            <a href="/Vendor/VendorList" class="btn btn-secondary">Back to List</a>
-        </div>
+        @if (Model.Ismail == false)
+        {
+            <div class="buttons">
+                <button class="btn btn-primary" onclick="prepareForPrint()">Print</button>
+                <a href="/Vendor/VendorList" class="btn btn-secondary">Back to List</a>
+            </div>
+        }
         <div class="invoice-container">
             <div class="header">
                 <img src="~/assets/images/layout-2/logo/logo.png" alt="Company Logo">
@@ -214,7 +230,7 @@
                 <table>
                     <tr>
                         <td>
-                            <strong>Invoice #:</strong> @Model.InvoiceNumber<br>
+                            <strong>Invoice Number:</strong> <span id="invoiceNumber">@Model.InvoiceNumber</span><br>
                             <strong>Invoice Date:</strong> @fordate <br>
                             <strong>Terms:</strong> @Model.Terms<br>
                             <strong>Due Date:</strong> @Model.Duedate.ToString("dd-MM-yyyy")
@@ -312,23 +328,26 @@
                     }
                     <tr>
                         <td>Rounding</td>
-                        <td>@rounding.ToString("F2")</td> <!-- Format to two decimal places -->
+                        <td>@rounding.ToString("F2")</td>
                     </tr>
                     <tr>
                         <td><strong>Total</strong></td>
-                        <td id="total"><strong>₹ @String.Format("{0:0.00}", totalAmount)</strong></td>
+                        <td><strong>₹ @String.Format("{0:0.00}", Model.TotalAmount)</strong></td>
                     </tr>
                 </table>
             </div>
             <div>
                 <h6>Total in Words</h6>
-                <h6><strong><span id="totalInWords"></span></strong></h6>
+                <h6><strong><span>@totalAmountwords</span></strong></h6>
             </div>
             <br />
-            <div>
-                <h6>Notes</h6>
-                <h6><span>@Model.Notes</span></h6>
-            </div>
+            @if (@Model.Notes != null)
+            {
+                <div>
+                    <h6>Notes</h6>
+                    <h6><span>@Model.Notes</span></h6>
+                </div>
+            }
             <div class="bank-details">
                 <strong>Bank Details</strong>
                 <br />
@@ -348,94 +367,62 @@
 </body>
 </html>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const totalText = document.getElementById('total')?.textContent?.replace('₹', '').trim() || '0';
-
-        const totalAmount = parseFloat(totalText);
-
-        if (isNaN(totalAmount)) {
-            console.error('Invalid total amount');
-            return;
-        }
-        const rupees = Math.floor(totalAmount);
-        const totalInWords = `Indian Rupee ${convertNumberToWords(rupees)} Only`;
-        const totalInWordsElement = document.getElementById('totalInWords');
-        if (totalInWordsElement) {
-            totalInWordsElement.textContent = totalInWords;
-        }
-        function convertNumberToWords(num) {
-            const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
-            const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
-            const thousands = ['', 'Thousand', 'Lakh', 'Crore'];
-
-            if (num === 0) return 'Zero';
-            let words = '';
-            let i = 0;
-
-            while (num > 0) {
-                if (num % 1000 !== 0) {
-                    words = `${convertHundreds(num % 1000)} ${thousands[i]} ${words}`.trim();
-                }
-                num = Math.floor(num / 1000);
-                i++;
-            }
-            return words;
-        }
-
-        function convertHundreds(num) {
-            const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
-            const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
-
-            if (num === 0) return '';
-            if (num < 20) return ones[num];
-            if (num < 100) return `${tens[Math.floor(num / 10)]} ${ones[num % 10]}`.trim();
-            return `${ones[Math.floor(num / 100)]} Hundred ${convertHundreds(num % 100)}`.trim();
-        }
-    });
-</script>
-<script>
     function prepareForPrint() {
         const elementsToHide = ['.buttons', '.page-body-wrapper', '.page-main-header', '.page-sidebar'];
+        const urlParams = new URLSearchParams(window.location.search);
+        const invoiceNumber = urlParams.get("InvoiceNumber");
+        if (invoiceNumber) {
+            document.getElementById("invoiceNumber").textContent = invoiceNumber;
+            document.title = invoiceNumber; 
+        }
 
         elementsToHide.forEach(selector => {
             const element = document.querySelector(selector);
             if (element) {
+                console.log(`Hiding element for print: ${selector}`);
                 element.style.display = 'none';
+            } else {
+                console.log(`Element not found for print: ${selector}`);
             }
         });
+
         const printStyle = document.createElement('style');
         printStyle.type = 'text/css';
         printStyle.media = 'print';
         printStyle.innerHTML = `
-                            @@page {
-                                margin: 0; /* Remove headers and footers */
-                                size: A4; /* Ensure A4 size */
-                            }
-                            body {
-                                margin: 0;
-                                padding: 0;
-                            }
-                        `;
+                                                        @@page {
+                                                            size: A4;
+                                                            margin: 10mm;
+                                                            padding: 20px;
+                                                        }
+                                                        body {
+                                                            margin: 0;
+                                                            padding: 0;
+                                                        }
+                                                    `;
         document.head.appendChild(printStyle);
         window.print();
+
         setTimeout(() => {
             elementsToHide.forEach(selector => {
                 const element = document.querySelector(selector);
                 if (element) {
-                    element.style.display = 'block';
+                    console.log(`Restoring element: ${selector}`);
+                    element.style.display = '';
                 }
             });
 
             if (printStyle.parentNode) {
                 document.head.removeChild(printStyle);
             }
-            window.location.reload();
         }, 500);
     }
+
     document.addEventListener('keydown', function (event) {
         if (event.ctrlKey && event.key === 'p') {
             event.preventDefault();
             prepareForPrint();
         }
     });
+
 </script>
