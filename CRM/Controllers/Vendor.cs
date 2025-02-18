@@ -21,6 +21,9 @@ using Org.BouncyCastle.Ocsp;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using System.Threading.Tasks;
 using DocumentFormat.OpenXml.ExtendedProperties;
+using Path = System.IO.Path;
+using jsreport.AspNetCore;
+using jsreport.Types;
 
 namespace CRM.Controllers
 {
@@ -938,7 +941,7 @@ namespace CRM.Controllers
         }
         [HttpGet]
         [Route("Vendor/VendorInvoice")]
-        public async Task<IActionResult> VendorInvoice(int ID)
+        public async Task<IActionResult> VendorInvoice(int ID , bool Ismail)
         {
             try
             {
@@ -946,7 +949,7 @@ namespace CRM.Controllers
                 {
                     Invoice invoice = new Invoice();
 
-                    invoice = await _ICrmrpo.GenerateInvoice(ID);
+                    invoice = await _ICrmrpo.GenerateInvoice(ID, Ismail);
                     if (invoice != null)
                     {
                         return View(invoice);
@@ -970,7 +973,7 @@ namespace CRM.Controllers
 
 
         }
-        public async Task<IActionResult> UpdateVendorActiveStatus(int Id)
+        public async Task<IActionResult> UpdateVendorActiveStatus(int Id, bool Ismail)
         {
             var vendor = await _context.VendorRegistrations.FirstOrDefaultAsync(x => x.Id == Id);
 
@@ -983,7 +986,7 @@ namespace CRM.Controllers
             await _context.SaveChangesAsync();
             if (vendor.Isactive == true)
             {
-                var pdfResult = await VendorInvoiceDocPDF(vendor.Id);
+                var pdfResult = await VendorInvoiceDocPDF(vendor.Id, Ismail);
                 if (pdfResult is JsonResult jsonResult && jsonResult.Value is IDictionary<string, object> result &&
                     result.TryGetValue("success", out var success) && (bool)success)
                 {
@@ -996,51 +999,40 @@ namespace CRM.Controllers
             }
             return RedirectToAction("VendorList");
         }
-
-        public async Task<IActionResult> VendorInvoiceDocPDF(int? Id = 0)
+        public async Task<IActionResult> VendorInvoiceDocPDF(int? Id = 0, bool Ismail = false)
         {
             try
             {
                 string schema = Request.Scheme;
                 string host = Request.Host.Value;
-                string SlipURL = $"{schema}://{host}/Vendor/VendorInvoice?Id={Id}";
+                string SlipURL = $"{schema}://{host}/Vendor/VendorInvoice?Id={Id}&Ismail={Ismail}";
                 HtmlToPdf converter = new HtmlToPdf();
                 PdfDocument doc = converter.ConvertUrl(SlipURL);
-                string wwwRootPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "VendorInvoicefile");
+                string wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "VendorInvoicefile");
                 if (!Directory.Exists(wwwRootPath))
                 {
                     Directory.CreateDirectory(wwwRootPath);
                 }
-                var result = (from vr in _context.VendorRegistrations
-                              where vr.Id == Id
-                              select new
-                              {
-                                  Id = vr.Id,
-                                  CompanyName = vr.CompanyName,
-                                  Email = vr.Email
-                              }).FirstOrDefault();
-                string uniqueFileName = $"Invoice_{Guid.NewGuid()}_{Id}_{DateTime.Now:yyyyMMddHHmmss}.pdf";
-                string filePath = System.IO.Path.Combine(wwwRootPath, uniqueFileName);
-                doc.Save(filePath);
-                byte[] pdf = System.IO.File.ReadAllBytes(filePath);
 
+                var result = _context.VendorRegistrations.FirstOrDefault(e => e.Id == Id);
 
-
-                if (result == null)
+                if (result != null)
                 {
-                    return BadRequest("Vendor not found.");
-                }
+                    string sanitizedInvoiceNumber = string.Concat(result.InvoiceNumber.Split(Path.GetInvalidFileNameChars()));
+                    string uniqueFileName = $"Invoice_{result.CompanyName}.pdf";
+                    string filePath = Path.Combine(wwwRootPath, uniqueFileName);
 
-                var empoff = _context.VendorRegistrations.FirstOrDefault(e => e.Id == result.Id);
-                if (empoff != null)
-                {
-                    empoff.Invoicefile = uniqueFileName;
+                    doc.Save(filePath);
+                    byte[] pdf = System.IO.File.ReadAllBytes(filePath);
+
+                    result.Invoicefile = uniqueFileName;
                     _context.SaveChanges();
+
                     string emailSubject = $"Invoice for {result.CompanyName}";
                     string emailBody = $"Hello {result.CompanyName}";
                     await _emailService.SendVendorInvoiceEmailAsync(result.Email, emailSubject, emailBody, pdf, uniqueFileName, "application/pdf");
-                    return Json(new { success = true, message = "Invoice  has been Sent successfully.", fileName = uniqueFileName });
 
+                    return Json(new { success = true, message = "Invoice has been sent successfully.", fileName = uniqueFileName });
                 }
                 else
                 {
@@ -4003,6 +3995,50 @@ namespace CRM.Controllers
             }
             return Json(success);
         }
+        [HttpGet]
+       [MiddlewareFilter(typeof(JsReportPipeline))]
+        public async Task<IActionResult> SendVendorInvoice(int Id = 0, bool Ismail = false)
+        {
+            try
+            {
+                Invoice invoice = await _ICrmrpo.GenerateInvoice(Id, Ismail);
+                if (invoice == null)
+                {
+                    TempData["msg"] = "No data found for the invoice.";
+                    return RedirectToAction("VendorList");
+                }
+
+                ViewBag.Protocol = Request.Scheme;
+                ViewBag.Host = Request.Host.Value;
+
+                if (Ismail)
+                {
+                    var jsReportFeature = HttpContext.JsReportFeature();
+                    if (jsReportFeature == null)
+                    {
+                        throw new Exception("JsReport feature is not available in the current context.");
+                    }
+
+                    jsReportFeature
+                        .Recipe(Recipe.ChromePdf)
+                        .OnAfterRender((r) =>
+                        {
+                            HttpContext.Response.Headers["Content-Disposition"] = $"attachment; filename=Invoice_{invoice.CompanyName}.pdf";
+                        });
+                    return View("VendorInvoice", invoice);
+                }
+                else
+                {
+                    return View(invoice);
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["msg"] = "An error occurred: " + ex.Message;
+                return RedirectToAction("VendorList");
+            }
+        }
+
     }
 }
 

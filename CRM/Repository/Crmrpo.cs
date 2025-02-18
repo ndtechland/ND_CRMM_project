@@ -655,7 +655,7 @@ namespace CRM.Repository
 
             return result;
         }
-        public async Task<Invoice> GenerateInvoice(int ID)
+        public async Task<Invoice> GenerateInvoice(int ID , bool Ismail)
         {
             try
             {
@@ -664,9 +664,16 @@ namespace CRM.Repository
                     await con.OpenAsync();
                     var invoice = await con.QuerySingleOrDefaultAsync<Invoice>(
                         "GenerateInvoice",
-                        new { ID },
+                        new { ID},
                         commandType: CommandType.StoredProcedure
                     );
+                    if (invoice != null)
+                    {
+                        invoice.Ismail = Ismail;
+                        invoice.TotalAmount = await CalculateTotalAmountByVendorId(invoice.InvoiceNumber);
+                        invoice.totalInWords = ConvertNumberToWords((decimal)invoice.TotalAmount);
+                    }
+
                     return invoice;
                 }
             }
@@ -1768,15 +1775,15 @@ namespace CRM.Repository
                 string[] allowedExtensions = { ".png" };
                 string ImagePath = "";
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
-                if (model.ImageFile != null)
-                {
-                    var fileExtension = Path.GetExtension(model.ImageFile.FileName).ToLower();
-                    if (!allowedExtensions.Contains(fileExtension))
-                    {
-                        throw new InvalidOperationException("Only  .png files are allowed.");
-                    }
-                    ImagePath = fileOperation.SaveBase64Image("CompanyImage", model.ImageFile, allowedExtensions);
-                }
+                //if (model.ImageFile != null)
+                //{
+                //    var fileExtension = Path.GetExtension(model.ImageFile.FileName).ToLower();
+                //    if (!allowedExtensions.Contains(fileExtension))
+                //    {
+                //        throw new InvalidOperationException("Only  .png files are allowed.");
+                //    }
+                //    ImagePath = fileOperation.SaveBase64Image("CompanyImage", model.ImageFile, allowedExtensions);
+                //}
                 Offerletter of = new Offerletter()
                 {
                     Name = model.Name,
@@ -1796,7 +1803,8 @@ namespace CRM.Repository
                     HrJobTitle = model.HrJobTitle,
                     HrName = model.HrName,
                     CandidateEmail = model.CandidateEmail,
-                    HrSignature = ImagePath
+                    //HrSignature = ImagePath
+                    HrSignature = model.HrSignature
                 };
                 _context.Offerletters.Add(of);
                 _context.SaveChanges();
@@ -1814,16 +1822,16 @@ namespace CRM.Repository
                 FileOperation fileOperation = new FileOperation(_webHostEnvironment);
                 string[] allowedExtensions = { ".png" };
                 var existingOfferletter = await _context.Offerletters.FindAsync(model.Id);
-                if (model.ImageFile != null)
-                {
-                    var fileExtension = Path.GetExtension(model.ImageFile.FileName).ToLower();
-                    if (!allowedExtensions.Contains(fileExtension))
-                    {
-                        throw new InvalidOperationException("Only .jpg, .jpeg, and .png files are allowed.");
-                    }
-                    string ImagePath = fileOperation.SaveBase64Image("CompanyImage", model.ImageFile, allowedExtensions);
-                    existingOfferletter.HrSignature = ImagePath;
-                }
+                //if (model.ImageFile != null)
+                //{
+                //    var fileExtension = Path.GetExtension(model.ImageFile.FileName).ToLower();
+                //    if (!allowedExtensions.Contains(fileExtension))
+                //    {
+                //        throw new InvalidOperationException("Only .jpg, .jpeg, and .png files are allowed.");
+                //    }
+                //    string ImagePath = fileOperation.SaveBase64Image("CompanyImage", model.ImageFile, allowedExtensions);
+                //    existingOfferletter.HrSignature = ImagePath;
+                //}
                 if (existingOfferletter != null)
                 {
                     existingOfferletter.Name = model.Name;
@@ -1840,6 +1848,7 @@ namespace CRM.Repository
                     existingOfferletter.HrJobTitle = model.HrJobTitle;
                     existingOfferletter.HrName = model.HrName;
                     existingOfferletter.CandidateEmail = model.CandidateEmail;
+                    existingOfferletter.HrSignature = model.HrSignature;
                     return await _context.SaveChangesAsync();
                 }
 
@@ -3946,7 +3955,6 @@ namespace CRM.Repository
                 FileOperation fileOperation = new FileOperation(_webHostEnvironment);
                 string[] allowedExtensions = { ".png" };
                 string ImagePath = "";
-                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
                 if (model.ImageFile != null)
                 {
                     var fileExtension = Path.GetExtension(model.ImageFile.FileName).ToLower();
@@ -3960,10 +3968,10 @@ namespace CRM.Repository
                 {
                     Hrsignature hs = new Hrsignature()
                     {
-                        Vendorid = adminlogin.Vendorid,
+                        Vendorid = Userid,
                         HrJobTitle = model.HrJobTitle,
                         HrName = model.HrName,
-                        HrSignature1 = ImagePath
+                        HrSignature1 = ImagePath,
                     };
                     _context.Hrsignatures.Add(hs);
                 }
@@ -3983,5 +3991,34 @@ namespace CRM.Repository
                 throw ex;
             }
         }
+        public async Task<decimal> CalculateTotalAmountByVendorId(string InvoiceNumber)
+        {
+            try
+            {
+                var invoiceDetails = await _context.VendorRegistrations
+                    .FirstOrDefaultAsync(x => x.InvoiceNumber == InvoiceNumber);
+
+                if (invoiceDetails == null)
+                {
+                    return 0;
+                }
+                decimal productPrice = Convert.ToDecimal(invoiceDetails.Productprice);
+                decimal igst = invoiceDetails.Igst ?? 0;
+                decimal scgst = invoiceDetails.Scgst ?? 0;
+                decimal cgst = invoiceDetails.Cgst ?? 0;
+
+                decimal productTotal = productPrice +
+                                       ((productPrice * igst) / 100) +
+                                       ((productPrice * scgst) / 100) +
+                                       ((productPrice * cgst) / 100);
+
+                return Math.Round(productTotal, 0, MidpointRounding.AwayFromZero);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
     }
 }

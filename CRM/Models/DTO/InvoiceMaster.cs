@@ -43,5 +43,8 @@
         public DateTime Duedate { get; set; }
         public string? Notes { get; set; }
         public string? Terms { get; set; }
+        public bool? Ismail { get; set; }
+        public decimal? TotalAmount { get; set; }
+        public string? totalInWords { get; set; }
     }
 }

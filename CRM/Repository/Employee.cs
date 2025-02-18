@@ -2807,5 +2807,72 @@ namespace CRM.Repository
             }
         }
 
+        public async Task<SelfassesstmentapiDTO> getSelfAssessment(string userid)
+        {
+            try
+            {
+                var emp = await _context.EmployeeRegistrations
+                                        .FirstOrDefaultAsync(x => x.EmployeeId == userid);
+
+                if (emp == null)
+                {
+                    throw new Exception("Employee not found.");
+                }
+
+                var empSelfAssessment = await _context.SelfassesstmentVendors
+                                                      .FirstOrDefaultAsync(x => x.VendorId == emp.Vendorid);
+
+                List<Selfassesstmentdetails> selfAssessmentDetails;
+
+                if (empSelfAssessment == null)
+                {
+                    selfAssessmentDetails = await _context.Selfassesstmentadmins
+                        .Select(s => new Selfassesstmentdetails
+                        {
+                            Id = s.Id,
+                            Tittle = s.Tittle,
+                            SubTittle = s.SubTittle,
+                            Pointname = s.Pointname,
+                        })
+                        .ToListAsync();
+                }
+                else
+                {
+                    selfAssessmentDetails = await _context.SelfassesstmentVendors
+                        .Where(s => s.VendorId == emp.Vendorid)
+                        .Select(s => new Selfassesstmentdetails
+                        {
+                            Id = s.Id,
+                            Tittle = s.Tittle,
+                            SubTittle = s.SubTittle,
+                            Pointname = s.Pointname,
+                        })
+                        .ToListAsync();
+                }
+
+                DateTime currentDate = DateTime.UtcNow;
+                int financialStartYear = currentDate.Month >= 4 ? currentDate.Year : currentDate.Year - 1;
+                int financialEndYear = financialStartYear + 1;
+
+                string departmentName = await _context.DepartmentMasters
+                                                      .Where(g => g.Id == Convert.ToInt16(emp.DepartmentId))
+                                                      .Select(g => g.DepartmentName.Trim())
+                                                      .FirstOrDefaultAsync() ?? "N/A";
+
+                return new SelfassesstmentapiDTO
+                {
+                    EmployeeName = $"{emp.FirstName} {emp.MiddleName} {emp.LastName}".Trim(),
+                    DepartmentName = departmentName,
+                    financialstartYear = financialStartYear.ToString(),  
+                    financialEndYear = financialEndYear.ToString(),     
+                    selfassesstmentdetails = selfAssessmentDetails
+                };
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error fetching self-assessment: {ex.Message}");
+            }
+        }
+
     }
 }
