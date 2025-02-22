@@ -29,6 +29,8 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using DinkToPdf;
+using DocumentFormat.OpenXml.Bibliography;
+using System.Text.Json;
 namespace CRM.Repository
 {
     public class Employee : IEmployee
@@ -162,7 +164,7 @@ namespace CRM.Repository
                 throw new Exception("Error: " + ex.Message);
             }
         }
-        public async Task<List<City>> getcity(int stateid)
+        public async Task<List<Models.Crm.City>> getcity(int stateid)
         {
             try
             {
@@ -2871,6 +2873,29 @@ namespace CRM.Repository
             catch (Exception ex)
             {
                 throw new Exception($"Error fetching self-assessment: {ex.Message}");
+            }
+        }
+        public async Task<SelfassesstmentdataDto> AddSelfAssessmentResponse(SelfassesstmentdataDto model, string userid)
+        {
+            try
+            {
+                Selfassesstmentdatum selfassesstmentdatum = new Selfassesstmentdatum()
+                {
+                    EmpId = userid,
+                    Startyear = model.Startyear,
+                    Endyear = model.Endyear,
+                    AssesstmentAns = JsonSerializer.Serialize(model.AssesstmentAns),
+                    ManagerName = model.ManagerName,
+                    Createddate = DateTime.Now.Date,
+                    IsActive = true,
+                };
+                await _context.Selfassesstmentdata.AddAsync(selfassesstmentdatum);
+                await _context.SaveChangesAsync();
+                return  model;
+            }
+            catch (Exception ex)
+            {
+                throw;
             }
         }
 

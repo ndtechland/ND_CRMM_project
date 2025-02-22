@@ -30,6 +30,7 @@ using Dapper;
 using CRM.Controllers;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.TeamFoundation.Common;
+using CRM.Data;
 
 
 namespace CRM.Repository
@@ -40,14 +41,19 @@ namespace CRM.Repository
         private admin_NDCrMContext _context;
         private readonly IEmailService _IEmailService;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private ApplicationContextDapper _contextDapper;
+        private readonly Jobforindia_HireJobContext _Jobcontext;
 
         //public virtual DbSet<EmployeeImportExcel> EmpMultiforms { get; set; } = null!;
-        public Crmrpo(admin_NDCrMContext context, IConfiguration configuration, IEmailService IEmailService, IWebHostEnvironment hostingEnvironment, IWebHostEnvironment webHostEnvironment)
+        public Crmrpo(admin_NDCrMContext context, IConfiguration configuration, IEmailService IEmailService, IWebHostEnvironment hostingEnvironment, IWebHostEnvironment webHostEnvironment, ApplicationContextDapper contextDapper, Jobforindia_HireJobContext _Jobcontext)
         {
             _context = context;
             Configuration = configuration;
             _IEmailService = IEmailService;
             _webHostEnvironment = webHostEnvironment;
+            _contextDapper = contextDapper;
+            this._Jobcontext = _Jobcontext;
+
         }
         public async Task<int> LoginAsync(AdminLogin model)
         {
@@ -655,7 +661,7 @@ namespace CRM.Repository
 
             return result;
         }
-        public async Task<Invoice> GenerateInvoice(int ID , bool Ismail)
+        public async Task<Invoice> GenerateInvoice(int ID, bool Ismail)
         {
             try
             {
@@ -664,7 +670,7 @@ namespace CRM.Repository
                     await con.OpenAsync();
                     var invoice = await con.QuerySingleOrDefaultAsync<Invoice>(
                         "GenerateInvoice",
-                        new { ID},
+                        new { ID },
                         commandType: CommandType.StoredProcedure
                     );
                     if (invoice != null)
@@ -3982,7 +3988,7 @@ namespace CRM.Repository
                     existdata.HrName = model.HrName;
                     existdata.HrSignature1 = ImagePath;
                 }
-              
+
                 _context.SaveChanges();
                 return true;
             }
@@ -4017,6 +4023,63 @@ namespace CRM.Repository
             catch (Exception)
             {
                 throw;
+            }
+        }
+        public async Task<List<Joblist>> Getjoblist(int Vendorid)
+        {
+            try
+            {
+                var jobOpens = await _Jobcontext.CJobOpens
+               .Where(cj => cj.Vendorid == Vendorid && cj.IsVendor == true && cj.Isdelete == false)
+               .ToListAsync();
+
+                var cities = await _context.Cities.ToListAsync();
+                var states = await _context.States.ToListAsync();
+                var departments = await _context.DepartmentMasters.ToListAsync();
+                var designations = await _context.DesignationMasters.ToListAsync();
+                var qualifications = await _Jobcontext.Qualifications.ToListAsync();
+                var salaries = await _Jobcontext.Salaries.ToListAsync();
+                var postedBies = await _Jobcontext.Postedbies.ToListAsync();
+                var workModes = await _Jobcontext.WorkModes.ToListAsync();
+
+                var joblist = (from cj in jobOpens
+                               join ct in cities on cj.Cityid equals ct.Id
+                               join st in states on cj.Stateid  equals st.Id
+                               join dem in departments on cj.Department equals dem.Id
+                               join desi in designations on Convert.ToInt32(cj.JobTitle) equals desi.Id
+                               join ql in qualifications on cj.Qualificationid equals ql.Id
+                               join sl in salaries on Convert.ToInt32(cj.Package) equals sl.Id
+                               join pt in postedBies on cj.PostedById equals pt.Id
+                               join wm in workModes on cj.WorkModeId equals wm.Id
+                               select new Joblist
+                               {
+                                   id = cj.Id,
+                                   DesignationName = desi.DesignationName,
+                                   NoOfOpening = Convert.ToInt32(cj.Opening),
+                                   RequiredExperience = cj.RequiredExperience,
+                                   JobDescription = cj.JobDescription,
+                                   Package = cj.Package,
+                                   EmployeementType = cj.EmployeementType,
+                                   QualificationName = ql.Qualificationame,
+                                   Department = dem.DepartmentName,
+                                   PostedBy = pt.Postedtype,
+                                   WorkMode = wm.WorkModeName,
+                                   stateName = (string)st.SName,
+                                   cityName = ct.City1,
+                                   QualificationDescription = cj.QualificationDescription,
+                                   AboutDescription = cj.AboutDescription,
+                                   ResponsebilitiesDescription = cj.ResponsebilitiesDescription,
+                                   Status = cj.Status ?? false,
+                                   AddedOn = (DateTime)cj.AddedOn,
+                                   Skills = cj.Skills
+                               }).ToList();
+
+                return joblist.Any() ? joblist : new List<Joblist>();
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error retrieving job list", ex); 
             }
         }
 

@@ -23,6 +23,7 @@ using DinkToPdf;
 using jsreport.AspNetCore;
 using jsreport.Local;
 using jsreport.Binary;
+using CRM.Data;
 
 namespace CRM
 {
@@ -49,6 +50,8 @@ namespace CRM
             // Database context
             services.AddDbContext<admin_NDCrMContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("db1")));
+            services.AddDbContext<Jobforindia_HireJobContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("db2")));
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressModelStateInvalidFilter = true;
@@ -94,6 +97,7 @@ namespace CRM
             services.AddScoped<IHome, Home>();
             services.AddScoped<Dcrypt>();
             services.AddScoped<Encrypt>();
+           services.AddScoped<ApplicationContextDapper>();
             services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
             ///added new 
             services.AddHostedService<ScheduledTaskService>();

@@ -46,6 +46,7 @@ namespace CRM.Repository
         public Task<bool> ApplyWfh(EmpApplyWfhDto model, string userid);
         public Task<EmployeeCheckIn> GetLATLONG(int id);
         public Task<SelfassesstmentapiDTO> getSelfAssessment(string userid);
+        public Task<SelfassesstmentdataDto> AddSelfAssessmentResponse(SelfassesstmentdataDto model, string userid);
 
     }
 }

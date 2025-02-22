@@ -1325,7 +1325,7 @@ namespace CRM.Controllers
                 ViewBag.Startdate = "";
                 ViewBag.Enddate = "";
                 ViewBag.Description = "";
-                ViewBag.Status = "";
+                //ViewBag.Status = "";
                 ViewBag.EmpId = "";
                 ViewBag.Heading = "Add TaskAssign";
                 ViewBag.BtnText = "SAVE";
@@ -1338,7 +1338,7 @@ namespace CRM.Controllers
                     ViewBag.Startdate = data.Startdate?.ToString("yyyy-MM-dd");
                     ViewBag.Enddate = data.Enddate?.ToString("yyyy-MM-dd");
                     ViewBag.Description = data.Description;
-                    ViewBag.Status = data.Status;
+                   // ViewBag.Status = data.Status;
                     ViewBag.EmpId = data.EmployeeId;
                     ViewBag.Heading = "Update TaskAssign";
                     ViewBag.BtnText = "UPDATE";
@@ -1375,7 +1375,7 @@ namespace CRM.Controllers
                         existingData.Startdate = model.Startdate;
                         existingData.Enddate = model.Enddate;
                         existingData.Description = model.Description;
-                        existingData.Status = Convert.ToInt16(model.Status);
+                        //existingData.Status = Convert.ToInt16(model.Status);
                         existingData.EmployeeId = model.EmployeeId;
                         existingData.Vendorid = adminlogin.Vendorid;
 
@@ -1398,7 +1398,7 @@ namespace CRM.Controllers
                         Startdate = model.Startdate,
                         Enddate = model.Enddate,
                         Description = model.Description,
-                        Status = Convert.ToInt16(model.Status),
+                        Status = 1,
                         EmployeeId = model.EmployeeId,
                         Vendorid = adminlogin.Vendorid,
                     };

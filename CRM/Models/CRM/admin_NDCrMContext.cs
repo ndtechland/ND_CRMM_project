@@ -106,6 +106,7 @@ namespace CRM.Models.Crm
         public virtual DbSet<Schema> Schemas { get; set; } = null!;
         public virtual DbSet<SelfassesstmentVendor> SelfassesstmentVendors { get; set; } = null!;
         public virtual DbSet<Selfassesstmentadmin> Selfassesstmentadmins { get; set; } = null!;
+        public virtual DbSet<Selfassesstmentdatum> Selfassesstmentdata { get; set; } = null!;
         public virtual DbSet<Server> Servers { get; set; } = null!;
         public virtual DbSet<Set> Sets { get; set; } = null!;
         public virtual DbSet<Softwarelink> Softwarelinks { get; set; } = null!;
@@ -2144,6 +2145,19 @@ namespace CRM.Models.Crm
                 entity.Property(e => e.SubTittle).HasMaxLength(250);
 
                 entity.Property(e => e.Tittle).HasMaxLength(250);
+            });
+
+            modelBuilder.Entity<Selfassesstmentdatum>(entity =>
+            {
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Createddate).HasColumnType("datetime");
+
+                entity.Property(e => e.EmpId).HasMaxLength(255);
+
+                entity.Property(e => e.ManagerName).HasMaxLength(200);
+
+                entity.Property(e => e.Startyear).HasColumnName("startyear");
             });
 
             modelBuilder.Entity<Server>(entity =>
