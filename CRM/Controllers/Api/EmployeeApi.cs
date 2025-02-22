@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.TeamFoundation.TestManagement.WebApi;
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.Text.Json;
 using City = CRM.Models.Crm.City;
 
 
@@ -2299,5 +2300,47 @@ namespace CRM.Controllers.Api
                 throw new Exception(ex.Message);
             }
         }
+
+        [HttpPost, Route("SelfAssessmentResponse")]
+        public async Task<IActionResult> SelfAssessmentResponse([FromBody] SelfassesstmentdataDto model)
+        {
+            var response = new Response<SelfassesstmentdataDto>();
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userid = User.Claims.FirstOrDefault().Value;
+                    var isLoginExists = await _apiemp.AddSelfAssessmentResponse(model, userid);
+                    if (isLoginExists != null)
+                    {
+                        response.Succeeded = true;
+                        response.StatusCode = StatusCodes.Status200OK;
+                        response.Status = "Success";
+                        response.Message = "Data Added Successful..";
+                        response.Data = isLoginExists;
+                        return Ok(response);
+                    }
+                    else
+                    {
+                        response.StatusCode = StatusCodes.Status401Unauthorized;
+                        response.Message = "Data not found.";
+                        return Ok(response);
+                    }
+                }
+                else
+                {
+                    response.StatusCode = StatusCodes.Status401Unauthorized;
+                    response.Message = "Token is expired.";
+                    return BadRequest(response);
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        
     }
 }

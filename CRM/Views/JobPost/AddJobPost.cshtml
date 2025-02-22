@@ -1,0 +1,695 @@
+﻿@using System.Web
+@model CRM.Models.Jobcontext.CJobOpen
+
+@{
+    ViewData["Title"] = "Addjob";
+    Layout = "~/Views/Shared/_adminLayout.cshtml";
+}
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<!-- SweetAlert2 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+<!-- Flatpickr -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<!-- Select2 -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+
+<style>
+    .dataTables_wrapper table.dataTable th {
+        background-color: #00baf2 !important;
+        padding: 24px 0.75rem !important;
+    }
+</style>
+
+
+<style>
+    .note-editable ul {
+        list-style: disc !important;
+        list-style-position: inside !important;
+    }
+
+    .note-editable ol {
+        list-style: decimal !important;
+        list-style-position: inside !important;
+    }
+</style>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var message = "@TempData["Message"]";
+
+        if (message == "ok"  || message == "updok") {
+            if (message) {
+                let alertText;
+
+               if (message == "updok") {
+                    alertText = "Job updated successfully.";
+                } else {
+                    alertText = "Job added successfully.";
+                }
+
+                Swal.fire({
+                    title: 'Success',
+                    text: alertText,
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        setTimeout(function () {
+                            window.location.href = '@Url.Action("AddJobPost", "JobPost")';
+                        }, 1000);
+                    }
+                });
+            }
+        }
+        else {
+            if (message) {
+                Swal.fire({
+                    title: 'Failed',
+                    text: message,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        setTimeout(function () {
+                            window.location.href = '@Url.Action("AddJobPost", "JobPost")';
+                        }, 1000);
+                    }
+                });
+            }
+        }
+    });
+</script>
+<div class="page-wrapper">
+    <div class="page-body-wrapper">
+        <div class="page-sidebar">
+        </div>
+
+        <div class="page-body">
+
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="page-header-left">
+                                <h2>
+                                    @ViewBag.heading
+                                </h2>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <ol class="breadcrumb pull-right">
+                                <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
+                                <li class="breadcrumb-item">Job Master</li>
+                                <li class="breadcrumb-item">Add Job</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Container-fluid Ends-->
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="row">
+
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <form asp-action="Addjob" autocomplete="off" onsubmit="return validateForm()">
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <label>Company Name</label>
+                                            <input type="text" class="form-control" value='@ViewBag.Organization' name="Companyid" readonly />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <input type="hidden" value='@ViewBag.id' name="Id" />
+                                            <div class="form-group">
+                                                <label for="exampleInputEmail1">Department</label>
+                                                <select name="Department" class="form-control " id="ddDepartmentID">
+                                                    <option value="">-- Select Department --</option>
+                                                    @foreach (var dep in ViewBag.Department)
+                                                    {
+                                                        <option value="@dep.Value">@dep.Text</option>
+                                                    }
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="JobTitle"> Job Title</label>
+                                                <select class="form-control" id="ddljobtitle" name="JobTitle">
+                                                    <option value="">-- Select Designation --</option>
+                                                    @foreach (var jobt in ViewBag.Designation)
+                                                    {
+                                                        <option value="@jobt.Value">@jobt.Text</option>
+                                                    }
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <label>State</label>
+                                            <select class="form-control " id="ddlState" name="Stateid">
+                                                <option value="">-- Select State --</option>
+                                                @foreach (var item in ViewBag.state)
+                                                {
+                                                    <option value="@item.Value">@item.Text</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <label>City</label>
+                                            <select class="form-control" name="Cityid" id="City">
+                                                <option value="">-- Select City Name --</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+
+                                            <div class="form-group">
+                                                <label for="exampleInputEmail1"> No of Openings</label>
+                                                <input type="text" class="form-control" id="txtOpenings" value='@ViewBag.NoOfOpenings' name="Opening" onkeydown="validateNumericInput(event)">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="exampleInputEmail1">Required Expeerience</label>
+                                                <input type="text" class="form-control" id="txtRequired" value='@ViewBag.RequiredExpeerience' placeholder="2-4 Years" name="RequiredExperience">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <input type="hidden" value='@ViewBag.id' name="Id" />
+                                            <div class="form-group">
+                                                <label for="exampleInputEmail1">Qualification</label>
+                                                <select name="Qualificationid" class="form-control" id="TxtQualificationId">
+                                                    <option value="">-- Select Qualification --</option>
+                                                    @foreach (var Qual in ViewBag.Qualification)
+                                                    {
+                                                        <option value="@Qual.Value">@Qual.Text</option>
+                                                    }
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <input type="hidden" value='@ViewBag.id' name="Id" />
+                                            <div class="form-group">
+                                                <label for="exampleInputEmail1">Posted By</label>
+                                                <select name="PostedById" class="form-control" id="TxtPostedId">
+                                                    <option value="">-- Select Posted By --</option>
+                                                    @foreach (var Posted in ViewBag.PostedBy)
+                                                    {
+                                                        <option value="@Posted.Value">@Posted.Text</option>
+                                                    }
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <input type="hidden" value='@ViewBag.id' name="Id" />
+                                            <div class="form-group">
+                                                <label for="exampleInputEmail1">Work Mode</label>
+                                                <select name="WorkModeId" class="form-control" id="TxtWorkModeId">
+                                                    <option value="">-- Select Work Mode --</option>
+                                                    @foreach (var Posted in @ViewBag.WorkModeId)
+                                                    {
+                                                        <option value="@Posted.Value">@Posted.Text</option>
+                                                    }
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        @* <div class="col-md-4">
+                                        <div class="form-group">
+                                        <label for="exampleInputEmail1">Status</label>
+                                        <select class="form-control" id="Status" name="Status">
+                                        <option value="">--Select Status--</option>
+                                        <option value="1">Active</option>
+                                        <option value="0">In-Active</option>
+                                        </select>
+                                        </div>
+                                        </div>*@
+                                        <div class="col-md-4">
+                                            <input type="hidden" value='@ViewBag.id' name="Id" />
+                                            <div class="form-group">
+                                                <label for="exampleInputEmail1">Package</label>
+                                                <select name="Package" class="form-control" id="TxtPackageId">
+                                                    <option value="">-- Select Package --</option>
+                                                    @foreach (var pac in ViewBag.Packagesss)
+                                                    {
+                                                        <option value="@pac.Value">@pac.Text</option>
+                                                    }
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="exampleInputEmail1">Employeement Type </label>
+                                                <input type="text" class="form-control" id="TxtEmployeementType" value='@ViewBag.EmployeementType' placeholder="Employeement Type" name="EmployeementType">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    @if (@ViewBag.id > 0)
+                                    {
+                                        <div class="row">
+                                            <div class="col-md-12 editor-space">
+                                                <div class="form-group">
+                                                    <label for="TxtSkills">Skills</label>
+                                                    <textarea data-feature="all" id="TxtSkills" name="Skills" rows="5">@ViewBag.Skills</textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label for="TxtSkills">Skills</label>
+                                                    <textarea data-feature="all" id="TxtSkills" name="Skills" rows="5"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+
+                                    @if (ViewBag.id > 0)
+                                    {
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label for="txtJobDiscreptions">Job Discreptions</label>
+                                                    <textarea data-feature="all" id="txtJobDiscreptions" name="JobDescription" rows="5">@ViewBag.JobDescreption</textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label for="txtJobDiscreptions">Job Discreptions</label>
+                                                    <textarea data-feature="all" id="txtJobDiscreptions" name="JobDescription" rows="5"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+
+                                    @if (ViewBag.id > 0)
+                                    {
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label for="txtQualificationDescription">Qualification Description</label>
+                                                    <textarea data-feature="all" id="txtQualificationDescription" name="QualificationDescription" rows="5">@ViewBag.QualificationDescription</textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label for="txtQualificationDescription">Qualification Description</label>
+                                                    <textarea data-feature="all" id="txtQualificationDescription" name="QualificationDescription" rows="5"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+
+                                    @if (ViewBag.id > 0)
+                                    {
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label for="txtAboutDescription">About Description</label>
+                                                    <textarea data-feature="all" id="txtAboutDescription" name="AboutDescription" rows="5">@ViewBag.AboutDescription</textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label for="txtAboutDescription">About Description</label>
+                                                    <textarea data-feature="all" id="txtAboutDescription" name="AboutDescription" rows="5"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+
+                                    @if (ViewBag.id > 0)
+                                    {
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label for="txtResponsebilitiesDescription">Responsebilities Description</label>
+                                                    <textarea data-feature="all" id="txtResponsebilitiesDescription" name="ResponsebilitiesDescription" rows="5">@ViewBag.ResponsebilitiesDescription</textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label for="txtResponsebilitiesDescription">Responsebilities Description</label>
+                                                    <textarea data-feature="all" id="txtResponsebilitiesDescription" name="ResponsebilitiesDescription" rows="5"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    <div class="form-group" style="display:flex; justify-content:center;">
+                                        <input type="submit" value="@ViewBag.btnText" class="btn btn-primary" />
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+ <script type="text/javascript">
+    $(document).ready(function () {
+
+        var departmentId = '@ViewBag.DepartmentId'
+        if (departmentId != "") {
+            $("#ddDepartmentID").val(departmentId).trigger('change');
+        }
+        var JobTitleId = '@ViewBag.DesignationId'
+        if (JobTitleId != "") {
+            $("#ddljobtitle").val(JobTitleId).trigger('change');
+        }
+        // var valueintextbox = $("#txtJobDiscreptions").val().trim()
+        // $("#txtJobDiscreptions").val("");
+        // if (valueintextbox != '') {
+
+        //     $("#txtJobDiscreptions").val("");
+        //     $("#txtJobDiscreptions").val(valueintextbox);
+        // }
+        var selectedPackage = '@ViewBag.Package'
+        if (selectedPackage != "") {
+            $("#TxtPackageId").val(selectedPackage).trigger('change');
+        }
+        var selectedQualification = '@ViewBag.Qualificationid'
+        if (selectedQualification != "") {
+            $("#TxtQualificationId").val(selectedQualification).trigger('change');
+        }
+        var selectedPosted = '@ViewBag.PostedById'
+        if (selectedPosted != "") {
+            $("#TxtPostedId").val(selectedPosted).trigger('change');
+        }
+        var selectedWorkMode = '@ViewBag.WorkMode'
+        if (selectedWorkMode != "") {
+            $("#TxtWorkModeId").val(selectedWorkMode).trigger('change');
+        }
+        // var selectedJobDescreption = '@ViewBag.JobDescreption'
+        // if (selectedJobDescreption != "") {
+        //     $("#txtJobDiscreptions").val(selectedJobDescreption);
+        // }
+        // var selectedSkills = '@ViewBag.Skills'
+        // if (selectedSkills != "") {
+        //     $("#TxtSkills").val(selectedSkills);
+        // }
+        var selectedstateid = '@ViewBag.stateid'
+        if (selectedstateid != "") {
+            $("#ddlState").val(selectedstateid).trigger('change');
+        }
+        //  var Companyname = '@ViewBag.company'
+        // if (Companyname != "") {
+        //     $("#ddlCompany").val(Companyname);
+        // }
+        // var QuDescription = '@ViewBag.QualificationDescription'
+        // if (QuDescription != "") {
+        //     $("#txtQualificationDescription").val(QuDescription);
+        // }
+        // var AbDescription = '@ViewBag.AboutDescription'
+        // if (AbDescription != "") {
+        //     $("#txtAboutDescription").val(AbDescription);
+        // }
+        // var RespDescription = '@ViewBag.ResponsebilitiesDescription'
+        // if (RespDescription != "") {
+        //     $("#txtResponsebilitiesDescription").val(RespDescription);
+        // }
+
+    })
+  
+</script> 
+
+<script>
+    // $(document).ready(function () {
+    //     $('#ddlState').change(function () {
+    //         var stateId = $(this).val();
+    //         if (stateId !== '0') {
+    //             $.ajax({
+    //                 url: '/JobPost/citydrop',
+    //                 type: 'GET',
+    //                 data: { stateid: stateId },
+    //                 success: function (data) {
+    //                     $('#City').empty();
+    //                     $('#City').append($('<option></option>').val(0).text('-- Select City --'));
+    //                     $.each(data, function (index, item) {
+    //                         $('#City').append($('<option>').text(item.text).attr('value', item.value));
+    //                     });
+    //                 }
+    //             });
+    //         }
+    //     });
+
+    //     var cityid = $("#ddlState").val();
+    //     $.get('/JobPost/citydrop', { stateid: cityid }, function (data) {
+
+    //         $('#City').empty();
+
+    //         $('#City').append($('<option></option>').val(0).text('-- Select City --'));
+    //         $.each(data, function (index, item) {
+    //             var dropdownBindStateAndCity = $("#City");
+    //             dropdownBindStateAndCity.append($('<option></option>').val(item.value).text(item.text));
+
+    //         });
+    //         var selectedcityid = '@ViewBag.cityid'
+    //         if (selectedcityid != "") {
+    //             $("#City").val(selectedcityid);
+    //         }
+    //     });
+    // });
+    $(document).ready(function () {
+        var selectedCityId = '@ViewBag.cityid'; 
+
+        $('#ddlState').change(function () {
+            var stateId = $(this).val();
+            if (stateId !== '') {
+                $.ajax({
+                    url: '/JobPost/citydrop',
+                    type: 'GET',
+                    data: { stateid: stateId },
+                    success: function (data) {
+                        $('#City').empty().append($('<option></option>').val("").text('-- Select City --'));
+                        $.each(data, function (index, item) {
+                            $('#City').append($('<option>').val(item.value).text(item.text));
+                        });
+
+                        // Set selected city if available
+                        if (selectedCityId) {
+                            $('#City').val(selectedCityId);
+                        }
+                    }
+                });
+            } else {
+                $('#City').empty().append($('<option></option>').val("").text('-- Select City --'));
+            }
+        });
+        var currentStateId = $('#ddlState').val();
+        if (currentStateId !== '') {
+            $('#ddlState').trigger('change');
+        }
+    });
+
+</script>
+
+<script>
+    function validateNumericInput(event) {
+        if ([46, 8, 9, 27, 13].indexOf(event.keyCode) !== -1 ||
+            (event.keyCode == 65 && event.ctrlKey === true) ||
+            (event.keyCode >= 35 && event.keyCode <= 39)) {
+            return;
+        }
+        if ((event.shiftKey || (event.keyCode < 48 || event.keyCode > 57)) && (event.keyCode < 96 || event.keyCode > 105)) {
+            event.preventDefault();
+        }
+
+    }
+
+</script>
+<script>
+    function validateForm() {
+        var CompanyName = $('#ddlCompany').val();
+        var Department = $('#ddDepartmentID').val();
+        var JobTitle = $('#ddljobtitle').val();
+        var State = $('#ddlState').val();
+        var City = $('#City').val();
+        var NoofOpenings = $('#txtOpenings').val();
+        var RequiredExpeerience = $('#txtRequired').val();
+        var Status = $('#Status').val();
+        var Package = $('#TxtPackageId').val();
+        var EmployeementType = $('#TxtEmployeementType').val();
+        var Qualification = $('#TxtQualificationId').val();
+        var PostedBy = $('#TxtPostedId').val();
+        var WorkMode = $('#TxtWorkModeId').val();
+        var JobDiscreptions = $('#txtJobDiscreptions').val();
+        var Skills = $('#TxtSkills').val();
+        var QualificationDescription = $('#txtQualificationDescription').val();
+        var AboutDescription = $('#txtAboutDescription').val();
+        var ResponsebilitiesDescription = $('#txtResponsebilitiesDescription').val();
+
+        if (CompanyName.trim() === "") {
+            alert("Company Name is required.");
+            return false;
+        }
+       else if (Department.trim() === "") {
+            alert("Department Name is required.");
+            return false;
+        }
+       else if (JobTitle.trim() === "") {
+            alert("JobTitle  is required.");
+            return false;
+        }
+        else if (State.trim() === "") {
+            alert("State Name is required.");
+            return false;
+        }
+        else if (City.trim() === "") {
+            alert("City Name is required.");
+            return false;
+        }
+        else if (NoofOpenings.trim() === "") {
+            alert("No of Openings is required.");
+            return false;
+        }
+        else if (RequiredExpeerience.trim() === "") {
+            alert("Required Expeerience is required.");
+            return false;
+        }
+        else if (Status.trim() === "") {
+            alert("Status is required.");
+            return false;
+        }
+        else if (Package.trim() === "") {
+            alert("Package Name is required.");
+            return false;
+        }
+        else if (EmployeementType.trim() === "") {
+            alert("EmployeementType is required.");
+            return false;
+        }
+        else if (Qualification.trim() === "") {
+            alert("Qualification Name is required.");
+            return false;
+        }
+        else if (PostedBy.trim() === "") {
+            alert("Posted Name  is required.");
+            return false;
+        }
+        else if (WorkMode.trim() === "") {
+            alert("WorkMode  is required.");
+            return false;
+        }
+        else if (Skills.trim() === "") {
+            alert("Skill  is required.");
+            return false;
+        }
+        else if (JobDiscreptions.trim() === "") {
+            alert("Job Discreptions  is required.");
+            return false;
+        }
+        else if (QualificationDescription.trim() === "") {
+            alert("Qualification Description  is required.");
+            return false;
+        }
+        else if (AboutDescription.trim() === "") {
+            alert("About Description  is required.");
+            return false;
+        }
+        else if (ResponsebilitiesDescription.trim() === "") {
+            alert("Responsebilities Description  is required.");
+            return false;
+        }
+        return true;
+    }
+</script>
+
+<script>
+    function getCommonConfig() {
+        return {
+            on: {
+                contentDom: function (evt) {
+                    // Allow custom context menu only on table elements
+                    evt.editor.editable().on('contextmenu', function (contextEvent) {
+                        var path = evt.editor.elementPath();
+                        if (!path.contains('table')) {
+                            contextEvent.cancel();
+                        }
+                    }, null, null, 5);
+                }
+            }
+        };
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize CKEditor on all textareas that have the attribute data-feature="all"
+        var textareas = document.querySelectorAll('textarea[data-feature="all"]');
+        textareas.forEach(function (textarea) {
+            // Ensure the textarea has a unique id
+            if (textarea.id) {
+                CKEDITOR.replace(textarea.id, getCommonConfig());
+            }
+        });
+
+        // Initialize inline CKEditor for area1
+        CKEDITOR.disableAutoInline = true;
+        CKEDITOR.inline('area1', {
+            toolbar: [
+                {
+                    name: 'basicstyles',
+                    groups: ['basicstyles'],
+                    items: ['Format', 'Bold', 'Italic', 'Underline']
+                },
+                {
+                    name: 'paragraph',
+                    groups: ['list', 'indent', 'blocks', 'align', 'bidi'],
+                    items: ['NumberedList', 'BulletedList', 'JustifyLeft', 'JustifyCenter', 'JustifyRight']
+                },
+                {
+                    name: 'links',
+                    items: ['Link', 'Unlink']
+                }
+            ],
+            fillEmptyBlocks: false,
+            autoParagraph: false
+        });
+    });
+
+</script>
+

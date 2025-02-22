@@ -1,0 +1,241 @@
+﻿@model IEnumerable<CRM.Models.DTO.GetApplyjob>
+
+@{
+    ViewData["Title"] = "GetApplyjob";
+    Layout = "~/Views/Shared/_adminLayout.cshtml";
+}
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style>
+    .dataTables_wrapper table.dataTable th {
+        background-color: #00baf2 !important;
+        padding: 24px 0.75rem !important;
+    }
+</style>
+
+@* <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var message = "@TempData["msg"]";
+
+        if (message) {
+            Swal.fire({
+                title: 'Success',
+                text: message,
+                icon: 'info',
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    setTimeout(function () {
+                        window.location.href = '@Url.Action("VendorList", "Vendor")';
+                    }, 1000);
+                }
+            });
+        }
+    });
+</script> *@
+<div class="page-wrapper">
+    <div class="page-body-wrapper">
+        <div class="page-sidebar">
+        </div>
+        <!-- Page Sidebar Ends-->
+        <!-- Right sidebar Start-->
+        <!-- Right sidebar Ends-->
+
+        <div class="page-body">
+
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="page-header-left">
+                                <h2>
+                                    Apply Job List
+                                </h2>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <ol class="breadcrumb pull-right">
+                                <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
+                                <li class="breadcrumb-item">Job Master</li>
+                                <li class="breadcrumb-item">Apply Job</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Container-fluid Ends-->
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="row">
+
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class=" table-responsive">
+                                    <table id="datatable" class="table table-responsive">
+                                        <thead>
+                                            <tr style="background-color: #00baf2;">
+                                                <th nowrap>Sl. No.</th>
+                                                <th nowrap>Full Name</th>
+                                                <th nowrap>Email</th>
+                                                <th nowrap>Mobile No</th>
+                                                <th nowrap>Experience</th>
+                                                <th nowrap>State Name</th>
+                                                <th nowrap>City Name</th>
+                                                <th nowrap>Gender Name</th>
+                                                <th nowrap>Dateofbirth</th>
+                                                <th nowrap>Pincode</th>
+                                                <th nowrap>Address</th>
+                                                <th nowrap>Designation</th>
+                                                <th nowrap>Status</th>
+                                                <th nowrap>Update Status</th>
+                                                <th nowrap>CV</th>
+                                                <th nowrap>Profile Image</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{
+                                                var count = 0;
+                                                @if (Model != null && Model.Count() > 0)
+                                                {
+                                                    @foreach (var item in Model)
+                                                    {
+                                                        count++;
+                                                        <tr>
+                                                            <th scope="row">@count</th>
+                                                            <td>@item.FullName</td>
+                                                            <td>@item.EmailID</td>
+                                                            <td>@item.MobileNumber</td>
+                                                            <td>@item.Experience</td>
+                                                            <td>@item.StateName</td>
+                                                            <td>@item.CityName</td>
+                                                            <td>@item.GenderName</td>
+                                                            <td>@item.Dateofbirth</td>
+                                                            <td>@item.Pincode</td>
+                                                            <td>@item.Address</td>
+                                                            <td>@item.Designation</td>
+                                                            <td>
+                                                                @if (!string.IsNullOrEmpty(item.CarrierStatus))
+                                                                {
+                                                                    if (item.CarrierStatus == "Applied")
+                                                                    {
+                                                                        <span class="badge badge-primary" style="height: 26px; width: 106px;font-size: 16px;">@item.CarrierStatus</span>
+                                                                    }
+                                                                    else if (item.CarrierStatus == "Hired")
+                                                                    {
+                                                                        <span class="badge badge-success" style="height: 26px; width: 106px;font-size: 16px;">@item.CarrierStatus</span>
+                                                                    }
+                                                                    else if (item.CarrierStatus == "Schedule")
+                                                                    {
+                                                                        <span class="badge badge-warning" style="height: 26px; width: 106px;font-size: 16px;">@item.CarrierStatus</span>
+                                                                    }
+                                                                    else if (item.CarrierStatus == "Rejected")
+                                                                    {
+                                                                        <span class="badge badge-danger" style="height: 26px; width: 106px;font-size: 16px;">@item.CarrierStatus</span>
+                                                                    }
+                                                                    else if (item.CarrierStatus == "Shortlisted")
+                                                                    {
+                                                                        <span class="badge badge-success" style="height: 26px; width: 106px;font-size: 16px;">@item.CarrierStatus</span>
+                                                                    }
+                                                                    else if (item.CarrierStatus == "Processing")
+                                                                    {
+                                                                        <span class="badge badge-warning" style="height: 26px; width: 106px;font-size: 16px;">@item.CarrierStatus</span>
+                                                                    }
+                                                                }
+                                                            </td>
+                                                            <td class="carrierid" hidden>
+
+                                                                @item.carrierlistid
+
+                                                            </td>
+
+                                                            <td class="CarrierId" hidden>
+                                                                @item.Id
+                                                            </td>
+
+                                                            <td class="EmailId" hidden>
+                                                                @item.EmailID
+                                                            </td>
+                                                            <td>
+                                                                <select name="CarrierStatus" class="form-control carrier-status" id="CarrierStatus" style="height: 33px; width: 100px;">
+                                                                    <option value="0">-- Select Carrier Status --</option>
+                                                                    @foreach (var pac in ViewBag.carrierStatus)
+                                                                    {
+                                                                        if (@pac.Text != "Hired")
+                                                                        {
+                                                                            <option value="@pac.Value">@pac.Text</option>
+                                                                        }
+                                                                    }
+                                                                </select>
+                                                            </td>
+                                                            <td><a target="_blank" href='@item.ResumeFilePath' title="Click here to Open Document (Document will be open in new Tab)"><img src='../assets/images/pdf-icon-4.png' style="height:50px;width:50px" /></a></td>
+                                                            @if (@item.ProfileImage != "https://jobapi.ndtechland.com/")
+                                                            {
+                                                                <td><a target="_blank" href="@item.ProfileImage" title="Click here to Open Document (Document will be open in new Tab)"><img src="@item.ProfileImage" alt="Document Image" style="height:50px;width:50px" /></a></td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td><a target="_blank" href="@item.ProfileImage" title="Click here to Open Document (Document will be open in new Tab)"><img src="/assets/images/no image.png" alt="Document Image" style="height:50px;width:50px" /></a></td>
+                                                            }
+                                                        </tr>
+                                                    }
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="pagination-container">
+                <ul id="pagination" class="pagination"></ul>
+            </div>
+        </div>
+
+
+    </div>
+
+</div>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $(document).on("change", "#CarrierStatus", function () {
+            var carrierStatus = $(this).val();
+            var selectedCarrierId = $(this).closest('tr').find('.CarrierId').text().trim();
+            var selectedCarrierStatusCell = $(this).closest('tr').find('.CarrierStatus');
+            var selectedCarrierEmail = $(this).closest('tr').find('.EmailId').text().trim();
+            $.ajax({
+                url: '/JobPost/GetApplyJob',
+                type: 'POST',
+                data: { CarrierStatus: carrierStatus, Id: selectedCarrierId, Email: selectedCarrierEmail },
+                success: function (response) {
+                    selectedCarrierStatusCell.text(response);
+                    location.reload();
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error updating carrier status:', error);
+                }
+            });
+        });
+    });
+
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.carrier-status').each(function () {
+            var selectedstatus = parseInt($(this).closest('tr').find('.carrierid').text().trim());
+            if (selectedstatus && selectedstatus !== "") {
+                $(this).val(selectedstatus);
+            }
+        });
+    });
+</script>
+
+

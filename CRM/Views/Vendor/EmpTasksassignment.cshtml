@@ -180,12 +180,7 @@
                                             <label class="control-label" for="taskTitle">Task Title</label>
                                             <input id="taskTitle" type="text" name="Tittle" value="@ViewBag.Tittle" placeholder="Please Enter Task Title" class="form-control" required />
                                         </div>
-
-                                        <div class="form-group col-md-6 editor-space">
-                                            <label class="control-label" for="taskDescription">Task Description</label>
-                                            <textarea rows="5" name="Description" id="editor1" class="form-control" cols="30" rows="10" placeholder="Please Enter Task Description">@ViewBag.Description</textarea>
-                                        </div>
-                                        <div class="form-group col-md-6">
+                                      @*   <div class="form-group col-md-6">
                                             <label for="taskStatusID">Task Status</label>
                                              <div class="dropdown-container position-relative">
                                             <select name="Status" class="form-control" id="taskStatusID" required>
@@ -197,9 +192,14 @@
                                             </select>
                                                 <i class="dropdown-icon fa fa-caret-down position-absolute"></i>
                                             </div>
+                                        </div> *@
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-md-12 editor-space">
+                                            <label class="control-label" for="taskDescription">Task Description</label>
+                                            <textarea name="Description" id="editor1" class="form-control" cols="30" rows="10" placeholder="Please Enter Task Description">@ViewBag.Description</textarea>
                                         </div>
                                     </div>
-
                                     <div class="form-group" style="display:flex; justify-content:center;">
                                         <input type="submit" value="@ViewBag.btnText" class="btn btn-primary" />
                                     </div>

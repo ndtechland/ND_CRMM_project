@@ -1,0 +1,186 @@
+﻿@model IEnumerable<CRM.Models.DTO.Joblist>
+
+@{
+    ViewData["Title"] = "Joblist";
+    Layout = "~/Views/Shared/_adminLayout.cshtml";
+}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style>
+    .dataTables_wrapper table.dataTable th {
+        background-color: #00baf2 !important;
+        padding: 24px 0.75rem !important;
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var message = "@TempData["Message"]";
+
+        if (message) {
+            Swal.fire({
+                title: 'Success',
+                text: message,
+                icon: 'info',
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    setTimeout(function () {
+                        window.location.href = '@Url.Action("JobList", "JobPost")';
+                    }, 1000);
+                }
+            });
+        }
+    });
+</script>
+<div class="page-wrapper">
+    <div class="page-body-wrapper">
+        <div class="page-sidebar">
+        </div>
+        <!-- Page Sidebar Ends-->
+        <!-- Right sidebar Start-->
+        <!-- Right sidebar Ends-->
+
+        <div class="page-body">
+
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="page-header-left">
+                                <h2>
+                                    Job List
+                                </h2>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <ol class="breadcrumb pull-right">
+                                <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
+                                <li class="breadcrumb-item">Job Master</li>
+                                <li class="breadcrumb-item">Job List</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Container-fluid Ends-->
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="row">
+
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class=" table-responsive">
+                                    <table id="datatable" class="table table-responsive">
+                                        <thead>
+                                            <tr style="background-color: #00baf2;">
+                                                <th nowrap>Sl. No.</th>
+                                                <th nowrap>Designation</th>
+                                                <th nowrap>No Of Opening</th>
+                                                <th nowrap>Required Experience </th>
+                                                <th nowrap>Job Description </th>
+                                                <th nowrap>Skills</th>
+                                                <th nowrap>Package</th>
+                                                <th nowrap>Employeement Type</th>
+                                                <th nowrap>Qualification Name</th>
+                                                <th nowrap>Department</th>
+                                                <th nowrap>Posted by</th>
+                                                <th nowrap>Work Mode</th>
+                                                <th nowrap>State Name</th>
+                                                <th nowrap>City Name</th>
+                                                <th nowrap>Added On</th>
+                                                <th nowrap>Qualification Description </th>
+                                                <th nowrap>About Description</th>
+                                                <th nowrap>Responsebilities Description</th>
+                                                <th nowrap>Status</th>
+                                                <th nowrap>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{
+                                                var count = 0;
+                                                foreach (var item in Model)
+                                                {
+                                                    count++;
+                                                    <tr>
+
+                                                        <th scope="row">@count</th>
+                                                        <td nowrap>@item.DesignationName</td>
+                                                        <td nowrap>@item.NoOfOpening</td>
+                                                        <td nowrap>@item.RequiredExperience</td>
+                                                        <td>@Html.Raw(@item.JobDescription.Length > 100 ? @item.JobDescription.Substring(0, 100) + "..." : @item.JobDescription)</td>
+                                                        <td>@Html.Raw(@item.Skills.Length > 100 ? @item.Skills.Substring(0, 100) + "..." : @item.Skills)</td>
+                                                        <td nowrap>@item.Package</td>
+                                                        <td nowrap>@item.EmployeementType</td>
+                                                        <td nowrap>@item.QualificationName</td>
+                                                        <td nowrap>@item.Department</td>
+                                                        <td nowrap>@item.PostedBy</td>
+                                                        <td nowrap>@item.WorkMode</td>
+                                                        <td nowrap>@item.stateName</td>
+                                                        <td nowrap>@item.cityName</td>
+                                                        <td style="white-space: nowrap">@item.AddedOn.ToString("dd/MM/yyyy")</td>
+                                                        <td>@Html.Raw(@item.QualificationDescription.Length > 100 ? @item.QualificationDescription.Substring(0, 100) + "..." : @item.QualificationDescription)</td>
+                                                        <td>@Html.Raw(@item.AboutDescription.Length > 100 ? @item.AboutDescription.Substring(0, 100) + "..." : @item.AboutDescription)</td>
+                                                        <td>@Html.Raw(@item.ResponsebilitiesDescription.Length > 100 ? @item.ResponsebilitiesDescription.Substring(0, 100) + "..." : @item.ResponsebilitiesDescription)</td>
+
+                                                        <td>
+                                                            @if ((bool)item.Status)
+                                                            {
+                                                                <a href="/JobPost/UpdateJobPostActiveStatus?Id=@item.id" class="btn btn-success"
+                                                                   onclick="return confirm('Are you sure you want to inactivate');">
+                                                                    Active
+                                                                </a>
+                                                            }
+                                                            else
+                                                            {
+                                                                <a href="/JobPost/UpdateJobPostActiveStatus?Id=@item.id&Ismail=@true" class="btn btn-danger" onclick="return confirm('Are you sure you want to Activate');">InActive</a>
+                                                            }
+                                                        </td>
+                                                        <td>
+                                                            <div>
+                                                                <a href="@Url.Action("AddJobPost","JobPost",new { id=item.id})" class="fa fa-edit m-2 font-success"></a>
+                                                                <a href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteJob", "JobPost", new { id = item.id })')" class="fa fa-trash font-danger"></a>
+
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="pagination-container">
+                <ul id="pagination" class="pagination"></ul>
+            </div>
+        </div>
+
+
+    </div>
+
+</div>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<script>
+    function confirmDelete(url) {
+        var result = confirm("Are you sure you want to delete?");
+        if (result) {
+            window.location.href = url;
+        }
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        $('#datatable').DataTable();
+    });
+</script>
+
