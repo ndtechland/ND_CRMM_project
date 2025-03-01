@@ -41,6 +41,7 @@ namespace CRM.Models.DTO
         public string? ManagerName { get; set; }
 
     }
+   
     public class AllQuestion
     {
         public QuestionOne QuestionOne { get; set; } = new QuestionOne();
@@ -61,6 +62,7 @@ namespace CRM.Models.DTO
     }
     public class QuestionOne1
     {
+        public int Id { get; set; }
         public int IndexId { get; set; }
         public string? ProjectName { get; set; }
         public string? TimeLine { get; set; }
@@ -68,17 +70,21 @@ namespace CRM.Models.DTO
     }
     public class QuestionOne2
     {
+        public int Id { get; set; }
         public int IndexId { get; set; }
         public string? Goal { get; set; }
         public string? Result { get; set; }
     }
     public class QuestionOne3
     {
+        public int Id { get; set; }
         public int IndexId { get; set; }
         public string? Example { get; set; }
     }
     public class QuestionOne4
     {
+        public int Id { get; set; }
+
         public int IndexId { get; set; }
         public string? Target { get; set; }
         public string? Deadline { get; set; }
@@ -90,9 +96,11 @@ namespace CRM.Models.DTO
         public QuestionTwo1 Question2 { get; set; } = new QuestionTwo1();
         public QuestionTwo1 Question3 { get; set; } = new QuestionTwo1();
         public QuestionTwo1 Question4 { get; set; } = new QuestionTwo1();
+        public QuestionTwo1 Question5 { get; set; } = new QuestionTwo1();
     }
     public class QuestionTwo1
     {
+        public int Id { get; set; }
         public int IndexId { get; set; }
         public string? Rating { get; set; }
         public string? Timeline { get; set; }
@@ -108,6 +116,8 @@ namespace CRM.Models.DTO
     }
     public class QuestionThird1
     {
+        public int Id { get; set; }
+
         public int IndexId { get; set; }
         public string? Example { get; set; }
     }
@@ -120,16 +130,19 @@ namespace CRM.Models.DTO
     }
     public class QuestionFour1
     {
+        public int Id { get; set; }
         public int IndexId { get; set; }
         public string? feddback { get; set; }
     }
     public class QuestionFour2
     {
+        public int Id { get; set; }
         public int IndexId { get; set; }
         public string? Improvement { get; set; }
     }
     public class QuestionFour4
     {
+        public int Id { get; set; }
         public int IndexId { get; set; }
         public string? Action { get; set; }
     }
@@ -143,11 +156,13 @@ namespace CRM.Models.DTO
     }
     public class QuestionFive1
     {
+        public int Id { get; set; }
         public int IndexId { get; set; }
         public string? Priorites { get; set; }
     }
     public class QuestionFive2
     {
+        public int Id { get; set; }
         public int IndexId { get; set; }
         public string? Example { get; set; }
     }
@@ -159,11 +174,13 @@ namespace CRM.Models.DTO
     }
     public class QuestionSix1
     {
+        public int Id { get; set; }
         public int IndexId { get; set; }
         public string? Example { get; set; }
     }
     public class QuestionSix3
     {
+        public int Id { get; set; }
         public int IndexId { get; set; }
         public string? Resources { get; set; }
     }
@@ -176,21 +193,25 @@ namespace CRM.Models.DTO
     }
     public class QuestionSeven1
     {
+        public int Id { get; set; }
         public int IndexId { get; set; }
         public string? PerformanceSummary { get; set; }
     }
     public class QuestionSeven2
     {
+        public int Id { get; set; }
         public int IndexId { get; set; }
         public string? Achievement { get; set; }
     }
     public class QuestionSeven3
     {
+        public int Id { get; set; }
         public int IndexId { get; set; }
         public string? FocusArea { get; set; }
     }
     public class QuestionSeven4
     {
+        public int Id { get; set; }
         public int IndexId { get; set; }
         public string? Example { get; set; }
     }

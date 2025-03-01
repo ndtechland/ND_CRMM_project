@@ -239,14 +239,15 @@
 																@item.CustomerID
 															</td>
 															<td>
+																@Html.DisplayFor(modelItem => item.EmployeeId)
+															</td>
+															<td>
 																@Html.DisplayFor(modelItem => item.FirstName)
 															</td>
 															<td>
 																@Html.DisplayFor(modelItem => item.FatherName)
 															</td>
-															<td>
-																@Html.DisplayFor(modelItem => item.EmployeeId)
-															</td>
+															
 															<td style="display:none" id="hiddenIncentive">
 																@item.Incentive
 															</td>
@@ -352,16 +353,16 @@
 					Month: selectedMonth,
 					Year: year,
 					CustomerID: row.find('td:eq(2)').text().trim(),
-					FirstName: row.find('td:eq(3)').text().trim(),
-					FatherName: row.find('td:eq(4)').text().trim(),
-					EmployeeId: row.find('td:eq(5)').text().trim(),
-					Incentive: row.find('td:eq(6)').text().trim(),
-					TravellingAllowance: row.find('td:eq(7)').text().trim(),
-					Grosspay: row.find('td:eq(8)').text().trim(),
-					lop: row.find('td:eq(9)').text().trim(),
-					EmpEpfvalue: row.find('td:eq(10)').text().trim(),
-					EmpEsivalue: row.find('td:eq(11)').text().trim(),
-					GenerateSalary: row.find('td:eq(12)').text().trim(),
+					EmployeeId: row.find('td:eq(4)').text().trim(),
+					FirstName: row.find('td:eq(5)').text().trim(),
+					FatherName: row.find('td:eq(6)').text().trim(),
+					Incentive: row.find('td:eq(7)').text().trim(),
+					TravellingAllowance: row.find('td:eq(8)').text().trim(),
+					Grosspay: row.find('td:eq(9)').text().trim(),
+					lop: row.find('td:eq(10)').text().trim(),
+					EmpEpfvalue: row.find('td:eq(11)').text().trim(),
+					EmpEsivalue: row.find('td:eq(12)').text().trim(),
+					GenerateSalary: row.find('td:eq(13)').text().trim(),
 					Attendance: row.find('input[name="Attendance"]').val()
 				};
 				if (customer.Attendance === "") {
@@ -776,7 +777,7 @@
 
 					table.rows().every(function (rowIdx, tableLoop, rowLoop) {
 						var row = this.node();
-						var employeeId = $(row).find('td:nth-child(6)').text().trim();
+						var employeeId = $(row).find('td:nth-child(4)').text().trim();
 						var employeeData = response.employees.find(emp => emp.employeeId == employeeId);
 
 						// if (employeeData) {
@@ -883,7 +884,7 @@
 			var row = $(this).closest('tr');
 			var month = $('#Month').val();
 			var year = $('#Year').val();
-			var employeeId = row.find('td:nth-child(6)').text().trim();
+			var employeeId = row.find('td:nth-child(4)').text().trim();
 			var attendance = parseFloat($(this).val()) || 0;
 
 			if (!year || year == "0") {
@@ -1000,7 +1001,7 @@
 			var row = $(this).closest('tr');
 			var month = $('#Month').val();
 			var year = $('#Year').val();
-			var employeeId = row.find('td:nth-child(6)').text().trim();
+			var employeeId = row.find('td:nth-child(4)').text().trim();
 			var attendance = parseFloat($(this).val()) || 0;
 
 			if (!year || year == "0") {

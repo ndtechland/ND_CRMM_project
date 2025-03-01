@@ -31,6 +31,7 @@ using CRM.Controllers;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.TeamFoundation.Common;
 using CRM.Data;
+using System.Text.Json;
 
 
 namespace CRM.Repository
@@ -4044,7 +4045,7 @@ namespace CRM.Repository
 
                 var joblist = (from cj in jobOpens
                                join ct in cities on cj.Cityid equals ct.Id
-                               join st in states on cj.Stateid  equals st.Id
+                               join st in states on cj.Stateid equals st.Id
                                join dem in departments on cj.Department equals dem.Id
                                join desi in designations on Convert.ToInt32(cj.JobTitle) equals desi.Id
                                join ql in qualifications on cj.Qualificationid equals ql.Id
@@ -4079,9 +4080,28 @@ namespace CRM.Repository
             }
             catch (Exception ex)
             {
-                throw new Exception("Error retrieving job list", ex); 
+                throw new Exception("Error retrieving job list", ex);
             }
         }
+        public async Task<List<SelfassesstmentempdataDto>> SelfassesstmentdataEmployeeList(int id)
+        {
+            List<SelfassesstmentempdataDto> selfdata = new List<SelfassesstmentempdataDto>();
 
+            var SelfAssessmentdata = (from er in _context.EmployeeRegistrations
+                                      join sd in _context.Selfassesstmentdata on er.EmployeeId equals sd.EmpId
+                                      where (er.Vendorid == id && er.Isactive == true && er.IsDeleted == false)
+                                      select new SelfassesstmentempdataDto
+                                      {
+                                          Id = sd.Id,
+                                          EmployeeId = er.EmployeeId,
+                                          EmployeeName = er.FirstName + "" + er.MiddleName + "  " + er.LastName,
+                                          Startyear = sd.Startyear,
+                                          Endyear = sd.Endyear,
+                                          ManagerName = sd.ManagerName,
+                                          Status = (bool)sd.IsActive,
+                                      }).OrderByDescending(x=>x.Id).ToList();
+
+            return SelfAssessmentdata;
+        }
     }
 }

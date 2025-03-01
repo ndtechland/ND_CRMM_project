@@ -153,7 +153,7 @@
 <body>
    @*  <div style="text-align:center; margin-top: 20px;">
         <button id="printButton" onclick="printPage()">Print</button>
-        <button id="backButton" onclick="window.history.back()">Back</button>
+    <button id="backButton" onclick="history.back()">Back</button>
     </div> *@
     <div class="container">
         <!-- Header Section -->
@@ -196,6 +196,12 @@
                         @Model.HrJobTitle<br>
                         @Model.CompanyName
                     </p>
+                      <img src="@ViewBag.Protocol://@ViewBag.Host/CompanyImage/@Model.HrSignature"
+                    alt="Signature Logo"
+                    style="background-color:transparent; height: 107px; width: 211px;">
+                   @*  <img src="https://api.ndtechland.com/CompanyImage/638743749592737986.png"
+                         alt="Signature Logo"
+                         style="background-color:transparent; height: 107px; width: 211px;"> *@
                 </div>
             </div>
         </div>

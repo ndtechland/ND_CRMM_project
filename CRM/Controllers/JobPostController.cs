@@ -347,7 +347,7 @@ namespace CRM.Controllers
                 throw new Exception("An error occurred while deleting the DeleteCurrentOpening:" + ex.Message);
             }
         }
-        public async Task<IActionResult> UpdateJobPostActiveStatus(int Id, bool Ismail)
+        public async Task<IActionResult> UpdateJobPostActiveStatus(int Id)
         {
             var jobdetail = await _Jobcontext.CJobOpens.FirstOrDefaultAsync(x => x.Id == Id);
 

@@ -1,0 +1,176 @@
+﻿@model IEnumerable<CRM.Models.DTO.SelfassesstmentempdataDto>
+
+@{
+    ViewData["Title"] = "Selfassesstmentempdata";
+    Layout = "~/Views/Shared/_adminLayout.cshtml";
+}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var message = "@TempData["Message"]";
+
+        if (message) {
+            Swal.fire({
+                title: 'Success',
+                text: message,
+                icon: 'info',
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    setTimeout(function () {
+                        window.location.href = '@Url.Action("EmployeeSelfassessmentlist", "Employee")';
+                    }, 1000);
+                }
+            });
+        }
+    });
+</script>
+<style>
+    .dataTables_wrapper table.dataTable th {
+        background-color: #00baf2 !important;
+        padding: 24px 0.75rem !important;
+    }
+</style>
+
+<div class="page-wrapper">
+    <div class="page-body-wrapper">
+        <div class="page-sidebar">
+        </div>
+        <div class="page-body">
+            <div class="container-fluid">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="page-header-left">
+                                <h3>
+                                    Self Assessment Data List
+                                </h3>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <ol class="breadcrumb pull-right">
+                                <li class="breadcrumb-item"><a href="/Home/Dashboard"><i data-feather="home"></i></a></li>
+                                <li class="breadcrumb-item">HR Payrole</li>
+                                <li class="breadcrumb-item active">Self Assessment</li>
+                                <li class="breadcrumb-item active">Self Assessment Data</li>
+                            </ol>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Container-fluid Ends-->
+            <!-- Container-fluid starts-->
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="table-responsive" style="margin-top: 16px;">
+
+                                    <table id="datatable" class="table table-hover">
+                                        <thead>
+                                            <tr style="background-color: #00baf2;">
+                                                <th nowrap>
+                                                    Sl. No.
+                                                </th>
+                                                <th nowrap>
+                                                    Employee ID
+                                                </th>
+                                                <th nowrap>
+                                                    Employee Name
+                                                </th>
+                                                <th nowrap>
+                                                    Start Year
+                                                </th>
+                                                <th nowrap>
+                                                    End Year
+                                                </th>
+                                                <th nowrap>
+                                                    Manager Name
+                                                </th>
+                                                <th nowrap>Status</th>
+                                                <th nowrap>View</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{
+                                                var count = 0;
+                                                @foreach (var item in Model)
+                                                {
+                                                    count++;
+                                                    <tr class="table-row">
+                                                        <td>@count</td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.EmployeeId) 
+                                                        </td>
+
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.EmployeeName)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.Startyear)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.Endyear)
+                                                        </td>
+                                                        <td nowrap>
+                                                            @Html.DisplayFor(modelItem => item.ManagerName)
+                                                        </td>
+                                                        <td>
+                                                            @if ((bool)item.Status)
+                                                            {
+                                                                <a href="/Employee/UpdateSelfassessmentActiveStatus?Id=@item.Id" class="btn btn-success"
+                                                                   onclick="return confirm('Are you sure you want to inactivate');">
+                                                                    Active
+                                                                </a>
+                                                            }
+                                                            else
+                                                            {
+                                                                <a href="/Employee/UpdateSelfassessmentActiveStatus?Id=@item.Id" class="btn btn-danger" onclick="return confirm('Are you sure you want to Activate');">InActive</a>
+                                                            }
+                                                        </td>
+                                                        <td nowrap>
+                                                            <div>
+                                                                <a href="getSelfassessmentdata?empid=@item.EmployeeId" class="fa fa-eye m-2 font-success"></a>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+             <div id="pagination-container">
+                <ul id="pagination" class="pagination"></ul>
+            </div>
+        </div>
+
+
+    </div>
+
+</div>
+
+<script>
+    function confirmDelete(url) {
+        var result = confirm("Are you sure you want to delete?");
+        if (result) {
+            window.location.href = url;
+        }
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        $('#datatable').DataTable();
+    });
+</script>

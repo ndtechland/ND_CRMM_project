@@ -130,6 +130,7 @@ namespace CRM.Repository
         public Task<List<ApprovedbankdetailList>> PreviousDataApprovedbankdetailList(int Userid);
         Task<bool> Addhrsignature(HrsignatureDto model, int VendorId);
         public Task<List<Joblist>> Getjoblist(int Vendorid);
+        public Task<List<SelfassesstmentempdataDto>> SelfassesstmentdataEmployeeList(int id);
 
     }
 }

@@ -1,0 +1,733 @@
+﻿@model CRM.Models.DTO.SelfassesstmentempdataDto
+
+@{
+    ViewData["Title"] = "Selfassesstmentempdata";
+    Layout = "~/Views/Shared/_adminLayout.cshtml";
+}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+<style>
+    .dataTables_wrapper table.dataTable th {
+        background-color: #00baf2 !important;
+        padding: 24px 0.75rem !important;
+    }
+</style>
+
+<div class="page-wrapper">
+    <div class="page-body-wrapper">
+        <div class="page-sidebar">
+        </div>
+        <div class="page-body">
+            <div class="container-fluid">
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="page-header-left">
+                                <h3>
+                                    Self Assessment Data List
+                                </h3>
+                            </div>
+                        </div>
+                    
+                    </div>
+                </div>
+            </div>
+          
+            <div class="container-fluid">
+                <ul class="nav nav-tabs" id="questionTabs">
+                    <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#q1">Question 1</a></li>
+                    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#q2">Question 2</a></li>
+                    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#q3">Question 3</a></li>
+                    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#q4">Question 4</a></li>
+                    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#q5">Question 5</a></li>
+                    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#q6">Question 6</a></li>
+                    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#q7">Question 7</a></li>
+                </ul>
+                @{
+                    var data = Model.AssesstmentAns;
+                    var QuestionTwo = data.QuestionTwo;
+                }
+                <div class="tab-content mt-3">
+                    <div class="tab-pane fade show active" id="q1">
+                        <h4 style="text-align: -webkit-center;">@data.QuestionOne.Question1.FirstOrDefault().Tittle</h4>
+
+                        <table class="table table-bordered">
+                            <h4>@data.QuestionOne.Question1.FirstOrDefault().SubTittle</h4>
+                            <thead>
+                                <tr style="background-color: #4a6e86;">
+                                    <th>Index</th>
+                                    <th>Project Name</th>
+                                    <th>Timeline</th>
+                                    <th>Outcome</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in data.QuestionOne.Question1)
+                                {
+                                    <tr>
+                                        <td>@item.IndexId</td>
+                                        <td>@item.ProjectName</td>
+                                        <td>@item.TimeLine</td>
+                                        <td>@item.OutCome</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <table class="table table-bordered">
+                            <h4>@data.QuestionOne.Question2.FirstOrDefault().SubTittle</h4>
+
+                            <thead>
+                                <tr style="background-color: #4a6e86;">
+                                    <th>Index</th>
+                                    <th>Goal</th>
+                                    <th>Result</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in data.QuestionOne.Question2)
+                                {
+                                    <tr>
+                                        <td>@item.IndexId</td>
+                                        <td>@item.Goal</td>
+                                        <td>@item.Result</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <table class="table table-bordered">
+                            <h4>@data.QuestionOne.Question3.FirstOrDefault().SubTittle</h4>
+
+                            <thead>
+                                <tr style="background-color: #4a6e86;">
+                                    <th>Index</th>
+                                    <th>Example</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in data.QuestionOne.Question3)
+                                {
+                                    <tr>
+                                        <td>@item.IndexId</td>
+                                        <td>@item.Example</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <table class="table table-bordered">
+                            <h4>@data.QuestionOne.Question4.FirstOrDefault().SubTittle</h4>
+
+                            <thead>
+                                <tr style="background-color: #4a6e86;">
+                                    <th>Index</th>
+                                    <th>Target</th>
+                                    <th>Deadline</th>
+                                    <th>Reason</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in data.QuestionOne.Question4)
+                                {
+                                    <tr>
+                                        <td>@item.IndexId</td>
+                                        <td>@item.Target</td>
+                                        <td>@item.Deadline</td>
+                                        <td>@item.Reason</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <table class="table table-bordered">
+                            <h4>@data.QuestionOne.Question5.FirstOrDefault().SubTittle</h4>
+
+                            <thead>
+                                <tr style="background-color: #4a6e86;">
+                                    <th>Index</th>
+                                    <th>Example</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in data.QuestionOne.Question5)
+                                {
+                                    <tr>
+                                        <td>@item.IndexId</td>
+                                        <td>@item.Example</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="tab-pane fade" id="q2">
+                        <h4 style="text-align: -webkit-center;">@data.QuestionTwo.Question1.Tittle</h4>
+
+
+                        <table class="table table-bordered">
+                            <h4>@data.QuestionTwo.Question1.SubTittle</h4>
+                            <thead>
+                                <tr style="background-color: #4a6e86;">
+                                    <th>Index</th>
+                                    <th>Rating</th>
+                                    <th>Timeline</th>
+                                    <th>Self-Assessment</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                <tr>
+                                    <td>@QuestionTwo.Question1.IndexId</td>
+                                    <td>@QuestionTwo.Question1.Rating</td>
+                                    <td>@QuestionTwo.Question1.Timeline</td>
+                                    <td>@QuestionTwo.Question1.Selfassestment</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                        <table class="table table-bordered">
+                            <h4>@data.QuestionTwo.Question2.SubTittle</h4>
+                            <thead>
+                                <tr style="background-color: #4a6e86;">
+                                    <th>Index</th>
+                                    <th>Rating</th>
+                                    <th>Timeline</th>
+                                    <th>Self-Assessment</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                <tr>
+                                    <td>@QuestionTwo.Question2.IndexId</td>
+                                    <td>@QuestionTwo.Question2.Rating</td>
+                                    <td>@QuestionTwo.Question2.Timeline</td>
+                                    <td>@QuestionTwo.Question2.Selfassestment</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                        <table class="table table-bordered">
+                            <h4>@data.QuestionTwo.Question3.SubTittle</h4>
+                            <thead>
+                                <tr style="background-color: #4a6e86;">
+                                    <th>Index</th>
+                                    <th>Rating</th>
+                                    <th>Timeline</th>
+                                    <th>Self-Assessment</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                <tr>
+                                    <td>@QuestionTwo.Question3.IndexId</td>
+                                    <td>@QuestionTwo.Question3.Rating</td>
+                                    <td>@QuestionTwo.Question3.Timeline</td>
+                                    <td>@QuestionTwo.Question3.Selfassestment</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                        <table class="table table-bordered">
+                            <h4>@data.QuestionTwo.Question4.SubTittle</h4>
+                            <thead>
+                                <tr style="background-color: #4a6e86;">
+                                    <th>Index</th>
+                                    <th>Rating</th>
+                                    <th>Timeline</th>
+                                    <th>Self-Assessment</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                <tr>
+                                    <td>@QuestionTwo.Question4.IndexId</td>
+                                    <td>@QuestionTwo.Question4.Rating</td>
+                                    <td>@QuestionTwo.Question4.Timeline</td>
+                                    <td>@QuestionTwo.Question4.Selfassestment</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                        <table class="table table-bordered">
+                            <h4>@data.QuestionTwo.Question5.SubTittle</h4>
+                            <thead>
+                                <tr style="background-color: #4a6e86;">
+                                    <th>Index</th>
+                                    <th>Rating</th>
+                                    <th>Timeline</th>
+                                    <th>Self-Assessment</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                <tr>
+                                    <td>@QuestionTwo.Question5.IndexId</td>
+                                    <td>@QuestionTwo.Question5.Rating</td>
+                                    <td>@QuestionTwo.Question5.Timeline</td>
+                                    <td>@QuestionTwo.Question5.Selfassestment</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="tab-pane fade" id="q3">
+                        <h4 style="text-align: -webkit-center;">@data.QuestionThird.Question1.FirstOrDefault().Tittle</h4>
+
+                        <table class="table table-bordered">
+                            <h4>@data.QuestionThird.Question1.FirstOrDefault().SubTittle</h4>
+                            <thead>
+                                <tr style="background-color: #4a6e86;">
+                                    <th>Index</th>
+                                    <th>Example</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in data.QuestionThird.Question1)
+                                {
+                                    <tr>
+                                        <td>@item.IndexId</td>
+                                        <td>@item.Example</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <table class="table table-bordered">
+                            <h4>@data.QuestionThird.Question2.FirstOrDefault().SubTittle</h4>
+
+                            <thead>
+                                <tr style="background-color: #4a6e86;">
+                                    <th>Index</th>
+                                    <th>Example</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in data.QuestionThird.Question2)
+                                {
+                                    <tr>
+                                        <td>@item.IndexId</td>
+                                        <td>@item.Example</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <table class="table table-bordered">
+                            <h4>@data.QuestionThird.Question3.FirstOrDefault().SubTittle</h4>
+
+                            <thead>
+                                <tr style="background-color: #4a6e86;">
+                                    <th>Index</th>
+                                    <th>Example</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in data.QuestionThird.Question3)
+                                {
+                                    <tr>
+                                        <td>@item.IndexId</td>
+                                        <td>@item.Example</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <table class="table table-bordered">
+                            <h4>@data.QuestionThird.Question4.FirstOrDefault().SubTittle</h4>
+
+                            <thead>
+                                <tr style="background-color: #4a6e86;">
+                                    <th>Index</th>
+                                    <th>Example</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in data.QuestionThird.Question4)
+                                {
+                                    <tr>
+                                        <td>@item.IndexId</td>
+                                        <td>@item.Example</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="tab-pane fade" id="q4">
+                        <h4 style="text-align: -webkit-center;">@data.QuestionFour.Question1.FirstOrDefault().Tittle</h4>
+
+                        <table class="table table-bordered">
+                            <h4>@data.QuestionFour.Question1.FirstOrDefault().SubTittle</h4>
+
+                            <thead>
+                                <tr style="background-color: #4a6e86;">
+                                    <th>Index</th>
+                                    <th>Feedback</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in data.QuestionFour.Question1)
+                                {
+                                    <tr>
+                                        <td>@item.IndexId</td>
+                                        <td>@item.feddback</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <table class="table table-bordered">
+                            <h4>@data.QuestionFour.Question2.FirstOrDefault().SubTittle</h4>
+                            <thead>
+                                <tr style="background-color: #4a6e86;">
+                                    <th>Index</th>
+                                    <th>Improvement</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in data.QuestionFour.Question2)
+                                {
+                                    <tr>
+                                        <td>@item.IndexId</td>
+                                        <td>@item.Improvement</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <table class="table table-bordered">
+                            <h4>@data.QuestionFour.Question3.FirstOrDefault().SubTittle</h4>
+
+                            <thead>
+                                <tr style="background-color: #4a6e86;">
+                                    <th>Index</th>
+                                    <th>Improvement</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in data.QuestionFour.Question3)
+                                {
+                                    <tr>
+                                        <td>@item.IndexId</td>
+                                        <td>@item.Improvement</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <table class="table table-bordered">
+                            <h4>@data.QuestionFour.Question4.FirstOrDefault().SubTittle</h4>
+
+                            <thead>
+                                <tr style="background-color: #4a6e86;">
+                                    <th>Index</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in data.QuestionFour.Question4)
+                                {
+                                    <tr>
+                                        <td>@item.IndexId</td>
+                                        <td>@item.Action</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="tab-pane fade" id="q5">
+                        <h4 style="text-align: -webkit-center;">@data.QuestionFive.Question1.FirstOrDefault().Tittle</h4>
+
+                        <table class="table table-bordered">
+                            <h4>@data.QuestionFive.Question1.FirstOrDefault().SubTittle</h4>
+
+                            <thead>
+                                <tr style="background-color: #4a6e86;">
+                                    <th>Index</th>
+                                    <th>Priorities</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in data.QuestionFive.Question1)
+                                {
+                                    <tr>
+                                        <td>@item.IndexId</td>
+                                        <td>@item.Priorites</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <table class="table table-bordered">
+                            <h4>@data.QuestionFive.Question2.FirstOrDefault().SubTittle</h4>
+
+                            <thead>
+                                <tr style="background-color: #4a6e86;">
+                                    <th>Index</th>
+                                    <th>Example</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in data.QuestionFive.Question2)
+                                {
+                                    <tr>
+                                        <td>@item.IndexId</td>
+                                        <td>@item.Example</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <table class="table table-bordered">
+                            <h4>@data.QuestionFive.Question3.FirstOrDefault().SubTittle</h4>
+
+                            <thead>
+                                <tr style="background-color: #4a6e86;">
+                                    <th>Index</th>
+                                    <th>Example</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in data.QuestionFive.Question3)
+                                {
+                                    <tr>
+                                        <td>@item.IndexId</td>
+                                        <td>@item.Example</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <table class="table table-bordered">
+                            <h4>@data.QuestionFive.Question4.FirstOrDefault().SubTittle</h4>
+
+                            <thead>
+                                <tr style="background-color: #4a6e86;">
+                                    <th>Index</th>
+                                    <th>Example</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in data.QuestionFive.Question4)
+                                {
+                                    <tr>
+                                        <td>@item.IndexId</td>
+                                        <td>@item.Example</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <table class="table table-bordered">
+                            <h4>@data.QuestionFive.Question5.FirstOrDefault().SubTittle</h4>
+
+                            <thead>
+                                <tr style="background-color: #4a6e86;">
+                                    <th>Index</th>
+                                    <th>Example</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in data.QuestionFive.Question5)
+                                {
+                                    <tr>
+                                        <td>@item.IndexId</td>
+                                        <td>@item.Example</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="tab-pane fade" id="q6">
+                        <h4 style="text-align: -webkit-center;">@data.QuestionSix.Question1.FirstOrDefault().Tittle</h4>
+
+                        <table class="table table-bordered">
+                            <h4>@data.QuestionSix.Question1.FirstOrDefault().SubTittle</h4>
+
+                            <thead>
+                                <tr style="background-color: #4a6e86;">
+                                    <th>Index</th>
+                                    <th>Example</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in data.QuestionSix.Question1)
+                                {
+                                    <tr>
+                                        <td>@item.IndexId</td>
+                                        <td>@item.Example</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <table class="table table-bordered">
+                            <h4>@data.QuestionSix.Question2.FirstOrDefault().SubTittle</h4>
+
+                            <thead>
+                                <tr style="background-color: #4a6e86;">
+                                    <th>Index</th>
+                                    <th>Example</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in data.QuestionSix.Question2)
+                                {
+                                    <tr>
+                                        <td>@item.IndexId</td>
+                                        <td>@item.Example</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <table class="table table-bordered">
+                            <h4>@data.QuestionSix.Question3.FirstOrDefault().SubTittle</h4>
+
+                            <thead>
+                                <tr style="background-color: #4a6e86;">
+                                    <th>Index</th>
+                                    <th>Example</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in data.QuestionSix.Question3)
+                                {
+                                    <tr>
+                                        <td>@item.IndexId</td>
+                                        <td>@item.Resources</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="tab-pane fade" id="q7">
+                        <h4 style="text-align: -webkit-center;">@data.QuestionSeven.Question1.FirstOrDefault().Tittle</h4>
+                        <table class="table table-bordered">
+                            <h4>@data.QuestionSeven.Question1.FirstOrDefault().SubTittle</h4>
+
+                            <thead>
+                                <tr style="background-color: #4a6e86;">
+                                    <th>Index</th>
+                                    <th>Performance Summary</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in data.QuestionSeven.Question1)
+                                {
+                                    <tr>
+                                        <td>@item.IndexId</td>
+                                        <td>@item.PerformanceSummary</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <table class="table table-bordered">
+                            <h4>@data.QuestionSeven.Question2.FirstOrDefault().SubTittle</h4>
+
+                            <thead>
+                                <tr style="background-color: #4a6e86;">
+                                    <th>Index</th>
+                                    <th>Achievement</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in data.QuestionSeven.Question2)
+                                {
+                                    <tr>
+                                        <td>@item.IndexId</td>
+                                        <td>@item.Achievement</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <table class="table table-bordered">
+                            <h4>@data.QuestionSeven.Question3.FirstOrDefault().SubTittle</h4>
+
+                            <thead>
+                                <tr style="background-color: #4a6e86;">
+                                    <th>Index</th>
+                                    <th>FocusArea</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in data.QuestionSeven.Question3)
+                                {
+                                    <tr>
+                                        <td>@item.IndexId</td>
+                                        <td>@item.FocusArea</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <table class="table table-bordered">
+                            <h4>@data.QuestionSeven.Question4.FirstOrDefault().SubTittle</h4>
+
+                            <thead>
+                                <tr style="background-color: #4a6e86;">
+                                    <th>Index</th>
+                                    <th>Example</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in data.QuestionSeven.Question4)
+                                {
+                                    <tr>
+                                        <td>@item.IndexId</td>
+                                        <td>@item.Example</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div id="pagination-container">
+                <ul id="pagination" class="pagination"></ul>
+            </div>
+        </div>
+
+
+    </div>
+
+</div>
+
+<script>
+    function confirmDelete(url) {
+        var result = confirm("Are you sure you want to delete?");
+        if (result) {
+            window.location.href = url;
+        }
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        $('#datatable').DataTable();
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('.question-toggle').click(function () {
+            var target = $(this).data('target');
+            $(target).slideToggle();
+        });
+
+        $('.question-item').click(function () {
+            var question = $(this).data('question');
+            $('#tableTitle').text(question);
+            loadTableData(question);
+        });
+    });
+
+    function loadTableData(question) {
+        var data = {
+            "Question1": [{ id: 1, value: "Project A" }, { id: 2, value: "Project B" }],
+            "Question2": [{ id: 3, value: "Goal X" }, { id: 4, value: "Goal Y" }],
+            "Q2_1": [{ id: 5, value: "Rating 1" }, { id: 6, value: "Rating 2" }]
+        };
+
+        var tableBody = $('#tableBody');
+        tableBody.empty();
+
+        if (data[question]) {
+            $.each(data[question], function (index, item) {
+                tableBody.append(`<tr><td>${index + 1}</td><td>${item.id}</td><td>${item.value}</td></tr>`);
+            });
+        } else {
+            tableBody.append('<tr><td colspan="3" class="text-center">No data available</td></tr>');
+        }
+    }
+</script>
