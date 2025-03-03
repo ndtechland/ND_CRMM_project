@@ -33,6 +33,7 @@ namespace CRM.Models.DTO
         public string? productprice { get; set; }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
+        public int? Countryid { get; set; }
     }
     public class CustomerListDto
     {

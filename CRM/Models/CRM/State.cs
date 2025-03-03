@@ -7,5 +7,6 @@ namespace CRM.Models.Crm
     {
         public int Id { get; set; }
         public string SName { get; set; } = null!;
+        public int? Countryid { get; set; }
     }
 }

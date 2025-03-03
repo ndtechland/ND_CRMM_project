@@ -154,6 +154,7 @@ namespace CRM.Repository
                     parameters.Add("@CustomerId", dbType: DbType.Int32, direction: ParameterDirection.Output);
                     parameters.Add("@FirstName", model.FirstName, DbType.String);
                     parameters.Add("@LastName", model.LastName, DbType.String);
+                    parameters.Add("@Countryid", model.Countryid, DbType.String);
                     await connection.ExecuteAsync("CustomerRegistration", parameters, commandType: CommandType.StoredProcedure);
 
                     int newCustomerId = parameters.Get<int>("@CustomerId");
@@ -899,6 +900,7 @@ namespace CRM.Repository
                 parameters.Add("@IsSameAddress", model.IsSameAddress == null ? false : model.IsSameAddress, DbType.Boolean);
                 parameters.Add("@FirstName", model.FirstName, DbType.String);
                 parameters.Add("@LastName", model.LastName, DbType.String);
+                parameters.Add("@Countryid", model.Countryid, DbType.String);
 
                 var result = await connection.ExecuteAsync(
                     "sp_updateCustomer_Reg",
