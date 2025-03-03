@@ -470,7 +470,7 @@ namespace CRM.Controllers
                         }
                         else
                         {
-                            response = await _ICrmrpo.CustomerEmployeeList(id);
+                            response = await _ICrmrpo.CustomerEmployeeList((int)adminlogin.Vendorid);
                         }
                         if (!string.IsNullOrEmpty(empid))
                         {
@@ -529,7 +529,7 @@ namespace CRM.Controllers
                     _context.SaveChanges();
                 }
                 TempData["Message"] = "dltok";
-                return RedirectToAction("Employeelist");
+                return RedirectToAction("PreviewEmployeelist");
             }
             catch (Exception ex)
             {
@@ -1514,6 +1514,94 @@ namespace CRM.Controllers
 
         }
 
+        private string GenerateEmployeeId()
+        {
+            var data = _context.EmployeeRegistrations
+                              .Where(x => !string.IsNullOrEmpty(x.EmployeeId))
+                              .OrderByDescending(x => x.Id)
+                              .FirstOrDefault();
+
+            string EmpID = string.Empty;
+            int numericValue = 1001;
+
+            var CompanyDetail = _context.VendorRegistrations.FirstOrDefault(x => x.Id == (int)data.Vendorid);
+            if (CompanyDetail == null) return EmpID; // Ensure CompanyDetail is not null
+
+            // Clean up company name by removing unwanted substrings
+            string companyName = CompanyDetail.CompanyName;
+            string[] unwantedWords = { "pvt ltd", "private limited", "ltd", "inc", "corporation", "corp" };
+
+            foreach (var word in unwantedWords)
+            {
+                companyName = companyName.Replace(word, "", StringComparison.OrdinalIgnoreCase).Trim();
+            }
+
+            string result = string.Empty;
+            var words = companyName.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (words.Length == 2)
+            {
+                if (words[0].Equals(words[1], StringComparison.OrdinalIgnoreCase))
+                {
+                    result = char.ToUpper(words[0][0]).ToString() + char.ToUpper(words[0][1]).ToString();
+                }
+                else
+                {
+                    result = char.ToUpper(words[0][0]).ToString() + char.ToUpper(words[0][1]).ToString() + char.ToUpper(words[1][0]);
+                }
+            }
+            else if (words.Length > 2)
+            {
+                foreach (var word in words)
+                {
+                    result += char.ToUpper(word[0]);
+                }
+            }
+            else
+            {
+                result = companyName.Length >= 3 ? companyName.Substring(0, 3).ToUpper() : companyName.ToUpper();
+            }
+
+            string firstChars = result;
+            string currentMonthYear = DateTime.Now.ToString("MMyyyy");
+
+            if (data != null && !string.IsNullOrEmpty(data.EmployeeId))
+            {
+                string[] parts = data.EmployeeId.Split('-');
+
+                if (parts.Length > 1)
+                {
+                    string previousAbbr = parts[0].Substring(0, parts[0].Length - 6);  // Extract company abbreviation
+
+                    if (previousAbbr == firstChars)
+                    {
+                        // Fetch the max numeric value for this company from all records
+                        var lastRecordForCompany = _context.EmployeeRegistrations
+                            .Where(x => x.EmployeeId.StartsWith(firstChars))
+                            .OrderByDescending(x => x.Id)
+                            .FirstOrDefault();
+
+                        if (lastRecordForCompany != null)
+                        {
+                            string[] lastParts = lastRecordForCompany.EmployeeId.Split('-');
+                            if (lastParts.Length > 1 && int.TryParse(lastParts.Last(), out numericValue))
+                            {
+                                numericValue++; // Keep incrementing for the same company
+                            }
+                        }
+                    }
+                    else
+                    {
+                        numericValue = 1001; // Reset if the company name changes
+                    }
+                }
+            }
+
+            EmpID = $"{firstChars}{currentMonthYear}-{numericValue:D4}";
+            return EmpID;
+        }
+
+
         //private string GenerateEmployeeId()
         //{
         //    var data = _context.EmployeeRegistrations
@@ -1521,6 +1609,7 @@ namespace CRM.Controllers
         //                      .FirstOrDefault();
         //    string EmpID = string.Empty;
         //    int numericValue = 1001;
+
         //    var CompanyDetail = _context.VendorRegistrations.Where(x => x.Id == data.Vendorid).FirstOrDefault();
 
         //    // Clean up the company name by removing unwanted substrings
@@ -1543,12 +1632,10 @@ namespace CRM.Controllers
         //        // For two-word names, check if the words are the same
         //        if (words[0].Equals(words[1], StringComparison.OrdinalIgnoreCase))
         //        {
-        //            // If both words are the same, take the first two characters from the first word
         //            result = char.ToUpper(words[0][0]).ToString() + char.ToUpper(words[0][1]).ToString();
         //        }
         //        else
         //        {
-        //            // If not the same, take the first two characters of the first word and the first of the second word
         //            result = char.ToUpper(words[0][0]).ToString() + char.ToUpper(words[0][1]).ToString() + char.ToUpper(words[1][0]);
         //        }
         //    }
@@ -1562,7 +1649,6 @@ namespace CRM.Controllers
         //    }
         //    else
         //    {
-        //        // For a single word, take up to the first 3 characters
         //        result = companyName.Length >= 3 ?
         //                 companyName.Substring(0, 3).ToUpper() :
         //                 companyName.ToUpper();
@@ -1572,14 +1658,31 @@ namespace CRM.Controllers
 
         //    // Get the current month and year in the "MMyyyy" format
         //    string currentMonthYear = DateTime.Now.ToString("MMyyyy");
+        //    string currentYear = DateTime.Now.ToString("yyyy");
 
         //    // Check if a previous employee ID exists and increment the numeric value
         //    if (data != null && !string.IsNullOrEmpty(data.EmployeeId))
         //    {
         //        string[] parts = data.EmployeeId.Split('-');
-        //        if (parts.Length > 1 && int.TryParse(parts.Last(), out numericValue))
+
+        //        if (parts.Length > 1)
         //        {
-        //            numericValue++;
+        //            string previousYear = parts[0].Substring(parts[0].Length - 4, 4);
+        //            string previousAbbr = parts[0].Substring(0, parts[0].Length - 6);
+
+        //            if (previousYear == currentYear && previousAbbr == firstChars)
+        //            {
+        //                // Increment numeric value if the year and abbreviation are the same
+        //                if (int.TryParse(parts.Last(), out numericValue))
+        //                {
+        //                    numericValue++;
+        //                }
+        //            }
+        //            else
+        //            {
+        //                // Reset numeric value if year or abbreviation changes
+        //                numericValue = 1001;
+        //            }
         //        }
         //    }
 
@@ -1588,96 +1691,6 @@ namespace CRM.Controllers
 
         //    return EmpID;
         //}
-
-        private string GenerateEmployeeId()
-        {
-            var data = _context.EmployeeRegistrations
-                              .OrderByDescending(x => x.Id)
-                              .FirstOrDefault();
-            string EmpID = string.Empty;
-            int numericValue = 1001;
-
-            var CompanyDetail = _context.VendorRegistrations.Where(x => x.Id == data.Vendorid).FirstOrDefault();
-
-            // Clean up the company name by removing unwanted substrings
-            string companyName = CompanyDetail.CompanyName;
-            string[] unwantedWords = new[] { "pvt ltd", "private limited", "ltd", "inc", "corporation", "corp" };
-
-            // Remove unwanted words (case-insensitive)
-            foreach (var word in unwantedWords)
-            {
-                companyName = companyName.Replace(word, "", StringComparison.OrdinalIgnoreCase).Trim();
-            }
-
-            string result = string.Empty;
-
-            // Split company name by space to handle multi-word names
-            var words = companyName.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-
-            if (words.Length == 2)
-            {
-                // For two-word names, check if the words are the same
-                if (words[0].Equals(words[1], StringComparison.OrdinalIgnoreCase))
-                {
-                    result = char.ToUpper(words[0][0]).ToString() + char.ToUpper(words[0][1]).ToString();
-                }
-                else
-                {
-                    result = char.ToUpper(words[0][0]).ToString() + char.ToUpper(words[0][1]).ToString() + char.ToUpper(words[1][0]);
-                }
-            }
-            else if (words.Length > 2)
-            {
-                // For more than two words, take the first letter of each word
-                foreach (var word in words)
-                {
-                    result += char.ToUpper(word[0]);
-                }
-            }
-            else
-            {
-                result = companyName.Length >= 3 ?
-                         companyName.Substring(0, 3).ToUpper() :
-                         companyName.ToUpper();
-            }
-
-            string firstChars = result;
-
-            // Get the current month and year in the "MMyyyy" format
-            string currentMonthYear = DateTime.Now.ToString("MMyyyy");
-            string currentYear = DateTime.Now.ToString("yyyy");
-
-            // Check if a previous employee ID exists and increment the numeric value
-            if (data != null && !string.IsNullOrEmpty(data.EmployeeId))
-            {
-                string[] parts = data.EmployeeId.Split('-');
-
-                if (parts.Length > 1)
-                {
-                    string previousYear = parts[0].Substring(parts[0].Length - 4, 4);
-                    string previousAbbr = parts[0].Substring(0, parts[0].Length - 6);
-
-                    if (previousYear == currentYear && previousAbbr == firstChars)
-                    {
-                        // Increment numeric value if the year and abbreviation are the same
-                        if (int.TryParse(parts.Last(), out numericValue))
-                        {
-                            numericValue++;
-                        }
-                    }
-                    else
-                    {
-                        // Reset numeric value if year or abbreviation changes
-                        numericValue = 1001;
-                    }
-                }
-            }
-
-            // Format the final employee ID with leading zeros
-            EmpID = $"{firstChars}{currentMonthYear}-{numericValue:D4}";
-
-            return EmpID;
-        }
 
         public async Task<IActionResult> DeleteEmployer(int id)
         {

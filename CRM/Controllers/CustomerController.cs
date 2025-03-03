@@ -26,20 +26,22 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                
+
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
 
                 var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
 
                 ViewBag.checkvendorbillingstateid = _context.VendorRegistrations.Where(v => v.Id == adminlogin.Vendorid).FirstOrDefault().BillingStateId;
                 var items = _context.States.ToList();
+                var Countriesitems = _context.Countries.ToList();
                 ViewBag.StateItems = new SelectList(items, "Id", "SName");
+                ViewBag.Countriesitems = new SelectList(Countriesitems, "CountryId", "CountryName");
                 if (id != 0)
                 {
-    
+
                     ViewBag.Heading = "Customer Registration";
                     ViewBag.btnText = "Update";
-                    var data =  _ICrmrpo.GetCustomerById(id);
+                    var data = _ICrmrpo.GetCustomerById(id);
                     if (data != null)
                     {
 
@@ -50,6 +52,7 @@ namespace CRM.Controllers
                                 Text = p.ProductName,
                             }).ToList();
 
+                        ViewBag.SelectedCountryid = data.Countryid;
                         ViewBag.SelectedStateId = data.StateId;
                         ViewBag.SelectedCityId = data.CityId;
                         ViewBag.state = data.BillingStateId;
@@ -65,10 +68,11 @@ namespace CRM.Controllers
 
                 ViewBag.Heading = "Customer Registration";
                 ViewBag.btnText = "SAVE";
+                ViewBag.SelectedCountryid = null;
                 ViewBag.SelectedStateId = null;
                 ViewBag.SelectedCityId = null;
                 ViewBag.BillingCityId = null;
-                ViewBag.CheckIsSameAddress =null;
+                ViewBag.CheckIsSameAddress = null;
                 ViewBag.NoOfRenewMonth = null;
                 ViewBag.Renewprice = null;
                 ViewBag.ProductDetails = _context.ProductMasters.Where(x => x.IsDeleted == false)
@@ -92,7 +96,7 @@ namespace CRM.Controllers
             {
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefaultAsync();
-               
+
                 if (model.Id > 0)
                 {
                     var data = await _ICrmrpo.updateCustomerReg(model);
@@ -109,7 +113,7 @@ namespace CRM.Controllers
                 }
                 else
                 {
-                    var response = await _ICrmrpo.Customer(model,(int)adminlogin.Vendorid);
+                    var response = await _ICrmrpo.Customer(model, (int)adminlogin.Vendorid);
                     if (response > 0)
                     {
                         TempData["Message"] = "ok";
@@ -134,7 +138,7 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                
+
                 int Adminid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = await _context.AdminLogins.Where(x => x.Id == Adminid).FirstOrDefaultAsync();
                 var response = await _ICrmrpo.CustomerList((int)adminlogin.Vendorid);
@@ -172,7 +176,7 @@ namespace CRM.Controllers
         {
             if (HttpContext.Session.GetString("UserName") != null)
             {
-                
+
                 string id = Convert.ToString(HttpContext.Session.GetString("UserId")); ;
 
                 ViewBag.id = id;
@@ -189,7 +193,7 @@ namespace CRM.Controllers
         {
             try
             {
-                
+
                 int id = Convert.ToInt32(HttpContext.Session.GetString("UserId")); ;
 
                 if (id != null)
@@ -293,6 +297,15 @@ namespace CRM.Controllers
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
+        }
+        public async Task<IActionResult> GetstatebyCountryId(int Countryid)
+        {
+            var states = await _context.States
+                .Where(s => s.Countryid == Countryid)
+                .Select(s => new { id = s.Id, name = s.SName })
+                .ToListAsync();
+
+            return Json(states);
         }
 
     }

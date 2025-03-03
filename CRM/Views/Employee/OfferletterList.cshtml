@@ -212,9 +212,9 @@
                                                             @Html.DisplayFor(modelItem => item.HrName)
                                                         </td>
                                                         <td nowrap>
-                                                            <img src='../CompanyImage/@item.HrSignature' style="height:100px;width:100px" />
+                                                            <img src="~/companyimage/@item.HrSignature" style="height:100px;width:100px" />
                                                         </td>
-                                                        <td>
+														<td>
                                                             <div>
                                                                 <a href="javascript:void(0)" onclick="OfferletterdownloadPDF(@item.Id)">
                                                                     <img src="@Url.Content("~/assets/images/layout-2/logo/email.png")" alt="PDF Icon" style=" height: 60px; width: 60px;" />
