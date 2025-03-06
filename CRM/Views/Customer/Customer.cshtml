@@ -752,6 +752,7 @@
     }
 </script>
 
+
 <script>
     function updateMobileCode() {
         var countryCode = document.getElementById("countryCode").value;
@@ -759,13 +760,31 @@
 
         // Remove existing country code if already present
         var existingValue = mobileInput.value;
-        var regex = /^\+\d+\s?/;  // Regex to match country code in the input field
+        var regex = /^\+\d+\s?/; // Regex to match country code in the input field
         existingValue = existingValue.replace(regex, ""); // Remove existing country code
 
         // Add the selected country code
         mobileInput.value = countryCode + " " + existingValue;
     }
+
+    // Function to pre-select the correct country code on edit
+    function setSelectedCountryCode() {
+        var mobileInput = document.getElementById("MobileNumber").value.trim();
+        var countryCodeSelect = document.getElementById("countryCode");
+        var regex = /^(\+\d+)\s?/; // Extract country code
+
+        var match = mobileInput.match(regex);
+        if (match) {
+            var countryCode = match[1]; // Extracted country code
+            countryCodeSelect.value = countryCode; // Set the dropdown
+            document.getElementById("MobileNumber").value = mobileInput.replace(regex, "").trim(); // Remove country code from input
+        }
+    }
+
+    // Call this function when the page loads (for edit scenario)
+    document.addEventListener("DOMContentLoaded", setSelectedCountryCode);
 </script>
+
 <script>
     function updateAlternateMobileCode() {
         var countryCode = document.getElementById("alternateCountryCode").value;
@@ -779,5 +798,23 @@
         // Add the selected country code
         mobileInput.value = countryCode + " " + existingValue;
     }
+
+    // Function to pre-select the correct country code on edit
+    function setSelectedAlternateCountryCode() {
+        var mobileInput = document.getElementById("AlternateNumber").value.trim();
+        var countryCodeSelect = document.getElementById("alternateCountryCode");
+        var regex = /^(\+\d+)\s?/; // Extract country code
+
+        var match = mobileInput.match(regex);
+        if (match) {
+            var countryCode = match[1]; // Extracted country code
+            countryCodeSelect.value = countryCode; // Set the dropdown
+            document.getElementById("AlternateNumber").value = mobileInput.replace(regex, "").trim(); // Remove country code from input
+        }
+    }
+
+    // Call this function when the page loads (for edit scenario)
+    document.addEventListener("DOMContentLoaded", setSelectedAlternateCountryCode);
 </script>
+
 

@@ -38,9 +38,6 @@ namespace CRM.Controllers
             this._apiAccount = apiAccount;
         }
 
-
-
-
         [HttpGet]
         public IActionResult Login()
         {

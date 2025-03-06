@@ -139,7 +139,7 @@
     });
     async function BreakinExportExcelfn() {
         const firstRow = document.querySelector('.table-row');
-        const empId = firstRow ? firstRow.getAttribute('data-empid') : null;
+        const empId = new URLSearchParams(window.location.search).get('EmpId');
 
         const monthDropdown = document.getElementById("Month");
         const yearDropdown = document.getElementById("Year");
@@ -246,7 +246,7 @@
         const monthDropdown = document.getElementById("Month");
         const yearDropdown = document.getElementById("Year");
         const firstRow = document.querySelector('.table-row');
-        const empId = firstRow ? firstRow.getAttribute('data-empid') : null;
+        const empId = new URLSearchParams(window.location.search).get('EmpId');
 
         // Get preselected values from ViewBag (passed from Razor)
         const selectedMonth = "@(ViewBag.month ?? "")";

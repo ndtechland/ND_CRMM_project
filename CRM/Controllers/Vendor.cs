@@ -941,7 +941,7 @@ namespace CRM.Controllers
         }
         [HttpGet]
         [Route("Vendor/VendorInvoice")]
-        public async Task<IActionResult> VendorInvoice(int ID , bool Ismail)
+        public async Task<IActionResult> VendorInvoice(int ID, bool Ismail)
         {
             try
             {
@@ -1338,7 +1338,7 @@ namespace CRM.Controllers
                     ViewBag.Startdate = data.Startdate?.ToString("yyyy-MM-dd");
                     ViewBag.Enddate = data.Enddate?.ToString("yyyy-MM-dd");
                     ViewBag.Description = data.Description;
-                   // ViewBag.Status = data.Status;
+                    // ViewBag.Status = data.Status;
                     ViewBag.EmpId = data.EmployeeId;
                     ViewBag.Heading = "Update TaskAssign";
                     ViewBag.BtnText = "UPDATE";
@@ -2571,92 +2571,81 @@ namespace CRM.Controllers
                 int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminLogin = await _context.AdminLogins.FirstOrDefaultAsync(x => x.Id == userId);
 
-                if (adminLogin != null)
-                {
-                    var attendanceQuery = from employee in _context.EmployeeRegistrations
-                                          join record in _context.EmployeeCheckInRecords
-                                          on employee.EmployeeId equals record.EmpId
-                                          where employee.Vendorid == adminLogin.Vendorid && employee.IsDeleted == false
-                                          orderby record.CurrentDate descending
-                                          select new EmployeeAttendanceDto
-                                          {
-                                              EmpId = record.EmpId,
-                                              EmployeeName = $"{employee.FirstName} " +
-                                                             (string.IsNullOrEmpty(employee.MiddleName) ? "" : employee.MiddleName + " ") +
-                                                             employee.LastName,
-                                              CheckIntime = record.CheckIntime.HasValue
-                                                  ? record.CheckIntime.Value.ToString("hh:mm tt")
-                                                  : "N/A",
-                                              CheckOuttime = record.CheckOuttime.HasValue
-                                                  ? record.CheckOuttime.Value.ToString("hh:mm tt")
-                                                  : "N/A",
-                                              CurrentDate = record.CurrentDate.HasValue
-                                                  ? record.CurrentDate.Value.ToString("dd-MMM-yyyy")
-                                                  : "N/A",
-                                              ShiftId = record.ShiftId,
-                                          };
-
-                    var attendanceRecords = await attendanceQuery.ToListAsync();
-
-                    if (month.HasValue && year.HasValue)
-                    {
-                        var filteredByDate = attendanceRecords
-                            .Where(x => DateTime.TryParse(x.CurrentDate, out DateTime currentDate) &&
-                                        currentDate.Month == month.Value &&
-                                        currentDate.Year == year.Value)
-                            .ToList();
-
-                        if (filteredByDate.Count > 0)
-                        {
-                            attendanceRecords = filteredByDate;
-                        }
-                    }
-                    if (!string.IsNullOrEmpty(EmpId) && attendanceRecords.Count > 0)
-                    {
-                        attendanceRecords = attendanceRecords.Where(x => x.EmpId == EmpId).ToList();
-                    }
-                    foreach (var attendanceRecord in attendanceRecords)
-                    {
-                        var shiftDetails = await _context.EmployeeRegistrations
-                            .Where(x => x.EmployeeId == attendanceRecord.EmpId)
-                            .Join(_context.Officeshifts,
-                                emp => emp.OfficeshiftTypeid,
-                                ob => ob.Id,
-                                (emp, ob) => new { ob.Starttime, ob.Endtime })
-                            .FirstOrDefaultAsync();
-
-                        if (shiftDetails != null && DateTime.TryParse(shiftDetails.Starttime, out DateTime startDateTime) &&
-                            DateTime.TryParse(shiftDetails.Endtime, out DateTime endDateTime))
-                        {
-                            TimeSpan startTime = startDateTime.TimeOfDay;
-                            TimeSpan endTime = endDateTime.TimeOfDay;
-                            double totalHours = (endTime - startTime).TotalHours;
-                            attendanceRecord.maxHour = FormatHours(totalHours);
-                        }
-
-                        if (DateTime.TryParse(attendanceRecord.CurrentDate, out DateTime parsedDate))
-                        {
-                            string workingHours = await TotalWorkingHours(attendanceRecord.EmpId, parsedDate);
-                            attendanceRecord.Workinghour = workingHours;
-                        }
-                        else
-                        {
-                            attendanceRecord.Workinghour = "Invalid Date";
-                        }
-                    }
-
-                    var attendanceDto = new EmployeeAttendanceDto
-                    {
-                        detail = attendanceRecords
-                    };
-                    ViewBag.month = month;
-                    ViewBag.year = year;
-                    return View(attendanceDto);
-                }
-                else
+                if (adminLogin == null)
                 {
                     return RedirectToAction("Login", "Admin");
                 }
+
+                // Base query
+                var attendanceQuery = from employee in _context.EmployeeRegistrations
+                                      join record in _context.EmployeeCheckInRecords
+                                      on employee.EmployeeId equals record.EmpId
+                                      where employee.Vendorid == adminLogin.Vendorid
+                                            && employee.IsDeleted == false
+                                            && (string.IsNullOrEmpty(EmpId) || record.EmpId == EmpId) 
+                                            && (!month.HasValue || record.CurrentDate.Value.Month == month.Value) 
+                                            && (!year.HasValue || record.CurrentDate.Value.Year == year.Value) 
+                                      orderby record.CurrentDate descending
+                                      select new EmployeeAttendanceDto
+                                      {
+                                          EmpId = record.EmpId,
+                                          EmployeeName = $"{employee.FirstName} " +
+                                                         (string.IsNullOrEmpty(employee.MiddleName) ? "" : employee.MiddleName + " ") +
+                                                         employee.LastName,
+                                          CheckIntime = record.CheckIntime.HasValue
+                                              ? record.CheckIntime.Value.ToString("hh:mm tt")
+                                              : "N/A",
+                                          CheckOuttime = record.CheckOuttime.HasValue
+                                              ? record.CheckOuttime.Value.ToString("hh:mm tt")
+                                              : "N/A",
+                                          CurrentDate = record.CurrentDate.HasValue
+                                              ? record.CurrentDate.Value.ToString("dd-MMM-yyyy")
+                                              : "N/A",
+                                          ShiftId = record.ShiftId,
+                                      };
+
+                // Fetch filtered results
+                var attendanceRecords = await attendanceQuery.Where(x=>x.EmpId == EmpId).ToListAsync();
+
+                // Fetch shift details & calculate hours
+                foreach (var attendanceRecord in attendanceRecords)
+                {
+                    var shiftDetails = await _context.EmployeeRegistrations
+                        .Where(x => x.EmployeeId == attendanceRecord.EmpId)
+                        .Join(_context.Officeshifts,
+                            emp => emp.OfficeshiftTypeid,
+                            ob => ob.Id,
+                            (emp, ob) => new { ob.Starttime, ob.Endtime })
+                        .FirstOrDefaultAsync();
+
+                    if (shiftDetails != null && DateTime.TryParse(shiftDetails.Starttime, out DateTime startDateTime) &&
+                        DateTime.TryParse(shiftDetails.Endtime, out DateTime endDateTime))
+                    {
+                        TimeSpan startTime = startDateTime.TimeOfDay;
+                        TimeSpan endTime = endDateTime.TimeOfDay;
+                        double totalHours = (endTime - startTime).TotalHours;
+                        attendanceRecord.maxHour = FormatHours(totalHours);
+                    }
+
+                    if (DateTime.TryParse(attendanceRecord.CurrentDate, out DateTime parsedDate))
+                    {
+                        string workingHours = await TotalWorkingHours(attendanceRecord.EmpId, parsedDate);
+                        attendanceRecord.Workinghour = workingHours;
+                    }
+                    else
+                    {
+                        attendanceRecord.Workinghour = "Invalid Date";
+                    }
+                }
+
+                var attendanceDto = new EmployeeAttendanceDto
+                {
+                    detail = attendanceRecords
+                };
+
+                ViewBag.month = month;
+                ViewBag.year = year;
+                return View(attendanceDto);
             }
             catch (Exception ex)
             {
@@ -3312,7 +3301,9 @@ namespace CRM.Controllers
                                                on employee.EmployeeId equals record.EmpId
                                                where employee.Vendorid == adminLogin.Vendorid &&
                                                      employee.IsDeleted == false &&
-                                                     employee.EmployeeId == EmpId
+                                                     (string.IsNullOrEmpty(EmpId) || employee.EmployeeId == EmpId)
+                                                     && (!month.HasValue || record.CurrentDate.Value.Month == month.Value)
+                                            && (!year.HasValue || record.CurrentDate.Value.Year == year.Value)
                                                orderby record.CurrentDate descending
                                                select new EmployeeAttendanceDto
                                                {
@@ -3330,17 +3321,7 @@ namespace CRM.Controllers
                                                        ? record.CurrentDate.Value.ToString("dd-MMM-yyyy")
                                                        : "N/A",
                                                    Workinghour = "N/A"
-                                               }).ToListAsync(); 
-
-                if (month.HasValue && year.HasValue)
-                {
-                    attendanceRecords = attendanceRecords
-                        .Where(x => DateTime.TryParse(x.CurrentDate, out DateTime date) &&
-                                    date.Month == month.Value &&
-                                    date.Year == year.Value)
-                        .ToList();
-                }
-
+                                               }).ToListAsync();
                 foreach (var attendanceRecord in attendanceRecords)
                 {
                     if (DateTime.TryParse(attendanceRecord.CurrentDate, out DateTime currentDate))
@@ -3996,7 +3977,7 @@ namespace CRM.Controllers
             return Json(success);
         }
         [HttpGet]
-       [MiddlewareFilter(typeof(JsReportPipeline))]
+        [MiddlewareFilter(typeof(JsReportPipeline))]
         public async Task<IActionResult> SendVendorInvoice(int Id = 0, bool Ismail = false)
         {
             try
