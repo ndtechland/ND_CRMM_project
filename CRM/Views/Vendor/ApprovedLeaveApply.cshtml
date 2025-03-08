@@ -118,13 +118,40 @@
                                                         <td>@item.UnPaidCountLeave</td>
                                                         <td nowrap>@item.CreatedDate.ToString("dd/MMM/yyyy")</td>
                                                         <td>
-                                                            <select name="Isapprove" class="form-control approvalstatus-dropdown" id="ddlapprovalstatusid_@item.Id" style="height: 40px; width: 135px;">
+                                                            @if (item.Isapprove == 2)
+                                                            {
+                                                                if (item.Isapprove == 1 || item.Isapprove == 3)
+                                                                {
+                                                                    <select name="Isapprove" class="form-control approvalstatus-dropdown" id="ddlapprovalstatusid_@item.Id" style="height: 40px; width: 135px;">
+                                                                        <option value="0">-- Select Status --</option>
+                                                                        @foreach (var statusitem in ViewBag.approvestatus)
+                                                                        {
+                                                                            <option value="@statusitem.Value">@statusitem.Text</option>
+                                                                        }
+                                                                    </select>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <select name="Isapprove" class="form-control approvalstatus-dropdown" id="ddlapprovalstatusid_@item.Id" style="height: 40px; width: 135px;" disabled>
+                                                                        <option value="0">-- Select Status --</option>
+                                                                        @foreach (var statusitem in ViewBag.approvestatus)
+                                                                        {
+                                                                            <option value="@statusitem.Value">@statusitem.Text</option>
+                                                                        }
+                                                                    </select>
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                 <select name="Isapprove" class="form-control approvalstatus-dropdown" id="ddlapprovalstatusid_@item.Id" style="height: 40px; width: 135px;">
                                                                 <option value="0">-- Select Status --</option>
                                                                 @foreach (var statusitem in ViewBag.approvestatus)
                                                                 {
                                                                     <option value="@statusitem.Value">@statusitem.Text</option>
                                                                 }
                                                             </select>
+                                                            }
+                                                           
                                                         </td>
                                                     </tr>
                                                 }
@@ -177,11 +204,11 @@
                             Swal.fire({
                                 title: 'Edit the dates, then click OK',
                                 html: `
-                                    <label>Start Date</label>
-                                    <input type="text" id="swal-start-date" class="swal2-input" value="${startDate}">
-                                    <label>End Date</label>
-                                    <input type="text" id="swal-end-date" class="swal2-input" value="${endDate}">
-                                `,
+                                        <label>Start Date</label>
+                                        <input type="text" id="swal-start-date" class="swal2-input" value="${startDate}">
+                                        <label>End Date</label>
+                                        <input type="text" id="swal-end-date" class="swal2-input" value="${endDate}">
+                                    `,
                                 didOpen: () => {
                                     // Initialize flatpickr for date inputs
                                     flatpickr("#swal-start-date", {
@@ -212,9 +239,9 @@
                                     const { updatedStartDate, updatedEndDate } = editResult.value;
                                     updateApprovalStatus(itemId, statusId, updatedStartDate, updatedEndDate);
                                 }
-                               else {
-                              window.location.reload();
-                            }
+                                else {
+                                    window.location.reload();
+                                }
                             });
 
                         }
@@ -317,96 +344,96 @@
 
 </script>
 <script>
-      $(document).ready(function () {
-          document.title = 'ApprovedLeavelist';
+    $(document).ready(function () {
+        document.title = 'ApprovedLeavelist';
 
-          // Serialize the status data from the server
-          var StatusData = @Html.Raw(Json.Serialize(ViewBag.approvestatus));
+        // Serialize the status data from the server
+        var StatusData = @Html.Raw(Json.Serialize(ViewBag.approvestatus));
 
-          // Initialize DataTable
-          var table = $('#datatable').DataTable({
-              "dom": '<"dt-buttons"Bf><"clear">lirtp',
-              "paging": true,
-              "autoWidth": true,
-              "buttons": [
-                  'colvis',
-                  'copyHtml5',
-                  'csvHtml5',
-                  'excelHtml5',
-                  'pdfHtml5',
-                  'print'
-              ]
-          });
+        // Initialize DataTable
+        var table = $('#datatable').DataTable({
+            "dom": '<"dt-buttons"Bf><"clear">lirtp',
+            "paging": true,
+            "autoWidth": true,
+            "buttons": [
+                'colvis',
+                'copyHtml5',
+                'csvHtml5',
+                'excelHtml5',
+                'pdfHtml5',
+                'print'
+            ]
+        });
 
-          // Function to update the text color of options and selected value
-          function updateTextColor(selectElement) {
-              $(selectElement).find('option').each(function () {
-                  var value = $(this).val();
-                  switch (value) {
-                      case "1": // Partial
-                          $(this).css('color', '#FFCC00'); // Yellow
-                          break;
-                      case "2": // Complete
-                          $(this).css('color', '#28A745'); // Green
-                          break;
-                      case "3": // Disapprove
-                          $(this).css('color', '#DC3545'); // Red
-                          break;
-                      default:
-                          $(this).css('color', 'black'); // Default
-                          break;
-                  }
-              });
+        // Function to update the text color of options and selected value
+        function updateTextColor(selectElement) {
+            $(selectElement).find('option').each(function () {
+                var value = $(this).val();
+                switch (value) {
+                    case "1": // Partial
+                        $(this).css('color', '#FFCC00'); // Yellow
+                        break;
+                    case "2": // Complete
+                        $(this).css('color', '#28A745'); // Green
+                        break;
+                    case "3": // Disapprove
+                        $(this).css('color', '#DC3545'); // Red
+                        break;
+                    default:
+                        $(this).css('color', 'black'); // Default
+                        break;
+                }
+            });
 
-              var selectedValue = $(selectElement).val();
-              switch (selectedValue) {
-                  case "1":
-                      $(selectElement).css('color', '#FFCC00'); // Yellow
-                      break;
-                  case "2":
-                      $(selectElement).css('color', '#28A745'); // Green
-                      break;
-                  case "3":
-                      $(selectElement).css('color', '#DC3545'); // Red
-                      break;
-                  default:
-                      $(selectElement).css('color', 'black'); // Default
-                      break;
-              }
-          }
+            var selectedValue = $(selectElement).val();
+            switch (selectedValue) {
+                case "1":
+                    $(selectElement).css('color', '#FFCC00'); // Yellow
+                    break;
+                case "2":
+                    $(selectElement).css('color', '#28A745'); // Green
+                    break;
+                case "3":
+                    $(selectElement).css('color', '#DC3545'); // Red
+                    break;
+                default:
+                    $(selectElement).css('color', 'black'); // Default
+                    break;
+            }
+        }
 
-          // Function to set dropdown value and apply colors
-          function bindstatusid(statusid, itemId) {
-              var dropdown = $("#ddlapprovalstatusid_" + itemId);
-              if (statusid !== null && statusid !== "") {
-                  dropdown.val(statusid);
-                  updateTextColor(dropdown); // Apply color after setting value
-              }
-          }
+        // Function to set dropdown value and apply colors
+        function bindstatusid(statusid, itemId) {
+            var dropdown = $("#ddlapprovalstatusid_" + itemId);
+            if (statusid !== null && statusid !== "") {
+                dropdown.val(statusid);
+                updateTextColor(dropdown); // Apply color after setting value
+            }
+        }
 
-          // Initialize dropdowns on page load
+        // Initialize dropdowns on page load
     @foreach (var item in Model)
     {
         <text>
-              bindstatusid('@item.Isapprove', '@item.Id');
+                    bindstatusid('@item.Isapprove', '@item.Id');
         </text>
     }
 
-    // Handle table redraw (pagination, sorting, search)
-       table.on('draw', function () {
+            // Handle table redraw (pagination, sorting, search)
+            table.on('draw', function () {
     @foreach (var item in Model)
     {
         <text>
-                 bindstatusid('@item.Isapprove', '@item.Id');
+                            bindstatusid('@item.Isapprove', '@item.Id');
         </text>
     }
-      });
-
-          // Update text color on dropdown change
-          $(document).on('change', '.approvalstatus-dropdown', function () {
-              updateTextColor(this);
           });
-      });
+
+        // Update text color on dropdown change
+        $(document).on('change', '.approvalstatus-dropdown', function () {
+            updateTextColor(this);
+        });
+    });
 </script>
 
 

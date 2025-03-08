@@ -265,6 +265,7 @@ namespace CRM.Controllers
             return Json(customer);
         }
 
+        [HttpGet]
         public async Task<IActionResult> CustomerInvoiceList()
         {
             try
@@ -289,6 +290,32 @@ namespace CRM.Controllers
             catch (Exception)
             {
 
+                throw;
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> CustomerInvoiceList(int PaymentStatus = 0)
+        {
+            try
+            {
+                int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = _context.AdminLogins.FirstOrDefault(x => x.Id == Userid);
+
+                ViewBag.Paymentmode = _context.Paymentmodes.Select(x => new SelectListItem
+                {
+                    Value = x.Id.ToString(),
+                    Text = x.PaymentType
+                }).ToList();
+                var checkPaymentStatus = _context.Paymentmodes.Where(x => x.Id == PaymentStatus).Select(x=>x.PaymentType).FirstOrDefault();
+                List<CustomerInvoiceDTO> data = await _ICrmrpo.GetCustometInvoiceList((int)adminlogin.Vendorid);
+
+                var paymentdata =  data.Where(x=> x.Paymentstatus == checkPaymentStatus).ToList();
+                ViewBag.PaymentType = PaymentStatus;
+
+                return View(paymentdata);
+            }
+            catch (Exception)
+            {
                 throw;
             }
         }
@@ -722,7 +749,7 @@ namespace CRM.Controllers
                 }
 
                 invoice.Paymentstatus = Paymentid;
-               
+
             }
 
             await _context.SaveChangesAsync();
@@ -786,7 +813,7 @@ namespace CRM.Controllers
             {
                 int Userid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
                 var adminlogin = _context.AdminLogins.Where(x => x.Id == Userid).FirstOrDefault();
-              
+
                 List<CustomerpaidInvoiceDTO> data = await (from ci in _context.CustomerInvoices
                                                            join c in _context.CustomerRegistrations on ci.CustomerId equals c.Id
                                                            join p in _context.VendorProductMasters on ci.ProductId equals p.Id
@@ -806,8 +833,8 @@ namespace CRM.Controllers
                                                                Email = grouped.Key.Email,
                                                                BillingState = grouped.Key.SName,
                                                                BillingCity = grouped.Key.City1,
-                                                               NoofInvoice = grouped.Select(g => g.ci.InvoiceNumber).Distinct().Count() 
-                                                           }).Distinct().OrderByDescending(x=> x.id).ToListAsync();
+                                                               NoofInvoice = grouped.Select(g => g.ci.InvoiceNumber).Distinct().Count()
+                                                           }).Distinct().OrderByDescending(x => x.id).ToListAsync();
 
 
                 if (data.Count > 0)
@@ -971,5 +998,95 @@ namespace CRM.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+        public async Task<IActionResult> ExportInvoiceCustomerList(string PaymentStatus)
+        {
+            try
+            {
+                int Adminid = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                var adminlogin = await _context.AdminLogins.Where(x => x.Id == Adminid).FirstOrDefaultAsync();
+
+                if (adminlogin == null)
+                {
+                    return BadRequest("Invalid Admin ID.");
+                }
+
+                List<CustomerInvoiceDTO> customerList = await _ICrmrpo.GetCustometInvoiceList((int)adminlogin.Vendorid);
+                var paymentdata = customerList.Where(x => x.Paymentstatus == PaymentStatus).ToList();
+
+                if (!paymentdata.Any())
+                {
+                    return BadRequest("No data found for the selected Payment Status.");
+                }
+
+                var firstInvoice = customerList.FirstOrDefault();
+                if (firstInvoice == null)
+                {
+                    return BadRequest("No invoices found.");
+                }
+
+                using (var workbook = new XLWorkbook())
+                {
+                    var worksheet = workbook.Worksheets.Add("Invoice List");
+
+                    // Adding Header Row
+                    int currentRow = 1;
+                    worksheet.Cell(currentRow, 1).Value = "Sl. No.";
+                    worksheet.Cell(currentRow, 2).Value = "Invoice Number";
+                    worksheet.Cell(currentRow, 3).Value = "GST Number";
+                    worksheet.Cell(currentRow, 4).Value = "Company Name";
+                    worksheet.Cell(currentRow, 5).Value = "IGST";
+                    worksheet.Cell(currentRow, 6).Value = "IGST Amount";
+                    worksheet.Cell(currentRow, 7).Value = "SGST";
+                    worksheet.Cell(currentRow, 8).Value = "SGST Amount";
+                    worksheet.Cell(currentRow, 9).Value = "CGST";
+                    worksheet.Cell(currentRow, 10).Value = "CGST Amount";
+                    worksheet.Cell(currentRow, 11).Value = "Total Payment";
+                    worksheet.Cell(currentRow, 12).Value = "Invoice Date";
+
+                    // Applying style to header
+                    for (int col = 1; col <= 12; col++)
+                    {
+                        worksheet.Cell(currentRow, col).Style.Fill.BackgroundColor = XLColor.LightGray;
+                        worksheet.Cell(currentRow, col).Style.Font.Bold = true;
+                    }
+
+                    // Adding Data Rows
+                    int serialNumber = 1;
+                    foreach (var item in paymentdata)
+                    {
+                        currentRow++;
+                        worksheet.Cell(currentRow, 1).Value = serialNumber++;
+                        worksheet.Cell(currentRow, 2).Value = item.InvoiceNumber;
+                        worksheet.Cell(currentRow, 3).Value = item.CustomerGstNumber;
+                        worksheet.Cell(currentRow, 4).Value = item.CompanyName;
+                        worksheet.Cell(currentRow, 5).Value = item.IGST;
+                        worksheet.Cell(currentRow, 6).Value = (item.ProductPrice * item.IGST / 100);
+                        worksheet.Cell(currentRow, 7).Value = item.SGST;
+                        worksheet.Cell(currentRow, 8).Value = (item.ProductPrice * item.SGST / 100);
+                        worksheet.Cell(currentRow, 9).Value = item.CGST;
+                        worksheet.Cell(currentRow, 10).Value = (item.ProductPrice * item.CGST / 100);
+                        worksheet.Cell(currentRow, 11).Value = item.TotalAmount;
+                        worksheet.Cell(currentRow, 12).Value = item.InvoiceDate;
+                    }
+
+                    // Adjust columns to content
+                    worksheet.Columns().AdjustToContents();
+
+                    // Save and return the Excel file
+                    using (var stream = new MemoryStream())
+                    {
+                        workbook.SaveAs(stream);
+                        var fileContent = stream.ToArray();
+                        return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "" + PaymentStatus + "_InvoiceList.xlsx");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
     }
 }

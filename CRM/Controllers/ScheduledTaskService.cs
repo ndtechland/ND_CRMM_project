@@ -137,19 +137,6 @@ namespace CRM.Controllers
 							}
 						}
 
-
-						//foreach (var employee in emplist)
-						//{
-						//    if (employee.DateOfJoining.HasValue && employee.DateOfJoining.Value.AddMonths(3) == today)
-						//    {
-						//        _logger.LogInformation($"Performing probation leave operations for employee {employee.EmployeeId}.");
-						//        task.Schedulemethod = EmpLeaveProbationperiod(context, employee.EmployeeId);
-						//        task.Excutetime = DateTime.Now;
-						//        task.IsExcute = true;
-						//        _logger.LogInformation($"Probation leave operations completed for employee {employee.EmployeeId}.");
-						//    }
-						//}
-
 					}
 				}
 			}
@@ -255,12 +242,14 @@ namespace CRM.Controllers
 		}
 		public string EmpLeaveDoWork(admin_NDCrMContext context, string EmployeeId, int Vendorid)
 		{
-			var leaveTypes = context.LeaveTypes.Where(x=>x.Vendorid == Vendorid).ToList();
-			var leaveMasters = context.Leavemasters.Where(x=>x.EmpId == EmployeeId && x.Vendorid == Vendorid).ToList();
+			var leaveTypes = context.LeaveTypes.Where(x => x.Vendorid == Vendorid).ToList();
+			var leaveMasters = context.Leavemasters.Where(x => x.EmpId == EmployeeId && x.Vendorid == Vendorid).ToList();
+			var emplist = context.EmployeeRegistrations.Where(x => x.EmployeeId == EmployeeId).FirstOrDefault();
+
 			foreach (var leaveMaster in leaveMasters)
 			{
 				var leaveType = leaveTypes.FirstOrDefault(x => x.Id == leaveMaster.LeavetypeId);
-			
+
 				if (leaveType != null)
 				{
 					if (leaveMaster.LeavetypeId != null)
@@ -269,37 +258,35 @@ namespace CRM.Controllers
 						leaveMaster.LeaveUpdateDate = DateTime.Now;
 					}
 				}
-		    }
+			}
 
 			context.SaveChanges();
 			return "EmpLeaveDoWork";
 		}
+		//     public string EmpLeaveDoWork(admin_NDCrMContext context, string EmployeeId, int Vendorid)
+		//     {
+		//         var leaveTypes = context.LeaveTypes.Where(x => x.Vendorid == Vendorid).ToList();
+		//         var leaveMasters = context.Leavemasters.Where(x => x.EmpId == EmployeeId && x.Vendorid == Vendorid).ToList();
+		//         var emplist = context.EmployeeRegistrations.FirstOrDefault(x => x.EmployeeId == EmployeeId);
 
-		//public string EmpLeaveProbationperiod(admin_NDCrMContext context, string EmployeeId)
-		//      {
-		//          var emplist = context.EmployeeRegistrations.Where(x => x.EmployeeId == EmployeeId).ToList();
-		//          var vendorId = emplist.FirstOrDefault()?.Vendorid;
+		//DateTime joiningDate = emplist.DateOfJoining.Value;
 
-		//          if (vendorId.HasValue)
-		//          {
-		//              var leaveTypes = context.LeaveTypes.Where(x => x.Vendorid == vendorId.Value).ToList();
-		//              foreach (var leaveType in leaveTypes)
-		//              {
-		//                  Leavemaster leavemaster = new Leavemaster
-		//                  {
-		//                      EmpId = EmployeeId,
-		//                      LeavetypeId = leaveType.Id,
-		//                      Value = leaveType.Leavevalue,
-		//                      Vendorid = vendorId.Value,
-		//                      LeaveUpdateDate = DateTime.Now,
-		//                      LeaveStartDate = DateTime.Now,
-		//                  };
-		//                  context.Leavemasters.Add(leavemaster);
-		//              }
-		//              context.SaveChanges();
-		//          }
-		//          return "EmpLeaveProbationperiod";
-		//      }
+		//         bool isEligibleForLeave = DateTime.Now >= joiningDate.AddMonths(3);
+
+		//         foreach (var leaveMaster in leaveMasters)
+		//         {
+		//             var leaveType = leaveTypes.FirstOrDefault(x => x.Id == leaveMaster.LeavetypeId);
+
+		//             if (leaveType != null && leaveMaster.LeavetypeId != null)
+		//             {
+		//                 leaveMaster.Value += isEligibleForLeave ? leaveType.Leavevalue : 0;
+		//                 leaveMaster.LeaveUpdateDate = DateTime.Now;
+		//             }
+		//         }
+
+		//         context.SaveChanges();
+		//         return "EmpLeaveDoWork";
+		//     }
 
 	}
 

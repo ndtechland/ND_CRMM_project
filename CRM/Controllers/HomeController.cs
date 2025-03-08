@@ -364,7 +364,6 @@ namespace CRM.Controllers
 
 
         //   }
-
         [HttpGet]
         public IActionResult Banner()
         {
