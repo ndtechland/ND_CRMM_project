@@ -71,6 +71,7 @@ using Org.BouncyCastle.Ocsp;
 using Umbraco.Core;
 using System.Text.RegularExpressions;
 using System.Linq;
+using CRM.Models.Jobcontext;
 
 namespace CRM.Controllers
 {
@@ -2201,6 +2202,10 @@ namespace CRM.Controllers
                                     join dpt in _context.DepartmentMasters on Convert.ToInt16(emp.DepartmentId) equals dpt.Id
                                     join salary in _context.EmployeeSalaryDetails on emp.EmployeeId equals salary.EmployeeId into salaryJoin
                                     from salaryDetails in salaryJoin.DefaultIfEmpty()
+                                    join salaryepf in _context.EmployeeEpfPayrollInfos on emp.Vendorid equals salaryepf.Vendorid into salaryep
+                                    from salaryepfs in salaryep.DefaultIfEmpty()
+                                    join salaryesic in _context.EmployeeEsicPayrollInfos on emp.Vendorid equals salaryesic.Vendorid into salaryes
+                                    from salaryesics in salaryes.DefaultIfEmpty()
                                     where emp.Id == Id && emp.IsDeleted == false
                                     select new EmpAppointmentletter
                                     {
@@ -2212,22 +2217,32 @@ namespace CRM.Controllers
                                         CompanyAddress = vendor.Location,
                                         CompanyEmail = vendor.Email,
                                         CompanyState = state.SName,
-                                        HRA = salaryDetails.HouseRentAllowance,
-                                        HRAYearly = (salaryDetails.HouseRentAllowance) * 12,
+                                        HRAYearly = salaryDetails.HouseRentAllowance,
+                                        HRA = Math.Round((decimal)(salaryDetails.HouseRentAllowance / 12), 2),
                                         CompanyImage = vendor.CompanyImage,
                                         DateOfJoining = emp.DateOfJoining.Value.ToString("dd/MM/yyyy"),
-                                        BasicSalary = salaryDetails.Basic,
-                                        BasicSalaryYearly = salaryDetails.Basic * 12,
-                                        Medical = salaryDetails.Medical,
-                                        MedicalYearly = (salaryDetails.Medical) * 12,
-                                        Conveyance = salaryDetails.Conveyanceallowance,
-                                        ConveyanceYearly = (salaryDetails.Conveyanceallowance) * 12,
-                                        PF = salaryDetails.Epf,
-                                        PFYearly = (salaryDetails.Epf) * 12,
-                                        ESIC = salaryDetails.Esic,
-                                        ESICYearly = (salaryDetails.Esic) * 12,
+                                        BasicSalaryYearly = salaryDetails.Basic,
+                                        BasicSalary = Math.Round((decimal)(salaryDetails.Basic / 12), 2),
+                                        MedicalYearly = salaryDetails.Medical,
+                                        Medical = Math.Round((decimal)(salaryDetails.Medical / 12), 2),
+                                        ConveyanceYearly = salaryDetails.Conveyanceallowance,
+                                        Conveyance = Math.Round((decimal)(salaryDetails.Conveyanceallowance / 12), 2),
+                                        PFYearly = salaryDetails.Epf,
+                                        PF = Math.Round((decimal)(salaryDetails.Epf / 12), 2),
+                                        ESICYearly = salaryDetails.Esic,
+                                        ESIC = Math.Round((decimal)(salaryDetails.Esic / 12), 2),
                                         DepartmentName = dpt.DepartmentName.Trim(),
+                                        TotalMonthlySalary = Math.Round((decimal)(salaryDetails.HouseRentAllowance + salaryDetails.Basic + salaryDetails.Medical + salaryDetails.Conveyanceallowance + salaryDetails.Epf + salaryDetails.Esic) / 12, 2),
+                                        TotalYearlySalary = Math.Round((decimal)(salaryDetails.Basic + salaryDetails.HouseRentAllowance + salaryDetails.Medical + salaryDetails.Conveyanceallowance + salaryDetails.Epf + salaryDetails.Esic), 2),
+                                        HRAper = Math.Round((decimal)(salaryDetails.Hrapercentage), 2),
+                                        BasicSalaryper = Math.Round((decimal)(salaryDetails.Basicpercentage), 2),
+                                        Medicalper = Math.Round((decimal)(salaryDetails.Medicalpercentage ), 2),
+                                        Conveyanceper = Math.Round((decimal)(salaryDetails.Conveyancepercentage), 2),
+                                        PFper = Math.Round((decimal)salaryepfs.Epfpercentage, 2),
+                                        ESICper = Math.Round((decimal)salaryesics.Esicpercentage, 2),
                                     }).FirstOrDefaultAsync();
+
+
 
                 if (result == null)
                 {
@@ -2658,7 +2673,7 @@ namespace CRM.Controllers
                 else
                 {
 
-                    var newRecord = new Leavemaster
+                    var newRecord = new Models.Crm.Leavemaster
                     {
                         LeavetypeId = Convert.ToInt16(model.LeavetypeId),
                         EmpId = model.EmpId,

@@ -18,18 +18,17 @@
         }
 
         .container {
-            max-width: 800px;
+            max-width: 785px;
             margin: 0 auto;
             border: 1px solid #ddd;
             padding: 20px;
             border-radius: 8px;
-            background: #f9f9f9;
         }
 
         .header {
             background: linear-gradient(135deg, #173564 60%, transparent 50%);
             color: white;
-            padding: 10px 0;
+            padding: 1px 0;
             text-align: center;
             font-size: 24px;
             margin-top: 20px;
@@ -102,13 +101,21 @@
                 background-color: #173564;
             }
 
+        @@page {
+            size: A4;
+            margin: 1mm auto;
+            padding: 60px;
+            height: max-content;
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
         <div class="header">
-            <img src="https://api.ndtechland.com/CompanyImage/638631208701816327.png" alt="Company Logo">
+@*             <img src="https://api.ndtechland.com/CompanyImage/638702230297411301.png" style="height:47px;width:118px;">
+ *@            <img src="~/CompanyImage/@Model.CompanyImage" alt="Company Logo" class="logo" style="height:47px;width:118px;">
+           
         </div>
 
         <h4>Subject: Appointment as @Model.DepartmentName</h4>
@@ -180,7 +187,7 @@
                     <b>In addition to your basic salary, the following allowances and benefits will apply:</b>
                     <ol>
                         <li>
-                            <b>House Rent Allowance (HRA):</b> 50% of Basic Salary -
+                            <b>House Rent Allowance (HRA):</b> @Model.HRAper% of Basic Salary -
                             <ul>
                                 <li>₹@Model.HRA per month</li>
                                 <li>Annual = ₹@Model.HRAYearly</li>
@@ -194,21 +201,21 @@
                             </ul>
                         </li>
                         <li>
-                            <b>Conveyance Reimbursement:</b> 10% of Basic Salary -
+                            <b>Conveyance Reimbursement:</b> @Model.Conveyanceper% of Basic Salary -
                             <ul>
                                 <li>₹@Model.Conveyance per month</li>
                                 <li>Annual = ₹@Model.ConveyanceYearly</li>
                             </ul>
                         </li>
                         <li>
-                            <b>Provident Fund (PF):</b> 13% of Basic Salary -
+                            <b>Provident Fund (PF):</b> @Model.PFper% of Basic Salary -
                             <ul>
                                 <li>₹@Model.PF per month</li>
                                 <li>Annual = ₹@Model.PFYearly</li>
                             </ul>
                         </li>
                         <li>
-                            <b>Employee State Insurance Corporation (ESIC):</b>3.75% of Basic Salary (if salary is below ₹19,000) -
+                            <b>Employee State Insurance Corporation (ESIC):</b>@Model.ESICper% of Basic Salary (if salary is below ₹19,000) -
                             <ul>
                                 <li>₹@Model.ESIC per month</li>
                                 <li>Annual = ₹@Model.ESICYearly</li>
@@ -262,6 +269,7 @@
                     <td><b>Total Gross Salary</b></td>
                     <td><b>₹@Model.TotalMonthlySalary</b></td>
                     <td><b>₹@Model.TotalYearlySalary</b></td>
+
                 </tr>
             </table>
         </div>

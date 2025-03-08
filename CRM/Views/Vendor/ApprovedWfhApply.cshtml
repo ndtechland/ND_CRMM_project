@@ -112,13 +112,40 @@
                                                         <td>@item.Reason</td>
                                                         <td nowrap>@item.CreatedDate.ToString("dd/MMM/yyyy")</td>
                                                         <td>
-                                                            <select name="Isapprove" class="form-control approvalstatus-dropdown" id="ddlapprovalstatusid_@item.Id" style="height: 40px; width: 135px;">
-                                                                <option value="0">-- Select Status --</option>
-                                                                @foreach (var statusitem in ViewBag.approvestatus)
+                                                            @if (item.Isapprove == 2)
+                                                            {
+                                                                if (item.Isapprove == 1 || item.Isapprove == 3)
                                                                 {
-                                                                    <option value="@statusitem.Value">@statusitem.Text</option>
+                                                                    <select name="Isapprove" class="form-control approvalstatus-dropdown" id="ddlapprovalstatusid_@item.Id" style="height: 40px; width: 135px;">
+                                                                        <option value="0">-- Select Status --</option>
+                                                                        @foreach (var statusitem in ViewBag.approvestatus)
+                                                                        {
+                                                                            <option value="@statusitem.Value">@statusitem.Text</option>
+                                                                        }
+                                                                    </select>
                                                                 }
-                                                            </select>
+                                                                else
+                                                                {
+                                                                    <select name="Isapprove" class="form-control approvalstatus-dropdown" id="ddlapprovalstatusid_@item.Id" style="height: 40px; width: 135px;" disabled>
+                                                                        <option value="0">-- Select Status --</option>
+                                                                        @foreach (var statusitem in ViewBag.approvestatus)
+                                                                        {
+                                                                            <option value="@statusitem.Value">@statusitem.Text</option>
+                                                                        }
+                                                                    </select>
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                <select name="Isapprove" class="form-control approvalstatus-dropdown" id="ddlapprovalstatusid_@item.Id" style="height: 40px; width: 135px;">
+                                                                    <option value="0">-- Select Status --</option>
+                                                                    @foreach (var statusitem in ViewBag.approvestatus)
+                                                                    {
+                                                                        <option value="@statusitem.Value">@statusitem.Text</option>
+                                                                    }
+                                                                </select>
+                                                            }
+
                                                         </td>
                                                     </tr>
                                                 }

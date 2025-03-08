@@ -110,7 +110,21 @@
                         <div class="col-sm-12">
                             <div class="card">
                                 <div class="card-body">
+                                    <img src="~/image/execimage.png" style="height:50px; margin-left:96%;width:53px;cursor:pointer" title="Export To Excel" onclick="ExportinvoiceExcelfn()" />
                                     <div class="table-responsive">
+                                        <form method="post" action="/Sale/CustomerInvoiceList" id="filterForm">
+                                            <div class="row">
+                                                <div class="form-group col-sm-2" style="margin-right: 20px;">
+                                                    <select name="Paymentstatus" class="form-control" id="paymentid" onchange="document.getElementById('filterForm').submit();">
+                                                        <option value="0">-- Select Payment Type --</option>
+                                                        @foreach (var shift in ViewBag.Paymentmode)
+                                                        {
+                                                            <option value="@shift.Value">@shift.Text</option>
+                                                        }
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </form>
                                         <table id="datatable" class="table table-hover">
                                             <thead>
                                                 <tr style="background-color: #00baf2;">
@@ -148,7 +162,7 @@
                                                         Paid Payment
                                                     </th>
                                                     <th nowrap>
-                                                       Payment Date
+                                                        Payment Date
                                                     </th>
                                                     <th nowrap>
                                                         Update Payment Status
@@ -211,7 +225,7 @@
                                                                                 class="form-control Paymentmode-dropdown"
                                                                                 id="ddPaymentmodeid_@item.InvoiceId"
                                                                                 style="height: 40px; width: 139px;"
-                                                                                 onchange="handlePaymentTypeChange(@item.InvoiceId, @item.DueAmount)">
+                                                                                onchange="handlePaymentTypeChange(@item.InvoiceId, @item.DueAmount)">
                                                                             <option value="0">-- Select Payment Type --</option>
                                                                             @foreach (var shift in ViewBag.Paymentmode)
                                                                             {
@@ -225,7 +239,7 @@
                                                                                 class="form-control Paymentmode-dropdown"
                                                                                 id="ddPaymentmodeid_@item.InvoiceId"
                                                                                 style="height: 40px; width: 139px;"
-                                                                                 onchange="handlePaymentTypeChange(@item.InvoiceId, @item.DueAmount)">
+                                                                                onchange="handlePaymentTypeChange(@item.InvoiceId, @item.DueAmount)">
                                                                             <option value="0">-- Select Payment Type --</option>
                                                                             @foreach (var shift in ViewBag.Paymentmode)
                                                                             {
@@ -252,9 +266,9 @@
                                                             </td>
 
                                                             <td>
-                                                                <form autocomplete="off" >
+                                                                <form autocomplete="off">
                                                                     <input type="text" id="inputBox_@item.InvoiceId" style="display:none; width: 100px; height: 30px;" placeholder="Enter Amount" onkeyup="fncamount(this, @item.TotalAmount, @item.DueAmount)" required />
-                                                                    <input type="date" id="dateInput_@item.InvoiceId" style="display:none; width: 78%; height: 30px;margin-top:7px" required />                             
+                                                                    <input type="date" id="dateInput_@item.InvoiceId" style="display:none; width: 78%; height: 30px;margin-top:7px" required />
                                                                     <button type="button" class="btn btn-primary submit-payment" id="submitBtn_@item.InvoiceId" data-invoiceid="@item.InvoiceId" style="height: 40px; display:none;margin-top:7px" onclick="updateCustomerInvoiceAmount(@item.InvoiceId)">Submit</button>
                                                                 </form>
                                                             </td>
@@ -411,115 +425,115 @@
         }
     }
 
-//   function handlePaymentTypeChange(itemId) {
-//     var paymentType = $("#ddPaymentmodeid_" + itemId).val();
+    //   function handlePaymentTypeChange(itemId) {
+    //     var paymentType = $("#ddPaymentmodeid_" + itemId).val();
 
-//     if (paymentType == 1 || paymentType == 3) {
-//         $("#inputBox_" + itemId).show();
-//         $("#dateInput_" + itemId).show();
-//         $("#submitBtn_" + itemId).show();
+    //     if (paymentType == 1 || paymentType == 3) {
+    //         $("#inputBox_" + itemId).show();
+    //         $("#dateInput_" + itemId).show();
+    //         $("#submitBtn_" + itemId).show();
 
-//         var now = new Date();
-//         var formattedDate = now.toISOString().slice(0, 10); 
-//         $("#dateInput_" + itemId).val(formattedDate);
-//     } else {
-//         $("#inputBox_" + itemId).hide();
-//         $("#dateInput_" + itemId).hide();
-//         $("#submitBtn_" + itemId).hide();
+    //         var now = new Date();
+    //         var formattedDate = now.toISOString().slice(0, 10);
+    //         $("#dateInput_" + itemId).val(formattedDate);
+    //     } else {
+    //         $("#inputBox_" + itemId).hide();
+    //         $("#dateInput_" + itemId).hide();
+    //         $("#submitBtn_" + itemId).hide();
 
-//         updateCustomerInvoiceAmount(itemId);
-//     }
-// }
+    //         updateCustomerInvoiceAmount(itemId);
+    //     }
+    // }
 
-function handlePaymentTypeChange(itemId, dueAmount) {
-    var paymentType = $("#ddPaymentmodeid_" + itemId).val();
+    function handlePaymentTypeChange(itemId, dueAmount) {
+        var paymentType = $("#ddPaymentmodeid_" + itemId).val();
 
-    if (paymentType == 1 || paymentType == 3) {
-        $("#inputBox_" + itemId).show();
-        $("#dateInput_" + itemId).show();
-        $("#submitBtn_" + itemId).show();
+        if (paymentType == 1 || paymentType == 3) {
+            $("#inputBox_" + itemId).show();
+            $("#dateInput_" + itemId).show();
+            $("#submitBtn_" + itemId).show();
 
-        var now = new Date();
-        var formattedDate = now.toISOString().slice(0, 10);
-        $("#dateInput_" + itemId).val(formattedDate);
+            var now = new Date();
+            var formattedDate = now.toISOString().slice(0, 10);
+            $("#dateInput_" + itemId).val(formattedDate);
 
-        if (paymentType == 1) {
-            $("#inputBox_" + itemId).val(dueAmount);
-        }
-    } else {
-        $("#inputBox_" + itemId).hide();
-        $("#dateInput_" + itemId).hide();
-        $("#submitBtn_" + itemId).hide();
-
-        updateCustomerInvoiceAmount(itemId);
-    }
-}
-
-
-   function updateCustomerInvoiceAmount(itemId) {
-    var paymentType = $("#ddPaymentmodeid_" + itemId).val();
-    var paidAmount = $("#inputBox_" + itemId).val() || 0;
-    var paymentDate = $("#dateInput_" + itemId).val(); // Fetch the date input
-    var invoiceId = itemId;
-
-    if ((paymentType == 1 || paymentType == 3) && (isNaN(paidAmount) || paidAmount <= 0)) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Invalid Paid Amount',
-            text: 'Please enter a valid paid amount.',
-        });
-        return;
-    }
-
-    if (!paymentDate) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Missing Payment Date',
-            text: 'Please select a payment date.',
-        });
-        return;
-    }
-
-    var data = {
-        InvoiceId: invoiceId,
-        Paymentid: paymentType,
-        PaidAmount: parseFloat(paidAmount),
-        PaymentDate: paymentDate 
-    };
-
-    console.log(data);
-
-    $.ajax({
-        url: '@Url.Action("UpdateCustomerInvoiceamount", "Sale")',
-        type: 'POST',
-        data: data,
-        success: function (response) {
-            if (response.success) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success',
-                    text: response.message,
-                }).then(() => {
-                    location.reload(); 
-                });
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: response.message,
-                });
+            if (paymentType == 1) {
+                $("#inputBox_" + itemId).val(dueAmount);
             }
-        },
-        error: function (xhr, status, error) {
-            console.error(error);
+        } else {
+            $("#inputBox_" + itemId).hide();
+            $("#dateInput_" + itemId).hide();
+            $("#submitBtn_" + itemId).hide();
+
+            updateCustomerInvoiceAmount(itemId);
+        }
+    }
+
+
+    function updateCustomerInvoiceAmount(itemId) {
+        var paymentType = $("#ddPaymentmodeid_" + itemId).val();
+        var paidAmount = $("#inputBox_" + itemId).val() || 0;
+        var paymentDate = $("#dateInput_" + itemId).val(); // Fetch the date input
+        var invoiceId = itemId;
+
+        if ((paymentType == 1 || paymentType == 3) && (isNaN(paidAmount) || paidAmount <= 0)) {
             Swal.fire({
                 icon: 'error',
-                title: 'Server Error',
-                text: 'An error occurred while updating the payment information.',
+                title: 'Invalid Paid Amount',
+                text: 'Please enter a valid paid amount.',
             });
+            return;
         }
-    });
-}
+
+        if (!paymentDate) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Missing Payment Date',
+                text: 'Please select a payment date.',
+            });
+            return;
+        }
+
+        var data = {
+            InvoiceId: invoiceId,
+            Paymentid: paymentType,
+            PaidAmount: parseFloat(paidAmount),
+            PaymentDate: paymentDate
+        };
+
+        console.log(data);
+
+        $.ajax({
+            url: '@Url.Action("UpdateCustomerInvoiceamount", "Sale")',
+            type: 'POST',
+            data: data,
+            success: function (response) {
+                if (response.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: response.message,
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: response.message,
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Server Error',
+                    text: 'An error occurred while updating the payment information.',
+                });
+            }
+        });
+    }
 
 
 
@@ -543,7 +557,7 @@ function handlePaymentTypeChange(itemId, dueAmount) {
                             bindpaymenttype('@item.Paymentid', '@item.InvoiceId');
         </text>
     }
-                    });
+                                });
         $(".Paymentmode-dropdown").change(function () {
             var itemId = $(this).attr('id').split('_')[1];
             toggleInputBoxBasedOnPaymentType(itemId);
@@ -566,18 +580,18 @@ function handlePaymentTypeChange(itemId, dueAmount) {
     function toggleInputBoxBasedOnPaymentType(itemId) {
         var selectedPaymentType = $("#ddPaymentmodeid_" + itemId).val();
         var now = new Date();
-        var formattedDate = now.toISOString().slice(0, 10); 
-       
+        var formattedDate = now.toISOString().slice(0, 10);
+
         if (parseInt(selectedPaymentType) === 1) {
             $("#inputBox_" + itemId).show();
             $("#submitBtn_" + itemId).show();
             $("#dateInput_" + itemId).show();
-             $("#dateInput_" + itemId).val(formattedDate);
+            $("#dateInput_" + itemId).val(formattedDate);
         } else if (parseInt(selectedPaymentType) === 3) {
             $("#inputBox_" + itemId).show();
             $("#submitBtn_" + itemId).show();
             $("#dateInput_" + itemId).show();
-             $("#dateInput_" + itemId).val(formattedDate);
+            $("#dateInput_" + itemId).val(formattedDate);
         } else {
             $("#inputBox_" + itemId).hide();
             $("#submitBtn_" + itemId).hide();
@@ -640,3 +654,19 @@ function handlePaymentTypeChange(itemId, dueAmount) {
 
 </script>
 
+<script>
+    function ExportinvoiceExcelfn() {
+        const paymentStatusDropdown = document.querySelector('select[name="Paymentstatus"]');
+        const paymentStatusText = paymentStatusDropdown.options[paymentStatusDropdown.selectedIndex].text;
+
+        if (paymentStatusText) {
+            window.location.href = '/Sale/ExportInvoiceCustomerList?Paymentstatus=' + encodeURIComponent(paymentStatusText);
+        } else {
+            alert('No Payment Status selected!');
+        }
+    }
+     var PaymentType = '@ViewBag.PaymentType';
+     if (PaymentType != "") {
+     $("#paymentid").val(PaymentType);
+    }
+</script>

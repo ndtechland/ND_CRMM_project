@@ -2111,7 +2111,6 @@ namespace CRM.Repository
                 var allExistingData = await _context.CustomerInvoices
                     .Where(ci => model.Select(m => m.CustomerId).Contains(ci.CustomerId) && ci.InvoiceNumber == InvoiceNo)
                     .ToListAsync();
-                var invoicedetail = await _context.CustomerInvoicedetails.FirstOrDefaultAsync(cid => cid.InvoiceNumber == InvoiceNo);
 
                 var groupedData = allExistingData
                     .GroupBy(ci => ci.CustomerId)
@@ -2223,17 +2222,9 @@ namespace CRM.Repository
                             _context.Update(data);
                         }
                     }
-                    if (invoicedetail != null)
-                    {
-                        invoicedetail.InvoiceNumber = InvoiceNo;
-                        invoicedetail.InvoiceDate = InvoiceDate;
-                        invoicedetail.InvoiceDueDate = InvoiceDueDate;
-                        invoicedetail.Notes = InvoiceNotes;
-                        invoicedetail.Terms = InvoiceTerms;
-                        invoicedetail.ServiceCharge = ServiceCharges;
-                        _context.Update(invoicedetail);
-                    }
-                    else
+                    var invoicedetail = await _context.CustomerInvoicedetails.FirstOrDefaultAsync(cid => cid.InvoiceNumber == InvoiceNo);
+
+                    if (invoicedetail == null)
                     {
                         var newinvoicedetail = new CustomerInvoicedetail()
                         {
@@ -2247,6 +2238,16 @@ namespace CRM.Repository
 
                         };
                         _context.Add(newinvoicedetail);
+                    }
+                    else
+                    {
+                        invoicedetail.InvoiceNumber = InvoiceNo;
+                        invoicedetail.InvoiceDate = InvoiceDate;
+                        invoicedetail.InvoiceDueDate = InvoiceDueDate;
+                        invoicedetail.Notes = InvoiceNotes;
+                        invoicedetail.Terms = InvoiceTerms;
+                        invoicedetail.ServiceCharge = ServiceCharges;
+                        _context.Update(invoicedetail);
                     }
                     await _context.SaveChangesAsync();
                 }
@@ -2305,10 +2306,12 @@ namespace CRM.Repository
                                                  Paymentstatus = grouped.First().pm.PaymentType,
                                                  PaidAmount = grouped.First().ci.PaidAmount ?? 0,
                                                  DueAmount = grouped.First().ci.DueAmount ?? 0,
-                                                 IGST = grouped.Sum(g => g.ci.Igst ?? 0),
-                                                 SGST = grouped.Sum(g => g.ci.Sgst ?? 0),
-                                                 CGST = grouped.Sum(g => g.ci.Cgst ?? 0),
+                                                 IGST = grouped.First().ci.Igst ?? 0 ,
+                                                 SGST = grouped.First().ci.Sgst ?? 0,
+                                                 CGST = grouped.First().ci.Cgst ?? 0,
                                                  Paymentid = grouped.First().ci.Paymentstatus,
+                                                 CustomerGstNumber = grouped.First().c.GstNumber,
+                                                 ProductPrice = grouped.Sum(x=>x.ci.ProductPrice),
                                              }).OrderByDescending(ci => ci.InvoiceId).ToListAsync();
 
                 foreach (var invoice in groupedInvoices)
