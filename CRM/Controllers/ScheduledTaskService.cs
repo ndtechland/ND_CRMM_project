@@ -83,10 +83,10 @@ namespace CRM.Controllers
 
 					DateTime today = DateTime.Today;
 				  DateTime lastDayOfMonth = new DateTime(today.Year, today.Month, DateTime.DaysInMonth(today.Year, today.Month));
-                   // DateTime lastDayOfMonth = DateTime.Today;
+                 // DateTime lastDayOfMonth = DateTime.Today;
 
-                   
-                    var emplist = context.EmployeeRegistrations.Where(x=>x.Isactive == true && x.IsDeleted ==false).ToList();
+
+                    var emplist = context.EmployeeRegistrations.Where(x=>x.Isactive == true && x.IsDeleted ==false).OrderByDescending(x=>x.Id).ToList();
 
 					_logger.LogInformation($"Today's date: {today.ToString("yyyy-MM-dd")}");
 
@@ -240,54 +240,78 @@ namespace CRM.Controllers
 			context.SaveChanges();
 			return "CustomerTaxes";
 		}
-		public string EmpLeaveDoWork(admin_NDCrMContext context, string EmployeeId, int Vendorid)
-		{
-			var leaveTypes = context.LeaveTypes.Where(x => x.Vendorid == Vendorid).ToList();
-			var leaveMasters = context.Leavemasters.Where(x => x.EmpId == EmployeeId && x.Vendorid == Vendorid).ToList();
-			var emplist = context.EmployeeRegistrations.Where(x => x.EmployeeId == EmployeeId).FirstOrDefault();
+        //public string EmpLeaveDoWork(admin_NDCrMContext context, string EmployeeId, int Vendorid)
+        //{
+        //	var leaveTypes = context.LeaveTypes.Where(x => x.Vendorid == Vendorid).ToList();
+        //	var leaveMasters = context.Leavemasters.Where(x => x.EmpId == EmployeeId && x.Vendorid == Vendorid).ToList();
+        //	var emplist = context.EmployeeRegistrations.Where(x => x.EmployeeId == EmployeeId).FirstOrDefault();
 
-			foreach (var leaveMaster in leaveMasters)
-			{
-				var leaveType = leaveTypes.FirstOrDefault(x => x.Id == leaveMaster.LeavetypeId);
+        //	foreach (var leaveMaster in leaveMasters)
+        //	{
+        //		var leaveType = leaveTypes.FirstOrDefault(x => x.Id == leaveMaster.LeavetypeId);
 
-				if (leaveType != null)
-				{
-					if (leaveMaster.LeavetypeId != null)
-					{
-						leaveMaster.Value += leaveType.Leavevalue;
-						leaveMaster.LeaveUpdateDate = DateTime.Now;
-					}
-				}
-			}
+        //		if (leaveType != null)
+        //		{
+        //			if (leaveMaster.LeavetypeId != null)
+        //			{
+        //				leaveMaster.Value += leaveType.Leavevalue;
+        //				leaveMaster.LeaveUpdateDate = DateTime.Now;
+        //			}
+        //		}
+        //	}
 
-			context.SaveChanges();
-			return "EmpLeaveDoWork";
-		}
-		//     public string EmpLeaveDoWork(admin_NDCrMContext context, string EmployeeId, int Vendorid)
-		//     {
-		//         var leaveTypes = context.LeaveTypes.Where(x => x.Vendorid == Vendorid).ToList();
-		//         var leaveMasters = context.Leavemasters.Where(x => x.EmpId == EmployeeId && x.Vendorid == Vendorid).ToList();
-		//         var emplist = context.EmployeeRegistrations.FirstOrDefault(x => x.EmployeeId == EmployeeId);
+        //	context.SaveChanges();
+        //	return "EmpLeaveDoWork";
+        //}
+        public string EmpLeaveDoWork(admin_NDCrMContext context, string EmployeeId, int Vendorid)
+        {
+            var leaveTypes = context.LeaveTypes.Where(x => x.Vendorid == Vendorid).ToList();
+            var leaveMasters = context.Leavemasters.Where(x => x.EmpId == EmployeeId && x.Vendorid == Vendorid).ToList();
+            var emplist = context.EmployeeRegistrations.FirstOrDefault(x => x.EmployeeId == EmployeeId);
 
-		//DateTime joiningDate = emplist.DateOfJoining.Value;
+            if (emplist == null || emplist.DateOfJoining == null)
+            {
+                return "Employee not found or joining date is null.";
+            }
 
-		//         bool isEligibleForLeave = DateTime.Now >= joiningDate.AddMonths(3);
+            DateTime joiningDate = emplist.DateOfJoining.Value;
+            bool isEligibleForLeave = DateTime.Now >= joiningDate.AddMonths(3);
 
-		//         foreach (var leaveMaster in leaveMasters)
-		//         {
-		//             var leaveType = leaveTypes.FirstOrDefault(x => x.Id == leaveMaster.LeavetypeId);
+            if (leaveMasters.Any()) 
+            {
+                foreach (var leaveMaster in leaveMasters)
+                {
+                    var leaveType = leaveTypes.FirstOrDefault(x => x.Id == leaveMaster.LeavetypeId);
+                    if (leaveType != null)
+                    {
+                        leaveMaster.Value = isEligibleForLeave ? leaveType.Leavevalue : 0; 
+                        leaveMaster.LeaveUpdateDate = DateTime.Now;
+                    }
+                }
+            }
+            else 
+            {
+                foreach (var leaveType in leaveTypes)
+                {
+                    Leavemaster newLeave = new Leavemaster
+                    {
+                        LeavetypeId = leaveType.Id,
+                        Value = isEligibleForLeave ? leaveType.Leavevalue : 0, // Add leave only if eligible
+                        EmpId = EmployeeId,
+                        Createddate = DateTime.Now,
+                        LeaveStartDate = DateTime.Now,
+                        LeaveUpdateDate = DateTime.Now,
+                        IsActive = true,
+                        Vendorid = Vendorid,
+                    };
+                    context.Leavemasters.Add(newLeave);
+                }
+            }
 
-		//             if (leaveType != null && leaveMaster.LeavetypeId != null)
-		//             {
-		//                 leaveMaster.Value += isEligibleForLeave ? leaveType.Leavevalue : 0;
-		//                 leaveMaster.LeaveUpdateDate = DateTime.Now;
-		//             }
-		//         }
+            context.SaveChanges();
+            return "EmpLeaveDoWork Completed";
+        }
 
-		//         context.SaveChanges();
-		//         return "EmpLeaveDoWork";
-		//     }
-
-	}
+    }
 
 }
