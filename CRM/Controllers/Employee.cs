@@ -3330,7 +3330,7 @@ namespace CRM.Controllers
                 decimal noOfDays = 0;
                 noOfDays = Convert.ToDecimal(attendanceDays.Nodays);
                 var employees = await _context.EmployeeRegistrations
-                                              .Where(x => x.Vendorid == adminLogin.Vendorid && x.IsDeleted == false)
+                                              .Where(x => x.Vendorid == adminLogin.Vendorid && x.IsDeleted == false).OrderByDescending(x=>x.Id)
                                               .ToListAsync();
 
                 if (!employees.Any())
@@ -3392,8 +3392,8 @@ namespace CRM.Controllers
                 foreach (var employeesdata in employees)
                 {
                     var leaveData = leaveCounts.FirstOrDefault(l => l.UserId == employeesdata.EmployeeId);
-                    var totalLeave = leaveData?.TotalLeave ?? 0;
-                    var PaidtotalLeave = leaveData?.PaidCountLeave ?? 0;
+                    decimal totalLeave = leaveData?.TotalLeave ?? 0;
+                    decimal PaidtotalLeave = leaveData?.PaidCountLeave ?? 0;
 
                     var EmpTotalWorkingHours = _context.EmployeeCheckInRecords
                         .Where(att => att.EmpId == employeesdata.EmployeeId &&
@@ -3424,7 +3424,7 @@ namespace CRM.Controllers
                         decimal shiftworkingHours = 0;
                         decimal NumberOfLateMarks = 0;
                         decimal salaryDeductionDays = 0;
-                        decimal TotalsalaryDeduction = 0;
+                        decimal TotalsalaryDeduction =0;
                         decimal EmployeeEpf = 0;
                         decimal EmployeeEsi = 0;
 
@@ -3439,8 +3439,8 @@ namespace CRM.Controllers
                             shiftworkingHours = Math.Max((decimal)shiftDuration.TotalHours, 0);
                         }
 
-                        int lateMarkCount = 0;
-                        int totalpresentdays = 0;
+                        decimal lateMarkCount = 0;
+                        decimal totalpresentdays = 0;
                         bool ischeck = false;
                         foreach (var item in EmpTotalWorkingHours)
                         {
@@ -3468,19 +3468,29 @@ namespace CRM.Controllers
                         }
 
                         List<DateTime> sundays = new List<DateTime>();
-                        DateTime today = DateTime.Today;
-                        DateTime startOfMonth = new DateTime(today.Year, today.Month, 1);
-
-                        for (DateTime date = startOfMonth; date <= today; date = date.AddDays(1))
+                        DateTime startOfMonth = new DateTime(year, month, 1);
+                        DateTime firstSunday = startOfMonth;
+                        while (firstSunday.DayOfWeek != DayOfWeek.Sunday)
                         {
-                            if (date.DayOfWeek == DayOfWeek.Sunday)
-                            {
-                                sundays.Add(date);
-                            }
+                            firstSunday = firstSunday.AddDays(1);
                         }
-                        int sundayCount = sundays.Count;
-                        TotalsalaryDeduction = Math.Round((totalpresentdays - totalLeave - NumberOfLateMarks + sundayCount), 2);
+                        DateTime lastDayOfMonth = new DateTime(year, month, DateTime.DaysInMonth(year, month));
+                        for (DateTime date = firstSunday; date <= lastDayOfMonth; date = date.AddDays(7))
+                        {
+                            sundays.Add(date);
+                        }
+                        foreach (var sunday in sundays)
+                        {
+                            Console.WriteLine(sunday.ToString("yyyy-MM-dd"));
+                        }
 
+                        decimal sundayCount = sundays.Count;
+                        decimal noofleave = noOfDays - (totalpresentdays + sundayCount + PaidtotalLeave);
+
+                        // TotalsalaryDeduction = Math.Round((decimal)(totalpresentdays + sundayCount + PaidtotalLeave - totalLeave - NumberOfLateMarks), 2);
+                        decimal  salaryDeduction = Math.Round((decimal)(totalpresentdays + sundayCount) + PaidtotalLeave - totalLeave - NumberOfLateMarks, 2);
+
+                        TotalsalaryDeduction = salaryDeduction + noofleave;
                         decimal monthlyPay = 0;
                         decimal empbasic = 0;
                         decimal totalSalary = 0;
