@@ -2580,10 +2580,8 @@ namespace CRM.Repository
                         });
                     }
                 }
-                return leaveDetails
-                      .OrderByDescending(l => l.StartDate == default(DateTime) ? DateTime.MinValue : l.StartDate)
-                      .ThenByDescending(l => l.EndDate == default(DateTime) ? DateTime.MinValue : l.EndDate)
-                      .ToList();
+                return leaveDetails.OrderByDescending(l => l.Id).ToList();
+
             }
             catch (Exception ex)
             {
@@ -3653,11 +3651,8 @@ namespace CRM.Repository
                         });
                     }
                 }
-
-                return leaveDetails
-                    .OrderByDescending(l => l.StartDate == default(DateTime) ? DateTime.MinValue : l.StartDate)
-                    .ThenByDescending(l => l.EndDate == default(DateTime) ? DateTime.MinValue : l.EndDate)
-                    .ToList();
+                return leaveDetails.OrderByDescending(l => l.Id).ToList();
+                   
             }
             catch (Exception ex)
             {
